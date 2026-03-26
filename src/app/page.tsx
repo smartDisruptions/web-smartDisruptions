@@ -1,10 +1,15 @@
+import HeroSection from '@/components/home/HeroSection';
+import FeaturedAppsSection from '@/components/home/FeaturedAppsSection';
+import SystemTeaserSection from '@/components/home/SystemTeaserSection';
+import CTASection from '@/components/home/CTASection';
+
 export default function Home() {
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold tracking-tight text-accent">Home</h1>
-      <p className="mt-4 text-lg text-text-secondary">
-        SmartDisruptions — AI-built web applications.
-      </p>
-    </div>
+    <>
+      <HeroSection />
+      <FeaturedAppsSection />
+      <SystemTeaserSection />
+      <CTASection />
+    </>
   );
 }
