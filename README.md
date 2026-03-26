@@ -10,11 +10,11 @@ A proof engine and system demonstration platform showcasing AI-built web applica
 
 ## Branching Strategy
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production — deployed to live site |
-| `dev` | Integration — all features merge here first |
-| `feature/*` | Feature branches — individual work items |
+| Branch      | Purpose                                     |
+| ----------- | ------------------------------------------- |
+| `main`      | Production — deployed to live site          |
+| `dev`       | Integration — all features merge here first |
+| `feature/*` | Feature branches — individual work items    |
 
 ## Getting Started
 
