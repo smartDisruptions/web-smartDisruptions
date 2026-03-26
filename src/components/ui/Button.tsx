@@ -35,9 +35,10 @@ export default function Button({
   href,
   disabled = false,
 }: ButtonProps) {
-  const base = `inline-flex items-center justify-center rounded-lg font-medium transition-all ${variantStyles[variant]} ${sizeStyles[size]} ${
-    disabled ? 'pointer-events-none opacity-50' : ''
-  } ${className}`.trim();
+  const base =
+    `inline-flex items-center justify-center rounded-lg font-medium transition-all ${variantStyles[variant]} ${sizeStyles[size]} ${
+      disabled ? 'pointer-events-none opacity-50' : ''
+    } ${className}`.trim();
 
   if (href && !disabled) {
     return (

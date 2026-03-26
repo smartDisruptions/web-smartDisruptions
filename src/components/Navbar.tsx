@@ -26,10 +26,7 @@ export default function Navbar() {
       aria-label="Main navigation"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link
-          href="/"
-          className="text-xl font-bold tracking-tight text-accent"
-        >
+        <Link href="/" className="text-xl font-bold tracking-tight text-accent">
           SmartDisruptions
         </Link>
 
