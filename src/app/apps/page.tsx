@@ -63,8 +63,12 @@ export default function AppsGallery() {
             <Link key={app.slug} href={`/apps/${app.slug}`}>
               <Card hover className="flex h-full flex-col">
                 {/* Thumbnail */}
-                <div className="flex h-44 items-center justify-center rounded-lg bg-white/5 text-sm text-text-secondary">
-                  Screenshot
+                <div className="overflow-hidden rounded-lg">
+                  <img
+                    src={app.thumbnailUrl}
+                    alt={`${app.name} screenshot`}
+                    className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
 
                 {/* Name + Status */}
@@ -93,10 +97,23 @@ export default function AppsGallery() {
                   ))}
                 </div>
 
-                {/* Link hint */}
-                <span className="mt-4 inline-block text-sm font-medium text-accent">
-                  View Details &rarr;
-                </span>
+                {/* Link hints */}
+                <div className="mt-4 flex items-center gap-4">
+                  <span className="text-sm font-medium text-accent">
+                    View Details &rarr;
+                  </span>
+                  {app.liveUrl && (
+                    <a
+                      href={app.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-sm font-medium text-text-secondary transition-colors hover:text-accent"
+                    >
+                      Try Demo &rarr;
+                    </a>
+                  )}
+                </div>
               </Card>
             </Link>
           ))}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { apps } from '@/data/apps';
 import {
   SectionContainer,
   Card,
@@ -6,28 +7,6 @@ import {
   Button,
   RevealOnScroll,
 } from '@/components/ui';
-
-const featuredApps = [
-  {
-    slug: 'review-funnel',
-    name: 'Review Funnel',
-    description:
-      'Automated review collection and display system for local businesses.',
-    tech: ['Next.js', 'Supabase', 'AI'],
-  },
-  {
-    slug: 'samurai-kitchen',
-    name: 'Samurai Kitchen',
-    description: 'Restaurant website with online ordering and menu management.',
-    tech: ['React', 'Node.js', 'Stripe'],
-  },
-  {
-    slug: 'smart-crm',
-    name: 'Smart CRM',
-    description: 'Lightweight CRM for tracking leads and client interactions.',
-    tech: ['TypeScript', 'PostgreSQL', 'API'],
-  },
-];
 
 export default function FeaturedAppsSection() {
   return (
@@ -45,13 +24,17 @@ export default function FeaturedAppsSection() {
       </RevealOnScroll>
 
       <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {featuredApps.map((app, index) => (
+        {apps.map((app, index) => (
           <RevealOnScroll key={app.slug} className={`delay-${index * 100}`}>
             <Link href={`/apps/${app.slug}`}>
               <Card hover={true} className="flex h-full flex-col">
-                {/* Placeholder image */}
-                <div className="flex h-40 items-center justify-center rounded-lg bg-white/5 text-sm text-text-secondary">
-                  Screenshot
+                {/* Thumbnail */}
+                <div className="overflow-hidden rounded-lg">
+                  <img
+                    src={app.thumbnailUrl}
+                    alt={`${app.name} screenshot`}
+                    className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
 
                 <h3 className="mt-4 text-lg font-semibold text-text-primary">
@@ -63,7 +46,7 @@ export default function FeaturedAppsSection() {
                 </p>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {app.tech.map((t) => (
+                  {app.techStack.slice(0, 3).map((t) => (
                     <Badge key={t} variant="accent">
                       {t}
                     </Badge>

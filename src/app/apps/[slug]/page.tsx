@@ -48,6 +48,17 @@ export default async function AppDetail({
         <p className="mt-4 max-w-3xl text-lg text-text-secondary">
           {app.longDescription}
         </p>
+        {app.liveUrl && (
+          <div className="mt-6">
+            <a
+              href={app.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button>Try Live Demo &rarr;</Button>
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Screenshots Gallery */}
@@ -56,12 +67,16 @@ export default async function AppDetail({
           Screenshots
         </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {app.screenshotUrls.map((url, i) => (
+          {app.screenshotUrls.map((url) => (
             <div
               key={url}
-              className="flex h-52 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm text-text-secondary"
+              className="overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
             >
-              Screenshot {i + 1}
+              <img
+                src={url}
+                alt={`${app.name} screenshot`}
+                className="h-52 w-full object-cover transition-transform duration-300 hover:scale-105"
+              />
             </div>
           ))}
         </div>
