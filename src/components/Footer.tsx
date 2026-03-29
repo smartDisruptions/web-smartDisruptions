@@ -13,7 +13,7 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
           {/* Column 1: Brand */}
-          <div>
+          <div className="text-center sm:text-left">
             <p className="text-lg font-bold text-accent">SmartDisruptions</p>
             <p className="mt-2 text-sm text-text-secondary">
               AI-built web applications — a proof engine for what&apos;s
@@ -22,11 +22,11 @@ export default function Footer() {
           </div>
 
           {/* Column 2: Quick Links */}
-          <div>
+          <div className="text-center sm:text-left">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-text-primary">
               Quick Links
             </h3>
-            <ul className="mt-3 flex flex-col gap-2" role="list">
+            <ul className="mt-3 flex flex-col items-center gap-2 sm:items-start" role="list">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
@@ -41,7 +41,7 @@ export default function Footer() {
           </div>
 
           {/* Column 3: Get the System */}
-          <div>
+          <div className="text-center sm:text-left">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-text-primary">
               Get the System
             </h3>
