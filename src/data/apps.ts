@@ -178,6 +178,57 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: 'https://app-neon-breakout.vercel.app',
   },
+  {
+    slug: 'ai-diary',
+    name: 'AI Diary',
+    description:
+      'AI-powered personal journal with mood tracking, personality analysis, and an intelligent companion chat.',
+    longDescription:
+      'A thoughtful journaling app that combines daily writing with AI-driven insights. Write freely about your day, and the app analyzes your entries to reveal mood patterns, Big Five personality traits, and writing style metrics over time. A companion chat powered by Claude provides reflective conversation and can extract actionable todos from your entries. The mood timeline tracks emotional valence across 90 data points, while the profile page surfaces emotion patterns, vocabulary level, and topic trends. All data persists locally in the browser for complete privacy — no server-side storage of personal content.',
+    thumbnailUrl: '/images/apps/ai-diary-thumbnail.png',
+    screenshotUrls: [
+      '/images/apps/ai-diary-1.png',
+      '/images/apps/ai-diary-2.png',
+      '/images/apps/ai-diary-3.png',
+    ],
+    techStack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'OpenRouter API', 'Zod'],
+    category: 'Productivity',
+    status: 'live',
+    outcomes: [
+      'AI companion chat extracts todos and provides reflective conversation from journal entries',
+      'Big Five personality profiling and mood timeline built from cumulative writing analysis',
+      'Privacy-first architecture with all personal data stored locally in the browser',
+      'Writing style analytics track formality, verbosity, vocabulary, and recurring topics',
+    ],
+    buildDate: '2025-03',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+  },
+  {
+    slug: 'attack-in-space',
+    name: 'Attack in Space',
+    description:
+      'A 3D space shooter with procedural audio, combo multipliers, and a custom ECS game engine built on Three.js.',
+    longDescription:
+      'A vertical-scrolling space shooter built from scratch on a custom Entity Component System engine powered by Three.js. The player pilots a ship through waves of enemies, collecting power-ups and building combo multipliers for high scores. Boss fights with unique attack patterns punctuate level progression. A procedural Web Audio synthesizer generates all sound effects and background music in real time — no audio files needed. The glass-panel HUD displays score, combo streak, shield status, weapon level, and bomb count with a cyberpunk-inspired neon aesthetic. The modular architecture separates physics, rendering, AI, spawning, and audio into independent ECS systems for clean game logic.',
+    thumbnailUrl: '/images/apps/attack-in-space-thumbnail.png',
+    screenshotUrls: [
+      '/images/apps/attack-in-space-1.png',
+      '/images/apps/attack-in-space-2.png',
+    ],
+    techStack: ['Three.js', 'Vite', 'Vanilla JavaScript', 'Web Audio API', 'ECS Architecture'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Custom Entity Component System engine enables modular game logic with clean separation of concerns',
+      'Procedural Web Audio synthesizer generates all sound effects and music with zero audio files',
+      'Boss fight system with unique attack patterns adds strategic depth beyond wave-based shooters',
+      'Glass-panel HUD with cyberpunk neon aesthetic provides clear gameplay feedback at a glance',
+    ],
+    buildDate: '2025-03',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
