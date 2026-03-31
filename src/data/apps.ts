@@ -151,6 +151,60 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: 'https://app-ai-diary.vercel.app',
   },
+  {
+    slug: 'aureum-snake',
+    name: 'AUREUM Snake',
+    description:
+      'Art Deco snake game with rank progression, chain scoring, and Web Audio sound effects — all in a single HTML file.',
+    longDescription:
+      'A luxurious take on the classic snake game, wrapped in an Art Deco aesthetic of gold and obsidian. Players guide a serpent across an 18x18 grid, eating food to grow while avoiding collisions. A chain-scoring system rewards consecutive catches, and a rank progression ladder (I through X) tracks mastery across sessions. The entire game — visuals, logic, and synthesized sound effects — ships as a single HTML file with zero dependencies. D-pad touch controls, pause and game-over overlays, persistent high scores via localStorage, and Web Audio API–driven sound design deliver a polished mobile-first experience.',
+    thumbnailUrl: '/images/apps/aureum-snake-thumbnail.png',
+    screenshotUrls: [
+      '/images/apps/aureum-snake-1.png',
+      '/images/apps/aureum-snake-2.png',
+      '/images/apps/aureum-snake-3.png',
+    ],
+    techStack: ['HTML5', 'CSS3', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Zero-dependency single-file architecture delivers the entire game in one HTML document',
+      'Chain-scoring and rank progression (I–X) add strategic depth beyond classic snake',
+      'Web Audio API synthesizes eat, level-up, and game-over sounds without any audio assets',
+      'Mobile-first D-pad controls with haptic feedback enable smooth touch gameplay',
+    ],
+    buildDate: '2026-03',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: 'https://app-snake-smoky.vercel.app',
+  },
+  {
+    slug: 'flappy-bird',
+    name: 'Flappy Bird Primo',
+    description:
+      'A polished Flappy Bird remake with pixel-art visuals, particle effects, slow-motion near-misses, and screen shake — built with PixiJS.',
+    longDescription:
+      'A GPU-accelerated Flappy Bird clone built with PixiJS and TypeScript, featuring hand-drawn pixel-art sprites generated entirely in code. The bird navigates procedurally spawned pipe gaps with realistic gravity and flap physics. Near-miss detection triggers a cinematic slow-motion effect, rewarding precise play. Death sequences include freeze frames, screen shake, particle explosions, and a flash overlay for dramatic impact. A share button generates challenge URLs with embedded scores. The game runs at 60fps with responsive canvas scaling, nearest-neighbor rendering for crisp pixel art, and touch/keyboard input support for cross-device play.',
+    thumbnailUrl: '/images/apps/flappy-bird-thumbnail.png',
+    screenshotUrls: [
+      '/images/apps/flappy-bird-1.png',
+      '/images/apps/flappy-bird-2.png',
+      '/images/apps/flappy-bird-3.png',
+    ],
+    techStack: ['Vite', 'TypeScript', 'PixiJS', 'HTML5', 'CSS3'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'GPU-accelerated 2D rendering via PixiJS delivers smooth 60fps gameplay',
+      'Near-miss slow-motion system adds cinematic tension to precise pipe navigation',
+      'Procedural sprite generation creates all pixel-art assets without external images',
+      'Death sequence with freeze frames, screen shake, and particle explosions provides satisfying feedback',
+    ],
+    buildDate: '2026-03',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: 'https://app-flappy-bird-primo.vercel.app',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
