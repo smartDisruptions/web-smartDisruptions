@@ -125,60 +125,6 @@ export const apps: App[] = [
     liveUrl: 'https://app-cloth-simulator.vercel.app',
   },
   {
-    slug: 'cyberpunk-runner',
-    name: 'Cyberpunk Runner',
-    description:
-      'Neon-soaked endless runner with lane-switching, combo multipliers, and a CRT scanline aesthetic.',
-    longDescription:
-      'An endless runner set on a glowing cyberpunk grid. The player dodges obstacles across three lanes, building combo multipliers for consecutive near-misses and collecting hack charges for a slow-motion ability. A full HUD tracks score, combo streak, velocity, and best run. The visual layer stacks CRT scanlines, a radial vignette, and neon glow effects over a perspective grid that accelerates as the run progresses. Game-over triggers a "FLATLINED" death screen with final stats. Built as a single HTML file with no dependencies — all rendering, input, and game logic in pure JavaScript on an HTML5 Canvas.',
-    thumbnailUrl: '/images/apps/cyberpunk-runner-thumbnail.png',
-    screenshotUrls: [
-      '/images/apps/cyberpunk-runner-1.png',
-      '/images/apps/cyberpunk-runner-2.png',
-      '/images/apps/cyberpunk-runner-3.png',
-    ],
-    techStack: ['HTML5 Canvas', 'Vanilla JavaScript', 'CSS3', 'CRT Effects'],
-    category: 'Game',
-    status: 'live',
-    outcomes: [
-      'Three-lane runner with smooth input and accelerating difficulty curve',
-      'Combo multiplier system rewards risk-taking with near-miss scoring',
-      'CRT scanline overlay and neon glow create an authentic retro-futuristic atmosphere',
-      'Zero-dependency single-file architecture loads instantly on any device',
-    ],
-    buildDate: '2025-03',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://app-cyberpunk-runner.vercel.app',
-  },
-  {
-    slug: 'neon-breakout',
-    name: 'Neon Breakout',
-    description:
-      'Synthwave brick-breaker with boss fights, power-ups, achievements, and procedural audio.',
-    longDescription:
-      'A feature-rich breakout game wrapped in a synthwave neon aesthetic. Rows of rainbow-colored bricks shatter under a glowing ball while the paddle collects power-ups — multi-ball, wide paddle, laser, and more. Boss fights punctuate level progression with unique attack patterns and health bars. An achievement system tracks milestones, and a procedural Web Audio engine generates sound effects in real time with no audio files. Screen shake, CRT scanline overlays, and particle explosions keep the action visually punchy. The modular JavaScript architecture splits physics, rendering, input, audio, and game state into separate files bundled for production.',
-    thumbnailUrl: '/images/apps/neon-breakout-thumbnail.png',
-    screenshotUrls: [
-      '/images/apps/neon-breakout-1.png',
-      '/images/apps/neon-breakout-2.png',
-      '/images/apps/neon-breakout-3.png',
-    ],
-    techStack: ['HTML5 Canvas', 'Vanilla JavaScript', 'CSS3', 'Web Audio API'],
-    category: 'Game',
-    status: 'live',
-    outcomes: [
-      'Boss fight system with unique attack patterns adds strategic depth beyond classic breakout',
-      'Procedural Web Audio engine generates all sound effects with zero external audio files',
-      'Power-up system with multi-ball, laser, and paddle upgrades keeps gameplay varied',
-      'Modular architecture splits 19 source files into physics, rendering, and game logic layers',
-    ],
-    buildDate: '2025-03',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://app-neon-breakout.vercel.app',
-  },
-  {
     slug: 'ai-diary',
     name: 'AI Diary',
     description:
@@ -229,6 +175,7 @@ export const apps: App[] = [
     buildDate: '2025-03',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
+    liveUrl: 'https://app-attack-in-space.vercel.app',
   },
 ];
 
