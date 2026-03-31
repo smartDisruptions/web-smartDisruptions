@@ -203,6 +203,7 @@ export const apps: App[] = [
     buildDate: '2025-03',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
+    liveUrl: 'https://app-ai-diary.vercel.app',
   },
   {
     slug: 'attack-in-space',
