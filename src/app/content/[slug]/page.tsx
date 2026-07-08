@@ -2,13 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { contentEntries, getContentBySlug } from '@/data/content';
-import {
-  SectionContainer,
-  Badge,
-  Button,
-  Card,
-  ComingSoonBadge,
-} from '@/components/ui';
+import { SectionContainer, Badge, Button } from '@/components/ui';
 
 export function generateStaticParams() {
   return contentEntries.map((entry) => ({ slug: entry.slug }));
@@ -33,7 +27,7 @@ export default async function ContentDetail({
         href="/content"
         className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
       >
-        &larr; Back to Content
+        &larr; Back to Writing
       </Link>
 
       {/* Header */}
@@ -80,11 +74,32 @@ export default async function ContentDetail({
                 {children}
               </ul>
             ),
+            ol: ({ children }) => (
+              <ol className="mb-4 ml-6 list-decimal space-y-3 text-text-secondary">
+                {children}
+              </ol>
+            ),
             li: ({ children }) => <li className="leading-relaxed">{children}</li>,
             strong: ({ children }) => (
               <strong className="font-semibold text-text-primary">
                 {children}
               </strong>
+            ),
+            em: ({ children }) => (
+              <em className="italic text-text-primary/90">{children}</em>
+            ),
+            code: ({ children }) => (
+              <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[0.85em] text-accent">
+                {children}
+              </code>
+            ),
+            a: ({ href, children }) => (
+              <a
+                href={href}
+                className="text-accent underline underline-offset-2 hover:opacity-80"
+              >
+                {children}
+              </a>
             ),
           }}
         >
@@ -92,26 +107,10 @@ export default async function ContentDetail({
         </ReactMarkdown>
       </article>
 
-      {/* Monetization Hook (conditional) */}
-      {entry.hasPaidContent && (
-        <Card className="mt-12 flex flex-col items-center text-center">
-          <h3 className="text-lg font-semibold text-text-primary">
-            Full Breakdown
-          </h3>
-          <p className="mt-2 text-sm text-text-secondary">
-            Want the complete deep dive? The full breakdown covers everything
-            behind this insight.
-          </p>
-          <div className="mt-4">
-            <ComingSoonBadge />
-          </div>
-        </Card>
-      )}
-
-      {/* Back to Content */}
-      <div className="mt-12 text-center">
+      {/* Back to Writing */}
+      <div className="mt-16 border-t border-white/10 pt-10 text-center">
         <Button variant="secondary" href="/content">
-          &larr; Back to All Content
+          &larr; Back to All Writing
         </Button>
       </div>
     </SectionContainer>

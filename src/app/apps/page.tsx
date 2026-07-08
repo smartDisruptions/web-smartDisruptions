@@ -17,13 +17,15 @@ export default function AppsGallery() {
     <SectionContainer className="py-20">
       {/* Page Header */}
       <div className="text-center">
-        <p className="font-mono-accent text-sm text-accent/70">// Showcase</p>
+        <p className="font-mono-accent text-sm text-accent/70">
+          {'// Builds'}
+        </p>
         <h1 className="mt-2 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-          Apps Built With The System
+          What I&apos;ve built
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-          Real applications — from idea to deployment. Each one is proof that
-          the system works.
+          Real apps I&apos;ve shipped and put online — the receipts behind the
+          writing. Try any of them live.
         </p>
       </div>
 

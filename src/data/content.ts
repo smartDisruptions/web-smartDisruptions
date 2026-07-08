@@ -6,74 +6,67 @@ export interface ContentEntry {
   category: string;
   publishDate: string;
   tags: string[];
-  hasPaidContent: boolean;
 }
 
 export const contentEntries: ContentEntry[] = [
   {
-    slug: 'why-orchestration-beats-prompting',
-    title: 'Why Orchestration Beats Prompting',
+    slug: 'food-truck-site-with-ai',
+    title: "I built my best friend's food truck site with AI — here's exactly how",
     excerpt:
-      'Most people treat AI like a search bar. Type something in, hope something good comes out. Here is why that approach fails for real software — and what works instead.',
-    body: `## The Prompting Trap
+      'I built a full online-ordering system with Square payments for my friend Robert’s food truck — and then didn’t ship it. The real design decision was shipping the subset his business actually needed. Here’s the timeline, the method, and the parts worth copying.',
+    body: `## The honest version
 
-Most AI workflows follow the same pattern: open a chat, type a request, get a result. Sometimes it works. Often it does not.
+I built a full online-ordering system for my best friend Robert's food truck — menu, cart, Square payments, the works. And then I **didn't ship it**.
 
-The problem is not the AI — it is the approach. Ad-hoc prompting has no structure, no validation, and no repeatability. Every session starts from zero.
+What went live is a menu with photos and a catering form that drops inquiries straight into his inbox. That's what his business actually needed. The ordering system is sitting in the repo, working, about 80% of the way to launch — a warm offer for later, not a cold pitch.
 
-## What Orchestration Looks Like
+Shipping *the subset the business actually needed* was the real design decision. Here's exactly how the whole thing came together — timeline, method, and the parts I'd tell a beginner to copy.
 
-Orchestration treats AI as one tool in a larger system. Instead of hoping a single prompt produces a finished product, the system breaks work into stages — each with clear inputs, outputs, and validation criteria.
+## The timeline (these are receipts, not memory)
 
-The result is not just a better output. It is a **repeatable process** that produces consistent results across different projects.
+I reconstructed this from the git history, so every claim here is a commit, not a vibe.
 
-## Why It Matters
+### v1 in about four hours
 
-When you build with orchestration:
+Starting from \`create-next-app\`, I had a complete, presentable business site in roughly four hours and five commits: a homepage with menu highlights, a "why us" section and a rewards call-to-action, a rewards page with loyalty signup and a stamp card, Open Graph metadata, and a font polish pass. Not a prototype — something you could hand to a customer.
 
-- Every stage has a defined purpose
-- Nothing advances without passing validation
-- Errors get caught early, not compounded
-- The process improves with every build
+### The real build, over a few evening sessions
 
-This is not about using AI less. It is about using it with structure.`,
-    category: 'System Insights',
-    publishDate: '2025-03-15',
-    tags: ['orchestration', 'methodology', 'AI'],
-    hasPaidContent: true,
-  },
-  {
-    slug: 'anatomy-of-an-ai-built-app',
-    title: 'Anatomy of an AI-Built App',
-    excerpt:
-      'What does it actually look like when an application goes from idea to deployment using AI orchestration? A high-level walkthrough of the stages every build follows.',
-    body: `## From Idea to Deployment
+That same evening I started the serious version. Inside the first session: project architecture, types, environment setup, a responsive header with a mobile menu, a footer with hours and location, a reusable hero, a full homepage, a menu page with **category filters and cart state**, and an order page with a **full checkout flow and success page**.
 
-Every app built with the SmartDisruptions system follows the same four-stage process. This article walks through what happens at each stage — without revealing the exact implementation details.
+The next morning: a rewards page with phone lookup, a locations page, and a catering page with an inquiry form wired to an API endpoint. That afternoon I swapped my placeholder menu for Robert's real menu, then ran pure UX passes — a sticky mobile category filter, consolidating seven menu categories down to four, splitting protein variants.
 
-## Stage 1: Idea Definition
+From \`git init\` to a working ordering platform with real menu data was roughly a day of elapsed time — an afternoon for v1, the platform itself across a few evening sessions.
 
-The build starts with a clear problem statement. Who is the user? What do they need? What does success look like? These questions get answered before any code is written.
+### The hard part — payments — done the disciplined way
 
-## Stage 2: Structured Planning
+The commit log literally shows the method. For the Square Web Payments integration it went: a **design spec** → **address spec-review feedback** → an **implementation plan** → then six implementation commits in **21 minutes** (the hook, the payment section, tokenization wired into checkout).
 
-The idea gets broken into executable stages. Each stage has defined inputs, outputs, and success criteria. This is where most AI workflows fail — they skip planning and jump straight to building.
+Spec-first isn't slower. The spec is *why* the implementation took 21 minutes.
 
-## Stage 3: Build and Validate
+### Then the pivot
 
-Each stage is executed and validated against its criteria. If something fails, it gets fixed before moving forward. This gate-based approach prevents the compounding errors that plague ad-hoc AI builds.
+A few weeks later I repointed the site toward catering — nav, hero, platter details — and wired the catering form to real email delivery so inquiries land in Robert's inbox directly. I made the menu display-only. That's the shape that's live today, and he uses it every day.
 
-## Stage 4: Deploy With Confidence
+## The method, in six moves
 
-By the time an app reaches deployment, every layer has been verified. The result is software that works — not a prototype held together with hope.
+Each commit was basically one ask to the AI. The sequence teaches itself:
 
-## The Takeaway
+1. **Scaffold with a generator.** \`create-next-app\`. Don't hand-build what a generator gives you for free.
+2. **One visible piece per ask.** Header, then footer, then hero, then homepage sections, then menu, then checkout — build in the order a visitor would see it.
+3. **Real data as its own step.** Placeholder data first to move fast, then a dedicated pass to drop in the real business's menu.
+4. **Polish as small, separate asks.** Sticky filters, category renames — polish is cheap when each change is one ask.
+5. **Spec-first only for the genuinely hard part.** For payments: spec, review, plan, implement. Everywhere else, just ask.
+6. **Cut scope at the end.** Ship what the person needs. Keep the rest in the repo as a future offer.
 
-The difference between an AI-assisted app and an AI-orchestrated app is not the technology. It is the process.`,
-    category: 'Build Breakdowns',
-    publishDate: '2025-03-20',
-    tags: ['process', 'build', 'walkthrough'],
-    hasPaidContent: false,
+## If you're just starting
+
+You don't need to know the framework. You need to know the *person*. I knew Robert needed catering inquiries in his inbox and food photos on a page — every ask I made was one visible piece of that.
+
+**Try this today:** pick one real person with one real need. Run \`create-next-app\`, then ask AI for one section at a time, in the order a visitor would see them. Deploy free on Vercel the same day. Don't add features the person didn't ask for — build those later, as an offer.`,
+    category: 'Build Breakdown',
+    publishDate: '2026-07-08',
+    tags: ['ai', 'shipping', 'next.js', 'case study'],
   },
 ];
 

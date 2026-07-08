@@ -1,13 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { apps, getAppBySlug } from '@/data/apps';
-import {
-  SectionContainer,
-  Badge,
-  Button,
-  Card,
-  ComingSoonBadge,
-} from '@/components/ui';
+import { SectionContainer, Badge, Button, Card } from '@/components/ui';
 
 export function generateStaticParams() {
   return apps.map((app) => ({ slug: app.slug }));
@@ -123,22 +117,20 @@ export default async function AppDetail({
         </div>
       </div>
 
-      {/* Monetization Hooks */}
+      {/* Read the writing */}
       <div className="mt-16">
         <Card className="flex flex-col items-center text-center">
           <h3 className="text-lg font-semibold text-text-primary">
-            Full Breakdown
+            Want the how and why?
           </h3>
-          <p className="mt-2 text-sm text-text-secondary">
-            See exactly how this app was architected, built, and deployed —
-            stage by stage.
+          <p className="mt-2 max-w-md text-sm text-text-secondary">
+            I write up builds like this one — the timeline, the method, and the
+            parts worth copying. No fluff, just what actually happened.
           </p>
           <div className="mt-4">
-            {app.hasFullBreakdown ? (
-              <Button size="sm">View Breakdown</Button>
-            ) : (
-              <ComingSoonBadge />
-            )}
+            <Button size="sm" href="/content">
+              Read the writing &rarr;
+            </Button>
           </div>
         </Card>
       </div>

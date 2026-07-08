@@ -17,13 +17,16 @@ export default function ContentList() {
     <SectionContainer className="py-20">
       {/* Page Header */}
       <div className="text-center">
-        <p className="font-mono-accent text-sm text-accent/70">// Insights</p>
+        <p className="font-mono-accent text-sm text-accent/70">
+          {'// Writing'}
+        </p>
         <h1 className="mt-2 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-          From the Lab
+          Writing
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-          Insights, breakdowns, and observations from building real applications
-          with AI orchestration.
+          Honest build breakdowns and field notes — the timeline, the method,
+          and the parts worth copying. Only what I&apos;ve actually shipped and
+          learned.
         </p>
       </div>
 

@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'SmartDisruptions — AI-Built Web Applications',
+  title: 'SmartDisruptions — building real things with AI, in public',
   description:
-    'SmartDisruptions is a proof engine showcasing AI-built web applications. Explore real apps, learn the system, and see what AI-driven development can deliver.',
+    'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. The goal: make advanced AI usable for people who feel behind, stuck, or underpowered.',
   openGraph: {
-    title: 'SmartDisruptions — AI-Built Web Applications',
+    title: 'SmartDisruptions — building real things with AI, in public',
     description:
-      'A proof engine showcasing AI-built web applications. Explore real apps, learn the system, and see what AI-driven development can deliver.',
+      'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. Real apps, shipped and live.',
     siteName: 'SmartDisruptions',
     type: 'website',
     locale: 'en_US',
