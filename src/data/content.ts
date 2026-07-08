@@ -11,59 +11,229 @@ export interface ContentEntry {
 export const contentEntries: ContentEntry[] = [
   {
     slug: 'food-truck-site-with-ai',
-    title: "I built my best friend's food truck site with AI — here's exactly how",
+    title:
+      "I built my best friend's food truck site with AI — here's what actually happened",
     excerpt:
-      'I built a full online-ordering system with Square payments for my friend Robert’s food truck — and then didn’t ship it. The real design decision was shipping the subset his business actually needed. Here’s the timeline, the method, and the parts worth copying.',
-    body: `## The honest version
+      'I built a full online-ordering system with Square payments for my best friend Robert’s food truck — and then shipped something much simpler. The real skill wasn’t building the impressive version. It was knowing what not to ship.',
+    body: `I built a full online-ordering system for my best friend Robert's food truck.
 
-I built a full online-ordering system for my best friend Robert's food truck — menu, cart, Square payments, the works. And then I **didn't ship it**.
+Menu, cart, checkout flow, Square payments — the whole thing.
 
-What went live is a menu with photos and a catering form that drops inquiries straight into his inbox. That's what his business actually needed. The ordering system is sitting in the repo, working, about 80% of the way to launch — a warm offer for later, not a cold pitch.
+And then I didn't ship that version.
 
-Shipping *the subset the business actually needed* was the real design decision. Here's exactly how the whole thing came together — timeline, method, and the parts I'd tell a beginner to copy.
+The version that actually went live is much simpler: a menu with photos and a catering form that sends inquiries straight to his inbox.
 
-## The timeline (these are receipts, not memory)
+That was the real lesson.
 
-I reconstructed this from the git history, so every claim here is a commit, not a vibe.
+The impressive thing was not building the ordering system. AI helped me move fast enough that the technical build was almost not the bottleneck anymore.
 
-### v1 in about four hours
+The real design decision was realizing what Robert's business actually needed right now.
 
-Starting from \`create-next-app\`, I had a complete, presentable business site in roughly four hours and five commits: a homepage with menu highlights, a "why us" section and a rewards call-to-action, a rewards page with loyalty signup and a stamp card, Open Graph metadata, and a font polish pass. Not a prototype — something you could hand to a customer.
+He did not need me to force a full ordering platform into his workflow just because I had built one. He needed people to see the food, understand what he offers, and contact him for catering.
 
-### The real build, over a few evening sessions
+So that is what shipped.
 
-That same evening I started the serious version. Inside the first session: project architecture, types, environment setup, a responsive header with a mobile menu, a footer with hours and location, a reusable hero, a full homepage, a menu page with **category filters and cart state**, and an order page with a **full checkout flow and success page**.
+The ordering system is still sitting in the repo. It works. It is probably 80% of the way there. But now it is a warm offer for later instead of a cold pitch today.
 
-The next morning: a rewards page with phone lookup, a locations page, and a catering page with an inquiry form wired to an API endpoint. That afternoon I swapped my placeholder menu for Robert's real menu, then ran pure UX passes — a sticky mobile category filter, consolidating seven menu categories down to four, splitting protein variants.
+That distinction matters.
 
-From \`git init\` to a working ordering platform with real menu data was roughly a day of elapsed time — an afternoon for v1, the platform itself across a few evening sessions.
+## The timeline
 
-### The hard part — payments — done the disciplined way
+I went back through the git history for this, so this is not me guessing from memory. These are the receipts.
 
-The commit log literally shows the method. For the Square Web Payments integration it went: a **design spec** → **address spec-review feedback** → an **implementation plan** → then six implementation commits in **21 minutes** (the hook, the payment section, tokenization wired into checkout).
+### The first version took about four hours
 
-Spec-first isn't slower. The spec is *why* the implementation took 21 minutes.
+I started from something called \`create-next-app\`. It is a single command you run in your terminal, and it instantly builds you a blank-but-working website skeleton — all the boring setup files and folders already wired together — so you can skip straight to building the actual pages. (It is tied to a popular website framework called Next.js, but every major framework has its own version of this.)
 
-### Then the pivot
+From that starting point, I had a complete, presentable business site in about four hours and five commits.
 
-A few weeks later I repointed the site toward catering — nav, hero, platter details — and wired the catering form to real email delivery so inquiries land in Robert's inbox directly. I made the menu display-only. That's the shape that's live today, and he uses it every day.
+It had a homepage, menu highlights, a "why us" section, a rewards call-to-action, a rewards page with a loyalty signup, Open Graph metadata, and a font polish pass.
 
-## The method, in six moves
+That was not some ugly prototype. It was already something you could show a real business owner.
 
-Each commit was basically one ask to the AI. The sequence teaches itself:
+That is the part that still feels kind of wild to me.
 
-1. **Scaffold with a generator.** \`create-next-app\`. Don't hand-build what a generator gives you for free.
-2. **One visible piece per ask.** Header, then footer, then hero, then homepage sections, then menu, then checkout — build in the order a visitor would see it.
-3. **Real data as its own step.** Placeholder data first to move fast, then a dedicated pass to drop in the real business's menu.
-4. **Polish as small, separate asks.** Sticky filters, category renames — polish is cheap when each change is one ask.
-5. **Spec-first only for the genuinely hard part.** For payments: spec, review, plan, implement. Everywhere else, just ask.
-6. **Cut scope at the end.** Ship what the person needs. Keep the rest in the repo as a future offer.
+With AI, the distance between "I have an idea" and "I can show someone a real thing" has collapsed.
 
-## If you're just starting
+### The real build happened over a few evening sessions
 
-You don't need to know the framework. You need to know the *person*. I knew Robert needed catering inquiries in his inbox and food photos on a page — every ask I made was one visible piece of that.
+That same evening, I started building the more serious version.
 
-**Try this today:** pick one real person with one real need. Run \`create-next-app\`, then ask AI for one section at a time, in the order a visitor would see them. Deploy free on Vercel the same day. Don't add features the person didn't ask for — build those later, as an offer.`,
+In the first session, I got the architecture in place: types, environment setup, responsive header, mobile menu, footer with hours and location, reusable hero, homepage, menu page, category filters, cart state, order page, checkout flow, and success page.
+
+The next morning, I added the rewards page with phone lookup, a locations page, and a catering page with an inquiry form wired to an API endpoint.
+
+That afternoon, I swapped out the placeholder menu for Robert's real menu.
+
+Then I did what I think of as pure UX passes: sticky mobile category filters, consolidating the menu from seven categories down to four, and splitting out protein variants so the menu made more sense.
+
+From \`git init\` to a working ordering platform with real menu data was roughly a day of elapsed time.
+
+Not one uninterrupted day. More like an afternoon for v1, then a few evening sessions for the full platform.
+
+That is the part beginners should pay attention to.
+
+You do not have to disappear for six months to build useful software anymore. You can build something real in the gaps of your life if you know how to keep the scope tight.
+
+## The hard part was payments
+
+The Square payments integration was the part I treated differently.
+
+For most of the site, I just built one visible piece at a time. Header. Footer. Hero. Menu. Cart. Checkout.
+
+But payments are not a place where I wanted to freestyle.
+
+The commit history shows the method clearly:
+
+First I made a design spec.
+
+Then I reviewed the spec.
+
+Then I made an implementation plan.
+
+Then I implemented it.
+
+After that, the actual payment integration came together in six commits in about 21 minutes: the hook, the payment section, tokenization, and checkout wiring.
+
+That is why I believe spec-first is not slower.
+
+It feels slower because you are not "coding" yet. But the spec is what makes the implementation fast.
+
+AI is way better when you give it a clear target. If the work is complex, vague, or easy to mess up, the spec is the shortcut.
+
+## Then I pivoted
+
+A few weeks later, I changed the site's focus toward catering.
+
+I updated the nav, hero, catering details, platter information, and form flow. Then I wired the catering form to real email delivery so inquiries land directly in Robert's inbox.
+
+I also changed the menu to display-only.
+
+That is the version that is live now.
+
+And he actually uses it.
+
+That matters more than the fact that I built a bigger version in the repo.
+
+A feature that is impressive but unused is not really a win. A smaller thing that fits into someone's actual business is.
+
+## The method
+
+Looking back, each commit was basically one ask to the AI.
+
+That is probably the simplest way to explain the workflow.
+
+### 1. Start with a generator
+
+Use \`create-next-app\` — the starter command I mentioned earlier.
+
+Do not hand-build the boring setup if a generator can give it to you for free.
+
+The goal is not to prove you know how to configure everything manually. The goal is to get to the useful part as quickly as possible.
+
+### 2. Build one visible piece at a time
+
+Header first.
+
+Then footer.
+
+Then hero.
+
+Then homepage sections.
+
+Then menu.
+
+Then checkout.
+
+I built in the order a visitor would experience the site.
+
+That kept the work grounded. I was not asking AI to "build a food truck website." I was asking for one specific piece at a time.
+
+That is a huge difference.
+
+### 3. Use placeholder data first
+
+I did not start by perfectly modeling the real menu.
+
+I used placeholder data to move fast, then did a dedicated pass later to drop in Robert's real menu.
+
+That kept momentum high.
+
+Beginners get stuck because they try to solve the whole real-world mess at the beginning. Sometimes it is better to build the shape first, then replace the fake data with real data.
+
+### 4. Treat polish as small separate asks
+
+Sticky filters.
+
+Better category names.
+
+Cleaner menu structure.
+
+Protein variants.
+
+Those were not huge rebuilds. They were small passes.
+
+This is one of the best parts of building with AI. Polish gets cheaper when you break it into tiny asks.
+
+### 5. Use specs for the scary parts
+
+I did not spec every single thing.
+
+That would have slowed me down.
+
+But I did spec payments.
+
+That is the balance I like: move fast on normal UI work, slow down on the parts that can break trust, money, data, or security.
+
+### 6. Cut scope at the end
+
+This was the biggest lesson.
+
+Ship what the person actually needs.
+
+Not what makes the project look most impressive.
+
+Not what proves you can build the hardest thing.
+
+Not what sounds best in a portfolio.
+
+What does the business need today?
+
+For Robert, the answer was: food photos, menu, catering form, and email delivery.
+
+So that is what shipped.
+
+## What I would tell someone starting out
+
+You do not need to know the framework perfectly.
+
+You need to know the person you are building for.
+
+That is the part AI cannot replace.
+
+I knew Robert. I knew his food. I knew he needed catering inquiries. I knew people needed to see the menu and pictures. So every ask I made to AI had a real purpose.
+
+That is why the project worked.
+
+If you want to try this, do not start with a giant SaaS idea.
+
+Pick one real person.
+
+Find one real need.
+
+Run \`create-next-app\` (that same starter command).
+
+Ask AI for one section at a time in the order a visitor would see it.
+
+Deploy it on Vercel.
+
+Then cut the scope down to what the person will actually use.
+
+That last part is where the product thinking is.
+
+AI can help you build almost anything now.
+
+The harder skill is knowing what not to ship.`,
     category: 'Build Breakdown',
     publishDate: '2026-07-08',
     tags: ['ai', 'shipping', 'next.js', 'case study'],
