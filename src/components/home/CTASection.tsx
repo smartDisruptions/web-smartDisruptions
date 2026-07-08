@@ -2,14 +2,14 @@ import { Button, RevealOnScroll } from '@/components/ui';
 
 export default function CTASection() {
   return (
-    <section className="bg-accent/5 px-4 py-20 sm:px-6">
+    <section className="border-y border-black/10 bg-accent/[0.05] px-6 py-24">
       <RevealOnScroll>
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold text-text-primary sm:text-4xl">
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
             Start with one real build
           </h2>
 
-          <p className="mt-4 text-lg text-text-secondary">
+          <p className="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
             Every post here is one project, broken down honestly — the timeline,
             the method, and the parts worth copying. Pick one and build
             alongside it.

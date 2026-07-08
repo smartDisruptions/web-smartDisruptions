@@ -17,10 +17,8 @@ export default function AppsGallery() {
     <SectionContainer className="py-20">
       {/* Page Header */}
       <div className="text-center">
-        <p className="font-mono-accent text-sm text-accent/70">
-          {'// Builds'}
-        </p>
-        <h1 className="mt-2 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+        <p className="font-mono-accent text-accent">Builds</p>
+        <h1 className="font-display mt-3 text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
           What I&apos;ve built
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
@@ -37,7 +35,7 @@ export default function AppsGallery() {
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === null
                 ? 'bg-accent text-background'
-                : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                : 'border border-black/10 text-text-secondary hover:text-text-primary'
             }`}
           >
             All
@@ -49,7 +47,7 @@ export default function AppsGallery() {
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 activeCategory === cat
                   ? 'bg-accent text-background'
-                  : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                  : 'border border-black/10 text-text-secondary hover:text-text-primary'
               }`}
             >
               {cat}
@@ -67,6 +65,8 @@ export default function AppsGallery() {
                 {/* Thumbnail */}
                 <div className="overflow-hidden rounded-lg">
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={app.thumbnailUrl}
                     alt={`${app.name} screenshot`}
                     className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-105"

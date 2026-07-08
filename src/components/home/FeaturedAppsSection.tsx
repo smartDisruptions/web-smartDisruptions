@@ -12,13 +12,14 @@ export default function FeaturedAppsSection() {
   return (
     <SectionContainer id="featured-apps">
       <RevealOnScroll>
-        <div className="text-center">
-          <h2 className="font-mono-accent text-sm font-semibold uppercase text-accent/70">
-            {'// Proof'}
+        <div className="mx-auto max-w-3xl">
+          <p className="font-mono-accent text-accent">Proof</p>
+          <h2 className="font-display mt-3 text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
+            The receipts behind the writing
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-text-secondary">
-            The receipts behind the writing — real apps I&apos;ve shipped and
-            put online. This is what the breakdowns are drawn from.
+          <p className="mt-3 max-w-2xl text-text-secondary">
+            Real apps I&apos;ve shipped and put online. This is what the
+            breakdowns are drawn from.
           </p>
         </div>
       </RevealOnScroll>
@@ -31,6 +32,8 @@ export default function FeaturedAppsSection() {
                 {/* Thumbnail */}
                 <div className="overflow-hidden rounded-lg">
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={app.thumbnailUrl}
                     alt={`${app.name} screenshot`}
                     className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"

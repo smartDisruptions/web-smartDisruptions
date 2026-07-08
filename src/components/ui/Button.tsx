@@ -14,10 +14,10 @@ interface ButtonProps {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-background hover:opacity-90',
+  primary: 'bg-accent text-background hover:bg-accent-hover',
   secondary:
-    'bg-transparent border border-accent text-accent hover:bg-accent/10',
-  ghost: 'bg-transparent text-text-primary hover:bg-white/10',
+    'bg-transparent border border-accent/40 text-accent hover:bg-accent/8',
+  ghost: 'bg-transparent text-text-primary hover:bg-black/[0.06]',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

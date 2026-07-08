@@ -34,7 +34,7 @@ export default async function AppDetail({
       {/* Header */}
       <div className="mt-8 text-center sm:text-left">
         <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-start">
-          <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
             {app.name}
           </h1>
           <Badge variant={app.status === 'live' ? 'accent' : 'secondary'}>
@@ -66,9 +66,11 @@ export default async function AppDetail({
           {app.screenshotUrls.map((url) => (
             <div
               key={url}
-              className="overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+              className="overflow-hidden rounded-xl border border-black/10 transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
             >
               <img
+                loading="lazy"
+                decoding="async"
                 src={url}
                 alt={`${app.name} screenshot`}
                 className="h-52 w-full object-cover transition-transform duration-300 hover:scale-105"

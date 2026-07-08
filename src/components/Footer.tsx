@@ -9,7 +9,7 @@ const quickLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-surface">
+    <footer className="border-t border-black/10 bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2">
           {/* Column 1: Brand */}
@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-text-secondary">
+        <div className="mt-10 border-t border-black/10 pt-6 text-center text-xs text-text-secondary">
           &copy; {new Date().getFullYear()} SmartDisruptions. All rights
           reserved.
         </div>

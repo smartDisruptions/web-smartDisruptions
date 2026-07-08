@@ -22,7 +22,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 border-b border-white/10 bg-surface/95 backdrop-blur-sm"
+      className="sticky top-0 z-50 border-b border-black/10 bg-surface/95 backdrop-blur-sm"
       aria-label="Main navigation"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
@@ -76,7 +76,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-white/10 md:hidden">
+        <div className="border-t border-black/10 md:hidden">
           <ul className="flex flex-col gap-2 px-4 py-4" role="list">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -86,7 +86,7 @@ export default function Navbar() {
                   className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive(link.href)
                       ? 'bg-accent/10 text-accent'
-                      : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                      : 'text-text-secondary hover:bg-black/[0.04] hover:text-text-primary'
                   }`}
                   aria-current={isActive(link.href) ? 'page' : undefined}
                 >

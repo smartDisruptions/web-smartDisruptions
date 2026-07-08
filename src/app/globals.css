@@ -1,150 +1,153 @@
 @import 'tailwindcss';
 
+/*
+  PAPER — light, editorial, typography-first.
+  One warm accent on warm paper. No grids, glows, or scanlines —
+  whitespace and type do the work, and the page stays lightning fast.
+*/
 @theme inline {
-  --color-background: #0a0a0a;
-  --color-surface: #141414;
-  --color-surface-elevated: #1a1a1a;
-  --color-accent: #00d4ff;
-  --color-accent-secondary: #7c3aed;
-  --color-text-primary: #f5f5f5;
-  --color-text-secondary: #a3a3a3;
-  --color-foreground: #f5f5f5;
-  --color-border: rgba(255, 255, 255, 0.1);
-  --font-sans: var(--font-geist-sans);
-  --font-mono:
-    var(--font-geist-mono), 'JetBrains Mono', 'Fira Code', 'Cascadia Code',
-    monospace;
+  --color-background: #fbfaf7; /* warm paper */
+  --color-surface: #ffffff; /* cards */
+  --color-surface-elevated: #f4f1ea; /* subtle raised fill */
+  --color-accent: #c2410c; /* terracotta */
+  --color-accent-hover: #9a3412; /* darker terracotta */
+  --color-accent-secondary: #b45309; /* amber, used sparingly */
+  --color-text-primary: #1a1714; /* near-black warm ink */
+  --color-text-secondary: #6b6560; /* warm grey */
+  --color-foreground: #1a1714;
+  --color-border: rgba(26, 23, 20, 0.12);
+  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display), Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-text-primary);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* LAB / SYSTEM typography accents */
+/* Headlines use the display serif */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Small eyebrow/label accent (replaces the old mono "// …" look) */
 .font-mono-accent {
   font-family: var(--font-mono);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
 }
 
-/* Subtle grid background pattern for lab feel */
-.bg-grid {
-  background-image:
-    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* Glow effects for accent elements */
-.glow-accent {
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
-}
-
-.glow-accent-strong {
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.15), 0 0 60px rgba(0, 212, 255, 0.05);
-}
-
-/* Selection color */
+/* Selection */
 ::selection {
-  background: rgba(0, 212, 255, 0.3);
-  color: #f5f5f5;
+  background: rgba(194, 65, 12, 0.18);
+  color: var(--color-text-primary);
 }
 
-/* Scrollbar styling */
+/* Scrollbar — quiet on light */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+  background: rgba(26, 23, 20, 0.18);
+  border-radius: 5px;
+  border: 2px solid var(--color-background);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(26, 23, 20, 0.3);
 }
 
-/* Scroll-reveal animation */
+/* Scroll-reveal animation (kept — it's cheap and adds polish) */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transform: translateY(16px);
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
 }
-
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
-
-/* Staggered children reveal */
 .reveal-stagger > .reveal {
-  transition-delay: calc(var(--stagger-index, 0) * 100ms);
+  transition-delay: calc(var(--stagger-index, 0) * 90ms);
 }
 
-/* Fade-in animation for page load */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out both;
-}
-
-/* Games marquee — horizontal scroll */
+/* Gabe's Games — arcade marquee + LED (scoped to that page) */
 @keyframes games-marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
-
 .games-marquee-track {
   display: flex;
   width: max-content;
   animation: games-marquee 38s linear infinite;
 }
-
 .games-marquee:hover .games-marquee-track {
   animation-play-state: paused;
 }
-
-/* Gentle pulse for arcade LEDs */
 @keyframes led-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
-
 .led-pulse {
   animation: led-pulse 1.6s ease-in-out infinite;
 }
 
+/* Fade-in on load */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out both;
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .games-marquee-track,
-  .led-pulse {
-    animation: none;
+  html {
+    scroll-behavior: auto;
   }
-
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
   }
-
   .reveal.visible {
     transform: none;
   }
-
   .animate-fade-in {
     animation: none;
     opacity: 1;
     transform: none;
   }
-
   *,
   *::before,
   *::after {

@@ -17,11 +17,9 @@ export default function ContentList() {
     <SectionContainer className="py-20">
       {/* Page Header */}
       <div className="text-center">
-        <p className="font-mono-accent text-sm text-accent/70">
-          {'// Writing'}
-        </p>
-        <h1 className="mt-2 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-          Writing
+        <p className="font-mono-accent text-accent">Writing</p>
+        <h1 className="font-display mt-3 text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
+          Field notes
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
           Honest build breakdowns and field notes — the timeline, the method,
@@ -38,7 +36,7 @@ export default function ContentList() {
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === null
                 ? 'bg-accent text-background'
-                : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                : 'border border-black/10 text-text-secondary hover:text-text-primary'
             }`}
           >
             All
@@ -50,7 +48,7 @@ export default function ContentList() {
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 activeCategory === cat
                   ? 'bg-accent text-background'
-                  : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                  : 'border border-black/10 text-text-secondary hover:text-text-primary'
               }`}
             >
               {cat}

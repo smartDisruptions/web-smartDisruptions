@@ -22,13 +22,14 @@ export default async function ContentDetail({
 
   return (
     <SectionContainer className="py-20">
-      {/* Back Navigation */}
-      <Link
-        href="/content"
-        className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
-      >
-        &larr; Back to Writing
-      </Link>
+      <div className="mx-auto max-w-2xl">
+        {/* Back Navigation */}
+        <Link
+          href="/content"
+          className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
+        >
+          &larr; Back to Writing
+        </Link>
 
       {/* Header */}
       <div className="mt-8">
@@ -38,7 +39,7 @@ export default async function ContentDetail({
             {entry.publishDate}
           </span>
         </div>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+        <h1 className="font-display mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-[2.75rem]">
           {entry.title}
         </h1>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -51,35 +52,35 @@ export default async function ContentDetail({
       </div>
 
       {/* Markdown Body */}
-      <article className="prose-invert mt-12 max-w-none">
+      <article className="mt-12 max-w-none">
         <ReactMarkdown
           components={{
             h2: ({ children }) => (
-              <h2 className="mb-4 mt-10 text-2xl font-bold text-text-primary">
+              <h2 className="font-display mb-4 mt-12 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
                 {children}
               </h2>
             ),
             h3: ({ children }) => (
-              <h3 className="mb-3 mt-8 text-xl font-semibold text-text-primary">
+              <h3 className="mb-3 mt-9 text-lg font-semibold text-text-primary">
                 {children}
               </h3>
             ),
             p: ({ children }) => (
-              <p className="mb-4 leading-relaxed text-text-secondary">
+              <p className="mb-5 text-lg leading-8 text-text-primary/85">
                 {children}
               </p>
             ),
             ul: ({ children }) => (
-              <ul className="mb-4 ml-6 list-disc space-y-2 text-text-secondary">
+              <ul className="mb-5 ml-5 list-disc space-y-2 text-lg text-text-primary/85">
                 {children}
               </ul>
             ),
             ol: ({ children }) => (
-              <ol className="mb-4 ml-6 list-decimal space-y-3 text-text-secondary">
+              <ol className="mb-5 ml-5 list-decimal space-y-3 text-lg text-text-primary/85">
                 {children}
               </ol>
             ),
-            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+            li: ({ children }) => <li className="leading-8">{children}</li>,
             strong: ({ children }) => (
               <strong className="font-semibold text-text-primary">
                 {children}
@@ -89,7 +90,7 @@ export default async function ContentDetail({
               <em className="italic text-text-primary/90">{children}</em>
             ),
             code: ({ children }) => (
-              <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[0.85em] text-accent">
+              <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono text-[0.85em] text-accent">
                 {children}
               </code>
             ),
@@ -107,11 +108,12 @@ export default async function ContentDetail({
         </ReactMarkdown>
       </article>
 
-      {/* Back to Writing */}
-      <div className="mt-16 border-t border-white/10 pt-10 text-center">
-        <Button variant="secondary" href="/content">
-          &larr; Back to All Writing
-        </Button>
+        {/* Back to Writing */}
+        <div className="mt-16 border-t border-black/10 pt-10 text-center">
+          <Button variant="secondary" href="/content">
+            &larr; Back to All Writing
+          </Button>
+        </div>
       </div>
     </SectionContainer>
   );

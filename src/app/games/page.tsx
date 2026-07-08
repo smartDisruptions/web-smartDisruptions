@@ -296,6 +296,8 @@ function CRTScreen({
         {/* Screen */}
         <div className="relative overflow-hidden rounded-md">
           <img
+            loading="lazy"
+            decoding="async"
             src={src}
             alt={alt}
             className="h-44 w-full object-cover transition-transform duration-500 ease-out group-hover/screen:scale-110"
