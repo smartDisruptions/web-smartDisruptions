@@ -51,6 +51,18 @@ export default async function ContentDetail({
         </div>
       </div>
 
+      {/* Hero Image */}
+      {entry.heroImage && (
+        <figure className="mt-10 overflow-hidden rounded-xl border border-black/10">
+          <img
+            src={entry.heroImage}
+            alt={entry.heroImageAlt ?? entry.title}
+            decoding="async"
+            className="h-auto w-full object-cover"
+          />
+        </figure>
+      )}
+
       {/* Markdown Body */}
       <article className="mt-12 max-w-none">
         <ReactMarkdown
