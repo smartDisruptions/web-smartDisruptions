@@ -20,6 +20,9 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  // The canonical/OG base. Set to the branded domain so social + canonical
+  // URLs are correct once smartdisruptions.com is pointed at this project.
+  metadataBase: new URL('https://smartdisruptions.com'),
   title: 'SmartDisruptions — building real things with AI, in public',
   description:
     'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. The goal: make advanced AI usable for people who feel behind, stuck, or underpowered.',
@@ -27,6 +30,7 @@ export const metadata: Metadata = {
     title: 'SmartDisruptions — building real things with AI, in public',
     description:
       'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. Real apps, shipped and live.',
+    url: 'https://smartdisruptions.com',
     siteName: 'SmartDisruptions',
     type: 'website',
     locale: 'en_US',
