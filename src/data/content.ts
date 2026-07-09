@@ -14,10 +14,10 @@ export const contentEntries: ContentEntry[] = [
   {
     slug: 'food-truck-site-with-ai',
     title:
-      "I built my best friend's food truck site with AI — here's what actually happened",
+      "I built my friend's food truck site with AI — here's what actually happened",
     excerpt:
-      'I built a full online-ordering system with Square payments for my best friend Robert’s food truck — and then shipped something much simpler. The real skill wasn’t building the impressive version. It was knowing what not to ship.',
-    body: `I built a full online-ordering system for my best friend Robert's food truck.
+      'I built a full online-ordering system with Square payments for my friend Robert’s food truck — and then shipped something much simpler. The real skill wasn’t building the impressive version. It was knowing what not to ship.',
+    body: `I built a full online-ordering system for my friend Robert's food truck.
 
 Menu, cart, checkout flow, Square payments — the whole thing.
 
