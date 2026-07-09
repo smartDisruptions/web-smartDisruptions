@@ -104,7 +104,7 @@ export const apps: App[] = [
       'Interactive particle-based cloth physics with real-time tearing, wind, burning, and material switching.',
     longDescription:
       'A GPU-friendly 2D cloth simulation built entirely in vanilla JavaScript and HTML5 Canvas. A grid of particles connected by distance constraints forms realistic fabric that responds to gravity, wind, and user interaction. Drag to pull, right-click to tear, press W for gusting wind, or switch to burn mode and watch fire propagate across threads. Multiple preset scenes — flag, curtain, hammock, web, and cape — demonstrate different constraint layouts. Material presets (cotton, silk, denim, chain) adjust stiffness, weight, and tear threshold. All physics run at 60fps with configurable gravity direction and wind strength.',
-    thumbnailUrl: '/images/apps/cloth-simulator-thumbnail.png',
+    thumbnailUrl: '/images/apps/cloth-simulator-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/cloth-simulator-1.png',
       '/images/apps/cloth-simulator-2.png',
@@ -158,7 +158,7 @@ export const apps: App[] = [
       'Art Deco snake game with rank progression, chain scoring, and Web Audio sound effects — all in a single HTML file.',
     longDescription:
       'A luxurious take on the classic snake game, wrapped in an Art Deco aesthetic of gold and obsidian. Players guide a serpent across an 18x18 grid, eating food to grow while avoiding collisions. A chain-scoring system rewards consecutive catches, and a rank progression ladder (I through X) tracks mastery across sessions. The entire game — visuals, logic, and synthesized sound effects — ships as a single HTML file with zero dependencies. D-pad touch controls, pause and game-over overlays, persistent high scores via localStorage, and Web Audio API–driven sound design deliver a polished mobile-first experience.',
-    thumbnailUrl: '/images/apps/aureum-snake-thumbnail.png',
+    thumbnailUrl: '/images/apps/aureum-snake-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/aureum-snake-1.png',
       '/images/apps/aureum-snake-2.png',
@@ -185,7 +185,7 @@ export const apps: App[] = [
       'A polished Flappy Bird remake with pixel-art visuals, particle effects, slow-motion near-misses, and screen shake — built with PixiJS.',
     longDescription:
       'A GPU-accelerated Flappy Bird clone built with PixiJS and TypeScript, featuring hand-drawn pixel-art sprites generated entirely in code. The bird navigates procedurally spawned pipe gaps with realistic gravity and flap physics. Near-miss detection triggers a cinematic slow-motion effect, rewarding precise play. Death sequences include freeze frames, screen shake, particle explosions, and a flash overlay for dramatic impact. A share button generates challenge URLs with embedded scores. The game runs at 60fps with responsive canvas scaling, nearest-neighbor rendering for crisp pixel art, and touch/keyboard input support for cross-device play.',
-    thumbnailUrl: '/images/apps/flappy-bird-thumbnail.png',
+    thumbnailUrl: '/images/apps/flappy-bird-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/flappy-bird-1.png',
       '/images/apps/flappy-bird-2.png',
@@ -212,7 +212,7 @@ export const apps: App[] = [
       'A browser-based kart racer my son Gabe built himself with Claude — pebble-powered drifting, lap times, and a course made for joy.',
     longDescription:
       'The one game on this site I did not build — my son Gabe did. I taught him how to use Claude: how to get a first playable prototype from a single prompt, then edit and upgrade it with follow-up prompts. From there he ran the loop himself and made his own kart racer — a pebble-themed kart drifting around a hand-crafted course, with lap timing and responsive arcade controls. Prompt to prototype, then prompt to improve, in the hands of a kid.',
-    thumbnailUrl: '/images/apps/pebble-kart-thumbnail.png',
+    thumbnailUrl: '/images/apps/pebble-kart-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/pebble-kart-1.png',
       '/images/apps/pebble-kart-2.png',
@@ -239,7 +239,7 @@ export const apps: App[] = [
       'A hex-based merging puzzle game with 12 evolving tiers — from seed to eternity — in a single HTML file.',
     longDescription:
       'A meditative tile-merging puzzle played on a hexagonal board. Place matching tiles next to each other and watch them merge through 12 themed tiers — Seed, Sprout, Sapling, Oak, Grove, Forest, Woodland, Wilderness, Kingdom, Realm, Eternity — each with its own palette that progresses from dark earth through golden hour to ethereal moonsilver. Axial hex coordinates, pointy-top SVG rendering, and a forest-dawn aesthetic built with Cormorant Garamond and JetBrains Mono typography. Scores and best tiers persist via localStorage, with combo-based scoring that rewards chain merges. Ships as a single HTML file with zero dependencies — mobile-first, touch-optimized, and playable offline.',
-    thumbnailUrl: '/images/apps/grove-thumbnail.png',
+    thumbnailUrl: '/images/apps/grove-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/grove-1.png',
       '/images/apps/grove-2.png',

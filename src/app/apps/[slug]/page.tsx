@@ -22,7 +22,7 @@ export default async function AppDetail({
   return (
     <SectionContainer className="py-20">
       {/* Back Navigation */}
-      <div className="text-center sm:text-left">
+      <div className="text-left">
         <Link
           href="/apps"
           className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
@@ -32,8 +32,8 @@ export default async function AppDetail({
       </div>
 
       {/* Header */}
-      <div className="mt-8 text-center sm:text-left">
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-start">
+      <div className="mt-8 text-left">
+        <div className="flex flex-wrap items-center justify-start gap-3">
           <h1 className="font-display text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
             {app.name}
           </h1>
@@ -45,7 +45,7 @@ export default async function AppDetail({
           {app.longDescription}
         </p>
         {app.liveUrl && (
-          <div className="mt-6 text-center sm:text-left">
+          <div className="mt-6 text-left">
             <a
               href={app.liveUrl}
               target="_blank"
@@ -59,7 +59,7 @@ export default async function AppDetail({
 
       {/* Screenshots Gallery */}
       <div className="mt-12">
-        <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-text-secondary sm:text-left">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-text-secondary">
           Screenshots
         </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -82,7 +82,7 @@ export default async function AppDetail({
 
       {/* Try Live Demo (below screenshots) */}
       {app.liveUrl && (
-        <div className="mt-8 text-center sm:text-left">
+        <div className="mt-8 text-left">
           <a
             href={app.liveUrl}
             target="_blank"
@@ -95,10 +95,10 @@ export default async function AppDetail({
 
       {/* Tech Stack */}
       <div className="mt-12">
-        <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-text-secondary sm:text-left">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-text-secondary">
           Tech Stack
         </h2>
-        <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
+        <div className="mt-4 flex flex-wrap justify-start gap-2">
           {app.techStack.map((tech) => (
             <Badge key={tech} variant="accent">
               {tech}
@@ -109,7 +109,7 @@ export default async function AppDetail({
 
       {/* Why It Works — Outcomes */}
       <div className="mt-12">
-        <h2 className="text-center text-2xl font-bold text-text-primary sm:text-left">Why It Works</h2>
+        <h2 className="text-2xl font-bold text-text-primary">Why It Works</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {app.outcomes.map((outcome) => (
             <Card key={outcome}>
