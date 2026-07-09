@@ -35,7 +35,7 @@ export default function AppsGallery() {
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === null
                 ? 'bg-accent text-background'
-                : 'border border-black/10 text-text-secondary hover:text-text-primary'
+                : 'border border-border text-text-secondary hover:text-text-primary'
             }`}
           >
             All
@@ -47,7 +47,7 @@ export default function AppsGallery() {
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 activeCategory === cat
                   ? 'bg-accent text-background'
-                  : 'border border-black/10 text-text-secondary hover:text-text-primary'
+                  : 'border border-border text-text-secondary hover:text-text-primary'
               }`}
             >
               {cat}

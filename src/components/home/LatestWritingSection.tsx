@@ -22,7 +22,7 @@ export default function LatestWritingSection() {
           </p>
         </RevealOnScroll>
 
-        <div className="mt-10 divide-y divide-black/10 border-y border-black/10">
+        <div className="mt-10 divide-y divide-border border-y border-border">
           {posts.map((post) => (
             <RevealOnScroll key={post.slug}>
               <Link
@@ -30,7 +30,7 @@ export default function LatestWritingSection() {
                 className="group block py-7 transition-colors sm:flex sm:gap-6"
               >
                 {post.heroImage && (
-                  <div className="mb-4 shrink-0 self-start overflow-hidden rounded-lg border border-black/10 sm:mb-0 sm:w-44">
+                  <div className="mb-4 shrink-0 self-start overflow-hidden rounded-lg border border-border sm:mb-0 sm:w-44">
                     <img
                       loading="lazy"
                       decoding="async"

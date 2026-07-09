@@ -54,7 +54,7 @@ export default async function ContentDetail({
 
       {/* Hero Image */}
       {entry.heroImage && (
-        <figure className="mt-10 overflow-hidden rounded-xl border border-black/10">
+        <figure className="mt-10 overflow-hidden rounded-xl border border-border">
           <img
             src={entry.heroImage}
             alt={entry.heroImageAlt ?? entry.title}
@@ -104,7 +104,7 @@ export default async function ContentDetail({
               <em className="italic text-text-primary/90">{children}</em>
             ),
             code: ({ children }) => (
-              <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono text-[0.85em] text-accent-hover">
+              <code className="rounded bg-fill px-1.5 py-0.5 font-mono text-[0.85em] text-accent-hover">
                 {children}
               </code>
             ),
@@ -123,7 +123,7 @@ export default async function ContentDetail({
       </article>
 
         {/* Back to Writing */}
-        <div className="mt-16 border-t border-black/10 pt-10 text-center">
+        <div className="mt-16 border-t border-border pt-10 text-center">
           <Button variant="secondary" href="/content">
             &larr; Back to All Writing
           </Button>

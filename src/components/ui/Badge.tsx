@@ -7,10 +7,10 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'bg-black/[0.05] text-text-secondary',
+  default: 'bg-fill text-text-secondary',
   // Darker ink on the light tint so small badge text clears WCAG AA.
   accent: 'bg-accent/10 text-accent-hover',
-  secondary: 'bg-accent-secondary/10 text-[#92400e]',
+  secondary: 'bg-accent-secondary/10 text-[var(--sd-badge-secondary)]',
 };
 
 export default function Badge({

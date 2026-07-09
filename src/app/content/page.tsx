@@ -46,7 +46,7 @@ function Thumb({
 function FeaturedCard({ post }: { post: ContentEntry }) {
   return (
     <Link href={`/content/${post.slug}`} className="group block">
-      <div className="overflow-hidden rounded-2xl border border-black/10 bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_rgba(26,23,20,0.18)] sm:flex">
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_var(--sd-card-shadow)] sm:flex">
         <div className="aspect-[16/10] overflow-hidden sm:aspect-auto sm:w-2/5 sm:shrink-0">
           <Thumb
             post={post}
@@ -155,7 +155,7 @@ export default function ContentList() {
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === null
                 ? 'bg-accent text-background'
-                : 'border border-black/10 text-text-secondary hover:text-text-primary'
+                : 'border border-border text-text-secondary hover:text-text-primary'
             }`}
           >
             All
@@ -167,7 +167,7 @@ export default function ContentList() {
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 activeCategory === cat
                   ? 'bg-accent text-background'
-                  : 'border border-black/10 text-text-secondary hover:text-text-primary'
+                  : 'border border-border text-text-secondary hover:text-text-primary'
               }`}
             >
               {cat}

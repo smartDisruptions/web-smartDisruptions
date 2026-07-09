@@ -66,7 +66,7 @@ export default async function AppDetail({
           {app.screenshotUrls.map((url) => (
             <div
               key={url}
-              className="overflow-hidden rounded-xl border border-black/10 transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+              className="overflow-hidden rounded-xl border border-border transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
             >
               <img
                 loading="lazy"

@@ -32,12 +32,14 @@ const YELLOW = '#facc15';
 const BLUE = '#3b82f6';
 const RIBBONS = [RED, YELLOW, BLUE];
 
-// Ink variants — used anywhere the color is TEXT or a chip on the light
-// "Paper" background, where the bright arcade colors fail WCAG AA
-// (bright yellow is 1.5:1). All three inks clear AA at ≥4.5:1.
-const RED_INK = '#b91c1c';
-const YELLOW_INK = '#a16207';
-const BLUE_INK = '#1d4ed8';
+// Ink variants — used anywhere the color is TEXT or a chip. Theme-aware via
+// CSS vars (globals.css): on the light "Paper" background these are dark inks
+// (the bright arcade colors fail WCAG AA — bright yellow is 1.5:1); in dark
+// mode they flip to the bright neon, which pops on the dark cabinet. Both
+// clear AA in their own theme.
+const RED_INK = 'var(--arcade-red-ink)';
+const YELLOW_INK = 'var(--arcade-yellow-ink)';
+const BLUE_INK = 'var(--arcade-blue-ink)';
 const RIBBONS_INK = [RED_INK, YELLOW_INK, BLUE_INK];
 
 const MARQUEE_ITEMS = [
@@ -492,7 +494,7 @@ function FilterPill({
             }
           : {
               backgroundColor: 'transparent',
-              color: 'var(--color-text-secondary)',
+              color: 'var(--sd-text-secondary)',
               border: `1px solid ${RED}55`,
             }
       }

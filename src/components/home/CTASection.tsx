@@ -2,7 +2,7 @@ import { Button, RevealOnScroll } from '@/components/ui';
 
 export default function CTASection() {
   return (
-    <section className="border-y border-black/10 bg-accent/[0.05] px-6 py-24">
+    <section className="border-y border-border bg-accent/[0.05] px-6 py-24">
       <RevealOnScroll>
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-display text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
