@@ -209,9 +209,9 @@ export const apps: App[] = [
     slug: 'pebble-kart',
     name: 'Pebble Kart',
     description:
-      'A browser-based kart racer for Gabe — pebble-powered drifting, lap times, and a course built for joy.',
+      'A browser-based kart racer my son Gabe built himself with Claude — pebble-powered drifting, lap times, and a course made for joy.',
     longDescription:
-      'A custom kart racing game built specifically for Gabe. Race a pebble-themed kart around a hand-crafted course with drift mechanics, lap timing, and responsive arcade controls. Designed to be picked up and enjoyed in seconds, with feedback that rewards both casual play and tight, optimized laps.',
+      'The one game on this site I did not build — my son Gabe did. I taught him how to use Claude: how to get a first playable prototype from a single prompt, then edit and upgrade it with follow-up prompts. From there he ran the loop himself and made his own kart racer — a pebble-themed kart drifting around a hand-crafted course, with lap timing and responsive arcade controls. Prompt to prototype, then prompt to improve, in the hands of a kid.',
     thumbnailUrl: '/images/apps/pebble-kart-thumbnail.png',
     screenshotUrls: [
       '/images/apps/pebble-kart-1.png',
@@ -222,10 +222,10 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'Custom-built kart racer designed for one player — Gabe',
-      'Arcade-style drift mechanics with responsive keyboard and touch controls',
-      'Lap timing system rewards tight, optimized racing lines',
-      'Hand-crafted course tuned for both quick pick-up-and-play and chasing best laps',
+      'Built by my son Gabe himself — his own game, from prototype to polish',
+      'A first playable version from a single prompt, then upgraded through follow-up prompts',
+      'A kid running the full AI-native build loop: prototype, then iterate with prompts',
+      'Pebble-themed drifting, lap timing, and arcade controls tuned for pick-up-and-play',
     ],
     buildDate: '2026-05',
     hasFullBreakdown: false,
