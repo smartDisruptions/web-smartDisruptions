@@ -219,7 +219,7 @@ export const apps: App[] = [
       '/images/apps/pebble-kart-3.png',
     ],
     techStack: ['HTML5', 'TypeScript', 'Canvas', 'Web Audio API'],
-    category: 'Gabes Games',
+    category: "Gabe's Games",
     status: 'live',
     outcomes: [
       'Custom-built kart racer designed for one player — Gabe',

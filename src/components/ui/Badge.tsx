@@ -8,8 +8,9 @@ interface BadgeProps {
 
 const variantStyles: Record<BadgeVariant, string> = {
   default: 'bg-black/[0.05] text-text-secondary',
-  accent: 'bg-accent/10 text-accent',
-  secondary: 'bg-accent-secondary/10 text-accent-secondary',
+  // Darker ink on the light tint so small badge text clears WCAG AA.
+  accent: 'bg-accent/10 text-accent-hover',
+  secondary: 'bg-accent-secondary/10 text-[#92400e]',
 };
 
 export default function Badge({

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { contentEntries, getContentBySlug } from '@/data/content';
 import { SectionContainer, Badge, Button } from '@/components/ui';
+import { formatDate } from '@/lib/format';
 
 export function generateStaticParams() {
   return contentEntries.map((entry) => ({ slug: entry.slug }));
@@ -36,7 +37,7 @@ export default async function ContentDetail({
         <div className="flex flex-wrap items-center gap-3">
           <Badge variant="accent">{entry.category}</Badge>
           <span className="text-sm text-text-secondary">
-            {entry.publishDate}
+            {formatDate(entry.publishDate)}
           </span>
         </div>
         <h1 className="font-display mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-[2.75rem]">

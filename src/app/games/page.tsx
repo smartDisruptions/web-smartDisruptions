@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { apps } from '@/data/apps';
 import { SectionContainer, Card } from '@/components/ui';
 
-const games = apps.filter((app) => app.category === 'Gabes Games');
+const games = apps.filter((app) => app.category === "Gabe's Games");
 
 const platforms = Array.from(
   new Set(
@@ -17,11 +17,21 @@ const platforms = Array.from(
   ),
 );
 
-// Bold primary palette — red as star, yellow + blue as supporting cast
+// Bold primary palette — red as star, yellow + blue as supporting cast.
+// Bright versions are for DECORATIVE fills only (ribbons, glows, LEDs,
+// confetti, on-dark marquee) where contrast doesn't apply.
 const RED = '#ef4444';
 const YELLOW = '#facc15';
 const BLUE = '#3b82f6';
 const RIBBONS = [RED, YELLOW, BLUE];
+
+// Ink variants — used anywhere the color is TEXT or a chip on the light
+// "Paper" background, where the bright arcade colors fail WCAG AA
+// (bright yellow is 1.5:1). All three inks clear AA at ≥4.5:1.
+const RED_INK = '#b91c1c';
+const YELLOW_INK = '#a16207';
+const BLUE_INK = '#1d4ed8';
+const RIBBONS_INK = [RED_INK, YELLOW_INK, BLUE_INK];
 
 const MARQUEE_ITEMS = [
   'NOW PLAYING',
@@ -69,7 +79,7 @@ export default function GabeGames() {
             <span
               className="bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(239,68,68,0.35)]"
               style={{
-                backgroundImage: `linear-gradient(90deg, ${RED} 0%, ${RED} 35%, ${YELLOW} 65%, ${BLUE} 100%)`,
+                backgroundImage: `linear-gradient(90deg, ${RED_INK} 0%, ${RED_INK} 35%, ${YELLOW_INK} 65%, ${BLUE_INK} 100%)`,
               }}
             >
               Gabe&apos;s Games
@@ -86,13 +96,15 @@ export default function GabeGames() {
               label="Games"
               value={String(games.length).padStart(2, '0')}
               color={RED}
+              ink={RED_INK}
             />
             <Stat
               label="Live"
               value={String(games.filter((g) => g.status === 'live').length).padStart(2, '0')}
               color={YELLOW}
+              ink={YELLOW_INK}
             />
-            <Stat label="Credits" value="∞" color={BLUE} />
+            <Stat label="Credits" value="∞" color={BLUE} ink={BLUE_INK} />
           </div>
         </div>
 
@@ -125,6 +137,7 @@ export default function GabeGames() {
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((game, idx) => {
               const ribbon = RIBBONS[idx % RIBBONS.length];
+              const ribbonInk = RIBBONS_INK[idx % RIBBONS_INK.length];
               return (
                 <Card
                   key={game.slug}
@@ -149,7 +162,7 @@ export default function GabeGames() {
                   <span
                     className="font-mono-accent absolute right-4 top-4 z-20 rounded-md bg-background/90 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest"
                     style={{
-                      color: ribbon,
+                      color: ribbonInk,
                       border: `1px solid ${ribbon}55`,
                     }}
                   >
@@ -169,7 +182,7 @@ export default function GabeGames() {
                     <Link
                       href={`/apps/${game.slug}`}
                       className="font-mono-accent text-lg font-black uppercase tracking-wide text-text-primary transition-colors"
-                      onMouseEnter={(e) => (e.currentTarget.style.color = ribbon)}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = ribbonInk)}
                       onMouseLeave={(e) => (e.currentTarget.style.color = '')}
                     >
                       {game.name}
@@ -186,13 +199,14 @@ export default function GabeGames() {
                   <div className="mt-4 flex flex-wrap gap-2">
                     {game.techStack.map((t, i) => {
                       const tagColor = RIBBONS[i % RIBBONS.length];
+                      const tagInk = RIBBONS_INK[i % RIBBONS_INK.length];
                       return (
                         <span
                           key={t}
                           className="inline-block rounded-full px-3 py-1 text-xs font-bold"
                           style={{
                             backgroundColor: `${tagColor}1A`,
-                            color: tagColor,
+                            color: tagInk,
                             border: `1px solid ${tagColor}40`,
                           }}
                         >
@@ -207,7 +221,7 @@ export default function GabeGames() {
                     <Link
                       href={`/apps/${game.slug}`}
                       className="font-mono-accent text-sm font-black uppercase tracking-wider transition-colors"
-                      style={{ color: RED }}
+                      style={{ color: RED_INK }}
                     >
                       ▶ Details
                     </Link>
@@ -217,7 +231,7 @@ export default function GabeGames() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-mono-accent text-sm font-black uppercase tracking-wider transition-colors"
-                        style={{ color: BLUE }}
+                        style={{ color: BLUE_INK }}
                       >
                         ◉ Press Start
                       </a>
@@ -241,10 +255,10 @@ export default function GabeGames() {
           style={{ borderColor: `${RED}33` }}
         >
           <p className="font-mono-accent text-xs uppercase tracking-[0.4em] text-text-secondary/70">
-            <span style={{ color: RED }}>──</span>{' '}
-            <span style={{ color: YELLOW }}>High Score Table</span>{' '}
-            <span style={{ color: BLUE }}>— Cabinet #1 —</span>{' '}
-            <span style={{ color: RED }}>──</span>
+            <span style={{ color: RED_INK }}>──</span>{' '}
+            <span style={{ color: YELLOW_INK }}>High Score Table</span>{' '}
+            <span style={{ color: BLUE_INK }}>— Cabinet #1 —</span>{' '}
+            <span style={{ color: RED_INK }}>──</span>
           </p>
           <p className="mt-3 text-xs text-text-secondary/60">
             ❤️ Built for Gabe.
@@ -381,7 +395,7 @@ function Marquee() {
 
   return (
     <div
-      className="games-marquee mt-10 overflow-hidden border-y bg-black/40 py-3"
+      className="games-marquee mt-10 overflow-hidden border-y bg-black/75 py-3"
       style={{ borderColor: `${RED}40` }}
       aria-hidden
     >
@@ -397,10 +411,12 @@ function Stat({
   label,
   value,
   color,
+  ink,
 }: {
   label: string;
   value: string;
   color: string;
+  ink: string;
 }) {
   return (
     <div
@@ -415,7 +431,7 @@ function Stat({
       </p>
       <p
         className="font-mono-accent mt-1 text-2xl font-black sm:text-3xl"
-        style={{ color }}
+        style={{ color: ink }}
       >
         {value}
       </p>
@@ -425,13 +441,15 @@ function Stat({
 
 function StatusBadge({ status }: { status: 'live' | 'beta' | 'development' }) {
   const color = status === 'live' ? YELLOW : status === 'beta' ? BLUE : RED;
+  const ink =
+    status === 'live' ? YELLOW_INK : status === 'beta' ? BLUE_INK : RED_INK;
   const label = status === 'live' ? 'PLAY' : status.toUpperCase();
   return (
     <span
       className="inline-block rounded-full px-3 py-1 text-xs font-black"
       style={{
         backgroundColor: `${color}1A`,
-        color,
+        color: ink,
         border: `1px solid ${color}55`,
       }}
     >
