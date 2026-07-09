@@ -59,6 +59,7 @@ export default async function ContentDetail({
             src={entry.heroImage}
             alt={entry.heroImageAlt ?? entry.title}
             decoding="async"
+            fetchPriority="high"
             className="h-auto w-full object-cover"
           />
         </figure>
