@@ -14,7 +14,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2">
           {/* Column 1: Brand */}
           <div className="text-center sm:text-left">
-            <p className="text-lg font-bold text-accent">SmartDisruptions</p>
+            <p className="font-display text-xl font-semibold text-accent">
+              SmartDisruptions
+            </p>
             <p className="mt-2 max-w-sm text-sm text-text-secondary">
               I build real things with AI and write up exactly how — so it&apos;s
               usable for people who feel behind, stuck, or underpowered.
