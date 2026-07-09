@@ -2,7 +2,7 @@ import { Button } from '@/components/ui';
 
 export default function HeroSection() {
   return (
-    <section className="relative flex min-h-[82vh] items-center px-6">
+    <section className="relative flex items-center px-6 pt-16 pb-20 sm:min-h-[82vh] sm:py-0">
       {/* Soft warm wash, top-left — the only ambient color, very subtle */}
       <div
         aria-hidden
