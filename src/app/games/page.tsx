@@ -185,6 +185,7 @@ export default function GabeGames() {
                     src={game.thumbnailUrl}
                     alt={`${game.name} screenshot`}
                     accent={ribbon}
+                    priority={idx === 0}
                   />
 
                   {/* Name + Status */}
@@ -284,11 +285,13 @@ function CRTScreen({
   src,
   alt,
   accent,
+  priority = false,
 }: {
   href: string;
   src: string;
   alt: string;
   accent: string;
+  priority?: boolean;
 }) {
   return (
     <Link href={href} className="group/screen relative block">
@@ -320,7 +323,8 @@ function CRTScreen({
         {/* Screen */}
         <div className="relative overflow-hidden rounded-md">
           <img
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : 'auto'}
             decoding="async"
             src={src}
             alt={alt}

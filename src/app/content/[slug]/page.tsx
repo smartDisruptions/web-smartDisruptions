@@ -103,7 +103,7 @@ export default async function ContentDetail({
               <em className="italic text-text-primary/90">{children}</em>
             ),
             code: ({ children }) => (
-              <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono text-[0.85em] text-accent">
+              <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono text-[0.85em] text-accent-hover">
                 {children}
               </code>
             ),
