@@ -4,7 +4,7 @@ const quickLinks = [
   { href: '/', label: 'Home' },
   { href: '/content', label: 'Writing' },
   { href: '/apps', label: 'Builds' },
-  { href: '/games', label: "Gabe's Games" },
+  { href: '/games', label: 'Arcade' },
 ];
 
 export default function Footer() {
@@ -23,9 +23,9 @@ export default function Footer() {
 
           {/* Column 2: Quick Links */}
           <div className="text-center sm:text-left">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-text-primary">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-text-primary">
               Explore
-            </h3>
+            </h2>
             <ul className="mt-3 flex flex-col items-center gap-2 sm:items-start" role="list">
               {quickLinks.map((link) => (
                 <li key={link.href}>

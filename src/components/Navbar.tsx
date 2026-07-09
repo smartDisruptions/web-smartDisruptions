@@ -8,7 +8,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/content', label: 'Writing' },
   { href: '/apps', label: 'Builds' },
-  { href: '/games', label: "Gabe's Games" },
+  { href: '/games', label: 'Arcade' },
 ];
 
 export default function Navbar() {

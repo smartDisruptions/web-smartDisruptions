@@ -85,7 +85,7 @@ body {
   transition-delay: calc(var(--stagger-index, 0) * 90ms);
 }
 
-/* Gabe's Games — arcade marquee + LED (scoped to that page) */
+/* Arcade — marquee + LED (scoped to that page) */
 @keyframes games-marquee {
   from {
     transform: translateX(0);

@@ -239,7 +239,7 @@ The harder skill is knowing what not to ship.`,
     category: 'Build Breakdown',
     publishDate: '2026-07-08',
     tags: ['ai', 'shipping', 'next.js', 'case study'],
-    heroImage: '/images/apps/samurai-kitchen-1.png',
+    heroImage: '/images/apps/samurai-kitchen-1.webp',
     heroImageAlt: 'The Samurai Kitchen site that shipped — the version Robert actually uses',
   },
 ];

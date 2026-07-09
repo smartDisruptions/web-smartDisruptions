@@ -25,7 +25,7 @@ export const apps: App[] = [
       'A full-service restaurant website replacing an outdated WordPress site with a fast, mobile-first ordering experience. Customers browse a categorized menu with dietary tags, build a cart, and pay securely through Square Web Payments. A built-in loyalty program lets diners earn and redeem points on every order. The catering section offers pre-built platter packages with tiered sizing and pricing. An admin dashboard handles feedback management and configuration — all backed by Supabase for data persistence and Square APIs for payments, catalog, and loyalty.',
     thumbnailUrl: '/images/apps/samurai-kitchen-thumbnail.png',
     screenshotUrls: [
-      '/images/apps/samurai-kitchen-1.png',
+      '/images/apps/samurai-kitchen-1.webp',
       '/images/apps/samurai-kitchen-2.png',
       '/images/apps/samurai-kitchen-3.png',
     ],
@@ -219,7 +219,7 @@ export const apps: App[] = [
       '/images/apps/pebble-kart-3.png',
     ],
     techStack: ['HTML5', 'TypeScript', 'Canvas', 'Web Audio API'],
-    category: "Gabe's Games",
+    category: 'Game',
     status: 'live',
     outcomes: [
       'Custom-built kart racer designed for one player — Gabe',

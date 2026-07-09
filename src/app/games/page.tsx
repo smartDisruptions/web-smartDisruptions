@@ -5,17 +5,14 @@ import Link from 'next/link';
 import { apps, type App } from '@/data/apps';
 import { SectionContainer, Card } from '@/components/ui';
 
-// The arcade leads with Gabe's Games, then features other playable builds from
-// the showcase. Explicit slugs keep the running order intentional; the games
-// keep their own /apps categories — this just also surfaces them here.
-const FEATURED_GAME_SLUGS = ['flappy-bird', 'grove', 'aureum-snake', 'cloth-simulator'];
+// The Arcade is an explicit, curated line-up — Pebble Kart (built for Gabe)
+// leads, then the rest of the playable builds. The games keep their own /apps
+// categories; this list just defines what shows in the cabinet, and its order.
+const ARCADE_GAME_SLUGS = ['pebble-kart', 'flappy-bird', 'grove', 'aureum-snake', 'cloth-simulator'];
 
-const games: App[] = [
-  ...apps.filter((app) => app.category === "Gabe's Games"),
-  ...FEATURED_GAME_SLUGS.map((slug) => apps.find((app) => app.slug === slug)).filter(
-    (app): app is App => app !== undefined,
-  ),
-];
+const games: App[] = ARCADE_GAME_SLUGS.map((slug) =>
+  apps.find((app) => app.slug === slug),
+).filter((app): app is App => app !== undefined);
 
 const platforms = Array.from(
   new Set(
@@ -51,7 +48,7 @@ const MARQUEE_ITEMS = [
   'PLAYER ONE READY',
 ];
 
-export default function GabeGames() {
+export default function Arcade() {
   const [activePlatform, setActivePlatform] = useState<string | null>(null);
 
   const filtered = activePlatform
@@ -92,7 +89,7 @@ export default function GabeGames() {
                 backgroundImage: `linear-gradient(90deg, ${RED_INK} 0%, ${RED_INK} 35%, ${YELLOW_INK} 65%, ${BLUE_INK} 100%)`,
               }}
             >
-              Gabe&apos;s Games
+              Arcade
             </span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
