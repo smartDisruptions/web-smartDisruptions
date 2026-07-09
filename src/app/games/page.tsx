@@ -180,7 +180,7 @@ export default function Arcade() {
 
                   {/* CRT cabinet frame */}
                   <CRTScreen
-                    href={`/apps/${game.slug}`}
+                    href={`/apps/${game.slug}?from=arcade`}
                     src={game.thumbnailUrl}
                     alt={`${game.name} screenshot`}
                     accent={ribbon}
@@ -190,7 +190,7 @@ export default function Arcade() {
                   {/* Name + Status */}
                   <div className="mt-4 flex items-center gap-2">
                     <Link
-                      href={`/apps/${game.slug}`}
+                      href={`/apps/${game.slug}?from=arcade`}
                       className="font-mono-accent text-lg font-black uppercase tracking-wide text-text-primary transition-colors"
                       onMouseEnter={(e) => (e.currentTarget.style.color = ribbonInk)}
                       onMouseLeave={(e) => (e.currentTarget.style.color = '')}
@@ -229,7 +229,7 @@ export default function Arcade() {
                   {/* Link hints */}
                   <div className="mt-4 flex items-center gap-4">
                     <Link
-                      href={`/apps/${game.slug}`}
+                      href={`/apps/${game.slug}?from=arcade`}
                       className="font-mono-accent text-sm font-black uppercase tracking-wider transition-colors"
                       style={{ color: RED_INK }}
                     >

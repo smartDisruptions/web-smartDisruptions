@@ -1,7 +1,9 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { apps, getAppBySlug } from '@/data/apps';
 import { SectionContainer, Badge, Button, Card } from '@/components/ui';
+import BackLink from '@/components/BackLink';
 
 export function generateStaticParams() {
   return apps.map((app) => ({ slug: app.slug }));
@@ -21,14 +23,20 @@ export default async function AppDetail({
 
   return (
     <SectionContainer className="py-20">
-      {/* Back Navigation */}
+      {/* Back Navigation — points to the Arcade when you came from it */}
       <div className="text-left">
-        <Link
-          href="/apps"
-          className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
+        <Suspense
+          fallback={
+            <Link
+              href="/apps"
+              className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
+            >
+              &larr; Back to Apps
+            </Link>
+          }
         >
-          &larr; Back to Apps
-        </Link>
+          <BackLink variant="top" />
+        </Suspense>
       </div>
 
       {/* Header */}
@@ -137,11 +145,17 @@ export default async function AppDetail({
         </Card>
       </div>
 
-      {/* Back to Gallery */}
+      {/* Back to Gallery — or the Arcade, if that's where you came from */}
       <div className="mt-16 text-center">
-        <Button variant="secondary" href="/apps">
-          &larr; Back to All Apps
-        </Button>
+        <Suspense
+          fallback={
+            <Button variant="secondary" href="/apps">
+              &larr; Back to All Apps
+            </Button>
+          }
+        >
+          <BackLink variant="bottom" />
+        </Suspense>
       </div>
     </SectionContainer>
   );
