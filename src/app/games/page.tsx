@@ -2,10 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { apps } from '@/data/apps';
+import { apps, type App } from '@/data/apps';
 import { SectionContainer, Card } from '@/components/ui';
 
-const games = apps.filter((app) => app.category === "Gabe's Games");
+// The arcade leads with Gabe's Games, then features other playable builds from
+// the showcase. Explicit slugs keep the running order intentional; the games
+// keep their own /apps categories — this just also surfaces them here.
+const FEATURED_GAME_SLUGS = ['flappy-bird', 'grove', 'aureum-snake', 'cloth-simulator'];
+
+const games: App[] = [
+  ...apps.filter((app) => app.category === "Gabe's Games"),
+  ...FEATURED_GAME_SLUGS.map((slug) => apps.find((app) => app.slug === slug)).filter(
+    (app): app is App => app !== undefined,
+  ),
+];
 
 const platforms = Array.from(
   new Set(
