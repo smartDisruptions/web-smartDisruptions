@@ -26,6 +26,7 @@ export async function generateMetadata({
   return {
     title: `${entry.title} — SmartDisruptions`,
     description: entry.excerpt,
+    alternates: { canonical: `/content/${entry.slug}` },
     openGraph: {
       title: entry.title,
       description: entry.excerpt,
@@ -58,8 +59,36 @@ export default async function ContentDetail({
     notFound();
   }
 
+  // Article structured data — the named author + publish date + large image
+  // signals Google Discover and search use to treat this as original,
+  // experience-led content.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: entry.title,
+    description: entry.excerpt,
+    datePublished: new Date(entry.publishDate).toISOString(),
+    author: {
+      '@type': 'Person',
+      name: 'Josh Escusa',
+      url: 'https://smartdisruptions.com',
+    },
+    ...(entry.heroImage
+      ? { image: [`https://smartdisruptions.com${entry.heroImage}`] }
+      : {}),
+    mainEntityOfPage: `https://smartdisruptions.com/content/${entry.slug}`,
+  };
+
   return (
     <SectionContainer className="py-20">
+      {/* Static local data, JSON-encoded; < escaped so content can never
+          close the script tag. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
       <div className="mx-auto max-w-2xl">
         {/* Back Navigation */}
         <Link
@@ -74,7 +103,7 @@ export default async function ContentDetail({
         <div className="flex flex-wrap items-center gap-3">
           <Badge variant="accent">{entry.category}</Badge>
           <span className="text-sm text-text-secondary">
-            {formatDate(entry.publishDate)}
+            {formatDate(entry.publishDate)} · by Josh Escusa
           </span>
         </div>
         <h1 className="font-display mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-[2.75rem]">
