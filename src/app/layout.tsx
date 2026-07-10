@@ -35,6 +35,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
   },
+  // og:image / twitter:image are supplied by app/opengraph-image.tsx and
+  // app/twitter-image.tsx (the branded card).
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SmartDisruptions — building real things with AI, in public',
+    description:
+      'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. Real apps, shipped and live.',
+  },
 };
 
 export default function RootLayout({
