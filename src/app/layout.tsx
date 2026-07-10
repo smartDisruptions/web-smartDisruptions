@@ -35,6 +35,19 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
   },
+  // max-image-preview:large is required for Google Discover to show posts
+  // with their full-size hero image instead of a thumbnail.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   // og:image / twitter:image are supplied by app/opengraph-image.tsx and
   // app/twitter-image.tsx (the branded card).
   twitter: {
