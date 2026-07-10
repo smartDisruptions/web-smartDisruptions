@@ -4,6 +4,7 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { contentEntries, getContentBySlug } from '@/data/content';
 import { SectionContainer, Badge, Button } from '@/components/ui';
+import SubscribeForm from '@/components/SubscribeForm';
 import { formatDate } from '@/lib/format';
 
 export function generateStaticParams() {
@@ -158,8 +159,20 @@ export default async function ContentDetail({
         </ReactMarkdown>
       </article>
 
+        {/* Subscribe — the reader just finished a build story; offer the next one */}
+        <div className="mt-16 rounded-xl border border-border bg-accent/[0.05] p-8">
+          <h2 className="font-display text-xl font-semibold tracking-tight text-text-primary">
+            Get the next build in your inbox
+          </h2>
+          <p className="mt-2 text-sm text-text-secondary">
+            One email when I publish a new breakdown — what I built, how, and
+            what I learned. No spam, ever.
+          </p>
+          <SubscribeForm source="post" className="mt-5" />
+        </div>
+
         {/* Back to Writing */}
-        <div className="mt-16 border-t border-border pt-10 text-center">
+        <div className="mt-12 border-t border-border pt-10 text-center">
           <Button variant="secondary" href="/content">
             &larr; Back to All Writing
           </Button>
