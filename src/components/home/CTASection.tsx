@@ -1,4 +1,5 @@
 import { Button, RevealOnScroll } from '@/components/ui';
+import SubscribeForm from '@/components/SubscribeForm';
 
 export default function CTASection() {
   return (
@@ -22,6 +23,16 @@ export default function CTASection() {
             <Button variant="secondary" size="lg" href="/apps">
               Browse the builds
             </Button>
+          </div>
+
+          <div className="mx-auto mt-14 max-w-md border-t border-border pt-10">
+            <p className="text-sm text-text-secondary">
+              Or get each new build in your inbox — what I built, how, and what
+              I learned. No spam, ever.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <SubscribeForm source="home" />
+            </div>
           </div>
         </div>
       </RevealOnScroll>
