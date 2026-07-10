@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 // Email-capture form. Posts to /api/subscribe (Supabase-backed, insert-only).
@@ -93,6 +94,16 @@ export default function SubscribeForm({
           {error}
         </p>
       )}
+      <p className="text-xs text-text-secondary/80 sm:basis-full">
+        Just your email, just new builds — never sold or shared. Unsubscribe
+        anytime by replying to any email.{' '}
+        <Link
+          href="/privacy"
+          className="underline underline-offset-2 hover:text-accent"
+        >
+          Privacy
+        </Link>
+      </p>
     </form>
   );
 }

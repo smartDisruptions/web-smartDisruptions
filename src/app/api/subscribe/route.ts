@@ -36,7 +36,31 @@ function rateLimited(ip: string): boolean {
   return false;
 }
 
+// Only the site's own pages may call this endpoint. Browsers always send an
+// Origin header on fetch POSTs, so requiring a match blocks drive-by pages
+// from making their visitors' browsers hammer the form (which would defeat
+// per-IP rate limits by distributing across many IPs).
+function allowedOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+  if (
+    origin === 'https://smartdisruptions.com' ||
+    origin === 'https://www.smartdisruptions.com' ||
+    origin === 'https://smart-disruptions-web.vercel.app'
+  ) {
+    return true;
+  }
+  // This project's Vercel preview deployments
+  return (
+    origin.startsWith('https://web-smart-disruptions-') &&
+    origin.endsWith('.vercel.app')
+  );
+}
+
 export async function POST(request: Request) {
+  if (!allowedOrigin(request.headers.get('origin'))) {
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
+  }
+
   let body: { email?: string; source?: string; company?: string };
   try {
     body = await request.json();

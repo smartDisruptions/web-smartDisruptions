@@ -46,7 +46,13 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-10 border-t border-border pt-6 text-center text-xs text-text-secondary">
           &copy; {new Date().getFullYear()} SmartDisruptions. All rights
-          reserved.
+          reserved. &middot;{' '}
+          <Link
+            href="/privacy"
+            className="underline underline-offset-2 transition-colors hover:text-accent"
+          >
+            Privacy
+          </Link>
         </div>
       </div>
     </footer>
