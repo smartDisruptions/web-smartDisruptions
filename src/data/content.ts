@@ -73,7 +73,7 @@ From \`git init\` to a working ordering platform with real menu data was roughly
 
 Not one uninterrupted day. More like an afternoon for v1, then a few evening sessions for the full platform.
 
-That is the part beginners should pay attention to.
+That is the part I wish I'd understood when I was starting out.
 
 You do not have to disappear for six months to build useful software anymore. You can build something real in the gaps of your life if you know how to keep the scope tight.
 
@@ -161,7 +161,7 @@ I used placeholder data to move fast, then did a dedicated pass later to drop in
 
 That kept momentum high.
 
-Beginners get stuck because they try to solve the whole real-world mess at the beginning. Sometimes it is better to build the shape first, then replace the fake data with real data.
+It is easy to get stuck trying to solve the whole real-world mess up front — I used to do exactly that. Sometimes it is better to build the shape first, then replace the fake data with real data.
 
 ### 4. Treat polish as small separate asks
 
