@@ -3,6 +3,10 @@ import { ImageResponse } from 'next/og';
 // Site-wide default social preview card (Open Graph + Twitter). Applies to every
 // route that doesn't set its own image — so any smartdisruptions.com link shared
 // to LinkedIn/X/Slack renders a branded card instead of a bare URL.
+//
+// Layout is CENTERED with a generous safe margin: social clients (esp. LinkedIn
+// on mobile) crop the sides of the card, so keeping everything centered and away
+// from the edges means no crop clips the wordmark or text.
 export const alt = 'SmartDisruptions — building real things with AI, in public';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -22,50 +26,56 @@ export default function OpengraphImage() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
           backgroundColor: BG,
-          padding: '80px',
+          padding: '110px',
           fontFamily: 'Georgia, serif',
         }}
       >
-        {/* Top: domain tag */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-          <div
-            style={{
-              width: '26px',
-              height: '26px',
-              borderRadius: '7px',
-              backgroundColor: ACCENT,
-              display: 'flex',
-            }}
-          />
-          <div style={{ display: 'flex', fontSize: '30px', color: MUTED, letterSpacing: '0.04em' }}>
-            smartdisruptions.com
-          </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: '26px',
+            color: MUTED,
+            letterSpacing: '0.12em',
+            marginBottom: '30px',
+          }}
+        >
+          SMARTDISRUPTIONS.COM
         </div>
 
-        {/* Middle: wordmark + tagline */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div
-            style={{
-              display: 'flex',
-              fontSize: '96px',
-              fontWeight: 600,
-              color: TEXT,
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Smart Disruptions
-          </div>
-          <div style={{ display: 'flex', width: '160px', height: '8px', backgroundColor: ACCENT, marginTop: '32px', borderRadius: '4px' }} />
-          <div style={{ display: 'flex', fontSize: '42px', color: MUTED, marginTop: '32px', lineHeight: 1.3 }}>
-            Building real things with AI, in public.
-          </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: '82px',
+            fontWeight: 600,
+            color: TEXT,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.05,
+          }}
+        >
+          Smart Disruptions
         </div>
 
-        {/* Bottom: audience line */}
-        <div style={{ display: 'flex', fontSize: '28px', color: MUTED }}>
+        <div
+          style={{
+            display: 'flex',
+            width: '120px',
+            height: '7px',
+            backgroundColor: ACCENT,
+            borderRadius: '4px',
+            marginTop: '34px',
+            marginBottom: '34px',
+          }}
+        />
+
+        <div style={{ display: 'flex', fontSize: '38px', color: TEXT, lineHeight: 1.3 }}>
+          Building real things with AI, in public.
+        </div>
+
+        <div style={{ display: 'flex', fontSize: '25px', color: MUTED, marginTop: '18px', lineHeight: 1.3 }}>
           Honest breakdowns for people who feel behind on AI.
         </div>
       </div>
