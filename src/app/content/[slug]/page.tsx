@@ -30,6 +30,11 @@ export async function generateMetadata({
       description: entry.excerpt,
       type: 'article',
       url: `/content/${entry.slug}`,
+      // article:published_time + article:author (fixes the "no author / no
+      // publish date" warning in social validators) + article:tag.
+      publishedTime: new Date(entry.publishDate).toISOString(),
+      authors: ['Josh Escusa'],
+      tags: entry.tags,
       ...(entry.heroImage ? { images: [{ url: entry.heroImage }] } : {}),
     },
     twitter: {
