@@ -60,11 +60,12 @@ export async function POST(request: Request) {
     );
   }
 
+  // Publishable keys go in the apikey header only (no Authorization header —
+  // Supabase assumes the anon role, which is exactly what we want here).
   const res = await fetch(`${SUPABASE_URL}/rest/v1/sd_subscribers`, {
     method: 'POST',
     headers: {
       apikey: SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
       'Content-Type': 'application/json',
       Prefer: 'return=minimal',
     },
