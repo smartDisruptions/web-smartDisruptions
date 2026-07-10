@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
@@ -7,6 +8,36 @@ import { formatDate } from '@/lib/format';
 
 export function generateStaticParams() {
   return contentEntries.map((entry) => ({ slug: entry.slug }));
+}
+
+// Per-post social metadata so a shared post link shows THIS post's title,
+// excerpt, and (if it has one) hero image — not the generic site card.
+// Falls back to the site-wide opengraph-image when there's no hero image.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const entry = getContentBySlug(slug);
+  if (!entry) return {};
+
+  return {
+    title: `${entry.title} — SmartDisruptions`,
+    description: entry.excerpt,
+    openGraph: {
+      title: entry.title,
+      description: entry.excerpt,
+      type: 'article',
+      url: `/content/${entry.slug}`,
+      ...(entry.heroImage ? { images: [{ url: entry.heroImage }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: entry.title,
+      description: entry.excerpt,
+    },
+  };
 }
 
 export default async function ContentDetail({
