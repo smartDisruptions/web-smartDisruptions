@@ -27,9 +27,9 @@ What actually changed how I work wasn't leaning harder on that built-in memory. 
 
 I stumbled into this inside Claude Code — the coding tool I use most days. It reads a file called \`CLAUDE.md\` at the start of every session automatically. Think of it as a standing briefing note: whatever's in there, the AI has read before it answers your first question.
 
-So I started putting things in it. How I like to work — direct, ship fast, show me the simpler path. What I was building. Little corrections I was tired of repeating.
+So I started putting things in it — on purpose. Nothing lands there on its own; the AI won't quietly decide to remember something for you. I either open the file and type, or I tell Claude "save that" and it writes the line. How I like to work — direct, ship fast, show me the simpler path. What I was building. Little corrections I was tired of repeating.
 
-And every session got sharper. The AI stopped handing me generic advice and started building on what I'd actually told it. I wasn't reminding it who I was anymore; it already knew, because I'd written it down once in a place it always looks.
+And that deliberateness turned out to be the feature, not a chore. Every session got sharper. The AI stopped handing me generic advice and started building on what I'd actually told it. I wasn't reminding it who I was anymore; it already knew, because I'd written it down once in a place it always looks.
 
 That was the whole lesson, and it was smaller than I expected: the useful move isn't hoping the AI remembers me. It's writing down who I am, on purpose, in a file I own.
 
