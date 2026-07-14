@@ -74,7 +74,7 @@ That's the next hill I'm climbing, and I'll write up how it goes. But the part t
     tags: ['ai', 'workflow', 'memory', 'productivity'],
     heroImage: '/images/content/one-file-about-yourself.webp',
     heroImageAlt:
-      'A plain-text file named about-me.md — who I am, what I am working on, how I work — the one file I paste into every AI chat.',
+      'A plain-text file named CLAUDE.md — who I am, what I am working on, how I work — the one file my AI reads every session.',
   },
   {
     slug: 'i-tried-to-break-my-friends-ai-site',
