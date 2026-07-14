@@ -72,6 +72,9 @@ That's the next hill I'm climbing, and I'll write up how it goes. But the part t
     category: 'Working With AI',
     publishDate: '2026-07-13',
     tags: ['ai', 'workflow', 'memory', 'productivity'],
+    heroImage: '/images/content/one-file-about-yourself.webp',
+    heroImageAlt:
+      'A plain-text file named about-me.md — who I am, what I am working on, how I work — the one file I paste into every AI chat.',
   },
   {
     slug: 'i-tried-to-break-my-friends-ai-site',
