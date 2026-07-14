@@ -37,6 +37,8 @@ That was the whole lesson, and it was smaller than I expected: the useful move i
 
 Filling in that one file taught me how much leverage was sitting there — so I went further and built a whole second brain out of the idea: linked notes on every project I've shipped, the skills I'm working on, decisions I've made and why. One map file at the front points to the rest, one line per note.
 
+And here's the part I like most: it's wired into that same little file. My \`CLAUDE.md\` doesn't hold all that knowledge — it just tells the AI where to look, pointing every session at the wiki. The file stays small; the knowledge behind it keeps growing.
+
 I mapped 34 projects into it. It felt like a lot. It *was* a lot. But once it existed, I could test whether it actually worked.
 
 ## The test that told me it was real
@@ -66,7 +68,7 @@ The reason a file you write beats the memory the AI keeps for you is simple — 
 
 ## Where I'm headed next
 
-The thing I'm still figuring out: making that memory follow me everywhere without me lifting a finger — same context at my desk, on my phone, in a browser, in whatever tool I happen to open — so I never introduce myself to my own AI again.
+The thing I'm still figuring out: making that memory follow me into *every* tool, not just the one that reads my file — same context in any chat app, any browser, whatever I happen to open — so I never introduce myself to my own AI again.
 
 That's the next hill I'm climbing, and I'll write up how it goes. But the part that already changed how I work was embarrassingly simple: I wrote down who I am, once, in a file I control — and stopped making the AI guess.`,
     category: 'Working With AI',
