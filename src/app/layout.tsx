@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Fraunces } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -83,6 +84,9 @@ export default function RootLayout({
         {/* Cookieless, aggregate page analytics (see /privacy). Requires
             Web Analytics enabled in the Vercel project settings. */}
         <Analytics />
+        {/* Core Web Vitals / real-user load-speed data. Requires Speed
+            Insights enabled in the Vercel project settings. */}
+        <SpeedInsights />
       </body>
     </html>
   );
