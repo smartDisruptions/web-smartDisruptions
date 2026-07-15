@@ -12,6 +12,83 @@ export interface ContentEntry {
 
 export const contentEntries: ContentEntry[] = [
   {
+    slug: 'six-prompts-one-day',
+    title:
+      'I put an app on my home screen in a day — here are the six prompts',
+    excerpt:
+      "I built a to-do app and put it on my phone's home screen in a day — six short prompts, start to finish. The surprising part wasn't that it worked. It's that four of those six barely needed me to explain anything, because the real work happened before I ever opened the project.",
+    body: `I have a to-do app on my phone's home screen. I built it in a day, and it works the way I actually think — my University tasks, my business, and my personal stuff, three columns I swipe cards across.
+
+The part that surprised me wasn't that I could build it. It was *how little I had to say to get it.* Six prompts, start to home screen. And none of them were the careful, detailed spec I used to think building with AI required.
+
+Here are the actual six, typos and all, with what each one *actually did* underneath — because the gap between what I typed and what came back is the whole lesson.
+
+## The six prompts
+
+**1.** *"build a polished Kanban so that I can track daily to-dos. ill use this for everything; work at the univeristy, business at home, personal, etc. I should be able to add and edit notes to items. I also want a graph and data of the activity."*
+→ The one real build prompt. Notice I never explained what my "areas" are — the AI came back with University / Business / Personal on its own, because it reads my notes about myself before it starts. It also quietly chose a design that records every action as it happens (which is why the activity graph is honest and not guesswork) — I didn't ask for that; the sensible version of "a graph and data" just fell out.
+
+**2.** *"this needs to be mobile first, since I will mainly be using it on my phone. the touches and the uix needs to be polished and validated to fit this. I want it fast and useful and beautiful."*
+→ Not a tweak — a rework. And "polished and validated" wasn't a spec I typed out; it was a bar already sitting in my setup. The charts ran through a design method I'd built for myself — including a check that the colors stay distinguishable for colorblind readers and readable at small sizes. I didn't write those rules that morning. I wrote them once, a while ago, and this prompt cashed them in.
+
+**3.** *"I merged to gh. what next?"*
+→ Handoff. The merge was mine to do ("gh" = GitHub, where the code lives); the AI just told me the next human step.
+
+**4.** *"give me the click by click on how to deploy, give me links if needed. I'm on my phone."*
+→ It already knew I was working from my phone, so the deploy steps ("deploy" = put it on the internet at a real address) came back phone-shaped — not generic desktop instructions I'd have to translate.
+
+**5.** *"deployed, its live on my phone now."*
+→ I confirm it's real; the AI verifies the live site — including checking that a private note returns "not found" — before we call it done.
+
+**6.** *"journal this and how it was built. include all prompts used."*
+→ This ran a skill I *wrote myself* — a little reusable instruction set that captures how a build happened, in my own format. It's the reason I can show you these exact six prompts now: one of my own tools recorded them as they happened.
+
+## The thing hiding in that list
+
+Four of the six — 1, 2, 4, and 6 — barely needed me to explain anything. They leaned on a system I'd already built, before this project existed:
+
+- **Prompt 1** used my notes about my own life (it knew my three areas).
+- **Prompt 2** used design standards I'd written for myself once and now reuse.
+- **Prompt 4** used the fact that my setup knows how I work (on a phone).
+- **Prompt 6** used a skill I built with my own hands — which is why this post has receipts at all.
+
+That's the real reason the prompts were short. Not because I got clever with wording. Because the context and the methods were already *on file*, doing their work silently in the background of nearly every request. (The "notes about myself" part is a whole story on its own — I wrote about that separately, in *[I stopped re-explaining myself to my AI](https://smartdisruptions.com/content/stop-re-explaining-yourself-to-ai)*. Here the point is just: it was working the entire time, and I never had to mention it.)
+
+When I was starting out with AI, I thought a good prompt was a precise blueprint — the more detail I stuffed in, the better the result. It's the opposite. A good prompt is a clear outcome and an honest constraint. The precision lives in the *system around the prompt*, and you build that up over time, not in the session you're typing.
+
+## The one thing I add every single build
+
+There's a second source of leverage in that list that isn't about my notes at all, and it's the one I'd never skip: I make the AI check its own work in a real browser.
+
+After the first build, it drove the actual app — clicking, adding cards, dragging them to "done," hovering the charts — and caught bugs before I ever saw them: a crash in the quick-add box, ugly numbers on a chart axis. Fixed before the first save.
+
+Then prompt 2's mobile rework got its *own* round of checking, this time faking finger-swipes and long-presses on a phone-sized screen. That caught three bugs that only happen on a phone: a tap that opened the edit sheet and instantly closed it again, tooltips that vanished the moment you lifted your finger, and date labels colliding in the small space. I would never have found those by eyeballing it.
+
+If you take one concrete thing from this: don't ask AI to write code, ask it to write code **and then prove it works by running it.** "Build it" and "build it and verify it in a browser" are two different instructions, and you get two different qualities of thing.
+
+## And the parts that stayed mine
+
+Prompts 3, 4, and 5 are the last mile — me and the AI handing the baton back and forth. I merged the code. I did the deploy from my phone. I confirmed it was live.
+
+One of those mattered more than it looks. The app lives *inside* my personal notes repo — my second brain, full of private things I'd never put on the public internet. So before anything went live, we set it up so only the app folder ever gets uploaded and served, and then *tested that a private note returns "not found"* on the live site before trusting it. That's not a call you let the AI make silently. That one's yours.
+
+## What one day actually bought me
+
+Not a prototype I screenshotted and abandoned. A tool I've used every day since — it even keeps an honest activity log, a GitHub-style heatmap of what I finished, streaks, completions by area.
+
+Here's the reframe I wish I'd had earlier: building with AI isn't about describing an app perfectly. It's about the system you bring to the session — your context on file, your methods written down, your skills built up — plus making the AI verify its own work, plus keeping your hands on the few parts that are really yours.
+
+The prompts get short when that system does the heavy lifting. That's the actual skill, and it's not the typing. Six prompts looked like the story. The months of setup underneath four of them were the real one.
+
+It's on my home screen. Yours can be too — and most of the work happens before you ever open the project.`,
+    category: 'Working With AI',
+    publishDate: '2026-07-14',
+    tags: ['ai', 'workflow', 'shipping', 'prompting'],
+    heroImage: '/images/content/six-prompts-one-day.webp',
+    heroImageAlt:
+      'Six short prompts, numbered one to six, flowing into a phone showing a Daily Kanban app with University, Business, and Personal columns — the whole app built from six messages.',
+  },
+  {
     slug: 'stop-re-explaining-yourself-to-ai',
     title:
       "I stopped re-explaining myself to my AI — here's the one file that did it",
