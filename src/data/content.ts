@@ -74,7 +74,7 @@ One of those mattered more than it looks. The app lives *inside* my personal not
 
 ## What one day actually bought me
 
-Not a prototype I screenshotted and abandoned. A tool I've used every day since — it even keeps an honest activity log, a GitHub-style heatmap of what I finished, streaks, completions by area.
+Not a prototype I screenshotted and abandoned. A tool I've used every day since — and one I've kept reshaping in the weeks after, usually a prompt or two at a time. It even keeps an honest activity log, a GitHub-style heatmap of what I finished, streaks, completions by area.
 
 Here's the reframe I wish I'd had earlier: building with AI isn't about describing an app perfectly. It's about the system you bring to the session — your context on file, your methods written down, your skills built up — plus making the AI verify its own work, plus keeping your hands on the few parts that are really yours.
 
