@@ -12,6 +12,79 @@ export interface ContentEntry {
 
 export const contentEntries: ContentEntry[] = [
   {
+    slug: 'email-list-break-in',
+    title:
+      'I built an email list, then spent the night trying to break into it',
+    excerpt:
+      "I added an email signup form to my site — it worked on the first try, and I could've called it done. Instead I spent the night trying to break into my own database, and got in twice. The holes weren't exotic and finding them wasn't technical: it took one plain-English question and a refusal to let \"it works\" mean \"it's done.\"",
+    body: `I added an email signup form to my site last week. The kind you've filled out a hundred times: drop in your address, get new posts in your inbox.
+
+It worked on the first try. I subscribed myself — subscriber #1 — and watched my email land in the database. I could've called it done and gone to bed.
+
+Instead I spent the rest of the night trying to break into it. And I got in — twice.
+
+I want to walk through that, because the holes I found weren't exotic, the way I found them wasn't technical, and the lesson underneath is the one thing I'd want anyone putting a form in front of strangers to hear: shipping isn't the finish line. *"What would someone do to this?"* is.
+
+## Why an email list at all
+
+Quick context on why I bothered. Everywhere I post, the audience isn't really mine — the platform rents it to me and can turn the tap off tomorrow. An email address is different: it's mine, it moves with me, and it compounds. So I wanted readers I keep, in a list I own — a plain table in my own database, exportable anywhere. (A "database" here is just a spreadsheet the website can write to.)
+
+The form itself took one prompt: *"Build the email capture on smartdisruptions.com."* Done. Subscriber #1.
+
+## The question that changed the night
+
+Here's the prompt that mattered, and notice it isn't a command:
+
+> "does the email process need hardening? if so do it. it should be secure."
+
+I didn't say "make it secure." I asked whether it *needed* it. That open question is what got me an honest audit instead of a rubber stamp — and the honest answer was: no, not yet. Here's why.
+
+To talk to my database from the browser, my site carries a key. That key is **public by design** — it ships inside the web page, so anyone who opens their browser's developer tools can read it. That's normal and fine… *as long as* the database itself only allows the one exact thing it should.
+
+Mine didn't. When I stopped thinking like the person who built the front door and started thinking like someone walking around the back, I found two ways in:
+
+**1. I could flood my own list with garbage.** My form had the usual guards — a hidden trap for bots, a limit on how often you can submit. But those guards live on the *form*. Nothing stopped someone from ignoring the form entirely and talking to the database directly with that public key, scripting in a million junk addresses. And junk isn't just messy: the day I send my first newsletter, those dead addresses bounce and trip spam traps, which quietly wrecks my ability to reach the real people's inboxes. One person with a script could poison the list before it's ever useful.
+
+**2. I could check whether *you specifically* were on the list.** Try to add an email that's already there, and the database handed back a tell-tale "already exists." Which means anyone could test a specific person's address and learn whether they'd subscribed. My own writing about security literally says "don't leak who's on the list" — and here was my own system leaking it.
+
+Neither of these took a hacker. They took one question — *"what could someone do if they skipped my form?"* — and a willingness to actually try it instead of assuming it was fine.
+
+## The fix was deleting the door, not guarding it
+
+The real lesson: **when the key is public, the form isn't your security — the database's own rules are.** Guarding the front door means nothing if the back wall is open.
+
+So I stopped guarding and started removing. I routed every signup through a small locked function that holds a *secret* key the browser never sees — it runs the checks, and only it can write to the list. Then I did the part that actually mattered: I **deleted the public write access entirely.** The key that ships in the browser can now do nothing to that table — it can't read it, and it can't write to it. The most secure version of a public opening is no opening.
+
+(That's the same lesson from a post I put up recently, breaking into a friend's AI-built site: the safest feature is often the one you delete, not the one you patch. This time it was my own.)
+
+And I didn't take my own word that it worked — I ran the attack again, as the anonymous public user, and watched the database reject it. I also sequenced the switch so the new path was live and tested *before* I closed the old one, so no real signup failed for even a second.
+
+## The part I want you to steal
+
+Here are the four prompts that drove this whole thing, start to finish:
+
+1. *"Build the email capture on smartdisruptions.com."*
+2. *"does the email process need hardening? if so do it. it should be secure."*
+3. *"does this meet security standards of a real email capture app?"*
+4. *"yes knock out the 2 now items."*
+
+Not one of them is technical. I never named a vulnerability, an architecture, or a fix. I just refused to let "it works" mean "it's done," and kept asking — in plain English — whether it was actually good enough. The AI did the security engineering; my side of it was asking the uncomfortable question and not flinching at the answer.
+
+That's the whole move, and you already know how to do it. When you build something with AI and it works, ask it one more thing: *"what would someone do to this if they wanted to break it or abuse it? Show me, then fix it."* You don't need to be a security person to ask that. You just have to not stop at "it works."
+
+I did leave one thing unfinished on purpose — the confirmation email that proves a new address is real (the "double opt-in"). It needs an email sender I haven't set up yet, and a half version now would be worse than doing it properly later. So I named the gap, wrote it down, and moved on. That's part of the honesty too: knowing what you *didn't* do, and saying so.
+
+I also wrote a plain-language privacy page where every line is true of the actual system — what I store, how long, and that the list can't be read from the public web at all. Writing "here's exactly what I keep" turned out to be its own security check: if you can't describe the thing simply and honestly, that's usually a sign it's more tangled than it should be.
+
+The form works. It also can't be poisoned, can't be read, and can't tell anyone who's on it. That second half wasn't the ship — it was the night *after* the ship, and it's the half I'd have skipped two years ago.`,
+    category: 'Build Breakdown',
+    publishDate: '2026-07-16',
+    tags: ['ai', 'security', 'shipping', 'case study'],
+    heroImage: '/images/content/email-list-break-in.webp',
+    heroImageAlt:
+      "A subscribe form with a padlock badge, tagged write-only — the public key can't read or write the list — beside the headline 'I built an email list. Then I tried to break in.'",
+  },
+  {
     slug: 'six-prompts-one-day',
     title:
       'I put an app on my home screen in a day — here are the six prompts',
