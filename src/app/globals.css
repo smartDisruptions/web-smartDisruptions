@@ -48,25 +48,28 @@
   --sd-badge-secondary: #92400e; /* dark amber — AA on the light amber tint */
 }
 
-/* DARK — warm charcoal, not cold black; keeps the "paper" identity after dark. */
+/* DARK — warm charcoal, not cold black; keeps the "paper" identity after dark.
+   Text scores AAA, so the contrast work here is structural: a deeper canvas
+   with surfaces and borders lifted into visible steps so cards, panels, and
+   dividers read as layered instead of dissolving into the page. */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --sd-bg: #191512;
-  --sd-surface: #221d18;
-  --sd-surface-elevated: #2b251e;
-  --sd-fill: rgba(245, 241, 232, 0.06);
-  --sd-accent: #f2793f;
+  --sd-bg: #14100c;
+  --sd-surface: #241d15;
+  --sd-surface-elevated: #302619;
+  --sd-fill: rgba(245, 241, 232, 0.07);
+  --sd-accent: #f4834b;
   --sd-accent-hover: #f7a273;
   --sd-accent-secondary: #e0913f;
-  --sd-text-primary: #f3eee4;
-  --sd-text-secondary: #b1a798;
-  --sd-border: rgba(243, 238, 228, 0.14);
-  --sd-scrollbar: rgba(243, 238, 228, 0.22);
+  --sd-text-primary: #f4efe5;
+  --sd-text-secondary: #b7ad9d;
+  --sd-border: rgba(245, 239, 227, 0.22);
+  --sd-scrollbar: rgba(245, 239, 227, 0.26);
   /* Arcade text inks — flip to bright neon, which pops on the dark cabinet */
   --arcade-red-ink: #f87171;
   --arcade-yellow-ink: #fde047;
   --arcade-blue-ink: #60a5fa;
-  --sd-card-shadow: rgba(0, 0, 0, 0.55); /* real depth on the dark surface */
+  --sd-card-shadow: rgba(0, 0, 0, 0.7); /* real depth on the dark surface */
   --sd-badge-secondary: #f2b483; /* soft light amber — AA on the dark tint */
 }
 
