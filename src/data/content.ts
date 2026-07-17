@@ -6,8 +6,14 @@ export interface ContentEntry {
   category: string;
   publishDate: string;
   tags: string[];
+  // On-page hero: a textless visual (the artifact/screenshot), shown under the
+  // headline. Should NOT repeat the title — the H1 already carries the words.
   heroImage?: string;
   heroImageAlt?: string;
+  // Social/OG card: the title-baked-in version, used only for link previews
+  // (LinkedIn, X, Google Discover) where headline-on-image helps click-through.
+  // Falls back to heroImage when unset.
+  ogImage?: string;
 }
 
 export const contentEntries: ContentEntry[] = [
@@ -72,9 +78,10 @@ And one more thing about that list: the AI didn't pretend it could do those step
     category: 'Working With AI',
     publishDate: '2026-07-16',
     tags: ['ai', 'workflow', 'collaboration', 'shipping'],
-    heroImage: '/images/content/what-ai-handed-back.webp',
+    heroImage: '/images/content/what-ai-handed-back-hero.webp',
+    ogImage: '/images/content/what-ai-handed-back.webp',
     heroImageAlt:
-      "A checklist card titled 'What only I could do — handed back to you', with three rows: the keys (accounts and credentials), the money (real dollars), and the final yes (the go-live, your name on it).",
+      "A card titled 'What only I could do' with three rows — the keys (accounts and credentials), the money (real dollars), and the final yes (the go-live, your name on it).",
   },
   {
     slug: 'six-prompts-one-day',
@@ -150,9 +157,10 @@ It's on my home screen. Yours can be too — and most of the work happens before
     category: 'Working With AI',
     publishDate: '2026-07-14',
     tags: ['ai', 'workflow', 'shipping', 'prompting'],
-    heroImage: '/images/content/six-prompts-one-day.webp',
+    heroImage: '/images/content/six-prompts-one-day-hero.webp',
+    ogImage: '/images/content/six-prompts-one-day.webp',
     heroImageAlt:
-      'Six short prompts, numbered one to six, flowing into a phone showing a Daily Kanban app with University, Business, and Personal columns — the whole app built from six messages.',
+      'The Daily Kanban board — University, Business, and Personal columns with task cards and an activity heatmap.',
   },
   {
     slug: 'stop-re-explaining-yourself-to-ai',
@@ -217,7 +225,8 @@ That's the next hill I'm climbing, and I'll write up how it goes. But the part t
     category: 'Working With AI',
     publishDate: '2026-07-13',
     tags: ['ai', 'workflow', 'memory', 'productivity'],
-    heroImage: '/images/content/one-file-about-yourself.webp',
+    heroImage: '/images/content/one-file-about-yourself-hero.webp',
+    ogImage: '/images/content/one-file-about-yourself.webp',
     heroImageAlt:
       'A plain-text file named CLAUDE.md — who I am, what I am working on, how I work — the one file my AI reads every session.',
   },
