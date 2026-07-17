@@ -37,7 +37,10 @@ export async function generateMetadata({
       publishedTime: new Date(entry.publishDate).toISOString(),
       authors: ['Josh Escusa'],
       tags: entry.tags,
-      ...(entry.heroImage ? { images: [{ url: entry.heroImage }] } : {}),
+      // Prefer the title-baked social card; fall back to the on-page hero.
+      ...((entry.ogImage ?? entry.heroImage)
+        ? { images: [{ url: (entry.ogImage ?? entry.heroImage) as string }] }
+        : {}),
     },
     twitter: {
       card: 'summary_large_image',
@@ -73,8 +76,12 @@ export default async function ContentDetail({
       name: 'Josh Escusa',
       url: 'https://smartdisruptions.com',
     },
-    ...(entry.heroImage
-      ? { image: [`https://smartdisruptions.com${entry.heroImage}`] }
+    ...((entry.ogImage ?? entry.heroImage)
+      ? {
+          image: [
+            `https://smartdisruptions.com${entry.ogImage ?? entry.heroImage}`,
+          ],
+        }
       : {}),
     mainEntityOfPage: `https://smartdisruptions.com/content/${entry.slug}`,
   };
