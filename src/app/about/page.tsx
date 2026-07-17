@@ -17,7 +17,15 @@ export default function AboutPage() {
           About
         </h1>
 
-        <div className="mt-10 space-y-8 text-base leading-relaxed text-text-primary">
+        <img
+          src="/images/josh.webp"
+          alt="Josh"
+          width={112}
+          height={112}
+          className="mt-8 h-28 w-28 rounded-full border border-border object-cover"
+        />
+
+        <div className="mt-8 space-y-8 text-base leading-relaxed text-text-primary">
           <p>
             I&rsquo;m Josh. I build real things &mdash; websites, apps, small
             tools, automations &mdash; mostly with AI, and I write about how they
