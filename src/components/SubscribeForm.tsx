@@ -57,7 +57,7 @@ export default function SubscribeForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`flex w-full max-w-md flex-col gap-3 sm:flex-row ${className}`.trim()}
+      className={`flex w-full max-w-md flex-col gap-3 sm:flex-row sm:flex-wrap ${className}`.trim()}
     >
       {/* Honeypot — hidden from people, filled by bots */}
       <input
