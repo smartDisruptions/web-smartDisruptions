@@ -29,7 +29,14 @@ export const apps: App[] = [
       '/images/apps/samurai-kitchen-2.png',
       '/images/apps/samurai-kitchen-3.png',
     ],
-    techStack: ['Next.js', 'React', 'TypeScript', 'Square API', 'Supabase', 'Tailwind CSS'],
+    techStack: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Square API',
+      'Supabase',
+      'Tailwind CSS',
+    ],
     category: 'Commerce',
     status: 'live',
     outcomes: [
@@ -56,7 +63,14 @@ export const apps: App[] = [
       '/images/apps/pomodoro-2.png',
       '/images/apps/pomodoro-3.png',
     ],
-    techStack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'shadcn/ui'],
+    techStack: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'Zustand',
+      'shadcn/ui',
+    ],
     category: 'Productivity',
     status: 'live',
     outcomes: [
@@ -83,7 +97,12 @@ export const apps: App[] = [
       '/images/apps/spacex-mars-2.png',
       '/images/apps/spacex-mars-3.png',
     ],
-    techStack: ['HTML5 Canvas', 'Vanilla JavaScript', 'CSS3', 'Orbital Mechanics'],
+    techStack: [
+      'HTML5 Canvas',
+      'Vanilla JavaScript',
+      'CSS3',
+      'Orbital Mechanics',
+    ],
     category: 'Simulation',
     status: 'live',
     outcomes: [
@@ -137,7 +156,14 @@ export const apps: App[] = [
       '/images/apps/ai-diary-2.png',
       '/images/apps/ai-diary-3.png',
     ],
-    techStack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'OpenRouter API', 'Zod'],
+    techStack: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'OpenRouter API',
+      'Zod',
+    ],
     category: 'Productivity',
     status: 'live',
     outcomes: [
@@ -231,6 +257,33 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: 'https://pebble-kart-ten.vercel.app',
+  },
+  {
+    slug: 'circuit-of-the-day',
+    name: 'Circuit of the Day',
+    description:
+      'A tiny daily logic puzzle — one hidden circuit per day, same board for everyone. Deduce the gates, light the lamp, share your time.',
+    longDescription:
+      'A Wordle-style daily puzzle about how computers actually think. Every day a new logic circuit is generated — deterministically seeded from the date, so everyone on Earth gets the same board. The gate chips arrive blank: flip the input switches, watch the signal run the copper traces in real time, and deduce which gate (AND, OR, XOR, NAND, NOR) belongs in each slot until the output lamp matches the target truth table on every row. A timer, swap counter, and daily streak give it the share-your-result hook, and a built-in gate reference teaches the logic as you play. Runs entirely in the browser — no signup, no backend, progress and streaks in localStorage.',
+    thumbnailUrl: '/images/apps/circuit-of-the-day-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/circuit-of-the-day-1.png',
+      '/images/apps/circuit-of-the-day-2.png',
+      '/images/apps/circuit-of-the-day-3.png',
+    ],
+    techStack: ['React', 'TypeScript', 'SVG'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Date-seeded deterministic generator — everyone gets the same daily board, no server required',
+      'Live signal propagation teaches boolean logic by letting players probe the circuit',
+      'Every generated puzzle is solver-verified: non-constant output, every input matters',
+      'Wordle-style emoji share card + streak tracking built for the daily-share loop',
+    ],
+    buildDate: '2026-07',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: 'https://smartdisruptions.com/games/circuit',
   },
   {
     slug: 'grove',

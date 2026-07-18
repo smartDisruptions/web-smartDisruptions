@@ -8,20 +8,33 @@ import { SectionContainer, Card } from '@/components/ui';
 // The Arcade is an explicit, curated line-up — Pebble Kart (built for Gabe)
 // leads, then the rest of the playable builds. The games keep their own /apps
 // categories; this list just defines what shows in the cabinet, and its order.
-const ARCADE_GAME_SLUGS = ['pebble-kart', 'flappy-bird', 'grove', 'aureum-snake', 'cloth-simulator'];
+const ARCADE_GAME_SLUGS = [
+  'pebble-kart',
+  'circuit-of-the-day',
+  'flappy-bird',
+  'grove',
+  'aureum-snake',
+  'cloth-simulator',
+];
 
 const games: App[] = ARCADE_GAME_SLUGS.map((slug) =>
-  apps.find((app) => app.slug === slug),
+  apps.find((app) => app.slug === slug)
 ).filter((app): app is App => app !== undefined);
 
 const platforms = Array.from(
   new Set(
     games.flatMap((g) =>
       g.techStack.filter((t) =>
-        ['HTML5', 'PixiJS', 'Vanilla JavaScript', 'SVG', 'Web Audio API'].includes(t),
-      ),
-    ),
-  ),
+        [
+          'HTML5',
+          'PixiJS',
+          'Vanilla JavaScript',
+          'SVG',
+          'Web Audio API',
+        ].includes(t)
+      )
+    )
+  )
 );
 
 // Bold primary palette — red as star, yellow + blue as supporting cast.
@@ -109,7 +122,9 @@ export default function Arcade() {
             />
             <Stat
               label="Live"
-              value={String(games.filter((g) => g.status === 'live').length).padStart(2, '0')}
+              value={String(
+                games.filter((g) => g.status === 'live').length
+              ).padStart(2, '0')}
               color={YELLOW}
               ink={YELLOW_INK}
             />
@@ -192,7 +207,9 @@ export default function Arcade() {
                     <Link
                       href={`/apps/${game.slug}?from=arcade`}
                       className="font-mono-accent text-lg font-black uppercase tracking-wide text-text-primary transition-colors"
-                      onMouseEnter={(e) => (e.currentTarget.style.color = ribbonInk)}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = ribbonInk)
+                      }
                       onMouseLeave={(e) => (e.currentTarget.style.color = '')}
                     >
                       {game.name}
