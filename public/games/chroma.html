@@ -76,7 +76,7 @@ h1.logo { font-size:44px; line-height:1.04; font-weight:900; letter-spacing:1px;
 .gameHead { width:100%; max-width:400px; display:flex; align-items:center; justify-content:space-between; }
 .gameHead .mid { text-align:center; }
 .gameHead .mid i { display:block; font-style:normal; font-size:11px; font-weight:700; letter-spacing:2px; color:#d8f3ef; margin-top:2px; }
-.hud { width:100%; max-width:400px; display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+.hud { width:100%; max-width:400px; display:flex; align-items:center; justify-content:space-between; margin-top:12px; flex-wrap:wrap; gap:8px; }
 .chip { border:2.5px solid #22333b; border-radius:12px; background:#fdf6ec; box-shadow:3px 3px 0 rgba(34,51,59,.85);
   padding:6px 13px; text-align:center; }
 .chip b { display:block; font-size:19px; font-weight:900; }
@@ -230,8 +230,13 @@ const LEVELS = [
  { name:'Purple Pair',     w:5,h:5, rows:['50505','3c505','053e9','69a53','50050'], src:[[0,'R'],[2,'R'],[4,'B']], goals:[[0,'R'],[3,'P']], seed:77 },
  { name:'Double Batch',    w:5,h:6, rows:['50555','56955','3d555','05a3d','95305','05005'], src:[[0,'R'],[2,'Y'],[3,'Y'],[4,'B']], goals:[[1,'O'],[4,'G']], seed:88 },
  { name:'Grand Junction',  w:5,h:7, rows:['50005','56aa9','55935','55060','3fc00','03d00','00530'], src:[[0,'R'],[4,'B']], goals:[[2,'P']], seed:99 },
+ // ---- expert tier (2026-07-19): bigger boards, tighter solution space ----
+ { name:'Triple Threat',   w:6,h:7, rows:['555555','555555','3d5555','653d55','55a53d','c53595','055505'], src:[[0,'R'],[1,'B'],[2,'Y'],[3,'R'],[4,'B'],[5,'Y']], goals:[[1,'P'],[3,'O'],[5,'G']], seed:143 },
+ { name:'Long Way Down',   w:5,h:8, rows:['50005','3ac69','55553','6af9a','563ac','50005','3aea9','50505'], src:[[0,'R'],[4,'B']], goals:[[2,'P']], seed:154 },
+ { name:'Purity Test',     w:6,h:7, rows:['555550','55a55c','55693c','53de55','535095','505005','505005'], src:[[0,'R'],[1,'R'],[3,'B'],[4,'B']], goals:[[0,'R'],[2,'P'],[5,'B']], seed:165 },
+ { name:'The Gauntlet',    w:6,h:8, rows:['555555','55553d','3fbfc5','57f955','356af9','69565a','595553','505555'], src:[[0,'R'],[1,'B'],[2,'Y'],[3,'R'],[4,'B'],[5,'Y']], goals:[[0,'P'],[2,'G'],[4,'O']], seed:176 },
 ];
-const DAILY_POOL = [5,6,7,8,9,10,11]; // harder designs feed the daily
+const DAILY_POOL = [5,6,7,8,9,10,11,12,13,14,15]; // harder designs feed the daily
 
 /* ---------------- persistence ---------------- */
 const store = {
