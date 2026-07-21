@@ -1,1 +1,0 @@
-- 2026-07-19 — trim: **Chroma Current — Josh cut 3 redundant levels** (Orange Squeeze, Green Light, Purple Pair; concepts already taught earlier in the sequence). 13 levels final, 13/13 Playwright-verified, daily pool re-indexed, pushed to `chroma-current-test`. [[Puzzle Game Ideas]] updated.
