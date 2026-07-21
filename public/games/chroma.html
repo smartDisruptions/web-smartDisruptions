@@ -221,13 +221,10 @@ const LEVELS = [
  { name:'First Fold',      w:3,h:4, rows:['050','050','050','050'], src:[[1,'R']], goals:[[1,'R']], seed:11 },
  { name:'Around the Bend', w:3,h:4, rows:['500','500','3ac','005'], src:[[0,'B']], goals:[[2,'B']], seed:22 },
  { name:'Purple Made',     w:5,h:5, rows:['50500','50500','3e900','05000','05000'], src:[[0,'R'],[2,'B']], goals:[[1,'P']], seed:33 },
- { name:'Orange Squeeze',  w:5,h:5, rows:['05050','05050','03e90','00500','00500'], src:[[1,'R'],[3,'Y']], goals:[[2,'O']], seed:55 },
- { name:'Green Light',     w:5,h:6, rows:['50005','50005','50a05','3aea9','00500','00500'], src:[[0,'B'],[4,'Y']], goals:[[2,'G']], seed:66 },
  { name:'Overpass',        w:5,h:5, rows:['50005','50005','3aac5','06af9','05050'], src:[[0,'R'],[4,'Y']], goals:[[1,'Y'],[3,'R']], seed:44 },
  { name:'Double Scoop',    w:5,h:5, rows:['55055','3d079','05a50','6505c','05050'], src:[[0,'R'],[1,'Y'],[3,'Y'],[4,'B']], goals:[[1,'O'],[3,'G']], seed:121 },
  { name:'Crosstown',       w:5,h:6, rows:['50505','3ad05','6afa9','5a505','50530','50500'], src:[[0,'R'],[2,'B'],[4,'Y']], goals:[[0,'Y'],[2,'P']], seed:132 },
  { name:'All Inks',        w:5,h:7, rows:['50505','53595','50505','3ad69','00555','a5790','00500'], src:[[0,'R'],[2,'B'],[4,'Y']], goals:[[2,'I']], seed:110 },
- { name:'Purple Pair',     w:5,h:5, rows:['50505','3c505','053e9','69a53','50050'], src:[[0,'R'],[2,'R'],[4,'B']], goals:[[0,'R'],[3,'P']], seed:77 },
  { name:'Double Batch',    w:5,h:6, rows:['50555','56955','3d555','05a3d','95305','05005'], src:[[0,'R'],[2,'Y'],[3,'Y'],[4,'B']], goals:[[1,'O'],[4,'G']], seed:88 },
  { name:'Grand Junction',  w:5,h:7, rows:['50005','56aa9','55935','55060','3fc00','03d00','00530'], src:[[0,'R'],[4,'B']], goals:[[2,'P']], seed:99 },
  // ---- expert tier (2026-07-19): bigger boards, tighter solution space ----
@@ -236,7 +233,7 @@ const LEVELS = [
  { name:'Purity Test',     w:6,h:7, rows:['555550','55a55c','55693c','53de55','535095','505005','505005'], src:[[0,'R'],[1,'R'],[3,'B'],[4,'B']], goals:[[0,'R'],[2,'P'],[5,'B']], seed:165 },
  { name:'The Gauntlet',    w:6,h:8, rows:['555555','55553d','3fbfc5','57f955','356af9','69565a','595553','505555'], src:[[0,'R'],[1,'B'],[2,'Y'],[3,'R'],[4,'B'],[5,'Y']], goals:[[0,'P'],[2,'G'],[4,'O']], seed:176 },
 ];
-const DAILY_POOL = [5,6,7,8,9,10,11,12,13,14,15]; // harder designs feed the daily
+const DAILY_POOL = [3,4,5,6,7,8,9,10,11,12]; // harder designs feed the daily
 
 /* ---------------- persistence ---------------- */
 const store = {
