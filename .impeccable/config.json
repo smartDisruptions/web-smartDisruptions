@@ -1,0 +1,43 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": ["**"],
+        "createdAt": "2026-07-27T00:00:00.000Z",
+        "reason": "The warm Paper ground (#f4efe4) is a made decision, not a reflex reach for the safe off-white. It was chosen over a near-white specifically because pure-white cards on near-white read as glare; see DESIGN.md, Paper not near-white. The rule is right that cream is an AI default; it is wrong that this one is."
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": ["games"],
+        "createdAt": "2026-07-27T00:00:00.000Z",
+        "reason": "The Arcade is a cabinet. Colored glow on the ribbons, LEDs and slot chips IS the subject of the page, not a cool-looking default applied to a generic UI. Scoped to /games only — a glow anywhere else on the site is still a finding."
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": ["games"],
+        "createdAt": "2026-07-27T00:00:00.000Z",
+        "reason": "The ARCADE wordmark is the one display moment on the site and the gradient is the marquee. Decorative by intent and not load-bearing for meaning. Scoped to /games; gradient text on a heading anywhere else is still a finding."
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": ["games"],
+        "createdAt": "2026-07-27T00:00:00.000Z",
+        "reason": "CRT scanlines. The point of the page is that it looks like a cabinet from 1985."
+      },
+      {
+        "rule": "gpt-thin-border-wide-shadow",
+        "value": "*",
+        "files": ["games"],
+        "createdAt": "2026-07-27T00:00:00.000Z",
+        "reason": "Cabinet edge lighting on the game cards — the thin border plus wide colored shadow reads as a lit machine, which is the intent. Same scoping logic as dark-glow."
+      }
+    ]
+  }
+}
