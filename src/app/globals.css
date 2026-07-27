@@ -42,7 +42,7 @@
   --sd-scrollbar: rgba(26, 23, 20, 0.22);
   /* Arcade text inks — dark on light paper (bright arcade colors fail AA here) */
   --arcade-red-ink: #b91c1c;
-  --arcade-yellow-ink: #a16207;
+  --arcade-yellow-ink: #854d0e; /* was #a16207 — 4.3:1 on paper, under AA */
   --arcade-blue-ink: #1d4ed8;
   --sd-card-shadow: rgba(26, 23, 20, 0.18);
   --sd-badge-secondary: #92400e; /* dark amber — AA on the light amber tint */
