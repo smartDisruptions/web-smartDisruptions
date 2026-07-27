@@ -80,7 +80,7 @@ export default function Arcade() {
         <div className="text-center">
           <p
             className="font-mono-accent text-sm uppercase tracking-[0.3em]"
-            style={{ color: RED }}
+            style={{ color: RED_INK }}
           >
             ★ Player One ★
           </p>

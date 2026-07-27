@@ -138,8 +138,9 @@ export default async function ContentDetail({
         </figure>
       )}
 
-      {/* Markdown Body */}
-      <article className="mt-12 max-w-none">
+      {/* Markdown Body — capped by measure, not container width: body copy
+          past ~80 characters per line loses the eye on the return sweep. */}
+      <article className="mt-12 max-w-[62ch]">
         <ReactMarkdown
           components={{
             h2: ({ children }) => (
@@ -200,7 +201,7 @@ export default async function ContentDetail({
           <h2 className="font-display text-xl font-semibold tracking-tight text-text-primary">
             Get the next build in your inbox
           </h2>
-          <p className="mt-2 text-sm text-text-secondary">
+          <p className="mt-2 max-w-lg text-sm text-text-secondary">
             One email when I publish a new breakdown — what I built, how, and
             what I learned. No spam, ever.
           </p>
