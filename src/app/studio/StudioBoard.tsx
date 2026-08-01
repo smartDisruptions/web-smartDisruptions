@@ -37,7 +37,8 @@ type BranchPost = {
 type BranchScan = { branch: string; posts: BranchPost[]; error?: string };
 
 const CHANNELS = ['linkedin', 'substack', 'reddit', 'email'] as const;
-const BASE_BRANCH = 'dev';
+const DRAFT_BRANCH = 'dev';
+const PRODUCTION_BRANCH = 'main';
 
 const eyebrow =
   'font-mono text-xs font-medium uppercase tracking-[0.16em] text-text-secondary';
@@ -136,7 +137,7 @@ export default function StudioBoard({
       }
       const better =
         rank[p.status] > rank[found.post.status] ||
-        (p.branch === BASE_BRANCH && found.post.branch !== BASE_BRANCH);
+        (p.branch === DRAFT_BRANCH && found.post.branch !== DRAFT_BRANCH);
       if (better) {
         bySlug.set(p.slug, {
           post: p,
@@ -380,10 +381,9 @@ function Empty() {
     <div className="mt-10 rounded-xl border border-dashed border-border px-6 py-12 text-center">
       <p className="text-text-primary">No articles found on any branch.</p>
       <p className="mt-2 text-sm text-text-secondary">
-        New Article creates a{' '}
-        <code className="font-mono">draft/&lt;slug&gt;</code> branch off{' '}
-        <code className="font-mono">{BASE_BRANCH}</code> and puts the file on
-        it.
+        New Article puts a file on{' '}
+        <code className="font-mono">{DRAFT_BRANCH}</code> as a draft. Ask Claude
+        for an article and it lands in the same place.
       </p>
     </div>
   );
@@ -410,13 +410,21 @@ function Board({
   busy: boolean;
 }) {
   const cols = [
-    { key: 'draft' as const, title: 'Drafts', hint: 'on their own branches' },
+    {
+      key: 'draft' as const,
+      title: 'Drafts',
+      hint: `written, not yet dated · on ${DRAFT_BRANCH}`,
+    },
     {
       key: 'scheduled' as const,
       title: 'Scheduled',
       hint: 'waiting for a date',
     },
-    { key: 'published' as const, title: 'Published', hint: 'live on the site' },
+    {
+      key: 'published' as const,
+      title: 'Published',
+      hint: `live on ${PRODUCTION_BRANCH}`,
+    },
   ];
   return (
     <div className="mt-8 grid gap-5 lg:grid-cols-3">
@@ -593,12 +601,23 @@ function Editor({
             </button>
           ) : (
             <div className="flex flex-col gap-3 rounded-lg border border-accent bg-fill px-4 py-3">
-              <p className="text-sm text-text-primary">
-                Publish <strong>{post.title}</strong>? This sets status to
-                published on <code className="font-mono">{post.branch}</code>,
-                then opens and merges a PR into{' '}
-                <code className="font-mono">{BASE_BRANCH}</code>.
-              </p>
+              <div className="flex flex-col gap-2 text-sm text-text-primary">
+                <p>
+                  Publish <strong>{post.title}</strong>? It goes live on the
+                  site.
+                </p>
+                <p className="text-text-secondary">
+                  This sets status to published, then merges{' '}
+                  <code className="font-mono">{DRAFT_BRANCH}</code> into{' '}
+                  <code className="font-mono">{PRODUCTION_BRANCH}</code> — so{' '}
+                  <strong className="text-text-primary">
+                    everything currently on {DRAFT_BRANCH} ships
+                  </strong>
+                  , not just this article. Other drafts riding along stay
+                  invisible.
+                </p>
+                <ShippingWith slug={post.slug} />
+              </div>
               <div className="flex gap-2">
                 <button
                   disabled={busy}
@@ -623,6 +642,109 @@ function Editor({
             </div>
           )}
         </div>
+      )}
+    </div>
+  );
+}
+
+type Pending = {
+  commits: number;
+  articles: string[];
+  otherFiles: string[];
+  truncated: boolean;
+  error?: string;
+};
+
+/**
+ * What a Publish press carries to production beyond this article.
+ *
+ * Drafts riding along are harmless — the gate hides them. Code changes are
+ * not, so they get their own line. Loaded only when the confirm panel opens,
+ * and a failure here never blocks publishing: it is context, not a gate.
+ */
+function ShippingWith({ slug }: { slug: string }) {
+  const [pending, setPending] = useState<Pending | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    fetch('/api/studio/pending', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((d: Pending) => live && setPending(d))
+      .catch(
+        () =>
+          live &&
+          setPending({
+            commits: 0,
+            articles: [],
+            otherFiles: [],
+            truncated: false,
+            error: 'unavailable',
+          })
+      );
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  if (!pending) {
+    return (
+      <p className="font-mono text-xs text-text-secondary">
+        Checking what else is on {DRAFT_BRANCH}…
+      </p>
+    );
+  }
+  if (pending.error) {
+    return (
+      <p className="font-mono text-xs text-text-secondary">
+        Could not check what else is on {DRAFT_BRANCH}.
+      </p>
+    );
+  }
+
+  const others = pending.articles.filter((a) => a !== slug);
+  const code = pending.otherFiles;
+
+  if (pending.commits === 0) {
+    return (
+      <p className="font-mono text-xs text-text-secondary">
+        {DRAFT_BRANCH} matches {PRODUCTION_BRANCH} — this article is the only
+        change.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5 rounded-lg border border-border bg-surface px-3 py-2.5">
+      <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-text-secondary">
+        Also shipping · {pending.commits} commit
+        {pending.commits === 1 ? '' : 's'} ahead of {PRODUCTION_BRANCH}
+      </span>
+      {others.length > 0 && (
+        <p className="text-xs text-text-secondary">
+          <span className="text-text-primary">
+            {others.length} other article
+            {others.length === 1 ? '' : 's'}
+          </span>{' '}
+          — {others.length === 1 ? 'stays' : 'stay'} invisible unless already
+          published: {others.join(', ')}
+        </p>
+      )}
+      {code.length > 0 && (
+        <p className="text-xs text-warn">
+          <span className="font-semibold">
+            {code.length} non-article file{code.length === 1 ? '' : 's'}
+          </span>{' '}
+          — code and assets go live too: {code.slice(0, 4).join(', ')}
+          {code.length > 4 ? ` +${code.length - 4} more` : ''}
+        </p>
+      )}
+      {others.length === 0 && code.length === 0 && (
+        <p className="text-xs text-text-secondary">Nothing but this article.</p>
+      )}
+      {pending.truncated && (
+        <p className="text-xs text-text-secondary">
+          (list truncated by GitHub at 300 files)
+        </p>
       )}
     </div>
   );

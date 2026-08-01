@@ -13,11 +13,11 @@ something public.
 Three environment variables. Locally they go in `.env.local` (gitignored); on
 Vercel, in the project's Environment Variables.
 
-| Variable | What it is |
-|---|---|
-| `STUDIO_PASSWORD` | The password you type to sign in. |
-| `STUDIO_SECRET` | A long random string used to sign session cookies. Rotating it signs every session out. |
-| `GITHUB_TOKEN` | A GitHub token with `repo` scope. The Studio reads branches and commits schedule changes with it. |
+| Variable          | What it is                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `STUDIO_PASSWORD` | The password you type to sign in.                                                                 |
+| `STUDIO_SECRET`   | A long random string used to sign session cookies. Rotating it signs every session out.           |
+| `GITHUB_TOKEN`    | A GitHub token with `repo` scope. The Studio reads branches and commits schedule changes with it. |
 
 Generate a secret with:
 
@@ -58,39 +58,56 @@ the schedule's history is the repo's history.
 
 ## The publish gate
 
-`getPublishedPosts()` is the only list the public site may render. A post is
-public when:
+`getPublishedPosts()` is the only list the public site may render, and exactly
+one thing puts an article in it: **`status: published`**, which only a Publish
+press sets.
 
-- `status: published`, **or**
-- `status: scheduled` and `liveAt` is in the past.
+`draft` and `scheduled` both 404, stay off `/content`, and are absent from the
+sitemap — no matter how far in the past `liveAt` is. `liveAt` is a plan the
+board surfaces, never an instruction the site acts on.
 
-Anything else 404s, stays off `/content`, and is absent from the sitemap.
-`scripts/test-posts.mjs` drops a draft into the store and asserts exactly that.
+An earlier version also treated `scheduled` with a past `liveAt` as live, so a
+missed press still went out on time. That was safe while publishing only
+reached `dev`. It is not safe now that Publish promotes `dev` to `main`: an
+article scheduled for last week and never pressed would have gone live as a
+side effect of publishing something else. Nothing self-publishes.
 
-The second clause is a safety net, not the mechanism: if a scheduled press is
-missed, the post still goes live at the next build rather than staying dark
-forever. The intended path is that you press Publish.
+`scripts/test-posts.mjs` asserts this directly, including that an overdue
+scheduled post stays invisible.
 
 ## Workflow
 
-**New article** creates a `draft/<slug>` branch off `dev` and puts the file on
-it, so drafts never touch `dev` until they ship and two drafts never collide in
-the same file.
+`dev` is the drafting floor. `main` is live.
 
-**Schedule** writes `status` and `liveAt` to the file on its branch.
+**New article** — or asking Claude for one — puts a file on `dev` with
+`status: draft`. It appears in the Drafts column immediately. Nothing else is
+needed: no branch to create, no PR to open.
 
-**Publish** flips `status` to `published`, then opens and merges a PR into
-`dev`. It always asks for confirmation first. Nothing publishes on a timer —
-making something public is a decision, so it stays a press.
+**Schedule** writes `status: scheduled` and `liveAt` to the file on `dev`.
 
-Merging `dev` → `main` remains a separate, deliberate step. The Studio does not
-touch production.
+**Publish** flips `status` to `published` and merges `dev` into `main`, so the
+article is live on smartdisruptions.com. It always asks for confirmation first,
+and nothing publishes on a timer — making something public is a decision, so it
+stays a press.
+
+**What Publish actually ships:** everything currently on `dev`, not just that
+one article. The confirm dialog shows the count of commits ahead of `main`,
+which other articles are travelling along, and — the part the status gate cannot
+protect you from — how many non-article files (code, assets) go live with it. This is the same promote-to-production step that used to be done by
+hand, so the confirm dialog says so rather than letting it surprise you. Other
+drafts travelling along stay invisible, because the gate is status-based rather
+than branch-based — that is the whole reason a draft can sit merged on `main`
+safely.
+
+An article authored on a side branch still works: Publish merges it into `dev`
+first, then promotes.
 
 ## Views
 
 - **Board** — every article grouped by draft / scheduled / published, showing
-  which branch each lives on. An article appearing on several branches collapses
-  to the copy furthest along, with the rest listed as "also on".
+  which branch each lives on (normally `dev`). An article appearing on several
+  branches collapses to the copy furthest along, with the rest listed as
+  "also on".
 - **Schedule** — what's dated, in date order, with what's overdue in red.
 - **Channels** — a per-article grid of LinkedIn / Substack / Reddit / email.
   The Studio tracks the plan; it does not post to those platforms.

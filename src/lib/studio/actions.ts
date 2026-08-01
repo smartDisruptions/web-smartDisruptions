@@ -5,9 +5,9 @@ import {
 } from '@/lib/frontmatter';
 import { parsePost, type ChannelPlan, type PostStatus } from '@/lib/posts';
 import {
-  BASE_BRANCH,
+  DRAFT_BRANCH,
+  PRODUCTION_BRANCH,
   POSTS_PATH,
-  createBranch,
   fetchFileText,
   listPostsOnBranch,
   mergePr,
@@ -33,11 +33,6 @@ export function slugify(title: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
-}
-
-/** Branch name for a new draft. Namespaced so the board can spot them. */
-export function draftBranchName(slug: string): string {
-  return `draft/${slug}`;
 }
 
 /**
@@ -114,7 +109,13 @@ export async function updateSchedule(
   );
 }
 
-/** Create a new draft on its own branch, per the branch-per-article rule. */
+/**
+ * Create a new article on the drafting branch.
+ *
+ * It lands on `dev` as `status: draft`, which is invisible to the public site
+ * because the gate is status-based rather than branch-based. That is what lets
+ * a draft ride along in a dev -> main merge without appearing anywhere.
+ */
 export async function createDraft(
   args: { title: string; category?: string; excerpt?: string },
   config: GhConfig
@@ -123,34 +124,15 @@ export async function createDraft(
   if (!slug)
     throw new Error('Title must contain at least one letter or number');
 
-  const branch = draftBranchName(slug);
   const path = `${POSTS_PATH}/${slug}.md`;
 
-  // Refuse if the slug is already taken anywhere that matters — a duplicate
-  // slug silently shadows an existing post once merged.
-  const onBase = await listPostsOnBranch(BASE_BRANCH, config);
-  if (onBase.some((p) => p.slug === slug)) {
+  // A duplicate slug silently shadows an existing article once both are on the
+  // same branch, so refuse rather than overwrite.
+  const existing = await listPostsOnBranch(DRAFT_BRANCH, config);
+  if (existing.some((p) => p.slug === slug)) {
     throw new Error(
-      `A post with the slug "${slug}" already exists on ${BASE_BRANCH}`
+      `An article with the slug "${slug}" already exists on ${DRAFT_BRANCH}.`
     );
-  }
-
-  try {
-    await createBranch(branch, BASE_BRANCH, config);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    // 422 "Reference already exists" — reuse the branch rather than fail.
-    if (!/already exists/i.test(msg)) throw e;
-
-    // The branch was already there, so the draft may be too. Writing over it
-    // without its blob SHA fails deep in the GitHub client with an opaque
-    // '"sha" wasn't supplied'; say what actually happened instead.
-    const existing = await listPostsOnBranch(branch, config);
-    if (existing.some((p) => p.slug === slug)) {
-      throw new Error(
-        `A draft called "${args.title}" already exists on ${branch}.`
-      );
-    }
   }
 
   const today = new Date().toISOString().slice(0, 10);
@@ -169,16 +151,29 @@ export async function createDraft(
   );
 
   await putFile(
-    { path, branch, content, message: `studio: new draft "${args.title}"` },
+    {
+      path,
+      branch: DRAFT_BRANCH,
+      content,
+      message: `studio: new draft "${args.title}"`,
+    },
     config
   );
 
-  return { branch, slug, path };
+  return { branch: DRAFT_BRANCH, slug, path };
 }
 
 /**
- * Publish: flip status to published on the branch, then open and merge a PR
- * into the base branch. Only ever called from an explicit press.
+ * Publish: flip status to published, then merge the drafting branch into
+ * production so the article is live on the site.
+ *
+ * Note what this really does — it ships everything currently on `dev`, not
+ * just this article. That is the same promote-to-production step that was
+ * previously done by hand, so the confirm dialog states it rather than
+ * letting it be a surprise. Other drafts riding along stay invisible because
+ * the gate is status-based.
+ *
+ * Only ever called from an explicit press. Nothing here runs on a timer.
  */
 export async function publish(
   args: { branch: string; slug: string; sha: string; title: string },
@@ -194,27 +189,43 @@ export async function publish(
     config
   );
 
+  // An article authored on a side branch has to reach the drafting branch
+  // first, or merging dev -> main would ship without it.
+  if (args.branch !== DRAFT_BRANCH) {
+    const staging = await openPr(
+      {
+        branch: args.branch,
+        base: DRAFT_BRANCH,
+        title: `Stage: ${args.title}`,
+        body: `Bringing **${args.title}** onto \`${DRAFT_BRANCH}\` ahead of publishing.`,
+      },
+      config
+    );
+    const staged = await mergePr(staging.number, config);
+    if (!staged.merged) {
+      throw new Error(
+        `Could not merge ${args.branch} into ${DRAFT_BRANCH}: ${staged.message}`
+      );
+    }
+  }
+
   const pr = await openPr(
     {
-      branch: args.branch,
+      branch: DRAFT_BRANCH,
+      base: PRODUCTION_BRANCH,
       title: `Publish: ${args.title}`,
       body: [
         `Publishing **${args.title}** from the Studio.`,
         '',
         `Slug: \`${args.slug}\``,
-        `Status flipped to \`published\` on \`${args.branch}\`.`,
+        '',
+        `This promotes \`${DRAFT_BRANCH}\` to \`${PRODUCTION_BRANCH}\`, so everything`,
+        `currently on \`${DRAFT_BRANCH}\` ships. Other drafts travelling with it stay`,
+        'invisible — the publish gate is status-based, not branch-based.',
       ].join('\n'),
     },
     config
   );
-
-  if (args.branch === BASE_BRANCH) {
-    return {
-      prUrl: pr.url,
-      merged: false,
-      message: 'Already on the base branch',
-    };
-  }
 
   const result = await mergePr(pr.number, config);
   return { prUrl: pr.url, merged: result.merged, message: result.message };
