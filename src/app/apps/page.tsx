@@ -17,13 +17,13 @@ export default function AppsGallery() {
     <SectionContainer className="py-20">
       {/* Page Header */}
       <div className="text-center">
-        <p className="font-mono-accent text-sm text-accent/70">// Showcase</p>
-        <h1 className="mt-2 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-          Apps Built With The System
+        <p className="font-mono-accent text-accent">Builds</p>
+        <h1 className="font-display mt-3 text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
+          What I&apos;ve built
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-          Real applications — from idea to deployment. Each one is proof that
-          the system works.
+          Real apps I&apos;ve shipped and put online — the receipts behind the
+          writing. Try any of them live.
         </p>
       </div>
 
@@ -35,7 +35,7 @@ export default function AppsGallery() {
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === null
                 ? 'bg-accent text-background'
-                : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                : 'border border-border text-text-secondary hover:text-text-primary'
             }`}
           >
             All
@@ -47,7 +47,7 @@ export default function AppsGallery() {
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 activeCategory === cat
                   ? 'bg-accent text-background'
-                  : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                  : 'border border-border text-text-secondary hover:text-text-primary'
               }`}
             >
               {cat}
@@ -59,63 +59,71 @@ export default function AppsGallery() {
       {/* App Grid */}
       {filtered.length > 0 ? (
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {/* The card is clickable via the stretched "View Details" link — its
+              ::after covers the whole card — so "Try Demo" stays a real sibling
+              anchor. Nesting it inside a card-wide <Link> is invalid HTML and
+              failed hydration on this route. */}
           {filtered.map((app) => (
-            <Link key={app.slug} href={`/apps/${app.slug}`}>
-              <Card hover className="flex h-full flex-col">
-                {/* Thumbnail */}
-                <div className="overflow-hidden rounded-lg">
-                  <img
-                    src={app.thumbnailUrl}
-                    alt={`${app.name} screenshot`}
-                    className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
+            <Card
+              key={app.slug}
+              hover
+              className="relative flex h-full flex-col"
+            >
+              {/* Thumbnail */}
+              <div className="overflow-hidden rounded-lg">
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={app.thumbnailUrl}
+                  alt={`${app.name} screenshot`}
+                  className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
 
-                {/* Name + Status */}
-                <div className="mt-4 flex items-center gap-2">
-                  <h2 className="text-lg font-semibold text-text-primary">
-                    {app.name}
-                  </h2>
-                  <Badge
-                    variant={app.status === 'live' ? 'accent' : 'secondary'}
-                  >
-                    {app.status}
+              {/* Name + Status */}
+              <div className="mt-4 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-text-primary">
+                  {app.name}
+                </h2>
+                <Badge variant={app.status === 'live' ? 'accent' : 'secondary'}>
+                  {app.status}
+                </Badge>
+              </div>
+
+              {/* Description */}
+              <p className="mt-2 flex-1 text-sm text-text-secondary">
+                {app.description}
+              </p>
+
+              {/* Tech Tags */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {app.techStack.map((t) => (
+                  <Badge key={t} variant="default">
+                    {t}
                   </Badge>
-                </div>
+                ))}
+              </div>
 
-                {/* Description */}
-                <p className="mt-2 flex-1 text-sm text-text-secondary">
-                  {app.description}
-                </p>
-
-                {/* Tech Tags */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {app.techStack.map((t) => (
-                    <Badge key={t} variant="default">
-                      {t}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Link hints */}
-                <div className="mt-4 flex items-center gap-4">
-                  <span className="text-sm font-medium text-accent">
-                    View Details &rarr;
-                  </span>
-                  {app.liveUrl && (
-                    <a
-                      href={app.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="text-sm font-medium text-text-secondary transition-colors hover:text-accent"
-                    >
-                      Try Demo &rarr;
-                    </a>
-                  )}
-                </div>
-              </Card>
-            </Link>
+              {/* Link hints */}
+              <div className="mt-4 flex items-center gap-4">
+                <Link
+                  href={`/apps/${app.slug}`}
+                  className="text-sm font-medium text-accent after:absolute after:inset-0 after:content-['']"
+                >
+                  View Details &rarr;
+                </Link>
+                {app.liveUrl && (
+                  <a
+                    href={app.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative text-sm font-medium text-text-secondary transition-colors hover:text-accent"
+                  >
+                    Try Demo &rarr;
+                  </a>
+                )}
+              </div>
+            </Card>
           ))}
         </div>
       ) : (

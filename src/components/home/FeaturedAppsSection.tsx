@@ -12,25 +12,28 @@ export default function FeaturedAppsSection() {
   return (
     <SectionContainer id="featured-apps">
       <RevealOnScroll>
-        <div className="text-center">
-          <h2 className="font-mono-accent text-sm font-semibold uppercase text-accent/70">
-            // Built With The System
+        <div className="mx-auto max-w-3xl">
+          <p className="font-mono-accent text-accent">Proof</p>
+          <h2 className="font-display mt-3 text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
+            The receipts behind the writing
           </h2>
-          <p className="mt-3 text-text-secondary">
-            Real applications built from idea to deployment using our AI
-            orchestration system.
+          <p className="mt-3 max-w-2xl text-text-secondary">
+            Real apps I&apos;ve shipped and put online. This is what the
+            breakdowns are drawn from.
           </p>
         </div>
       </RevealOnScroll>
 
       <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {apps.map((app, index) => (
+        {apps.slice(0, 6).map((app, index) => (
           <RevealOnScroll key={app.slug} className={`delay-${index * 100}`}>
             <Link href={`/apps/${app.slug}`}>
               <Card hover={true} className="flex h-full flex-col">
                 {/* Thumbnail */}
                 <div className="overflow-hidden rounded-lg">
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={app.thumbnailUrl}
                     alt={`${app.name} screenshot`}
                     className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"

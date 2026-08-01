@@ -2,8 +2,125 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { contentEntries, getContentCategories } from '@/data/content';
+import {
+  contentEntries,
+  getContentCategories,
+  type ContentEntry,
+} from '@/data/content';
 import { SectionContainer, Card, Badge } from '@/components/ui';
+import { formatDate } from '@/lib/format';
+
+/**
+ * Post thumbnail. Uses the post's heroImage when present, and falls back to
+ * a designed paper block with the category initial — so a missing image
+ * never blocks publishing and the layout never shows a broken frame.
+ */
+function Thumb({
+  post,
+  className = '',
+}: {
+  post: ContentEntry;
+  className?: string;
+}) {
+  if (post.heroImage) {
+    return (
+      <img
+        loading="lazy"
+        decoding="async"
+        src={post.heroImage}
+        alt={post.heroImageAlt ?? post.title}
+        className={`h-full w-full object-cover ${className}`.trim()}
+      />
+    );
+  }
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-surface-elevated">
+      <span className="font-display text-6xl font-semibold text-accent/25">
+        {post.category.charAt(0)}
+      </span>
+    </div>
+  );
+}
+
+/** Full-width lead card: image beside the copy on desktop, stacked on mobile. */
+function FeaturedCard({ post }: { post: ContentEntry }) {
+  return (
+    <Link href={`/content/${post.slug}`} className="group block">
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_var(--sd-card-shadow)] sm:flex">
+        <div className="aspect-[16/10] overflow-hidden sm:aspect-auto sm:w-2/5 sm:shrink-0">
+          <Thumb
+            post={post}
+            className="transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+        <div className="flex flex-1 flex-col p-6 sm:p-8">
+          <div className="flex items-center justify-between gap-3">
+            <Badge variant="accent">{post.category}</Badge>
+            <span className="text-xs text-text-secondary">
+              {formatDate(post.publishDate)}
+            </span>
+          </div>
+          <h2 className="font-display mt-4 text-2xl font-semibold leading-tight tracking-tight text-text-primary transition-colors group-hover:text-accent sm:text-3xl">
+            {post.title}
+          </h2>
+          <p className="mt-3 line-clamp-3 flex-1 text-text-secondary">
+            {post.excerpt}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <Badge key={tag} variant="default">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          <span className="mt-5 inline-block text-sm font-medium text-accent">
+            Read More &rarr;
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+/** Compact card used once there are enough posts to fill a grid. */
+function GridCard({ post }: { post: ContentEntry }) {
+  return (
+    <Link href={`/content/${post.slug}`} className="group block h-full">
+      <Card hover className="flex h-full flex-col overflow-hidden !p-0">
+        <div className="aspect-[16/9] overflow-hidden">
+          <Thumb
+            post={post}
+            className="transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+        <div className="flex flex-1 flex-col p-6">
+          <div className="flex items-center justify-between gap-3">
+            <Badge variant="accent">{post.category}</Badge>
+            <span className="text-xs text-text-secondary">
+              {formatDate(post.publishDate)}
+            </span>
+          </div>
+          <h2 className="font-display mt-3 text-lg font-semibold text-text-primary transition-colors group-hover:text-accent">
+            {post.title}
+          </h2>
+          <p className="mt-2 line-clamp-3 flex-1 text-sm text-text-secondary">
+            {post.excerpt}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <Badge key={tag} variant="default">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          <span className="mt-4 inline-block text-sm font-medium text-accent">
+            Read More &rarr;
+          </span>
+        </div>
+      </Card>
+    </Link>
+  );
+}
 
 export default function ContentList() {
   const categories = getContentCategories();
@@ -13,17 +130,20 @@ export default function ContentList() {
     ? contentEntries.filter((entry) => entry.category === activeCategory)
     : contentEntries;
 
+  const [featured, ...rest] = filtered;
+
   return (
     <SectionContainer className="py-20">
       {/* Page Header */}
       <div className="text-center">
-        <p className="font-mono-accent text-sm text-accent/70">// Insights</p>
-        <h1 className="mt-2 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-          From the Lab
+        <p className="font-mono-accent text-accent">Writing</p>
+        <h1 className="font-display mt-3 text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
+          Field notes
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-          Insights, breakdowns, and observations from building real applications
-          with AI orchestration.
+          Honest build breakdowns and field notes — the timeline, the method,
+          and the parts worth copying. Only what I&apos;ve actually shipped and
+          learned.
         </p>
       </div>
 
@@ -35,7 +155,7 @@ export default function ContentList() {
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === null
                 ? 'bg-accent text-background'
-                : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                : 'border border-border text-text-secondary hover:text-text-primary'
             }`}
           >
             All
@@ -47,7 +167,7 @@ export default function ContentList() {
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 activeCategory === cat
                   ? 'bg-accent text-background'
-                  : 'border border-white/10 text-text-secondary hover:text-text-primary'
+                  : 'border border-border text-text-secondary hover:text-text-primary'
               }`}
             >
               {cat}
@@ -56,46 +176,20 @@ export default function ContentList() {
         </div>
       )}
 
-      {/* Content Cards */}
+      {/* Content */}
       {filtered.length > 0 ? (
-        <div className="mt-12 grid gap-8 sm:grid-cols-2">
-          {filtered.map((entry) => (
-            <Link key={entry.slug} href={`/content/${entry.slug}`}>
-              <Card hover className="flex h-full flex-col">
-                {/* Category + Date */}
-                <div className="flex items-center justify-between">
-                  <Badge variant="accent">{entry.category}</Badge>
-                  <span className="text-xs text-text-secondary">
-                    {entry.publishDate}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h2 className="mt-4 text-lg font-semibold text-text-primary">
-                  {entry.title}
-                </h2>
-
-                {/* Excerpt */}
-                <p className="mt-2 flex-1 text-sm text-text-secondary">
-                  {entry.excerpt}
-                </p>
-
-                {/* Tags */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {entry.tags.map((tag) => (
-                    <Badge key={tag} variant="default">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Link hint */}
-                <span className="mt-4 inline-block text-sm font-medium text-accent">
-                  Read More &rarr;
-                </span>
-              </Card>
-            </Link>
-          ))}
+        <div className="mx-auto mt-12 max-w-5xl space-y-8">
+          <FeaturedCard post={featured} />
+          {/* A grid needs ≥2 items to look intentional; otherwise stay full-width. */}
+          {rest.length >= 2 ? (
+            <div className="grid gap-8 sm:grid-cols-2">
+              {rest.map((post) => (
+                <GridCard key={post.slug} post={post} />
+              ))}
+            </div>
+          ) : (
+            rest.map((post) => <FeaturedCard key={post.slug} post={post} />)
+          )}
         </div>
       ) : (
         <div className="mt-20 text-center">

@@ -1,13 +1,9 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { apps, getAppBySlug } from '@/data/apps';
-import {
-  SectionContainer,
-  Badge,
-  Button,
-  Card,
-  ComingSoonBadge,
-} from '@/components/ui';
+import { SectionContainer, Badge, Button, Card } from '@/components/ui';
+import BackLink from '@/components/BackLink';
 
 export function generateStaticParams() {
   return apps.map((app) => ({ slug: app.slug }));
@@ -27,20 +23,26 @@ export default async function AppDetail({
 
   return (
     <SectionContainer className="py-20">
-      {/* Back Navigation */}
-      <div className="text-center sm:text-left">
-        <Link
-          href="/apps"
-          className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
+      {/* Back Navigation — points to the Arcade when you came from it */}
+      <div className="text-left">
+        <Suspense
+          fallback={
+            <Link
+              href="/apps"
+              className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
+            >
+              &larr; Back to Apps
+            </Link>
+          }
         >
-          &larr; Back to Apps
-        </Link>
+          <BackLink variant="top" />
+        </Suspense>
       </div>
 
       {/* Header */}
-      <div className="mt-8 text-center sm:text-left">
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-start">
-          <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+      <div className="mt-8 text-left">
+        <div className="flex flex-wrap items-center justify-start gap-3">
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
             {app.name}
           </h1>
           <Badge variant={app.status === 'live' ? 'accent' : 'secondary'}>
@@ -51,7 +53,7 @@ export default async function AppDetail({
           {app.longDescription}
         </p>
         {app.liveUrl && (
-          <div className="mt-6 text-center sm:text-left">
+          <div className="mt-6 text-left">
             <a
               href={app.liveUrl}
               target="_blank"
@@ -65,16 +67,18 @@ export default async function AppDetail({
 
       {/* Screenshots Gallery */}
       <div className="mt-12">
-        <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-text-secondary sm:text-left">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-text-secondary">
           Screenshots
         </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {app.screenshotUrls.map((url) => (
             <div
               key={url}
-              className="overflow-hidden rounded-xl border border-white/10 transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+              className="overflow-hidden rounded-xl border border-border transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
             >
               <img
+                loading="lazy"
+                decoding="async"
                 src={url}
                 alt={`${app.name} screenshot`}
                 className="h-52 w-full object-cover transition-transform duration-300 hover:scale-105"
@@ -86,7 +90,7 @@ export default async function AppDetail({
 
       {/* Try Live Demo (below screenshots) */}
       {app.liveUrl && (
-        <div className="mt-8 text-center sm:text-left">
+        <div className="mt-8 text-left">
           <a
             href={app.liveUrl}
             target="_blank"
@@ -99,10 +103,10 @@ export default async function AppDetail({
 
       {/* Tech Stack */}
       <div className="mt-12">
-        <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-text-secondary sm:text-left">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-text-secondary">
           Tech Stack
         </h2>
-        <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
+        <div className="mt-4 flex flex-wrap justify-start gap-2">
           {app.techStack.map((tech) => (
             <Badge key={tech} variant="accent">
               {tech}
@@ -113,7 +117,7 @@ export default async function AppDetail({
 
       {/* Why It Works — Outcomes */}
       <div className="mt-12">
-        <h2 className="text-center text-2xl font-bold text-text-primary sm:text-left">Why It Works</h2>
+        <h2 className="text-2xl font-bold text-text-primary">Why It Works</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {app.outcomes.map((outcome) => (
             <Card key={outcome}>
@@ -123,31 +127,35 @@ export default async function AppDetail({
         </div>
       </div>
 
-      {/* Monetization Hooks */}
+      {/* Read the writing */}
       <div className="mt-16">
         <Card className="flex flex-col items-center text-center">
           <h3 className="text-lg font-semibold text-text-primary">
-            Full Breakdown
+            Want the how and why?
           </h3>
-          <p className="mt-2 text-sm text-text-secondary">
-            See exactly how this app was architected, built, and deployed —
-            stage by stage.
+          <p className="mt-2 max-w-md text-sm text-text-secondary">
+            I write up builds like this one — the timeline, the method, and the
+            parts worth copying. No fluff, just what actually happened.
           </p>
           <div className="mt-4">
-            {app.hasFullBreakdown ? (
-              <Button size="sm">View Breakdown</Button>
-            ) : (
-              <ComingSoonBadge />
-            )}
+            <Button size="sm" href="/content">
+              Read the writing &rarr;
+            </Button>
           </div>
         </Card>
       </div>
 
-      {/* Back to Gallery */}
+      {/* Back to Gallery — or the Arcade, if that's where you came from */}
       <div className="mt-16 text-center">
-        <Button variant="secondary" href="/apps">
-          &larr; Back to All Apps
-        </Button>
+        <Suspense
+          fallback={
+            <Button variant="secondary" href="/apps">
+              &larr; Back to All Apps
+            </Button>
+          }
+        >
+          <BackLink variant="bottom" />
+        </Suspense>
       </div>
     </SectionContainer>
   );

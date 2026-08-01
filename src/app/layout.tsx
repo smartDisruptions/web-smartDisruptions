@@ -1,30 +1,62 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Inter, Fraunces } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// Body: Inter — clean, highly legible at long-form reading sizes.
+const inter = Inter({
+  variable: '--font-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+// Display: Fraunces — a characterful serif for headlines (the personality).
+const fraunces = Fraunces({
+  variable: '--font-display',
   subsets: ['latin'],
+  display: 'swap',
+  axes: ['opsz'],
 });
 
 export const metadata: Metadata = {
-  title: 'SmartDisruptions — AI-Built Web Applications',
+  // The canonical/OG base. Set to the branded domain so social + canonical
+  // URLs are correct once smartdisruptions.com is pointed at this project.
+  metadataBase: new URL('https://smartdisruptions.com'),
+  title: 'SmartDisruptions — building real things with AI, in public',
   description:
-    'SmartDisruptions is a proof engine showcasing AI-built web applications. Explore real apps, learn the system, and see what AI-driven development can deliver.',
+    'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. The goal: make advanced AI usable for people who feel behind, stuck, or underpowered.',
   openGraph: {
-    title: 'SmartDisruptions — AI-Built Web Applications',
+    title: 'SmartDisruptions — building real things with AI, in public',
     description:
-      'A proof engine showcasing AI-built web applications. Explore real apps, learn the system, and see what AI-driven development can deliver.',
+      'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. Real apps, shipped and live.',
+    url: 'https://smartdisruptions.com',
     siteName: 'SmartDisruptions',
     type: 'website',
     locale: 'en_US',
+  },
+  // max-image-preview:large is required for Google Discover to show posts
+  // with their full-size hero image instead of a thumbnail.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  // og:image / twitter:image are supplied by app/opengraph-image.tsx and
+  // app/twitter-image.tsx (the branded card).
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SmartDisruptions — building real things with AI, in public',
+    description:
+      'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. Real apps, shipped and live.',
   },
 };
 
@@ -36,12 +68,25 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Set the theme before first paint so there's no flash of the wrong
+            theme. Uses the saved choice, else the OS preference. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
+          }}
+        />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
+        {/* Cookieless, aggregate page analytics (see /privacy). Requires
+            Web Analytics enabled in the Vercel project settings. */}
+        <Analytics />
+        {/* Core Web Vitals / real-user load-speed data. Requires Speed
+            Insights enabled in the Vercel project settings. */}
+        <SpeedInsights />
       </body>
     </html>
   );

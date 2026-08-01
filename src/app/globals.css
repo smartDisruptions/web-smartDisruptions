@@ -1,119 +1,237 @@
 @import 'tailwindcss';
 
+/*
+  PAPER — light, editorial, typography-first.
+  One warm accent on warm paper. No grids, glows, or scanlines —
+  whitespace and type do the work, and the page stays lightning fast.
+*/
 @theme inline {
-  --color-background: #0a0a0a;
-  --color-surface: #141414;
-  --color-surface-elevated: #1a1a1a;
-  --color-accent: #00d4ff;
-  --color-accent-secondary: #7c3aed;
-  --color-text-primary: #f5f5f5;
-  --color-text-secondary: #a3a3a3;
-  --color-foreground: #f5f5f5;
-  --color-border: rgba(255, 255, 255, 0.1);
-  --font-sans: var(--font-geist-sans);
+  /* Colors are driven by the semantic --sd-* variables below, so a single
+     [data-theme] switch re-themes the whole site — utilities and direct
+     var() references alike. */
+  --color-background: var(--sd-bg);
+  --color-surface: var(--sd-surface);
+  --color-surface-elevated: var(--sd-surface-elevated);
+  --color-fill: var(--sd-fill); /* subtle tint: inline code bg, hovers */
+  --color-accent: var(--sd-accent);
+  --color-accent-hover: var(--sd-accent-hover);
+  --color-accent-secondary: var(--sd-accent-secondary);
+  /* Market Storm — bull / bear / caution data semantics */
+  --color-bull: var(--sd-bull);
+  --color-bull-soft: var(--sd-bull-soft);
+  --color-bear: var(--sd-bear);
+  --color-bear-soft: var(--sd-bear-soft);
+  --color-warn: var(--sd-warn);
+  --color-warn-soft: var(--sd-warn-soft);
+  --color-text-primary: var(--sd-text-primary);
+  --color-text-secondary: var(--sd-text-secondary);
+  --color-foreground: var(--sd-text-primary);
+  --color-border: var(--sd-border);
+  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display), Georgia, 'Times New Roman', serif;
   --font-mono:
-    var(--font-geist-mono), 'JetBrains Mono', 'Fira Code', 'Cascadia Code',
-    monospace;
+    ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* LIGHT (default) — a warmer, less-glary paper than the old near-white,
+   with cards lifted just above it instead of pure white. */
+:root {
+  color-scheme: light;
+  --sd-bg: #f4efe4;
+  --sd-surface: #fdfbf6;
+  --sd-surface-elevated: #ece5d7;
+  --sd-fill: rgba(26, 23, 20, 0.05);
+  --sd-accent: #c2410c;
+  --sd-accent-hover: #9a3412;
+  --sd-accent-secondary: #b45309;
+  --sd-text-primary: #1a1714;
+  --sd-text-secondary: #6b6560;
+  --sd-border: rgba(26, 23, 20, 0.12);
+  --sd-scrollbar: rgba(26, 23, 20, 0.22);
+  /* Arcade text inks — dark on light paper (bright arcade colors fail AA here) */
+  --arcade-red-ink: #b91c1c;
+  --arcade-yellow-ink: #854d0e; /* was #a16207 — 4.3:1 on paper, under AA */
+  --arcade-blue-ink: #1d4ed8;
+  --sd-card-shadow: rgba(26, 23, 20, 0.18);
+  --sd-badge-secondary: #92400e; /* dark amber — AA on the light amber tint */
+  /* Market Storm data semantics — text-safe inks on paper. Follows the ink
+     flip: dark on paper here, bright on the dark cabinet below. */
+  --sd-bull: #166534; /* green-800 — AA on paper */
+  --sd-bull-soft: rgba(22, 101, 52, 0.1);
+  --sd-bear: #b91c1c; /* reuses the arcade red ink — AA on paper */
+  --sd-bear-soft: rgba(185, 28, 28, 0.08);
+  --sd-warn: #92400e; /* dark amber — matches badge-secondary, AA on paper */
+  --sd-warn-soft: rgba(146, 64, 14, 0.1);
+}
+
+/* DARK — warm charcoal, not cold black; keeps the "paper" identity after dark.
+   Text scores AAA, so the contrast work here is structural: a deeper canvas
+   with surfaces and borders lifted into visible steps so cards, panels, and
+   dividers read as layered instead of dissolving into the page. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --sd-bg: #14100c;
+  --sd-surface: #241d15;
+  --sd-surface-elevated: #302619;
+  --sd-fill: rgba(245, 241, 232, 0.07);
+  --sd-accent: #f4834b;
+  --sd-accent-hover: #f7a273;
+  --sd-accent-secondary: #e0913f;
+  --sd-text-primary: #f4efe5;
+  --sd-text-secondary: #b7ad9d;
+  --sd-border: rgba(245, 239, 227, 0.22);
+  --sd-scrollbar: rgba(245, 239, 227, 0.26);
+  /* Arcade text inks — flip to bright neon, which pops on the dark cabinet */
+  --arcade-red-ink: #f87171;
+  --arcade-yellow-ink: #fde047;
+  --arcade-blue-ink: #60a5fa;
+  --sd-card-shadow: rgba(0, 0, 0, 0.7); /* real depth on the dark surface */
+  --sd-badge-secondary: #f2b483; /* soft light amber — AA on the dark tint */
+  /* Market Storm data semantics — inks flip to bright on the dark cabinet
+     (both clear AA in their own theme). */
+  --sd-bull: #4ade80;
+  --sd-bull-soft: rgba(74, 222, 128, 0.14);
+  --sd-bear: #f87171;
+  --sd-bear-soft: rgba(248, 113, 113, 0.14);
+  --sd-warn: #f2b483;
+  --sd-warn-soft: rgba(242, 180, 131, 0.14);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-text-primary);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  background: var(--sd-bg);
+  color: var(--sd-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* LAB / SYSTEM typography accents */
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+  }
+}
+
+/* Headlines use the display serif */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Small eyebrow/label accent (replaces the old mono "// …" look) */
 .font-mono-accent {
   font-family: var(--font-mono);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
 }
 
-/* Subtle grid background pattern for lab feel */
-.bg-grid {
-  background-image:
-    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* Glow effects for accent elements */
-.glow-accent {
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
-}
-
-.glow-accent-strong {
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.15), 0 0 60px rgba(0, 212, 255, 0.05);
-}
-
-/* Selection color */
+/* Selection */
 ::selection {
-  background: rgba(0, 212, 255, 0.3);
-  color: #f5f5f5;
+  background: color-mix(in srgb, var(--sd-accent) 22%, transparent);
+  color: var(--sd-text-primary);
 }
 
-/* Scrollbar styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+  background: var(--sd-scrollbar);
+  border-radius: 5px;
+  border: 2px solid var(--sd-bg);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--sd-text-secondary);
 }
 
-/* Scroll-reveal animation */
+/* Scroll-reveal animation (kept — it's cheap and adds polish) */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transform: translateY(16px);
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
 }
-
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
-
-/* Staggered children reveal */
 .reveal-stagger > .reveal {
-  transition-delay: calc(var(--stagger-index, 0) * 100ms);
+  transition-delay: calc(var(--stagger-index, 0) * 90ms);
 }
 
-/* Fade-in animation for page load */
+/* Arcade — marquee + LED (scoped to that page) */
+@keyframes games-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.games-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: games-marquee 38s linear infinite;
+}
+.games-marquee:hover .games-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes led-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+.led-pulse {
+  animation: led-pulse 1.6s ease-in-out infinite;
+}
+
+/* Fade-in on load */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out both;
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
   }
-
   .reveal.visible {
     transform: none;
   }
-
   .animate-fade-in {
     animation: none;
     opacity: 1;
     transform: none;
   }
-
   *,
   *::before,
   *::after {
