@@ -9,7 +9,10 @@
     "lint": "eslint",
     "design:audit": "node scripts/design-audit.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:posts": "node --import ./scripts/ts-resolve-register.mjs scripts/test-posts.mjs",
+    "test:auth": "node --import ./scripts/ts-resolve-register.mjs scripts/test-auth.mjs",
+    "test": "npm run test:posts && npm run test:auth"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
