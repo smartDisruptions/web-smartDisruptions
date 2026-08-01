@@ -261,6 +261,59 @@ export async function putFile(
   return { sha: data.content.sha };
 }
 
+export type PendingChanges = {
+  commits: number;
+  /** Article files that differ between the branches, by slug. */
+  articles: string[];
+  /** Everything else — code, config, assets. The part the status gate
+   *  cannot protect you from, so it is surfaced before you publish. */
+  otherFiles: string[];
+  truncated: boolean;
+};
+
+/**
+ * What would ship if `head` were merged into `base` right now.
+ *
+ * Publishing promotes the whole drafting branch, so the confirm dialog shows
+ * this: drafts riding along are harmless (the gate hides them), but code
+ * changes are not, and that is worth seeing before pressing.
+ */
+export async function comparePending(
+  base: string,
+  head: string,
+  config: GhConfig
+): Promise<PendingChanges> {
+  const cmp = await gh<{
+    ahead_by: number;
+    files?: { filename: string }[];
+  }>(
+    `/repos/${OWNER}/${REPO}/compare/${encodeURIComponent(base)}...${encodeURIComponent(head)}`,
+    config
+  );
+
+  const files = cmp.files ?? [];
+  const articles: string[] = [];
+  const otherFiles: string[] = [];
+  for (const f of files) {
+    if (f.filename.startsWith(`${POSTS_PATH}/`) && f.filename.endsWith('.md')) {
+      articles.push(
+        f.filename.slice(POSTS_PATH.length + 1).replace(/\.md$/, '')
+      );
+    } else {
+      otherFiles.push(f.filename);
+    }
+  }
+
+  return {
+    commits: cmp.ahead_by,
+    articles,
+    otherFiles,
+    // GitHub caps the compare file list at 300; say so rather than implying
+    // the short list is the whole story.
+    truncated: files.length >= 300,
+  };
+}
+
 export async function createBranch(
   name: string,
   fromBranch: string,

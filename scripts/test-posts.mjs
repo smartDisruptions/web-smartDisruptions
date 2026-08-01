@@ -112,14 +112,18 @@ throws('unknown channel status is rejected',
 
 console.log('\n— the publish gate —');
 const mk = (status, liveAt) => parsePost(base(`status: ${status}${liveAt ? `\nliveAt: ${liveAt}` : ''}`), 'a.md');
-const NOW = new Date('2026-08-01T12:00:00Z');
 
-ok('draft is NOT live', isLive(mk('draft'), NOW) === false);
-ok('published IS live', isLive(mk('published'), NOW) === true);
-ok('scheduled in the future is NOT live', isLive(mk('scheduled', '2026-08-05T00:00:00Z'), NOW) === false);
-ok('scheduled in the past IS live', isLive(mk('scheduled', '2026-07-30T00:00:00Z'), NOW) === true);
-ok('scheduled exactly now IS live', isLive(mk('scheduled', '2026-08-01T12:00:00Z'), NOW) === true);
-ok('scheduled one second out is NOT live', isLive(mk('scheduled', '2026-08-01T12:00:01Z'), NOW) === false);
+// Only a deliberate press publishes. A date is a plan, never an instruction:
+// otherwise an article scheduled for last week and never pressed would go live
+// as a side effect of publishing something else, since Publish promotes
+// dev -> main and rebuilds the whole site.
+ok('draft is NOT live', isLive(mk('draft')) === false);
+ok('published IS live', isLive(mk('published')) === true);
+ok('scheduled in the future is NOT live', isLive(mk('scheduled', '2026-08-05T00:00:00Z')) === false);
+ok('scheduled in the PAST is still NOT live', isLive(mk('scheduled', '2020-01-01T00:00:00Z')) === false,
+   'an overdue date must never self-publish');
+ok('scheduled far in the past is still NOT live', isLive(mk('scheduled', '1999-01-01T00:00:00Z')) === false);
+ok('only status decides — liveAt is ignored for published', isLive(mk('published')) === true);
 
 console.log('\n— the real content store —');
 const { readdirSync, readFileSync, writeFileSync, unlinkSync } = await import('node:fs');

@@ -136,16 +136,18 @@ export function getAllPosts(): Post[] {
 /**
  * Is this post publicly reachable right now?
  *
- * `published` is the real gate — the dashboard flips it on a deliberate press.
- * A `scheduled` post whose liveAt has passed also counts, so a missed press
- * degrades to "goes live on time at the next build" rather than staying dark.
+ * Exactly one thing makes an article public: someone pressed Publish, which
+ * set `status: published`. Nothing else — not a date, not the passage of time.
+ *
+ * An earlier version also treated `scheduled` with a past `liveAt` as live, so
+ * a missed press would still go out on time. That was safe while publishing
+ * only reached `dev`. It stopped being safe once Publish promotes `dev` to
+ * `main`: an article scheduled for last week and never pressed would have gone
+ * live as a side effect of publishing something else entirely. `liveAt` is a
+ * plan, and the board surfaces overdue ones — it is not an instruction.
  */
-export function isLive(post: Post, now: Date = new Date()): boolean {
-  if (post.status === 'published') return true;
-  if (post.status === 'scheduled' && post.liveAt) {
-    return Date.parse(post.liveAt) <= now.getTime();
-  }
-  return false;
+export function isLive(post: Post): boolean {
+  return post.status === 'published';
 }
 
 /** The only list the public site may render. */

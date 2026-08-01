@@ -58,18 +58,22 @@ the schedule's history is the repo's history.
 
 ## The publish gate
 
-`getPublishedPosts()` is the only list the public site may render. A post is
-public when:
+`getPublishedPosts()` is the only list the public site may render, and exactly
+one thing puts an article in it: **`status: published`**, which only a Publish
+press sets.
 
-- `status: published`, **or**
-- `status: scheduled` and `liveAt` is in the past.
+`draft` and `scheduled` both 404, stay off `/content`, and are absent from the
+sitemap — no matter how far in the past `liveAt` is. `liveAt` is a plan the
+board surfaces, never an instruction the site acts on.
 
-Anything else 404s, stays off `/content`, and is absent from the sitemap.
-`scripts/test-posts.mjs` drops a draft into the store and asserts exactly that.
+An earlier version also treated `scheduled` with a past `liveAt` as live, so a
+missed press still went out on time. That was safe while publishing only
+reached `dev`. It is not safe now that Publish promotes `dev` to `main`: an
+article scheduled for last week and never pressed would have gone live as a
+side effect of publishing something else. Nothing self-publishes.
 
-The second clause is a safety net, not the mechanism: if a scheduled press is
-missed, the post still goes live at the next build rather than staying dark
-forever. The intended path is that you press Publish.
+`scripts/test-posts.mjs` asserts this directly, including that an overdue
+scheduled post stays invisible.
 
 ## Workflow
 
@@ -87,7 +91,9 @@ and nothing publishes on a timer — making something public is a decision, so i
 stays a press.
 
 **What Publish actually ships:** everything currently on `dev`, not just that
-one article. This is the same promote-to-production step that used to be done by
+one article. The confirm dialog shows the count of commits ahead of `main`,
+which other articles are travelling along, and — the part the status gate cannot
+protect you from — how many non-article files (code, assets) go live with it. This is the same promote-to-production step that used to be done by
 hand, so the confirm dialog says so rather than letting it surprise you. Other
 drafts travelling along stay invisible, because the gate is status-based rather
 than branch-based — that is the whole reason a draft can sit merged on `main`
