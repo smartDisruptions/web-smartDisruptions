@@ -15,8 +15,17 @@ const OWNER = 'smartDisruptions';
 const REPO = 'web-smartDisruptions';
 const API = 'https://api.github.com';
 export const POSTS_PATH = 'src/content/posts';
-/** Where drafts branch from and merge back to. */
-export const BASE_BRANCH = 'dev';
+
+/**
+ * The two branches the Studio works between.
+ *
+ * `dev` is the drafting floor: new articles land here as `status: draft` and
+ * stay invisible because the publish gate is status-based, not branch-based.
+ * `main` is production. Publishing merges dev -> main, which is why the confirm
+ * dialog says plainly that everything on dev ships, not just the one article.
+ */
+export const DRAFT_BRANCH = 'dev';
+export const PRODUCTION_BRANCH = 'main';
 
 export type GhConfig = { token: string };
 
@@ -271,10 +280,13 @@ export type PullRequest = { number: number; url: string; merged: boolean };
 
 export async function findOpenPr(
   branch: string,
+  base: string,
   config: GhConfig
 ): Promise<PullRequest | null> {
+  // Filtered by base as well as head: an open dev -> staging PR must not be
+  // mistaken for the dev -> main one and merged into the wrong place.
   const prs = await gh<{ number: number; html_url: string }[]>(
-    `/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${branch}&state=open`,
+    `/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${branch}&base=${encodeURIComponent(base)}&state=open`,
     config
   );
   const pr = prs[0];
@@ -282,10 +294,10 @@ export async function findOpenPr(
 }
 
 export async function openPr(
-  args: { branch: string; title: string; body: string; base?: string },
+  args: { branch: string; title: string; body: string; base: string },
   config: GhConfig
 ): Promise<PullRequest> {
-  const existing = await findOpenPr(args.branch, config);
+  const existing = await findOpenPr(args.branch, args.base, config);
   if (existing) return existing;
   const pr = await gh<{ number: number; html_url: string }>(
     `/repos/${OWNER}/${REPO}/pulls`,
@@ -296,7 +308,7 @@ export async function openPr(
         title: args.title,
         body: args.body,
         head: args.branch,
-        base: args.base ?? BASE_BRANCH,
+        base: args.base,
       }),
     }
   );
