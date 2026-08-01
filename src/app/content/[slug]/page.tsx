@@ -1,14 +1,23 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { contentEntries, getContentBySlug } from '@/data/content';
+import { getPublishedPosts, getPostBySlug } from '@/lib/posts';
 import { SectionContainer, Badge, Button } from '@/components/ui';
 import ArticleBody from '@/components/ArticleBody';
 import SubscribeForm from '@/components/SubscribeForm';
+import DirectingDrill from '@/components/DirectingDrill';
 import { formatDate } from '@/lib/format';
 
+// In-body interactive slots. A post drops the marker on its own line where the
+// component belongs; the body is rendered as markdown either side of it. Posts
+// without a marker are unaffected — split() just returns the whole body.
+const EMBEDS: Record<string, () => React.ReactElement> = {
+  'directing-drill': () => <DirectingDrill />,
+};
+const EMBED_RE = /^\[\[embed:([a-z-]+)\]\]$/m;
+
 export function generateStaticParams() {
-  return contentEntries.map((entry) => ({ slug: entry.slug }));
+  return getPublishedPosts().map((entry) => ({ slug: entry.slug }));
 }
 
 // Per-post social metadata so a shared post link shows THIS post's title,
@@ -20,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const entry = getContentBySlug(slug);
+  const entry = getPostBySlug(slug);
   if (!entry) return {};
 
   return {
@@ -56,7 +65,7 @@ export default async function ContentDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const entry = getContentBySlug(slug);
+  const entry = getPostBySlug(slug);
 
   if (!entry) {
     notFound();
@@ -105,42 +114,62 @@ export default async function ContentDetail({
           &larr; Back to Writing
         </Link>
 
-      {/* Header */}
-      <div className="mt-8">
-        <div className="flex flex-wrap items-center gap-3">
-          <Badge variant="accent">{entry.category}</Badge>
-          <span className="text-sm text-text-secondary">
-            {formatDate(entry.publishDate)} · by Josh Escusa
-          </span>
+        {/* Header */}
+        <div className="mt-8">
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge variant="accent">{entry.category}</Badge>
+            <span className="text-sm text-text-secondary">
+              {formatDate(entry.publishDate)} · by Josh Escusa
+            </span>
+          </div>
+          <h1 className="font-display mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-[2.75rem]">
+            {entry.title}
+          </h1>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {entry.tags.map((tag) => (
+              <Badge key={tag} variant="default">
+                {tag}
+              </Badge>
+            ))}
+          </div>
         </div>
-        <h1 className="font-display mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-[2.75rem]">
-          {entry.title}
-        </h1>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {entry.tags.map((tag) => (
-            <Badge key={tag} variant="default">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </div>
 
-      {/* Hero Image */}
-      {entry.heroImage && (
-        <figure className="mt-10 overflow-hidden rounded-xl border border-border">
-          <img
-            src={entry.heroImage}
-            alt={entry.heroImageAlt ?? entry.title}
-            decoding="async"
-            fetchPriority="high"
-            className="h-auto w-full object-cover"
-          />
-        </figure>
-      )}
+        {/* Hero Image */}
+        {entry.heroImage && (
+          <figure className="mt-10 overflow-hidden rounded-xl border border-border">
+            <img
+              src={entry.heroImage}
+              alt={entry.heroImageAlt ?? entry.title}
+              decoding="async"
+              fetchPriority="high"
+              className="h-auto w-full object-cover"
+            />
+          </figure>
+        )}
 
-      {/* Markdown Body — capped by measure, not container width: body copy
-          past ~80 characters per line loses the eye on the return sweep. */}
-      <ArticleBody className="mt-12 max-w-[62ch]">{entry.body}</ArticleBody>
+        {/* Markdown Body — capped by measure, not container width: body copy
+          past ~80 characters per line loses the eye on the return sweep.
+          An [[embed:name]] marker splits the body around an interactive
+          component, which runs full container width rather than the measure. */}
+        {(() => {
+          const match = entry.body.match(EMBED_RE);
+          const Embed = match ? EMBEDS[match[1]] : undefined;
+          if (!match || !Embed) {
+            return (
+              <ArticleBody className="mt-12 max-w-[62ch]">
+                {entry.body}
+              </ArticleBody>
+            );
+          }
+          const [before, after] = entry.body.split(match[0]);
+          return (
+            <>
+              <ArticleBody className="mt-12 max-w-[62ch]">{before}</ArticleBody>
+              <Embed />
+              <ArticleBody className="max-w-[62ch]">{after}</ArticleBody>
+            </>
+          );
+        })()}
 
         {/* Subscribe — the reader just finished a build story; offer the next one */}
         <div className="mt-16 rounded-xl border border-border bg-accent/[0.05] p-8">

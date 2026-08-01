@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { contentEntries } from '@/data/content';
+import { getPublishedPosts } from '@/lib/posts';
 import { apps } from '@/data/apps';
 import { marketStormReports } from '@/data/marketStorm';
 
@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/privacy`, changeFrequency: 'yearly', priority: 0.1 },
   ];
 
-  const posts: MetadataRoute.Sitemap = contentEntries.map((entry) => ({
+  const posts: MetadataRoute.Sitemap = getPublishedPosts().map((entry) => ({
     url: `${BASE}/content/${entry.slug}`,
     lastModified: new Date(entry.publishDate),
     changeFrequency: 'monthly',
