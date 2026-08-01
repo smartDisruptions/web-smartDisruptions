@@ -1,10 +1,15 @@
 import Link from 'next/link';
-import { contentEntries } from '@/data/content';
-import { SectionContainer, Badge, Button, RevealOnScroll } from '@/components/ui';
+import { getPublishedPosts } from '@/lib/posts';
+import {
+  SectionContainer,
+  Badge,
+  Button,
+  RevealOnScroll,
+} from '@/components/ui';
 import { formatDate } from '@/lib/format';
 
 export default function LatestWritingSection() {
-  const posts = contentEntries.slice(0, 3);
+  const posts = getPublishedPosts().slice(0, 3);
 
   if (posts.length === 0) return null;
 

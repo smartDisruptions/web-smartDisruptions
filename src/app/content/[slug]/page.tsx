@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { contentEntries, getContentBySlug } from '@/data/content';
+import { getPublishedPosts, getPostBySlug } from '@/lib/posts';
 import { SectionContainer, Badge, Button } from '@/components/ui';
 import ArticleBody from '@/components/ArticleBody';
 import SubscribeForm from '@/components/SubscribeForm';
@@ -17,7 +17,7 @@ const EMBEDS: Record<string, () => React.ReactElement> = {
 const EMBED_RE = /^\[\[embed:([a-z-]+)\]\]$/m;
 
 export function generateStaticParams() {
-  return contentEntries.map((entry) => ({ slug: entry.slug }));
+  return getPublishedPosts().map((entry) => ({ slug: entry.slug }));
 }
 
 // Per-post social metadata so a shared post link shows THIS post's title,
@@ -29,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const entry = getContentBySlug(slug);
+  const entry = getPostBySlug(slug);
   if (!entry) return {};
 
   return {
@@ -65,7 +65,7 @@ export default async function ContentDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const entry = getContentBySlug(slug);
+  const entry = getPostBySlug(slug);
 
   if (!entry) {
     notFound();
