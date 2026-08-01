@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
 import { contentEntries, getContentBySlug } from '@/data/content';
 import { SectionContainer, Badge, Button } from '@/components/ui';
+import ArticleBody from '@/components/ArticleBody';
 import SubscribeForm from '@/components/SubscribeForm';
 import { formatDate } from '@/lib/format';
 
@@ -140,61 +140,7 @@ export default async function ContentDetail({
 
       {/* Markdown Body — capped by measure, not container width: body copy
           past ~80 characters per line loses the eye on the return sweep. */}
-      <article className="mt-12 max-w-[62ch]">
-        <ReactMarkdown
-          components={{
-            h2: ({ children }) => (
-              <h2 className="font-display mb-4 mt-12 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
-                {children}
-              </h2>
-            ),
-            h3: ({ children }) => (
-              <h3 className="mb-3 mt-9 text-lg font-semibold text-text-primary">
-                {children}
-              </h3>
-            ),
-            p: ({ children }) => (
-              <p className="mb-5 text-lg leading-8 text-text-primary/85">
-                {children}
-              </p>
-            ),
-            ul: ({ children }) => (
-              <ul className="mb-5 ml-5 list-disc space-y-2 text-lg text-text-primary/85">
-                {children}
-              </ul>
-            ),
-            ol: ({ children }) => (
-              <ol className="mb-5 ml-5 list-decimal space-y-3 text-lg text-text-primary/85">
-                {children}
-              </ol>
-            ),
-            li: ({ children }) => <li className="leading-8">{children}</li>,
-            strong: ({ children }) => (
-              <strong className="font-semibold text-text-primary">
-                {children}
-              </strong>
-            ),
-            em: ({ children }) => (
-              <em className="italic text-text-primary/90">{children}</em>
-            ),
-            code: ({ children }) => (
-              <code className="rounded bg-fill px-1.5 py-0.5 font-mono text-[0.85em] text-accent-hover">
-                {children}
-              </code>
-            ),
-            a: ({ href, children }) => (
-              <a
-                href={href}
-                className="text-accent underline underline-offset-2 hover:opacity-80"
-              >
-                {children}
-              </a>
-            ),
-          }}
-        >
-          {entry.body}
-        </ReactMarkdown>
-      </article>
+      <ArticleBody className="mt-12 max-w-[62ch]">{entry.body}</ArticleBody>
 
         {/* Subscribe — the reader just finished a build story; offer the next one */}
         <div className="mt-16 rounded-xl border border-border bg-accent/[0.05] p-8">

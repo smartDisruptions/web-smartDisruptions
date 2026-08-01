@@ -16,13 +16,21 @@
   --color-accent: var(--sd-accent);
   --color-accent-hover: var(--sd-accent-hover);
   --color-accent-secondary: var(--sd-accent-secondary);
+  /* Market Storm — bull / bear / caution data semantics */
+  --color-bull: var(--sd-bull);
+  --color-bull-soft: var(--sd-bull-soft);
+  --color-bear: var(--sd-bear);
+  --color-bear-soft: var(--sd-bear-soft);
+  --color-warn: var(--sd-warn);
+  --color-warn-soft: var(--sd-warn-soft);
   --color-text-primary: var(--sd-text-primary);
   --color-text-secondary: var(--sd-text-secondary);
   --color-foreground: var(--sd-text-primary);
   --color-border: var(--sd-border);
   --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
   --font-display: var(--font-display), Georgia, 'Times New Roman', serif;
-  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  --font-mono:
+    ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 /* LIGHT (default) — a warmer, less-glary paper than the old near-white,
@@ -46,6 +54,14 @@
   --arcade-blue-ink: #1d4ed8;
   --sd-card-shadow: rgba(26, 23, 20, 0.18);
   --sd-badge-secondary: #92400e; /* dark amber — AA on the light amber tint */
+  /* Market Storm data semantics — text-safe inks on paper. Follows the ink
+     flip: dark on paper here, bright on the dark cabinet below. */
+  --sd-bull: #166534; /* green-800 — AA on paper */
+  --sd-bull-soft: rgba(22, 101, 52, 0.1);
+  --sd-bear: #b91c1c; /* reuses the arcade red ink — AA on paper */
+  --sd-bear-soft: rgba(185, 28, 28, 0.08);
+  --sd-warn: #92400e; /* dark amber — matches badge-secondary, AA on paper */
+  --sd-warn-soft: rgba(146, 64, 14, 0.1);
 }
 
 /* DARK — warm charcoal, not cold black; keeps the "paper" identity after dark.
@@ -71,6 +87,14 @@
   --arcade-blue-ink: #60a5fa;
   --sd-card-shadow: rgba(0, 0, 0, 0.7); /* real depth on the dark surface */
   --sd-badge-secondary: #f2b483; /* soft light amber — AA on the dark tint */
+  /* Market Storm data semantics — inks flip to bright on the dark cabinet
+     (both clear AA in their own theme). */
+  --sd-bull: #4ade80;
+  --sd-bull-soft: rgba(74, 222, 128, 0.14);
+  --sd-bear: #f87171;
+  --sd-bear-soft: rgba(248, 113, 113, 0.14);
+  --sd-warn: #f2b483;
+  --sd-warn-soft: rgba(242, 180, 131, 0.14);
 }
 
 html {

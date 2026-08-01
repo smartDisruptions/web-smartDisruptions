@@ -17,6 +17,16 @@ colors:
   text-secondary: '#6b6560'
   badge-secondary: '#92400e' # dark amber — AA on the light amber tint
 
+  # Market Storm — bull / bear / caution data semantics. TEXT-SAFE inks, AA on
+  # paper. Same ink-flip discipline as the arcade inks (dark here, bright below).
+  bull-ink: '#166534' # green-800
+  bear-ink: '#b91c1c' # same hue as arcade-red-ink
+  warn-ink: '#92400e' # matches badge-secondary
+  # Soft fills for chips/dots (decorative tints, not text)
+  bull-soft: 'rgba(22, 101, 52, 0.1)'
+  bear-soft: 'rgba(185, 28, 28, 0.08)'
+  warn-soft: 'rgba(146, 64, 14, 0.1)'
+
   # Arcade inks (light) — TEXT ONLY. The bright arcade colors below fail AA
   # on paper, so anything that is text or a chip uses these.
   arcade-red-ink: '#b91c1c'
@@ -45,6 +55,13 @@ colors:
   dark-arcade-red-ink: '#f87171'
   dark-arcade-yellow-ink: '#fde047'
   dark-arcade-blue-ink: '#60a5fa'
+  # Market Storm inks flip to bright on the dark cabinet (both AA in their theme)
+  dark-bull-ink: '#4ade80'
+  dark-bear-ink: '#f87171' # shares the dark red ink
+  dark-warn-ink: '#f2b483' # shares the dark badge amber
+  dark-bull-soft: 'rgba(74, 222, 128, 0.14)'
+  dark-bear-soft: 'rgba(248, 113, 113, 0.14)'
+  dark-warn-soft: 'rgba(242, 180, 131, 0.14)'
 
 typography:
   display:
@@ -131,6 +148,18 @@ that exact mistake shipped once and was caught by an audit in July 2026.
 
 Post bodies cap at `62ch` (~74 characters per line), not at the container width.
 Above ~80 characters the eye loses its place on the return sweep.
+
+## Market Storm data semantics (bull / bear / caution)
+
+The Market Storm reports carry financial data with a real bull/bear polarity, so
+they get three semantic inks beyond the single warm accent — `bull` (green),
+`bear` (red), `warn` (amber). These encode _meaning in the data_ (a metric that
+helps vs. hurts the thesis), never decoration, and they follow the same rules as
+everything else: they are **on-token** (`--sd-bull/bear/warn` + soft tints), they
+**flip** dark-on-paper → bright-on-dark like the arcade inks, and every text use
+clears WCAG AA in both themes (`bear`/`warn` reuse the already-verified
+`arcade-red-ink` / `badge-secondary` values). The accent stays burnt-orange; these
+are a separate semantic axis, not a second accent.
 
 ## Accessibility is a floor, not a goal
 
