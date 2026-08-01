@@ -1,5 +1,9 @@
+import { Suspense } from 'react';
 import { getAuthConfig } from '@/lib/studio/auth';
 import LoginForm from './LoginForm';
+
+// An auth page should never be prerendered or cached.
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Studio — SmartDisruptions',
@@ -20,7 +24,13 @@ export default function StudioLogin() {
       </h1>
 
       {cfg.ok ? (
-        <LoginForm />
+        // LoginForm reads ?next= via useSearchParams, which needs a Suspense
+        // boundary or the whole page bails out of static rendering.
+        <Suspense
+          fallback={<div className="mt-8 h-[7.5rem] rounded-lg bg-fill" />}
+        >
+          <LoginForm />
+        </Suspense>
       ) : (
         <div className="mt-8 rounded-xl border border-border bg-surface p-6">
           <h2 className="font-semibold text-text-primary">
