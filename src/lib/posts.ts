@@ -5,11 +5,12 @@ import { parseFrontmatter, type Frontmatter, type Scalar } from './frontmatter';
 /**
  * Post store. One markdown file per article under src/content/posts, so that
  * two draft branches editing different articles never touch the same file, and
- * so the Studio dashboard can read a branch's drafts without parsing a TS
- * module out of it.
+ * so an external tool can read a branch's drafts over the GitHub API without
+ * having to parse a TypeScript module out of it.
  *
  * Publish state lives in frontmatter, which makes git the single source of
- * truth for the schedule — no second store to drift out of sync.
+ * truth for the schedule — no second store to drift out of sync. The editorial
+ * dashboard is a separate app; this repo only owns the content and the gate.
  */
 
 export const POSTS_DIR = path.join(process.cwd(), 'src/content/posts');
@@ -113,8 +114,8 @@ export function postFromFrontmatter(
   };
 }
 
-/** Parse one post file's raw text. Exported so the Studio can reuse it on
- *  content fetched from other branches, where there is no local file. */
+/** Parse one post file's raw text. Exported so an external tool can reuse it
+ *  on content fetched from other branches, where there is no local file. */
 export function parsePost(raw: string, filename: string): Post {
   const { data, body } = parseFrontmatter(raw);
   return postFromFrontmatter(data, body.trim(), filename);
