@@ -108,6 +108,14 @@ first, then promotes.
   which branch each lives on (normally `dev`). An article appearing on several
   branches collapses to the copy furthest along, with the rest listed as
   "also on".
+
+  **Published status is not the same as live.** An article marked published on
+  `dev` is not on the site until `dev` is promoted, so the board checks what is
+  actually on `main` and badges anything still waiting as **not live**. The
+  tiles say so too: "Live on main" counts what production is really serving,
+  and "Awaiting promote" counts what is published but hasn't shipped. A
+  dashboard that calls a 404 "published" is worse than no dashboard.
+
 - **Schedule** — what's dated, in date order, with what's overdue in red.
 - **Channels** — a per-article grid of LinkedIn / Substack / Reddit / email.
   The Studio tracks the plan; it does not post to those platforms.

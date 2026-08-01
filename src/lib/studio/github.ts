@@ -200,7 +200,17 @@ export async function scanAllBranches(config: GhConfig): Promise<BranchScan[]> {
       };
     }
   });
-  return scans.filter((s) => s.posts.length > 0 || s.error);
+  // Always keep the drafting and production branches, even when empty.
+  // "production has no articles" is a fact the board needs — dropping the
+  // entry would be indistinguishable from "not scanned", and the board would
+  // go on claiming things are live that were never promoted.
+  return scans.filter(
+    (s) =>
+      s.posts.length > 0 ||
+      s.error ||
+      s.branch === DRAFT_BRANCH ||
+      s.branch === PRODUCTION_BRANCH
+  );
 }
 
 function emptyPost(filename: string): Post {

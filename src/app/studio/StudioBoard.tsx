@@ -126,6 +126,21 @@ export default function StudioBoard({
    * branched off dev, say) collapses to the copy furthest along, so the board
    * shows articles rather than duplicates — with the others listed as "also on".
    */
+  /**
+   * Slugs genuinely live on the site: present on the production branch AND
+   * published there. Status alone is not liveness — an article can be marked
+   * published on `dev` and simply never have been promoted, which is exactly
+   * the state that made the board claim a 404ing article was live.
+   */
+  const liveSlugs = useMemo(() => {
+    const prod = (scans ?? []).find((s) => s.branch === PRODUCTION_BRANCH);
+    return new Set(
+      (prod?.posts ?? [])
+        .filter((p) => p.status === 'published')
+        .map((p) => p.slug)
+    );
+  }, [scans]);
+
   const articles = useMemo(() => {
     const rank = { draft: 0, scheduled: 1, published: 2 };
     const bySlug = new Map<string, { post: BranchPost; alsoOn: string[] }>();
@@ -161,6 +176,14 @@ export default function StudioBoard({
       published: articles.filter((a) => a.post.status === 'published'),
     }),
     [articles]
+  );
+
+  const awaitingPromote = useMemo(
+    () =>
+      articles.filter(
+        (a) => a.post.status === 'published' && !liveSlugs.has(a.post.slug)
+      ),
+    [articles, liveSlugs]
   );
 
   const dueNow = useMemo(
@@ -228,7 +251,8 @@ export default function StudioBoard({
         counts={{
           drafts: columns.draft.length,
           scheduled: columns.scheduled.length,
-          published: columns.published.length,
+          live: liveSlugs.size,
+          awaiting: awaitingPromote.length,
           due: dueNow.length,
         }}
       />
@@ -274,6 +298,7 @@ export default function StudioBoard({
       ) : view === 'board' ? (
         <Board
           columns={columns}
+          liveSlugs={liveSlugs}
           open={open}
           setOpen={setOpen}
           save={save}
@@ -345,12 +370,29 @@ const HELP: Record<string, string> = {
 function Summary({
   counts,
 }: {
-  counts: { drafts: number; scheduled: number; published: number; due: number };
+  counts: {
+    drafts: number;
+    scheduled: number;
+    live: number;
+    awaiting: number;
+    due: number;
+  };
 }) {
   const tiles = [
     { label: 'Drafts', value: counts.drafts, tone: 'text-text-primary' },
     { label: 'Scheduled', value: counts.scheduled, tone: 'text-warn' },
-    { label: 'Published', value: counts.published, tone: 'text-bull' },
+    // "Live" counts what is actually on production, not what is merely
+    // marked published somewhere.
+    {
+      label: `Live on ${PRODUCTION_BRANCH}`,
+      value: counts.live,
+      tone: 'text-bull',
+    },
+    {
+      label: 'Awaiting promote',
+      value: counts.awaiting,
+      tone: counts.awaiting > 0 ? 'text-warn' : 'text-text-secondary',
+    },
     {
       label: 'Due now',
       value: counts.due,
@@ -358,7 +400,7 @@ function Summary({
     },
   ];
   return (
-    <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       {tiles.map((t) => (
         <div
           key={t.label}
@@ -398,12 +440,14 @@ type Entry = { post: BranchPost; alsoOn: string[] };
 
 function Board({
   columns,
+  liveSlugs,
   open,
   setOpen,
   save,
   busy,
 }: {
   columns: Record<'draft' | 'scheduled' | 'published', Entry[]>;
+  liveSlugs: Set<string>;
   open: string | null;
   setOpen: (v: string | null) => void;
   save: SaveFn;
@@ -423,7 +467,7 @@ function Board({
     {
       key: 'published' as const,
       title: 'Published',
-      hint: `live on ${PRODUCTION_BRANCH}`,
+      hint: `marked published · live once ${PRODUCTION_BRANCH} has them`,
     },
   ];
   return (
@@ -446,6 +490,7 @@ function Board({
               <ArticleCard
                 key={entry.post.slug}
                 entry={entry}
+                isLive={liveSlugs.has(entry.post.slug)}
                 open={open === entry.post.slug}
                 onToggle={() =>
                   setOpen(open === entry.post.slug ? null : entry.post.slug)
@@ -463,12 +508,14 @@ function Board({
 
 function ArticleCard({
   entry,
+  isLive,
   open,
   onToggle,
   save,
   busy,
 }: {
   entry: Entry;
+  isLive: boolean;
   open: boolean;
   onToggle: () => void;
   save: SaveFn;
@@ -489,9 +536,13 @@ function ArticleCard({
             {post.title}
           </span>
           <span
-            className={`flex-none rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] ${STATUS_TONE[post.status]}`}
+            className={`flex-none rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] ${
+              post.status === 'published' && !isLive
+                ? 'border-warn text-warn'
+                : STATUS_TONE[post.status]
+            }`}
           >
-            {post.status}
+            {post.status === 'published' && !isLive ? 'not live' : post.status}
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-text-secondary">
@@ -507,6 +558,12 @@ function ArticleCard({
             </span>
           )}
         </div>
+        {post.status === 'published' && !isLive && (
+          <p className="text-xs text-warn">
+            Marked published but not on {PRODUCTION_BRANCH} yet — promote{' '}
+            {DRAFT_BRANCH} to put it on the site.
+          </p>
+        )}
         {post.parseError && (
           <p className="text-xs text-bear">
             Could not parse this file: {post.parseError}
