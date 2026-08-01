@@ -113,6 +113,10 @@ Nobody's coming for the person who can do both.`,
     category: 'Working With AI',
     publishDate: '2026-08-01',
     tags: ['ai', 'workflow', 'skills', 'interactive'],
+    heroImage: '/images/content/you-dont-get-replaced-for-being-slow-hero.webp',
+    heroImageAlt:
+      'A card headed "Three things in this are wrong" over three phrases from a quarterly report, each underlined in red and labelled with its failure mode: invented source, asserted cause, no denominator',
+    ogImage: '/images/content/you-dont-get-replaced-for-being-slow.webp',
   },
   {
     slug: 'what-ai-handed-back',
