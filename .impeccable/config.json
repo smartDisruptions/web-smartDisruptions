@@ -37,6 +37,13 @@
         "files": ["games"],
         "createdAt": "2026-07-27T00:00:00.000Z",
         "reason": "Cabinet edge lighting on the game cards — the thin border plus wide colored shadow reads as a lit machine, which is the intent. Same scoping logic as dark-glow."
+      },
+      {
+        "rule": "line-length",
+        "value": "*",
+        "files": ["market-storm", "market-storm/**"],
+        "createdAt": "2026-08-01T00:00:00.000Z",
+        "reason": "Market Storm reports render financial data tables (the earnings print, valuation multiples) whose rows exceed the ~80-char prose measure by necessity — a scannable data row is not a prose reading line, which is what this rule protects. ALL actual prose in these reports is explicitly capped at 62ch (summary, analysis, bull/bear items, verification, callouts, the hero verdict). Scoped to /market-storm so an over-wide prose paragraph anywhere else on the site is still caught."
       }
     ]
   }

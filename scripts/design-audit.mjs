@@ -21,11 +21,13 @@ const VERSION = '3.3.1'; // pinned: a detector that changes under you isn't a ch
 const ROUTES = [
   '/',
   '/content',
+  '/market-storm',
   '/apps',
   '/games',
   '/about',
   '/privacy',
   '/content/what-ai-handed-back',
+  '/market-storm/amzn-q2-2026',
 ];
 
 const VIEWPORTS = [

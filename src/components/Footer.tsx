@@ -3,6 +3,7 @@ import Link from 'next/link';
 const quickLinks = [
   { href: '/', label: 'Home' },
   { href: '/content', label: 'Writing' },
+  { href: '/market-storm', label: 'Market Storm' },
   { href: '/apps', label: 'Builds' },
   { href: '/games', label: 'Arcade' },
 ];

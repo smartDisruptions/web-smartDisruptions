@@ -9,7 +9,7 @@ export default function SubscribeForm({
   source = 'site',
   className = '',
 }: {
-  source?: 'site' | 'post' | 'home';
+  source?: 'site' | 'post' | 'home' | 'market-storm';
   className?: string;
 }) {
   const [email, setEmail] = useState('');
