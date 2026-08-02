@@ -113,17 +113,35 @@ throws('unknown channel status is rejected',
 console.log('\n— the publish gate —');
 const mk = (status, liveAt) => parsePost(base(`status: ${status}${liveAt ? `\nliveAt: ${liveAt}` : ''}`), 'a.md');
 
-// Only a deliberate press publishes. A date is a plan, never an instruction:
-// otherwise an article scheduled for last week and never pressed would go live
-// as a side effect of publishing something else, since Publish promotes
-// dev -> main and rebuilds the whole site.
-ok('draft is NOT live', isLive(mk('draft')) === false);
-ok('published IS live', isLive(mk('published')) === true);
-ok('scheduled in the future is NOT live', isLive(mk('scheduled', '2026-08-05T00:00:00Z')) === false);
-ok('scheduled in the PAST is still NOT live', isLive(mk('scheduled', '2020-01-01T00:00:00Z')) === false,
-   'an overdue date must never self-publish');
-ok('scheduled far in the past is still NOT live', isLive(mk('scheduled', '1999-01-01T00:00:00Z')) === false);
-ok('only status decides — liveAt is ignored for published', isLive(mk('published')) === true);
+// PRODUCTION: only a deliberate publish makes an article public. Not a date,
+// not the passage of time — a rebuild must never publish anything, which is
+// what stops one article's publish from dragging others live with it.
+const PROD = false;
+ok('draft is NOT live in production', isLive(mk('draft'), PROD) === false);
+ok('staged is NOT live in production', isLive(mk('staged'), PROD) === false,
+   'staged rides along in a merge and stays hidden — the load-bearing property');
+ok('staged + past date is STILL not live in production',
+   isLive(mk('staged', '2020-01-01T00:00:00Z'), PROD) === false,
+   'an overdue date must never self-publish; the scheduler flips status explicitly');
+ok('staged + future date is not live in production',
+   isLive(mk('staged', '2099-01-01T00:00:00Z'), PROD) === false);
+ok('published IS live in production', isLive(mk('published'), PROD) === true);
+
+// PREVIEW: staged renders, so it can be read exactly as it will look.
+const PREVIEW = true;
+ok('draft is NOT live on preview', isLive(mk('draft'), PREVIEW) === false,
+   'a draft is unfinished — staging is the deliberate "show me this" step');
+ok('staged IS live on preview', isLive(mk('staged'), PREVIEW) === true);
+ok('staged + any date renders on preview',
+   isLive(mk('staged', '2099-01-01T00:00:00Z'), PREVIEW) === true);
+ok('published IS live on preview', isLive(mk('published'), PREVIEW) === true);
+
+console.log('\n— status compatibility —');
+ok('the old "scheduled" still parses, as staged', mk('scheduled', '2026-09-01').status === 'staged',
+   'a branch written before the rename must not break the build');
+ok('staged without a date is allowed', mk('staged').status === 'staged',
+   'undated staged = ready, I will press it');
+throws('an unknown status is still rejected', () => mk('sortof'), /unknown status/);
 
 console.log('\n— the real content store —');
 const { readdirSync, readFileSync, writeFileSync, unlinkSync } = await import('node:fs');
@@ -168,7 +186,7 @@ try {
   ok('draft IS visible to the dashboard (getAllPosts)', all.some((p) => p.slug === 'zzz-gate-probe'));
   ok('draft is NOT in getPublishedPosts', !live.some((p) => p.slug === 'zzz-gate-probe'));
   ok('draft is NOT resolvable by slug', mod.getPostBySlug('zzz-gate-probe') === undefined);
-  ok('published posts all pass isLive', live.every((p) => mod.isLive(p)));
+  ok('published posts all pass isLive', live.every((p) => mod.isLive(p, false)));
 } finally {
   unlinkSync(probe);
 }
