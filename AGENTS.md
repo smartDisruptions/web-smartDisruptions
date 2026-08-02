@@ -17,11 +17,12 @@ src/content/posts/<slug>.md
 ```
 
 on the `dev` branch, with `status: draft` in the frontmatter. That is the only
-step needed — the Studio dashboard at `/studio` reads `dev` and the article
-appears in its Drafts column, where Josh schedules and publishes it.
+step needed — the editorial dashboard (a separate app) reads `dev` over the
+GitHub API and the article appears in its drafts, where Josh schedules and
+publishes it.
 
 Do not set `liveAt`, do not flip `status`, and do not merge to `main`.
-Scheduling and publishing are decisions made in the dashboard, by a person.
+Scheduling and publishing are decisions made by a person, not here.
 
 ## Frontmatter
 
@@ -67,5 +68,3 @@ The publish gate is the one to respect: `getPublishedPosts()` is the only list
 the public site may render, and a `draft` is unreachable, unlisted, and absent
 from the sitemap. That is what lets drafts sit on `main` safely. Don't route
 around it.
-
-Full workflow: `docs/studio.md`.
