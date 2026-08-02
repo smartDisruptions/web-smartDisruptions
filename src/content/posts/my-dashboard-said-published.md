@@ -1,14 +1,14 @@
 ---
 title: My dashboard said the article was published. The article was returning a 404.
 slug: my-dashboard-said-published
-excerpt: "I built a dashboard to tell me what's live on my own site. For a few hours it confidently reported an article as published while that exact URL returned a 404 — and 52 passing tests never noticed. Here's why status boards lie in the direction you want to believe, and the habit that catches it."
+excerpt: I built a dashboard to tell me what's live on my own site. For a few hours it confidently reported an article as published while that exact URL returned a 404 — and 52 passing tests never noticed. Here's why status boards lie in the direction you want to believe, and the habit that catches it.
 category: Working With AI
 publishDate: 2026-08-02
 tags: [ai, tooling, verification, shipping]
-status: draft
+status: published
 channels: []
 heroImage: /images/content/my-dashboard-said-published-hero.webp
-heroImageAlt: "A dashboard row showing the article marked PUBLISHED in green, above the same article's URL returning a red 404"
+heroImageAlt: A dashboard row showing the article marked PUBLISHED in green, above the same article's URL returning a red 404
 ogImage: /images/content/my-dashboard-said-published.webp
 ---
 I spent yesterday building a dashboard for my own site.
