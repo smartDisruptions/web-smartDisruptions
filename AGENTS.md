@@ -105,6 +105,41 @@ what was true — because the headline already carries the words. Two rows, a
 A post with a real screenshot or photograph already set as its `heroImage`
 keeps it; the script then generates only the social card.
 
+## What may go on `dev`, and what may not
+
+**`dev` carries content only: articles and their images. Nothing else, ever.**
+
+The scheduler promotes `dev` to production on its own, and promoting a branch
+ships all of it. So it refuses to run whenever `dev` carries a file that is not
+an article or an image — deciding to ship code with nobody watching is not a
+thing a scheduler should do. That guard is correct and it is not going away.
+
+What that means in practice:
+
+- **An article and its images belong in ONE commit.** Not the post now and the
+  hero later. A promote can land in the gap, and the article goes live with
+  broken image links.
+- **Tooling, scripts, config, docs and site code go straight to `main`** in
+  their own PR. Never via `dev`. If it is not the article or its images, it does
+  not belong on the drafting branch.
+
+This is not theoretical. On 2026-08-02 a commit adding `scripts/make-hero.mjs`,
+`scripts/test-posts.mjs` and this file went onto `dev` alongside an article, and
+the scheduler correctly refused to publish anything for hours. The article was
+fine. The tooling was fine. Putting them on the same branch was the mistake.
+
+There is one ordering trap worth knowing, because it caught the fix for this:
+a check that *enforces* something about content has to reach `main` no earlier
+than the content it checks. Ship them together, or main goes red in between.
+
+Allowed on `dev`:
+
+```
+src/content/posts/<slug>.md
+public/images/content/<slug>-hero.webp
+public/images/content/<slug>.webp
+```
+
 ## Voice
 
 Josh's writing has a locked voice spec in his vault
