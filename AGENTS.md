@@ -8,7 +8,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Writing articles
 
-**New articles go on `dev`, as drafts. Never on `main`, never on a side branch.**
+**New articles go on `dev`, staged. Never on `main`, never on a side branch.**
 
 When asked to write an article, run a content day, or draft a post, create:
 
@@ -16,13 +16,24 @@ When asked to write an article, run a content day, or draft a post, create:
 src/content/posts/<slug>.md
 ```
 
-on the `dev` branch, with `status: draft` in the frontmatter. That is the only
-step needed — the editorial dashboard (a separate app) reads `dev` over the
-GitHub API and the article appears in its drafts, where Josh schedules and
-publishes it.
+on the `dev` branch, with **`status: staged`** in the frontmatter.
 
-Do not set `liveAt`, do not flip `status`, and do not merge to `main`.
-Scheduling and publishing are decisions made by a person, not here.
+Staged is deliberate, not a shortcut. The gate is environment-aware: staged
+renders on **preview deployments only** and stays invisible on the live site.
+So writing it staged means Josh can read it as it will actually look, on the
+SSO-gated preview, the moment it is committed — without an extra trip to the
+dashboard to make it visible, and without any risk of it reaching production.
+
+**Do not set `liveAt`.** An undated staged article means "ready, Josh presses
+publish when he wants". Setting a date means "publish itself then", and that
+is a scheduling decision he makes, not one an authoring session makes.
+
+**Do not set `status: published`, and do not merge to `main`.** Publishing is
+a person's call.
+
+Use `status: draft` only for a genuine stub with nothing worth looking at yet —
+the New Article button in Studio does this. Anything with real prose in it
+should be staged, because the whole point is that he can read it.
 
 ## Frontmatter
 
@@ -34,7 +45,7 @@ excerpt: One or two sentences. Shown on cards and as the social description.
 category: Working With AI
 publishDate: 2026-08-01
 tags: [ai, workflow]
-status: draft
+status: staged
 channels: []
 ---
 Article body in markdown.
