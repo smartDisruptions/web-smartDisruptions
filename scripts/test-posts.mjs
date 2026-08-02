@@ -149,7 +149,7 @@ ok('staged without a date is allowed', mk('staged').status === 'staged',
 throws('an unknown status is still rejected', () => mk('sortof'), /unknown status/);
 
 console.log('\n— the real content store —');
-const { readdirSync, readFileSync, writeFileSync, unlinkSync } = await import('node:fs');
+const { readdirSync, readFileSync, writeFileSync, unlinkSync, existsSync } = await import('node:fs');
 const pathMod = await import('node:path');
 const DIR = pathMod.join(process.cwd(), 'src/content/posts');
 const files = readdirSync(DIR).filter((f) => f.endsWith('.md'));
@@ -207,6 +207,45 @@ try {
   process.env.VERCEL_ENV = wasEnv;
 } finally {
   unlinkSync(probe);
+}
+
+console.log('\n— every readable article carries its images —');
+// An article shipped with no hero and nothing caught it, because the frontmatter
+// treated images as optional and the only thing enforcing them was somebody
+// remembering. A convention nothing checks is a preference. Draft is exempt: a
+// stub has nothing to illustrate yet.
+{
+  const dir = DIR;
+  const missing = [];
+  const broken = [];
+  for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+    const post = parsePost(readFileSync(pathMod.join(dir, file), 'utf8'), file);
+    if (post.status === 'draft') continue;
+    const raw = readFileSync(pathMod.join(dir, file), 'utf8');
+    const get = (k) => (new RegExp(`^${k}:\\s*(.+)$`, 'm').exec(raw) ?? [])[1]?.trim();
+    const hero = get('heroImage');
+    const og = get('ogImage');
+    const alt = get('heroImageAlt');
+    if (!hero || !og || !alt) {
+      missing.push(`${file} (${[!hero && 'heroImage', !og && 'ogImage', !alt && 'heroImageAlt'].filter(Boolean).join(', ')})`);
+      continue;
+    }
+    // A path that points at nothing is the same as no image, and only shows up
+    // as a broken box after it has shipped.
+    for (const ref of [hero, og]) {
+      if (!existsSync(pathMod.join(process.cwd(), 'public', ref.replace(/^\//, '')))) broken.push(`${file} -> ${ref}`);
+    }
+  }
+  ok(
+    'no staged or published article is missing its hero/og/alt',
+    missing.length === 0,
+    missing.join('; '),
+  );
+  ok(
+    'every referenced image file actually exists on disk',
+    broken.length === 0,
+    broken.join('; '),
+  );
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

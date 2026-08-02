@@ -53,12 +53,57 @@ Article body in markdown.
 
 `title`, `slug`, `excerpt`, `category`, `publishDate` and a body are all
 required — the dashboard flags an article missing any of them. The filename
-must match the slug. `heroImage` / `heroImageAlt` / `ogImage` are optional; see
-an existing post for the convention.
+must match the slug.
+
+**`heroImage`, `heroImageAlt` and `ogImage` are required too**, for anything
+above `draft`. `npm run test:posts` fails without them, and fails again if a
+path points at a file that isn't there. They used to be optional and made by
+hand, which worked until the once nobody remembered — an article shipped with
+no images and nothing noticed.
 
 Only a small YAML subset is supported (scalars, inline arrays, and one level of
 block-list objects for `channels`). Anything outside it throws rather than being
 half-parsed. Long prose belongs in the body, not in frontmatter.
+
+## Images — generate them, don't skip them
+
+Writing an article is not finished until it has both images. Generate them:
+
+```bash
+node scripts/make-hero.mjs <slug> spec.json
+```
+
+It writes `public/images/content/<slug>-hero.webp` (the in-page card) and
+`<slug>.webp` (the social card), then adds whatever frontmatter keys are
+missing. Headless Chrome renders and encodes both — nothing to install.
+
+The spec is what makes the image worth having:
+
+```json
+{
+  "headline": [
+    { "t": "My dashboard said " },
+    { "t": "published.", "tone": "good" },
+    { "t": " The URL said " },
+    { "t": "404.", "tone": "bad" }
+  ],
+  "rows": [
+    { "label": "WHAT MY DASHBOARD SAID", "value": "You don't get replaced…",
+      "badge": "PUBLISHED", "tone": "good" },
+    { "label": "WHAT THE URL SAID", "value": "/content/you-dont…",
+      "badge": "404", "tone": "bad" }
+  ],
+  "alt": "One sentence for someone who can't see the image."
+}
+```
+
+Run with no spec and it falls back to the title, which is a waste of an image.
+The card should stage the post's **central contrast** — what I believed next to
+what was true — because the headline already carries the words. Two rows, a
+`good` one and a `bad` one, is the house pattern.
+
+A post with a real screenshot or photograph already set as its `heroImage`
+keeps it; the script then generates only the social card.
 
 ## Voice
 
@@ -71,7 +116,7 @@ generic AI prose, it is wrong.
 ## Checks
 
 ```bash
-npm run test:posts   # frontmatter round-trips, the publish gate, real files
+npm run test:posts   # frontmatter, the publish gate, real files, images present
 npm run build
 ```
 

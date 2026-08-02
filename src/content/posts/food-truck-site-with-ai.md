@@ -11,6 +11,7 @@ channels:
     status: done
 heroImage: /images/apps/samurai-kitchen-1.webp
 heroImageAlt: The Samurai Kitchen site that shipped — the version Robert actually uses
+ogImage: /images/content/food-truck-site-with-ai.webp
 ---
 I built a full online-ordering system for my friend Robert's food truck.
 
