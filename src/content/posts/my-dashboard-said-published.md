@@ -10,6 +10,7 @@ channels: []
 heroImage: /images/content/my-dashboard-said-published-hero.webp
 heroImageAlt: A dashboard row showing the article marked PUBLISHED in green, above the same article's URL returning a red 404
 ogImage: /images/content/my-dashboard-said-published.webp
+liveAt: 2026-08-04T06:47:00.000Z
 ---
 I spent yesterday building a dashboard for my own site.
 
