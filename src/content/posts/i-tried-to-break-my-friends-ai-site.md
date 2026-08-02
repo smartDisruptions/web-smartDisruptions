@@ -11,6 +11,7 @@ channels:
     status: done
 heroImage: /images/apps/samurai-kitchen-2.png
 heroImageAlt: The Samurai Kitchen ordering site — the one I had the AI attack before writing about it
+ogImage: /images/content/i-tried-to-break-my-friends-ai-site.webp
 ---
 Before I let anyone read about how I built my friend Robert's site, I did something that felt a little paranoid.
 
