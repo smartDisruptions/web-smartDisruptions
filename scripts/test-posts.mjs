@@ -191,7 +191,20 @@ try {
   ok('draft IS visible to the dashboard (getAllPosts)', all.some((p) => p.slug === 'zzz-gate-probe'));
   ok('draft is NOT in getPublishedPosts', !live.some((p) => p.slug === 'zzz-gate-probe'));
   ok('draft is NOT resolvable by slug', mod.getPostBySlug('zzz-gate-probe') === undefined);
-  ok('published posts all pass isLive', live.every((p) => mod.isLive(p, false)));
+  // getPublishedPosts is environment-aware, so asserting its results against
+  // production rules is wrong by construction on a preview. Test the property
+  // that actually matters, in both environments.
+  ok('everything it returns is live in the environment it was computed for',
+     live.every((p) => mod.isLive(p, mod.isPreviewEnv())));
+
+  const wasEnv = process.env.VERCEL_ENV;
+  process.env.VERCEL_ENV = 'production';
+  const prodLive = mod.getPublishedPosts.call(null);
+  ok('production excludes the draft probe', !prodLive.some((p) => p.slug === 'zzz-gate-probe'));
+  ok('production excludes staged articles', !prodLive.some((p) => p.status === 'staged'),
+     'staged rides along in a merge and must stay invisible on the live site');
+  ok('production returns only published', prodLive.every((p) => p.status === 'published'));
+  process.env.VERCEL_ENV = wasEnv;
 } finally {
   unlinkSync(probe);
 }
