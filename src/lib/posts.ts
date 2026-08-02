@@ -5,17 +5,31 @@ import { parseFrontmatter, type Frontmatter, type Scalar } from './frontmatter';
 /**
  * Post store. One markdown file per article under src/content/posts, so that
  * two draft branches editing different articles never touch the same file, and
- * so the Studio dashboard can read a branch's drafts without parsing a TS
- * module out of it.
+ * so an external tool can read a branch's drafts over the GitHub API without
+ * having to parse a TypeScript module out of it.
  *
  * Publish state lives in frontmatter, which makes git the single source of
- * truth for the schedule — no second store to drift out of sync.
+ * truth for the schedule — no second store to drift out of sync. The editorial
+ * dashboard is a separate app; this repo only owns the content and the gate.
  */
 
 export const POSTS_DIR = path.join(process.cwd(), 'src/content/posts');
 
-/** Where a post is in its life. Only `published` is publicly reachable. */
-export type PostStatus = 'draft' | 'scheduled' | 'published';
+/**
+ * Where a post is in its life.
+ *
+ * - `draft`     — invisible everywhere, including previews.
+ * - `staged`    — renders on PREVIEW deployments only. This is what makes a
+ *                 read-before-you-ship review possible, and it is also what
+ *                 lets several articles sit ready at once: a staged article
+ *                 rides along in a dev -> main merge and stays invisible on
+ *                 the live site, so publishing one never publishes another.
+ * - `published` — live everywhere.
+ *
+ * `scheduled` is the old name for `staged` and is still accepted so a branch
+ * written before the rename doesn't break the build.
+ */
+export type PostStatus = 'draft' | 'staged' | 'published';
 
 /** A planned distribution push. The dashboard tracks these; it never posts. */
 export type ChannelPlan = {
@@ -42,7 +56,9 @@ export interface Post {
   ogImage?: string;
 }
 
-const STATUSES: PostStatus[] = ['draft', 'scheduled', 'published'];
+const STATUSES: PostStatus[] = ['draft', 'staged', 'published'];
+/** Old name -> new. Kept so pre-rename branches still parse. */
+const STATUS_ALIASES: Record<string, PostStatus> = { scheduled: 'staged' };
 const CHANNEL_STATUSES = new Set(['planned', 'scheduled', 'done']);
 
 function str(v: Scalar | undefined, fallback = ''): string {
@@ -61,12 +77,13 @@ export function postFromFrontmatter(
 ): Post {
   const slug = str(data.slug as Scalar) || filename.replace(/\.md$/, '');
   const rawStatus = str(data.status as Scalar, 'draft');
-  if (!STATUSES.includes(rawStatus as PostStatus)) {
+  const aliased = STATUS_ALIASES[rawStatus] ?? rawStatus;
+  if (!STATUSES.includes(aliased as PostStatus)) {
     throw new Error(
       `${filename}: unknown status "${rawStatus}" (expected ${STATUSES.join(' | ')})`
     );
   }
-  const status = rawStatus as PostStatus;
+  const status = aliased as PostStatus;
 
   const rawChannels = Array.isArray(data.channels) ? data.channels : [];
   const channels: ChannelPlan[] = (rawChannels as Record<string, Scalar>[]).map(
@@ -84,10 +101,9 @@ export function postFromFrontmatter(
     }
   );
 
+  // liveAt is optional on a staged post: undated means "ready, I'll press it",
+  // dated means "publish it then". Both are legitimate.
   const liveAt = optionalStr(data.liveAt as Scalar);
-  if (status === 'scheduled' && !liveAt) {
-    throw new Error(`${filename}: status is "scheduled" but liveAt is missing`);
-  }
   if (liveAt && Number.isNaN(Date.parse(liveAt))) {
     throw new Error(`${filename}: liveAt is not a valid date: "${liveAt}"`);
   }
@@ -113,8 +129,8 @@ export function postFromFrontmatter(
   };
 }
 
-/** Parse one post file's raw text. Exported so the Studio can reuse it on
- *  content fetched from other branches, where there is no local file. */
+/** Parse one post file's raw text. Exported so an external tool can reuse it
+ *  on content fetched from other branches, where there is no local file. */
 export function parsePost(raw: string, filename: string): Post {
   const { data, body } = parseFrontmatter(raw);
   return postFromFrontmatter(data, body.trim(), filename);
@@ -134,25 +150,37 @@ export function getAllPosts(): Post[] {
 }
 
 /**
- * Is this post publicly reachable right now?
+ * Are we rendering a preview rather than the live site?
  *
- * Exactly one thing makes an article public: someone pressed Publish, which
- * set `status: published`. Nothing else — not a date, not the passage of time.
- *
- * An earlier version also treated `scheduled` with a past `liveAt` as live, so
- * a missed press would still go out on time. That was safe while publishing
- * only reached `dev`. It stopped being safe once Publish promotes `dev` to
- * `main`: an article scheduled for last week and never pressed would have gone
- * live as a side effect of publishing something else entirely. `liveAt` is a
- * plan, and the board surfaces overdue ones — it is not an instruction.
+ * Vercel sets VERCEL_ENV to 'production' only for the production deployment;
+ * branch deploys are 'preview'. Local dev has it unset, and showing staged
+ * work locally is what you want.
  */
-export function isLive(post: Post): boolean {
-  return post.status === 'published';
+export function isPreviewEnv(): boolean {
+  return process.env.VERCEL_ENV !== 'production';
 }
 
-/** The only list the public site may render. */
+/**
+ * Is this post reachable on THIS deployment?
+ *
+ * On production, exactly one thing makes an article public: `status: published`,
+ * which only a deliberate publish sets. Not a date, not the passage of time —
+ * a rebuild can never publish anything, which is the property that stops one
+ * article's publish from dragging others live with it.
+ *
+ * On a preview, `staged` renders too. That is the whole point of staging: the
+ * article can be read exactly as it will look, on an SSO-gated URL, while
+ * production still refuses to serve it.
+ */
+export function isLive(post: Post, preview: boolean = isPreviewEnv()): boolean {
+  if (post.status === 'published') return true;
+  return preview && post.status === 'staged';
+}
+
+/** The only list a deployment may render — staged included on previews. */
 export function getPublishedPosts(): Post[] {
-  return getAllPosts().filter((p) => isLive(p));
+  const preview = isPreviewEnv();
+  return getAllPosts().filter((p) => isLive(p, preview));
 }
 
 export function getPostBySlug(slug: string): Post | undefined {
