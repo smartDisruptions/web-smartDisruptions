@@ -53,12 +53,88 @@ Article body in markdown.
 
 `title`, `slug`, `excerpt`, `category`, `publishDate` and a body are all
 required — the dashboard flags an article missing any of them. The filename
-must match the slug. `heroImage` / `heroImageAlt` / `ogImage` are optional; see
-an existing post for the convention.
+must match the slug.
+
+**`heroImage`, `heroImageAlt` and `ogImage` are required too**, for anything
+above `draft`. `npm run test:posts` fails without them, and fails again if a
+path points at a file that isn't there. They used to be optional and made by
+hand, which worked until the once nobody remembered — an article shipped with
+no images and nothing noticed.
 
 Only a small YAML subset is supported (scalars, inline arrays, and one level of
 block-list objects for `channels`). Anything outside it throws rather than being
 half-parsed. Long prose belongs in the body, not in frontmatter.
+
+## Images — generate them, don't skip them
+
+Writing an article is not finished until it has both images. Generate them:
+
+```bash
+node scripts/make-hero.mjs <slug> spec.json
+```
+
+It writes `public/images/content/<slug>-hero.webp` (the in-page card) and
+`<slug>.webp` (the social card), then adds whatever frontmatter keys are
+missing. Headless Chrome renders and encodes both — nothing to install.
+
+The spec is what makes the image worth having:
+
+```json
+{
+  "headline": [
+    { "t": "My dashboard said " },
+    { "t": "published.", "tone": "good" },
+    { "t": " The URL said " },
+    { "t": "404.", "tone": "bad" }
+  ],
+  "rows": [
+    { "label": "WHAT MY DASHBOARD SAID", "value": "You don't get replaced…",
+      "badge": "PUBLISHED", "tone": "good" },
+    { "label": "WHAT THE URL SAID", "value": "/content/you-dont…",
+      "badge": "404", "tone": "bad" }
+  ],
+  "alt": "One sentence for someone who can't see the image."
+}
+```
+
+Run with no spec and it falls back to the title, which is a waste of an image.
+The card should stage the post's **central contrast** — what I believed next to
+what was true — because the headline already carries the words. Two rows, a
+`good` one and a `bad` one, is the house pattern.
+
+A post with a real screenshot or photograph already set as its `heroImage`
+keeps it; the script then generates only the social card.
+
+## What may go on `dev`, and what may not
+
+**`dev` carries content only: articles and their images. Nothing else, ever.**
+
+The scheduler promotes `dev` to production on its own, and promoting a branch
+ships all of it. So it refuses to run whenever `dev` carries a file that is not
+an article or an image — deciding to ship code with nobody watching is not a
+thing a scheduler should do. That guard is correct and it is not going away.
+
+What that means in practice:
+
+- **An article and its images belong in ONE commit.** Not the post now and the
+  hero later. A promote can land in the gap, and the article goes live with
+  broken image links.
+- **Tooling, scripts, config, docs and site code go straight to `main`** in
+  their own PR. Never via `dev`. If it isn't the article or its images, it does
+  not belong on the drafting branch.
+
+This is not theoretical. On 2026-08-02 a commit adding `scripts/make-hero.mjs`,
+`scripts/test-posts.mjs` and this file went onto `dev` alongside an article, and
+the scheduler correctly refused to publish anything for hours. The article was
+fine. The tooling was fine. Putting them on the same branch was the mistake.
+
+Allowed on `dev`:
+
+```
+src/content/posts/<slug>.md
+public/images/content/<slug>-hero.webp
+public/images/content/<slug>.webp
+```
 
 ## Voice
 
@@ -71,7 +147,7 @@ generic AI prose, it is wrong.
 ## Checks
 
 ```bash
-npm run test:posts   # frontmatter round-trips, the publish gate, real files
+npm run test:posts   # frontmatter, the publish gate, real files, images present
 npm run build
 ```
 
