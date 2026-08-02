@@ -5,11 +5,12 @@ excerpt: I built a dashboard to tell me what's live on my own site. For a few ho
 category: Working With AI
 publishDate: 2026-08-02
 tags: [ai, tooling, verification, shipping]
-status: staged
+status: published
 channels: []
 heroImage: /images/content/my-dashboard-said-published-hero.webp
 heroImageAlt: A dashboard row showing the article marked PUBLISHED in green, above the same article's URL returning a red 404
 ogImage: /images/content/my-dashboard-said-published.webp
+liveAt: 2026-08-02T13:00:00.000Z
 ---
 I spent yesterday building a dashboard for my own site.
 

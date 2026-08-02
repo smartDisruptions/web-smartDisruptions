@@ -95,15 +95,48 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
   else console.log(`  waiting ${file} — due ${fm.liveAt}`);
 }
 
-if (due.length === 0) {
-  console.log('nothing due. done.');
+// 2. What is already published on dev but has not reached production?
+//
+//    Flipping the status and promoting it are two steps, and they are not
+//    atomic. If the second fails — a 403, a rate limit, a bad minute at GitHub
+//    — the article is left marked published on the drafting branch with nothing
+//    carrying it to production. It also stops being "due", because it is no
+//    longer staged, so every later run skipped it and reported success. That is
+//    the worst shape a failure can take: a green light over a stuck state.
+//
+//    So each run reconciles instead of only looking forward. This is what makes
+//    a half-finished publish self-healing rather than permanent.
+const cmp = await api(`/repos/${OWNER}/${REPO}/compare/${PROD}...${DRAFT}`);
+const changedFiles = new Set((cmp.files ?? []).map((f) => f.filename));
+const stranded = [];
+for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+  const fm = readFrontmatter(readFileSync(path.join(dir, file), 'utf8'));
+  if (fm.status !== 'published') continue;
+  // Identical on production already — nothing to carry over.
+  if (!changedFiles.has(`${POSTS}/${file}`)) continue;
+  stranded.push({ file, slug: fm.slug ?? file.replace(/\.md$/, '') });
+}
+
+if (due.length === 0 && stranded.length === 0) {
+  console.log('nothing due, nothing awaiting promotion. done.');
   process.exit(0);
 }
-console.log(`due now: ${due.map((d) => d.slug).join(', ')}`);
+if (due.length) console.log(`due now: ${due.map((d) => d.slug).join(', ')}`);
+if (stranded.length) {
+  console.log(
+    `awaiting promotion (published on ${DRAFT}, not on ${PROD}): ${stranded
+      .map((d) => d.slug)
+      .join(', ')}`,
+  );
+}
+if (cmp.files && cmp.files.length >= 300) {
+  // GitHub caps compare at 300 files; say so rather than quietly reconciling
+  // against a partial view.
+  console.log('WARNING: compare truncated at 300 files — reconcile may be incomplete.');
+}
 
-// 2. Safety valve. Promoting dev ships everything on dev; a scheduler must not
+// 3. Safety valve. Promoting dev ships everything on dev; a scheduler must not
 //    decide to ship code with nobody watching.
-const cmp = await api(`/repos/${OWNER}/${REPO}/compare/${PROD}...${DRAFT}`);
 const nonContent = (cmp.files ?? [])
   .map((f) => f.filename)
   .filter((f) => !CONTENT_PATHS.some((isContent) => isContent(f)));
@@ -117,7 +150,7 @@ if (nonContent.length > 0) {
   process.exit(0);
 }
 
-// 3. Flip only the due ones.
+// 4. Flip only the due ones.
 for (const d of due) {
   const p = `${POSTS}/${d.file}`;
   const meta = await api(`/repos/${OWNER}/${REPO}/contents/${p}?ref=${DRAFT}`);
@@ -140,7 +173,7 @@ for (const d of due) {
   });
 }
 
-// 4. Promote.
+// 5. Promote — covers both the newly due and anything left stranded.
 if (DRY) {
   console.log('dry run — not merging.');
   process.exit(0);
@@ -151,8 +184,15 @@ const pr =
   (await api(`/repos/${OWNER}/${REPO}/pulls`, {
     method: 'POST',
     body: JSON.stringify({
-      title: `Autopublish: ${due.map((d) => d.slug).join(', ')}`,
-      body: `Scheduled publish. Due: ${due.map((d) => `\`${d.slug}\` (${d.liveAt})`).join(', ')}.\n\nOnly due articles had their status flipped; anything else staged travels with this merge and stays invisible on production.`,
+      title: `Autopublish: ${[...due, ...stranded].map((d) => d.slug).join(', ')}`,
+      body:
+        (due.length
+          ? `Scheduled publish. Due: ${due.map((d) => `\`${d.slug}\` (${d.liveAt})`).join(', ')}.\n\n`
+          : '') +
+        (stranded.length
+          ? `Recovering articles already marked published on \`${DRAFT}\` that never reached \`${PROD}\`: ${stranded.map((d) => `\`${d.slug}\``).join(', ')}.\n\n`
+          : '') +
+        `Only due articles had their status flipped; anything else staged travels with this merge and stays invisible on production.`,
       head: DRAFT,
       base: PROD,
     }),
