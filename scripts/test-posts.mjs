@@ -104,7 +104,12 @@ Body text.`;
 
 ok('defaults to draft when status omitted', parsePost(base('status: draft'), 'a.md').status === 'draft');
 throws('unknown status is rejected', () => parsePost(base('status: sortof'), 'a.md'), /unknown status/);
-throws('scheduled without liveAt is rejected', () => parsePost(base('status: scheduled'), 'a.md'), /liveAt is missing/);
+// Deliberately no longer an error: an undated staged post means "ready, I'll
+// press it", and a dated one means "publish it then". Both are valid.
+ok('staged without liveAt is accepted', parsePost(base('status: staged'), 'a.md').status === 'staged');
+ok('the old "scheduled" without liveAt is accepted too',
+   parsePost(base('status: scheduled'), 'a.md').status === 'staged',
+   'the alias must not resurrect the old requirement');
 throws('invalid liveAt is rejected', () => parsePost(base('status: scheduled\nliveAt: soon'), 'a.md'), /not a valid date/);
 throws('unknown channel status is rejected',
   () => parsePost(base('status: draft\nchannels:\n  - name: x\n    status: whenever'), 'a.md'),
