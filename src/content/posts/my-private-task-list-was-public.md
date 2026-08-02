@@ -5,7 +5,7 @@ excerpt: I'd written a post about a tool I built. Before publishing it, I stoppe
 category: Working With AI
 publishDate: 2026-08-02
 tags: [security, deployment, verification, shipping]
-status: staged
+status: published
 channels: []
 heroImage: /images/content/my-private-task-list-was-public-hero.webp
 heroImageAlt: "A card contrasting what I assumed was private — my task list — with what the URL actually returned: 200 OK, 17,798 bytes, 43 tasks, public."
