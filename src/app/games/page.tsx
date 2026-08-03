@@ -394,7 +394,7 @@ function CRTScreen({
 // How fast the marquee actually travels. The duration is derived from the
 // measured strip width rather than hardcoded, so adding a game changes how long
 // the loop takes and never how fast it reads.
-const MARQUEE_SPEED_PX_PER_SEC = 22;
+const MARQUEE_SPEED_PX_PER_SEC = 30;
 
 function Marquee() {
   const trackRef = useRef<HTMLDivElement>(null);
