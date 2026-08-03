@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { apps, type App } from '@/data/apps';
 import { SectionContainer, Card } from '@/components/ui';
@@ -391,9 +391,41 @@ function CRTScreen({
   );
 }
 
+// How fast the marquee actually travels. The duration is derived from the
+// measured strip width rather than hardcoded, so adding a game changes how long
+// the loop takes and never how fast it reads.
+const MARQUEE_SPEED_PX_PER_SEC = 30;
+
 function Marquee() {
-  const segment = (key: string) => (
-    <div key={key} className="flex shrink-0 items-center">
+  const trackRef = useRef<HTMLDivElement>(null);
+  const segmentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    const firstSegment = segmentRef.current;
+    if (!track || !firstSegment) return;
+
+    const syncDuration = () => {
+      const width = firstSegment.getBoundingClientRect().width;
+      if (width > 0) {
+        track.style.setProperty(
+          '--games-marquee-duration',
+          `${width / MARQUEE_SPEED_PX_PER_SEC}s`,
+        );
+      }
+    };
+
+    syncDuration();
+    // The strip is text, so its width moves under us — a web font swapping in
+    // after first paint is enough to change it. Re-measure instead of trusting
+    // the first reading.
+    const observer = new ResizeObserver(syncDuration);
+    observer.observe(firstSegment);
+    return () => observer.disconnect();
+  }, []);
+
+  const segment = (key: string, ref?: React.Ref<HTMLDivElement>) => (
+    <div key={key} ref={ref} className="flex shrink-0 items-center">
       {MARQUEE_ITEMS.map((t, i) => (
         <span
           key={`${key}-${i}`}
@@ -412,8 +444,8 @@ function Marquee() {
       style={{ borderColor: `${RED}40` }}
       aria-hidden
     >
-      <div className="games-marquee-track">
-        {segment('a')}
+      <div ref={trackRef} className="games-marquee-track">
+        {segment('a', segmentRef)}
         {segment('b')}
       </div>
     </div>
