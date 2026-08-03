@@ -186,7 +186,7 @@ body {
      constant as games are added. It used to be a flat 38s, tuned when the arcade
      had one game; by five games that same 38s covered ~1.8x the distance. The
      fallback below is today's width at the target speed, for the first paint. */
-  animation: games-marquee var(--games-marquee-duration, 66s) linear infinite;
+  animation: games-marquee var(--games-marquee-duration, 49s) linear infinite;
 }
 .games-marquee:hover .games-marquee-track {
   animation-play-state: paused;
