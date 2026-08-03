@@ -181,7 +181,12 @@ body {
 .games-marquee-track {
   display: flex;
   width: max-content;
-  animation: games-marquee 38s linear infinite;
+  /* Duration is measured, not hardcoded — Marquee in games/page.tsx sets
+     --games-marquee-duration from the segment's real width so the speed stays
+     constant as games are added. It used to be a flat 38s, tuned when the arcade
+     had one game; by five games that same 38s covered ~1.8x the distance. The
+     fallback below is today's width at the target speed, for the first paint. */
+  animation: games-marquee var(--games-marquee-duration, 66s) linear infinite;
 }
 .games-marquee:hover .games-marquee-track {
   animation-play-state: paused;
@@ -237,5 +242,12 @@ body {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  /* The blanket rule above is right for one-shot animations (it makes them
+     effectively instant) and wrong for an infinite one — a 0.01ms loop doesn't
+     stop the marquee, it strobes it, at the users who asked for less motion.
+     Stop it outright instead. */
+  .games-marquee-track {
+    animation: none !important;
   }
 }
