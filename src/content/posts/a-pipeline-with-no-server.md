@@ -5,7 +5,7 @@ excerpt: A daily job that records my portfolio, built from a scheduled task and 
 category: Build Breakdown
 publishDate: 2026-08-03
 tags: [automation, github-actions, no-server, migration]
-status: staged
+status: published
 channels: []
 heroImage: /images/content/a-pipeline-with-no-server-hero.webp
 heroImageAlt: "A card contrasting what a daily pipeline seemed to need — a server, a database, a monthly bill — with what it actually is: a script, a timer and a text file, at no cost."
