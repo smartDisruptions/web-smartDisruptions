@@ -8,8 +8,9 @@ tags: [architecture, internal-tools, ai-native, shipping]
 status: staged
 channels: []
 heroImage: /images/content/took-it-apart-and-built-it-again-hero.webp
-heroImageAlt: A card showing the two flaws of a dashboard built inside the site it watches: it could only see one folder of articles, and it went down whenever the site did.
+heroImageAlt: "A card showing the two flaws of a dashboard built inside the site it watches: it could only see one folder of articles, and it went down whenever the site did."
 ogImage: /images/content/took-it-apart-and-built-it-again.webp
+liveAt: 2026-08-04T13:00:00.000Z
 ---
 I write here often enough that I kept losing track of my own work. What's finished, what's half-written, what I said I'd publish on Thursday and didn't.
 
