@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getPublishedPosts, getPostBySlug } from '@/lib/posts';
 import { SectionContainer, Badge, Button } from '@/components/ui';
 import ArticleBody from '@/components/ArticleBody';
+import HeroImage from '@/components/HeroImage';
 import SubscribeForm from '@/components/SubscribeForm';
 import DirectingDrill from '@/components/DirectingDrill';
 import { formatDate } from '@/lib/format';
@@ -137,11 +138,9 @@ export default async function ContentDetail({
         {/* Hero Image */}
         {entry.heroImage && (
           <figure className="mt-10 overflow-hidden rounded-xl border border-border">
-            <img
-              src={entry.heroImage}
-              alt={entry.heroImageAlt ?? entry.title}
-              decoding="async"
-              fetchPriority="high"
+            <HeroImage
+              post={entry}
+              priority
               className="h-auto w-full object-cover"
             />
           </figure>

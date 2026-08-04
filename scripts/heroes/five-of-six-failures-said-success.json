@@ -1,0 +1,26 @@
+{
+  "tone": "bad",
+  "before": {
+    "label": "What the job reported",
+    "text": "Nothing due. Done."
+  },
+  "after": {
+    "label": "What was actually true",
+    "text": "An article stranded, going nowhere"
+  },
+  "count": {
+    "of": 6,
+    "hit": 5,
+    "unit": "failures before it worked",
+    "verdict": "reported success",
+    "detail": "The publish button itself worked on day one"
+  },
+  "headline": [
+    { "t": "The job reported " },
+    { "t": "success", "tone": "good" },
+    { "t": ". Nothing had " },
+    { "t": "published", "tone": "bad" },
+    { "t": "." }
+  ],
+  "alt": "Six blocks, one per failed run, five of them filled: five of the six failures reported success while an article sat stranded."
+}

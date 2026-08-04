@@ -19,9 +19,10 @@ channels:
     note: "1/ My dashboard said an article on my site was published. Green badge. I opened the actual URL and got a 404. I'd built the dashboard the day before.\n\n2/ The mistake: every article carries a label, status draft or status published. The dashboard read the label. But a label saying published is something I intended. Whether the page loads is something the world does. I built a tool that treated them as one fact.\n\n3/ They agree most of the time. They come apart in exactly one window: after you mark something published, before it has actually gone out. Which is the normal state of anything you just finished.\n\n4/ I had 52 tests. Every one passed. They were checking whether the label logic was consistent, and it was, perfectly. The bug wasn't an inconsistency. It was the frame. What caught it was me looking at the board and declining to believe it.\n\n5/ Then I found a rule I'd written hours earlier: if a scheduled date has passed, treat the article as live. Safe when publishing only moved things to staging. I later changed publishing to go straight to the live site. Same rule, new blast radius. I deleted it.\n\n6/ So the question isn't: is this tool accurate. It's: can it be wrong in a way that feels reassuring? A tool that says error gets investigated in ten seconds. A tool that says done, all good gets believed, and the gap sits there for weeks."
     comment: "Full write-up, including the three habits I picked up from it and why no results should look suspicious to you: https://www.smartdisruptions.com/content/my-dashboard-said-published"
 heroImage: /images/content/my-dashboard-said-published-hero.webp
-heroImageAlt: A dashboard row showing the article marked PUBLISHED in green, above the same article's URL returning a red 404
+heroImageAlt: "A run log: the dashboard reporting the article published, the URL returning 404, and 52 passing tests that caught none of it."
 ogImage: /images/content/my-dashboard-said-published.webp
 liveAt: 2026-08-02T13:00:00.000Z
+heroImageLight: /images/content/my-dashboard-said-published-hero-light.webp
 ---
 I spent yesterday building a dashboard for my own site.
 

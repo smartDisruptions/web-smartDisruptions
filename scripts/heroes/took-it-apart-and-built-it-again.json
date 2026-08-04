@@ -1,0 +1,18 @@
+{
+  "tone": "warn",
+  "before": {
+    "label": "What the dashboard could see",
+    "text": "One folder of articles"
+  },
+  "after": {
+    "label": "What happened when the site went down",
+    "text": "The monitor went down with it",
+    "detail": "Built inside the thing it was watching"
+  },
+  "headline": [
+    { "t": "I built the monitor " },
+    { "t": "inside", "tone": "warn" },
+    { "t": " the thing it was monitoring." }
+  ],
+  "alt": "Two panels: what the dashboard could see, one folder of articles, above what happened when the site went down — the monitor went down with it, because it was built inside the thing it was watching."
+}

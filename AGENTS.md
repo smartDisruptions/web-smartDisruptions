@@ -61,49 +61,116 @@ path points at a file that isn't there. They used to be optional and made by
 hand, which worked until the once nobody remembered — an article shipped with
 no images and nothing noticed.
 
+`heroImageLight` is optional but expected on a generated hero: it is the same
+card grounded on paper, shown when the site is in its light theme. A photograph
+or an app screenshot doesn't need one. If it is set, the file has to exist.
+
 Only a small YAML subset is supported (scalars, inline arrays, and one level of
 block-list objects for `channels`). Anything outside it throws rather than being
 half-parsed. Long prose belongs in the body, not in frontmatter.
 
 ## Images — generate them, don't skip them
 
-Writing an article is not finished until it has both images. Generate them:
+Writing an article is not finished until it has its images. Generate them:
 
 ```bash
-node scripts/make-hero.mjs <slug> spec.json
+node scripts/make-hero.mjs <slug> scripts/heroes/<slug>.json
 ```
 
-It writes `public/images/content/<slug>-hero.webp` (the in-page card) and
-`<slug>.webp` (the social card), then adds whatever frontmatter keys are
-missing. Headless Chrome renders and encodes both — nothing to install.
+It writes three files and adds whatever frontmatter keys are missing. Headless
+Chrome renders and encodes all of them — nothing to install.
 
-The spec is what makes the image worth having:
+| File | Where it shows |
+|---|---|
+| `<slug>-hero.webp` | in-page and grid card, dark theme |
+| `<slug>-hero-light.webp` | the same art on paper, light theme |
+| `<slug>.webp` | the social card |
+
+**Keep the spec.** It lives at `scripts/heroes/<slug>.json` and is committed, so
+the image can be re-rendered when the template changes. The first version of
+this script took its spec as a throwaway argument; when the template was
+redesigned every spec had to be reconstructed from the alt text.
 
 ```json
 {
+  "tone": "bad",
+  "before": { "label": "What my dashboard said", "text": "Published" },
+  "after":  { "label": "What the URL returned", "text": "404 — not found",
+              "detail": "52 passing tests · none of them caught it" },
   "headline": [
     { "t": "My dashboard said " },
-    { "t": "published.", "tone": "good" },
-    { "t": " The URL said " },
-    { "t": "404.", "tone": "bad" }
-  ],
-  "rows": [
-    { "label": "WHAT MY DASHBOARD SAID", "value": "You don't get replaced…",
-      "badge": "PUBLISHED", "tone": "good" },
-    { "label": "WHAT THE URL SAID", "value": "/content/you-dont…",
-      "badge": "404", "tone": "bad" }
+    { "t": "published", "tone": "good" },
+    { "t": ". The URL said " },
+    { "t": "404", "tone": "bad" },
+    { "t": "." }
   ],
   "alt": "One sentence for someone who can't see the image."
 }
 ```
 
-Run with no spec and it falls back to the title, which is a waste of an image.
-The card should stage the post's **central contrast** — what I believed next to
-what was true — because the headline already carries the words. Two rows, a
-`good` one and a `bad` one, is the house pattern.
+The picture is the post's **central contrast** — what I believed above what was
+true — because the headline already carries the words. `tone` colours it and is
+the whole mood of the image: `bad` (red), `good` (green), `warn` (amber), `info`
+(blue), `accent` (burnt orange). Every one is an on-token value from DESIGN.md;
+don't introduce a colour that isn't in that list.
 
-A post with a real screenshot or photograph already set as its `heroImage`
-keeps it; the script then generates only the social card.
+Write for the smallest place it appears. The grid renders the hero at about
+500px wide, so `before.text` and `after.text` are clauses of roughly 30
+characters — long ones are auto-shrunk, which is a fallback, not a licence.
+
+### The three templates, and why you never pick one
+
+There are three hero templates, and **the spec's shape decides which renders.
+There is no `template` key and there must not be one.**
+
+| Add this to the spec | Renders | Use when |
+|---|---|---|
+| nothing extra | `split` | the default — two panels, the second a colour field |
+| `count` | `count` | the post has a countable finding, 12 or fewer |
+| `log` | `console` | the evidence *is* machine output — a response, a run, a log |
+
+The one question to answer is **what evidence does this post have**, which is a
+fact about the article. "Which template looks nicer here" is a taste call, and
+taste calls don't survive this pipeline — three articles have been written in the
+same two minutes before. A wrong treatment reads worse than a plain one, so when
+neither trigger clearly applies, it's a `split`. That is the majority case, not a
+fallback.
+
+A `count.of` above 12 stops being countable at a glance, so it renders `split`
+and says so. Don't work around that by shrinking the number to fit; 52 passing
+tests is a `log` line, not eight blocks.
+
+```json
+"count": { "of": 8, "hit": 7, "unit": "claims checked",
+           "verdict": "were wrong", "detail": "Central thesis withdrawn" }
+```
+renders as *8 claims checked* over eight blocks with seven filled, under
+*“**7 of 8** were wrong”*. `hit` is the number that broke, not the number that passed.
+
+```json
+"log": { "name": "curl · no session, no password",
+         "lines": [ { "chip": "ASSUMED", "tone": "good", "text": "Private", "muted": true },
+                    { "chip": "200 OK",  "tone": "bad",  "text": "17,798 bytes · 43 tasks" } ],
+         "summary": "Public the whole time." }
+```
+The house pattern is two lines — what looked fine, then what was true — and a
+summary. Chips must be real output, not invented labels.
+
+**`before` and `after` are always required**, whichever template renders: the
+social card uses them and does not vary.
+
+### The social card never changes
+
+Whatever the hero does, `<slug>.webp` is always the same design. The two images
+have different jobs — the hero lives on an index where variety is the point, the
+social card lives in a feed where being recognisable is. Don't add template
+variants to the social card.
+
+Run with no spec and it falls back to the title, which wastes the image.
+
+A post with a real screenshot or photograph already set as its `heroImage` keeps
+it, and the script generates only the social card. `--force` replaces an
+existing hero — that flag is the only way to overwrite one, on purpose.
 
 ## What may go on `dev`, and what may not
 
@@ -137,8 +204,12 @@ Allowed on `dev`:
 ```
 src/content/posts/<slug>.md
 public/images/content/<slug>-hero.webp
+public/images/content/<slug>-hero-light.webp
 public/images/content/<slug>.webp
 ```
+
+The hero spec (`scripts/heroes/<slug>.json`) is tooling, not content — it goes
+to `main` with the rest of the scripts, never on `dev`.
 
 ## Voice
 

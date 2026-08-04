@@ -19,9 +19,10 @@ channels:
     note: "1/ I automated publishing my own articles. The code took an afternoon and it was tested. It then failed six separate times over the following day — and five of those failures reported success.\n\n2/ The worst one: the job flipped the article to published, then got refused permission on the step that actually ships it. So the article sat marked-published, with nothing shipping it.\n\n3/ My job looks for articles that are scheduled and due. That one wasn't scheduled anymore — it had marked itself published. So every later run looked, found nothing due, and exited successfully. A green checkmark every fifteen minutes, forever.\n\n4/ Nothing was broken. Nothing alerted. The only symptom was an article that didn't appear. A job that reports success while sitting on a stuck state is worse than one that crashes. A crash gets looked at. This gets trusted.\n\n5/ I couldn't reorder the two steps — the second needs the first. So every run now asks a different question first: is there anything I already marked done that never actually shipped? If a job can half-finish, it must look for its wreckage before new work.\n\n6/ Ask what your green light is asserting. Mine asserted \"this script ran to completion.\" I read it as \"the thing I wanted has happened.\" All six failures were environmental, ordering, or habit. The code was never the hard part."
     comment: "The other failures — my own guard blocking my own commits, twice — and what GitHub actually does with a 15-minute schedule (measured gaps: 66 to 92 minutes): https://www.smartdisruptions.com/content/five-of-six-failures-said-success"
 heroImage: /images/content/five-of-six-failures-said-success-hero.webp
-heroImageAlt: "A card contrasting what the scheduled job reported — nothing due, done, success — with what was actually true: an article stranded and going nowhere."
+heroImageAlt: "Six blocks, one per failed run, five of them filled: five of the six failures reported success while an article sat stranded."
 ogImage: /images/content/five-of-six-failures-said-success.webp
 liveAt: 2026-08-04T13:00:00.000Z
+heroImageLight: /images/content/five-of-six-failures-said-success-hero-light.webp
 ---
 I wanted to schedule articles. Pick a time, walk away, have it go out without me.
 

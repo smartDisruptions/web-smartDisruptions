@@ -1,0 +1,27 @@
+{
+  "tone": "bad",
+  "before": {
+    "label": "What my dashboard said",
+    "text": "Published"
+  },
+  "after": {
+    "label": "What the URL returned",
+    "text": "404 — not found"
+  },
+  "log": {
+    "name": "publish-check · after deploy",
+    "lines": [
+      { "chip": "DASHBOARD", "tone": "good", "text": "Published", "muted": true },
+      { "chip": "GET /content", "tone": "bad", "text": "404 — not found" }
+    ],
+    "summary": "52 tests passed. None of them caught it."
+  },
+  "headline": [
+    { "t": "My dashboard said " },
+    { "t": "published", "tone": "good" },
+    { "t": ". The URL said " },
+    { "t": "404", "tone": "bad" },
+    { "t": "." }
+  ],
+  "alt": "A run log: the dashboard reporting the article published, the URL returning 404, and 52 passing tests that caught none of it."
+}

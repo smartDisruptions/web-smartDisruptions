@@ -1,0 +1,18 @@
+{
+  "tone": "good",
+  "before": {
+    "label": "What it looked like it needed",
+    "text": "A server, a database, a monthly bill"
+  },
+  "after": {
+    "label": "What it actually took",
+    "text": "A script, a timer, a text file",
+    "detail": "$0 a month · no database · no API keys"
+  },
+  "headline": [
+    { "t": "It looked like it needed a server. It needed a " },
+    { "t": "text file", "tone": "good" },
+    { "t": "." }
+  ],
+  "alt": "Two panels: what a daily pipeline looked like it needed — a server, a database, a monthly bill — above what it actually took, a script, a timer and a text file, at no cost."
+}
