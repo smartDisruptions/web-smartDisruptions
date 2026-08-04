@@ -10,6 +10,7 @@ channels: []
 heroImage: /images/content/five-of-six-failures-said-success-hero.webp
 heroImageAlt: "A card contrasting what the scheduled job reported — nothing due, done, success — with what was actually true: an article stranded and going nowhere."
 ogImage: /images/content/five-of-six-failures-said-success.webp
+liveAt: 2026-08-04T16:00:00.000Z
 ---
 I wanted to schedule articles. Pick a time, walk away, have it go out without me.
 
