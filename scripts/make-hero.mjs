@@ -17,24 +17,33 @@
  * photograph: every claim on this site is a receipt, and a generated scene is
  * the opposite of a receipt.
  *
- * THREE TEMPLATES, AND WHY THE SPEC PICKS ONE
- * -------------------------------------------
- *   split     two panels, the second a saturated field. The default.
- *   count     one block per unit, filled for the ones that broke.
- *   console   the run that produced the finding, as a log.
+ * THE TEMPLATES, AND WHY THE SPEC PICKS ONE
+ * -----------------------------------------
+ *   evidence key   template   the picture
+ *   —              split      two panels, the second a saturated field
+ *   count          count      one block per unit, filled for the ones that broke
+ *   log            console    the run that produced the finding
+ *   record         receipt    a ledger of findings, verdict stamped across it
+ *   statement      field      one colour, one sentence reversed out of it
  *
- * **The template is derived from the spec's shape, never named in it.** A spec
- * carrying `count` renders Count; one carrying `log` renders Console; anything
- * else renders Split. That is deliberate and it is the whole design: the only
- * question an author has to answer is *what evidence does this post have*, which
- * is a fact about the article. "Which template looks nicer here" is a taste call,
- * and taste calls do not survive a pipeline where three articles get written in
- * the same two minutes — they degrade quietly, and a wrong treatment reads worse
- * than a plain one.
+ * **The template is derived from the spec's shape, never named in it.** Each
+ * template owns one evidence key; carrying that key is what selects it. There is
+ * no `template` field and adding one would be a mistake: it would hand an author
+ * a taste call where they currently have only a fact to record.
  *
- * So: does the post carry a countable finding small enough to draw? Record it as
- * `count`. Is the evidence literally machine output? Record it as `log`. Neither?
- * Then it is a Split, and that is not a fallback — it is the majority case.
+ * The single question is *what evidence does this post have*, which is a fact
+ * about the article. "Which template looks nicer here" is taste, and taste does
+ * not survive a pipeline where three articles get written in the same two
+ * minutes — it degrades quietly, and a wrong treatment reads worse than a plain
+ * one. No evidence key at all means Split, which is the majority case rather
+ * than a fallback.
+ *
+ * Exactly one key may be present. Two is an authoring mistake and throws, rather
+ * than being resolved by a precedence table: a post has one central piece of
+ * evidence, and if two of these look right then the spec has not yet decided
+ * what the article is about.
+ *
+ * See REGISTRY below for how to add a sixth.
  *
  * THE SOCIAL CARD DOES NOT VARY
  * -----------------------------
@@ -220,22 +229,91 @@ const T = TONES[tone];
 const headline = spec.headline ?? [{ t: fm.title ?? slug }];
 
 /**
- * Which template. Derived, never declared — see the header. A `count` too large
- * to draw falls back to Split rather than rendering forty unreadable slivers,
- * and says so, because a silent downgrade is how a rule stops being one.
+ * The template registry.
+ *
+ * Each entry owns one **evidence key**. If the spec carries that key, that
+ * template renders. Nothing else selects: there is no `template` field in a
+ * spec, and adding one would give an author a taste call to make where they
+ * currently only have a fact to record.
+ *
+ * ADDING A TEMPLATE
+ * -----------------
+ * Append an entry with a `key` no other template claims, a `render(theme)`, and
+ * optionally a `check` returning a string when the data cannot be drawn. Then
+ * document the key in AGENTS.md. Nothing else in this file changes — that is the
+ * whole point of the registry, and the reason a sixth costs what the fifth did.
+ *
+ * The new template's key has to be a genuinely different *shape of evidence*,
+ * not a mood. `count` is a tally, `log` is machine output, `record` is a ledger
+ * of findings, `statement` is a single sentence. If a proposed template would
+ * read from the same keys as an existing one, it is a restyle of that template,
+ * not a new one, and the honest move is to change the existing renderer.
+ *
+ * `split` is last and claims no key: it is what renders when a post carries no
+ * special evidence, which is the majority case rather than a fallback.
+ */
+const REGISTRY = [
+  {
+    name: 'count',
+    key: 'count',
+    render: (k) => countCard(k),
+    check: (c) =>
+      c.of > MAX_BLOCKS
+        ? `count.of is ${c.of}; above ${MAX_BLOCKS} the blocks stop being countable at a glance`
+        : null,
+  },
+  {
+    name: 'console',
+    key: 'log',
+    render: (k) => logCard(k),
+    check: (l) => (l.lines?.length ? null : 'log.lines is empty'),
+  },
+  {
+    name: 'receipt',
+    key: 'record',
+    render: (k) => receiptCard(k),
+    check: (r) => (r.rows?.length ? null : 'record.rows is empty'),
+  },
+  {
+    name: 'field',
+    key: 'statement',
+    render: (k) => fieldCard(k),
+    check: (s) => (s.loud ? null : 'statement.loud is required — it is the line that carries'),
+  },
+  { name: 'split', key: null, render: (k) => split(k) },
+];
+
+/**
+ * Which template. Exactly one evidence key may be present.
+ *
+ * Two keys is an authoring mistake, not a precedence puzzle, so it throws rather
+ * than silently ranking them: a post has one central piece of evidence, and if
+ * two look right the spec has not decided what the article is actually about.
+ * Unusable data for an otherwise-valid key falls back to split and says why —
+ * a silent downgrade is how a rule stops being one.
  */
 function chooseTemplate() {
-  if (spec.count) {
-    if (spec.count.of > MAX_BLOCKS) {
-      console.warn(
-        `  ! count.of is ${spec.count.of} (max ${MAX_BLOCKS} reads at card size) — rendering split`,
-      );
-      return 'split';
-    }
-    return 'count';
+  const claimed = REGISTRY.filter((t) => t.key && spec[t.key] != null);
+
+  if (claimed.length > 1) {
+    // An authoring mistake, not a crash: say what is wrong and how to fix it,
+    // and don't bury it under a stack trace nobody needs.
+    const keys = claimed.map((t) => `${t.key} (renders ${t.name})`).join(', ');
+    console.error(`\nThis spec carries ${claimed.length} evidence keys: ${keys}.`);
+    console.error('A hero shows one piece of evidence, so only one key may be present.');
+    console.error('Keep the one the post is actually about and delete the rest.\n');
+    process.exit(1);
   }
-  if (spec.log?.lines?.length) return 'console';
-  return 'split';
+
+  const picked = claimed[0];
+  if (!picked) return REGISTRY.find((t) => t.name === 'split');
+
+  const problem = picked.check?.(spec[picked.key]);
+  if (problem) {
+    console.warn(`  ! ${problem} — rendering split instead`);
+    return REGISTRY.find((t) => t.name === 'split');
+  }
+  return picked;
 }
 
 /* SPLIT — two full-bleed panels, the second a saturated field. No inner card:
@@ -347,7 +425,89 @@ function logCard(k) {
   );
 }
 
-const TEMPLATES = { split, count: countCard, console: logCard };
+/* RECEIPT — a ledger of findings with the verdict stamped across it. Where
+   Split stages one belief against one truth, this is for a post that produced a
+   *set* of findings: the rows are the audit, the stamp is what it concluded.
+   Colour arrives once, in the stamp and the row that went wrong, which is why
+   this is the quietest of the five and the right one when the finding is dry. */
+function receiptCard(k) {
+  const t = THEMES[k];
+  const r = spec.record;
+  const rows = r.rows
+    .map(
+      (row) => `
+      <div class="row">
+        <span class="k">${esc(row.label)}</span>
+        <span class="v${row.tone ? ' hit' : ''}"
+          ${row.tone ? `style="color:${k === 'dark' ? (TONES[row.tone] ?? T).bright : (TONES[row.tone] ?? T).field}"` : ''}
+        >${esc(row.value)}</span>
+      </div>`,
+    )
+    .join('');
+  const stampInk = k === 'dark' ? T.bright : T.field;
+  return doc(
+    `body{background:${t.bg};font-family:${MONO};padding:56px 68px}
+     .sheet{height:100%;background:${t.surface};border:1px solid ${t.rule};padding:38px 44px;
+       display:flex;flex-direction:column;justify-content:space-between}
+     .top{display:flex;justify-content:space-between;align-items:baseline;
+       padding-bottom:18px;border-bottom:2px solid ${t.hair}}
+     .who{font-size:19px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+       color:${t.text}}
+     .when{font-size:16px;color:${t.dim};letter-spacing:.08em}
+     .row{display:flex;justify-content:space-between;align-items:baseline;gap:32px;
+       padding:20px 0;border-bottom:1px dashed ${t.rule}}
+     .k{font-size:17px;letter-spacing:.1em;text-transform:uppercase;color:${t.dim}}
+     .v{font-family:${DISPLAY};font-weight:600;font-size:32px;letter-spacing:-.01em;
+       color:${t.text};text-align:right}
+     .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:28px}
+     .stamp{border:3px solid ${stampInk};color:${stampInk};font-weight:700;
+       letter-spacing:.14em;text-transform:uppercase;padding:12px 22px;
+       transform:rotate(-4deg);font-size:${fitSize(r.stamp, 26, 17, 26)}px}
+     .note{font-size:17px;letter-spacing:.1em;text-transform:uppercase;color:${t.dim};
+       text-align:right;white-space:pre-line}`,
+    `<div class="sheet">
+       <div class="top">
+         <span class="who">${esc(r.title ?? 'Record')}</span>
+         <span class="when">smartdisruptions.com</span>
+       </div>
+       ${rows}
+       <div class="foot">
+         ${r.stamp ? `<span class="stamp">${esc(r.stamp)}</span>` : '<span></span>'}
+         ${r.note ? `<span class="note">${esc(r.note)}</span>` : ''}
+       </div>
+     </div>`,
+  );
+}
+
+/* FIELD — one saturated ground with the sentence reversed out of it.
+   The least evidence of the five by a distance, so it is only right when the
+   sentence *is* the finding and there is nothing to show beside it. A post with
+   a number or a log has something better to put here. */
+function fieldCard(k) {
+  const t = THEMES[k];
+  const s = spec.statement;
+  const chars = `${s.quiet ?? ''}${s.loud}`.length;
+  return doc(
+    `body{background:${T.field};font-family:${SANS};display:flex;flex-direction:column}
+     .main{flex:1;display:flex;flex-direction:column;justify-content:center;
+       padding:0 78px;gap:26px}
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.0;letter-spacing:-.03em;
+       color:${FIELD_FG};font-size:${fitSize('x'.repeat(chars), 104, 60, 34)}px}
+     .q{color:rgba(249,245,236,.55)}
+     .sub{font-family:${MONO};font-size:22px;letter-spacing:.08em;color:rgba(249,245,236,.78)}
+     footer{flex:0 0 74px;background:${t.bg};display:flex;align-items:center;
+       justify-content:space-between;padding:0 78px;font-family:${MONO};font-size:17px;
+       letter-spacing:.12em;text-transform:uppercase;color:${t.dim}}`,
+    `<div class="main">
+       <div class="h">${s.quiet ? `<span class="q">${esc(s.quiet)}</span><br>` : ''}${esc(s.loud)}</div>
+       ${s.note ? `<div class="sub">${esc(s.note)}</div>` : ''}
+     </div>
+     <footer>
+       <span>${esc(fm.category ?? '')}</span>
+       <span>smartdisruptions.com</span>
+     </footer>`,
+  );
+}
 
 /** The social card. One design for every template — see the header. */
 function ogHtml() {
@@ -434,11 +594,10 @@ if (hasHero && !force) {
   console.log('  hero already set — social card only (--force to replace it)');
 } else {
   const template = chooseTemplate();
-  const draw = TEMPLATES[template];
-  render(draw('dark'), heroOut);
-  render(draw('light'), heroLightOut);
+  render(template.render('dark'), heroOut);
+  render(template.render('light'), heroLightOut);
   wroteHero = true;
-  console.log(`  template: ${template}`);
+  console.log(`  template: ${template.name}`);
   console.log(`  ${heroOut}`);
   console.log(`  ${heroLightOut}`);
 }
