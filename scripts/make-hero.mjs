@@ -19,12 +19,17 @@
  *
  * THE TEMPLATES, AND WHY THE SPEC PICKS ONE
  * -----------------------------------------
- *   evidence key   template   the picture
- *   —              split      two panels, the second a saturated field
- *   count          count      one block per unit, filled for the ones that broke
- *   log            console    the run that produced the finding
- *   record         receipt    a ledger of findings, verdict stamped across it
- *   statement      field      one colour, one sentence reversed out of it
+ *   evidence key   template    the picture
+ *   —              split       two panels, the second a saturated field
+ *   count          count       one block per unit, filled for the ones that broke
+ *   log            console     the run that produced the finding
+ *   record         receipt     a ledger of findings, verdict stamped across it
+ *   statement      field       one colour, one sentence reversed out of it
+ *   file           file        a document as itself, filename in the chrome
+ *   sequence       sequence    ordered events on a rail
+ *   checklist      checklist   a set of named peers, each with its own state
+ *   annotated      annotated   a passage with its problems marked
+ *   versus         versus      two named alternatives across the same dimensions
  *
  * **The template is derived from the spec's shape, never named in it.** Each
  * template owns one evidence key; carrying that key is what selects it. There is
@@ -91,6 +96,8 @@ const H = 630;
 
 /** Above this many units the blocks stop being countable at a glance. */
 const MAX_BLOCKS = 12;
+/** Above this many nodes the sequence rail crowds at grid size. */
+const MAX_STEPS = 7;
 
 /**
  * Both themes, mirroring the `--sd-*` tokens in globals.css. Dark is not a
@@ -279,6 +286,63 @@ const REGISTRY = [
     key: 'statement',
     render: (k) => fieldCard(k),
     check: (s) => (s.loud ? null : 'statement.loud is required — it is the line that carries'),
+  },
+  {
+    name: 'file',
+    key: 'file',
+    render: (k) => fileCard(k),
+    check: (f) =>
+      !f.lines?.length
+        ? 'file.lines is empty'
+        : f.lines.length > 4
+          ? `file.lines has ${f.lines.length}; above 4 the card stops reading at grid size`
+          : null,
+  },
+  {
+    name: 'sequence',
+    key: 'sequence',
+    render: (k) => sequenceCard(k),
+    check: (s) =>
+      !s.steps?.length
+        ? 'sequence.steps is empty'
+        : s.steps.length > MAX_STEPS
+          ? `sequence.steps has ${s.steps.length}; above ${MAX_STEPS} the rail crowds`
+          : null,
+  },
+  {
+    name: 'checklist',
+    key: 'checklist',
+    render: (k) => checklistCard(k),
+    check: (c) =>
+      !c.items?.length
+        ? 'checklist.items is empty'
+        : c.items.length > 4
+          ? `checklist.items has ${c.items.length}; above 4 the names stop being readable`
+          : null,
+  },
+  {
+    name: 'annotated',
+    key: 'annotated',
+    render: (k) => annotatedCard(k),
+    check: (a) =>
+      !a.spans?.length
+        ? 'annotated.spans is empty'
+        : a.spans.length > 3
+          ? `annotated.spans has ${a.spans.length}; three flagged claims is the ceiling`
+          : null,
+  },
+  {
+    name: 'versus',
+    key: 'versus',
+    render: (k) => versusCard(k),
+    check: (v) =>
+      !v.rows?.length
+        ? 'versus.rows is empty'
+        : !v.left?.name || !v.right?.name
+          ? 'versus needs left.name and right.name — the columns are the point'
+          : v.rows.length > 4
+            ? `versus.rows has ${v.rows.length}; above 4 the table gets cramped`
+            : null,
   },
   { name: 'split', key: null, render: (k) => split(k) },
 ];
@@ -506,6 +570,207 @@ function fieldCard(k) {
        <span>${esc(fm.category ?? '')}</span>
        <span>smartdisruptions.com</span>
      </footer>`,
+  );
+}
+
+/* FILE — a document as itself: the filename in the chrome, the contents below.
+   For a post whose evidence is a file someone can go and write — a config, a
+   context file, a spec. Distinct from `console`, which shows what a machine
+   *emitted*; this shows what a person *wrote*. */
+function fileCard(k) {
+  const t = THEMES[k];
+  const f = spec.file;
+  const ink = k === 'dark' ? T.bright : T.field;
+  const lines = f.lines
+    .map(
+      (ln) => `
+      <div class="ln">
+        <div class="h"><span class="hash">#</span> ${esc(ln.h)}</div>
+        <div class="v">${esc(ln.v)}</div>
+      </div>`,
+    )
+    .join('');
+  return doc(
+    `body{background:${t.bg};font-family:${MONO};padding:64px 76px}
+     .win{height:100%;background:${t.surface};border:1px solid ${t.rule};border-radius:12px;
+       overflow:hidden;display:flex;flex-direction:column}
+     .bar{display:flex;align-items:center;gap:10px;padding:18px 24px;background:${t.lift};
+       border-bottom:1px solid ${t.rule}}
+     .dot{width:12px;height:12px;border-radius:50%;background:${t.rule}}
+     .fn{margin-left:10px;font-size:22px;font-weight:600;letter-spacing:.02em;color:${t.text}}
+     .fn em{font-style:normal;color:${ink}}
+     .body{flex:1;padding:30px 34px;display:flex;flex-direction:column;
+       justify-content:center;gap:26px}
+     .h{font-size:26px;font-weight:600;color:${ink};letter-spacing:.01em}
+     .hash{opacity:.55}
+     .v{font-size:25px;color:${t.dim};margin-top:6px;letter-spacing:-.005em}`,
+    `<div class="win">
+       <div class="bar">
+         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+         <span class="fn">${esc(f.name)}<em>${esc(f.ext ?? '')}</em></span>
+       </div>
+       <div class="body">${lines}</div>
+     </div>`,
+  );
+}
+
+/* SEQUENCE — ordered events on a rail. For a post whose evidence is that things
+   happened in an order: six prompts, four deploys, a migration. The numbers are
+   the part that survives the shrink, so they are drawn, not set in type. */
+function sequenceCard(k) {
+  const t = THEMES[k];
+  const s = spec.sequence;
+  const ink = k === 'dark' ? T.bright : T.field;
+  const steps = s.steps
+    .map(
+      (st, i) => `
+      <div class="step">
+        <div class="node${st.mark ? ' on' : ''}">${i + 1}</div>
+        <div class="cap">${esc(st.text)}</div>
+      </div>`,
+    )
+    .join('');
+  return doc(
+    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+       justify-content:center;gap:44px;padding:0 74px}
+     .l{font-family:${MONO};font-size:21px;font-weight:500;letter-spacing:.15em;
+       text-transform:uppercase;color:${t.dim}}
+     .rail{position:relative;display:flex;justify-content:space-between;gap:18px}
+     .rail:before{content:'';position:absolute;left:26px;right:26px;top:26px;height:2px;
+       background:${t.rule}}
+     .step{position:relative;flex:1 1 0;display:flex;flex-direction:column;
+       align-items:center;gap:16px;min-width:0}
+     .node{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;
+       justify-content:center;font-family:${MONO};font-size:24px;font-weight:700;
+       background:${t.surface};border:2px solid ${t.hair};color:${t.dim};
+       position:relative;z-index:1}
+     .node.on{background:${ink};border-color:${ink};color:${FIELD_FG}}
+     .cap{font-family:${MONO};font-size:17px;line-height:1.35;color:${t.text};
+       text-align:center;letter-spacing:-.005em}
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.02em;
+       color:${t.text};font-size:${fitSize(s.verdict, 54, 38, 34)}px}
+     .h em{font-style:normal;color:${ink}}`,
+    `<div class="l">${esc(s.label)}</div>
+     <div class="rail">${steps}</div>
+     ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}`,
+  );
+}
+
+/* CHECKLIST — a set of named peers, each with its own state. Not a tally (that
+   is `count`, where the units are identical) and not a ledger of findings (that
+   is `record`, which ends in a verdict). This is "here are the three things",
+   where the names are the content. Markers are drawn, never emoji. */
+function checklistCard(k) {
+  const t = THEMES[k];
+  const c = spec.checklist;
+  const ink = k === 'dark' ? T.bright : T.field;
+  const items = c.items
+    .map(
+      (it) => `
+      <div class="item">
+        <span class="mark${it.off ? ' off' : ''}"></span>
+        <span class="txt"><b>${esc(it.text)}</b>${it.note ? `<i>${esc(it.note)}</i>` : ''}</span>
+      </div>`,
+    )
+    .join('');
+  return doc(
+    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+       justify-content:center;gap:34px;padding:0 76px}
+     .l{font-family:${MONO};font-size:21px;font-weight:500;letter-spacing:.15em;
+       text-transform:uppercase;color:${t.dim}}
+     .item{display:flex;align-items:baseline;gap:22px;padding:16px 0;
+       border-bottom:1px solid ${t.rule}}
+     .item:last-of-type{border-bottom:0}
+     .mark{flex:0 0 auto;width:22px;height:22px;border-radius:5px;background:${ink};
+       transform:translateY(2px)}
+     .mark.off{background:transparent;border:2px solid ${t.hair}}
+     .txt b{font-family:${DISPLAY};font-weight:600;font-size:42px;letter-spacing:-.02em;
+       color:${t.text}}
+     .txt i{font-style:normal;font-family:${MONO};font-size:19px;color:${t.dim};
+       margin-left:16px;letter-spacing:.02em}
+     .note{font-family:${MONO};font-size:20px;letter-spacing:.04em;color:${t.dim}}`,
+    `<div class="l">${esc(c.label)}</div>
+     <div>${items}</div>
+     ${c.note ? `<div class="note">${esc(c.note)}</div>` : ''}`,
+  );
+}
+
+/* ANNOTATED — a passage with its problems marked. For a post whose evidence is
+   that something *reads fine and isn't*: the claim stays legible, the flag names
+   what is wrong with it. The underline does the work a red pen would. */
+function annotatedCard(k) {
+  const t = THEMES[k];
+  const a = spec.annotated;
+  const ink = k === 'dark' ? T.bright : T.field;
+  const spans = a.spans
+    .map(
+      (sp) => `
+      <div class="sp">
+        <div class="claim">${esc(sp.text)}</div>
+        <div class="flag">${esc(sp.flag)}</div>
+      </div>`,
+    )
+    .join('');
+  return doc(
+    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+       justify-content:center;gap:30px;padding:0 76px}
+     .top{display:flex;flex-direction:column;gap:8px}
+     .h{font-family:${DISPLAY};font-weight:600;font-size:46px;letter-spacing:-.02em;
+       color:${t.text};line-height:1.08}
+     .sub{font-family:${MONO};font-size:19px;letter-spacing:.04em;color:${t.dim}}
+     .sp{padding:14px 0}
+     .claim{font-family:${DISPLAY};font-weight:600;font-size:33px;letter-spacing:-.01em;
+       color:${t.text};display:inline-block;border-bottom:3px solid ${ink};
+       padding-bottom:5px;line-height:1.2}
+     .flag{font-family:${MONO};font-size:17px;font-weight:600;letter-spacing:.14em;
+       text-transform:uppercase;color:${ink};margin-top:11px}`,
+    `<div class="top">
+       <div class="h">${esc(a.intro)}</div>
+       ${a.sub ? `<div class="sub">${esc(a.sub)}</div>` : ''}
+     </div>
+     <div>${spans}</div>`,
+  );
+}
+
+/* VERSUS — two named alternatives across the same dimensions. For build-vs-buy,
+   mine-vs-theirs, before-the-rewrite-vs-after. Distinct from `split`, which is
+   one belief against one truth on a single axis; this compares two things that
+   both exist, on several. */
+function versusCard(k) {
+  const t = THEMES[k];
+  const v = spec.versus;
+  const ink = k === 'dark' ? T.bright : T.field;
+  const rows = v.rows
+    .map(
+      (r) => `
+      <div class="r"><span class="k">${esc(r.label)}</span></div>
+      <div class="r"><span class="a">${esc(r.l)}</span></div>
+      <div class="r"><span class="b">${esc(r.r)}</span></div>`,
+    )
+    .join('');
+  return doc(
+    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+       justify-content:center;padding:0 72px;gap:0}
+     .grid{display:grid;grid-template-columns:auto 1fr 1fr;column-gap:38px;align-items:baseline}
+     .hd{font-family:${MONO};font-size:19px;font-weight:600;letter-spacing:.13em;
+       text-transform:uppercase;padding-bottom:16px;border-bottom:2px solid ${t.hair}}
+     .hd.one{color:${t.dim}} .hd.two{color:${ink}}
+     /* Sized up from 31px after the card test: at the grid's ~40% these were
+        landing near 12px, which is the exact failure the whole redesign was
+        about. The row cap of 4 is what buys the room. */
+     .r{padding:22px 0;border-bottom:1px solid ${t.rule}}
+     .k{font-family:${MONO};font-size:18px;letter-spacing:.1em;text-transform:uppercase;
+       color:${t.dim};white-space:nowrap}
+     .a{font-family:${DISPLAY};font-weight:600;font-size:40px;letter-spacing:-.015em;
+       color:${t.dim}}
+     .b{font-family:${DISPLAY};font-weight:600;font-size:40px;letter-spacing:-.015em;
+       color:${t.text}}`,
+    `<div class="grid">
+       <div class="hd"></div>
+       <div class="hd one">${esc(v.left.name)}</div>
+       <div class="hd two">${esc(v.right.name)}</div>
+       ${rows}
+     </div>`,
   );
 }
 

@@ -1,0 +1,19 @@
+{
+  "tone": "accent",
+  "before": { "label": "What I did every session", "text": "Explained myself again" },
+  "after": { "label": "What replaced it", "text": "One file I wrote and control" },
+  "file": {
+    "name": "CLAUDE", "ext": ".md",
+    "lines": [
+      { "h": "who I am", "v": "enterprise dev → AI-native builder" },
+      { "h": "working on now", "v": "teaching what I ship, in public" },
+      { "h": "how I work", "v": "direct · ship fast · simpler path" }
+    ]
+  },
+  "headline": [
+    { "t": "I stopped re-explaining myself. " },
+    { "t": "One file did it", "tone": "accent" },
+    { "t": "." }
+  ],
+  "alt": "A file card titled CLAUDE.md with three sections — who I am, working on now, how I work — each holding one line about me."
+}

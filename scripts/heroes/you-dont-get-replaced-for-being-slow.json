@@ -1,0 +1,20 @@
+{
+  "tone": "bad",
+  "before": { "label": "What it reads like", "text": "Perfectly fine" },
+  "after": { "label": "What is actually in it", "text": "Three things that are wrong" },
+  "annotated": {
+    "intro": "Three things in this are wrong.",
+    "sub": "And it reads perfectly.",
+    "spans": [
+      { "text": "…the 2024 Gartner Retention Index", "flag": "Invented source" },
+      { "text": "…which every customer has now adopted", "flag": "Asserted cause" },
+      { "text": "…roughly 12% month over month", "flag": "No denominator" }
+    ]
+  },
+  "headline": [
+    { "t": "You don't get replaced for being slow. " },
+    { "t": "You get replaced for not noticing", "tone": "bad" },
+    { "t": "." }
+  ],
+  "alt": "Three claims underlined in red, each labelled with what is wrong with it — invented source, asserted cause, no denominator — under the line three things in this are wrong."
+}
