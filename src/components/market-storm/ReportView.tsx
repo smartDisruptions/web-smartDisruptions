@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import Link from 'next/link';
 import ArticleBody from '@/components/ArticleBody';
 import {
   MARKET_STORM_DISCLAIMER,
@@ -7,6 +8,8 @@ import {
   type Tone,
   type DataTable as DataTableType,
   type SourceRef,
+  type HeadlineVsReal as HeadlineVsRealType,
+  type ThroughLine as ThroughLineType,
 } from '@/data/marketStorm';
 
 /* ---- tone → token classes (bull=green, bear=red, warn=amber). Tone is
@@ -106,6 +109,59 @@ function PriceStrip({ report }: { report: MarketStormReport }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ---- headline vs. filing: the recurring finding, given its own block ----
+   Two stacked rows per claim rather than a table, because the pairing is the
+   point and a 3-column table collapses badly on a phone. */
+function HeadlineVsRealBlock({ items }: { items: HeadlineVsRealType[] }) {
+  return (
+    <div>
+      <h2 className="font-display mb-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+        The headline number vs. the filing
+      </h2>
+      <p className="mb-6 max-w-[62ch] text-text-secondary">
+        Every report in this section has found the same shape: the number that
+        leads the coverage is not the number the filing supports. Here is where
+        they part company.
+      </p>
+      <div className="space-y-4">
+        {items.map((item, i) => (
+          <div
+            key={i}
+            className="overflow-hidden rounded-xl border border-border bg-surface"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              <div className="border-b border-border px-5 py-4 sm:border-b-0 sm:border-r">
+                <div className="font-mono-accent text-text-secondary">
+                  The headline says
+                </div>
+                <p className="mt-1.5 text-[0.95rem] leading-relaxed text-text-primary/85">
+                  <Inline>{item.headline}</Inline>
+                </p>
+              </div>
+              <div className="px-5 py-4">
+                <div className={`font-mono-accent ${toneText.warn}`}>
+                  The filing says
+                </div>
+                <p className="mt-1.5 text-[0.95rem] leading-relaxed text-text-primary/85">
+                  <Inline>{item.real}</Inline>
+                </p>
+              </div>
+            </div>
+            <div className="border-t border-border bg-fill px-5 py-3">
+              <p className="text-sm leading-relaxed text-text-secondary">
+                <span className="font-semibold text-text-primary">
+                  The gap:{' '}
+                </span>
+                <Inline>{item.gap}</Inline>
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -341,13 +397,14 @@ function VerificationLedger({ report }: { report: MarketStormReport }) {
         </span>
       </div>
       <p className="mb-5 max-w-[62ch] text-[0.95rem] leading-relaxed text-text-primary/85">
+        {/* Each report's note opens with its own "Confirmed against X:" lead.
+            Bold that lead wherever it ends, rather than hardcoding one
+            company's name — which previously printed "Amazon" on every
+            report, including Microsoft's. */}
         <span className="font-semibold text-text-primary">
-          Confirmed against Amazon’s own filing:{' '}
+          {v.confirmedNote.slice(0, v.confirmedNote.indexOf(':') + 1)}{' '}
         </span>
-        {v.confirmedNote.replace(
-          /^Confirmed against Amazon’s own filing:\s*/,
-          ''
-        )}
+        {v.confirmedNote.slice(v.confirmedNote.indexOf(':') + 1).trim()}
       </p>
       <div className="space-y-3">
         {v.items.map((item, i) => (
@@ -399,6 +456,42 @@ function OpenQuestions({ report }: { report: MarketStormReport }) {
               <Inline>{q}</Inline>
             </p>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---- the non-finance takeaway + the cross-report through line ---- */
+function SoWhat({ report }: { report: MarketStormReport }) {
+  return (
+    <div className="rounded-2xl border border-border bg-accent/[0.06] p-6 sm:p-8">
+      <p className="font-mono-accent mb-3 text-accent">
+        So what — if you don’t trade stocks
+      </p>
+      <ArticleBody className="max-w-[62ch] [&>p:last-child]:mb-0">
+        {report.soWhat ?? ''}
+      </ArticleBody>
+    </div>
+  );
+}
+
+function ThroughLineBlock({ line }: { line: ThroughLineType }) {
+  return (
+    <div>
+      <h2 className="font-display mb-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+        How this reads against the other reports
+      </h2>
+      <ArticleBody className="max-w-[62ch]">{line.text}</ArticleBody>
+      <div className="mt-5 flex flex-wrap gap-3">
+        {line.links.map((l) => (
+          <Link
+            key={l.slug}
+            href={`/market-storm/${l.slug}`}
+            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:border-accent/40 hover:text-accent"
+          >
+            {l.label} &rarr;
+          </Link>
         ))}
       </div>
     </div>
@@ -494,6 +587,10 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
         </ArticleBody>
       </section>
 
+      {report.headlineVsReal && report.headlineVsReal.length > 0 && (
+        <HeadlineVsRealBlock items={report.headlineVsReal} />
+      )}
+
       <section>
         <Eyebrow>The scorecard</Eyebrow>
         <p className="mb-4 mt-1 max-w-[62ch] text-text-secondary">
@@ -516,6 +613,8 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
       <Invalidation report={report} />
       <VerificationLedger report={report} />
       <OpenQuestions report={report} />
+      {report.soWhat && <SoWhat report={report} />}
+      {report.throughLine && <ThroughLineBlock line={report.throughLine} />}
       <Sources sources={report.sources} />
       <MethodNote />
     </div>

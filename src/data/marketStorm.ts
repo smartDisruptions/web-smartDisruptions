@@ -48,6 +48,22 @@ export interface Verification {
   items: VerificationItem[];
 }
 
+// The recurring finding across every report so far: the number in the headline
+// is not the number the filing supports. It kept turning up buried in KPI notes,
+// so it gets its own block — one row per claim, the gap named explicitly.
+export interface HeadlineVsReal {
+  headline: string; // what the release / the coverage leads with
+  real: string; // what the filing supports
+  gap: string; // the mechanism that separates them
+}
+
+// A report links to its siblings. Three isolated notes are three notes; three
+// notes that read each other are a thesis about the AI-capex cycle.
+export interface ThroughLine {
+  text: string; // markdown — how this report reads against the others
+  links: { label: string; slug: string }[];
+}
+
 export interface SourceRef {
   n: number;
   label: string;
@@ -69,6 +85,7 @@ export interface MarketStormReport {
   verdict: string; // the one-line hero thesis
   priceStrip: PriceCell[];
   summary: string; // markdown — the one-paragraph read
+  headlineVsReal?: HeadlineVsReal[]; // the gap between the release and the filing
   kpis: Kpi[];
   printTable: DataTable; // the catalyst's key figures
   printTableTitle: string;
@@ -79,6 +96,11 @@ export interface MarketStormReport {
   invalidation: { bull: string[]; bear: string[] };
   verification: Verification;
   openQuestions: string[];
+  // The reader here is a working professional learning AI, not a fund manager.
+  // Every report has to answer "what does this tell me about AI?" in plain
+  // English, or it is a sell-side note wearing our typeface.
+  soWhat?: string; // markdown — the non-finance takeaway
+  throughLine?: ThroughLine;
   sources: SourceRef[];
   ogImage?: string;
 }
@@ -373,6 +395,11 @@ On the counterweight side: **the marquee OpenAI $38B AWS deal is Nvidia GPUs —
     'When exactly does the depreciation step-up hit AWS operating margin, and how big? The whole bear case hinges on timing not yet disclosed.',
     'The precise TTM FCF figure — sources split −$7.6B vs −$11.6B on differing capex definitions. The most decision-relevant number has the least source agreement.',
   ],
+  soWhat: `The number to take away from this print isn't the EPS — it's **~$220 billion of capex in one year, at one company**, to build the thing you rent by the token.
+
+That is what "AI is cheap now" actually costs somebody. Every time an API call gets cheaper, it is because a company like this one front-loaded a decade of concrete, power, and silicon and is betting it can bill for it later. Amazon's free cash flow going negative is the first quarter where that bet showed up as an actual hole in the statement rather than a line in a slide deck.
+
+The practical read: if you build on top of this infrastructure, your costs are currently subsidised by a capex race between four companies. Useful to know while it lasts — and worth noticing that **power, not chips, is the binding constraint** Amazon named. That's the ceiling on how cheap inference gets.`,
   sources: [
     {
       n: 1,
@@ -601,7 +628,14 @@ const msftQ4_FY2026: MarketStormReport = {
       { label: 'Note' },
     ],
     rows: [
-      { cells: ['Total revenue', '$90,007M', '+17.7%', 'Beat ~$87.6B consensus by $2.4B'] },
+      {
+        cells: [
+          'Total revenue',
+          '$90,007M',
+          '+17.7%',
+          'Beat ~$87.6B consensus by $2.4B',
+        ],
+      },
       {
         star: true,
         cells: [
@@ -619,7 +653,14 @@ const msftQ4_FY2026: MarketStormReport = {
           'A $5,151M swing — the source of the EPS gap',
         ],
       },
-      { cells: ['Net income', '$35,766M', '+31.3%', 'Despite a higher 18.8% tax rate (vs 16.5%)'] },
+      {
+        cells: [
+          'Net income',
+          '$35,766M',
+          '+31.3%',
+          'Despite a higher 18.8% tax rate (vs 16.5%)',
+        ],
+      },
       {
         star: true,
         cells: [
@@ -629,10 +670,22 @@ const msftQ4_FY2026: MarketStormReport = {
           '⚠ non-GAAP strips OpenAI only; Anthropic gain stays in',
         ],
       },
-      { cells: ['Microsoft Cloud', '$59.3B', '+27%', 'Gross margin 65%, down from 68%'] },
+      {
+        cells: [
+          'Microsoft Cloud',
+          '$59.3B',
+          '+27%',
+          'Gross margin 65%, down from 68%',
+        ],
+      },
       {
         star: true,
-        cells: ['Azure and other cloud', '—', '+43%', 'Crossed $100B annual revenue; +43% cc'],
+        cells: [
+          'Azure and other cloud',
+          '—',
+          '+43%',
+          'Crossed $100B annual revenue; +43% cc',
+        ],
       },
       {
         cells: [
@@ -650,7 +703,14 @@ const msftQ4_FY2026: MarketStormReport = {
           '$21,900M op income · 57.9% margin',
         ],
       },
-      { cells: ['More Personal Computing', '$12,854M', '−4.4%', 'Op income −13.9%; Xbox impairments'] },
+      {
+        cells: [
+          'More Personal Computing',
+          '$12,854M',
+          '−4.4%',
+          'Op income −13.9%; Xbox impairments',
+        ],
+      },
       {
         star: true,
         cells: [
@@ -669,8 +729,22 @@ const msftQ4_FY2026: MarketStormReport = {
           '⚠ positive but declining; FY26 $67.0B, down ~6.5%',
         ],
       },
-      { cells: ['Commercial RPO', '$678B', '+84%', 'Ex-OpenAI +25%; ~30–45% OpenAI-attributable'] },
-      { cells: ['Commercial bookings', '—', '+10% (+11% cc)', 'Ex-OpenAI +18% — OpenAI depresses this one'] },
+      {
+        cells: [
+          'Commercial RPO',
+          '$678B',
+          '+84%',
+          'Ex-OpenAI +25%; ~30–45% OpenAI-attributable',
+        ],
+      },
+      {
+        cells: [
+          'Commercial bookings',
+          '—',
+          '+10% (+11% cc)',
+          'Ex-OpenAI +18% — OpenAI depresses this one',
+        ],
+      },
       {
         cells: [
           'FY26 totals',
@@ -812,6 +886,11 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
     'Does the 30% perf-per-dollar Maia claim hold against a neutral benchmark? There is no MLPerf submission to check it against, and the baseline is unstated.',
     'One flat contradiction left unresolved: Microsoft’s release reports the Q4 OpenAI item as a $480M *gain*, while at least one outlet described a ~$600M Q4 *markdown*. The primary filing supports the gain, and I did not average them.',
   ],
+  soWhat: `The transferable lesson here has nothing to do with owning the stock: **when a number moves, check whether the thing it measures moved, or whether the definition did.**
+
+Microsoft's capex figure fell from ~$190B to ~$175B and was widely reported as a pullback in AI spending. It wasn't. Leases were reclassified — the same buildings, counted differently. Meanwhile $329.1B of signed-but-uncommenced leases sit outside the capex line entirely, and the useful life of a datacenter was extended from 15 years to 25, which lowers annual depreciation on every asset in the fleet.
+
+None of that is fraud; it is all disclosed, and mostly defensible. But three separate accounting choices in one quarter all moved reported numbers the same direction, and the summary you read probably mentioned none of them. **The filing and the coverage of the filing are two different documents** — and only one of them is signed under penalty of law.`,
   sources: [
     {
       n: 1,
@@ -836,7 +915,8 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
     },
     {
       n: 4,
-      label: 'Investing.com — Microsoft Q4 FY2026 earnings call transcript (2026-07-29)',
+      label:
+        'Investing.com — Microsoft Q4 FY2026 earnings call transcript (2026-07-29)',
       url: 'https://www.investing.com/news/transcripts/earnings-call-transcript-microsoft-q4-2026-beats-forecasts-stock-jumps-8-93CH-4822020',
     },
     {
@@ -846,7 +926,8 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
     },
     {
       n: 6,
-      label: 'Directions on Microsoft — capacity constraints and capex acceleration (2026-07-30)',
+      label:
+        'Directions on Microsoft — capacity constraints and capex acceleration (2026-07-30)',
       url: 'https://www.directionsonmicrosoft.com/microsoft-expect-capacity-constraints-capex-acceleration-to-continue/',
     },
     {
@@ -856,40 +937,48 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
     },
     {
       n: 8,
-      label: 'Business Model Analyst — "the $15B capex cut is an accounting move"',
+      label:
+        'Business Model Analyst — "the $15B capex cut is an accounting move"',
       url: 'https://businessmodelanalyst.com/microsoft-capex-accounting-signal/',
     },
     {
       n: 9,
-      label: 'BTW Media — $329.1B of uncommenced datacenter leases (from the FY26 10-K)',
+      label:
+        'BTW Media — $329.1B of uncommenced datacenter leases (from the FY26 10-K)',
       url: 'https://btw.media/en/microsoft-329-1bn-uncommenced-datacentre-leases',
     },
     {
       n: 10,
-      label: 'Bloomberg — over $130B in new datacenter leases in the quarter (2026-07-29)',
+      label:
+        'Bloomberg — over $130B in new datacenter leases in the quarter (2026-07-29)',
       url: 'https://www.bloomberg.com/news/articles/2026-07-29/microsoft-reports-over-130-billion-in-new-data-center-leases',
     },
     {
       n: 11,
-      label: 'TechCrunch — $3.2B Anthropic gain; conflicting OpenAI characterization (2026-07-29)',
+      label:
+        'TechCrunch — $3.2B Anthropic gain; conflicting OpenAI characterization (2026-07-29)',
       url: 'https://techcrunch.com/2026/07/29/microsoft-logs-3-2b-from-anthropic-investment-but-openai-was-a-mixed-bag/',
     },
     {
       n: 12,
-      label: 'Microsoft — the next chapter of the Microsoft/OpenAI partnership (2025-10-28)',
+      label:
+        'Microsoft — the next chapter of the Microsoft/OpenAI partnership (2025-10-28)',
       url: 'https://blogs.microsoft.com/blog/2025/10/28/the-next-chapter-of-the-microsoft-openai-partnership/',
       primary: true,
-      secondaryUrl: 'https://openai.com/index/next-chapter-of-microsoft-openai-partnership/',
+      secondaryUrl:
+        'https://openai.com/index/next-chapter-of-microsoft-openai-partnership/',
       secondaryLabel: 'OpenAI',
     },
     {
       n: 13,
-      label: 'Directions on Microsoft — the April 2026 OpenAI agreement amendment',
+      label:
+        'Directions on Microsoft — the April 2026 OpenAI agreement amendment',
       url: 'https://www.directionsonmicrosoft.com/microsoft-openai-amend-their-agreement-again/',
     },
     {
       n: 14,
-      label: 'DataCenterDynamics — recapitalization terms, 27% stake, $250B Azure, ROFR lost',
+      label:
+        'DataCenterDynamics — recapitalization terms, 27% stake, $250B Azure, ROFR lost',
       url: 'https://www.datacenterdynamics.com/en/news/openai-completes-for-profit-move-microsoft-given-27-stake-and-250bn-azure-contract-but-no-longer-has-cloud-right-of-first-refusal/',
     },
     {
@@ -904,25 +993,29 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
     },
     {
       n: 17,
-      label: 'MLCommons — MLPerf Inference v6.0 results (2026-04-01); no Maia submission',
+      label:
+        'MLCommons — MLPerf Inference v6.0 results (2026-04-01); no Maia submission',
       url: 'https://mlcommons.org/2026/04/mlperf-inference-v6-0-results/',
       primary: true,
     },
     {
       n: 18,
-      label: 'Amazon Q2 2026 earnings release — AWS +37% comparison (2026-07-30)',
+      label:
+        'Amazon Q2 2026 earnings release — AWS +37% comparison (2026-07-30)',
       url: 'https://www.aboutamazon.com/news/company-news/amazon-earnings-q2-2026-report',
       primary: true,
     },
     {
       n: 19,
-      label: 'Alphabet Q2 2026 earnings release — Google Cloud +82% (2026-07-22)',
+      label:
+        'Alphabet Q2 2026 earnings release — Google Cloud +82% (2026-07-22)',
       url: 'https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf',
       primary: true,
     },
     {
       n: 20,
-      label: 'Google — Wiz acquisition closed (2026-03-11); the asterisk on the 82%',
+      label:
+        'Google — Wiz acquisition closed (2026-03-11); the asterisk on the 82%',
       url: 'https://www.googlecloudpresscorner.com/2026-03-11-Google-Completes-Acquisition-of-Wiz',
       primary: true,
     },
@@ -933,7 +1026,8 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
     },
     {
       n: 22,
-      label: 'stockanalysis.com — MSFT analyst targets and rating counts, as of 2026-08-03',
+      label:
+        'stockanalysis.com — MSFT analyst targets and rating counts, as of 2026-08-03',
       url: 'https://stockanalysis.com/stocks/msft/forecast/',
     },
     {
@@ -953,14 +1047,581 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
     },
     {
       n: 26,
-      label: 'scanx.trade — ex-OpenAI RPO growth from the call [conflicts with other attributions]',
+      label:
+        'scanx.trade — ex-OpenAI RPO growth from the call [conflicts with other attributions]',
       url: 'https://scanx.trade/stock-market-news/companies/microsoft-q4-results-commercial-rpo-hits-record-678-billion/46990028',
     },
   ],
 };
 
+const pltrQ2_2026: MarketStormReport = {
+  slug: 'pltr-q2-2026',
+  ticker: 'PLTR',
+  company: 'Palantir Technologies Inc.',
+  title:
+    'Palantir grew 93% and paid a 1.4% tax rate — only one of those is in the headlines',
+  excerpt:
+    'Revenue accelerated for a third straight quarter to +93%, GAAP operating margin went 27% → 47%, and free cash flow hit a 63% margin on $14.6 million of capex. The growth is real and the operating leverage is not an adjusted-numbers trick. But $15.4M of tax on $1.08B of pre-tax income does a fifth of the work in the headline EPS, bookings grew at half the rate of revenue, and the stock carries ~114× normalized earnings. STORM put four AI agents on the Q2 2026 print, then had a skeptic try to refute every load-bearing claim against the filing.',
+  catalyst: 'Q2 2026 earnings — reported August 3, 2026',
+  publishDate: '2026-08-04',
+  tags: ['PLTR', 'AIP', 'earnings', 'enterprise-AI', 'valuation'],
+  verdict:
+    'Palantir accelerated to 93% growth at a $1.9B quarterly run rate — something large software companies are not supposed to be able to do. It is also the one AI winner with no capex to hide anything in, which moves the entire earnings-quality question into the price.',
+  priceStrip: [
+    { k: '52-wk high', v: '$207.52' },
+    { k: 'Two-day move', v: '≈ +30%', tone: 'bull' },
+    { k: 'Price · Aug 4', v: '$163.24' },
+    { k: 'Market cap', v: '~$391B' },
+    { k: 'Fwd P/E', v: '86.5×', tone: 'warn' },
+    { k: 'P/S · FY26 guide', v: '~48×', tone: 'bear' },
+  ],
+  summary: `Revenue grew **93%** to $1.935B — the *third consecutive quarter of acceleration* (+70% → +85% → +93%), which at a $1.9B quarterly run rate is close to unheard of. GAAP operating margin went **27% → 47%**, and that one isn't adjusted: it's the actual income statement. Adjusted free cash flow was **$1.22B at a 63% margin** on **$14.6M** of capex — Palantir monetizes the AI buildout without funding it. Management raised the FY26 guide to **$8.15B (+82%)**, up from the +61% it guided in February. All real. But **Palantir paid $15.4M of tax on $1.081B of pre-tax income — a 1.42% rate** — while its own non-GAAP footnote calls 23% the long-term rate; apply that and the headline **$0.41 EPS is ~$0.32**. Closed TCV grew **49%** against revenue's 93%, and all of it came from one segment. At **~48× forward sales and ~114× normalized earnings**, the price already assumes about five more years of this.`,
+  headlineVsReal: [
+    {
+      headline:
+        '"GAAP net income of $1.062 billion, representing a 55% margin" — and diluted EPS of **$0.41**, up from $0.13.',
+      real: 'About **$0.32** at the tax rate Palantir itself calls its long-term rate. Operating income — the part that is unambiguously the business — was $912M.',
+      gap: 'Palantir booked **$15.4M of tax on $1,081.3M of pre-tax income, a 1.42% effective rate**. Its own adjusted-EPS footnote states an "estimated long-term annual effective tax rate of 23.0%." Applying the company’s own number costs ~$233M and ~9¢ of EPS. The tell is in the release itself: adjusted EPS ($0.41) is now *below* GAAP EPS for the first time — a year ago it was $0.16 vs $0.13, the other way around.',
+    },
+    {
+      headline:
+        '"Rule of 40 score of 155%" — quoted in the CEO’s first sentence.',
+      real: '**140%** using the GAAP operating margin. Still, by a distance, the best score in enterprise software.',
+      gap: 'Palantir defines Rule of 40 as revenue growth plus the **adjusted** operating margin (62%), which excludes $265.2M of stock compensation. The GAAP margin is 47%. This is a company-defined metric, not a GAAP one — the number is extraordinary either way, but 155% and 140% are not the same claim.',
+    },
+    {
+      headline:
+        '"Closed total contract value (TCV) of $3.373 billion, up 49% year-over-year" — read as bookings confirming the growth.',
+      real: 'Bookings grew at roughly **half** the rate of revenue (+49% vs +93%), and **every dollar of the growth came from US commercial**.',
+      gap: 'US commercial TCV was $2.132B of the $3.373B total. Back it out and bookings everywhere else — US government plus all international — went **$1.427B → $1.241B, about −13% YoY** (our arithmetic off the Q2 2025 and Q2 2026 releases). The fair caveat: Q2 2025 was itself a record TCV quarter at +140%, so the comp is brutal and one quarter is not a trend.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue growth',
+      value: '+93%',
+      delta: '3rd straight accel',
+      note: '+70% → +85% → +93%, at a $1.9B quarterly run rate.',
+      tone: 'bull',
+    },
+    {
+      label: 'US commercial revenue',
+      value: '$764M',
+      delta: '+149% YoY',
+      note: 'The engine of the whole print — and the concentration.',
+      tone: 'bull',
+    },
+    {
+      label: 'GAAP operating margin',
+      value: '47%',
+      delta: '▲ from 27%',
+      note: 'Real operating leverage — this is the unadjusted line.',
+      tone: 'bull',
+    },
+    {
+      label: 'Adjusted free cash flow',
+      value: '$1.22B',
+      delta: '63% margin',
+      note: 'On $14.6M of capex. Nobody else in AI has this shape.',
+      tone: 'bull',
+    },
+    {
+      label: 'Effective tax rate',
+      value: '1.42%',
+      delta: '⚠ vs 23% stated',
+      note: '$15.4M on $1.08B pre-tax; ~9¢ of the $0.41 EPS.',
+      tone: 'warn',
+    },
+    {
+      label: 'Closed TCV',
+      value: '$3.37B',
+      delta: '+49% YoY',
+      note: 'Bookings growing at half the rate of revenue.',
+      tone: 'warn',
+    },
+    {
+      label: 'Stock comp',
+      value: '$265M',
+      delta: '13.7% of revenue',
+      note: 'Down from 15.9%; diluted share count up just 0.2% YoY.',
+      tone: 'neutral',
+    },
+    {
+      label: 'Valuation',
+      value: '~48×',
+      delta: 'fwd sales · ~114× norm. P/E',
+      note: 'The most expensive large-cap in US software, by a wide margin.',
+      tone: 'bear',
+    },
+  ],
+  printTableTitle: 'Q2 2026 — the facts everything hangs on',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 2026', align: 'right' },
+      { label: 'YoY', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Revenue',
+          '$1,935.5M',
+          '+93%',
+          'Beat ~$1.81B consensus and its own $1.86B guide',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'US commercial revenue',
+          '$764M',
+          '+149%',
+          'The engine — and where all the bookings growth sits',
+        ],
+      },
+      {
+        cells: [
+          'US government revenue',
+          '$809M',
+          '+90%',
+          'Still the larger US half',
+        ],
+      },
+      {
+        cells: [
+          'US revenue (total)',
+          '$1,573M',
+          '+115%',
+          '81% of total revenue — this is a US story',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'GAAP income from operations',
+          '$912.0M',
+          '+239%',
+          '47% margin, up from 27% — not an adjusted figure',
+        ],
+      },
+      {
+        cells: [
+          'Adjusted income from operations',
+          '$1,194.5M',
+          '+157%',
+          '62% margin — excludes $265M of stock comp',
+        ],
+      },
+      {
+        cells: [
+          'Interest income',
+          '$77.5M',
+          '+38%',
+          'On $9.2B of cash and Treasuries, no debt',
+        ],
+      },
+      {
+        cells: [
+          'Other income, net',
+          '$91.8M',
+          'from $6.6M',
+          '⚠ ~14×; materially non-cash marks — not operating',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Provision for income taxes',
+          '$15.4M',
+          'on $1,081.3M pre-tax',
+          '⚠ A 1.42% effective rate; company states 23% long-term',
+        ],
+      },
+      {
+        cells: [
+          'GAAP net income',
+          '$1,061.9M',
+          '+225%',
+          '55% margin — flattered by the tax line above',
+        ],
+      },
+      {
+        cells: [
+          'GAAP EPS (diluted)',
+          '$0.41',
+          'vs $0.13',
+          '⚠ ~$0.32 at Palantir’s own 23% long-term rate',
+        ],
+      },
+      {
+        cells: [
+          'Adjusted EPS (diluted)',
+          '$0.41',
+          'vs $0.16',
+          'Now *below* GAAP — the flip is the tell',
+        ],
+      },
+      {
+        cells: [
+          'Stock-based compensation',
+          '$265.2M',
+          '+66%',
+          '13.7% of revenue, improved from 15.9%',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Adjusted free cash flow',
+          '$1,220.4M',
+          '+115%',
+          '63% margin — the strongest fact in the release',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Purchases of property & equipment',
+          '$14.6M',
+          '+91%',
+          '0.75% of revenue — monetizes AI without funding it',
+        ],
+      },
+      {
+        cells: [
+          'Closed TCV',
+          '$3,373M',
+          '+49%',
+          '⚠ Bookings growing at half the rate of revenue',
+        ],
+      },
+      {
+        cells: [
+          'US commercial TCV',
+          '$2,132M',
+          '+153%',
+          'All of the TCV growth, and then some',
+        ],
+      },
+      {
+        cells: [
+          'TCV outside US commercial (derived)',
+          '$1,241M',
+          '−13%',
+          '⚠ $1,427M a year ago — against a record comp',
+        ],
+      },
+      {
+        cells: [
+          'US commercial RDV',
+          '$6,238M',
+          '+124%',
+          '+27% QoQ; no total-company RDV disclosed',
+        ],
+      },
+      {
+        cells: [
+          'Diluted shares outstanding',
+          '2,568.7M',
+          '+0.2%',
+          'Dilution has essentially stopped — a dated bear point',
+        ],
+      },
+      {
+        cells: ['Cash + short-term Treasuries', '$9.2B', '+53%', 'No debt'],
+      },
+      {
+        cells: [
+          'FY2026 revenue guide',
+          '$8,150–8,158M',
+          '+82%',
+          '▲ from +61% guided in February — ~$1B added',
+        ],
+      },
+    ],
+  },
+  bull: [
+    '**Revenue growth is accelerating, three quarters running** — +70% → +85% → +93% — at a scale where the law of large numbers is supposed to bite.',
+    '**The operating leverage is GAAP, not adjusted:** operating margin went 27% → 47% in a year, on the real income statement.',
+    '**63% free-cash-flow margin on $14.6M of capex.** Palantir is the asset-light tenant of everyone else’s $200B build — no depreciation wave, no debt, no negative-FCF window.',
+    '**Guidance raised twice, hard:** FY26 revenue from +61% (February) to +71% (May) to **+82%** (August) — roughly $1B added in six months, after eight straight beats.',
+    '**The dilution complaint is now stale:** diluted share count rose 0.2% YoY and stock comp fell from 15.9% to 13.7% of revenue.',
+    '**The competition bear case got weaker, not stronger** — 149% US commercial growth is not the shape of a company losing share to hyperscaler AI layers.',
+  ],
+  bear: [
+    '**~48× forward sales and ~114× normalized earnings** — the most expensive large-cap in US software, with no close second.',
+    '**A 1.42% effective tax rate** does ~9¢ of the $0.41 headline EPS; Palantir’s own footnote says 23% is the long-term rate.',
+    '**Bookings grew at half the rate of revenue** (TCV +49% vs revenue +93%) — revenue eventually converges to bookings.',
+    '**TCV outside US commercial fell ~13% YoY.** Concentration is increasing, not broadening, and US revenue is 81% of the total.',
+    '**Two disclosures went quiet:** customer count (touted at +43% a year ago) and any total-company RDV or RPO figure.',
+    '**$91.8M of "other income"** — ~14× the year-ago figure and materially non-cash — sits inside that 55% net margin.',
+  ],
+  theQuestion: `Is 93% growth a *land grab with a long runway* — sovereign AI as a real new category Palantir defined and owns — or a *pull-forward* into a US commercial base that the bookings data says isn't broadening? Every other question here is downstream. At ~114× normalized earnings the price doesn't just need the first answer; it needs it to keep being true for about five more years.`,
+  analysis: `## Valuation — this is the entire bear case, and it isn't a small one
+
+At **$163.24** the market pays **~$391B** (on basic shares; ~$419B on diluted) for a company guiding to **$8.15B** of 2026 revenue. That is **~48× forward sales**. Large-cap software generally lives at 10–20×. Nvidia — the most direct AI beneficiary in the market — trades at roughly a quarter of Palantir's sales multiple.
+
+The earnings multiple is where it gets concrete. Trailing P/E is 139.6× and forward is 86.5× — but both are computed on a tax rate the company itself says is not the long-run rate. Normalize FY26: the adjusted operating income guide of **$4.89B**, less roughly **$1.05B** of stock compensation and payroll tax, plus ~**$0.6B** of interest and other income, taxed at Palantir's own **23%**, lands near **$3.4B of normalized earnings — about 114× the basic market cap** (~122× diluted).
+
+| Multiple (on $163.24) | Value | Context |
+| --- | --- | --- |
+| Price / sales (FY26 guide) | **~48×** | Rest of large-cap software: 10–20× |
+| Trailing P/E | 139.6× | On a 1.4% tax rate |
+| Forward P/E | 86.5× | Also on the low tax rate |
+| **Normalized P/E (our estimate)** | **~114×** | GAAP operating basis, taxed at Palantir's own 23% |
+| EV / EBITDA | 143.6× | — |
+| Price / free cash flow | 116.6× | ~85× on the FY26 adj. FCF guide |
+| Price / book | 30.9× | — |
+
+**What has to happen.** At ~114×, reaching a 30× multiple — still a premium to almost anything — requires earnings to grow about **3.8×**. At a 40% earnings CAGR that is four years; at 30%, a bit over five. So today's price embeds roughly **half a decade of compounding at rates almost no company sustains, just to arrive at "expensive."**
+
+One concession the bears should make: **the de-rating already partly happened.** Palantir entered this print ~41% below its 52-week high and down ~32% year to date — the business compounded at 85% through the first half of 2026 while the stock fell. Even after a ~30% two-day move it sits ~21% below the $207.52 high. The multiple compression bears were waiting for arrived in H1; this print bought some of it back.
+
+## The growth — what is actually accelerating, and what isn't
+
+Take the operating business on its own terms, because it has earned that. Revenue growth went **+70% (Q4 2025) → +85% (Q1 2026) → +93% (Q2 2026)**. Acceleration at a $1B+ quarterly scale is rare enough to be the story on its own. GAAP operating margin went **27% → 47%** in a year — and this is the point most bear write-ups skip, because it is not a non-GAAP artifact; it is the reported income statement. Adjusted free cash flow margin is 63%. Guidance has gone from +61% to +71% to +82% in six months.
+
+Then the counterweight, which is in the same release. **Closed TCV grew 49% while revenue grew 93%** — bookings are compounding at roughly half the rate of the revenue they eventually become. And the composition is narrow: US commercial TCV was **$2.132B of the $3.373B** total. Back it out and bookings everywhere else went **$1.427B → $1.241B, about −13% YoY**.
+
+> **Caveat, applied honestly:** Q2 2025 was itself a record TCV quarter at +140% YoY, so this is a punishing comp, and a single quarter of a derived figure is not a trend. It is, however, the one number in the release that does not rhyme with the headline — and it is the number to watch next quarter.
+
+Two disclosures that used to be there aren't. **Customer count** — touted in the Q2 2025 highlights at +43% YoY — appears in neither the Q1 nor the Q2 2026 release. And Palantir gives US commercial RDV ($6.238B) but **no total-company RDV or RPO**, so there is no way to check whether total backlog is keeping pace with revenue. Neither omission is evidence of a problem. Both remove the evidence that would settle one.
+
+## The shape nobody else in AI has
+
+Palantir spent **$14.6M** on property and equipment this quarter — **0.75% of revenue** — and generated $1.22B of adjusted free cash flow. Amazon's trailing capex is ~$169B; Microsoft's was $115.9B for the year with another $329B of uncommenced leases sitting off the statement.
+
+That difference is not a detail, it is the investment case. Palantir sells into the AI buildout **without funding it**. There is no depreciation wave arriving in 2027, no debt raised to cover a capex hole, no negative-free-cash-flow window to explain away. The earnings-quality questions that dominated the Amazon and Microsoft prints simply have no place to live on this balance sheet.
+
+Which is precisely why they moved into the price — and into the tax line.
+
+## Risk — each isolated, do not blur
+
+1. **Valuation / multiple risk (dominant).** ~114× normalized earnings, ~48× forward sales. A 30% de-rating requires nothing to go wrong operationally — that is not a hypothetical, it is what happened in H1 2026 while revenue accelerated.
+2. **Earnings quality — the tax line.** A 1.42% effective rate against the company's own stated 23% long-term rate. When the shield exhausts, reported EPS growth decouples *downward* from operating growth, and the optics of that quarter will be ugly regardless of the business.
+3. **Concentration.** US revenue is 81% of total; US commercial supplied all the bookings growth. Marketed as a global sovereign-AI wave, the segment data currently describes a US phenomenon.
+4. **Bookings vs. revenue.** TCV growing at half of revenue growth. If revenue keeps outrunning bookings, growth converges downward to bookings — the only question is when.
+5. **Non-operating income.** $91.8M of "other income," ~14× the year-ago figure and materially non-cash, sitting inside the 55% net margin.
+6. **Insider selling.** Karp sold 397,744 Class A shares on May 20, 2026 under a 10b5-1 plan, with sustained executive-suite selling for two years. Pre-scheduled 10b5-1 sales are not a signal by themselves — but the aggregate is large enough to name rather than omit.
+7. **Competition (ranked low, deliberately).** Every hyperscaler sells an AI application layer. This print made that case *weaker*: 149% US commercial growth is not what share loss looks like.
+
+## Time horizon & position sizing (kept separate)
+
+**Horizon.** Not a next-quarter setup. The next two quarters are guided to decelerate — **+83%** for Q3, and the FY guide implies roughly **+72%** for Q4 — and Palantir has beaten its own guide eight quarters running, so the near term is mostly a game of by-how-much. The thesis resolves over **3–5 years** on the question the valuation section poses: does ~$8B of revenue become ~$30B+ before the multiple normalizes? Under two years you are trading sentiment on the AI complex, not the business.
+
+**Sizing considerations (not a recommendation).** Two things separate Palantir from the other names in this section. It is the only one that **doesn't carry capex-cycle risk** — no depreciation wave, no debt, no negative-FCF window — so it is genuine diversification against AMZN/MSFT/NVDA exposure rather than more of the same beta. Against that: at ~48× sales, returns are dominated by the multiple rather than by operations, and H1 2026 is the proof — the business accelerated and the stock fell 32%. A position sized for the business will behave like a position sized for the multiple.`,
+  invalidation: {
+    bull: [
+      'Total TCV growth stays near half of revenue growth into FY27 — bookings stop replenishing the revenue they feed.',
+      'TCV outside US commercial declines a second and third quarter, confirming concentration rather than a hard comp.',
+      'The tax shield exhausts and normalized EPS growth visibly lags the multiple.',
+      'US commercial revenue growth decelerates faster than the guide while international commercial stays undisclosed.',
+    ],
+    bear: [
+      'Total TCV growth re-accelerates toward revenue growth — and Palantir resumes disclosing total RDV or customer count.',
+      'International commercial turns, proving "sovereign AI" is a global category rather than a US one.',
+      'The implied ~+72% Q4 guide is beaten by the usual 4%+, making the deceleration curve a sandbag rather than a ceiling.',
+      'Adjusted FCF lands at the top of the $4.5–4.7B guide while revenue nearly doubles — funding the multiple from cash rather than hope.',
+    ],
+  },
+  verification: {
+    confirmed: 5,
+    partlyTrue: 4,
+    corrected: 2,
+    confirmedNote:
+      'Confirmed against Palantir’s own 8-K: revenue $1,935.5M / +93% and US commercial $764M / +149% · GAAP income from operations $912.0M at a 47% margin, up from 27% · adjusted free cash flow $1,220.4M at a 63% margin on $14.6M of capex · the FY26 guide raised to $8.150–8.158B (+82%) from +61% in February · $9.2B of cash and Treasuries with no debt.',
+    items: [
+      {
+        kind: 'corrected',
+        title:
+          'The "55% net margin" is an operating result — a fifth of it is the tax line',
+        text: 'Palantir booked **$15.4M of tax on $1,081.3M of pre-tax income — a 1.42% effective rate** — while its own adjusted-EPS footnote states a 23.0% long-term rate. At 23%, net income is ~$833M and diluted EPS ~$0.32, not $0.41. The release itself shows the flip: adjusted EPS is now *below* GAAP EPS ($0.41 vs $0.41, versus $0.16 vs $0.13 a year ago).',
+      },
+      {
+        kind: 'corrected',
+        title: 'The "massive dilution" bear point is dated',
+        text: 'The most-repeated criticism of Palantir no longer matches the filing. **Diluted share count rose 0.23% YoY** (2,562.9M → 2,568.7M) and stock compensation *fell* from 15.9% to **13.7% of revenue**. It was a fair complaint in 2023–24; on this print it is not.',
+      },
+      {
+        kind: 'partly',
+        title: '"Rule of 40 score of 155%"',
+        text: 'True to Palantir’s own definition, which sums revenue growth and the **adjusted** operating margin (62%). On the GAAP margin (47%) it is 140%. Best in enterprise software either way — but it is a company-defined, non-GAAP-flavored metric, quoted as though it were an audited one.',
+      },
+      {
+        kind: 'partly',
+        title:
+          '"Closed TCV of $3.373 billion, up 49%" as confirmation of the growth',
+        text: 'Bookings grew at roughly half the rate of revenue, and **all** of the growth came from US commercial ($2.132B of $3.373B). Derived from the two press releases, TCV outside US commercial went $1.427B → $1.241B, **about −13% YoY**. Fair caveat: Q2 2025 was a record TCV quarter (+140%), so the comp is severe and one quarter is not a trend.',
+      },
+      {
+        kind: 'partly',
+        title: '"Demand for AI sovereignty has now been unleashed"',
+        text: 'The segment data supports a **US** story specifically: US revenue +115% and 81% of the total. The release gives **no international commercial growth figure at all** — historically Palantir’s weakest segment. The demand is evidently real; its geography is being described more broadly than the disclosure supports.',
+      },
+      {
+        kind: 'partly',
+        title: 'The $91.8M of "other income, net" inside the 55% net margin',
+        text: 'Up ~14× from $6.6M a year ago, and not operating income. The cash-flow statement backs out $62.2M of marketable-securities gains and $85.6M of "other operating activities" over six months, indicating a materially non-cash component. Exact composition awaits the 10-Q.',
+      },
+    ],
+  },
+  openQuestions: [
+    'What actually composes the $91.8M of "other income, net"? It is ~14× the year-ago figure and sits inside the headline net margin — the press release doesn’t break it out, and the 10-Q isn’t filed yet.',
+    'Why is there no total-company RDV or RPO? Palantir discloses US commercial RDV ($6.238B) but no total — which is precisely the figure that would settle whether total backlog is keeping pace with 93% revenue growth.',
+    'Where did customer count go? Disclosed at +43% YoY in the Q2 2025 highlights, absent from both the Q1 and Q2 2026 releases. Is 149% US commercial growth more customers, or more spend from the same ones?',
+  ],
+  soWhat: `If you want to know where enterprise AI money is actually going, this print is the cleanest signal yet — and it is not going to the model labs.
+
+Palantir sells the layer between a company's private data and somebody else's model. Its customers are signing nine-figure contracts not to *get* intelligence — they can rent that from four vendors at commodity prices — but to use it without handing over the thing that makes them good at their job. Karp's phrasing on the call was that customers "have declined to become vassal states of the language labs."
+
+The practical read for anyone building with AI: **the model is becoming the commodity and the context is becoming the product.** Palantir grew 93% selling plumbing, governance, and deployment around models it does not own. That is the same bet you make every time you invest in a \`CLAUDE.md\` instead of a better prompt — value accrues to whoever owns the context, not whoever owns the weights.
+
+And the money shows the shape of it. Amazon spent roughly **$169 billion** of capex to be in this cycle. Palantir spent **$14.6 million**.`,
+  throughLine: {
+    text: `Three reports now, three readings of the same AI-capex cycle — and Palantir is the mirror image of the other two.
+
+Amazon and Microsoft both had an obligation problem. The cash was real, but the thing funding the future sat where the headline number didn't show it: free cash flow turned negative at Amazon; $329B of signed-but-uncommenced leases sat off Microsoft's capex line entirely. Both reports came down to the same question — *where did the capex go, and when does it bill?*
+
+Palantir has no capex to hide anything in. $14.6M of property and equipment against $1.22B of free cash flow. It is the tenant, not the landlord — it monetizes the buildout without funding it.
+
+So the earnings-quality question doesn't disappear, it **relocates**. For AMZN and MSFT it lives on the balance sheet. For PLTR there is barely a balance sheet to interrogate — so it lives entirely in the price, and in a 1.4% tax rate.`,
+    links: [
+      { label: 'AMZN — the first negative-cash quarter', slug: 'amzn-q2-2026' },
+      {
+        label: 'MSFT — the capex that moved off the line',
+        slug: 'msft-q4-fy2026',
+      },
+    ],
+  },
+  sources: [
+    {
+      n: 1,
+      label: 'Palantir Q2 2026 press release (SEC 8-K, Exhibit 99.1)',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000039/a2026q2ex991pressrelease.htm',
+      primary: true,
+      secondaryUrl:
+        'https://www.sec.gov/Archives/edgar/data/0001321655/000132165526000039/pltr-20260803.htm',
+      secondaryLabel: '8-K',
+    },
+    {
+      n: 2,
+      label:
+        'Palantir Q2 2025 press release — the year-ago TCV and customer-count comp',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165525000105/a2025q2ex991pressrelease.htm',
+      primary: true,
+    },
+    {
+      n: 3,
+      label:
+        'Palantir Q1 2026 press release — the sequential and guidance trail',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000026/a2026q1ex991pressrelease.htm',
+      primary: true,
+    },
+    {
+      n: 4,
+      label: 'Palantir Q4 2025 results — FY25 base and the original FY26 guide',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000004/a2025q4ex991earningsrelease.htm',
+      primary: true,
+    },
+    {
+      n: 5,
+      label:
+        'CNBC — Palantir stock rises 30% on commercial revenue, AI sovereignty (2026-08-04)',
+      url: 'https://www.cnbc.com/2026/08/04/palantir-2q-earnings-ai-sovereign-tools.html',
+    },
+    {
+      n: 6,
+      label: 'CNBC — Palantir Q2 2026 earnings (2026-08-03)',
+      url: 'https://www.cnbc.com/2026/08/03/palantir-pltr-earnings-q2-2026.html',
+    },
+    {
+      n: 7,
+      label:
+        'stockanalysis.com — PLTR statistics (price, market cap, multiples)',
+      url: 'https://stockanalysis.com/stocks/pltr/statistics/',
+    },
+    {
+      n: 8,
+      label: 'GuruFocus — Q2 2026 earnings call highlights',
+      url: 'https://www.gurufocus.com/news/9000347/palantir-technologies-inc-pltr-q2-2026-earnings-call-highlights-record-93-revenue-growth-and-raised-guidance-signal-unprecedented-ai-demand',
+    },
+    {
+      n: 9,
+      label: 'Seeking Alpha — Q2 2026 earnings call presentation',
+      url: 'https://seekingalpha.com/article/4929655-palantir-technologies-inc-2026-q2-results-earnings-call-presentation',
+    },
+    {
+      n: 10,
+      label:
+        'TradingKey — earnings preview: 8 straight beats, 40% off its high',
+      url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262068882-palantir-pltr-earnings-preview-august-3-2026-options-swing-triangle-tradingkey',
+    },
+    {
+      n: 11,
+      label: 'TradingKey — surges 15% after Q2 results, guidance raised',
+      url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262072328-palantir-q2-earnings-sweep-expectations-stock-surges-15-tradingkey',
+    },
+    {
+      n: 12,
+      label:
+        '24/7 Wall St. — after the blowout, where the stock could head next',
+      url: 'https://247wallst.com/investing/2026/08/04/after-palantirs-blowout-earnings-heres-where-the-stock-could-head-next/',
+    },
+    {
+      n: 13,
+      label: 'TIKR — down 34% from its 52-week high, the path to $212 by 2028',
+      url: 'https://www.tikr.com/blog/palantir-stock-is-down-34-from-its-52-week-high-heres-the-path-to-212-by-2028',
+    },
+    {
+      n: 14,
+      label:
+        'StockTitan — Karp Form 4: 397,744 Class A shares sold (2026-05-20)',
+      url: 'https://www.stocktitan.net/sec-filings/PLTR/form-4-palantir-technologies-inc-insider-trading-activity-48a8d6e385ad.html',
+    },
+    {
+      n: 15,
+      label: 'TipRanks — Karp continues to sell company stock',
+      url: 'https://www.tipranks.com/news/palantir-pltr-ceo-alex-karp-continues-to-sell-company-stock',
+    },
+    {
+      n: 16,
+      label:
+        'MarketBeat — Palantir Q2 2026 earnings report (consensus vs actual)',
+      url: 'https://www.marketbeat.com/earnings/reports/2026-8-3-palantir-technologies-inc-stock/',
+    },
+    {
+      n: 17,
+      label: 'Yahoo Finance — what to expect from Palantir’s Q2 2026 report',
+      url: 'https://finance.yahoo.com/markets/stocks/articles/expect-palantir-q2-2026-earnings-124258336.html',
+    },
+    {
+      n: 18,
+      label:
+        'AOL / Fortune — Karp on frontier labs wanting to "colonize your enterprise"',
+      url: 'https://www.aol.com/articles/palantir-ceo-alex-karp-says-002758000.html',
+    },
+    {
+      n: 19,
+      label:
+        'FinancialContent — sustained insider selling [low-confidence secondary]',
+      url: 'https://markets.financialcontent.com/stocks/article/marketminute-2026-3-10-palantir-shares-dip-as-sustained-insider-selling-shadows-dominant-ai-footprint',
+    },
+    {
+      n: 20,
+      label:
+        'Palantir Investor Relations — CEO letters and investor presentations',
+      url: 'https://investors.palantir.com',
+    },
+  ],
+};
+
 // Newest first — the section index renders in array order, without sorting.
-export const marketStormReports: MarketStormReport[] = [msftQ4_FY2026, amznQ2_2026];
+export const marketStormReports: MarketStormReport[] = [
+  pltrQ2_2026,
+  msftQ4_FY2026,
+  amznQ2_2026,
+];
 
 export function getReportBySlug(slug: string): MarketStormReport | undefined {
   return marketStormReports.find((r) => r.slug === slug);
