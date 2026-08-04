@@ -5,7 +5,7 @@ excerpt: I automated publishing my own articles. The code was written and tested
 category: Working With AI
 publishDate: 2026-08-03
 tags: [automation, ci, verification, shipping]
-status: staged
+status: published
 channels: []
 heroImage: /images/content/five-of-six-failures-said-success-hero.webp
 heroImageAlt: "A card contrasting what the scheduled job reported — nothing due, done, success — with what was actually true: an article stranded and going nowhere."
