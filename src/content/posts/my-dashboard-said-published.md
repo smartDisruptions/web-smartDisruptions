@@ -8,7 +8,7 @@ tags: [ai, tooling, verification, shipping]
 status: published
 channels: []
 heroImage: /images/content/my-dashboard-said-published-hero.webp
-heroImageAlt: "Two panels: the dashboard reporting the article as published, above the same article's URL returning a 404, with 52 passing tests that caught none of it."
+heroImageAlt: "A run log: the dashboard reporting the article published, the URL returning 404, and 52 passing tests that caught none of it."
 ogImage: /images/content/my-dashboard-said-published.webp
 liveAt: 2026-08-02T13:00:00.000Z
 heroImageLight: /images/content/my-dashboard-said-published-hero-light.webp

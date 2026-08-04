@@ -8,7 +8,7 @@ tags: [automation, ci, verification, shipping]
 status: published
 channels: []
 heroImage: /images/content/five-of-six-failures-said-success-hero.webp
-heroImageAlt: "Two panels: what the scheduled job reported — nothing due, done — above what was actually true, an article stranded and going nowhere, across six failures, five of which reported success."
+heroImageAlt: "Six blocks, one per failed run, five of them filled: five of the six failures reported success while an article sat stranded."
 ogImage: /images/content/five-of-six-failures-said-success.webp
 liveAt: 2026-08-04T13:00:00.000Z
 heroImageLight: /images/content/five-of-six-failures-said-success-hero-light.webp

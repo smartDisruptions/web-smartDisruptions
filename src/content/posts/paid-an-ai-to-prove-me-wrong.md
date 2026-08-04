@@ -8,7 +8,7 @@ tags: [research, verification, ai-workflow]
 status: staged
 channels: []
 heroImage: /images/content/paid-an-ai-to-prove-me-wrong-hero.webp
-heroImageAlt: "Two panels: a first research pass that looked sourced, structured and confident, above a second pass that corrected seven of its eight claims and withdrew the central thesis."
+heroImageAlt: "Eight blocks, one per claim, seven of them filled: seven of the eight claims were wrong and the central thesis was withdrawn."
 ogImage: /images/content/paid-an-ai-to-prove-me-wrong.webp
 heroImageLight: /images/content/paid-an-ai-to-prove-me-wrong-hero-light.webp
 ---

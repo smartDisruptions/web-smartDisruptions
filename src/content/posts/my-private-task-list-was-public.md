@@ -8,7 +8,7 @@ tags: [security, deployment, verification, shipping]
 status: published
 channels: []
 heroImage: /images/content/my-private-task-list-was-public-hero.webp
-heroImageAlt: "Two panels: what I assumed — that my task list was private — above what the URL actually returned, 200 OK and public, 17,798 bytes and 43 tasks including personal items."
+heroImageAlt: "A run log: a request with no session and no password returning 200 OK, 17,798 bytes and 43 tasks from a list assumed to be private."
 ogImage: /images/content/my-private-task-list-was-public.webp
 liveAt: 2026-08-02T20:35:00.000Z
 heroImageLight: /images/content/my-private-task-list-was-public-hero-light.webp

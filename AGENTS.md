@@ -109,15 +109,62 @@ redesigned every spec had to be reconstructed from the alt text.
 ```
 
 The picture is the post's **central contrast** — what I believed above what was
-true — because the headline already carries the words. `tone` colours the second
-panel and is the whole mood of the image: `bad` (red), `good` (green), `warn`
-(amber), `info` (blue), `accent` (burnt orange). Every one is an on-token value
-from DESIGN.md; don't introduce a colour that isn't in that list.
+true — because the headline already carries the words. `tone` colours it and is
+the whole mood of the image: `bad` (red), `good` (green), `warn` (amber), `info`
+(blue), `accent` (burnt orange). Every one is an on-token value from DESIGN.md;
+don't introduce a colour that isn't in that list.
 
 Write for the smallest place it appears. The grid renders the hero at about
 500px wide, so `before.text` and `after.text` are clauses of roughly 30
-characters — long ones are auto-shrunk, which is a fallback, not a licence. Put
-the numbers in `detail`.
+characters — long ones are auto-shrunk, which is a fallback, not a licence.
+
+### The three templates, and why you never pick one
+
+There are three hero templates, and **the spec's shape decides which renders.
+There is no `template` key and there must not be one.**
+
+| Add this to the spec | Renders | Use when |
+|---|---|---|
+| nothing extra | `split` | the default — two panels, the second a colour field |
+| `count` | `count` | the post has a countable finding, 12 or fewer |
+| `log` | `console` | the evidence *is* machine output — a response, a run, a log |
+
+The one question to answer is **what evidence does this post have**, which is a
+fact about the article. "Which template looks nicer here" is a taste call, and
+taste calls don't survive this pipeline — three articles have been written in the
+same two minutes before. A wrong treatment reads worse than a plain one, so when
+neither trigger clearly applies, it's a `split`. That is the majority case, not a
+fallback.
+
+A `count.of` above 12 stops being countable at a glance, so it renders `split`
+and says so. Don't work around that by shrinking the number to fit; 52 passing
+tests is a `log` line, not eight blocks.
+
+```json
+"count": { "of": 8, "hit": 7, "unit": "claims checked",
+           "verdict": "were wrong", "detail": "Central thesis withdrawn" }
+```
+renders as *8 claims checked* over eight blocks with seven filled, under
+*“**7 of 8** were wrong”*. `hit` is the number that broke, not the number that passed.
+
+```json
+"log": { "name": "curl · no session, no password",
+         "lines": [ { "chip": "ASSUMED", "tone": "good", "text": "Private", "muted": true },
+                    { "chip": "200 OK",  "tone": "bad",  "text": "17,798 bytes · 43 tasks" } ],
+         "summary": "Public the whole time." }
+```
+The house pattern is two lines — what looked fine, then what was true — and a
+summary. Chips must be real output, not invented labels.
+
+**`before` and `after` are always required**, whichever template renders: the
+social card uses them and does not vary.
+
+### The social card never changes
+
+Whatever the hero does, `<slug>.webp` is always the same design. The two images
+have different jobs — the hero lives on an index where variety is the point, the
+social card lives in a feed where being recognisable is. Don't add template
+variants to the social card.
 
 Run with no spec and it falls back to the title, which wastes the image.
 

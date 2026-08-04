@@ -6,7 +6,13 @@
   },
   "after": {
     "label": "What the second pass found",
-    "text": "7 of 8 claims corrected",
+    "text": "7 of 8 claims corrected"
+  },
+  "count": {
+    "of": 8,
+    "hit": 7,
+    "unit": "claims checked",
+    "verdict": "were wrong",
     "detail": "Central thesis withdrawn"
   },
   "headline": [
@@ -14,5 +20,5 @@
     { "t": "One survived", "tone": "bad" },
     { "t": "." }
   ],
-  "alt": "Two panels: a first research pass that looked sourced, structured and confident, above a second pass that corrected seven of its eight claims and withdrew the central thesis."
+  "alt": "Eight blocks, one per claim, seven of them filled: seven of the eight claims were wrong and the central thesis was withdrawn."
 }

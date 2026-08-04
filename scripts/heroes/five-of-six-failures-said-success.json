@@ -6,8 +6,14 @@
   },
   "after": {
     "label": "What was actually true",
-    "text": "An article stranded, going nowhere",
-    "detail": "6 failures · 5 of them reported success"
+    "text": "An article stranded, going nowhere"
+  },
+  "count": {
+    "of": 6,
+    "hit": 5,
+    "unit": "failures before it worked",
+    "verdict": "reported success",
+    "detail": "The publish button itself worked on day one"
   },
   "headline": [
     { "t": "The job reported " },
@@ -16,5 +22,5 @@
     { "t": "published", "tone": "bad" },
     { "t": "." }
   ],
-  "alt": "Two panels: what the scheduled job reported — nothing due, done — above what was actually true, an article stranded and going nowhere, across six failures, five of which reported success."
+  "alt": "Six blocks, one per failed run, five of them filled: five of the six failures reported success while an article sat stranded."
 }
