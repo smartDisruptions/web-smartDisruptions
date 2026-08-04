@@ -1061,7 +1061,7 @@ const pltrQ2_2026: MarketStormReport = {
   title:
     'Palantir grew 93% and paid a 1.4% tax rate — only one of those is in the headlines',
   excerpt:
-    'Revenue accelerated for a third straight quarter to +93%, GAAP operating margin went 27% → 47%, and free cash flow hit a 63% margin on $14.6 million of capex. The growth is real and the operating leverage is not an adjusted-numbers trick. But $15.4M of tax on $1.08B of pre-tax income does a fifth of the work in the headline EPS, bookings grew at half the rate of revenue, and the stock carries ~114× normalized earnings. STORM put four AI agents on the Q2 2026 print, then had a skeptic try to refute every load-bearing claim against the filing.',
+    'Revenue accelerated for a third straight quarter to +93%, GAAP operating margin went 27% → 47%, and free cash flow hit a 63% margin on $14.6 million of capex. The growth is real and the operating leverage is not an adjusted-numbers trick. But $15.4M of tax on $1.08B of pre-tax income does a fifth of the work in the headline EPS, and the stock carries ~114× normalized earnings. STORM put four AI agents on the Q2 2026 print, then had skeptics try to refute every load-bearing claim against the filings — including this report’s own bear case, which is where the pass bit hardest.',
   catalyst: 'Q2 2026 earnings — reported August 3, 2026',
   publishDate: '2026-08-04',
   tags: ['PLTR', 'AIP', 'earnings', 'enterprise-AI', 'valuation'],
@@ -1075,13 +1075,13 @@ const pltrQ2_2026: MarketStormReport = {
     { k: 'Fwd P/E', v: '86.5×', tone: 'warn' },
     { k: 'P/S · FY26 guide', v: '~48×', tone: 'bear' },
   ],
-  summary: `Revenue grew **93%** to $1.935B — the *third consecutive quarter of acceleration* (+70% → +85% → +93%), which at a $1.9B quarterly run rate is close to unheard of. GAAP operating margin went **27% → 47%**, and that one isn't adjusted: it's the actual income statement. Adjusted free cash flow was **$1.22B at a 63% margin** on **$14.6M** of capex — Palantir monetizes the AI buildout without funding it. Management raised the FY26 guide to **$8.15B (+82%)**, up from the +61% it guided in February. All real. But **Palantir paid $15.4M of tax on $1.081B of pre-tax income — a 1.42% rate** — while its own non-GAAP footnote calls 23% the long-term rate; apply that and the headline **$0.41 EPS is ~$0.32**. Closed TCV grew **49%** against revenue's 93%, and all of it came from one segment. At **~48× forward sales and ~114× normalized earnings**, the price already assumes about five more years of this.`,
+  summary: `Revenue grew **93%** to $1.935B — the *third consecutive quarter of acceleration* (+70% → +85% → +93%), which at a $1.9B quarterly run rate is close to unheard of. GAAP operating margin went **27% → 47%**, and that one isn't adjusted: it's the actual income statement. Adjusted free cash flow was **$1.22B at a 63% margin** on **$14.6M** of capex — Palantir monetizes the AI buildout without funding it. Management raised the FY26 guide to **$8.15B (+82%)**, up from the +61% it guided in February. All real. But **Palantir paid $15.4M of tax on $1.081B of pre-tax income — a 1.42% rate** — while its own non-GAAP footnote calls 23% the long-term rate; apply that and the headline **$0.41 EPS is ~$0.32**. Closed TCV grew only **49%** against revenue's 93%, all of it from one segment — though the broader backlog (total RDV **+83%**) largely answers that. At **~48× forward sales and ~114× normalized earnings**, the price already assumes about five more years of this.`,
   headlineVsReal: [
     {
       headline:
         '"GAAP net income of $1.062 billion, representing a 55% margin" — and diluted EPS of **$0.41**, up from $0.13.',
       real: 'About **$0.32** at the tax rate Palantir itself calls its long-term rate. Operating income — the part that is unambiguously the business — was $912M.',
-      gap: 'Palantir booked **$15.4M of tax on $1,081.3M of pre-tax income, a 1.42% effective rate**. Its own adjusted-EPS footnote states an "estimated long-term annual effective tax rate of 23.0%." Applying the company’s own number costs ~$233M and ~9¢ of EPS. The tell is in the release itself: adjusted EPS ($0.41) is now *below* GAAP EPS for the first time — a year ago it was $0.16 vs $0.13, the other way around.',
+      gap: 'Palantir booked **$15.4M of tax on $1,081.3M of pre-tax income, a 1.42% effective rate**, confirmed in the Q2 10-Q filed 2026-08-04. Note 10 states the company "has maintained a full valuation allowance on its U.S. and U.K. deferred tax assets" with "a reasonable possibility" of releasing it. Its own adjusted-EPS footnote assumes a 23.0% long-term rate; applying that costs ~$233M and ~9¢. You can watch the gap open in the release itself — adjusted EPS ($0.41) has converged with GAAP EPS and is arithmetically now a shade *below* it, where a year ago it was $0.16 against $0.13. That convergence is mechanical, not mysterious: adjusted EPS is taxed at 23% while GAAP is taxed at 1.42%, so the two lines meeting *is* the tax gap becoming visible.',
     },
     {
       headline:
@@ -1092,8 +1092,8 @@ const pltrQ2_2026: MarketStormReport = {
     {
       headline:
         '"Closed total contract value (TCV) of $3.373 billion, up 49% year-over-year" — read as bookings confirming the growth.',
-      real: 'Bookings grew at roughly **half** the rate of revenue (+49% vs +93%), and **every dollar of the growth came from US commercial**.',
-      gap: 'US commercial TCV was $2.132B of the $3.373B total. Back it out and bookings everywhere else — US government plus all international — went **$1.427B → $1.241B, about −13% YoY** (our arithmetic off the Q2 2025 and Q2 2026 releases). The fair caveat: Q2 2025 was itself a record TCV quarter at +140%, so the comp is brutal and one quarter is not a trend.',
+      real: 'Closed TCV did grow at roughly **half** the rate of revenue (+49% vs +93%) — but it is the *narrowest* backlog measure, and the broader ones tracked revenue closely: **total remaining deal value $13.1B, +83%**.',
+      gap: 'This is the claim our own verification pass cut down the most, so here it is with the counter-evidence attached. The arithmetic holds: TCV-to-quarterly-revenue fell to **1.74× from 2.26×**, the TCV definition is word-for-word unchanged between releases, and backing US commercial ($2.132B) out of the $3.373B total leaves bookings everywhere else at **$1.241B vs $1.427B — about −13% YoY**. What defuses it: the year-ago quarter was a *record* +140% TCV spike, the ratio actually **rose sequentially** from 1.48× in Q1 2026, and total RDV (+83%) and RPO ($4.9B) are the measures that matter for revenue conversion. Treat TCV as one yellow flag worth watching next quarter — not as evidence the growth is hollow.',
     },
   ],
   kpis: [
@@ -1136,8 +1136,15 @@ const pltrQ2_2026: MarketStormReport = {
       label: 'Closed TCV',
       value: '$3.37B',
       delta: '+49% YoY',
-      note: 'Bookings growing at half the rate of revenue.',
+      note: 'The one metric lagging revenue — but total RDV grew 83%.',
       tone: 'warn',
+    },
+    {
+      label: 'Total remaining deal value',
+      value: '$13.1B',
+      delta: '+83% YoY',
+      note: 'The broad backlog measure — tracks revenue far more closely.',
+      tone: 'bull',
     },
     {
       label: 'Stock comp',
@@ -1313,11 +1320,39 @@ const pltrQ2_2026: MarketStormReport = {
         ],
       },
       {
+        cells: ['US commercial RDV', '$6,238M', '+124%', '+27% QoQ'],
+      },
+      {
+        star: true,
         cells: [
-          'US commercial RDV',
-          '$6,238M',
-          '+124%',
-          '+27% QoQ; no total-company RDV disclosed',
+          'Total remaining deal value',
+          '$13.1B',
+          '+83%',
+          'Disclosed on the call, not in the release bullets',
+        ],
+      },
+      {
+        cells: [
+          'Remaining performance obligations',
+          '$4.9B',
+          '10-Q Note 3',
+          'The non-cancelable measure; 43% books within 12 months',
+        ],
+      },
+      {
+        cells: [
+          'Customer count',
+          '1,049',
+          '+24%',
+          'Also on the call — growth is spend-per-customer, not logos',
+        ],
+      },
+      {
+        cells: [
+          'Days sales outstanding',
+          '70.0 days',
+          'from 78.6 (Q1)',
+          'Compressed sharply — revenue is being collected',
         ],
       },
       {
@@ -1343,7 +1378,8 @@ const pltrQ2_2026: MarketStormReport = {
   },
   bull: [
     '**Revenue growth is accelerating, three quarters running** — +70% → +85% → +93% — at a scale where the law of large numbers is supposed to bite.',
-    '**The operating leverage is GAAP, not adjusted:** operating margin went 27% → 47% in a year, on the real income statement.',
+    '**The operating leverage is GAAP, not adjusted:** operating margin went 27% → 47%, and the **GAAP** margin expanded *more* than the adjusted one (2,029bp vs 1,545bp) — the opposite of stock-comp suppression. Incremental operating margin on new revenue was **69%**.',
+    '**Cash confirms the earnings:** DSO compressed from 78.6 to 70.0 days while revenue grew 18.5% sequentially, and contract liabilities were a $144M *source* of cash. Customers are paying earlier, not later — the strongest evidence against a pulled-forward-on-paper thesis.',
     '**63% free-cash-flow margin on $14.6M of capex.** Palantir is the asset-light tenant of everyone else’s $200B build — no depreciation wave, no debt, no negative-FCF window.',
     '**Guidance raised twice, hard:** FY26 revenue from +61% (February) to +71% (May) to **+82%** (August) — roughly $1B added in six months, after eight straight beats.',
     '**The dilution complaint is now stale:** diluted share count rose 0.2% YoY and stock comp fell from 15.9% to 13.7% of revenue.',
@@ -1352,12 +1388,13 @@ const pltrQ2_2026: MarketStormReport = {
   bear: [
     '**~48× forward sales and ~114× normalized earnings** — the most expensive large-cap in US software, with no close second.',
     '**A 1.42% effective tax rate** does ~9¢ of the $0.41 headline EPS; Palantir’s own footnote says 23% is the long-term rate.',
-    '**Bookings grew at half the rate of revenue** (TCV +49% vs revenue +93%) — revenue eventually converges to bookings.',
-    '**TCV outside US commercial fell ~13% YoY.** Concentration is increasing, not broadening, and US revenue is 81% of the total.',
-    '**Two disclosures went quiet:** customer count (touted at +43% a year ago) and any total-company RDV or RPO figure.',
-    '**$91.8M of "other income"** — ~14× the year-ago figure and materially non-cash — sits inside that 55% net margin.',
+    '**Closed TCV grew at half the rate of revenue** (+49% vs +93%) — the weakest of the backlog measures, and worth watching, though total RDV (+83%) largely offsets it.',
+    '**TCV outside US commercial fell ~13% YoY**, against a record comp. US revenue is 81% of the total and growth is spend-per-customer, not new logos (customer count +24%).',
+    '**Concentration is increasing, not broadening** — and the release gives no international commercial growth figure at all.',
+    '**$91.8M of "other income"** sits inside that 55% net margin — and the 10-Q shows **$66M of it is unrealized gains on public equity stakes the company mostly cannot yet sell.**',
+    '**Insider selling in size for two years**, including 397,744 Class A shares by the CEO in May 2026.',
   ],
-  theQuestion: `Is 93% growth a *land grab with a long runway* — sovereign AI as a real new category Palantir defined and owns — or a *pull-forward* into a US commercial base that the bookings data says isn't broadening? Every other question here is downstream. At ~114× normalized earnings the price doesn't just need the first answer; it needs it to keep being true for about five more years.`,
+  theQuestion: `Is 93% growth a *land grab with a long runway* — sovereign AI as a real new category Palantir defined and owns — or a *deepening* of a narrow base, where 1,049 customers spend more each year until they stop? The bookings data cuts both ways: total RDV grew 83%, but customer count grew only 24%, so nearly all of this is existing accounts expanding. Every other question is downstream. At ~114× normalized earnings the price doesn't just need the land-grab answer; it needs it to keep being true for about five more years.`,
   analysis: `## Valuation — this is the entire bear case, and it isn't a small one
 
 At **$163.24** the market pays **~$391B** (on basic shares; ~$419B on diluted) for a company guiding to **$8.15B** of 2026 revenue. That is **~48× forward sales**. Large-cap software generally lives at 10–20×. For a same-day comparison against the most direct AI beneficiary in the market: Nvidia trades at **~20× trailing and ~12× forward sales**, against Palantir's ~64× trailing and ~48× on the FY26 guide.
@@ -1382,11 +1419,15 @@ One concession the bears should make: **the de-rating already partly happened.**
 
 Take the operating business on its own terms, because it has earned that. Revenue growth went **+70% (Q4 2025) → +85% (Q1 2026) → +93% (Q2 2026)**. Acceleration at a $1B+ quarterly scale is rare enough to be the story on its own. GAAP operating margin went **27% → 47%** in a year — and this is the point most bear write-ups skip, because it is not a non-GAAP artifact; it is the reported income statement. Adjusted free cash flow margin is 63%. Guidance has gone from +61% to +71% to +82% in six months.
 
-Then the counterweight, which is in the same release. **Closed TCV grew 49% while revenue grew 93%** — bookings are compounding at roughly half the rate of the revenue they eventually become. And the composition is narrow: US commercial TCV was **$2.132B of the $3.373B** total. Back it out and bookings everywhere else went **$1.427B → $1.241B, about −13% YoY**.
+The margin story deserves one more line, because it is the opposite of what the standard Palantir bear case assumes. Stock compensation grew **65.8%** — faster than total costs (+39.4%) — so it was a *drag* on margin, not its source. The decisive proof: the **GAAP** operating margin expanded 2,029bp while the **adjusted** margin expanded only 1,545bp. GAAP outran non-GAAP. Whatever else is going on in this print, the margin is not a stock-comp trick.
 
-> **Caveat, applied honestly:** Q2 2025 was itself a record TCV quarter at +140% YoY, so this is a punishing comp, and a single quarter of a derived figure is not a trend. It is, however, the one number in the release that does not rhyme with the headline — and it is the number to watch next quarter.
+Cash agrees. Operating cash flow of $1,216M is 1.14× net income, and **days sales outstanding compressed from 78.6 to 70.0** even as revenue grew 18.5% sequentially — receivables grew 5.7% against 18.6% revenue growth. Contract liabilities were a **$144M source** of cash. Customers are paying earlier, not later, which is the single most direct evidence against a "revenue is being pulled forward on paper" reading.
 
-Two disclosures that used to be there aren't. **Customer count** — touted in the Q2 2025 highlights at +43% YoY — appears in neither the Q1 nor the Q2 2026 release. And Palantir gives US commercial RDV ($6.238B) but **no total-company RDV or RPO**, so there is no way to check whether total backlog is keeping pace with revenue. Neither omission is evidence of a problem. Both remove the evidence that would settle one.
+Then the counterweight. **Closed TCV grew 49% while revenue grew 93%** — TCV-to-quarterly-revenue fell to 1.74× from 2.26×. And the composition is narrow: US commercial TCV was **$2.132B of the $3.373B** total; back it out and bookings everywhere else went **$1.427B → $1.241B, about −13% YoY**.
+
+> **Caveat, applied honestly — and this is the claim our own verification pass cut down hardest.** Q2 2025 was a *record* TCV quarter at +140%, so the comp is punishing. The ratio actually **rose sequentially**, from 1.48× in Q1 2026. And TCV is the softest of three backlog measures: total **remaining deal value is $13.1B, +83%** — close to revenue's +93% — while **remaining performance obligations**, the non-cancelable measure, stand at **$4.9B**, with 43% expected to book as revenue inside twelve months. TCV is one yellow flag worth watching next quarter. It is not evidence the growth is hollow, and an earlier draft of this report leaned on it far too hard.
+
+What the release *doesn't* put in its bullet list is worth naming, though it is a smaller point than it first appears. **Customer count** (1,049, +24%) and **total RDV** ($13.1B, +83%) were both given on the earnings call rather than in the highlights, and **RPO** appears only in Note 3 of the 10-Q. Nothing is hidden. But the +24% customer number tells you something the +149% US commercial revenue number does not: **this quarter's growth is overwhelmingly existing customers spending more, not new logos arriving.** That is a better business in the short run and a narrower one in the long run.
 
 ## The shape nobody else in AI has
 
@@ -1402,35 +1443,37 @@ Which is precisely why they moved into the price — and into the tax line.
 2. **Earnings quality — the tax line.** A 1.42% effective rate against the company's own stated 23% long-term rate. When the shield exhausts, reported EPS growth decouples *downward* from operating growth, and the optics of that quarter will be ugly regardless of the business.
 3. **Concentration.** US revenue is 81% of total; US commercial supplied all the bookings growth. Marketed as a global sovereign-AI wave, the segment data currently describes a US phenomenon.
 4. **Bookings vs. revenue.** TCV growing at half of revenue growth. If revenue keeps outrunning bookings, growth converges downward to bookings — the only question is when.
-5. **Non-operating income.** $91.8M of "other income," ~14× the year-ago figure and materially non-cash, sitting inside the 55% net margin.
+5. **Non-operating income.** $91.8M of "other income," ~14× the year-ago figure, sitting inside the 55% net margin. The 10-Q settles what it is: realized and unrealized gains on equity securities plus FX — and specifically **$66M of net *unrealized* gains on publicly-traded stakes, "the majority of which are subject to short-term restrictions on the ability to sell."** Palantir's public-equity holdings went from $23M to $184M in six months. So a visible slice of the quarter's net income is a paper mark on shares the company could not sell today if it wanted to, and it reverses if those positions fall.
 6. **Insider selling.** Karp sold 397,744 Class A shares on May 20, 2026 under a 10b5-1 plan, with sustained executive-suite selling for two years. Pre-scheduled 10b5-1 sales are not a signal by themselves — but the aggregate is large enough to name rather than omit.
 7. **Competition (ranked low, deliberately).** Every hyperscaler sells an AI application layer. This print made that case *weaker*: 149% US commercial growth is not what share loss looks like.
 
 ## Time horizon & position sizing (kept separate)
 
-**Horizon.** Not a next-quarter setup. The next two quarters are guided to decelerate — **+83%** for Q3, and the FY guide implies roughly **+72%** for Q4 — and Palantir has beaten its own guide eight quarters running, so the near term is mostly a game of by-how-much. The thesis resolves over **3–5 years** on the question the valuation section poses: does ~$8B of revenue become ~$30B+ before the multiple normalizes? Under two years you are trading sentiment on the AI complex, not the business.
+**Horizon.** Not a next-quarter setup. The next two quarters are guided to decelerate — **+83%** for Q3, and the FY guide implies roughly **+72%** for Q4 — and Palantir has beaten its own guide eight quarters running, so the near term is mostly a game of by-how-much.
+
+It is tempting to wave the deceleration away as a hard comp. That doesn't survive checking, and the check is clean because *sequential* growth is comp-independent. Through the back half of 2025 revenue compounded **+40.2%** from Q2 to Q4; the 2026 guide compounds only **+25.3%** across the same stretch. Hold Q2 2026's own delivered sequential rate (+18.5%) and Q4 lands near **$2.71B — a +93% year-over-year rate, identical to the quarter just posted.** So the entire 93% → 72% step-down lives in the guidance, not in the base. Either management is sandbagging by roughly $290M of quarterly revenue, or it sees something the print doesn't show. Given eight straight beats the first is more likely — but it is a *choice about guidance*, not arithmetic forced by the comparison. The thesis resolves over **3–5 years** on the question the valuation section poses: does ~$8B of revenue become ~$30B+ before the multiple normalizes? Under two years you are trading sentiment on the AI complex, not the business.
 
 **Sizing considerations (not a recommendation).** Two things separate Palantir from the other names in this section. It is the only one that **doesn't carry capex-cycle risk** — no depreciation wave, no debt, no negative-FCF window — so it is genuine diversification against AMZN/MSFT/NVDA exposure rather than more of the same beta. Against that: at ~48× sales, returns are dominated by the multiple rather than by operations, and H1 2026 is the proof — the business accelerated and the stock fell 32%. A position sized for the business will behave like a position sized for the multiple.`,
   invalidation: {
     bull: [
-      'Total TCV growth stays near half of revenue growth into FY27 — bookings stop replenishing the revenue they feed.',
-      'TCV outside US commercial declines a second and third quarter, confirming concentration rather than a hard comp.',
-      'The tax shield exhausts and normalized EPS growth visibly lags the multiple.',
-      'US commercial revenue growth decelerates faster than the guide while international commercial stays undisclosed.',
+      '**Total RDV** growth — not TCV — falls materially below revenue growth for two consecutive quarters. That is the measure that matters, and at +83% it currently does not.',
+      'TCV outside US commercial declines a second and third quarter, turning a hard comp into a confirmed trend.',
+      'Customer count stalls near ~1,050 while revenue decelerates — proving the model was land-and-expand into a fixed base, not a land grab.',
+      'The valuation allowance releases and normalized EPS growth visibly lags the multiple.',
     ],
     bear: [
-      'Total TCV growth re-accelerates toward revenue growth — and Palantir resumes disclosing total RDV or customer count.',
-      'International commercial turns, proving "sovereign AI" is a global category rather than a US one.',
-      'The implied ~+72% Q4 guide is beaten by the usual 4%+, making the deceleration curve a sandbag rather than a ceiling.',
+      'Q3 beats the $2.162B guide by the customary 4%+, confirming the 93% → 72% curve is a guidance choice rather than a demand ceiling.',
+      'International commercial gets disclosed and turns — proving "sovereign AI" is a global category rather than a US one.',
+      'Customer count re-accelerates alongside revenue, showing new logos rather than only deeper wallets.',
       'Adjusted FCF lands at the top of the $4.5–4.7B guide while revenue nearly doubles — funding the multiple from cash rather than hope.',
     ],
   },
   verification: {
-    confirmed: 5,
-    partlyTrue: 4,
-    corrected: 2,
+    confirmed: 6,
+    partlyTrue: 3,
+    corrected: 4,
     confirmedNote:
-      'Confirmed against Palantir’s own 8-K: revenue $1,935.5M / +93% and US commercial $764M / +149% · GAAP income from operations $912.0M at a 47% margin, up from 27% · adjusted free cash flow $1,220.4M at a 63% margin on $14.6M of capex · the FY26 guide raised to $8.150–8.158B (+82%) from +61% in February · $9.2B of cash and Treasuries with no debt.',
+      'Confirmed against Palantir’s own 8-K and the Q2 10-Q: revenue $1,935.5M / +93% and US commercial $764M / +149% · GAAP income from operations $912.0M at a 47% margin, up from 27%, with 69% incremental margin · adjusted free cash flow $1,220.4M at a 63% margin on $14.6M of capex · DSO compressed 78.6 → 70.0 days · the 1.42% effective tax rate and the full valuation allowance in Note 10 · the FY26 guide raised to $8.150–8.158B (+82%) from +61% in February.',
     items: [
       {
         kind: 'corrected',
@@ -1449,10 +1492,16 @@ Which is precisely why they moved into the price — and into the tax line.
         text: 'True to Palantir’s own definition, which sums revenue growth and the **adjusted** operating margin (62%). On the GAAP margin (47%) it is 140%. Best in enterprise software either way — but it is a company-defined, non-GAAP-flavored metric, quoted as though it were an audited one.',
       },
       {
-        kind: 'partly',
+        kind: 'corrected',
         title:
-          '"Closed TCV of $3.373 billion, up 49%" as confirmation of the growth',
-        text: 'Bookings grew at roughly half the rate of revenue, and **all** of the growth came from US commercial ($2.132B of $3.373B). Derived from the two press releases, TCV outside US commercial went $1.427B → $1.241B, **about −13% YoY**. Fair caveat: Q2 2025 was a record TCV quarter (+140%), so the comp is severe and one quarter is not a trend.',
+          'Our own first draft: "bookings grew at half the rate of revenue" was overstated',
+        text: 'The skeptic pass cut down this report’s own load-bearing bear claim, so it is recorded here rather than quietly edited. The arithmetic survived — closed TCV +49% vs revenue +93%, TCV-to-revenue 1.74× from 2.26×, definition unchanged, and TCV outside US commercial down ~13%. But three counters were missing: the year-ago quarter was a **record +140%** TCV spike, the ratio **rose sequentially** from 1.48× in Q1 2026, and TCV is the softest of three backlog measures — **total RDV is $13.1B (+83%)** and **RPO is $4.9B**. "The only headline metric growing slower than revenue" was also simply false: US government revenue (+90%), customer count (+24%) and international all grew slower too.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'Our own first draft: the "missing" disclosures were not missing',
+        text: 'An earlier version of this report asked where customer count and total RDV had gone, and said the 10-Q was not yet filed. All three were wrong. **Customer count (1,049, +24%)** and **total RDV ($13.1B, +83%)** were both given on the earnings call; **RPO ($4.9B)** is in Note 3 of the **Q2 10-Q, which was filed 2026-08-04** — the same day this report first published. They are absent from the press-release bullet list, which is a far weaker observation than "undisclosed," and the report now says so.',
       },
       {
         kind: 'partly',
@@ -1462,14 +1511,19 @@ Which is precisely why they moved into the price — and into the tax line.
       {
         kind: 'partly',
         title: 'The $91.8M of "other income, net" inside the 55% net margin',
-        text: 'Up ~14× from $6.6M a year ago, and not operating income. The cash-flow statement backs out $62.2M of marketable-securities gains and $85.6M of "other operating activities" over six months, indicating a materially non-cash component. Exact composition awaits the 10-Q.',
+        text: 'Resolved once the Q2 10-Q landed. It is realized and unrealized gains on equity securities plus FX — including **$66M of net *unrealized* gains on publicly-traded stakes, "the majority of which are subject to short-term restrictions on the ability to sell."** Public-equity holdings went $23M → $184M in six months. So the non-cash read was right; what it understated is that these are marks on shares Palantir could not currently sell.',
+      },
+      {
+        kind: 'partly',
+        title: 'The margin expansion as evidence of "operating leverage"',
+        text: 'True, and the verification pass strengthened it rather than weakening it. Opex/revenue fell 53.9% → 37.5% (−1,640bp of the ~2,029bp expansion) against only ~388bp from gross margin, and incremental operating margin on new revenue was **69%**. Stock comp grew 65.8% — *faster* than total costs — so the **GAAP** margin expanded 2,029bp while the **adjusted** margin expanded only 1,545bp. The stock-comp-suppression charge is refuted outright.',
       },
     ],
   },
   openQuestions: [
-    'What actually composes the $91.8M of "other income, net"? It is ~14× the year-ago figure and sits inside the headline net margin — the press release doesn’t break it out, and the 10-Q isn’t filed yet.',
-    'Why is there no total-company RDV or RPO? Palantir discloses US commercial RDV ($6.238B) but no total — which is precisely the figure that would settle whether total backlog is keeping pace with 93% revenue growth.',
-    'Where did customer count go? Disclosed at +43% YoY in the Q2 2025 highlights, absent from both the Q1 and Q2 2026 releases. Is 149% US commercial growth more customers, or more spend from the same ones?',
+    'Why is guidance implying a 93% → 72% deceleration that the sequential math doesn’t require? Hold Q2’s own +18.5% sequential pace and Q4 prints ~$2.71B (+93%). The step-down is a guidance *choice*, not comp arithmetic — is it the usual sandbag, or visibility we can’t see?',
+    'What is international commercial actually doing? "Sovereign AI" is described as a global wave, but the release quantifies only the US (+115%, 81% of revenue) and gives no international commercial growth figure at all.',
+    'Does the tax shield have a date on it? Note 10 says there is "a reasonable possibility" of releasing the valuation allowance. Whenever that lands, reported EPS growth decouples downward from operating growth — and nobody has guided to when.',
   ],
   soWhat: `If you want to know where enterprise AI money is actually going, this print is the cleanest signal yet — and it is not going to the model labs.
 
@@ -1507,114 +1561,127 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
     {
       n: 2,
       label:
+        'Palantir Q2 2026 Form 10-Q (filed 2026-08-04) — RPO, Note 10 tax, equity-securities marks',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000041/pltr-20260630.htm',
+      primary: true,
+    },
+    {
+      n: 3,
+      label:
         'Palantir Q2 2025 press release — the year-ago TCV and customer-count comp',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165525000105/a2025q2ex991pressrelease.htm',
       primary: true,
     },
     {
-      n: 3,
+      n: 4,
+      label:
+        'Palantir Q2 2026 earnings call transcript — total RDV $13.1B, customer count 1,049',
+      url: 'https://seekingalpha.com/article/4929675-palantir-technologies-inc-pltr-q2-2026-earnings-call-transcript',
+    },
+    {
+      n: 5,
       label:
         'Palantir Q1 2026 press release — the sequential and guidance trail',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000026/a2026q1ex991pressrelease.htm',
       primary: true,
     },
     {
-      n: 4,
+      n: 6,
       label: 'Palantir Q4 2025 results — FY25 base and the original FY26 guide',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000004/a2025q4ex991earningsrelease.htm',
       primary: true,
     },
     {
-      n: 5,
+      n: 7,
       label:
         'CNBC — Palantir stock rises 30% on commercial revenue, AI sovereignty (2026-08-04)',
       url: 'https://www.cnbc.com/2026/08/04/palantir-2q-earnings-ai-sovereign-tools.html',
     },
     {
-      n: 6,
+      n: 8,
       label: 'CNBC — Palantir Q2 2026 earnings (2026-08-03)',
       url: 'https://www.cnbc.com/2026/08/03/palantir-pltr-earnings-q2-2026.html',
     },
     {
-      n: 7,
+      n: 9,
       label:
         'stockanalysis.com — PLTR statistics (price, market cap, multiples)',
       url: 'https://stockanalysis.com/stocks/pltr/statistics/',
     },
     {
-      n: 8,
+      n: 10,
       label: 'GuruFocus — Q2 2026 earnings call highlights',
       url: 'https://www.gurufocus.com/news/9000347/palantir-technologies-inc-pltr-q2-2026-earnings-call-highlights-record-93-revenue-growth-and-raised-guidance-signal-unprecedented-ai-demand',
     },
     {
-      n: 9,
+      n: 11,
       label: 'Seeking Alpha — Q2 2026 earnings call presentation',
       url: 'https://seekingalpha.com/article/4929655-palantir-technologies-inc-2026-q2-results-earnings-call-presentation',
     },
     {
-      n: 10,
+      n: 12,
       label:
         'TradingKey — earnings preview: 8 straight beats, 40% off its high',
       url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262068882-palantir-pltr-earnings-preview-august-3-2026-options-swing-triangle-tradingkey',
     },
     {
-      n: 11,
+      n: 13,
       label: 'TradingKey — surges 15% after Q2 results, guidance raised',
       url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262072328-palantir-q2-earnings-sweep-expectations-stock-surges-15-tradingkey',
     },
     {
-      n: 12,
+      n: 14,
       label:
         '24/7 Wall St. — after the blowout, where the stock could head next',
       url: 'https://247wallst.com/investing/2026/08/04/after-palantirs-blowout-earnings-heres-where-the-stock-could-head-next/',
     },
     {
-      n: 13,
+      n: 15,
       label: 'TIKR — down 34% from its 52-week high, the path to $212 by 2028',
       url: 'https://www.tikr.com/blog/palantir-stock-is-down-34-from-its-52-week-high-heres-the-path-to-212-by-2028',
     },
     {
-      n: 14,
+      n: 16,
       label:
         'StockTitan — Karp Form 4: 397,744 Class A shares sold (2026-05-20)',
       url: 'https://www.stocktitan.net/sec-filings/PLTR/form-4-palantir-technologies-inc-insider-trading-activity-48a8d6e385ad.html',
     },
     {
-      n: 15,
+      n: 17,
       label: 'TipRanks — Karp continues to sell company stock',
       url: 'https://www.tipranks.com/news/palantir-pltr-ceo-alex-karp-continues-to-sell-company-stock',
     },
     {
-      n: 16,
+      n: 18,
       label:
         'MarketBeat — Palantir Q2 2026 earnings report (consensus vs actual)',
       url: 'https://www.marketbeat.com/earnings/reports/2026-8-3-palantir-technologies-inc-stock/',
     },
     {
-      n: 17,
+      n: 19,
       label: 'Yahoo Finance — what to expect from Palantir’s Q2 2026 report',
       url: 'https://finance.yahoo.com/markets/stocks/articles/expect-palantir-q2-2026-earnings-124258336.html',
     },
     {
-      n: 18,
+      n: 20,
       label:
         'AOL / Fortune — Karp on frontier labs wanting to "colonize your enterprise"',
       url: 'https://www.aol.com/articles/palantir-ceo-alex-karp-says-002758000.html',
     },
     {
-      n: 19,
+      n: 21,
       label:
         'FinancialContent — sustained insider selling [low-confidence secondary]',
       url: 'https://markets.financialcontent.com/stocks/article/marketminute-2026-3-10-palantir-shares-dip-as-sustained-insider-selling-shadows-dominant-ai-footprint',
     },
     {
-      n: 20,
+      n: 22,
       label:
         'Palantir Investor Relations — CEO letters and investor presentations',
       url: 'https://investors.palantir.com',
     },
     {
-      n: 21,
+      n: 23,
       label:
         'stockanalysis.com — NVDA statistics (the same-day sales-multiple comparison)',
       url: 'https://stockanalysis.com/stocks/nvda/statistics/',
