@@ -1360,7 +1360,7 @@ const pltrQ2_2026: MarketStormReport = {
   theQuestion: `Is 93% growth a *land grab with a long runway* — sovereign AI as a real new category Palantir defined and owns — or a *pull-forward* into a US commercial base that the bookings data says isn't broadening? Every other question here is downstream. At ~114× normalized earnings the price doesn't just need the first answer; it needs it to keep being true for about five more years.`,
   analysis: `## Valuation — this is the entire bear case, and it isn't a small one
 
-At **$163.24** the market pays **~$391B** (on basic shares; ~$419B on diluted) for a company guiding to **$8.15B** of 2026 revenue. That is **~48× forward sales**. Large-cap software generally lives at 10–20×. Nvidia — the most direct AI beneficiary in the market — trades at roughly a quarter of Palantir's sales multiple.
+At **$163.24** the market pays **~$391B** (on basic shares; ~$419B on diluted) for a company guiding to **$8.15B** of 2026 revenue. That is **~48× forward sales**. Large-cap software generally lives at 10–20×. For a same-day comparison against the most direct AI beneficiary in the market: Nvidia trades at **~20× trailing and ~12× forward sales**, against Palantir's ~64× trailing and ~48× on the FY26 guide.
 
 The earnings multiple is where it gets concrete. Trailing P/E is 139.6× and forward is 86.5× — but both are computed on a tax rate the company itself says is not the long-run rate. Normalize FY26: the adjusted operating income guide of **$4.89B**, less roughly **$1.05B** of stock compensation and payroll tax, plus ~**$0.6B** of interest and other income, taxed at Palantir's own **23%**, lands near **$3.4B of normalized earnings — about 114× the basic market cap** (~122× diluted).
 
@@ -1612,6 +1612,12 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
       label:
         'Palantir Investor Relations — CEO letters and investor presentations',
       url: 'https://investors.palantir.com',
+    },
+    {
+      n: 21,
+      label:
+        'stockanalysis.com — NVDA statistics (the same-day sales-multiple comparison)',
+      url: 'https://stockanalysis.com/stocks/nvda/statistics/',
     },
   ],
 };
