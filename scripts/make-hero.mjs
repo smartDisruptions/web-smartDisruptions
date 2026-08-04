@@ -69,9 +69,14 @@
  *
  * SIZED FOR THE SMALLEST PLACE IT APPEARS
  * ---------------------------------------
- * The binding constraint is the Field Notes grid, where a hero renders about
- * 500px wide — roughly 40% of the source. Type is set so the phrases still read
- * at that size, which is why there are few words and they are large.
+ * A hero renders at 494px in the Field Notes grid on desktop and **341px on a
+ * phone** — 0.284 of the source, and the number that actually decides this. An
+ * earlier version of this file designed to "about 40%", which is the desktop
+ * figure, and every template drawn to it lost a third of its size again on the
+ * device most people read on.
+ *
+ * See TYPE below: one scale, and every template carries exactly one line at the
+ * top of it.
  *
  * NO NEW DEPENDENCIES
  * -------------------
@@ -209,6 +214,36 @@ const DISPLAY = `Fraunces, Georgia, 'Times New Roman', serif`;
 const SANS = `InterCard, system-ui, -apple-system, sans-serif`;
 const MONO = `ui-monospace, SFMono-Regular, Menlo, monospace`;
 
+/**
+ * The type scale. Every template draws from this and none invents a size.
+ *
+ * WHY THE NUMBERS ARE WHAT THEY ARE
+ * ---------------------------------
+ * A hero renders at 494px in the Field Notes grid on desktop and **341px on a
+ * phone** — 0.284 of the 1200px source, which is the size that actually decides
+ * this. Multiply any value below by 0.284 to see what a reader gets.
+ *
+ *   lede    58  ->  16.5px on a phone.  Legible. Every template has exactly one.
+ *   major   40  ->  11.4px.  Reads on desktop, marginal on a phone.
+ *   minor   30  ->   8.5px.  Texture on a phone, readable on desktop.
+ *   label   20  ->   5.7px.  Context. Texture at any small size, by design.
+ *   micro   17  ->   4.8px.  Authenticity only — log chrome, flags, seals.
+ *
+ * THE RULE THAT MATTERS
+ * ---------------------
+ * **The lede carries the finding.** A reader who sees only the lede still gets
+ * the point; everything under it is evidence they can lean in for. That is what
+ * makes ten different templates read as one system at card size: same size, same
+ * job, same place on every card. Before this existed, the largest element ranged
+ * from 7.4px to 29.6px on a phone — a 4x spread, which read as ten unrelated
+ * images rather than one set.
+ *
+ * `field` is the single documented exception: it has no evidence region at all,
+ * so its lede takes the whole frame and is allowed LEDE_SOLO.
+ */
+const TYPE = { lede: 58, major: 40, minor: 30, label: 20, micro: 17 };
+const LEDE_SOLO = 78;
+
 const RESET = `*{box-sizing:border-box;margin:0;padding:0}
   html,body{width:${W}px;height:${H}px;-webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility}`;
@@ -224,6 +259,32 @@ function fitSize(text, max, min, budget) {
   const n = String(text ?? '').length;
   if (n <= budget) return max;
   return Math.max(min, Math.round(max * Math.sqrt(budget / n)));
+}
+
+/**
+ * Size a lede. Every template routes its one lede through here, so the rule
+ * lives in a single place rather than in ten CSS blocks.
+ *
+ * The floor is 46px — 13.1px on a phone — rather than TYPE.major, because the
+ * whole point of the lede is that it reads at the smallest size the site renders
+ * it at. Letting it shrink freely reintroduced the spread this scale exists to
+ * remove: one card at 16.5px next to another at 11.4px reads as two systems.
+ *
+ * A lede long enough to hit the floor is a lede that is too long. It still
+ * renders — refusing to draw an article's hero over a copy nit would be worse —
+ * but it says so, because the fix is an editing fix.
+ */
+const LEDE_BUDGET = 38;
+const LEDE_FLOOR = 46;
+function ledeSize(text) {
+  const n = String(text ?? '').length;
+  if (n > 62) {
+    console.warn(
+      `  ! lede is ${n} characters and will render at the ${LEDE_FLOOR}px floor.\n` +
+        `    Under ${LEDE_BUDGET} keeps it at full size — this is the line a phone reader gets.`,
+    );
+  }
+  return fitSize(text, TYPE.lede, LEDE_FLOOR, LEDE_BUDGET);
 }
 
 const before = spec.before ?? {
@@ -296,7 +357,9 @@ const REGISTRY = [
         ? 'file.lines is empty'
         : f.lines.length > 4
           ? `file.lines has ${f.lines.length}; above 4 the card stops reading at grid size`
-          : null,
+          : !f.verdict
+            ? 'file.verdict is required — a file card is all small mono, so the caption is the only thing a phone can read'
+            : null,
   },
   {
     name: 'sequence',
@@ -342,7 +405,9 @@ const REGISTRY = [
           ? 'versus needs left.name and right.name — the columns are the point'
           : v.rows.length > 4
             ? `versus.rows has ${v.rows.length}; above 4 the table gets cramped`
-            : null,
+            : !v.verdict
+              ? 'versus.verdict is required — a table has no natural lede, so it has to be stated'
+              : null,
   },
   { name: 'split', key: null, render: (k) => split(k) },
 ];
@@ -390,13 +455,13 @@ function split(k) {
      .p{display:flex;flex-direction:column;justify-content:center;gap:20px;padding:0 68px}
      .a{flex:0 0 282px;background:${t.surface};border-bottom:1px solid ${t.rule}}
      .b{flex:1 1 auto;background:${T.field}}
-     .l{font-family:${MONO};font-size:21px;font-weight:500;letter-spacing:.15em;
+     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase}
      .a .l{color:${t.dim}} .b .l{color:rgba(249,245,236,.82)}
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.015em}
-     .a .h{color:${t.text};font-size:${fitSize(before.text, 60, 40, 30)}px}
-     .b .h{color:${FIELD_FG};font-size:${fitSize(after.text, 60, 40, 30)}px}
-     .d{font-family:${MONO};font-size:20px;color:rgba(249,245,236,.78);letter-spacing:.02em}`,
+     .a .h{color:${t.text};font-size:${ledeSize(before.text)}px}
+     .b .h{color:${FIELD_FG};font-size:${ledeSize(after.text)}px}
+     .d{font-family:${MONO};font-size:${TYPE.label}px;color:rgba(249,245,236,.78);letter-spacing:.02em}`,
     `<div class="p a">
        ${before.label ? `<div class="l">${esc(before.label)}</div>` : ''}
        <div class="h">${esc(before.text)}</div>
@@ -425,13 +490,13 @@ function countCard(k) {
   return doc(
     `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:38px;padding:0 74px}
-     .l{font-family:${MONO};font-size:21px;font-weight:500;letter-spacing:.15em;
+     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase;color:${t.dim}}
      .blocks{display:flex;gap:14px;height:130px}
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.02em;
-       color:${t.text};font-size:${fitSize(c.verdict, 64, 44, 26)}px}
+       color:${t.text};font-size:${ledeSize(c.verdict)}px}
      .h em{font-style:normal;color:${k === 'dark' ? T.bright : T.field}}
-     .d{font-family:${MONO};font-size:20px;letter-spacing:.04em;color:${t.dim}}`,
+     .d{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
     `<div class="l">${esc(c.of)} ${esc(c.unit)}</div>
      <div class="blocks">${blocks}</div>
      <div class="h"><em>${esc(c.hit)} of ${esc(c.of)}</em> ${esc(c.verdict)}</div>
@@ -465,17 +530,17 @@ function logCard(k) {
      .bar{display:flex;align-items:center;gap:10px;padding:16px 22px;background:${t.lift};
        border-bottom:1px solid ${t.rule}}
      .dot{width:12px;height:12px;border-radius:50%;background:${t.rule}}
-     .name{margin-left:8px;font-size:17px;color:${t.dim};letter-spacing:.06em}
+     .name{margin-left:8px;font-size:${TYPE.micro}px;color:${t.dim};letter-spacing:.06em}
      .body{flex:1;padding:26px 30px;display:flex;flex-direction:column;gap:20px;
        justify-content:center}
      .line{display:flex;align-items:center;gap:18px}
-     .chip{border:1px solid;border-radius:3px;padding:3px 10px;font-size:17px;
+     .chip{border:1px solid;border-radius:3px;padding:3px 10px;font-size:${TYPE.micro}px;
        font-weight:600;letter-spacing:.1em;white-space:nowrap}
-     .txt{font-size:25px;color:${t.text};letter-spacing:-.01em}
+     .txt{font-size:${TYPE.minor}px;color:${t.text};letter-spacing:-.01em}
      .muted{color:${t.dim}}
      .sum{font-family:${DISPLAY};font-weight:600;letter-spacing:-.015em;
        color:${k === 'dark' ? T.bright : T.field};padding-top:20px;
-       border-top:1px solid ${t.rule};font-size:${fitSize(l.summary, 42, 30, 30)}px}`,
+       border-top:1px solid ${t.rule};font-size:${ledeSize(l.summary)}px}`,
     `<div class="win">
        <div class="bar">
          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -515,20 +580,25 @@ function receiptCard(k) {
        display:flex;flex-direction:column;justify-content:space-between}
      .top{display:flex;justify-content:space-between;align-items:baseline;
        padding-bottom:18px;border-bottom:2px solid ${t.hair}}
-     .who{font-size:19px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+     .who{font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
        color:${t.text}}
-     .when{font-size:16px;color:${t.dim};letter-spacing:.08em}
+     .when{font-size:${TYPE.micro}px;color:${t.dim};letter-spacing:.08em}
      .row{display:flex;justify-content:space-between;align-items:baseline;gap:32px;
        padding:20px 0;border-bottom:1px dashed ${t.rule}}
-     .k{font-size:17px;letter-spacing:.1em;text-transform:uppercase;color:${t.dim}}
-     .v{font-family:${DISPLAY};font-weight:600;font-size:32px;letter-spacing:-.01em;
+     .k{font-size:${TYPE.micro}px;letter-spacing:.1em;text-transform:uppercase;color:${t.dim}}
+     .v{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;letter-spacing:-.01em;
        color:${t.text};text-align:right}
      .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:28px}
-     .stamp{border:3px solid ${stampInk};color:${stampInk};font-weight:700;
-       letter-spacing:.14em;text-transform:uppercase;padding:12px 22px;
-       transform:rotate(-4deg);font-size:${fitSize(r.stamp, 26, 17, 26)}px}
-     .note{font-size:17px;letter-spacing:.1em;text-transform:uppercase;color:${t.dim};
-       text-align:right;white-space:pre-line}`,
+     /* The stamp is this template's lede — it is the verdict, which is the whole
+        point of a record. It is set in the display face rather than mono: at
+        lede size, mono uppercase with tracking ran about 980px wide, wrapped to
+        two lines, and squeezed the note beside it into a column one word wide. */
+     .stamp{flex:0 1 auto;border:3px solid ${stampInk};color:${stampInk};
+       font-family:${DISPLAY};font-weight:600;letter-spacing:-.005em;padding:10px 20px;
+       transform:rotate(-3deg);line-height:1.1;
+       font-size:${ledeSize(r.stamp)}px}
+     .note{flex:0 0 auto;font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.1em;
+       text-transform:uppercase;color:${t.dim};text-align:right;white-space:pre-line}`,
     `<div class="sheet">
        <div class="top">
          <span class="who">${esc(r.title ?? 'Record')}</span>
@@ -556,11 +626,11 @@ function fieldCard(k) {
      .main{flex:1;display:flex;flex-direction:column;justify-content:center;
        padding:0 78px;gap:26px}
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.0;letter-spacing:-.03em;
-       color:${FIELD_FG};font-size:${fitSize('x'.repeat(chars), 104, 60, 34)}px}
+       color:${FIELD_FG};font-size:${fitSize('x'.repeat(chars), LEDE_SOLO, TYPE.lede, 34)}px}
      .q{color:rgba(249,245,236,.55)}
-     .sub{font-family:${MONO};font-size:22px;letter-spacing:.08em;color:rgba(249,245,236,.78)}
+     .sub{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.08em;color:rgba(249,245,236,.78)}
      footer{flex:0 0 74px;background:${t.bg};display:flex;align-items:center;
-       justify-content:space-between;padding:0 78px;font-family:${MONO};font-size:17px;
+       justify-content:space-between;padding:0 78px;font-family:${MONO};font-size:${TYPE.micro}px;
        letter-spacing:.12em;text-transform:uppercase;color:${t.dim}}`,
     `<div class="main">
        <div class="h">${s.quiet ? `<span class="q">${esc(s.quiet)}</span><br>` : ''}${esc(s.loud)}</div>
@@ -591,26 +661,40 @@ function fileCard(k) {
     )
     .join('');
   return doc(
-    `body{background:${t.bg};font-family:${MONO};padding:64px 76px}
-     .win{height:100%;background:${t.surface};border:1px solid ${t.rule};border-radius:12px;
-       overflow:hidden;display:flex;flex-direction:column}
-     .bar{display:flex;align-items:center;gap:10px;padding:18px 24px;background:${t.lift};
+    `body{background:${t.bg};font-family:${MONO};padding:52px 72px;display:flex;
+       flex-direction:column;gap:26px}
+     /* A file card is all small mono by nature — that is the metaphor and it is
+        worth keeping — so the lede sits under it as a caption rather than being
+        forced inside the window. The card is the evidence; this is the finding. */
+     .win{flex:1 1 auto;min-height:0;background:${t.surface};border:1px solid ${t.rule};
+       border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+     .bar{display:flex;align-items:center;gap:10px;padding:15px 22px;background:${t.lift};
        border-bottom:1px solid ${t.rule}}
-     .dot{width:12px;height:12px;border-radius:50%;background:${t.rule}}
-     .fn{margin-left:10px;font-size:22px;font-weight:600;letter-spacing:.02em;color:${t.text}}
+     .dot{width:11px;height:11px;border-radius:50%;background:${t.rule}}
+     .fn{margin-left:10px;font-size:${TYPE.label}px;font-weight:600;letter-spacing:.02em;
+       color:${t.text}}
      .fn em{font-style:normal;color:${ink}}
-     .body{flex:1;padding:30px 34px;display:flex;flex-direction:column;
-       justify-content:center;gap:26px}
-     .h{font-size:26px;font-weight:600;color:${ink};letter-spacing:.01em}
+     .body{flex:1;padding:22px 30px;display:flex;flex-direction:column;
+       justify-content:center;gap:18px}
+     .h{font-size:${TYPE.label}px;font-weight:600;color:${ink};letter-spacing:.01em}
      .hash{opacity:.55}
-     .v{font-size:25px;color:${t.dim};margin-top:6px;letter-spacing:-.005em}`,
+     .v{font-size:${TYPE.label}px;color:${t.dim};margin-top:5px;letter-spacing:-.005em}
+     .lede{flex:0 0 auto;font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;
+       color:${t.text};line-height:1.06;
+       font-size:${ledeSize(f.verdict)}px}
+     .lede em{font-style:normal;color:${ink}}`,
     `<div class="win">
        <div class="bar">
          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
          <span class="fn">${esc(f.name)}<em>${esc(f.ext ?? '')}</em></span>
        </div>
        <div class="body">${lines}</div>
-     </div>`,
+     </div>
+     ${
+       f.verdict
+         ? `<div class="lede">${f.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>`
+         : ''
+     }`,
   );
 }
 
@@ -633,7 +717,7 @@ function sequenceCard(k) {
   return doc(
     `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:44px;padding:0 74px}
-     .l{font-family:${MONO};font-size:21px;font-weight:500;letter-spacing:.15em;
+     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase;color:${t.dim}}
      .rail{position:relative;display:flex;justify-content:space-between;gap:18px}
      .rail:before{content:'';position:absolute;left:26px;right:26px;top:26px;height:2px;
@@ -641,14 +725,14 @@ function sequenceCard(k) {
      .step{position:relative;flex:1 1 0;display:flex;flex-direction:column;
        align-items:center;gap:16px;min-width:0}
      .node{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;
-       justify-content:center;font-family:${MONO};font-size:24px;font-weight:700;
+       justify-content:center;font-family:${MONO};font-size:${TYPE.label}px;font-weight:700;
        background:${t.surface};border:2px solid ${t.hair};color:${t.dim};
        position:relative;z-index:1}
      .node.on{background:${ink};border-color:${ink};color:${FIELD_FG}}
-     .cap{font-family:${MONO};font-size:17px;line-height:1.35;color:${t.text};
+     .cap{font-family:${MONO};font-size:${TYPE.micro}px;line-height:1.35;color:${t.text};
        text-align:center;letter-spacing:-.005em}
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.02em;
-       color:${t.text};font-size:${fitSize(s.verdict, 54, 38, 34)}px}
+       color:${t.text};font-size:${ledeSize(s.verdict)}px}
      .h em{font-style:normal;color:${ink}}`,
     `<div class="l">${esc(s.label)}</div>
      <div class="rail">${steps}</div>
@@ -676,20 +760,25 @@ function checklistCard(k) {
   return doc(
     `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:34px;padding:0 76px}
-     .l{font-family:${MONO};font-size:21px;font-weight:500;letter-spacing:.15em;
+     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase;color:${t.dim}}
-     .item{display:flex;align-items:baseline;gap:22px;padding:16px 0;
+     /* The label is the lede here: it states the finding, and the named items
+        below are the evidence for it. Promoting the items instead would give the
+        card three ledes and none of them would be the point. */
+     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;color:${t.text};
+       line-height:1.06;font-size:${ledeSize(c.label)}px}
+     .item{display:flex;align-items:baseline;gap:20px;padding:13px 0;
        border-bottom:1px solid ${t.rule}}
      .item:last-of-type{border-bottom:0}
-     .mark{flex:0 0 auto;width:22px;height:22px;border-radius:5px;background:${ink};
+     .mark{flex:0 0 auto;width:20px;height:20px;border-radius:5px;background:${ink};
        transform:translateY(2px)}
      .mark.off{background:transparent;border:2px solid ${t.hair}}
-     .txt b{font-family:${DISPLAY};font-weight:600;font-size:42px;letter-spacing:-.02em;
-       color:${t.text}}
-     .txt i{font-style:normal;font-family:${MONO};font-size:19px;color:${t.dim};
-       margin-left:16px;letter-spacing:.02em}
-     .note{font-family:${MONO};font-size:20px;letter-spacing:.04em;color:${t.dim}}`,
-    `<div class="l">${esc(c.label)}</div>
+     .txt b{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.major}px;
+       letter-spacing:-.02em;color:${t.text}}
+     .txt i{font-style:normal;font-family:${MONO};font-size:${TYPE.micro}px;color:${t.dim};
+       margin-left:14px;letter-spacing:.02em}
+     .note{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
+    `<div class="lede">${esc(c.label)}</div>
      <div>${items}</div>
      ${c.note ? `<div class="note">${esc(c.note)}</div>` : ''}`,
   );
@@ -715,15 +804,17 @@ function annotatedCard(k) {
     `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:30px;padding:0 76px}
      .top{display:flex;flex-direction:column;gap:8px}
-     .h{font-family:${DISPLAY};font-weight:600;font-size:46px;letter-spacing:-.02em;
-       color:${t.text};line-height:1.08}
-     .sub{font-family:${MONO};font-size:19px;letter-spacing:.04em;color:${t.dim}}
-     .sp{padding:14px 0}
-     .claim{font-family:${DISPLAY};font-weight:600;font-size:33px;letter-spacing:-.01em;
-       color:${t.text};display:inline-block;border-bottom:3px solid ${ink};
-       padding-bottom:5px;line-height:1.2}
-     .flag{font-family:${MONO};font-size:17px;font-weight:600;letter-spacing:.14em;
-       text-transform:uppercase;color:${ink};margin-top:11px}`,
+     /* The intro is the lede — it is the finding. The flagged claims are the
+        evidence and sit one step down the ramp. */
+     .h{font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;color:${t.text};
+       line-height:1.06;font-size:${ledeSize(a.intro)}px}
+     .sub{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.04em;color:${t.dim}}
+     .sp{padding:11px 0}
+     .claim{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.major}px;
+       letter-spacing:-.01em;color:${t.text};display:inline-block;
+       border-bottom:3px solid ${ink};padding-bottom:5px;line-height:1.2}
+     .flag{font-family:${MONO};font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.14em;
+       text-transform:uppercase;color:${ink};margin-top:9px}`,
     `<div class="top">
        <div class="h">${esc(a.intro)}</div>
        ${a.sub ? `<div class="sub">${esc(a.sub)}</div>` : ''}
@@ -750,22 +841,30 @@ function versusCard(k) {
     .join('');
   return doc(
     `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
-       justify-content:center;padding:0 72px;gap:0}
-     .grid{display:grid;grid-template-columns:auto 1fr 1fr;column-gap:38px;align-items:baseline}
-     .hd{font-family:${MONO};font-size:19px;font-weight:600;letter-spacing:.13em;
-       text-transform:uppercase;padding-bottom:16px;border-bottom:2px solid ${t.hair}}
+       justify-content:center;padding:0 72px;gap:30px}
+     /* A table has no natural lede — every cell is peer content — so this one is
+        stated. Without it the largest thing on the card was a 40px cell, which is
+        11px on a phone, and the card said nothing at the size most people see. */
+     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;color:${t.text};
+       line-height:1.06;font-size:${ledeSize(v.verdict)}px}
+     .lede em{font-style:normal;color:${ink}}
+     .grid{display:grid;grid-template-columns:auto 1fr 1fr;column-gap:34px;align-items:baseline}
+     .hd{font-family:${MONO};font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.13em;
+       text-transform:uppercase;padding-bottom:13px;border-bottom:2px solid ${t.hair}}
      .hd.one{color:${t.dim}} .hd.two{color:${ink}}
-     /* Sized up from 31px after the card test: at the grid's ~40% these were
-        landing near 12px, which is the exact failure the whole redesign was
-        about. The row cap of 4 is what buys the room. */
-     .r{padding:22px 0;border-bottom:1px solid ${t.rule}}
-     .k{font-family:${MONO};font-size:18px;letter-spacing:.1em;text-transform:uppercase;
-       color:${t.dim};white-space:nowrap}
-     .a{font-family:${DISPLAY};font-weight:600;font-size:40px;letter-spacing:-.015em;
-       color:${t.dim}}
-     .b{font-family:${DISPLAY};font-weight:600;font-size:40px;letter-spacing:-.015em;
-       color:${t.text}}`,
-    `<div class="grid">
+     .r{padding:15px 0;border-bottom:1px solid ${t.rule}}
+     .k{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.1em;
+       text-transform:uppercase;color:${t.dim};white-space:nowrap}
+     .a{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
+       letter-spacing:-.015em;color:${t.dim}}
+     .b{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
+       letter-spacing:-.015em;color:${t.text}}`,
+    `${
+      v.verdict
+        ? `<div class="lede">${v.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>`
+        : ''
+    }
+     <div class="grid">
        <div class="hd"></div>
        <div class="hd one">${esc(v.left.name)}</div>
        <div class="hd two">${esc(v.right.name)}</div>

@@ -50,6 +50,7 @@
         "l": "A monthly bill",
         "r": "$0"
       }
-    ]
+    ],
+    "verdict": "It looked like it needed a server. It needed *a text file*."
   }
 }
