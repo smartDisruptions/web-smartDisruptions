@@ -7,12 +7,50 @@
   "after": {
     "label": "What it actually took",
     "text": "A script, a timer, a text file",
-    "detail": "$0 a month · no database · no API keys"
+    "detail": "$0 a month \u00b7 no database \u00b7 no API keys"
   },
   "headline": [
-    { "t": "It looked like it needed a server. It needed a " },
-    { "t": "text file", "tone": "good" },
-    { "t": "." }
+    {
+      "t": "It looked like it needed a server. It needed a "
+    },
+    {
+      "t": "text file",
+      "tone": "good"
+    },
+    {
+      "t": "."
+    }
   ],
-  "alt": "Two panels: what a daily pipeline looked like it needed — a server, a database, a monthly bill — above what it actually took, a script, a timer and a text file, at no cost."
+  "alt": "A two-column comparison: a server, a cron host, a database and a monthly bill on one side; a script, a timer, a text file and $0 on the other.",
+  "versus": {
+    "left": {
+      "name": "What it looked like"
+    },
+    "right": {
+      "name": "What it took"
+    },
+    "rows": [
+      {
+        "label": "Compute",
+        "l": "A server",
+        "r": "A script"
+      },
+      {
+        "label": "Schedule",
+        "l": "A cron host",
+        "r": "A timer"
+      },
+      {
+        "label": "Storage",
+        "l": "A database",
+        "r": "A text file"
+      },
+      {
+        "label": "Cost",
+        "l": "A monthly bill",
+        "r": "$0"
+      }
+    ],
+    "verdict": "It looked like it needed a server. It needed *a text file*."
+  }
 }

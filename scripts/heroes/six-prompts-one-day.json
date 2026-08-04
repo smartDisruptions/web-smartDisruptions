@@ -1,0 +1,51 @@
+{
+  "tone": "accent",
+  "before": {
+    "label": "What I typed",
+    "text": "Six prompts, one with a typo"
+  },
+  "after": {
+    "label": "What carried the rest",
+    "text": "A system built before the project"
+  },
+  "sequence": {
+    "label": "One day, start to finish",
+    "steps": [
+      {
+        "text": "build a Kanban",
+        "mark": true
+      },
+      {
+        "text": "make it mobile",
+        "mark": true
+      },
+      {
+        "text": "what next?"
+      },
+      {
+        "text": "how do I deploy"
+      },
+      {
+        "text": "it's live"
+      },
+      {
+        "text": "journal this",
+        "mark": true
+      }
+    ],
+    "verdict": "*Three of the six* leaned on work I'd already done."
+  },
+  "headline": [
+    {
+      "t": "Six prompts. "
+    },
+    {
+      "t": "Three of them barely said anything",
+      "tone": "accent"
+    },
+    {
+      "t": "."
+    }
+  ],
+  "alt": "Six numbered steps along a rail \u2014 build a Kanban, make it mobile, what next, how do I deploy, it's live, journal this \u2014 with three marked as leaning on work done before the project started."
+}

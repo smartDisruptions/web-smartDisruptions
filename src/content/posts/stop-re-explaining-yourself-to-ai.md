@@ -18,9 +18,10 @@ channels:
     status: planned
     note: "1/ Claude and ChatGPT both remember things about me between chats now. That's real and it helps. But it's their memory of me: automatic, out of sight, and it doesn't travel from one tool to the other.\n\n2/ What actually changed how I work was the opposite — a file about myself that I wrote and control. Claude Code reads a file called CLAUDE.md at the start of every session, so whatever's in it has been read before I ask my first question.\n\n3/ Nothing lands in that file on its own. I type it, or I tell the AI to save the line. How I like to work, what I'm building, the corrections I was tired of repeating. The deliberateness turned out to be the feature.\n\n4/ Then I got carried away and mapped 34 projects into linked notes. The file itself doesn't hold all that — it just points at it. Small file, growing knowledge behind it.\n\n5/ The test: I opened a completely fresh session and quizzed it about me like a stranger cramming before a meeting. 6 of 10 questions answered fully, right notes, one or two hops, citing where each answer came from.\n\n6/ The 4 it missed were things I'd never written down, and it flagged them as gaps instead of inventing an answer. The memory was exactly as good as what I'd fed it. The hard part was never the software.\n\n7/ Start with one file: who you are, what you're working on, what you've shipped, how you like to work. Yours beats the built-in kind on three counts — portable, legible, deliberate. Paste it as a first message and you'll feel it in the first reply."
     comment: "The full write-up: how the file started, what the fresh-session quiz scored, and why the four misses were the useful part: https://www.smartdisruptions.com/content/stop-re-explaining-yourself-to-ai"
-heroImage: /images/content/one-file-about-yourself-hero.webp
-heroImageAlt: A plain-text file named CLAUDE.md — who I am, what I am working on, how I work — the one file my AI reads every session.
-ogImage: /images/content/one-file-about-yourself.webp
+heroImage: /images/content/stop-re-explaining-yourself-to-ai-hero.webp
+heroImageAlt: A file card titled CLAUDE.md with three sections — who I am, working on now, how I work — each holding one line about me.
+ogImage: /images/content/stop-re-explaining-yourself-to-ai.webp
+heroImageLight: /images/content/stop-re-explaining-yourself-to-ai-hero-light.webp
 ---
 Most AI tools have a memory now. Claude remembers things about me between chats. So does ChatGPT. That's real, and it helps.
 

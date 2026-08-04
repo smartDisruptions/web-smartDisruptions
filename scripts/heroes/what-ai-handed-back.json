@@ -1,0 +1,20 @@
+{
+  "tone": "warn",
+  "before": { "label": "What the AI built", "text": "A payment system, then a website" },
+  "after": { "label": "What it handed back", "text": "The same three things, twice" },
+  "checklist": {
+    "label": "What only I could do",
+    "items": [
+      { "text": "The keys", "note": "accounts and credentials" },
+      { "text": "The money", "note": "real dollars on the line" },
+      { "text": "The final yes", "note": "the go-live, my name on it" }
+    ],
+    "note": "Carried to the doorstep, twice in one day"
+  },
+  "headline": [
+    { "t": "It built the whole thing, then handed back " },
+    { "t": "three things", "tone": "warn" },
+    { "t": "." }
+  ],
+  "alt": "Three marked items under the heading what only I could do — the keys, the money, and the final yes — each with a short gloss."
+}
