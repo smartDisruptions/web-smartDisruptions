@@ -6,13 +6,21 @@
   },
   "after": {
     "label": "What happened when the site went down",
-    "text": "The monitor went down with it",
-    "detail": "Built inside the thing it was watching"
+    "text": "The monitor went down with it"
+  },
+  "record": {
+    "title": "Dashboard review",
+    "rows": [
+      { "label": "What it could see", "value": "One folder of articles", "tone": "warn" },
+      { "label": "When the site went down", "value": "The monitor went with it", "tone": "warn" }
+    ],
+    "stamp": "Built inside what it watched",
+    "note": "Rebuilt as\nits own app"
   },
   "headline": [
     { "t": "I built the monitor " },
     { "t": "inside", "tone": "warn" },
     { "t": " the thing it was monitoring." }
   ],
-  "alt": "Two panels: what the dashboard could see, one folder of articles, above what happened when the site went down — the monitor went down with it, because it was built inside the thing it was watching."
+  "alt": "A review sheet listing two findings — the dashboard could see only one folder of articles, and it went down whenever the site did — stamped 'built inside what it watched'."
 }

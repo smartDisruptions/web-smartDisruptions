@@ -118,34 +118,40 @@ Write for the smallest place it appears. The grid renders the hero at about
 500px wide, so `before.text` and `after.text` are clauses of roughly 30
 characters — long ones are auto-shrunk, which is a fallback, not a licence.
 
-### The three templates, and why you never pick one
+### The templates, and why you never pick one
 
-There are three hero templates, and **the spec's shape decides which renders.
-There is no `template` key and there must not be one.**
+Each template owns one **evidence key**. Putting that key in the spec is what
+selects it. **There is no `template` field and there must not be one.**
 
-| Add this to the spec | Renders | Use when |
+| Add this key | Renders | Use when |
 |---|---|---|
-| nothing extra | `split` | the default — two panels, the second a colour field |
-| `count` | `count` | the post has a countable finding, 12 or fewer |
-| `log` | `console` | the evidence *is* machine output — a response, a run, a log |
+| nothing | `split` | the default — one belief against one truth |
+| `count` | `count` | a countable finding, 12 or fewer |
+| `log` | `console` | the evidence *is* machine output — a response, a run |
+| `record` | `receipt` | a *set* of findings with a verdict, not a single contrast |
+| `statement` | `field` | the finding compresses to one sentence and there is nothing else to show |
 
 The one question to answer is **what evidence does this post have**, which is a
 fact about the article. "Which template looks nicer here" is a taste call, and
 taste calls don't survive this pipeline — three articles have been written in the
 same two minutes before. A wrong treatment reads worse than a plain one, so when
-neither trigger clearly applies, it's a `split`. That is the majority case, not a
+no trigger clearly applies it's a `split`. That is the majority case, not a
 fallback.
 
+**Exactly one evidence key may be present.** Two is an error and the script
+refuses to run: a post has one central piece of evidence, and if two look right
+then the spec hasn't decided what the article is about yet.
+
 A `count.of` above 12 stops being countable at a glance, so it renders `split`
-and says so. Don't work around that by shrinking the number to fit; 52 passing
-tests is a `log` line, not eight blocks.
+and says so. Don't shrink the number to fit — 52 passing tests is a `log` line,
+not eight blocks.
 
 ```json
 "count": { "of": 8, "hit": 7, "unit": "claims checked",
            "verdict": "were wrong", "detail": "Central thesis withdrawn" }
 ```
-renders as *8 claims checked* over eight blocks with seven filled, under
-*“**7 of 8** were wrong”*. `hit` is the number that broke, not the number that passed.
+*8 claims checked* over eight blocks with seven filled, under *“**7 of 8** were
+wrong”*. `hit` is the number that broke, not the number that passed.
 
 ```json
 "log": { "name": "curl · no session, no password",
@@ -153,11 +159,44 @@ renders as *8 claims checked* over eight blocks with seven filled, under
                     { "chip": "200 OK",  "tone": "bad",  "text": "17,798 bytes · 43 tasks" } ],
          "summary": "Public the whole time." }
 ```
-The house pattern is two lines — what looked fine, then what was true — and a
-summary. Chips must be real output, not invented labels.
+Two lines — what looked fine, then what was true — and a summary. Chips must be
+real output, not invented labels.
+
+```json
+"record": { "title": "Dashboard review",
+            "rows": [ { "label": "What it could see", "value": "One folder of articles", "tone": "warn" },
+                      { "label": "When the site went down", "value": "The monitor went with it", "tone": "warn" } ],
+            "stamp": "Built inside what it watched", "note": "Rebuilt as\nits own app" }
+```
+Two or three rows read best; four is the ceiling before the sheet gets cramped.
+`tone` on a row colours that row's value. Use this when the post audited
+something and found several things, where a `split` would have to throw away all
+but one.
+
+```json
+"statement": { "quiet": "It looked like it needed a server.",
+               "loud": "It needed a text file.", "note": "$0 a month · no database" }
+```
+The whole frame becomes the tone colour. This carries the least evidence of the
+five, so it is only right when the sentence *is* the finding — if the post has a
+number, a log, or two concrete lists, one of those is the better picture.
 
 **`before` and `after` are always required**, whichever template renders: the
 social card uses them and does not vary.
+
+### Adding a sixth
+
+Append an entry to `REGISTRY` in `scripts/make-hero.mjs` with a `key` no other
+template claims, a `render(theme)`, and optionally a `check` that returns a
+string when the data can't be drawn. Then add a row to the table above. Nothing
+else changes.
+
+The bar for a new template is that its key is a genuinely different **shape of
+evidence** — `count` is a tally, `log` is machine output, `record` is a ledger,
+`statement` is a sentence. If a proposed template would read from the same keys
+as an existing one, it's a restyle of that template rather than a new one, and
+the honest move is to change the existing renderer instead. That bar is what
+keeps this a system rather than a folder of looks.
 
 ### The social card never changes
 
