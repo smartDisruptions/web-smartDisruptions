@@ -6,6 +6,7 @@ import {
   Button,
   RevealOnScroll,
 } from '@/components/ui';
+import HeroImage from '@/components/HeroImage';
 import { formatDate } from '@/lib/format';
 
 export default function LatestWritingSection() {
@@ -36,12 +37,12 @@ export default function LatestWritingSection() {
               >
                 {post.heroImage && (
                   <div className="mb-4 shrink-0 self-start overflow-hidden rounded-lg border border-border sm:mb-0 sm:w-44">
-                    <img
-                      loading="lazy"
-                      decoding="async"
-                      src={post.heroImage}
-                      alt={post.heroImageAlt ?? post.title}
-                      className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-105 sm:h-28"
+                    {/* 40:21 is the hero's own ratio — a fixed height here
+                        cropped the sides and clipped the first letter of every
+                        line. */}
+                    <HeroImage
+                      post={post}
+                      className="aspect-[40/21] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                 )}

@@ -8,9 +8,10 @@ tags: [automation, ci, verification, shipping]
 status: published
 channels: []
 heroImage: /images/content/five-of-six-failures-said-success-hero.webp
-heroImageAlt: "A card contrasting what the scheduled job reported — nothing due, done, success — with what was actually true: an article stranded and going nowhere."
+heroImageAlt: "Two panels: what the scheduled job reported — nothing due, done — above what was actually true, an article stranded and going nowhere, across six failures, five of which reported success."
 ogImage: /images/content/five-of-six-failures-said-success.webp
 liveAt: 2026-08-04T13:00:00.000Z
+heroImageLight: /images/content/five-of-six-failures-said-success-hero-light.webp
 ---
 I wanted to schedule articles. Pick a time, walk away, have it go out without me.
 

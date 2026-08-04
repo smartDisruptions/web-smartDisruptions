@@ -52,6 +52,12 @@ export interface Post {
   liveAt?: string;
   channels: ChannelPlan[];
   heroImage?: string;
+  /**
+   * The hero re-grounded on paper, shown when the site is in its light theme.
+   * Optional: a photograph or an app screenshot is theme-neutral and needs no
+   * second copy, so only the generated cards set this.
+   */
+  heroImageLight?: string;
   heroImageAlt?: string;
   ogImage?: string;
 }
@@ -124,6 +130,7 @@ export function postFromFrontmatter(
     liveAt,
     channels,
     heroImage: optionalStr(data.heroImage as Scalar),
+    heroImageLight: optionalStr(data.heroImageLight as Scalar),
     heroImageAlt: optionalStr(data.heroImageAlt as Scalar),
     ogImage: optionalStr(data.ogImage as Scalar),
   };

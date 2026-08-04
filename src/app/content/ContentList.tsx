@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { PostSummary } from '@/lib/posts';
 import { SectionContainer, Card, Badge } from '@/components/ui';
+import HeroImage from '@/components/HeroImage';
 import { formatDate } from '@/lib/format';
 
 /**
@@ -20,13 +21,7 @@ function Thumb({
 }) {
   if (post.heroImage) {
     return (
-      <img
-        loading="lazy"
-        decoding="async"
-        src={post.heroImage}
-        alt={post.heroImageAlt ?? post.title}
-        className={`h-full w-full object-cover ${className}`.trim()}
-      />
+      <HeroImage post={post} className={`h-full w-full object-cover ${className}`.trim()} />
     );
   }
   return (
@@ -42,8 +37,12 @@ function Thumb({
 function FeaturedCard({ post }: { post: PostSummary }) {
   return (
     <Link href={`/content/${post.slug}`} className="group block">
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_var(--sd-card-shadow)] sm:flex">
-        <div className="aspect-[16/10] overflow-hidden sm:aspect-auto sm:w-2/5 sm:shrink-0">
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_var(--sd-card-shadow)] sm:flex sm:items-center">
+        {/* Holds the hero's own 40:21 at every width. This used to stretch to
+            the card's height, which made the frame far narrower than the source
+            and let object-cover crop the sides — on a hero whose words start
+            68px from the edge, that clipped the first letter of every line. */}
+        <div className="aspect-[40/21] overflow-hidden sm:w-2/5 sm:shrink-0">
           <Thumb
             post={post}
             className="transition-transform duration-500 group-hover:scale-105"

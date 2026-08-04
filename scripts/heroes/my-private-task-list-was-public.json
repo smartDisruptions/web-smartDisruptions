@@ -1,0 +1,18 @@
+{
+  "tone": "bad",
+  "before": {
+    "label": "What I assumed",
+    "text": "My task list was private"
+  },
+  "after": {
+    "label": "What the URL returned",
+    "text": "200 OK — public the whole time",
+    "detail": "17,798 bytes · 43 tasks · personal items included"
+  },
+  "headline": [
+    { "t": "I assumed my task list was private. The URL returned " },
+    { "t": "200 OK", "tone": "bad" },
+    { "t": "." }
+  ],
+  "alt": "Two panels: what I assumed — that my task list was private — above what the URL actually returned, 200 OK and public, 17,798 bytes and 43 tasks including personal items."
+}

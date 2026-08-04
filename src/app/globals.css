@@ -251,3 +251,20 @@ body {
     animation: none !important;
   }
 }
+
+/* Post heroes ship in both themes — the generated cards are drawn twice, once
+   grounded on charcoal and once on paper. Light is the default because :root
+   is the paper theme; the dark copy takes over under [data-theme='dark'].
+
+   Both copies are in the DOM and CSS picks one. `<picture>` with
+   prefers-color-scheme was the obvious alternative and is wrong here: it
+   follows the OS and would ignore the site's own theme toggle. */
+.hero-themed-dark {
+  display: none;
+}
+:root[data-theme='dark'] .hero-themed-dark {
+  display: block;
+}
+:root[data-theme='dark'] .hero-themed-light {
+  display: none;
+}

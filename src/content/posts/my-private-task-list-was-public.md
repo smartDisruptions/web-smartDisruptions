@@ -8,9 +8,10 @@ tags: [security, deployment, verification, shipping]
 status: published
 channels: []
 heroImage: /images/content/my-private-task-list-was-public-hero.webp
-heroImageAlt: "A card contrasting what I assumed was private — my task list — with what the URL actually returned: 200 OK, 17,798 bytes, 43 tasks, public."
+heroImageAlt: "Two panels: what I assumed — that my task list was private — above what the URL actually returned, 200 OK and public, 17,798 bytes and 43 tasks including personal items."
 ogImage: /images/content/my-private-task-list-was-public.webp
 liveAt: 2026-08-02T20:35:00.000Z
+heroImageLight: /images/content/my-private-task-list-was-public-hero-light.webp
 ---
 I'd built a small dashboard for this site and written a post about it. The post was done. I was about to hit publish.
 

@@ -8,9 +8,10 @@ tags: [ai, tooling, verification, shipping]
 status: published
 channels: []
 heroImage: /images/content/my-dashboard-said-published-hero.webp
-heroImageAlt: A dashboard row showing the article marked PUBLISHED in green, above the same article's URL returning a red 404
+heroImageAlt: "Two panels: the dashboard reporting the article as published, above the same article's URL returning a 404, with 52 passing tests that caught none of it."
 ogImage: /images/content/my-dashboard-said-published.webp
 liveAt: 2026-08-02T13:00:00.000Z
+heroImageLight: /images/content/my-dashboard-said-published-hero-light.webp
 ---
 I spent yesterday building a dashboard for my own site.
 

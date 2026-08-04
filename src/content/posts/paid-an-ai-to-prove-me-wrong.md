@@ -8,8 +8,9 @@ tags: [research, verification, ai-workflow]
 status: staged
 channels: []
 heroImage: /images/content/paid-an-ai-to-prove-me-wrong-hero.webp
-heroImageAlt: A card contrasting a first research pass that looked sourced and confident with a second pass that corrected seven of eight claims and withdrew the central thesis.
+heroImageAlt: "Two panels: a first research pass that looked sourced, structured and confident, above a second pass that corrected seven of its eight claims and withdrew the central thesis."
 ogImage: /images/content/paid-an-ai-to-prove-me-wrong.webp
+heroImageLight: /images/content/paid-an-ai-to-prove-me-wrong-hero-light.webp
 ---
 I use AI to research things properly — not "summarize this article", but a real pass: several agents, each with a different angle, pulling sources and writing up what they find.
 

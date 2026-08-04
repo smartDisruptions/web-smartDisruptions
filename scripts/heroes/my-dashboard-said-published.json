@@ -1,0 +1,20 @@
+{
+  "tone": "bad",
+  "before": {
+    "label": "What my dashboard said",
+    "text": "Published"
+  },
+  "after": {
+    "label": "What the URL returned",
+    "text": "404 — not found",
+    "detail": "52 passing tests · none of them caught it"
+  },
+  "headline": [
+    { "t": "My dashboard said " },
+    { "t": "published", "tone": "good" },
+    { "t": ". The URL said " },
+    { "t": "404", "tone": "bad" },
+    { "t": "." }
+  ],
+  "alt": "Two panels: the dashboard reporting the article as published, above the same article's URL returning a 404, with 52 passing tests that caught none of it."
+}

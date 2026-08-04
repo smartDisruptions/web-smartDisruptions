@@ -1,0 +1,20 @@
+{
+  "tone": "bad",
+  "before": {
+    "label": "What the job reported",
+    "text": "Nothing due. Done."
+  },
+  "after": {
+    "label": "What was actually true",
+    "text": "An article stranded, going nowhere",
+    "detail": "6 failures · 5 of them reported success"
+  },
+  "headline": [
+    { "t": "The job reported " },
+    { "t": "success", "tone": "good" },
+    { "t": ". Nothing had " },
+    { "t": "published", "tone": "bad" },
+    { "t": "." }
+  ],
+  "alt": "Two panels: what the scheduled job reported — nothing due, done — above what was actually true, an article stranded and going nowhere, across six failures, five of which reported success."
+}

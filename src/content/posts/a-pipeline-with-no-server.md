@@ -8,9 +8,10 @@ tags: [automation, github-actions, no-server, migration]
 status: published
 channels: []
 heroImage: /images/content/a-pipeline-with-no-server-hero.webp
-heroImageAlt: "A card contrasting what a daily pipeline seemed to need — a server, a database, a monthly bill — with what it actually is: a script, a timer and a text file, at no cost."
+heroImageAlt: "Two panels: what a daily pipeline looked like it needed — a server, a database, a monthly bill — above what it actually took, a script, a timer and a text file, at no cost."
 ogImage: /images/content/a-pipeline-with-no-server.webp
 liveAt: 2026-08-03T13:00:00.000Z
+heroImageLight: /images/content/a-pipeline-with-no-server-hero-light.webp
 ---
 I have a little app that tracks my investments. One file. Open it in a browser, see where things stand.
 

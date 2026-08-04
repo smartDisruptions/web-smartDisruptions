@@ -231,8 +231,11 @@ console.log('\n— every readable article carries its images —');
       continue;
     }
     // A path that points at nothing is the same as no image, and only shows up
-    // as a broken box after it has shipped.
-    for (const ref of [hero, og]) {
+    // as a broken box after it has shipped. heroImageLight is optional — a
+    // photograph needs no second copy — but a declared one must resolve, or the
+    // paper theme renders an empty frame where the hero should be.
+    const heroLight = get('heroImageLight');
+    for (const ref of [hero, og, heroLight].filter(Boolean)) {
       if (!existsSync(pathMod.join(process.cwd(), 'public', ref.replace(/^\//, '')))) broken.push(`${file} -> ${ref}`);
     }
   }

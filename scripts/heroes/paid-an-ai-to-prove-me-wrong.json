@@ -1,0 +1,18 @@
+{
+  "tone": "bad",
+  "before": {
+    "label": "What the first pass produced",
+    "text": "Sourced, structured, confident"
+  },
+  "after": {
+    "label": "What the second pass found",
+    "text": "7 of 8 claims corrected",
+    "detail": "Central thesis withdrawn"
+  },
+  "headline": [
+    { "t": "Eight claims. " },
+    { "t": "One survived", "tone": "bad" },
+    { "t": "." }
+  ],
+  "alt": "Two panels: a first research pass that looked sourced, structured and confident, above a second pass that corrected seven of its eight claims and withdrew the central thesis."
+}
