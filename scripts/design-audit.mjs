@@ -16,7 +16,7 @@
 import { spawn } from 'node:child_process';
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000';
-const VERSION = '3.3.1'; // pinned: a detector that changes under you isn't a check
+const VERSION = '3.5.0'; // pinned: a detector that changes under you isn't a check
 
 const ROUTES = [
   '/',

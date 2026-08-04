@@ -27,14 +27,31 @@ under you isn't a check.
 
 ## Expected baseline
 
-**One `low-contrast` finding on `/games` is expected and is a false positive.**
-The ARCADE wordmark is `text-transparent` with a `bg-clip-text` gradient behind
-it; the detector reads the transparent color as `#000000` and compares it to the
-gradient underneath. There is no real contrast problem.
+> **⚠️ The tripwire below is currently DEAD — do not trust it. Verified
+> 2026-08-04 on both 3.3.1 and 3.5.0: `low-contrast` fires **zero** times, on
+> `/games` and on every other route. The baseline says the expected count is
+> exactly 1, so a rule that no longer fires at all reads as "all clear" while
+> asserting nothing.** The arcade wordmark is unchanged (`bg-clip-text
+> text-transparent` is still on `src/app/games/page.tsx:89`), so this is the
+> detector's behaviour changing, not the page's — the false positive appears to
+> have been fixed upstream at some point before 3.3.1.
+>
+> **This needs a decision, not a doc edit.** A canary that cannot fire is worse
+> than no canary, because this file claims it is watching. Either confirm the
+> rule still works by deliberately breaking contrast somewhere and seeing it
+> fire — then rewrite the baseline below as `== 0` — or accept that contrast is
+> no longer covered here and cover it another way. Until then, treat "no
+> low-contrast findings" as **no information**.
+
+**Historical note (the original baseline, now inaccurate):** one `low-contrast`
+finding on `/games` used to be expected as a false positive. The ARCADE wordmark
+is `text-transparent` with a `bg-clip-text` gradient behind it; the detector read
+the transparent color as `#000000` and compared it to the gradient underneath.
+There was never a real contrast problem.
 
 It is deliberately **not** suppressed. Contrast is the thing most worth catching,
 and `/games` has the riskiest colors on the site — silencing the rule there to
-kill one nuisance would blind the page that needs it most. So treat it as a
+kill one nuisance would blind the page that needs it most. So it was treated as a
 tripwire with a known baseline:
 
 > `/games` low-contrast count == 1 → expected.
@@ -54,6 +71,8 @@ because the answer isn't in yet:
 | `nested-cards`          | `/games`                 | The CRT screen inside the game card. Probably fine, not yet decided.                                                                                                                                                    |
 | `cramped-padding`       | `/games`                 | The marquee's children sit flush to its edges. Worth a look.                                                                                                                                                            |
 | `em-dash-overuse`       | most routes              | Advisory only; never fails. Real signal about the prose, though.                                                                                                                                                        |
+| `kicker-above-heading`  | `/`, `/content`, `/apps`, `/market-storm` | **New in CLI 3.5.0.** Five kickers: "Builds" over *What I've built*, "Writing" over *Field notes* and over *Latest from the notebook*, "Proof" over *The receipts behind the writing*, "Market Storm" over *The AI market, read by a research method*. The rule bans them outright — a tiny tracked-uppercase label above a heading is a generated-UI tell, and the heading already carries its own weight. Deleting five kickers changes the page rhythm site-wide, so it is a brand call, not a lint fix. Undecided. |
+| `radial-spotlight-glow` | `/`                      | **New in CLI 3.5.0.** A `pointer-events-none` radial gradient, accent `#c2410c` at **6% alpha** fading to transparent, over the hero surface. At that opacity it is close to invisible, which cuts both ways: it is not doing much harm, and it may not be earning its place either. Undecided. |
 
 ## The ignore file is a rejection log
 
