@@ -91,8 +91,12 @@ export default async function MarketStormDetail({
         <div className="mt-8">
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="accent">Market Storm</Badge>
+            {/* "Published" is doing real work: the hero below carries the date
+                the company REPORTED, and without the label a reader sees the
+                same date twice and assumes one of them is a mistake. They
+                coincide on Amazon and diverge on Palantir. */}
             <span className="text-sm text-text-secondary">
-              {formatDate(report.publishDate)} · by Josh Escusa
+              Published {formatDate(report.publishDate)} · by Josh Escusa
             </span>
           </div>
           <h1 className="font-display mt-5 max-w-4xl text-3xl font-semibold leading-[1.12] tracking-tight text-text-primary sm:text-[2.5rem]">

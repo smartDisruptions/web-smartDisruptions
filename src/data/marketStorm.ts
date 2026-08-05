@@ -134,13 +134,12 @@ const amznQ2_2026: MarketStormReport = {
   publishDate: '2026-07-30',
   tags: ['AMZN', 'AWS', 'earnings', 'AI-infrastructure', 'valuation'],
   verdict:
-    'Amazon posted its best AWS quarter in years and its first-ever negative-cash quarter — in the same release. The stock is no longer a cash-return story; it’s a duration bet.',
+    'The stock stopped being a cash-return story this quarter and became a duration bet: roughly $220B a year of capex, wagered on AWS billing it back before depreciation and rates catch up with it.',
   priceStrip: [
     { k: 'Close · Jul 30', v: '$235.50' },
     { k: 'After hours', v: '≈ +7–10%', tone: 'bull' },
     { k: 'Market cap', v: '~$2.53T' },
     { k: 'Fwd P/E', v: '~26.3×' },
-    { k: 'Free cash flow', v: 'negative', tone: 'bear' },
   ],
   summary: `Amazon's cloud business had its best quarter in four years — and in the same release, the company burned more cash than it earned for the first time ever. Both are true, and they are the same story: AWS is growing fast *because* Amazon is spending roughly $220 billion a year building the data centres that run it. The bet is that the spending turns into billed revenue before the accounting catches up with it. The scorecard below is that argument in numbers — the operating business on one side, the cash statement on the other.`,
   kpis: [
@@ -1081,7 +1080,6 @@ const pltrQ2_2026: MarketStormReport = {
     { k: 'Price · Aug 4', v: '$163.24' },
     { k: 'Market cap', v: '~$391B' },
     { k: 'Fwd P/E', v: '86.5×', tone: 'warn' },
-    { k: 'P/S · FY26 guide', v: '~48×', tone: 'bear' },
   ],
   summary: `Palantir is growing faster at $2 billion a quarter than most software companies manage at a tenth the size — 93%, accelerating for a third straight quarter, with margins that widened rather than thinned. That part is not in dispute. What the headlines leave out is that the company paid **1.4% tax** on its profits, which flatters the earnings figure everyone quotes by about a fifth. The business is exceptional; the question this report ends on is whether a price of roughly 114× normalised earnings has already spent the next five years of it.`,
   headlineVsReal: [
@@ -1687,7 +1685,7 @@ const spcxQ2_2026: MarketStormReport = {
   publishDate: '2026-08-04',
   tags: ['SPCX', 'Starlink', 'AI-infrastructure', 'earnings', 'capex'],
   verdict:
-    'SpaceX spent $2.35 of capital for every dollar of revenue it earned this quarter, almost all of it on AI compute — and roughly 60% of the revenue that compute serves comes from a single customer who was not material three months ago.',
+    'Roughly 60% of the AI revenue paying for that build comes from a single customer who was not material three months ago — and a third of the debt behind it is owed to a firm run by one of SpaceX’s own directors.',
   priceStrip: [
     { k: 'IPO · Jun 12', v: '$135.00' },
     { k: 'High · Jun 16', v: '$225.64' },
