@@ -3,9 +3,9 @@ title: I built my own dashboard for my site — then took it apart and built it 
 slug: took-it-apart-and-built-it-again
 excerpt: Six hours in, I had a working dashboard for my own site. Then I said the architecture was wrong and pulled it out into its own app. The mistake is one almost everyone makes on their first internal tool, and it only becomes visible after the thing exists.
 category: Working With AI
-publishDate: 2026-08-03
+publishDate: 2026-08-05
 tags: [architecture, internal-tools, ai-native, shipping]
-status: staged
+status: published
 channels:
   - name: linkedin
     status: planned
@@ -19,9 +19,10 @@ channels:
     note: "1/ I built a dashboard for my own site. It took a day, it worked, and by that evening I'd decided it was built wrong and taken it apart. Nothing was broken. That's what makes it worth writing down.\n\n2/ It lived inside the website, behind a password. Every reason for that was good: the site already existed, it already knew how to read my articles, one thing to deploy.\n\n3/ Problem one: a bad deploy that broke the site broke the dashboard with it. The moment I'd most want to look is exactly the moment it's gone. I'd built a smoke detector and wired it to the same circuit as the stove.\n\n4/ Problem two: it read the site's own store of posts, so posts were all it could ever show me. The pages I wanted weren't \"not done yet\" — they weren't in that data at all. I hadn't built a command center. I'd built a nicer view of one folder.\n\n5/ Before touching anything I saved the old version to a branch and tagged it. Thirty seconds. That's what turned \"should I rebuild this?\" from a risk into a preference.\n\n6/ The rebuild looks at the system instead of being part of it. It reads route files, so pages that haven't shipped still show up. It checks whether my scheduled jobs left behind the files they're supposed to leave. And it works when the site is down.\n\n7/ One question sorts this before you build: if the thing I'm monitoring goes down, do I still have the monitor? If no, it belongs outside."
     comment: Full write-up, including the follow-up question — is the data it reads the data I'll eventually want? https://www.smartdisruptions.com/content/took-it-apart-and-built-it-again
 heroImage: /images/content/took-it-apart-and-built-it-again-hero.webp
-heroImageAlt: "A review sheet listing two findings — the dashboard could see only one folder of articles, and it went down whenever the site did — stamped 'built inside what it watched'."
+heroImageAlt: A review sheet listing two findings — the dashboard could see only one folder of articles, and it went down whenever the site did — stamped 'built inside what it watched'.
 ogImage: /images/content/took-it-apart-and-built-it-again.webp
 heroImageLight: /images/content/took-it-apart-and-built-it-again-hero-light.webp
+liveAt: 2026-08-05T13:00:00.000Z
 ---
 I write here often enough that I kept losing track of my own work. What's finished, what's half-written, what I said I'd publish on Thursday and didn't.
 
