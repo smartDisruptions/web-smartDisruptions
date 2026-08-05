@@ -110,6 +110,13 @@ export interface MarketStormReport {
   heroImage?: string;
   heroImageLight?: string;
   heroImageAlt?: string;
+  // Which of the Market Storm templates the hero was drawn with, mirroring the
+  // evidence key in scripts/heroes/<slug>.json. The index reads it to avoid
+  // printing the verification counts twice: a `ledger` hero IS those counts at
+  // display size, so the chips underneath it are pure duplication. Declaring it
+  // beats inferring it from the filename, which would be a guess that rots the
+  // first time a hero is redrawn.
+  heroTemplate?: 'quote' | 'scorecard' | 'ledger';
   ogImage?: string;
 }
 
@@ -412,6 +419,7 @@ The practical read: if you build on top of this infrastructure, your costs are c
   heroImageLight: '/images/content/amzn-q2-2026-hero-light.webp',
   heroImageAlt:
     'A verification ledger for Amazon: five confirmed, three partly-true, one corrected.',
+  heroTemplate: 'ledger',
   sources: [
     {
       n: 1,
@@ -907,6 +915,7 @@ None of that is fraud; it is all disclosed, and mostly defensible. But three sep
   heroImageLight: '/images/content/msft-q4-fy2026-hero-light.webp',
   heroImageAlt:
     'A four-tile scorecard for Microsoft: Azure growth, cloud margin, uncommenced leases and depreciation.',
+  heroTemplate: 'scorecard',
   sources: [
     {
       n: 1,
@@ -1568,6 +1577,7 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
   heroImageLight: '/images/content/pltr-q2-2026-hero-light.webp',
   heroImageAlt:
     'A verification ledger for Palantir: six confirmed, three partly-true, four corrected.',
+  heroTemplate: 'ledger',
   sources: [
     {
       n: 1,
@@ -2200,6 +2210,7 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
   heroImageLight: '/images/content/spcx-q2-2026-hero-light.webp',
   heroImageAlt:
     'A ticker board for SPCX showing revenue growth, capex, AI capex ratio and free cash flow.',
+  heroTemplate: 'quote',
   sources: [
     {
       n: 1,
