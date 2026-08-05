@@ -144,84 +144,81 @@ characters — long ones are auto-shrunk, which is a fallback, not a licence.
 Each template owns one **evidence key**. Putting that key in the spec is what
 selects it. **There is no `template` field and there must not be one.**
 
-| Add this key | Renders   | Use when                                                                 |
-| ------------ | --------- | ------------------------------------------------------------------------ |
-| nothing      | `split`   | the default — one belief against one truth                               |
-| `count`      | `count`   | a countable finding, 12 or fewer                                         |
-| `log`        | `console` | the evidence _is_ machine output — a response, a run                     |
-| `record`     | `receipt` | a _set_ of findings with a verdict, not a single contrast                |
-| `statement`  | `field`   | the finding compresses to one sentence and there is nothing else to show |
+| Add this key | Renders     | Use when                                              |
+| ------------ | ----------- | ----------------------------------------------------- |
+| nothing      | `split`     | the default, and most posts — one belief against one truth |
+| `count`      | `count`     | a countable finding, 12 or fewer                      |
+| `sequence`   | `sequence`  | things happened in an order and the order is the finding |
+| `annotated`  | `annotated` | something reads fine and isn't — claims with their faults marked |
 
 The one question to answer is **what evidence does this post have**, which is a
 fact about the article. "Which template looks nicer here" is a taste call, and
 taste calls don't survive this pipeline — three articles have been written in the
 same two minutes before. A wrong treatment reads worse than a plain one, so when
-no trigger clearly applies it's a `split`. That is the majority case, not a
-fallback.
+no trigger clearly applies it's a `split`. That is the majority case by a wide
+margin: six of the ten field notes are splits.
 
 **Exactly one evidence key may be present.** Two is an error and the script
 refuses to run: a post has one central piece of evidence, and if two look right
 then the spec hasn't decided what the article is about yet.
 
+There were ten of these. `console`, `receipt`, `versus`, `checklist`, `file` and
+`field` were retired in August 2026 because each one turned out to be a split
+wearing a costume — see the header of `scripts/make-hero.mjs` for the reasoning
+and the bar that replaced the old one. Market Storm's four (`ledger`, `quote`,
+`scorecard`, `logo`) are a different content type and are not affected.
+
 A `count.of` above 12 stops being countable at a glance, so it renders `split`
-and says so. Don't shrink the number to fit — 52 passing tests is a `log` line,
-not eight blocks.
+and says so. Don't shrink the number to fit.
 
 ```json
-"count": { "of": 8, "hit": 7, "unit": "claims checked",
-           "verdict": "were wrong", "detail": "Central thesis withdrawn" }
+"count": { "of": 8, "hit": 7, "unit": "claims checked" }
 ```
 
-_8 claims checked_ over eight blocks with seven filled, under _“**7 of 8** were
-wrong”_. `hit` is the number that broke, not the number that passed.
+_8 claims checked_ over eight blocks with seven filled, under _**7 of 8**_.
+`hit` is the number that broke, not the number that passed. `verdict` is
+optional and usually wrong to set: if the title already says what the ratio
+means, the ratio alone is the evidence and a verdict is a restatement.
 
 ```json
-"log": { "name": "curl · no session, no password",
-         "lines": [ { "chip": "ASSUMED", "tone": "good", "text": "Private", "muted": true },
-                    { "chip": "200 OK",  "tone": "bad",  "text": "17,798 bytes · 43 tasks" } ],
-         "summary": "Public the whole time." }
+"sequence": { "steps": [ { "text": "build", "mark": true }, { "text": "mobile" } ],
+              "verdict": "*Three of six* leaned on earlier work." }
 ```
 
-Two lines — what looked fine, then what was true — and a summary. Chips must be
-real output, not invented labels.
+Captions are one or two words — the rail and its numerals are the picture, and
+the captions only name each step. Seven steps is the ceiling. `mark` fills a
+node in the tone colour.
 
 ```json
-"record": { "title": "Dashboard review",
-            "rows": [ { "label": "What it could see", "value": "One folder of articles", "tone": "warn" },
-                      { "label": "When the site went down", "value": "The monitor went with it", "tone": "warn" } ],
-            "stamp": "Built inside what it watched", "note": "Rebuilt as\nits own app" }
+"annotated": { "intro": "Three things in this are wrong.",
+               "spans": [ { "text": "…the 2024 Gartner Retention Index", "flag": "Invented source" } ] }
 ```
 
-Two or three rows read best; four is the ceiling before the sheet gets cramped.
-`tone` on a row colours that row's value. Use this when the post audited
-something and found several things, where a `split` would have to throw away all
-but one.
-
-```json
-"statement": { "quiet": "It looked like it needed a server.",
-               "loud": "It needed a text file.", "note": "$0 a month · no database" }
-```
-
-The whole frame becomes the tone colour. This carries the least evidence of the
-five, so it is only right when the sentence _is_ the finding — if the post has a
-number, a log, or two concrete lists, one of those is the better picture.
+Three flagged claims is the ceiling. This is the one template with a raised word
+budget, because a reader has to be able to read the claim to see the flaw in it.
 
 **`before` and `after` are always required**, whichever template renders: the
-social card uses them and does not vary.
+social card uses them and does not vary. Keep the labels short — they sit at
+label tier, which is unreadable on a phone, so a long one spends the word budget
+on the part nobody can read.
 
-### Adding a sixth
+### Adding one
 
 Append an entry to `REGISTRY` in `scripts/make-hero.mjs` with a `key` no other
 template claims, a `render(theme)`, and optionally a `check` that returns a
 string when the data can't be drawn. Then add a row to the table above. Nothing
 else changes.
 
-The bar for a new template is that its key is a genuinely different **shape of
-evidence** — `count` is a tally, `log` is machine output, `record` is a ledger,
-`statement` is a sentence. If a proposed template would read from the same keys
-as an existing one, it's a restyle of that template rather than a new one, and
-the honest move is to change the existing renderer instead. That bar is what
-keeps this a system rather than a folder of looks.
+The bar is not "does this need its own data" — six templates cleared that and
+were still retired. It is **can a `split` not draw this**. A console, a receipt,
+a versus table and a checklist all resolve to two or three facts in a frame,
+which is exactly what a split is; rendering the same posts both ways showed the
+split was bigger, clearer and said the same thing.
+
+The three that survive pass the real bar: `count` draws a quantity you see
+rather than a number you read, `sequence` expresses order, and `annotated` marks
+up three claims at once. If a `split` could carry it, it is a restyle of the
+split, and the honest move is to improve the split.
 
 ### The social card never changes
 

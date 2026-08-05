@@ -1,28 +1,12 @@
 {
   "tone": "warn",
   "before": {
-    "label": "What the dashboard could see",
+    "label": "It could see",
     "text": "One folder of articles"
   },
   "after": {
-    "label": "What happened when the site went down",
+    "label": "When the site went down",
     "text": "The monitor went down with it"
-  },
-  "record": {
-    "title": "Dashboard review",
-    "rows": [
-      {
-        "label": "Could see",
-        "value": "One folder",
-        "tone": "warn"
-      },
-      {
-        "label": "Site went down",
-        "value": "Went down with it",
-        "tone": "warn"
-      }
-    ],
-    "stamp": "Built inside what it watched"
   },
   "headline": [
     {

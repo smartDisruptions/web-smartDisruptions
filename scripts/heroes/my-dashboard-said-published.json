@@ -8,23 +8,6 @@
     "label": "What the URL returned",
     "text": "404 \u2014 not found"
   },
-  "log": {
-    "name": "publish-check \u00b7 after deploy",
-    "lines": [
-      {
-        "chip": "DASHBOARD",
-        "tone": "good",
-        "text": "Published",
-        "muted": true
-      },
-      {
-        "chip": "GET /content",
-        "tone": "bad",
-        "text": "404 \u2014 not found"
-      }
-    ],
-    "summary": "52 tests passed. None of them caught it."
-  },
   "headline": [
     {
       "t": "My dashboard said "
