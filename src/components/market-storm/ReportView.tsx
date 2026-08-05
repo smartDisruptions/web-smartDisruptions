@@ -624,12 +624,35 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
         </Stop>
       )}
 
+      {/* The full print, collapsed.
+
+          Every KPI card above is also a row in here — 8 of 8 on Amazon, 6 of 9
+          on Palantir. Deleting the duplicate rows was the obvious fix and the
+          wrong one: this table's job is letting somebody check the arithmetic,
+          and a reference table missing its headline figures cannot do that.
+
+          So it keeps every row and stops competing for attention instead. The
+          walkthrough reader never opens it; the one who wants to verify gets
+          the complete print. */}
       <Stop
         n={report.headlineVsReal?.length ? 4 : 3}
         title={report.printTableTitle}
-        lede="The full print, for anyone who wants to check the arithmetic."
       >
-        <DataTableBlock table={report.printTable} />
+        <details className="group rounded-xl border border-border bg-surface">
+          <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
+            <span
+              className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
+              aria-hidden
+            >
+              &#9654;
+            </span>
+            Show the full print — {report.printTable.rows.length} rows, every
+            figure this report rests on
+          </summary>
+          <div className="border-t border-border p-5">
+            <DataTableBlock table={report.printTable} />
+          </div>
+        </details>
       </Stop>
 
       <Stop
