@@ -163,10 +163,10 @@ export default function AboutPage() {
 
       <p className="mt-8 text-lg leading-[1.75] text-text-secondary">
         I build real things with AI and write about how they actually get made.
-        Three of those years have been daily work with these tools, and the
+        I&rsquo;ve worked with these tools daily for three years, and the
         interesting part isn&rsquo;t that I use them &mdash; everyone uses them.
-        It&rsquo;s the distance between how I used them in 2023 and what runs
-        without me now.
+        In 2023 I was copying answers out of a chat window. Now agents I built
+        publish articles while I&rsquo;m asleep.
       </p>
 
       {/* The spine. The border on the list draws it; each node's dot sits on
