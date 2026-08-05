@@ -55,6 +55,24 @@ Article body in markdown.
 required — the dashboard flags an article missing any of them. The filename
 must match the slug.
 
+**Put today's date in `publishDate` and don't think about it.** It is a
+placeholder until the article actually ships: `scripts/autopublish.mjs`
+restamps it to the real day at the moment it flips `staged` → `published`.
+That matters because an article can sit staged for a week, and the date is not
+decoration — it is the schema.org `datePublished` asserted to Google and the
+date printed on every card. Before this was automatic, one article claimed it
+published a day before it did, and a staged one claimed a date while it had
+never published at all.
+
+If you publish **by hand** rather than through the scheduler, restamp the date
+yourself in the same commit. `npm run test:posts` fails outright on a published
+article dated in the future, and warns on an unpublished one whose date has
+already passed — that warning is the one telling you to restamp.
+
+Dates are anchored to Pacific (`scripts/publish-day.mjs`), never UTC.
+`toISOString()` returns tomorrow from 5pm PT onward, which is how you get an
+article dated a day ahead of itself.
+
 **`heroImage`, `heroImageAlt` and `ogImage` are required too**, for anything
 above `draft`. `npm run test:posts` fails without them, and fails again if a
 path points at a file that isn't there. They used to be optional and made by
@@ -80,11 +98,11 @@ node scripts/make-hero.mjs <slug> scripts/heroes/<slug>.json
 It writes three files and adds whatever frontmatter keys are missing. Headless
 Chrome renders and encodes all of them — nothing to install.
 
-| File | Where it shows |
-|---|---|
-| `<slug>-hero.webp` | in-page and grid card, dark theme |
+| File                     | Where it shows                     |
+| ------------------------ | ---------------------------------- |
+| `<slug>-hero.webp`       | in-page and grid card, dark theme  |
 | `<slug>-hero-light.webp` | the same art on paper, light theme |
-| `<slug>.webp` | the social card |
+| `<slug>.webp`            | the social card                    |
 
 **Keep the spec.** It lives at `scripts/heroes/<slug>.json` and is committed, so
 the image can be re-rendered when the template changes. The first version of
@@ -95,8 +113,11 @@ redesigned every spec had to be reconstructed from the alt text.
 {
   "tone": "bad",
   "before": { "label": "What my dashboard said", "text": "Published" },
-  "after":  { "label": "What the URL returned", "text": "404 — not found",
-              "detail": "52 passing tests · none of them caught it" },
+  "after": {
+    "label": "What the URL returned",
+    "text": "404 — not found",
+    "detail": "52 passing tests · none of them caught it"
+  },
   "headline": [
     { "t": "My dashboard said " },
     { "t": "published", "tone": "good" },
@@ -123,13 +144,13 @@ characters — long ones are auto-shrunk, which is a fallback, not a licence.
 Each template owns one **evidence key**. Putting that key in the spec is what
 selects it. **There is no `template` field and there must not be one.**
 
-| Add this key | Renders | Use when |
-|---|---|---|
-| nothing | `split` | the default — one belief against one truth |
-| `count` | `count` | a countable finding, 12 or fewer |
-| `log` | `console` | the evidence *is* machine output — a response, a run |
-| `record` | `receipt` | a *set* of findings with a verdict, not a single contrast |
-| `statement` | `field` | the finding compresses to one sentence and there is nothing else to show |
+| Add this key | Renders   | Use when                                                                 |
+| ------------ | --------- | ------------------------------------------------------------------------ |
+| nothing      | `split`   | the default — one belief against one truth                               |
+| `count`      | `count`   | a countable finding, 12 or fewer                                         |
+| `log`        | `console` | the evidence _is_ machine output — a response, a run                     |
+| `record`     | `receipt` | a _set_ of findings with a verdict, not a single contrast                |
+| `statement`  | `field`   | the finding compresses to one sentence and there is nothing else to show |
 
 The one question to answer is **what evidence does this post have**, which is a
 fact about the article. "Which template looks nicer here" is a taste call, and
@@ -150,8 +171,9 @@ not eight blocks.
 "count": { "of": 8, "hit": 7, "unit": "claims checked",
            "verdict": "were wrong", "detail": "Central thesis withdrawn" }
 ```
-*8 claims checked* over eight blocks with seven filled, under *“**7 of 8** were
-wrong”*. `hit` is the number that broke, not the number that passed.
+
+_8 claims checked_ over eight blocks with seven filled, under _“**7 of 8** were
+wrong”_. `hit` is the number that broke, not the number that passed.
 
 ```json
 "log": { "name": "curl · no session, no password",
@@ -159,6 +181,7 @@ wrong”*. `hit` is the number that broke, not the number that passed.
                     { "chip": "200 OK",  "tone": "bad",  "text": "17,798 bytes · 43 tasks" } ],
          "summary": "Public the whole time." }
 ```
+
 Two lines — what looked fine, then what was true — and a summary. Chips must be
 real output, not invented labels.
 
@@ -168,6 +191,7 @@ real output, not invented labels.
                       { "label": "When the site went down", "value": "The monitor went with it", "tone": "warn" } ],
             "stamp": "Built inside what it watched", "note": "Rebuilt as\nits own app" }
 ```
+
 Two or three rows read best; four is the ceiling before the sheet gets cramped.
 `tone` on a row colours that row's value. Use this when the post audited
 something and found several things, where a `split` would have to throw away all
@@ -177,8 +201,9 @@ but one.
 "statement": { "quiet": "It looked like it needed a server.",
                "loud": "It needed a text file.", "note": "$0 a month · no database" }
 ```
+
 The whole frame becomes the tone colour. This carries the least evidence of the
-five, so it is only right when the sentence *is* the finding — if the post has a
+five, so it is only right when the sentence _is_ the finding — if the post has a
 number, a log, or two concrete lists, one of those is the better picture.
 
 **`before` and `after` are always required**, whichever template renders: the
@@ -235,7 +260,7 @@ the scheduler correctly refused to publish anything for hours. The article was
 fine. The tooling was fine. Putting them on the same branch was the mistake.
 
 There is one ordering trap worth knowing, because it caught the fix for this:
-a check that *enforces* something about content has to reach `main` no earlier
+a check that _enforces_ something about content has to reach `main` no earlier
 than the content it checks. Ship them together, or main goes red in between.
 
 Allowed on `dev`:

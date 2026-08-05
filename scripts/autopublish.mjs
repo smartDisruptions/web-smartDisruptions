@@ -21,6 +21,7 @@
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
+import { publishDay } from './publish-day.mjs';
 
 const [OWNER, REPO] = (process.env.GITHUB_REPOSITORY ?? '').split('/');
 const TOKEN = process.env.GITHUB_TOKEN;
@@ -58,7 +59,9 @@ const api = async (p, init = {}) => {
     },
   });
   if (!res.ok) {
-    throw new Error(`GitHub ${res.status} on ${p}: ${(await res.text()).slice(0, 200)}`);
+    throw new Error(
+      `GitHub ${res.status} on ${p}: ${(await res.text()).slice(0, 200)}`
+    );
   }
   return res.status === 204 ? null : res.json();
 };
@@ -91,7 +94,12 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
     console.log(`  skip ${file}: unparseable liveAt "${fm.liveAt}"`);
     continue;
   }
-  if (t <= now.getTime()) due.push({ file, slug: fm.slug ?? file.replace(/\.md$/, ''), liveAt: fm.liveAt });
+  if (t <= now.getTime())
+    due.push({
+      file,
+      slug: fm.slug ?? file.replace(/\.md$/, ''),
+      liveAt: fm.liveAt,
+    });
   else console.log(`  waiting ${file} — due ${fm.liveAt}`);
 }
 
@@ -126,13 +134,15 @@ if (stranded.length) {
   console.log(
     `awaiting promotion (published on ${DRAFT}, not on ${PROD}): ${stranded
       .map((d) => d.slug)
-      .join(', ')}`,
+      .join(', ')}`
   );
 }
 if (cmp.files && cmp.files.length >= 300) {
   // GitHub caps compare at 300 files; say so rather than quietly reconciling
   // against a partial view.
-  console.log('WARNING: compare truncated at 300 files — reconcile may be incomplete.');
+  console.log(
+    'WARNING: compare truncated at 300 files — reconcile may be incomplete.'
+  );
 }
 
 // 3. Safety valve. Promoting dev ships everything on dev; a scheduler must not
@@ -145,22 +155,42 @@ if (nonContent.length > 0) {
   console.log(
     `REFUSING: ${DRAFT} carries ${nonContent.length} non-article file(s) — ` +
       `publishing would ship code unattended.\n  ${nonContent.slice(0, 10).join('\n  ')}` +
-      `\nPublish by hand from Studio, where the "what else is shipping" panel is visible.`,
+      `\nPublish by hand from Studio, where the "what else is shipping" panel is visible.`
   );
   process.exit(0);
 }
 
 // 4. Flip only the due ones.
+//
+//    publishDate is restamped here, not trusted from the file. It is written
+//    when the article is DRAFTED, and an article can sit staged for days — so
+//    by the time it actually goes live the date in the frontmatter is whatever
+//    day someone happened to write it. That date is not decoration: it is the
+//    schema.org `datePublished` we assert to Google and the date on the card.
+//    Stamping it at the moment of publication is the only way it can be true.
+//    The date is anchored to Pacific, not UTC — see scripts/publish-day.mjs.
+//    This job runs at 13:00Z where the two agree, but a manual or retried run
+//    in the evening would otherwise stamp tomorrow.
+const today = publishDay(now);
+
 for (const d of due) {
   const p = `${POSTS}/${d.file}`;
   const meta = await api(`/repos/${OWNER}/${REPO}/contents/${p}?ref=${DRAFT}`);
   const text = Buffer.from(meta.content, 'base64').toString('utf8');
-  const next = text.replace(/^status:.*$/m, 'status: published');
+  const drafted = text.match(/^publishDate:\s*(.+)$/m)?.[1]?.trim();
+  const next = text
+    .replace(/^status:.*$/m, 'status: published')
+    .replace(/^publishDate:.*$/m, `publishDate: ${today}`);
   if (next === text) {
     console.log(`  ${d.slug}: no status line changed, skipping`);
     continue;
   }
-  console.log(`  publishing ${d.slug} (was due ${d.liveAt})`);
+  console.log(
+    `  publishing ${d.slug} (was due ${d.liveAt})` +
+      (drafted && drafted !== today
+        ? ` — publishDate ${drafted} -> ${today}`
+        : '')
+  );
   if (DRY) continue;
   await api(`/repos/${OWNER}/${REPO}/contents/${p}`, {
     method: 'PUT',
@@ -178,7 +208,9 @@ if (DRY) {
   console.log('dry run — not merging.');
   process.exit(0);
 }
-const open = await api(`/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${DRAFT}&base=${PROD}&state=open`);
+const open = await api(
+  `/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${DRAFT}&base=${PROD}&state=open`
+);
 const pr =
   open[0] ??
   (await api(`/repos/${OWNER}/${REPO}/pulls`, {
