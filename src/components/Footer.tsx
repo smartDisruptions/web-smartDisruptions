@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { isArtifactRoute } from '@/lib/chrome';
 
 const quickLinks = [
   { href: '/', label: 'Home' },
@@ -6,9 +10,15 @@ const quickLinks = [
   { href: '/market-storm', label: 'Market Storm' },
   { href: '/apps', label: 'Apps' },
   { href: '/games', label: 'Arcade' },
+  { href: '/web-design', label: 'Web Design' },
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Matches Navbar: artifacts carry their own way back, not the site's.
+  if (isArtifactRoute(pathname)) return null;
+
   return (
     <footer className="border-t border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

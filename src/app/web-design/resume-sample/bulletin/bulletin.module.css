@@ -1,0 +1,772 @@
+/*
+  VARIETY TRIAL BULLETIN — the world's tokens.
+
+  Land-grant extension bulletins are the graphic tradition the Palouse
+  actually publishes: wheat variety trials from WSU and U of Idaho, printed as
+  plot maps and yield tables. A résumé is the same document — a performance
+  record under measured conditions.
+
+  Ground is basalt, not paper: the trial is read at the field's edge at dusk,
+  and the contour survey underneath has to read as terrain. Every text colour
+  below clears WCAG AA on that ground.
+*/
+
+.world {
+  --ground: #0f1711;
+  --ground-2: #16211a;
+  --ground-3: #1d2b22;
+  --wheat: #dfc46a;
+  --teal: #4f9d9d;
+  --flag: #d94f8a;
+  --chaff: #eae4d2;
+  --chaff-dim: rgba(234, 228, 210, 0.68);
+  --rule: rgba(234, 228, 210, 0.18);
+  --rule-strong: rgba(234, 228, 210, 0.34);
+
+  --slab: var(--font-bulletin-slab), Georgia, serif;
+  --sans: var(--font-bulletin-sans), system-ui, sans-serif;
+  --mono: var(--font-bulletin-mono), ui-monospace, monospace;
+
+  position: relative;
+  min-height: 100vh;
+  background: var(--ground);
+  color: var(--chaff);
+  font-family: var(--sans);
+  overflow-x: hidden;
+}
+
+.world *,
+.world *::before,
+.world *::after {
+  box-sizing: border-box;
+}
+
+/* ── Terrain ──────────────────────────────────────────────────────────── */
+
+.terrain {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100svh;
+  width: 100%;
+  display: block;
+}
+
+/* Only enough to land the terrain into the page ground at the fold — any more
+   and it crushes the tallest ridges, which are the nearest ones. */
+.terrainVeil {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100svh;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 17, 0) 0%,
+    rgba(15, 23, 17, 0) 74%,
+    rgba(15, 23, 17, 0.72) 92%,
+    var(--ground) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Shell ────────────────────────────────────────────────────────────── */
+
+.shell {
+  position: relative;
+  margin: 0 auto;
+  max-width: 68rem;
+  padding: 0 1.5rem 6rem;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    padding: 0 2.5rem 7rem;
+  }
+}
+
+/* ── Masthead ─────────────────────────────────────────────────────────── */
+
+.masthead {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem 0 4rem;
+}
+
+.plate {
+  background: rgba(15, 23, 17, 0.82);
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  padding: 2rem 1.75rem;
+  max-width: 46rem;
+  backdrop-filter: blur(3px);
+}
+
+@media (min-width: 640px) {
+  .plate {
+    padding: 3rem 3rem 2.75rem;
+  }
+}
+
+.plateHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1rem;
+}
+
+.issuer {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.issue {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--chaff-dim);
+}
+
+.title {
+  margin: 1.75rem 0 0;
+  font-family: var(--slab);
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  color: var(--wheat);
+}
+
+.subject {
+  margin: 1.25rem 0 0;
+  font-family: var(--slab);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--chaff);
+}
+
+.standfirst {
+  margin: 1.5rem 0 0;
+  max-width: 46ch;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--chaff-dim);
+}
+
+.plateFoot {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2.5rem;
+}
+
+.stat {
+  min-width: 7rem;
+}
+
+.statLabel {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.statValue {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--chaff);
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────── */
+
+.section {
+  padding-top: 6rem;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  border-bottom: 2px solid var(--wheat);
+  padding-bottom: 0.75rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--slab);
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--chaff);
+}
+
+.sectionNote {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--chaff-dim);
+}
+
+.lede {
+  margin: 1.5rem 0 0;
+  max-width: 58ch;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--chaff-dim);
+}
+
+/* ── Plot map ─────────────────────────────────────────────────────────── */
+
+.plots {
+  margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  background: var(--rule);
+  border: 1px solid var(--rule-strong);
+}
+
+@media (min-width: 800px) {
+  .plots {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.plot {
+  position: relative;
+  background: var(--ground-2);
+  border: 0;
+  padding: 1.5rem 1.25rem 1.75rem;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 220ms ease,
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.plot:hover,
+.plot:focus-visible {
+  background: var(--ground-3);
+}
+
+.plot:focus-visible {
+  outline: 2px solid var(--wheat);
+  outline-offset: -2px;
+}
+
+.plotActive {
+  background: var(--ground-3);
+}
+
+.plotActive::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--flag);
+  pointer-events: none;
+}
+
+.plotId {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  color: var(--teal);
+}
+
+.plotName {
+  margin: 0.6rem 0 0;
+  font-family: var(--slab);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--chaff);
+}
+
+.plotKind {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--chaff-dim);
+}
+
+/* A span, so it needs an explicit box — an inline element ignores height and
+   the fill inside it takes over the layout. */
+.plotYield {
+  display: block;
+  margin-top: 1.1rem;
+  height: 3px;
+  width: 100%;
+  background: rgba(234, 228, 210, 0.14);
+  overflow: hidden;
+}
+
+.plotYieldValue {
+  display: block;
+}
+
+.plotYieldFill {
+  display: block;
+  height: 100%;
+  background: var(--wheat);
+  transform-origin: left center;
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.plotYieldValue {
+  margin-top: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--chaff-dim);
+}
+
+/* Reading of the selected plot */
+
+.reading {
+  margin-top: 2px;
+  border: 1px solid var(--rule-strong);
+  border-top: 2px solid var(--flag);
+  background: var(--ground-2);
+  padding: 1.75rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .reading {
+    padding: 2rem 2.25rem;
+  }
+}
+
+.readingHead {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--flag);
+}
+
+.readingResult {
+  margin: 0.9rem 0 0;
+  font-family: var(--slab);
+  font-size: clamp(1.15rem, 3vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--wheat);
+}
+
+.readingDetail {
+  margin: 1rem 0 0;
+  max-width: 62ch;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--chaff-dim);
+}
+
+.readingLink {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.readingLink:hover {
+  color: var(--wheat);
+}
+
+/* ── Season record ────────────────────────────────────────────────────── */
+
+.seasons {
+  margin-top: 2.5rem;
+}
+
+.axis {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--chaff-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.season {
+  border-bottom: 1px solid var(--rule);
+  padding: 1.5rem 0;
+}
+
+.seasonBar {
+  position: relative;
+  height: 8px;
+  background: rgba(234, 228, 210, 0.1);
+  margin-bottom: 1rem;
+}
+
+.seasonBarFill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--teal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: grow 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.seasonBarCurrent {
+  background: var(--wheat);
+}
+
+@keyframes grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.seasonHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.seasonTitle {
+  margin: 0;
+  font-family: var(--slab);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--chaff);
+}
+
+.seasonOrg {
+  font-size: 0.9rem;
+  color: var(--chaff-dim);
+}
+
+.seasonYears {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--teal);
+}
+
+.seasonNotes {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 66ch;
+}
+
+.seasonNotes li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-top: 0.55rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--chaff-dim);
+}
+
+.seasonNotes li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 0.5rem;
+  height: 1px;
+  background: var(--wheat);
+}
+
+.stack {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--rule-strong);
+  color: var(--chaff);
+}
+
+/* ── Field notebook ───────────────────────────────────────────────────── */
+
+.notebook {
+  margin-top: 2.5rem;
+  border: 1px solid var(--rule-strong);
+  background: var(--ground-2);
+  padding: 1.75rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .notebook {
+    padding: 2.25rem 2.25rem 2rem;
+  }
+}
+
+.askRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.askInput {
+  flex: 1 1 16rem;
+  min-width: 0;
+  background: var(--ground);
+  border: 1px solid var(--rule-strong);
+  color: var(--chaff);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0;
+}
+
+.askInput::placeholder {
+  color: rgba(234, 228, 210, 0.55);
+}
+
+.askInput:focus {
+  outline: 2px solid var(--wheat);
+  outline-offset: -1px;
+}
+
+.askButton {
+  flex: 0 0 auto;
+  background: var(--wheat);
+  color: var(--ground);
+  border: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.5rem;
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+
+.askButton:hover:not(:disabled) {
+  background: var(--chaff);
+}
+
+.askButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.suggests {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.suggest {
+  background: transparent;
+  border: 1px dashed var(--rule-strong);
+  color: var(--chaff-dim);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.suggest:hover:not(:disabled) {
+  border-color: var(--wheat);
+  color: var(--chaff);
+}
+
+.suggest:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.entry {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+}
+
+.entryQ {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0;
+}
+
+.entryA {
+  margin: 0.9rem 0 0;
+  max-width: 62ch;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--chaff);
+}
+
+.entryError {
+  margin: 0.9rem 0 0;
+  max-width: 62ch;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--flag);
+}
+
+.pending {
+  display: inline-flex;
+  gap: 0.3rem;
+  margin-top: 0.9rem;
+}
+
+.pending span {
+  width: 6px;
+  height: 6px;
+  background: var(--wheat);
+  animation: pulse 1.1s ease-in-out infinite;
+}
+
+.pending span:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.pending span:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Ruled off the top, matching the reading plate — a coloured left border is
+   the generic alert costume and this world doesn't use one anywhere else. */
+.offline {
+  margin-top: 1.5rem;
+  border-top: 2px solid var(--flag);
+  padding-top: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--chaff-dim);
+  max-width: 60ch;
+}
+
+/* ── Colophon ─────────────────────────────────────────────────────────── */
+
+/* No rule of its own — it sits directly under the section head, which already
+   draws one. Two wheat rules with a gap between them reads as a mistake. */
+.colophon {
+  margin-top: 2.5rem;
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 800px) {
+  .colophon {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+}
+
+.colophonBlock h3 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  font-weight: 500;
+}
+
+.colophonBlock p {
+  margin: 0.75rem 0 0;
+  max-width: 52ch;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--chaff-dim);
+}
+
+.colophonBlock strong {
+  color: var(--chaff);
+  font-weight: 600;
+}
+
+.footer {
+  margin-top: 3rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+}
+
+.footerLink {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.footerLink:hover {
+  color: var(--wheat);
+}
+
+.disclosure {
+  flex: 1 1 20rem;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: rgba(234, 228, 210, 0.6);
+  margin: 0;
+  max-width: 52ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world *,
+  .world *::before,
+  .world *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .seasonBarFill {
+    transform: scaleX(1);
+  }
+}

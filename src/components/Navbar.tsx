@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
+import { isArtifactRoute } from '@/lib/chrome';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -11,12 +12,17 @@ const navLinks = [
   { href: '/market-storm', label: 'Market Storm' },
   { href: '/apps', label: 'Apps' },
   { href: '/games', label: 'Arcade' },
+  { href: '/web-design', label: 'Web Design' },
   { href: '/about', label: 'About' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // The resume samples are artifacts in their own visual worlds — site chrome
+  // would sit the Paper palette next to a world picked to be nothing like it.
+  if (isArtifactRoute(pathname)) return null;
 
   function isActive(href: string) {
     if (href === '/') return pathname === '/';
