@@ -11,16 +11,30 @@
   "record": {
     "title": "Dashboard review",
     "rows": [
-      { "label": "What it could see", "value": "One folder of articles", "tone": "warn" },
-      { "label": "When the site went down", "value": "The monitor went with it", "tone": "warn" }
+      {
+        "label": "Could see",
+        "value": "One folder",
+        "tone": "warn"
+      },
+      {
+        "label": "Site went down",
+        "value": "Went down with it",
+        "tone": "warn"
+      }
     ],
-    "stamp": "Built inside what it watched",
-    "note": "Rebuilt as\nits own app"
+    "stamp": "Built inside what it watched"
   },
   "headline": [
-    { "t": "I built the monitor " },
-    { "t": "inside", "tone": "warn" },
-    { "t": " the thing it was monitoring." }
+    {
+      "t": "I built the monitor "
+    },
+    {
+      "t": "inside",
+      "tone": "warn"
+    },
+    {
+      "t": " the thing it was monitoring."
+    }
   ],
-  "alt": "A review sheet listing two findings — the dashboard could see only one folder of articles, and it went down whenever the site did — stamped 'built inside what it watched'."
+  "alt": "A review sheet listing two findings \u2014 the dashboard could see only one folder of articles, and it went down whenever the site did \u2014 stamped 'built inside what it watched'."
 }

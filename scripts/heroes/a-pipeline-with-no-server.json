@@ -6,8 +6,7 @@
   },
   "after": {
     "label": "What it actually took",
-    "text": "A script, a timer, a text file",
-    "detail": "$0 a month \u00b7 no database \u00b7 no API keys"
+    "text": "A script, a timer, a text file"
   },
   "headline": [
     {
@@ -24,33 +23,25 @@
   "alt": "A two-column comparison: a server, a cron host, a database and a monthly bill on one side; a script, a timer, a text file and $0 on the other.",
   "versus": {
     "left": {
-      "name": "What it looked like"
+      "name": "Looked like"
     },
     "right": {
-      "name": "What it took"
+      "name": "Took"
     },
     "rows": [
       {
-        "label": "Compute",
         "l": "A server",
         "r": "A script"
       },
       {
-        "label": "Schedule",
-        "l": "A cron host",
-        "r": "A timer"
-      },
-      {
-        "label": "Storage",
         "l": "A database",
         "r": "A text file"
       },
       {
-        "label": "Cost",
         "l": "A monthly bill",
         "r": "$0"
       }
     ],
-    "verdict": "It looked like it needed a server. It needed *a text file*."
+    "verdict": "Runs on *nothing*."
   }
 }

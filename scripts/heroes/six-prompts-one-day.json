@@ -9,31 +9,30 @@
     "text": "A system built before the project"
   },
   "sequence": {
-    "label": "One day, start to finish",
     "steps": [
       {
-        "text": "build a Kanban",
+        "text": "build",
         "mark": true
       },
       {
-        "text": "make it mobile",
+        "text": "mobile",
         "mark": true
       },
       {
-        "text": "what next?"
+        "text": "next?"
       },
       {
-        "text": "how do I deploy"
+        "text": "deploy"
       },
       {
-        "text": "it's live"
+        "text": "live"
       },
       {
-        "text": "journal this",
+        "text": "journal",
         "mark": true
       }
     ],
-    "verdict": "*Three of the six* leaned on work I'd already done."
+    "verdict": "*Three of six* leaned on earlier work."
   },
   "headline": [
     {

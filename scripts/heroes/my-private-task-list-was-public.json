@@ -6,20 +6,36 @@
   },
   "after": {
     "label": "What the URL returned",
-    "text": "200 OK — public the whole time"
+    "text": "200 OK \u2014 public the whole time"
   },
   "log": {
-    "name": "curl · no session, no password",
+    "name": "curl \u00b7 no session, no password",
     "lines": [
-      { "chip": "ASSUMED", "tone": "good", "text": "Private", "muted": true },
-      { "chip": "200 OK", "tone": "bad", "text": "17,798 bytes · 43 tasks" }
+      {
+        "chip": "ASSUMED",
+        "tone": "good",
+        "text": "Private",
+        "muted": true
+      },
+      {
+        "chip": "200 OK",
+        "tone": "bad",
+        "text": "17,798 bytes \u00b7 43 tasks"
+      }
     ],
     "summary": "Public the whole time."
   },
   "headline": [
-    { "t": "I assumed my task list was private. The URL returned " },
-    { "t": "200 OK", "tone": "bad" },
-    { "t": "." }
+    {
+      "t": "I assumed my task list was private. The URL returned "
+    },
+    {
+      "t": "200 OK",
+      "tone": "bad"
+    },
+    {
+      "t": "."
+    }
   ],
   "alt": "A run log: a request with no session and no password returning 200 OK, 17,798 bytes and 43 tasks from a list assumed to be private."
 }
