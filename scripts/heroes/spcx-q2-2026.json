@@ -32,7 +32,6 @@
  "alt": "A ticker board for SPCX showing revenue growth, capex, AI capex ratio and free cash flow.",
  "quote": {
   "ticker": "SPCX",
-  "catalyst": "Q2 2026 · first public quarter",
   "verdict": "Revenue grew 92%. Capex was 2.35× that.",
   "cells": [
    {

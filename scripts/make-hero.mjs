@@ -563,7 +563,12 @@ function chooseTemplate() {
 /* QUOTE — the ticker board. A monospace symbol at display size over a rule of
    figures, each inked by its own polarity. This is the most literal of the
    three: it is the report's price strip, cropped. Tabular numerals throughout,
-   because a row of figures that shifts on the digit is a row nobody trusts. */
+   because a row of figures that shifts on the digit is a row nobody trusts.
+
+   The catalyst used to sit beside the ticker and was cut: at 341px it rendered
+   as texture rather than words, and the card underneath already prints it. A
+   hero that repeats the chrome around it is spending its scarcest resource —
+   room — on nothing. */
 function quoteCard(k) {
   const t = THEMES[k];
   const q = spec.quote;
@@ -581,8 +586,6 @@ function quoteCard(k) {
      .top{display:flex;align-items:baseline;gap:26px}
      .tk{font-family:${MONO};font-weight:700;font-size:76px;letter-spacing:.06em;
        color:${t.accent};line-height:1}
-     .cat{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.12em;
-       text-transform:uppercase;color:${t.dim}}
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
        color:${t.text};font-size:${ledeSize(q.verdict)}px;max-width:1000px}
      .row{display:flex;gap:0;border-top:1px solid ${t.rule}}
@@ -593,10 +596,7 @@ function quoteCard(k) {
        text-transform:uppercase;color:${t.dim}}
      .cv{font-family:${MONO};font-weight:700;font-size:${TYPE.major}px;
        font-variant-numeric:tabular-nums;letter-spacing:-.01em}`,
-    `<div class="top">
-       <span class="tk">${esc(q.ticker)}</span>
-       ${q.catalyst ? `<span class="cat">${esc(q.catalyst)}</span>` : ''}
-     </div>
+    `<div class="top"><span class="tk">${esc(q.ticker)}</span></div>
      <div class="h">${esc(q.verdict)}</div>
      <div class="row">${cells}</div>`
   );
@@ -606,7 +606,14 @@ function quoteCard(k) {
    KPI grid at card scale. The dot rather than a coloured card edge is
    deliberate: a tinted rail down the side of a tile is the documented AI-UI
    tell the house rejects, and ReportView refuses it on the page for the same
-   reason. */
+   reason.
+
+   Each tile carried a third line — the delta, "down from 68%" — and it is gone.
+   Four tiles times a sub-label put this template at 13 text elements against
+   the 3-5 every other template carries, and at 341px that third line was below
+   reading size in every one of them. It was the only thing on any of these
+   cards that was purely noise: unreadable, and there to be unreadable. A
+   figure that needs context has a lede above it for exactly that. */
 function scorecardCard(k) {
   const t = THEMES[k];
   const s = spec.scorecard;
@@ -616,7 +623,6 @@ function scorecardCard(k) {
          <div class="tl"><span class="dot" style="background:${ink(k, kpi.tone)}"></span>
            <span>${esc(kpi.label)}</span></div>
          <div class="tv" style="color:${ink(k, kpi.tone)}">${esc(kpi.value)}</div>
-         ${kpi.delta ? `<div class="td">${esc(kpi.delta)}</div>` : ''}
        </div>`
     )
     .join('');
@@ -627,13 +633,12 @@ function scorecardCard(k) {
        color:${t.text};font-size:${ledeSize(s.verdict)}px;max-width:1000px}
      .g{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:${t.rule};
        border:1px solid ${t.rule}}
-     .t{background:${t.surface};padding:20px 26px;display:flex;flex-direction:column;gap:9px}
+     .t{background:${t.surface};padding:26px;display:flex;flex-direction:column;gap:12px}
      .tl{display:flex;align-items:center;gap:10px;font-family:${MONO};
-       font-size:${TYPE.micro}px;letter-spacing:.13em;text-transform:uppercase;color:${t.dim}}
-     .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+       font-size:${TYPE.label}px;letter-spacing:.13em;text-transform:uppercase;color:${t.dim}}
+     .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
      .tv{font-family:${MONO};font-weight:700;font-size:${TYPE.major}px;
-       font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}
-     .td{font-family:${MONO};font-size:${TYPE.micro}px;color:${t.dim};letter-spacing:.02em}`,
+       font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}`,
     `<div class="h">${esc(s.verdict)}</div>
      <div class="g">${tiles}</div>`
   );
@@ -642,7 +647,13 @@ function scorecardCard(k) {
 /* LEDGER — the verification pass, which is the thing this section has that a
    sell-side note does not. Three chips carrying the counts, then the one
    finding worth the space. The chips are outlined rather than filled so that
-   three of them side by side read as a tally and not as three warnings. */
+   three of them side by side read as a tally and not as three warnings.
+
+   This was already the sparsest of the three and it survived card size best,
+   which is the argument for the cuts made to the other two. Its own eyebrow
+   went anyway: "EVERY LOAD-BEARING CLAIM, REFUTED ON PURPOSE" was texture at
+   341px, and three chips reading 6 / 3 / 4 already say a ledger is what this
+   is. */
 function ledgerCard(k) {
   const t = THEMES[k];
   const l = spec.ledger;
@@ -668,8 +679,7 @@ function ledgerCard(k) {
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.025em;
        color:${t.text};font-size:${ledeSize(l.finding)}px;max-width:1010px}
      .n2{font-family:${MONO};font-size:${TYPE.label}px;color:${t.dim};letter-spacing:.02em}`,
-    `<div class="l">${esc(l.label ?? 'Every load-bearing claim, refuted on purpose')}</div>
-     <div class="chips">
+    `<div class="chips">
        ${chip(l.confirmed, 'confirmed', 'bull')}
        ${chip(l.partlyTrue, 'partly-true', 'warn')}
        ${chip(l.corrected, 'corrected', 'bear')}

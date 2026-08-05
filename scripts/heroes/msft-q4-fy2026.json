@@ -26,25 +26,21 @@
    {
     "label": "Azure growth",
     "value": "+43%",
-    "delta": "crossed $100B",
     "tone": "bull"
    },
    {
     "label": "Cloud margin",
     "value": "65%",
-    "delta": "down from 68%",
     "tone": "bear"
    },
    {
     "label": "Uncommenced leases",
     "value": "$329.1B",
-    "delta": "off-statement",
     "tone": "warn"
    },
    {
     "label": "Useful life",
     "value": "15 → 25 yrs",
-    "delta": "effective FY27",
     "tone": "warn"
    }
   ]
