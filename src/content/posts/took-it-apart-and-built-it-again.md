@@ -3,9 +3,9 @@ title: I built my own dashboard for my site — then took it apart and built it 
 slug: took-it-apart-and-built-it-again
 excerpt: Six hours in, I had a working dashboard for my own site. Then I said the architecture was wrong and pulled it out into its own app. The mistake is one almost everyone makes on their first internal tool, and it only becomes visible after the thing exists.
 category: Working With AI
-publishDate: 2026-08-03
+publishDate: 2026-08-05
 tags: [architecture, internal-tools, ai-native, shipping]
-status: staged
+status: published
 channels:
   - name: linkedin
     status: planned
