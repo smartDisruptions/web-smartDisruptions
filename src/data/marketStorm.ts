@@ -1433,7 +1433,7 @@ What the release *doesn't* put in its bullet list is worth naming, though it is 
 
 Palantir spent **$14.6M** on property and equipment this quarter — **0.75% of revenue** — and generated $1.22B of adjusted free cash flow. Amazon's trailing capex is ~$169B; Microsoft's was $115.9B for the year with another $329B of uncommenced leases sitting off the statement.
 
-That difference is not a detail, it is the investment case. Palantir sells into the AI buildout **without funding it**. There is no depreciation wave arriving in 2027, no debt raised to cover a capex hole, no negative-free-cash-flow window to explain away. The earnings-quality questions that dominated the Amazon and Microsoft prints simply have no place to live on this balance sheet.
+That difference is not a detail, it is the investment case. Palantir sells into the AI buildout **without funding it**. There is no depreciation wave arriving in 2027, no debt raised to cover a capex hole, no negative-free-cash-flow window to explain away. The earnings-quality questions that dominate every other large AI-infrastructure story — when does the depreciation land, what did the leases hide, how is the hole being funded — simply have no place to live on this balance sheet.
 
 Which is precisely why they moved into the price — and into the tax line.
 
@@ -1453,7 +1453,7 @@ Which is precisely why they moved into the price — and into the tax line.
 
 It is tempting to wave the deceleration away as a hard comp. That doesn't survive checking, and the check is clean because *sequential* growth is comp-independent. Through the back half of 2025 revenue compounded **+40.2%** from Q2 to Q4; the 2026 guide compounds only **+25.3%** across the same stretch. Hold Q2 2026's own delivered sequential rate (+18.5%) and Q4 lands near **$2.71B — a +93% year-over-year rate, identical to the quarter just posted.** So the entire 93% → 72% step-down lives in the guidance, not in the base. Either management is sandbagging by roughly $290M of quarterly revenue, or it sees something the print doesn't show. Given eight straight beats the first is more likely — but it is a *choice about guidance*, not arithmetic forced by the comparison. The thesis resolves over **3–5 years** on the question the valuation section poses: does ~$8B of revenue become ~$30B+ before the multiple normalizes? Under two years you are trading sentiment on the AI complex, not the business.
 
-**Sizing considerations (not a recommendation).** Two things separate Palantir from the other names in this section. It is the only one that **doesn't carry capex-cycle risk** — no depreciation wave, no debt, no negative-FCF window — so it is genuine diversification against AMZN/MSFT/NVDA exposure rather than more of the same beta. Against that: at ~48× sales, returns are dominated by the multiple rather than by operations, and H1 2026 is the proof — the business accelerated and the stock fell 32%. A position sized for the business will behave like a position sized for the multiple.`,
+**Sizing considerations (not a recommendation).** Two things separate Palantir from the rest of the AI-infrastructure complex. It **doesn't carry capex-cycle risk** — no depreciation wave, no debt, no negative-FCF window — so it is genuine diversification against AMZN/MSFT/NVDA exposure rather than more of the same beta. Against that: at ~48× sales, returns are dominated by the multiple rather than by operations, and H1 2026 is the proof — the business accelerated and the stock fell 32%. A position sized for the business will behave like a position sized for the multiple.`,
   invalidation: {
     bull: [
       '**Total RDV** growth — not TCV — falls materially below revenue growth for two consecutive quarters. That is the measure that matters, and at +83% it currently does not.',
@@ -1699,10 +1699,10 @@ const spcxQ2_2026: MarketStormReport = {
     'The first quarterly report from the largest IPO in history: revenue up 92% to $7.8B, the operating loss cut from $970M to $143M, and capex of $18.4B — 2.35× revenue, against a $13.2B consensus. Nearly all of it is AI. One customer that did not exist last quarter is now a fifth of company revenue, $13.3B of the debt funding the build comes from a sitting director’s firm, and the stock was too weak to trigger an early share release — which moves a larger block to December instead. STORM put four AI agents on the print, then had skeptics try to refute every load-bearing claim against the 10-Q.',
   catalyst:
     'Q2 2026 — first earnings as a public company, reported August 4, 2026',
-  publishDate: '2026-08-05',
+  publishDate: '2026-08-04',
   tags: ['SPCX', 'Starlink', 'AI-infrastructure', 'earnings', 'capex'],
   verdict:
-    'Amazon’s capex quietly exceeded its operating cash flow. Microsoft’s moved off the reported line. Palantir had none at all. SpaceX spent 2.35× its revenue in a single quarter — and the question that decides the stock is whether the customer paying for it stays.',
+    'SpaceX spent $2.35 of capital for every dollar of revenue it earned this quarter, almost all of it on AI compute — and roughly 60% of the revenue that compute serves comes from a single customer who was not material three months ago.',
   priceStrip: [
     { k: 'IPO · Jun 12', v: '$135.00' },
     { k: 'High · Jun 16', v: '$225.64' },
@@ -2008,7 +2008,7 @@ const spcxQ2_2026: MarketStormReport = {
     '**$27,955M of non-cancelable obligations**, with **$22,244M concentrated in 2027** — the year the capex bill comes due.',
     '**Colossus II’s power is under legal challenge:** the NAACP is seeking to enjoin the mobile gas turbines running it under the Clean Air Act.',
   ],
-  theQuestion: `Every AI-infrastructure report in this section has come down to a version of the same question, and here it is in its most extreme form: **is $18.4B of quarterly capex a land grab into demand that already exists in contract form — or is it a purpose-built campus for one customer?** Customer B went from under 10% of revenue to 19.5% in a single quarter and is ~60% of the AI segment. The prospectus suggests a term through 2029; the risk factors say 90 days' notice. Which of those two sentences turns out to govern is, more or less, the entire investment.`,
+  theQuestion: `**Is $18.4B of quarterly capex a land grab into demand that already exists in contract form — or is it a purpose-built campus for one customer?** Customer B went from under 10% of revenue to 19.5% in a single quarter and is ~60% of the AI segment. The prospectus suggests a term through 2029; the risk factors say 90 days' notice. Which of those two sentences turns out to govern is, more or less, the entire investment.`,
   analysis: `## Valuation — an unusual problem, because there are no earnings to divide by
 
 At the **$115.98** after-hours print the market values SpaceX near **$1.65T** on ~13.17B shares. There is no P/E: the company lost $541M in the quarter and $9.36B over the trailing twelve months. So the multiples are all revenue-based, and they are extreme by any standard.
@@ -2026,18 +2026,15 @@ The forward multiple is the interesting one. At 32.4× the market is already und
 
 Context matters on the drawdown, though, and it cuts both ways. The stock is **48.6% below its $225.64 June high** and **14.1% below the $135 IPO price** — so a great deal of enthusiasm has already come out. It also *rose 9.4%* on the day of the print and gave back 7.5% after hours, which tells you the market liked the revenue and disliked the capex, in that order.
 
-## The capex — where this sits on the spectrum
+## The capex — the number that moved the stock
 
-This section has now looked at four companies in the same AI-infrastructure cycle, and they form a clean spectrum of how much of the future is being paid for today:
+The market liked the revenue and disliked this, in that order. Capex of **$18,369M** against **$7,814M** of revenue is a ratio of **2.35×**, and it beat the ~$13.2B consensus by roughly $5B — which is why a stock that rose 9.4% during the session gave back 7.5% after hours.
 
-| Company | Capex vs revenue | Where the strain shows |
-| --- | --- | --- |
-| Palantir | **0.75% of revenue** | Nowhere — it shows in the price instead |
-| Microsoft | ~32% of quarterly revenue | $329B of leases *off* the capex line |
-| Amazon | ~105% of operating cash flow | Free cash flow turned negative |
-| **SpaceX** | **235% of revenue** | Everywhere at once |
+Almost all of it is one segment. **AI capex went from $749M to $15,828M in a year — a 21× increase** — while AI revenue went from $737M to $2,561M. At $15.8B of spend against $2.6B of quarterly revenue, the build is running years ahead of the business it serves. That is a deliberate choice, not an accident: nameplate compute went 0.4 GW → 1.0 GW → 1.4 GW across three quarters, and management is buying capacity for contracts that ramp later.
 
-SpaceX is not a more aggressive version of the hyperscalers. It is a different kind of company doing the same thing with a twentieth of the revenue base. **AI capex went from $749M to $15,828M in a year — a 21× increase** — while AI revenue went from $737M to $2,561M. The build is running roughly six years ahead of the revenue it serves.
+Some of that asset isn't even depreciating yet. Construction-in-progress went **$4.6B → $12.6B**, and the 10-Q says it is "primarily comprised of ongoing construction and expansion of the facilities and equipment as well as AI infrastructure that has not yet been placed in service." So forward depreciation rises sharply as that lands — which is precisely the line Adjusted EBITDA adds back.
+
+The other two segments are, by comparison, ordinary. Connectivity spent $1,367M to generate $4,291M and $1,656M of operating income. Space spent $1,174M against $962M of revenue, which is heavy but is a launch business building the vehicle that carries its own constellation. Neither is what the market reacted to.
 
 Some of that asset isn't even depreciating yet. Construction-in-progress went **$4.6B → $12.6B**, and the 10-Q says it is "primarily comprised of ongoing construction and expansion of the facilities and equipment as well as AI infrastructure that has not yet been placed in service." So forward depreciation rises sharply as that lands — which is precisely the line that Adjusted EBITDA adds back.
 
@@ -2155,13 +2152,13 @@ Two caveats: every figure is an "up to," assuming no option exercises or RSU set
     'Is Customer B’s ~$1.52B a run rate or a first-quarter catch-up? It went from roughly nothing to 19.5% of company revenue in one quarter, and Q3 is the first clean read.',
     'What is the $1,195M of "Proceeds from product rebates" in investing activities? It is a first-time line, it is material, and the filing does not describe it.',
   ],
-  soWhat: `The four reports in this section now trace one arc, and it is the most useful thing in them: **the AI buildout has stopped being a technology story and become a capital-markets story.**
+  soWhat: `Read the shape of this quarter and you learn what "AI infrastructure" actually means in 2026, because SpaceX is the least disguised version of it.
 
-Look at what SpaceX actually is in this quarter. A rocket company that sells satellite internet, spending **$15.8 billion in three months** on GPUs — financed partly by a bond issue, partly by its IPO, and partly by lease agreements with a board member's investment firm — so that **AI labs can rent compute from it**. The customers are Anthropic and Google. The supplier of the batteries is Tesla. The power comes from mobile gas turbines that are being sued over.
+A rocket company that sells satellite internet spent **$15.8 billion in three months** on GPUs — financed partly by its IPO, partly by a bond issue, partly by lease agreements with a board member's investment firm — so that **AI labs can rent compute from it**. The customers are Anthropic and Google. The batteries come from Tesla. The power comes from mobile gas turbines that are the subject of a Clean Air Act injunction motion.
 
-That is what "AI infrastructure" means in practice, and none of it is about model quality. It is about who can raise $100 billion and survive the eighteen months before it pays back.
+None of that is about model quality. It is about who can raise a hundred billion dollars and survive the eighteen months before it pays back.
 
-The practical read if you're building rather than investing: **the cheap inference you're using is being funded by an enormous, leveraged bet with a clock on it.** Four companies in this section have now shown the same shape from different angles — Amazon's cash flow went negative, Microsoft moved the spending off its capex line, SpaceX is spending 2.35× revenue, and Palantir is the one profiting from all of it without paying for any of it. Knowing which of those positions the company you depend on occupies is worth more than knowing its benchmark scores.`,
+The practical read if you're building rather than investing: **the cheap inference you rent is being funded by an enormous, leveraged bet with a clock on it.** Compute prices right now reflect a capex race, not a cost curve. When you pick a provider, the useful question isn't which benchmark it wins — it's whether that provider is funding the buildout from operating cash flow or from the capital markets, because only one of those keeps its prices when the market closes.`,
   throughLine: {
     text: `Four reports, one cycle — and SpaceX is the far end of it.
 
