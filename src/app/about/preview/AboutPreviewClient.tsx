@@ -33,7 +33,7 @@ const templates = [
     id: 3,
     name: 'The Path',
     pitch:
-      'A timeline with a spine, 2007 to now. The eighteen-year span is the argument — nobody skipped to the end. Dates are your real ones.',
+      'A timeline with a spine, weighted to the AI arc: prompting → agents → pipelines → memory → a team that runs without you. Closes with your skills under their real names.',
     Component: AboutPath,
   },
   {
