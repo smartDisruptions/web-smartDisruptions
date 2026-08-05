@@ -1,0 +1,18 @@
+{
+ "title": "SpaceX — Market Storm",
+ "category": "Market Storm",
+ "out": "spcx-q2-2026-card",
+ "logo": {
+  "file": "spcx.svg",
+  "scale": 0.52
+ },
+ "before": {
+  "label": "Company",
+  "text": "SpaceX"
+ },
+ "after": {
+  "label": "Section",
+  "text": "Market Storm"
+ },
+ "alt": "SpaceX logo"
+}

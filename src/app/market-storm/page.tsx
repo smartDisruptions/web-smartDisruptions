@@ -56,8 +56,6 @@ const STAKES = [
  */
 function ReportCard({ report }: { report: MarketStormReport }) {
   const v = report.verification;
-  // A ledger hero already renders these three counts as its entire design.
-  const heroShowsLedger = report.heroTemplate === 'ledger';
   return (
     <Link href={`/market-storm/${report.slug}`} className="group block h-full">
       <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_var(--sd-card-shadow)]">
@@ -69,10 +67,18 @@ function ReportCard({ report }: { report: MarketStormReport }) {
             {formatDate(report.publishDate)}
           </span>
         </div>
-        {report.heroImage && (
+        {/* The mark, not the hero. HeroImage takes whatever pair it is handed,
+            so the card feeds it the logo and the report page feeds it the
+            generated card. */}
+        {report.cardImage && (
           <div className="aspect-[1200/630] w-full overflow-hidden border-b border-border">
             <HeroImage
-              post={{ ...report, title: report.title }}
+              post={{
+                heroImage: report.cardImage,
+                heroImageLight: report.cardImageLight,
+                heroImageAlt: report.cardImageAlt,
+                title: report.title,
+              }}
               className="h-full w-full object-cover"
             />
           </div>
@@ -89,20 +95,20 @@ function ReportCard({ report }: { report: MarketStormReport }) {
           <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-text-secondary">
             {report.excerpt}
           </p>
+          {/* The counts are back on every card. They were hidden where the
+              hero already showed them; now the card carries a logo, which
+              shows nothing, so this is the only place the verification pass is
+              visible on the index — and it is the section's whole differentiator. */}
           <div className="mt-4 flex flex-wrap items-center gap-2 pt-1 text-[0.7rem] font-semibold">
-            {!heroShowsLedger && (
-              <>
-                <span className="rounded border border-bull bg-bull-soft px-1.5 py-0.5 text-bull">
-                  {v.confirmed} confirmed
-                </span>
-                <span className="rounded border border-warn bg-warn-soft px-1.5 py-0.5 text-warn">
-                  {v.partlyTrue} partly-true
-                </span>
-                <span className="rounded border border-border bg-fill px-1.5 py-0.5 text-text-primary">
-                  {v.corrected} corrected
-                </span>
-              </>
-            )}
+            <span className="rounded border border-bull bg-bull-soft px-1.5 py-0.5 text-bull">
+              {v.confirmed} confirmed
+            </span>
+            <span className="rounded border border-warn bg-warn-soft px-1.5 py-0.5 text-warn">
+              {v.partlyTrue} partly-true
+            </span>
+            <span className="rounded border border-border bg-fill px-1.5 py-0.5 text-text-primary">
+              {v.corrected} corrected
+            </span>
             <span className="ml-auto text-sm font-medium text-accent">
               Read &rarr;
             </span>
@@ -158,9 +164,11 @@ export default function MarketStormIndex() {
         <Disclaimer />
       </div>
 
-      {/* Reports — two up. Three would put the heroes near 280px, below the
-          341px they are drawn to survive at. */}
-      <div className="mx-auto mt-10 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+      {/* Reports — three up, which needs the wider container to work. At
+          max-w-5xl a third column puts each hero at 325px, under the 341px they
+          are drawn to survive at; at max-w-6xl it is 368px and they hold. The
+          container is what decides this, not the column count. */}
+      <div className="mx-auto mt-10 grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {marketStormReports.map((report) => (
           <ReportCard key={report.slug} report={report} />
         ))}

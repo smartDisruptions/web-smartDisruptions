@@ -117,6 +117,14 @@ export interface MarketStormReport {
   // beats inferring it from the filename, which would be a guess that rots the
   // first time a hero is redrawn.
   heroTemplate?: 'quote' | 'scorecard' | 'ledger';
+  // The index card carries the company's mark instead of the hero. The two
+  // images answer different questions: on an index the reader is scanning for
+  // a company, and a logo answers that faster than any amount of type; on the
+  // report page there is room for the finding, so the hero earns its place
+  // there. Same reason the social card never varies while heroes do.
+  cardImage?: string;
+  cardImageLight?: string;
+  cardImageAlt?: string;
   ogImage?: string;
 }
 
@@ -420,6 +428,9 @@ The practical read: if you build on top of this infrastructure, your costs are c
   heroImageAlt:
     'A verification ledger for Amazon: five confirmed, three partly-true, one corrected.',
   heroTemplate: 'ledger',
+  cardImage: '/images/content/amzn-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/amzn-q2-2026-card-hero-light.webp',
+  cardImageAlt: 'Amazon logo',
   sources: [
     {
       n: 1,
@@ -916,6 +927,9 @@ None of that is fraud; it is all disclosed, and mostly defensible. But three sep
   heroImageAlt:
     'A four-tile scorecard for Microsoft: Azure growth, cloud margin, uncommenced leases and depreciation.',
   heroTemplate: 'scorecard',
+  cardImage: '/images/content/msft-q4-fy2026-card-hero.webp',
+  cardImageLight: '/images/content/msft-q4-fy2026-card-hero-light.webp',
+  cardImageAlt: 'Microsoft logo',
   sources: [
     {
       n: 1,
@@ -1578,6 +1592,9 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
   heroImageAlt:
     'A verification ledger for Palantir: six confirmed, three partly-true, four corrected.',
   heroTemplate: 'ledger',
+  cardImage: '/images/content/pltr-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/pltr-q2-2026-card-hero-light.webp',
+  cardImageAlt: 'Palantir Technologies logo',
   sources: [
     {
       n: 1,
@@ -2211,6 +2228,9 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
   heroImageAlt:
     'A ticker board for SPCX showing revenue growth, capex, AI capex ratio and free cash flow.',
   heroTemplate: 'quote',
+  cardImage: '/images/content/spcx-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/spcx-q2-2026-card-hero-light.webp',
+  cardImageAlt: 'SpaceX logo',
   sources: [
     {
       n: 1,

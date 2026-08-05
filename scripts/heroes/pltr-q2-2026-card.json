@@ -1,0 +1,18 @@
+{
+ "title": "Palantir — Market Storm",
+ "category": "Market Storm",
+ "out": "pltr-q2-2026-card",
+ "logo": {
+  "file": "pltr.svg",
+  "scale": 0.52
+ },
+ "before": {
+  "label": "Company",
+  "text": "Palantir"
+ },
+ "after": {
+  "label": "Section",
+  "text": "Market Storm"
+ },
+ "alt": "Palantir Technologies logo"
+}
