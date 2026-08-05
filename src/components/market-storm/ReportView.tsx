@@ -86,25 +86,38 @@ function ReportHero({ report }: { report: MarketStormReport }) {
   );
 }
 
-/* ---- price strip ---- */
+/* ---- price strip ----
+   auto-fit rather than a fixed column count. It was `sm:grid-cols-5` against
+   reports that carry five OR six cells, so a six-cell strip dropped its last
+   stat onto a row of its own beside four empty slots — the most visible
+   unpolished thing on the page. auto-fit fills the row at whatever count the
+   report has and never orphans one.
+
+   The dividers are a 1px grid gap over a border-coloured ground rather than
+   per-cell borders, because a wrapped row makes `last:border-r-0` wrong on
+   every cell that happens to end a line. */
 function PriceStrip({ report }: { report: MarketStormReport }) {
   return (
-    <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-surface sm:grid-cols-5">
-      {report.priceStrip.map((cell, i) => (
-        <div
-          key={i}
-          className="border-b border-border px-4 py-3 sm:border-b-0 sm:border-r sm:last:border-r-0"
-        >
-          <div className="font-mono-accent text-text-secondary">{cell.k}</div>
-          <div
-            className={`mt-1 font-mono text-lg font-semibold [font-variant-numeric:tabular-nums] ${
-              toneText[cell.tone ?? 'neutral']
-            }`}
-          >
-            {cell.v}
+    <div className="overflow-hidden rounded-xl border border-border bg-border">
+      <div
+        className="grid gap-px"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        }}
+      >
+        {report.priceStrip.map((cell, i) => (
+          <div key={i} className="bg-surface px-4 py-3">
+            <div className="font-mono-accent text-text-secondary">{cell.k}</div>
+            <div
+              className={`mt-1 font-mono text-lg font-semibold [font-variant-numeric:tabular-nums] ${
+                toneText[cell.tone ?? 'neutral']
+              }`}
+            >
+              {cell.v}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -207,6 +220,7 @@ function DataTableBlock({ table }: { table: DataTableType }) {
               {table.columns.map((col, i) => (
                 <th
                   key={i}
+                  scope="col"
                   className={`border-b border-border px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary ${
                     col.align === 'right' ? 'text-right' : 'text-left'
                   }`}
@@ -541,16 +555,21 @@ function Stop({
 }) {
   return (
     <section>
-      <div className="mb-5 flex items-baseline gap-3 border-b border-border pb-3">
-        <span className="font-mono text-sm font-bold text-accent [font-variant-numeric:tabular-nums]">
+      {/* The number sits ABOVE the title, not beside it. Inline, it pushed
+          every h2 29px to the right of the content it heads — so the page had
+          one left edge for its headings and a different one for everything
+          under them, all the way down. A single flush edge is most of what
+          reads as "aligned". */}
+      <div className="border-b border-border pb-4">
+        <p className="font-mono-accent text-accent [font-variant-numeric:tabular-nums]">
           {String(n).padStart(2, '0')}
-        </span>
-        <h2 className="font-display text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+        </p>
+        <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
           {title}
         </h2>
       </div>
-      {lede && <p className="mb-6 max-w-[62ch] text-text-secondary">{lede}</p>}
-      {children}
+      {lede && <p className="mt-5 max-w-[62ch] text-text-secondary">{lede}</p>}
+      <div className="mt-6">{children}</div>
     </section>
   );
 }
