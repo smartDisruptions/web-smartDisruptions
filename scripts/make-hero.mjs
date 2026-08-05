@@ -657,9 +657,18 @@ function scorecardCard(k) {
 function ledgerCard(k) {
   const t = THEMES[k];
   const l = spec.ledger;
+  /* `corrected` is neutral, not red, and that is a judgement rather than a
+     styling detail. Red says the finding is bad. A correction is the ledger
+     doing its job — often the most valuable line on the page, and twice now it
+     has been this report's own error. ReportView has always drawn it neutral;
+     the card matching it keeps the two from arguing.
+
+     Neutral takes the hairline for its border rather than full body colour, so
+     a chip carrying no polarity does not out-shout the two that do. */
   const chip = (n, word, tone) => {
     const c = ink(k, tone);
-    return `<div class="chip" style="border-color:${c}">
+    const border = tone ? c : t.hair;
+    return `<div class="chip" style="border-color:${border}">
         <span class="n" style="color:${c}">${n}</span>
         <span class="w" style="color:${c}">${esc(word)}</span>
       </div>`;
@@ -682,7 +691,7 @@ function ledgerCard(k) {
     `<div class="chips">
        ${chip(l.confirmed, 'confirmed', 'bull')}
        ${chip(l.partlyTrue, 'partly-true', 'warn')}
-       ${chip(l.corrected, 'corrected', 'bear')}
+       ${chip(l.corrected, 'corrected', null)}
      </div>
      <div class="h">${esc(l.finding)}</div>
      ${l.note ? `<div class="n2">${esc(l.note)}</div>` : ''}`
