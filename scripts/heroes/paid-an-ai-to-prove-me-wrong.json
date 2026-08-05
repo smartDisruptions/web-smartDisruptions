@@ -12,13 +12,19 @@
     "of": 8,
     "hit": 7,
     "unit": "claims checked",
-    "verdict": "were wrong",
-    "detail": "Central thesis withdrawn"
+    "verdict": ""
   },
   "headline": [
-    { "t": "Eight claims. " },
-    { "t": "One survived", "tone": "bad" },
-    { "t": "." }
+    {
+      "t": "Eight claims. "
+    },
+    {
+      "t": "One survived",
+      "tone": "bad"
+    },
+    {
+      "t": "."
+    }
   ],
   "alt": "Eight blocks, one per claim, seven of them filled: seven of the eight claims were wrong and the central thesis was withdrawn."
 }

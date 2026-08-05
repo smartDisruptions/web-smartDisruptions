@@ -249,6 +249,43 @@ const MONO = `ui-monospace, SFMono-Regular, Menlo, monospace`;
 const TYPE = { lede: 58, major: 40, minor: 30, label: 20, micro: 17 };
 const LEDE_SOLO = 78;
 
+/**
+ * How many words an image may carry, counting everything it renders.
+ *
+ * THE MEASUREMENT THAT SET THIS
+ * -----------------------------
+ * The templates averaged 27 words each, and at 341px — a phone — **69% of those
+ * words were under 11px and unreadable**. They cost density on desktop and paid
+ * nothing on the device most people read on, which is the worst trade available.
+ * One card ran 84% unreadable.
+ *
+ * MARKS ARE NOT WORDS
+ * -------------------
+ * The blocks, the rail, the window chrome, the table grid and the stamp border
+ * all survive being illegible: an unreadable log window still reads as a
+ * terminal, and the shape is the information. An unreadable *sentence* is only
+ * noise. So the cut fell on prose, not on structure — the pictures kept their
+ * furniture and lost their captions.
+ *
+ * THE DIVISION OF LABOUR
+ * ----------------------
+ * **The image carries the evidence; the page carries the claim.** The card next
+ * to it already has a title and an excerpt, and the featured post was stating
+ * one fact three times — "7 of 8 were wrong" on the image, "It broke seven of my
+ * eight claims" in the title, "corrected seven of eight" in the excerpt. A lede
+ * that restates the headline is the thing this file's own header warned about
+ * and then did anyway.
+ */
+/**
+ * Set at 14 first, which was a guess. Measuring the templates against it showed
+ * the guess was wrong for the ones whose picture is *made* of text: a console
+ * needs its invocation, two chips, two values and a summary to read as a run,
+ * and there is no nineteenth word to cut without it stopping being a console.
+ * 20 is what the structural templates actually need; the lean ones land near 10
+ * and should stay there.
+ */
+const WORD_BUDGET = 20;
+
 const RESET = `*{box-sizing:border-box;margin:0;padding:0}
   html,body{width:${W}px;height:${H}px;-webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility}`;
@@ -392,6 +429,12 @@ const REGISTRY = [
     name: 'annotated',
     key: 'annotated',
     render: (k) => annotatedCard(k),
+    // The three flagged claims ARE the picture: this template exists to show
+    // that something reads fine and isn't, and a reader has to be able to read
+    // the claim to see the flaw in it. Shortening them to hit the shared budget
+    // would remove the thing the template is for. Raised deliberately, once,
+    // with a reason — not by moving WORD_BUDGET for everyone.
+    words: 28,
     check: (a) =>
       !a.spans?.length
         ? 'annotated.spans is empty'
@@ -474,7 +517,7 @@ function split(k) {
      <div class="p b">
        ${after.label ? `<div class="l">${esc(after.label)}</div>` : ''}
        <div class="h">${esc(after.text)}</div>
-       ${after.detail ? `<div class="d">${esc(after.detail)}</div>` : ''}
+
      </div>`,
   );
 }
@@ -499,13 +542,13 @@ function countCard(k) {
        text-transform:uppercase;color:${t.dim}}
      .blocks{display:flex;gap:14px;height:130px}
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
-       color:${t.text};font-size:${ledeSize(c.verdict)}px}
+       color:${t.text};font-size:${ledeSize(`${c.hit} of ${c.of} ${c.verdict ?? ''}`)}px}
      .h em{font-style:normal;color:${k === 'dark' ? T.bright : T.field}}
      .d{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
     `<div class="l">${esc(c.of)} ${esc(c.unit)}</div>
      <div class="blocks">${blocks}</div>
-     <div class="h"><em>${esc(c.hit)} of ${esc(c.of)}</em> ${esc(c.verdict)}</div>
-     ${c.detail ? `<div class="d">${esc(c.detail)}</div>` : ''}`,
+     <div class="h"><em>${esc(c.hit)} of ${esc(c.of)}</em>${c.verdict ? ` ${esc(c.verdict)}` : ''}</div>
+`,
   );
 }
 
@@ -607,12 +650,11 @@ function receiptCard(k) {
     `<div class="sheet">
        <div class="top">
          <span class="who">${esc(r.title ?? 'Record')}</span>
-         <span class="when">smartdisruptions.com</span>
        </div>
        ${rows}
        <div class="foot">
          ${r.stamp ? `<span class="stamp">${esc(r.stamp)}</span>` : '<span></span>'}
-         ${r.note ? `<span class="note">${esc(r.note)}</span>` : ''}
+
        </div>
      </div>`,
   );
@@ -639,7 +681,7 @@ function fieldCard(k) {
        letter-spacing:.12em;text-transform:uppercase;color:${t.dim}}`,
     `<div class="main">
        <div class="h">${s.quiet ? `<span class="q">${esc(s.quiet)}</span><br>` : ''}${esc(s.loud)}</div>
-       ${s.note ? `<div class="sub">${esc(s.note)}</div>` : ''}
+
      </div>
      <footer>
        <span>${esc(fm.category ?? '')}</span>
@@ -739,8 +781,7 @@ function sequenceCard(k) {
      .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
        color:${t.text};font-size:${ledeSize(s.verdict)}px}
      .h em{font-style:normal;color:${ink}}`,
-    `<div class="l">${esc(s.label)}</div>
-     <div class="rail">${steps}</div>
+    `     <div class="rail">${steps}</div>
      ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}`,
   );
 }
@@ -758,7 +799,7 @@ function checklistCard(k) {
       (it) => `
       <div class="item">
         <span class="mark${it.off ? ' off' : ''}"></span>
-        <span class="txt"><b>${esc(it.text)}</b>${it.note ? `<i>${esc(it.note)}</i>` : ''}</span>
+        <span class="txt"><b>${esc(it.text)}</b></span>
       </div>`,
     )
     .join('');
@@ -785,7 +826,7 @@ function checklistCard(k) {
      .note{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
     `<div class="lede">${esc(c.label)}</div>
      <div>${items}</div>
-     ${c.note ? `<div class="note">${esc(c.note)}</div>` : ''}`,
+`,
   );
 }
 
@@ -822,7 +863,7 @@ function annotatedCard(k) {
        text-transform:uppercase;color:${ink};margin-top:9px}`,
     `<div class="top">
        <div class="h">${esc(a.intro)}</div>
-       ${a.sub ? `<div class="sub">${esc(a.sub)}</div>` : ''}
+
      </div>
      <div>${spans}</div>`,
   );
@@ -839,7 +880,6 @@ function versusCard(k) {
   const rows = v.rows
     .map(
       (r) => `
-      <div class="r"><span class="k">${esc(r.label)}</span></div>
       <div class="r"><span class="a">${esc(r.l)}</span></div>
       <div class="r"><span class="b">${esc(r.r)}</span></div>`,
     )
@@ -853,13 +893,11 @@ function versusCard(k) {
      .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;color:${t.text};
        line-height:1.06;font-size:${ledeSize(v.verdict)}px}
      .lede em{font-style:normal;color:${ink}}
-     .grid{display:grid;grid-template-columns:auto 1fr 1fr;column-gap:34px;align-items:baseline}
+     .grid{display:grid;grid-template-columns:1fr 1fr;column-gap:44px;align-items:baseline}
      .hd{font-family:${MONO};font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.13em;
        text-transform:uppercase;padding-bottom:13px;border-bottom:2px solid ${t.hair}}
      .hd.one{color:${t.dim}} .hd.two{color:${ink}}
      .r{padding:15px 0;border-bottom:1px solid ${t.rule}}
-     .k{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.1em;
-       text-transform:uppercase;color:${t.dim};white-space:nowrap}
      .a{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
        letter-spacing:-.025em;color:${t.dim}}
      .b{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
@@ -870,7 +908,6 @@ function versusCard(k) {
         : ''
     }
      <div class="grid">
-       <div class="hd"></div>
        <div class="hd one">${esc(v.left.name)}</div>
        <div class="hd two">${esc(v.right.name)}</div>
        ${rows}
@@ -963,7 +1000,30 @@ if (hasHero && !force) {
   console.log('  hero already set — social card only (--force to replace it)');
 } else {
   const template = chooseTemplate();
-  render(template.render('dark'), heroOut);
+  const markup = template.render('dark');
+
+  // Count what the picture actually says. Counting the rendered markup rather
+  // than the spec is the point: it catches words a template adds on its own, and
+  // it cannot drift out of sync with a renderer the way a spec-side count would.
+  const words = markup
+    .replace(/<style[\s\S]*?<\/style>/g, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;/g, ' ')
+    .split(/\s+/)
+    // A lone `#`, `·` or `→` is a mark, not a word — it carries no reading cost.
+    .filter((w) => /[a-z0-9]/i.test(w)).length;
+  const budget = template.words ?? WORD_BUDGET;
+  if (words > budget) {
+    console.warn(
+      `  ! ${words} words on this image; the budget is ${budget}.\n` +
+        `    At 341px most of them are under 11px and read as grey noise. The card\n` +
+        `    beside it already carries the title and the excerpt — cut, don't shrink.`,
+    );
+  } else {
+    console.log(`  words: ${words}/${budget}`);
+  }
+
+  render(markup, heroOut);
   render(template.render('light'), heroLightOut);
   wroteHero = true;
   console.log(`  template: ${template.name}`);
