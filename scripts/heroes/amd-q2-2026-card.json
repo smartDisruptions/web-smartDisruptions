@@ -1,0 +1,18 @@
+{
+ "title": "AMD — Market Storm",
+ "category": "Market Storm",
+ "out": "amd-q2-2026-card",
+ "logo": {
+  "file": "amd.svg",
+  "scale": 0.52
+ },
+ "before": {
+  "label": "Company",
+  "text": "AMD"
+ },
+ "after": {
+  "label": "Section",
+  "text": "Market Storm"
+ },
+ "alt": "AMD logo"
+}
