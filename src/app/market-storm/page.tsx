@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { marketStormReports, type MarketStormReport } from '@/data/marketStorm';
+import {
+  marketStormReports,
+  type MarketStormReport,
+  type Kpi,
+} from '@/data/marketStorm';
 import { SectionContainer } from '@/components/ui';
 import { Disclaimer } from '@/components/market-storm/ReportView';
+import { toneText } from '@/components/market-storm/tone';
 import HeroImage from '@/components/HeroImage';
 import { formatDate } from '@/lib/format';
 
@@ -38,6 +43,61 @@ const STAKES = [
 ];
 
 /**
+ * The three headline figures for a report, on the index card.
+ *
+ * WHICH THREE
+ * -----------
+ * The first three of `kpis`. That list is authored most-important-first — the
+ * report page's scorecard reads in the same order — so the card takes the top
+ * of it rather than carrying a second, hand-curated selection that could drift
+ * out of agreement with the page.
+ *
+ * WHY NO DELTA
+ * ------------
+ * A cell is about 100px wide here. `delta` runs from "+37% YoY" to "3rd
+ * straight accel", and the long ones either wrap to three lines or truncate
+ * mid-word. The value is the headline and the ink already carries the
+ * direction; the delta is detail, and detail belongs on the page the card
+ * opens. Same reasoning that took the hero images from 27 words to 17.
+ */
+function CardFigures({ kpis }: { kpis: Kpi[] }) {
+  const shown = kpis.slice(0, 3);
+  if (!shown.length) return null;
+  return (
+    <div className="overflow-hidden rounded-lg border border-border bg-border">
+      <div
+        className="grid gap-px"
+        style={{ gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))` }}
+      >
+        {/* Grid cells in a row already stretch to the tallest, so each one is a
+            column with the label at the top and the figure pushed to the
+            bottom. That keeps the numbers on one baseline for any label length.
+            A fixed two-line label box was the first attempt and it clipped:
+            "US commercial revenue" and "GAAP operating margin" both need three
+            lines at this width, and both lost their last word to an ellipsis. */}
+        {shown.map((kpi, i) => (
+          <div
+            key={i}
+            className="flex flex-col justify-between gap-2 bg-surface px-3 pb-2.5 pt-2"
+          >
+            <div className="font-mono text-[0.62rem] uppercase leading-[1.05rem] tracking-[0.07em] text-text-secondary">
+              {kpi.label}
+            </div>
+            <div
+              className={`font-mono text-[0.95rem] font-semibold leading-none [font-variant-numeric:tabular-nums] ${
+                toneText[kpi.tone ?? 'neutral']
+              }`}
+            >
+              {kpi.value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
  * One report, as a card in a two-up grid.
  *
  * It used to be a full-bleed row roughly 900px tall — one whole screen per
@@ -47,15 +107,14 @@ const STAKES = [
  * - The excerpt ran past 600 characters. That is an abstract, and the report
  *   page already has it; on an index the reader is choosing, not reading. It
  *   clamps to three lines.
- * - The verification chips were printed twice over. The `ledger` heroes ARE
- *   those counts, at display size — so the chips only render for a report whose
- *   hero is not already showing them.
+ * - The verification chips were replaced by the report's own headline figures.
+ *   "6 confirmed / 4 partly-true / 3 corrected" carried the same three labels on
+ *   every card, so it read as chrome and said nothing about the company.
  * - Two columns rather than three: the heroes are drawn to survive down to
  *   341px (see make-hero.mjs), and a three-up grid here lands near 280px, which
  *   crowds the ticker board's cells and the scorecard's tiles.
  */
 function ReportCard({ report }: { report: MarketStormReport }) {
-  const v = report.verification;
   return (
     <Link href={`/market-storm/${report.slug}`} className="group block h-full">
       <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_var(--sd-card-shadow)]">
@@ -95,23 +154,22 @@ function ReportCard({ report }: { report: MarketStormReport }) {
           <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-text-secondary">
             {report.excerpt}
           </p>
-          {/* The counts are back on every card. They were hidden where the
-              hero already showed them; now the card carries a logo, which
-              shows nothing, so this is the only place the verification pass is
-              visible on the index — and it is the section's whole differentiator. */}
-          <div className="mt-4 flex flex-wrap items-center gap-2 pt-1 text-[0.7rem] font-semibold">
-            <span className="rounded border border-bull bg-bull-soft px-1.5 py-0.5 text-bull">
-              {v.confirmed} confirmed
-            </span>
-            <span className="rounded border border-warn bg-warn-soft px-1.5 py-0.5 text-warn">
-              {v.partlyTrue} partly-true
-            </span>
-            <span className="rounded border border-border bg-fill px-1.5 py-0.5 text-text-primary">
-              {v.corrected} corrected
-            </span>
-            <span className="ml-auto text-sm font-medium text-accent">
+          {/* The figures, not the verification counts.
+              Three chips reading "6 confirmed / 4 partly-true / 3 corrected"
+              described the method and said nothing about the company — the
+              same three labels on every card, so they scanned as chrome. What
+              a reader wants off an index is what the quarter did.
+
+              Deliberately the PriceStrip pattern from the report page rather
+              than a new stat treatment: same 1px-gap-over-border-ground, same
+              mono-accent label over tabular-nums figure, same semantic inks.
+              The card is a promise about the page it opens, so it should be
+              built out of that page's parts. */}
+          <div className="mt-auto pt-4">
+            <CardFigures kpis={report.kpis} />
+            <div className="mt-3 text-right text-sm font-medium text-accent">
               Read &rarr;
-            </span>
+            </div>
           </div>
         </div>
       </article>
