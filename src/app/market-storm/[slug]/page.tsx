@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { marketStormReports, getReportBySlug } from '@/data/marketStorm';
 import { SectionContainer, Badge, Button } from '@/components/ui';
 import ReportView from '@/components/market-storm/ReportView';
-import HeroImage from '@/components/HeroImage';
 import SubscribeForm from '@/components/SubscribeForm';
 import { formatDate } from '@/lib/format';
 
@@ -108,17 +107,12 @@ export default async function MarketStormDetail({
           </div>
         </div>
 
-        {/* The generated card. A report's shape matches a post's for these
-            four fields, so the shared component takes it unchanged. */}
-        {report.heroImage && (
-          <figure className="mt-10 overflow-hidden rounded-xl border border-border">
-            <HeroImage
-              post={{ ...report, title: report.title }}
-              priority
-              className="h-auto w-full object-cover"
-            />
-          </figure>
-        )}
+        {/* No hero image here, deliberately. ReportView opens with ReportHero —
+            the ticker at display size, the company, the catalyst and the verdict
+            — so an image above it repeated the identity and then added its own
+            evidence on top, which read as a wall of text before the report had
+            started. The simple ticker block this page wanted was already the
+            next element down. */}
 
         {/* The full structured report */}
         <ReportView report={report} />
