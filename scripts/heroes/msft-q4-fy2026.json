@@ -1,0 +1,52 @@
+{
+ "title": "Microsoft moved $15B of capex off the reported line",
+ "category": "Market Storm",
+ "tone": "warn",
+ "before": {
+  "label": "What the coverage said",
+  "text": "Microsoft cut AI capex $15B"
+ },
+ "after": {
+  "label": "What the filing said",
+  "text": "A lease reclassification"
+ },
+ "headline": [
+  {
+   "t": "Three accounting choices. "
+  },
+  {
+   "t": "All pointing the same way.",
+   "tone": "warn"
+  }
+ ],
+ "alt": "A four-tile scorecard for Microsoft: Azure growth, cloud margin, uncommenced leases and depreciation.",
+ "scorecard": {
+  "verdict": "Three choices, all the same way.",
+  "kpis": [
+   {
+    "label": "Azure growth",
+    "value": "+43%",
+    "delta": "crossed $100B",
+    "tone": "bull"
+   },
+   {
+    "label": "Cloud margin",
+    "value": "65%",
+    "delta": "down from 68%",
+    "tone": "bear"
+   },
+   {
+    "label": "Uncommenced leases",
+    "value": "$329.1B",
+    "delta": "off-statement",
+    "tone": "warn"
+   },
+   {
+    "label": "Useful life",
+    "value": "15 → 25 yrs",
+    "delta": "effective FY27",
+    "tone": "warn"
+   }
+  ]
+ }
+}

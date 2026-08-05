@@ -1,0 +1,60 @@
+{
+ "title": "SpaceX spent $2.35 of capex for every dollar of revenue",
+ "category": "Market Storm",
+ "tone": "bad",
+ "before": {
+  "label": "Revenue this quarter",
+  "text": "$7.8 billion"
+ },
+ "after": {
+  "label": "Capital spent to earn it",
+  "text": "$18.4 billion"
+ },
+ "headline": [
+  {
+   "t": "It earned "
+  },
+  {
+   "t": "$7.8B",
+   "tone": "good"
+  },
+  {
+   "t": ". It spent "
+  },
+  {
+   "t": "$18.4B",
+   "tone": "bad"
+  },
+  {
+   "t": "."
+  }
+ ],
+ "alt": "A ticker board for SPCX showing revenue growth, capex, AI capex ratio and free cash flow.",
+ "quote": {
+  "ticker": "SPCX",
+  "catalyst": "Q2 2026 · first public quarter",
+  "verdict": "Revenue grew 92%. Capex was 2.35× that.",
+  "cells": [
+   {
+    "k": "Revenue",
+    "v": "+92%",
+    "tone": "bull"
+   },
+   {
+    "k": "Capex",
+    "v": "$18.4B",
+    "tone": "bear"
+   },
+   {
+    "k": "AI capex",
+    "v": "6.2× rev",
+    "tone": "bear"
+   },
+   {
+    "k": "H1 FCF",
+    "v": "−$25B",
+    "tone": "bear"
+   }
+  ]
+ }
+}

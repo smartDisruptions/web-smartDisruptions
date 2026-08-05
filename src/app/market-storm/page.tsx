@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { marketStormReports, type MarketStormReport } from '@/data/marketStorm';
 import { SectionContainer } from '@/components/ui';
 import { Disclaimer } from '@/components/market-storm/ReportView';
+import HeroImage from '@/components/HeroImage';
 import { formatDate } from '@/lib/format';
 
 export const metadata: Metadata = {
@@ -52,6 +53,14 @@ function ReportCard({ report }: { report: MarketStormReport }) {
             {formatDate(report.publishDate)}
           </span>
         </div>
+        {report.heroImage && (
+          <div className="aspect-[1200/630] w-full overflow-hidden border-b border-border">
+            <HeroImage
+              post={{ ...report, title: report.title }}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
         <div className="p-6 sm:p-8">
           <h2 className="font-display text-2xl font-semibold leading-tight tracking-tight text-text-primary transition-colors group-hover:text-accent sm:text-[1.6rem]">
             {report.title}

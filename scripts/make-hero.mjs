@@ -87,7 +87,13 @@
  *   node scripts/make-hero.mjs <slug> scripts/heroes/<slug>.json [--force]
  */
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync, existsSync, rmSync } from 'node:fs';
+import {
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  rmSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -95,7 +101,10 @@ import path from 'node:path';
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const POSTS = 'src/content/posts';
 const OUT = 'public/images/content';
-const FONT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fonts');
+const FONT_DIR = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  'fonts'
+);
 const W = 1200;
 const H = 630;
 
@@ -155,7 +164,9 @@ const force = argv.includes('--force');
 const [slug, specPath] = argv.filter((a) => a !== '--force');
 
 if (!slug) {
-  console.error('usage: node scripts/make-hero.mjs <slug> [spec.json] [--force]');
+  console.error(
+    'usage: node scripts/make-hero.mjs <slug> [spec.json] [--force]'
+  );
   process.exit(1);
 }
 if (!existsSync(CHROME)) {
@@ -163,9 +174,25 @@ if (!existsSync(CHROME)) {
   process.exit(1);
 }
 
+/**
+ * Standalone mode — for pages whose text is not a content post.
+ *
+ * Market Storm reports live in `src/data/marketStorm.ts`, not as markdown, so
+ * there is no file to read a title from and nothing to write frontmatter back
+ * into. A spec carrying its own `title` says "this is one of those": render the
+ * images, skip the writeback, and leave wiring the path up to the caller.
+ * Everything between those two ends — templates, tones, both themes — is
+ * identical, which is the point. A second renderer would drift within a month.
+ */
 const postPath = path.join(POSTS, `${slug}.md`);
-if (!existsSync(postPath)) {
-  console.error(`No such article: ${postPath}`);
+const specPreview = specPath ? JSON.parse(readFileSync(specPath, 'utf8')) : {};
+const standalone = Boolean(specPreview.title);
+
+if (!standalone && !existsSync(postPath)) {
+  console.error(
+    `No such article: ${postPath}\n` +
+      `(For a page that is not a content post, put "title" in the spec to render standalone.)`
+  );
   process.exit(1);
 }
 
@@ -182,9 +209,11 @@ function frontmatter(text) {
   return out;
 }
 
-const raw = readFileSync(postPath, 'utf8');
-const fm = frontmatter(raw);
-const spec = specPath ? JSON.parse(readFileSync(specPath, 'utf8')) : {};
+const raw = standalone ? '' : readFileSync(postPath, 'utf8');
+const spec = specPreview;
+const fm = standalone
+  ? { title: spec.title, category: spec.category ?? 'Market Storm' }
+  : frontmatter(raw);
 
 const esc = (s) =>
   String(s ?? '')
@@ -202,7 +231,9 @@ const esc = (s) =>
 function fontFace(family, file) {
   const p = path.join(FONT_DIR, file);
   if (!existsSync(p)) {
-    console.warn(`  ! scripts/fonts/${file} missing — falling back to a system face`);
+    console.warn(
+      `  ! scripts/fonts/${file} missing — falling back to a system face`
+    );
     return '';
   }
   return `@font-face{font-family:'${family}';font-weight:100 900;font-style:normal;
@@ -210,7 +241,8 @@ function fontFace(family, file) {
 }
 
 const FONTS =
-  fontFace('DisplaySD', 'instrument-sans.woff2') + fontFace('InterCard', 'inter.woff2');
+  fontFace('DisplaySD', 'instrument-sans.woff2') +
+  fontFace('InterCard', 'inter.woff2');
 // Must match `--font-display` in globals.css. When the site's display face
 // changes, this and the vendored woff2 change with it — otherwise the cards go
 // out in a face the site does not use, which is exactly how they spent weeks
@@ -286,7 +318,7 @@ function ledeSize(text) {
   if (n > 62) {
     console.warn(
       `  ! lede is ${n} characters and will render at the ${LEDE_FLOOR}px floor.\n` +
-        `    Under ${LEDE_BUDGET} keeps it at full size — this is the line a phone reader gets.`,
+        `    Under ${LEDE_BUDGET} keeps it at full size — this is the line a phone reader gets.`
     );
   }
   return fitSize(text, TYPE.lede, LEDE_FLOOR, LEDE_BUDGET);
@@ -351,7 +383,10 @@ const REGISTRY = [
     name: 'field',
     key: 'statement',
     render: (k) => fieldCard(k),
-    check: (s) => (s.loud ? null : 'statement.loud is required — it is the line that carries'),
+    check: (s) =>
+      s.loud
+        ? null
+        : 'statement.loud is required — it is the line that carries',
   },
   {
     name: 'file',
@@ -414,8 +449,77 @@ const REGISTRY = [
               ? 'versus.verdict is required — a table has no natural lede, so it has to be stated'
               : null,
   },
+  /* ---- Market Storm ----------------------------------------------------
+     Three templates for the research reports, and they are deliberately their
+     own family. Every template above carries ONE tone: a post has a finding
+     and the finding is good or bad. A financial report does not work that way
+     — AWS margin expanding and free cash flow going negative are the same
+     quarter, and DESIGN.md gives Market Storm a three-ink bull/bear/warn axis
+     for exactly that reason. These are the only templates that colour each
+     datum independently, which is what makes the section recognisable in the
+     grid without a badge saying so.
+
+     They still obey the one rule that matters: a lede at the standard size, in
+     the standard place, carrying the finding. */
+  {
+    name: 'quote',
+    key: 'quote',
+    render: (k) => quoteCard(k),
+    check: (q) =>
+      !q.ticker
+        ? 'quote.ticker is required — the ticker is the whole identity of the card'
+        : !q.cells?.length
+          ? 'quote.cells is empty'
+          : q.cells.length > 4
+            ? `quote.cells has ${q.cells.length}; above 4 the figures stop being legible at grid size`
+            : !q.verdict
+              ? 'quote.verdict is required — a row of figures has no natural lede'
+              : null,
+  },
+  {
+    name: 'scorecard',
+    key: 'scorecard',
+    render: (k) => scorecardCard(k),
+    check: (s) =>
+      !s.kpis?.length
+        ? 'scorecard.kpis is empty'
+        : s.kpis.length !== 4
+          ? `scorecard.kpis has ${s.kpis.length}; the grid is 2x2 and takes exactly 4`
+          : !s.verdict
+            ? 'scorecard.verdict is required — four tiles have no natural lede'
+            : null,
+  },
+  {
+    name: 'ledger',
+    key: 'ledger',
+    render: (k) => ledgerCard(k),
+    check: (l) =>
+      [l.confirmed, l.partlyTrue, l.corrected].some(
+        (n) => typeof n !== 'number'
+      )
+        ? 'ledger needs numeric confirmed, partlyTrue and corrected'
+        : !l.finding
+          ? 'ledger.finding is required — the counts are the texture, the finding is the point'
+          : null,
+  },
   { name: 'split', key: null, render: (k) => split(k) },
 ];
+
+/**
+ * The data inks, for the Market Storm family only.
+ *
+ * `bull`/`bear`/`warn` are the semantic axis from DESIGN.md; they flip
+ * dark-on-paper to bright-on-charcoal exactly like the arcade inks, and both
+ * halves are already AA-verified there. `neutral` is deliberately the body
+ * colour rather than a fourth hue — a figure that carries no polarity should
+ * not look like it carries one.
+ */
+const DATA_TONE = { bull: 'good', bear: 'bad', warn: 'warn' };
+const ink = (k, tone) => {
+  const mapped = DATA_TONE[tone];
+  if (!mapped) return THEMES[k].text;
+  return k === 'dark' ? TONES[mapped].bright : TONES[mapped].field;
+};
 
 /**
  * Which template. Exactly one evidence key may be present.
@@ -433,9 +537,15 @@ function chooseTemplate() {
     // An authoring mistake, not a crash: say what is wrong and how to fix it,
     // and don't bury it under a stack trace nobody needs.
     const keys = claimed.map((t) => `${t.key} (renders ${t.name})`).join(', ');
-    console.error(`\nThis spec carries ${claimed.length} evidence keys: ${keys}.`);
-    console.error('A hero shows one piece of evidence, so only one key may be present.');
-    console.error('Keep the one the post is actually about and delete the rest.\n');
+    console.error(
+      `\nThis spec carries ${claimed.length} evidence keys: ${keys}.`
+    );
+    console.error(
+      'A hero shows one piece of evidence, so only one key may be present.'
+    );
+    console.error(
+      'Keep the one the post is actually about and delete the rest.\n'
+    );
     process.exit(1);
   }
 
@@ -448,6 +558,125 @@ function chooseTemplate() {
     return REGISTRY.find((t) => t.name === 'split');
   }
   return picked;
+}
+
+/* QUOTE — the ticker board. A monospace symbol at display size over a rule of
+   figures, each inked by its own polarity. This is the most literal of the
+   three: it is the report's price strip, cropped. Tabular numerals throughout,
+   because a row of figures that shifts on the digit is a row nobody trusts. */
+function quoteCard(k) {
+  const t = THEMES[k];
+  const q = spec.quote;
+  const cells = q.cells
+    .map(
+      (c) => `<div class="c">
+         <div class="ck">${esc(c.k)}</div>
+         <div class="cv" style="color:${ink(k, c.tone)}">${esc(c.v)}</div>
+       </div>`
+    )
+    .join('');
+  return doc(
+    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+       justify-content:center;gap:40px;padding:0 74px}
+     .top{display:flex;align-items:baseline;gap:26px}
+     .tk{font-family:${MONO};font-weight:700;font-size:76px;letter-spacing:.06em;
+       color:${t.accent};line-height:1}
+     .cat{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.12em;
+       text-transform:uppercase;color:${t.dim}}
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
+       color:${t.text};font-size:${ledeSize(q.verdict)}px;max-width:1000px}
+     .row{display:flex;gap:0;border-top:1px solid ${t.rule}}
+     .c{flex:1;padding:22px 26px 4px 0;display:flex;flex-direction:column;gap:10px;
+       border-right:1px solid ${t.rule}}
+     .c:last-child{border-right:0}
+     .ck{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.14em;
+       text-transform:uppercase;color:${t.dim}}
+     .cv{font-family:${MONO};font-weight:700;font-size:${TYPE.major}px;
+       font-variant-numeric:tabular-nums;letter-spacing:-.01em}`,
+    `<div class="top">
+       <span class="tk">${esc(q.ticker)}</span>
+       ${q.catalyst ? `<span class="cat">${esc(q.catalyst)}</span>` : ''}
+     </div>
+     <div class="h">${esc(q.verdict)}</div>
+     <div class="row">${cells}</div>`
+  );
+}
+
+/* SCORECARD — four tiles, 2x2, each with its own polarity dot. The report's own
+   KPI grid at card scale. The dot rather than a coloured card edge is
+   deliberate: a tinted rail down the side of a tile is the documented AI-UI
+   tell the house rejects, and ReportView refuses it on the page for the same
+   reason. */
+function scorecardCard(k) {
+  const t = THEMES[k];
+  const s = spec.scorecard;
+  const tiles = s.kpis
+    .map(
+      (kpi) => `<div class="t">
+         <div class="tl"><span class="dot" style="background:${ink(k, kpi.tone)}"></span>
+           <span>${esc(kpi.label)}</span></div>
+         <div class="tv" style="color:${ink(k, kpi.tone)}">${esc(kpi.value)}</div>
+         ${kpi.delta ? `<div class="td">${esc(kpi.delta)}</div>` : ''}
+       </div>`
+    )
+    .join('');
+  return doc(
+    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+       justify-content:center;gap:34px;padding:0 74px}
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
+       color:${t.text};font-size:${ledeSize(s.verdict)}px;max-width:1000px}
+     .g{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:${t.rule};
+       border:1px solid ${t.rule}}
+     .t{background:${t.surface};padding:20px 26px;display:flex;flex-direction:column;gap:9px}
+     .tl{display:flex;align-items:center;gap:10px;font-family:${MONO};
+       font-size:${TYPE.micro}px;letter-spacing:.13em;text-transform:uppercase;color:${t.dim}}
+     .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+     .tv{font-family:${MONO};font-weight:700;font-size:${TYPE.major}px;
+       font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}
+     .td{font-family:${MONO};font-size:${TYPE.micro}px;color:${t.dim};letter-spacing:.02em}`,
+    `<div class="h">${esc(s.verdict)}</div>
+     <div class="g">${tiles}</div>`
+  );
+}
+
+/* LEDGER — the verification pass, which is the thing this section has that a
+   sell-side note does not. Three chips carrying the counts, then the one
+   finding worth the space. The chips are outlined rather than filled so that
+   three of them side by side read as a tally and not as three warnings. */
+function ledgerCard(k) {
+  const t = THEMES[k];
+  const l = spec.ledger;
+  const chip = (n, word, tone) => {
+    const c = ink(k, tone);
+    return `<div class="chip" style="border-color:${c}">
+        <span class="n" style="color:${c}">${n}</span>
+        <span class="w" style="color:${c}">${esc(word)}</span>
+      </div>`;
+  };
+  return doc(
+    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+       justify-content:center;gap:34px;padding:0 74px}
+     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
+       text-transform:uppercase;color:${t.dim}}
+     .chips{display:flex;gap:18px}
+     .chip{display:flex;align-items:baseline;gap:12px;padding:16px 26px;
+       border:2px solid;border-radius:12px}
+     .n{font-family:${MONO};font-weight:700;font-size:44px;
+       font-variant-numeric:tabular-nums;line-height:1}
+     .w{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.1em;
+       text-transform:uppercase}
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.025em;
+       color:${t.text};font-size:${ledeSize(l.finding)}px;max-width:1010px}
+     .n2{font-family:${MONO};font-size:${TYPE.label}px;color:${t.dim};letter-spacing:.02em}`,
+    `<div class="l">${esc(l.label ?? 'Every load-bearing claim, refuted on purpose')}</div>
+     <div class="chips">
+       ${chip(l.confirmed, 'confirmed', 'bull')}
+       ${chip(l.partlyTrue, 'partly-true', 'warn')}
+       ${chip(l.corrected, 'corrected', 'bear')}
+     </div>
+     <div class="h">${esc(l.finding)}</div>
+     ${l.note ? `<div class="n2">${esc(l.note)}</div>` : ''}`
+  );
 }
 
 /* SPLIT — two full-bleed panels, the second a saturated field. No inner card:
@@ -475,7 +704,7 @@ function split(k) {
        ${after.label ? `<div class="l">${esc(after.label)}</div>` : ''}
        <div class="h">${esc(after.text)}</div>
        ${after.detail ? `<div class="d">${esc(after.detail)}</div>` : ''}
-     </div>`,
+     </div>`
   );
 }
 
@@ -490,7 +719,7 @@ function countCard(k) {
   const blocks = Array.from({ length: c.of }, (_, i) =>
     i < c.hit
       ? `<span style="background:${fill};flex:1;border-radius:4px"></span>`
-      : `<span style="border:2px solid ${t.hair};flex:1;border-radius:4px"></span>`,
+      : `<span style="border:2px solid ${t.hair};flex:1;border-radius:4px"></span>`
   ).join('');
   return doc(
     `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
@@ -505,7 +734,7 @@ function countCard(k) {
     `<div class="l">${esc(c.of)} ${esc(c.unit)}</div>
      <div class="blocks">${blocks}</div>
      <div class="h"><em>${esc(c.hit)} of ${esc(c.of)}</em> ${esc(c.verdict)}</div>
-     ${c.detail ? `<div class="d">${esc(c.detail)}</div>` : ''}`,
+     ${c.detail ? `<div class="d">${esc(c.detail)}</div>` : ''}`
   );
 }
 
@@ -525,7 +754,7 @@ function logCard(k) {
       <div class="line">
         <span class="chip" style="color:${ink(ln.tone)};border-color:${ink(ln.tone)}">${esc(ln.chip)}</span>
         <span class="txt${ln.muted ? ' muted' : ''}">${esc(ln.text)}</span>
-      </div>`,
+      </div>`
     )
     .join('');
   return doc(
@@ -555,7 +784,7 @@ function logCard(k) {
          ${lines}
          ${l.summary ? `<div class="sum">${esc(l.summary)}</div>` : ''}
        </div>
-     </div>`,
+     </div>`
   );
 }
 
@@ -575,7 +804,7 @@ function receiptCard(k) {
         <span class="v${row.tone ? ' hit' : ''}"
           ${row.tone ? `style="color:${k === 'dark' ? (TONES[row.tone] ?? T).bright : (TONES[row.tone] ?? T).field}"` : ''}
         >${esc(row.value)}</span>
-      </div>`,
+      </div>`
     )
     .join('');
   const stampInk = k === 'dark' ? T.bright : T.field;
@@ -614,7 +843,7 @@ function receiptCard(k) {
          ${r.stamp ? `<span class="stamp">${esc(r.stamp)}</span>` : '<span></span>'}
          ${r.note ? `<span class="note">${esc(r.note)}</span>` : ''}
        </div>
-     </div>`,
+     </div>`
   );
 }
 
@@ -644,7 +873,7 @@ function fieldCard(k) {
      <footer>
        <span>${esc(fm.category ?? '')}</span>
        <span>smartdisruptions.com</span>
-     </footer>`,
+     </footer>`
   );
 }
 
@@ -662,7 +891,7 @@ function fileCard(k) {
       <div class="ln">
         <div class="h"><span class="hash">#</span> ${esc(ln.h)}</div>
         <div class="v">${esc(ln.v)}</div>
-      </div>`,
+      </div>`
     )
     .join('');
   return doc(
@@ -699,7 +928,7 @@ function fileCard(k) {
        f.verdict
          ? `<div class="lede">${f.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>`
          : ''
-     }`,
+     }`
   );
 }
 
@@ -716,7 +945,7 @@ function sequenceCard(k) {
       <div class="step">
         <div class="node${st.mark ? ' on' : ''}">${i + 1}</div>
         <div class="cap">${esc(st.text)}</div>
-      </div>`,
+      </div>`
     )
     .join('');
   return doc(
@@ -741,7 +970,7 @@ function sequenceCard(k) {
      .h em{font-style:normal;color:${ink}}`,
     `<div class="l">${esc(s.label)}</div>
      <div class="rail">${steps}</div>
-     ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}`,
+     ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}`
   );
 }
 
@@ -759,7 +988,7 @@ function checklistCard(k) {
       <div class="item">
         <span class="mark${it.off ? ' off' : ''}"></span>
         <span class="txt"><b>${esc(it.text)}</b>${it.note ? `<i>${esc(it.note)}</i>` : ''}</span>
-      </div>`,
+      </div>`
     )
     .join('');
   return doc(
@@ -785,7 +1014,7 @@ function checklistCard(k) {
      .note{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
     `<div class="lede">${esc(c.label)}</div>
      <div>${items}</div>
-     ${c.note ? `<div class="note">${esc(c.note)}</div>` : ''}`,
+     ${c.note ? `<div class="note">${esc(c.note)}</div>` : ''}`
   );
 }
 
@@ -802,7 +1031,7 @@ function annotatedCard(k) {
       <div class="sp">
         <div class="claim">${esc(sp.text)}</div>
         <div class="flag">${esc(sp.flag)}</div>
-      </div>`,
+      </div>`
     )
     .join('');
   return doc(
@@ -824,7 +1053,7 @@ function annotatedCard(k) {
        <div class="h">${esc(a.intro)}</div>
        ${a.sub ? `<div class="sub">${esc(a.sub)}</div>` : ''}
      </div>
-     <div>${spans}</div>`,
+     <div>${spans}</div>`
   );
 }
 
@@ -841,7 +1070,7 @@ function versusCard(k) {
       (r) => `
       <div class="r"><span class="k">${esc(r.label)}</span></div>
       <div class="r"><span class="a">${esc(r.l)}</span></div>
-      <div class="r"><span class="b">${esc(r.r)}</span></div>`,
+      <div class="r"><span class="b">${esc(r.r)}</span></div>`
     )
     .join('');
   return doc(
@@ -874,7 +1103,7 @@ function versusCard(k) {
        <div class="hd one">${esc(v.left.name)}</div>
        <div class="hd two">${esc(v.right.name)}</div>
        ${rows}
-     </div>`,
+     </div>`
   );
 }
 
@@ -906,7 +1135,7 @@ function ogHtml() {
       .map((h) =>
         h.tone && TONES[h.tone]
           ? `<span style="color:${TONES[h.tone].bright}">${esc(h.t)}</span>`
-          : esc(h.t),
+          : esc(h.t)
       )
       .join('')}</h1></div>
      <div class="evidence">
@@ -922,7 +1151,7 @@ function ogHtml() {
      <footer>
        <span>smartdisruptions.com</span>
        <span class="cat">${esc(fm.category ?? '')}</span>
-     </footer>`,
+     </footer>`
   );
 }
 
@@ -945,7 +1174,7 @@ function render(html, outWebp) {
       `--window-size=${W},${H}`,
       `file://${htmlPath}`,
     ],
-    { stdio: 'ignore' },
+    { stdio: 'ignore' }
   );
   if (!existsSync(outWebp)) throw new Error(`Chrome did not write ${outWebp}`);
 }
@@ -996,7 +1225,13 @@ if (wroteHero) {
 }
 setKey('ogImage', `/images/content/${slug}.webp`);
 
-if (text !== raw) {
+if (standalone) {
+  console.log(
+    `  standalone — no frontmatter to update. Wire the paths up by hand:\n` +
+      `    hero  /images/content/${slug}-hero.webp (+ -hero-light)\n` +
+      `    social /images/content/${slug}.webp`
+  );
+} else if (text !== raw) {
   writeFileSync(postPath, text);
   console.log(`  updated frontmatter in ${postPath}`);
 }
