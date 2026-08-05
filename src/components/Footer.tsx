@@ -4,7 +4,7 @@ const quickLinks = [
   { href: '/', label: 'Home' },
   { href: '/content', label: 'Writing' },
   { href: '/market-storm', label: 'Market Storm' },
-  { href: '/apps', label: 'Builds' },
+  { href: '/apps', label: 'Apps' },
   { href: '/games', label: 'Arcade' },
 ];
 
