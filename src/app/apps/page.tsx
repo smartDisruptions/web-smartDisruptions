@@ -17,7 +17,7 @@ export default function AppsGallery() {
     <SectionContainer className="py-20">
       {/* Page Header */}
       <div className="text-center">
-        <p className="font-mono-accent text-accent">Builds</p>
+        <p className="font-mono-accent text-accent">Apps</p>
         <h1 className="font-display mt-3 text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
           What I&apos;ve built
         </h1>

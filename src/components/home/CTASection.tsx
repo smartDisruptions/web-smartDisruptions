@@ -21,7 +21,7 @@ export default function CTASection() {
               Read the writing
             </Button>
             <Button variant="secondary" size="lg" href="/apps">
-              Browse the builds
+              Browse the apps
             </Button>
           </div>
 
