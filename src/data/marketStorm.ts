@@ -142,7 +142,7 @@ const amznQ2_2026: MarketStormReport = {
     { k: 'Fwd P/E', v: '~26.3×' },
     { k: 'Free cash flow', v: 'negative', tone: 'bear' },
   ],
-  summary: `AWS reaccelerated to **+37%** (its fastest in 18 quarters) while *expanding* operating margin to **39.4%** — the opposite of what the "AI capex crushes cloud margins" bear case predicted. But trailing free cash flow turned **negative** as capex hit ~$169B, the headline **$5.75 EPS is ~3× inflated** by a one-time $53.4B mark on the Anthropic stake, and management **raised 2026 capex to ~$220B**. So the stock is no longer a cash-return story — it's a **duration bet** that ~$220B/yr of AI capex converts to AWS revenue at a good return before depreciation and rates catch it. At ~26× forward it's a *normal* Mag-7 multiple — you're not overpaying, but you're underwriting future cash flow that doesn't exist today.`,
+  summary: `Amazon's cloud business had its best quarter in four years — and in the same release, the company burned more cash than it earned for the first time ever. Both are true, and they are the same story: AWS is growing fast *because* Amazon is spending roughly $220 billion a year building the data centres that run it. The bet is that the spending turns into billed revenue before the accounting catches up with it. The scorecard below is that argument in numbers — the operating business on one side, the cash statement on the other.`,
   kpis: [
     {
       label: 'AWS revenue',
@@ -564,7 +564,7 @@ const msftQ4_FY2026: MarketStormReport = {
     { k: 'Fwd P/E', v: '22.6–24.8×' },
     { k: 'FCF yield', v: '~1.85%', tone: 'warn' },
   ],
-  summary: `Azure grew **43%** and crossed **$100B** in annual revenue, commercial backlog hit **$678B (+84%)**, and the stock put up the **largest single-day market-cap gain on record**. That part is real. But GAAP EPS of **$4.81 (+32%)** outruns operating income (**+18%**) entirely below the operating line — and roughly **27% of the full year's net income growth** is a non-cash mark on a private OpenAI stake, not operations. Microsoft's non-GAAP **$4.74** strips the OpenAI gain and *keeps* a **$3.2B Anthropic gain** inside it. Meanwhile the calendar-2026 capex figure fell ~$190B → **~$175B** on a **lease reclassification, not less spending**; datacenter useful lives were extended **15 → 25 years** effective FY2027; and **$329.1B** of signed-but-uncommenced leases sit outside the $115.9B capex line. Free cash flow stayed positive at **$67.0B** — while *falling* for the first time in the series.`,
+  summary: `Microsoft had a genuinely strong quarter: Azure grew 43% and crossed $100 billion a year. But three separate accounting decisions in the same period all moved the reported numbers in the same, flattering direction — a capex figure that fell without the spending falling, a change to how long data centres are assumed to last, and $329 billion of signed leases that sit outside the capex line entirely. None of it is hidden and none of it is improper. It just means the headline number and the filing are telling slightly different stories, and only one of them is signed.`,
   kpis: [
     {
       label: 'Azure growth',
@@ -793,49 +793,43 @@ const msftQ4_FY2026: MarketStormReport = {
   theQuestion: `Three accounting choices landed in one quarter, and every one of them flattered a reported number: useful lives extended 15→25 years, ~$15B of capex reclassified from finance to operating leases, and a headline EPS lifted by a non-cash mark on a private stake. Individually each is defensible — datacenters really may last 25 years, ASC 842 really does work that way, and the OpenAI gain is really disclosed. The question is whether they are ordinary hygiene arriving together by coincidence, or a reported cash profile being managed while the actual obligation — $329B of leases not yet on any statement — accumulates offstage. Everything else is downstream of that call.`,
   analysis: `## Valuation — a reasonable P/E sitting on a 1.85% cash yield
 
-The multiple depends entirely on which earnings number you use, and the trackers do not agree with each other.
-
 | Multiple (at $487.65, Aug 3) | Value | Context |
 | --- | --- | --- |
 | Trailing P/E | 27.2× | on GAAP $17.95 |
 | **Forward P/E** | **22.6–24.8×** | genuine tracker spread, not one number |
 | P/E on clean operating EPS | ~28.6× | strips the residual discrete benefit |
 | EV / EBITDA | 19.0× | — |
-| Price / Sales | 10.9× | — |
 | **Price / FCF** | **54.1×** | the line nobody quotes |
-| PEG | 1.58 | — |
 | S&P 500 forward P/E | 19.6× | FactSet, Jul 31 — MSFT at ~26% premium |
 
-The under-discussed number is that **P/FCF of 54× against a P/E of 27×**. The equity yields about **1.85% in free cash flow** because capex is taking 63% of operating cash. On the P/E line the multiple is asking for roughly what management guided — ~14–15% NTM EPS growth, and the Q1 guide plus a ~45% Azure acceleration is consistent with that. The stretch is entirely on cash, not on earnings.
+The under-discussed number is **P/FCF of 54× against a P/E of 27×**. The equity yields about **1.85% in free cash flow** because capex is taking 63% of operating cash. On earnings the multiple asks for roughly what management guided; the stretch is entirely on cash.
 
-Analyst reaction was uniformly constructive and unusually dispersed: **56 analysts, mean target $562.73, median $550, high $870, low $400**, with 40 Strong Buy / 13 Buy / 3 Hold / 0 Sell. Goldman went $610→$640; Wells Fargo reset to $650. **I could not find a single post-print cut** — but note that BofA ($500) and Phillip ($515) raised to levels barely above the current price, which is where the real disagreement lives.
+Analyst reaction was constructive and unusually dispersed: **56 analysts, mean target $562.73, high $870, low $400**, with 40 Strong Buy / 0 Sell and **no post-print cut I could find** — though BofA ($500) and Phillip ($515) raised to barely above the current price, which is where the real disagreement lives.
 
-## AI-compute position — attacking the constraint that actually binds
+## The compute position
 
-Microsoft now reports capacity in **gigawatts, not GPUs**, and that unit change is the tell. It added ~1GW in the quarter, opened 31 datacenters (88 for the year), and says it is on track to roughly double total capacity in two years. Demand still exceeds supply, and management **declined to say when that ends** — or even to name whether the binding constraint is power, shells, GPUs, or land.
+Microsoft now reports capacity in **gigawatts, not GPUs**, and the unit change is the tell. It added ~1GW in the quarter, opened 31 datacenters, and expects to roughly double capacity in two years. Demand still exceeds supply, and management **declined to say when that ends** — or to name whether the binding constraint is power, shells, GPUs or land.
 
-That reframes the silicon story. **Maia 200 is an inference part, not a training part** — TSMC N3, 10 PFLOPS FP4, 216GB HBM3e, and critically **~750W against Nvidia designs at 1,200W+**. When your limit is a gigawatt rather than a purchase order, performance-per-watt *is* the capacity strategy. It is internal-only; enterprise customers cannot select Maia instances.
+That reframes the silicon story. **Maia 200 is an inference part, not a training part**, and critically draws **~750W against Nvidia designs at 1,200W+**. When your limit is a gigawatt rather than a purchase order, performance-per-watt *is* the capacity strategy.
 
-> **Caveat the skeptic pass insisted on:** every custom-silicon performance claim in circulation this quarter — Microsoft's "30% better performance per dollar," Amazon's Trainium comparisons, Google's TPU numbers — is **vendor-published and unrefereed**. MLPerf Inference v6.0 (April 2026) drew 24 submitting organizations and included **no Maia results and no current-generation TPU results**. There is no neutral referee. Treat all of it as directional.
+> **Caveat the skeptic pass insisted on:** every custom-silicon claim this quarter — Microsoft's "30% better performance per dollar", Amazon's Trainium comparisons, Google's TPU numbers — is **vendor-published and unrefereed**. MLPerf Inference v6.0 included no Maia and no current-generation TPU results. There is no neutral referee; treat all of it as directional.
 
-On competitive growth, the three clouds are not comparable without adjusting for base: **Azure +43% off >$100B**, **AWS +37% to $42.2B**, **Google Cloud +82% to $24.8B**. The Google figure is the one most often quoted without its asterisk — it **includes the Wiz acquisition**, closed March 2026, with no organic/inorganic split disclosed anywhere I could find. All three are now supply-constrained, which means the differentiator has moved from who has demand to who can energize watts fastest.
+The OpenAI relationship is now two-sided. Microsoft holds ~27% as-converted at **$135B carrying value** and OpenAI committed **$250B** of Azure purchases — but Microsoft **gave up right of first refusal** on OpenAI's compute, and OpenAI has since expanded AWS by ~$100B. Products still ship first on Azure unless Microsoft cannot supply. The exclusivity is gone.
 
-The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-converted at **$135B carrying value**, OpenAI committed **$250B** of Azure purchases — and Microsoft **gave up right of first refusal** on OpenAI's compute. OpenAI has since expanded AWS by ~$100B on top of an existing $38B. Products still ship first on Azure unless Microsoft cannot supply, but the exclusivity is gone.
+## Risk — each isolated, do not blur
 
-## Risk — six, isolated, not blurred
+1. **The reclassification (central).** Extending assumed asset life from 15 to 25 years makes a given lease term a smaller fraction of that life, which is the mechanism that moved finance leases to operating leases and the guide from ~$190B to ~$175B. All disclosed on the call — but the number that reached most readers was "Microsoft cut capex."
+2. **The off-statement obligation.** $329.1B of leases signed but not commenced, roughly 3× Azure's annual revenue, commencing FY27–FY33, appearing in no capex figure. Sources disagree on the prior-period base and I could not reconcile them.
+3. **Earnings quality.** The FY26 OpenAI line swung $8.6B, from a $3.62B loss to a $4.96B gain — a **non-cash dilution gain** from the recapitalisation, reversible if OpenAI's valuation compresses. A $3.2B Anthropic gain sits *inside* the "clean" non-GAAP figure.
+4. **Depreciation, deferred rather than absorbed.** FY26 depreciation was $34.3B against $22.0B. The life extension pushes future depreciation out; management guided FY27 margin "down less than a point." Worth noting it covers **buildings and shells, not servers or GPUs**, so the usual "they stretched server lives" attack does not apply.
+5. **Cloud margin compression.** Microsoft Cloud gross margin fell 3 points to 65% — while Amazon printed AWS margin *expansion* the following day. Same capex cycle, opposite direction, and the most decision-relevant comparison here.
+6. **Related-party concentration.** OpenAI is somewhere in a **30–45% band** of commercial RPO depending which disclosure you read, and Microsoft does not disclose how much Azure revenue comes from it.
 
-1. **The reclassification question (the central risk).** The calendar-2026 capex guide fell ~$190B → ~$175B because finance leases became operating leases, not because spending fell. Extending assumed asset life from 15 to 25 years makes a given lease term a smaller fraction of that life, which is the mechanism that moves the classification. Microsoft disclosed all of it on the call — but the headline number that reached most readers was "Microsoft cut capex."
-2. **The off-statement obligation.** $329.1B of leases signed but not commenced, primarily datacenters, commencing FY27–FY33. That is roughly 3× Azure's annual revenue and it appears in none of the capex figures. Sources disagree on the prior-period base ($196.6B vs $92.7B) and I could not reconcile them against the filing.
-3. **Earnings quality.** The FY26 OpenAI line swung $8.6B — from a $3.62B loss to a $4.96B gain — against ~$31.6B of total net income growth. The gain is a **dilution gain from the OpenAI recapitalization**: non-cash, non-operating, and reversible if OpenAI's valuation compresses. Separately, a $3.2B Anthropic gain sits *inside* the "clean" non-GAAP $4.74.
-4. **Depreciation, deferred rather than absorbed.** FY26 depreciation was $34.3B, up from $22.0B and $15.2B. The useful-life extension pushes future depreciation out — and management guided FY27 operating margin "down less than a point." Real compression, pre-announced, small. Worth noting the extension covers **buildings and shells, not servers or GPUs**, so the classic "they stretched server lives" attack does not apply here.
-5. **Cloud margin compression.** Microsoft Cloud gross margin fell 3 points to 65%. Amazon printed AWS margin *expansion* the following day. Same capex cycle, opposite margin direction — that contrast is the single most decision-relevant comparison in this report.
-6. **Related-party concentration.** OpenAI accounts for somewhere in a **30–45% band** of commercial RPO depending on which disclosure and quarter you read, and Microsoft does not disclose how much Azure revenue comes from OpenAI. The direction of travel is down as a share and up in absolute dollars.
+## Horizon and sizing (kept separate)
 
-## Time horizon & position sizing (kept separate)
+**Horizon.** Not a next-quarter setup — the stock moved ~25% in three sessions and the guide is in the price. The thesis resolves over **3–5 years**: do the FY27–FY33 lease commencements convert to billed Azure revenue at a return above the depreciation just pushed out?
 
-**Horizon.** This is not a next-quarter setup — the stock already moved ~25% in three sessions and the Q1 guide is in the price. The thesis resolves on a **3–5 year** window: do the FY27–FY33 lease commencements convert to billed Azure revenue at a return above the depreciation that was just pushed out? Under two years you are trading sentiment on the capex headline and the mark-to-market swings on two private stakes. At five years you are underwriting **Azure ROIC against a deferred depreciation schedule** — the actual bet.
-
-**Sizing considerations (not a recommendation).** MSFT now carries the same AI-capex-cycle beta as NVDA, AMZN and GOOGL, so it adds correlation rather than diversification to an AI-infrastructure basket. Reported earnings now swing on marks on two private companies — OpenAI and Anthropic — which is a new and lumpy source of non-operating volatility Microsoft does not remark routinely. And a ~1.85% free-cash-flow yield leaves less cushion than a 27× P/E implies.`,
+**Sizing considerations (not a recommendation).** MSFT carries the same AI-capex-cycle beta as NVDA, AMZN and GOOGL, so it adds correlation rather than diversification. Reported earnings now swing on marks on two private companies, a new and lumpy source of volatility. And a ~1.85% free-cash-flow yield leaves less cushion than a 27× P/E implies.`,
   invalidation: {
     bull: [
       'Free cash flow keeps falling through FY27 as the uncommenced leases begin commencing — "positive FCF" becomes a technicality.',
@@ -1089,7 +1083,7 @@ const pltrQ2_2026: MarketStormReport = {
     { k: 'Fwd P/E', v: '86.5×', tone: 'warn' },
     { k: 'P/S · FY26 guide', v: '~48×', tone: 'bear' },
   ],
-  summary: `Revenue grew **93%** to $1.935B — the *third consecutive quarter of acceleration* (+70% → +85% → +93%), which at a $1.9B quarterly run rate is close to unheard of. GAAP operating margin went **27% → 47%**, and that one isn't adjusted: it's the actual income statement. Adjusted free cash flow was **$1.22B at a 63% margin** on **$14.6M** of capex — Palantir monetizes the AI buildout without funding it. Management raised the FY26 guide to **$8.15B (+82%)**, up from the +61% it guided in February. All real. But **Palantir paid $15.4M of tax on $1.081B of pre-tax income — a 1.42% rate** — while its own non-GAAP footnote calls 23% the long-term rate; apply that and the headline **$0.41 EPS is ~$0.32**. Closed TCV grew only **49%** against revenue's 93%, all of it from one segment — though the broader backlog (total RDV **+83%**) largely answers that. At **~48× forward sales and ~114× normalized earnings**, the price already assumes about five more years of this.`,
+  summary: `Palantir is growing faster at $2 billion a quarter than most software companies manage at a tenth the size — 93%, accelerating for a third straight quarter, with margins that widened rather than thinned. That part is not in dispute. What the headlines leave out is that the company paid **1.4% tax** on its profits, which flatters the earnings figure everyone quotes by about a fifth. The business is exceptional; the question this report ends on is whether a price of roughly 114× normalised earnings has already spent the next five years of it.`,
   headlineVsReal: [
     {
       headline:
@@ -1409,65 +1403,39 @@ const pltrQ2_2026: MarketStormReport = {
     '**Insider selling in size for two years**, including 397,744 Class A shares by the CEO in May 2026.',
   ],
   theQuestion: `Is 93% growth a *land grab with a long runway* — sovereign AI as a real new category Palantir defined and owns — or a *deepening* of a narrow base, where 1,049 customers spend more each year until they stop? The bookings data cuts both ways: total RDV grew 83%, but customer count grew only 24%, so nearly all of this is existing accounts expanding. Every other question is downstream. At ~114× normalized earnings the price doesn't just need the land-grab answer; it needs it to keep being true for about five more years.`,
-  analysis: `## Valuation — this is the entire bear case, and it isn't a small one
+  analysis: `## Valuation — this is the entire bear case
 
-At **$163.24** the market pays **~$391B** (on basic shares; ~$419B on diluted) for a company guiding to **$8.15B** of 2026 revenue. That is **~48× forward sales**. Large-cap software generally lives at 10–20×. For a same-day comparison against the most direct AI beneficiary in the market: Nvidia trades at **~20× trailing and ~12× forward sales**, against Palantir's ~64× trailing and ~48× on the FY26 guide.
+At **$163.24** the market pays **~$391B** for a company guiding to **$8.15B** of 2026 revenue: **~48× forward sales**, where large-cap software lives at 10–20×. Nvidia, the most direct AI beneficiary in the market, trades at ~20× trailing and ~12× forward.
 
-The earnings multiple is where it gets concrete. Trailing P/E is 139.6× and forward is 86.5× — but both are computed on a tax rate the company itself says is not the long-run rate. Normalize FY26: the adjusted operating income guide of **$4.89B**, less roughly **$1.05B** of stock compensation and payroll tax, plus ~**$0.6B** of interest and other income, taxed at Palantir's own **23%**, lands near **$3.4B of normalized earnings — about 114× the basic market cap** (~122× diluted).
+There is no clean P/E to quote, because the reported one runs on a tax rate the company itself says is not the long-run rate. Normalising FY26 — the adjusted operating income guide of **$4.89B**, less ~**$1.05B** of stock compensation and payroll tax, plus ~**$0.6B** of interest and other income, taxed at Palantir's own **23%** — lands near **$3.4B**, or about **114×**.
 
 | Multiple (on $163.24) | Value | Context |
 | --- | --- | --- |
 | Price / sales (FY26 guide) | **~48×** | Rest of large-cap software: 10–20× |
 | Trailing P/E | 139.6× | On a 1.4% tax rate |
 | Forward P/E | 86.5× | Also on the low tax rate |
-| **Normalized P/E (our estimate)** | **~114×** | GAAP operating basis, taxed at Palantir's own 23% |
+| **Normalised P/E (our estimate)** | **~114×** | GAAP operating basis, taxed at Palantir's own 23% |
 | EV / EBITDA | 143.6× | — |
 | Price / free cash flow | 116.6× | ~85× on the FY26 adj. FCF guide |
-| Price / book | 30.9× | — |
 
-**What has to happen.** At ~114×, reaching a 30× multiple — still a premium to almost anything — requires earnings to grow about **3.8×**. At a 40% earnings CAGR that is four years; at 30%, a bit over five. So today's price embeds roughly **half a decade of compounding at rates almost no company sustains, just to arrive at "expensive."**
+**What has to happen.** At ~114×, reaching a 30× multiple — still a premium to almost anything — needs earnings to grow about **3.8×**: four years at a 40% CAGR, a bit over five at 30%. Today's price embeds roughly half a decade of compounding at rates almost nothing sustains, just to arrive at *expensive*.
 
-One concession the bears should make: **the de-rating already partly happened.** Palantir entered this print ~41% below its 52-week high and down ~32% year to date — the business compounded at 85% through the first half of 2026 while the stock fell. Even after a ~30% two-day move it sits ~21% below the $207.52 high. The multiple compression bears were waiting for arrived in H1; this print bought some of it back.
-
-## The growth — what is actually accelerating, and what isn't
-
-Take the operating business on its own terms, because it has earned that. Revenue growth went **+70% (Q4 2025) → +85% (Q1 2026) → +93% (Q2 2026)**. Acceleration at a $1B+ quarterly scale is rare enough to be the story on its own. GAAP operating margin went **27% → 47%** in a year — and this is the point most bear write-ups skip, because it is not a non-GAAP artifact; it is the reported income statement. Adjusted free cash flow margin is 63%. Guidance has gone from +61% to +71% to +82% in six months.
-
-The margin story deserves one more line, because it is the opposite of what the standard Palantir bear case assumes. Stock compensation grew **65.8%** — faster than total costs (+39.4%) — so it was a *drag* on margin, not its source. The decisive proof: the **GAAP** operating margin expanded 2,029bp while the **adjusted** margin expanded only 1,545bp. GAAP outran non-GAAP. Whatever else is going on in this print, the margin is not a stock-comp trick.
-
-Cash agrees. Operating cash flow of $1,216M is 1.14× net income, and **days sales outstanding compressed from 78.6 to 70.0** even as revenue grew 18.5% sequentially — receivables grew 5.7% against 18.6% revenue growth. Contract liabilities were a **$144M source** of cash. Customers are paying earlier, not later, which is the single most direct evidence against a "revenue is being pulled forward on paper" reading.
-
-Then the counterweight. **Closed TCV grew 49% while revenue grew 93%** — TCV-to-quarterly-revenue fell to 1.74× from 2.26×. And the composition is narrow: US commercial TCV was **$2.132B of the $3.373B** total; back it out and bookings everywhere else went **$1.427B → $1.241B, about −13% YoY**.
-
-> **Caveat, applied honestly — and this is the claim our own verification pass cut down hardest.** Q2 2025 was a *record* TCV quarter at +140%, so the comp is punishing. The ratio actually **rose sequentially**, from 1.48× in Q1 2026. And TCV is the softest of three backlog measures: total **remaining deal value is $13.1B, +83%** — close to revenue's +93% — while **remaining performance obligations**, the non-cancelable measure, stand at **$4.9B**, with 43% expected to book as revenue inside twelve months. TCV is one yellow flag worth watching next quarter. It is not evidence the growth is hollow, and an earlier draft of this report leaned on it far too hard.
-
-What the release *doesn't* put in its bullet list is worth naming, though it is a smaller point than it first appears. **Customer count** (1,049, +24%) and **total RDV** ($13.1B, +83%) were both given on the earnings call rather than in the highlights, and **RPO** appears only in Note 3 of the 10-Q. Nothing is hidden. But the +24% customer number tells you something the +149% US commercial revenue number does not: **this quarter's growth is overwhelmingly existing customers spending more, not new logos arriving.** That is a better business in the short run and a narrower one in the long run.
-
-## The shape nobody else in AI has
-
-Palantir spent **$14.6M** on property and equipment this quarter — **0.75% of revenue** — and generated $1.22B of adjusted free cash flow. Amazon's trailing capex is ~$169B; Microsoft's was $115.9B for the year with another $329B of uncommenced leases sitting off the statement.
-
-That difference is not a detail, it is the investment case. Palantir sells into the AI buildout **without funding it**. There is no depreciation wave arriving in 2027, no debt raised to cover a capex hole, no negative-free-cash-flow window to explain away. The earnings-quality questions that dominate every other large AI-infrastructure story — when does the depreciation land, what did the leases hide, how is the hole being funded — simply have no place to live on this balance sheet.
-
-Which is precisely why they moved into the price — and into the tax line.
+One concession the bears should make: **the de-rating already partly happened.** Palantir entered this print ~41% below its 52-week high and down ~32% year to date — the business compounded at 85% through the first half while the stock fell.
 
 ## Risk — each isolated, do not blur
 
-1. **Valuation / multiple risk (dominant).** ~114× normalized earnings, ~48× forward sales. A 30% de-rating requires nothing to go wrong operationally — that is not a hypothetical, it is what happened in H1 2026 while revenue accelerated.
-2. **Earnings quality — the tax line.** A 1.42% effective rate against the company's own stated 23% long-term rate. When the shield exhausts, reported EPS growth decouples *downward* from operating growth, and the optics of that quarter will be ugly regardless of the business.
-3. **Concentration.** US revenue is 81% of total; US commercial supplied all the bookings growth. Marketed as a global sovereign-AI wave, the segment data currently describes a US phenomenon.
-4. **Bookings vs. revenue.** TCV growing at half of revenue growth. If revenue keeps outrunning bookings, growth converges downward to bookings — the only question is when.
-5. **Non-operating income.** $91.8M of "other income," ~14× the year-ago figure, sitting inside the 55% net margin. The 10-Q settles what it is: realized and unrealized gains on equity securities plus FX — and specifically **$66M of net *unrealized* gains on publicly-traded stakes, "the majority of which are subject to short-term restrictions on the ability to sell."** Palantir's public-equity holdings went from $23M to $184M in six months. So a visible slice of the quarter's net income is a paper mark on shares the company could not sell today if it wanted to, and it reverses if those positions fall.
-6. **Insider selling.** Karp sold 397,744 Class A shares on May 20, 2026 under a 10b5-1 plan, with sustained executive-suite selling for two years. Pre-scheduled 10b5-1 sales are not a signal by themselves — but the aggregate is large enough to name rather than omit.
-7. **Competition (ranked low, deliberately).** Every hyperscaler sells an AI application layer. This print made that case *weaker*: 149% US commercial growth is not what share loss looks like.
+1. **Valuation (dominant).** A 30% de-rating requires nothing to go wrong operationally. That is not hypothetical; it is what H1 2026 did while revenue accelerated.
+2. **The tax line.** When the valuation allowance releases, reported EPS growth decouples *downward* from operating growth, and that quarter will look ugly regardless of the business.
+3. **Concentration.** US revenue is 81% of the total, and growth is existing customers spending more — 1,049 of them, up 24%, against revenue up 93%.
+4. **Bookings.** If revenue keeps outrunning bookings, growth converges down to bookings. The only question is when.
+5. **Non-operating income.** $91.8M of "other income" includes **$66M of unrealised gains on public stakes the company mostly cannot yet sell** — it reverses if those positions fall.
+6. **Competition (ranked low, deliberately).** Every hyperscaler sells an AI application layer. This print made that case *weaker*, not stronger: 149% US commercial growth is not what share loss looks like.
 
-## Time horizon & position sizing (kept separate)
+## Horizon and sizing (kept separate)
 
-**Horizon.** Not a next-quarter setup. The next two quarters are guided to decelerate — **+83%** for Q3, and the FY guide implies roughly **+72%** for Q4 — and Palantir has beaten its own guide eight quarters running, so the near term is mostly a game of by-how-much.
+**Horizon.** Not a next-quarter setup — Q3 is guided to +83% and Q4 to roughly +72%, and Palantir has beaten its own guide eight quarters running, so the near term is a game of by-how-much. It is worth knowing the deceleration is a *guidance choice* rather than comp arithmetic: hold Q2's own +18.5% sequential pace and Q4 prints ~$2.71B, or +93%. The thesis resolves over **3–5 years** on one question — does ~$8B of revenue become ~$30B+ before the multiple normalises?
 
-It is tempting to wave the deceleration away as a hard comp. That doesn't survive checking, and the check is clean because *sequential* growth is comp-independent. Through the back half of 2025 revenue compounded **+40.2%** from Q2 to Q4; the 2026 guide compounds only **+25.3%** across the same stretch. Hold Q2 2026's own delivered sequential rate (+18.5%) and Q4 lands near **$2.71B — a +93% year-over-year rate, identical to the quarter just posted.** So the entire 93% → 72% step-down lives in the guidance, not in the base. Either management is sandbagging by roughly $290M of quarterly revenue, or it sees something the print doesn't show. Given eight straight beats the first is more likely — but it is a *choice about guidance*, not arithmetic forced by the comparison. The thesis resolves over **3–5 years** on the question the valuation section poses: does ~$8B of revenue become ~$30B+ before the multiple normalizes? Under two years you are trading sentiment on the AI complex, not the business.
-
-**Sizing considerations (not a recommendation).** Two things separate Palantir from the rest of the AI-infrastructure complex. It **doesn't carry capex-cycle risk** — no depreciation wave, no debt, no negative-FCF window — so it is genuine diversification against AMZN/MSFT/NVDA exposure rather than more of the same beta. Against that: at ~48× sales, returns are dominated by the multiple rather than by operations, and H1 2026 is the proof — the business accelerated and the stock fell 32%. A position sized for the business will behave like a position sized for the multiple.`,
+**Sizing considerations (not a recommendation).** Palantir is the rare AI name that **doesn't carry capex-cycle risk** — $14.6M of quarterly capex means no depreciation wave, no debt, no negative-FCF window — so it diversifies against the hyperscalers rather than doubling them. Against that: at ~48× sales the return is dominated by the multiple, not the operations, and H1 2026 proved it. A position sized for the business will behave like a position sized for the multiple.`,
   invalidation: {
     bull: [
       '**Total RDV** growth — not TCV — falls materially below revenue growth for two consecutive quarters. That is the measure that matters, and at +83% it currently does not.',
@@ -1728,7 +1696,7 @@ const spcxQ2_2026: MarketStormReport = {
     { k: 'Market cap', v: '~$1.65T' },
     { k: 'P/S · Q2 ann.', v: '~53×', tone: 'bear' },
   ],
-  summary: `Revenue grew **92%** to **$7.814B** and all three segments accelerated. The operating loss narrowed from $(970)M to **$(143)M**. Those are good numbers, and the stock rose 9.4% into the print. Then capex landed: **$18.369B in one quarter — 2.35× revenue**, against a ~$13.2B consensus, of which **$15.828B was AI** against $2.561B of AI revenue. Shares fell 7.5% after hours. Underneath, three things the headline doesn't carry: **Adjusted EBITDA of $3.538B is 90% depreciation and stock comp**, and the 10-Q publishes no useful-life table for the assets generating that depreciation; a **single customer went from under 10% of revenue to 19.5%** in one quarter and is ~60% of the AI segment; and **$13.329B of the debt funding the build is a failed sale-leaseback with a firm run by a sitting director**. H1 free cash flow was **−$25.0B** against ~$105B of liquidity.`,
+  summary: `In its first quarter as a public company, SpaceX earned **$7.8 billion** and spent **$18.4 billion** building for the future — $2.35 of capital for every dollar of revenue, almost all of it on AI computing. That is the number that knocked the stock after hours. Underneath it are two things the release does not lead with: roughly 60% of the revenue that computing serves comes from a **single customer** who did not exist on the books three months ago, and a third of the debt funding the build is owed to a firm run by one of SpaceX's own directors.`,
   headlineVsReal: [
     {
       headline:
@@ -2026,9 +1994,9 @@ const spcxQ2_2026: MarketStormReport = {
     '**Colossus II’s power is under legal challenge:** the NAACP is seeking to enjoin the mobile gas turbines running it under the Clean Air Act.',
   ],
   theQuestion: `**Is $18.4B of quarterly capex a land grab into demand that already exists in contract form — or is it a purpose-built campus for one customer?** Customer B went from under 10% of revenue to 19.5% in a single quarter and is ~60% of the AI segment. The prospectus suggests a term through 2029; the risk factors say 90 days' notice. Which of those two sentences turns out to govern is, more or less, the entire investment.`,
-  analysis: `## Valuation — an unusual problem, because there are no earnings to divide by
+  analysis: `## Valuation — no earnings to divide by
 
-At the **$115.98** after-hours print the market values SpaceX near **$1.65T** on ~13.17B shares. There is no P/E: the company lost $541M in the quarter and $9.36B over the trailing twelve months. So the multiples are all revenue-based, and they are extreme by any standard.
+At the **$115.98** after-hours print the market values SpaceX near **$1.65T** on ~13.17B shares. There is no P/E: the company lost $541M in the quarter and $9.36B over the trailing year. So every multiple is revenue-based, and they are extreme.
 
 | Multiple | Value | Context |
 | --- | --- | --- |
@@ -2036,70 +2004,52 @@ At the **$115.98** after-hours print the market values SpaceX near **$1.65T** on
 | **Price / sales (Q2 annualised)** | **~53×** | On $31.3B of run-rate revenue |
 | Price / sales (forward) | 32.4× | Implies ~$51B of forward revenue |
 | EV / EBITDA | 313.5× | On the *adjusted* measure |
-| Price / book | 19.2× | Book value inflated by $85.7B of IPO proceeds |
 | P/E | n/a | Trailing net loss of $9.36B |
 
-The forward multiple is the interesting one. At 32.4× the market is already underwriting roughly **$51B of forward revenue** — a 63% increase on the current run rate. That is not a sceptical price. It is a price that assumes the cloud contracts ramp on schedule and the Starlink subscriber curve holds.
+The forward multiple is the telling one: at 32.4× the market already underwrites roughly **$51B of forward revenue**, a 63% increase on the run rate. That is not a sceptical price.
 
-Context matters on the drawdown, though, and it cuts both ways. The stock is **48.6% below its $225.64 June high** and **14.1% below the $135 IPO price** — so a great deal of enthusiasm has already come out. It also *rose 9.4%* on the day of the print and gave back 7.5% after hours, which tells you the market liked the revenue and disliked the capex, in that order.
-
-## The capex — the number that moved the stock
-
-The market liked the revenue and disliked this, in that order. Capex of **$18,369M** against **$7,814M** of revenue is a ratio of **2.35×**, and it beat the ~$13.2B consensus by roughly $5B — which is why a stock that rose 9.4% during the session gave back 7.5% after hours.
-
-Almost all of it is one segment. **AI capex went from $749M to $15,828M in a year — a 21× increase** — while AI revenue went from $737M to $2,561M. At $15.8B of spend against $2.6B of quarterly revenue, the build is running years ahead of the business it serves. That is a deliberate choice, not an accident: nameplate compute went 0.4 GW → 1.0 GW → 1.4 GW across three quarters, and management is buying capacity for contracts that ramp later.
-
-Some of that asset isn't even depreciating yet. Construction-in-progress went **$4.6B → $12.6B**, and the 10-Q says it is "primarily comprised of ongoing construction and expansion of the facilities and equipment as well as AI infrastructure that has not yet been placed in service." So forward depreciation rises sharply as that lands — which is precisely the line Adjusted EBITDA adds back.
-
-The other two segments are, by comparison, ordinary. Connectivity spent $1,367M to generate $4,291M and $1,656M of operating income. Space spent $1,174M against $962M of revenue, which is heavy but is a launch business building the vehicle that carries its own constellation. Neither is what the market reacted to.
-
-Some of that asset isn't even depreciating yet. Construction-in-progress went **$4.6B → $12.6B**, and the 10-Q says it is "primarily comprised of ongoing construction and expansion of the facilities and equipment as well as AI infrastructure that has not yet been placed in service." So forward depreciation rises sharply as that lands — which is precisely the line that Adjusted EBITDA adds back.
+The drawdown cuts both ways. The stock is **48.6% below its $225.64 June high** and **14.1% below the $135 IPO price**, so a great deal of enthusiasm has already gone. It also *rose 9.4%* on the day of the print and gave back 7.5% after hours — the market liked the revenue and disliked the capex, in that order.
 
 ## The customer
 
-Note 3 of the 10-Q discloses two customers above 10% of consolidated revenue. **Customer A at 18.3%** spans all three segments and is long-standing — it was 20.9%, 24.2% and 25.2% of revenue in 2025, 2024 and 2023, so it predates the cloud business entirely. **Customer B at 19.5%** is new: it did not clear 10% in any prior period, it relates only to the AI segment, and at ~$1.52B it is roughly **95% of the $1.6B of incremental cloud revenue** the release attributes to the new agreements.
+Note 3 discloses two customers above 10% of revenue. **Customer A at 18.3%** spans all three segments and is long-standing — 20.9%, 24.2% and 25.2% of revenue in 2025, 2024 and 2023, so it predates the cloud business. **Customer B at 19.5%** is new: it cleared 10% in no prior period, relates only to the AI segment, and at ~$1.52B is roughly **95% of the $1.6B of incremental cloud revenue**.
 
-Put plainly: **essentially all of the AI segment's revenue growth this quarter came from one counterparty that was not material three months ago.**
+Plainly: **essentially all of the AI segment's growth this quarter came from one counterparty that was not material three months ago.**
 
-The company doesn't name it in the 10-Q, but it isn't a secret either — the IPO prospectus describes an Anthropic arrangement of roughly 325,000 GPUs at about $1.25B/month running to May 2029, and the CFO named Google and Anthropic on the call, with the Google agreement ramping from October. Note 17 lists only Tesla and Valor as related parties, so **the cloud customers are arm's-length** — a reading worth ruling out explicitly, and it is ruled out.
+It is not a secret — the prospectus describes an Anthropic arrangement of ~325,000 GPUs at ~$1.25B/month running to May 2029, and the CFO named Google and Anthropic on the call, with Google ramping from October. Note 17 lists only Tesla and Valor as related parties, so **the cloud customers are arm's-length** — worth ruling out explicitly, and it is ruled out.
 
-> **The tension the filings don't resolve.** The risk factors say cloud agreements "may be terminated by either party upon 90 days' notice." The prospectus describes a term running to 2029. Both are SpaceX's own words. The honest position is that the *contracted* term is long and the *cancellation* right is short, and only one of those gets tested if the AI capex cycle turns.
+> **The tension the filings don't resolve.** The risk factors say cloud agreements "may be terminated by either party upon **90 days' notice**." The prospectus describes a term running to 2029. Both are SpaceX's own words: the contracted term is long and the cancellation right is short, and only one of them gets tested if the AI capex cycle turns.
 
 ## The financing — a director's firm holds a third of the debt
 
-This is the disclosure most worth reading slowly. Of $39,364M of total debt, **$13,329M — 33.9% — is owed to Valor Equity Partners**, whose founder, CEO and Chief Investment Officer **Antonio Gracias serves on SpaceX's board**. It comes from three equipment lease agreements for AI infrastructure hardware (November 2025, January 2026, April 2026, the last through CTC Property LLC), all of which **failed sale-leaseback accounting** — meaning the assets stay on SpaceX's balance sheet and the proceeds book as debt. SpaceX guarantees the lessees' payments. The balance nearly **tripled in six months**, from $4,507M, and it carries **$327M of the quarter's $629M interest expense — 52%**.
+Of $39,364M of total debt, **$13,329M — 33.9% — is owed to Valor Equity Partners**, whose founder, CEO and Chief Investment Officer **Antonio Gracias sits on SpaceX's board**. It comes from three equipment lease agreements for AI hardware (November 2025, January 2026, April 2026, the last through CTC Property LLC), all of which **failed sale-leaseback accounting** — so the assets stay on the balance sheet and the proceeds book as debt. SpaceX guarantees the lessees' payments. The balance nearly **tripled in six months** from $4,507M, and carries **$327M of the quarter's $629M interest expense — 52%**.
 
-None of that is hidden; it is all in Notes 9 and 17. And the terms are not obviously off-market: the 10-Q's Other Financings paragraph states these arrangements carry an **average fixed interest rate of 5.9%**, against 5.855% weighted average on the public investment-grade notes.
+None of it is hidden; it is in Notes 9 and 17. The terms are not obviously off-market either: the 10-Q states these arrangements carry an **average fixed rate of 5.9%**, against 5.855% on the public notes.
 
-There is, however, a gap the filing does not reconcile. **$327M of quarterly interest against an average related-party balance of roughly $8.9B annualises to the mid-teens**, not 5.9%. Failed sale-leaseback accounting can produce interest expense that exceeds a stated coupon, so there are innocent explanations — but the filing gives balances and interest and a rate that don't sit together, and does not explain why. It is the single thing I would most want asked on the next call.
+There is a gap the filing does not reconcile. **$327M of quarterly interest against an average related-party balance near $8.9B annualises to the mid-teens**, not 5.9%. Failed sale-leaseback accounting can produce interest above a stated coupon, so there are innocent explanations — but the filing gives balances, interest and a rate that do not sit together, and does not say why. It is the thing I would most want asked on the next call.
 
 ## Risk — each isolated, do not blur
 
-1. **The capex/funding gap (dominant).** −$25.0B of H1 free cash flow, capex nearly doubling sequentially, ~$105B of liquidity — roughly 18 months at the Q2 exit rate before the company needs the capital markets again. It has investment-grade access today. That is a condition, not a guarantee.
+1. **The funding gap (dominant).** −$25.0B of H1 free cash flow against ~$105B of liquidity — roughly 18 months at the Q2 exit rate before the capital markets are needed again. Investment-grade access today is a condition, not a guarantee.
 2. **Customer concentration.** 37.8% of revenue in two customers; ~60% of the AI segment in one that appeared this quarter.
 3. **The depreciation assumption.** 90% of Adjusted EBITDA is D&A and stock comp, $12.6B of asset is not yet in service, and **the 10-Q publishes no useful-life table**. If GPU lives are shorter than assumed, the adjustment does the damage on the way back.
-4. **Starlink unit economics.** ARPU −22% and revenue per subscriber −28% while subscribers doubled. Management attributes it to international mix and cheaper plans; the filing gives no like-for-like or US-only ARPU, so a price cut in mature markets cannot be ruled out.
-5. **The 2027 obligation wall.** $22,244M of the $27,955M of non-cancelable commitments falls in 2027.
-6. **Governance.** A third of the debt and half the interest expense run to a board member's firm, with an unreconciled implied rate.
-7. **Operational and legal.** The NAACP is seeking a preliminary injunction against the gas turbines powering Colossus II under the Clean Air Act; separately, multiple class actions over Grok's image generation, with a $354M litigation accrual.
+4. **Starlink unit economics.** ARPU −22% and revenue per subscriber −28% while subscribers doubled. Management cites international mix and cheaper plans; no like-for-like is given, so a price cut in mature markets cannot be ruled out.
+5. **The 2027 wall.** $22,244M of the $27,955M of non-cancelable commitments falls in 2027.
+6. **Operational and legal.** The NAACP is seeking to enjoin the gas turbines powering Colossus II under the Clean Air Act; separately, class actions over Grok's image generation, with a $354M accrual.
 
-## The lockup — the stock's weakness made the overhang bigger, not smaller
+## The lockup — the weakness made the overhang bigger
 
-The mechanics here are genuinely non-obvious and worth getting right, because they are two days away.
+On **August 6**, up to **911.5M shares** (excluding affiliates) come free — about **1.43× the entire IPO float**, roughly $106B. That much was widely reported and is right.
 
-On **August 6**, up to **911.5M shares** (excluding affiliates) come free — about **1.43× the entire 638.9M-share IPO float**, roughly $106B at the after-hours price. That much was widely reported and is correct.
+Less noticed: a second tranche of **455.8M "Additional Release Shares"** was scheduled for the same date, but only if the stock closed 30% above the $135 IPO price (**$175.50**) on five of the ten trading days ending on the earnings date. Over that window the closes ran $108.37 to $118.24. **The best close was 32.6% below the trigger. Zero of ten days qualified.**
 
-What was less noticed: a *second* tranche of **455.8M "Additional Release Shares"** was also scheduled for that date — but only if the stock closed at least 30% above the $135 IPO price (**$175.50**) on five of the ten trading days ending on the earnings date. Over that window (July 22 – August 4) the closes ran $108.37 to $118.24. **The highest close was 32.6% below the trigger. Zero of ten days qualified.**
+So they do not release now. They roll to **December 8 — where up to 797.6M shares come free instead of 328.4M.** The weak share price did not avoid the dilution; it deferred it and made the December block **469M shares larger**. Every figure is an "up to", and the lockup is waivable with Goldman Sachs' written consent.
 
-So those shares do not release now. Under the prospectus's alternative branch they roll to **December 8, 2026 — where up to 797.6M shares come free instead of 328.4M.** The weak share price didn't avoid the dilution. It deferred it, and made the December block **469M shares larger**.
+## Horizon and sizing (kept separate)
 
-Two caveats: every figure is an "up to," assuming no option exercises or RSU settlements after March 31; and the lockup, price condition included, is waivable with Goldman Sachs' written consent.
+**Horizon.** The next 90 days are mechanics rather than fundamentals — the August 6 unlock, the October ramp of the Google agreement, the Cursor close, and a Q3 print showing whether Customer B's revenue is a step or a spike. The thesis resolves over **3–5 years**: does 1.4 GW of compute and a doubling constellation earn returns above a depreciation base compounding faster than revenue?
 
-## Time horizon & position sizing (kept separate)
-
-**Horizon.** The next 90 days are dominated by mechanics rather than fundamentals — the August 6 unlock, the October ramp of the Google agreement, the Cursor close in Q3, and a Q3 print that will show whether Customer B's revenue is a step or a spike. The actual thesis resolves on a **3–5 year** horizon: does 1.4 GW of compute and a doubling Starlink constellation generate returns above a depreciation base that is compounding faster than revenue?
-
-**Sizing considerations (not a recommendation).** SpaceX is the highest-beta expression of the same AI-capex cycle that drives Amazon, Microsoft and Nvidia — it does not diversify an AI-infrastructure basket, it concentrates it, and it adds two risks the others do not carry: a single-customer AI revenue base and a funding requirement that returns in roughly 18 months. Against that, Connectivity is a real, growing, profitable business that would be worth something substantial on its own, and the Space franchise has no competitor at its cadence. A position here is not one bet; it is three businesses with one balance sheet, two of which lose money at the operating line.`,
+**Sizing considerations (not a recommendation).** This is the highest-beta expression of the AI-capex cycle — it concentrates an AI-infrastructure basket rather than diversifying it, and adds two risks the others do not carry: a single-customer AI revenue base and a funding requirement returning in ~18 months. Against that, Connectivity is a real, growing, profitable business worth something substantial alone. A position here is not one bet; it is three businesses on one balance sheet, two of which lose money at the operating line.`,
   invalidation: {
     bull: [
       'Customer B’s revenue does not repeat in Q3 — proving the AI step-up was a spike, not a run rate.',
