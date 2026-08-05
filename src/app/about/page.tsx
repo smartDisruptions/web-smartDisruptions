@@ -48,7 +48,7 @@ const milestones = [
   {
     year: '2024',
     title: 'Became an engineer at work — with the tools already in hand',
-    body: 'Ten years after walking into the university, I moved into engineering: Oracle SQL, Pro*C, Banner. Worth noticing that the daily AI habit came first. The tools were part of how I got the title, not a thing I picked up after.',
+    body: 'Ten years after walking into the university, I moved into engineering: Oracle SQL, Pro*C, Java, HTML, CSS, Banner, Argos — the systems that quietly move real money to real students.',
   },
   {
     year: '2025',
@@ -198,18 +198,16 @@ export default function AboutPage() {
         ))}
       </ol>
 
-      {/* The vocabulary. Deliberately plain-language on the right-hand side —
-          the terms are for credibility, the sentences are for the reader who
-          doesn't have them yet, which is the whole audience. */}
+      {/* The skills. Deliberately plain-language on the right-hand side — the
+          terms carry credibility, the sentences are for the reader who doesn't
+          have them yet, which is most of the audience. */}
       <section className="mt-16 border-t border-border pt-12">
         <h2 className="font-display text-2xl font-semibold text-text-primary sm:text-3xl">
-          What that adds up to
+          Skills I picked up along the way
         </h2>
         <p className="mt-3 leading-[1.75] text-text-secondary">
-          Some of these I built before I knew the field already had a name for
-          them. Here they are with their names, and in plain English &mdash;
-          because the terms are how you get taken seriously, and the plain
-          English is how anyone actually learns the thing.
+          Three years in, almost none of this is prompting any more. Each one
+          came out of a build that needed it rather than a course I took.
         </p>
 
         <dl className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
