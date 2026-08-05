@@ -1,6 +1,6 @@
 ---
 name: Smart Disruptions
-description: Paper. Editorial, typography-first, one warm accent on warm paper. Whitespace and type do the work. Dark mode is the same identity after dark — warm charcoal, never cold black.
+description: Paper. Editorial, typography-first, one warm accent on warm paper. Whitespace and type do the work; the display face is a clean sans, set tight and heavy, so hierarchy comes from weight and size rather than from serif-against-sans. Dark mode is the same identity after dark — warm charcoal, never cold black.
 
 # Values below mirror src/app/globals.css. That file is the source of truth;
 # this is the portable export the impeccable detector reads. If a token
@@ -65,13 +65,13 @@ colors:
 
 typography:
   display:
-    fontFamily: 'Fraunces, Georgia, Times New Roman, serif'
+    fontFamily: 'Instrument Sans, system-ui, -apple-system, sans-serif'
     fontSize: '3rem'
     fontWeight: 600
-    letterSpacing: '-0.01em'
-    lineHeight: 1.1
+    letterSpacing: '-0.025em'
+    lineHeight: 1.06
   headline:
-    fontFamily: 'Fraunces, Georgia, Times New Roman, serif'
+    fontFamily: 'Instrument Sans, system-ui, -apple-system, sans-serif'
     fontSize: '1.75rem'
     fontWeight: 600
     lineHeight: 1.2
@@ -148,6 +148,24 @@ that exact mistake shipped once and was caught by an audit in July 2026.
 
 Post bodies cap at `62ch` (~74 characters per line), not at the container width.
 Above ~80 characters the eye loses its place on the return sweep.
+
+## The display face is a sans, and that costs something
+
+Headlines were set in Fraunces until August 2026 — a characterful serif whose
+`f` descended below the baseline. It read as a quirk rather than a signature, so
+the display face is **Instrument Sans**: clean, slightly condensed, modern.
+
+The cost is real and worth naming, because the fix for it is a rule. Body copy
+is Inter, so headlines and body are now **both sans**. The serif-against-sans
+contrast that used to separate a headline from the paragraph under it is gone,
+and hierarchy has to come from weight, size, and Instrument Sans's tighter set
+width instead. Display tracking went to `-0.025em` for the same reason: a
+condensed sans at 3rem needs more negative tracking than the old serif did.
+
+**So: don't set a heading below 600, and don't close the size gap between a
+heading and its body copy.** Those two are now the only things holding the
+hierarchy up. Reaching for a serif somewhere to "add contrast back" is the wrong
+repair — it would put a third face on a page that has a considered two.
 
 ## Market Storm data semantics (bull / bear / caution)
 

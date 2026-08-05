@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Fraunces } from 'next/font/google';
+import { Inter, Instrument_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
@@ -13,12 +13,16 @@ const inter = Inter({
   display: 'swap',
 });
 
-// Display: Fraunces — a characterful serif for headlines (the personality).
-const fraunces = Fraunces({
+// Display: Instrument Sans — clean, slightly condensed, modern.
+//
+// This replaced Fraunces, whose descending `f` dropped below the baseline and
+// read as a quirk rather than a signature. Headlines and body are now both
+// sans, so the contrast between them has to come from weight, size and the
+// tighter set width of this face rather than from serif-against-sans.
+const display = Instrument_Sans({
   variable: '--font-display',
   subsets: ['latin'],
   display: 'swap',
-  axes: ['opsz'],
 });
 
 export const metadata: Metadata = {
@@ -68,7 +72,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${inter.variable} ${display.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Set the theme before first paint so there's no flash of the wrong

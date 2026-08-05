@@ -209,8 +209,13 @@ function fontFace(family, file) {
     font-display:block;src:url('file://${p}') format('woff2')}`;
 }
 
-const FONTS = fontFace('Fraunces', 'fraunces.woff2') + fontFace('InterCard', 'inter.woff2');
-const DISPLAY = `Fraunces, Georgia, 'Times New Roman', serif`;
+const FONTS =
+  fontFace('DisplaySD', 'instrument-sans.woff2') + fontFace('InterCard', 'inter.woff2');
+// Must match `--font-display` in globals.css. When the site's display face
+// changes, this and the vendored woff2 change with it — otherwise the cards go
+// out in a face the site does not use, which is exactly how they spent weeks
+// rendering in Georgia.
+const DISPLAY = `DisplaySD, system-ui, -apple-system, sans-serif`;
 const SANS = `InterCard, system-ui, -apple-system, sans-serif`;
 const MONO = `ui-monospace, SFMono-Regular, Menlo, monospace`;
 
@@ -458,7 +463,7 @@ function split(k) {
      .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase}
      .a .l{color:${t.dim}} .b .l{color:rgba(249,245,236,.82)}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.015em}
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.025em}
      .a .h{color:${t.text};font-size:${ledeSize(before.text)}px}
      .b .h{color:${FIELD_FG};font-size:${ledeSize(after.text)}px}
      .d{font-family:${MONO};font-size:${TYPE.label}px;color:rgba(249,245,236,.78);letter-spacing:.02em}`,
@@ -493,7 +498,7 @@ function countCard(k) {
      .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase;color:${t.dim}}
      .blocks{display:flex;gap:14px;height:130px}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.02em;
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
        color:${t.text};font-size:${ledeSize(c.verdict)}px}
      .h em{font-style:normal;color:${k === 'dark' ? T.bright : T.field}}
      .d{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
@@ -538,7 +543,7 @@ function logCard(k) {
        font-weight:600;letter-spacing:.1em;white-space:nowrap}
      .txt{font-size:${TYPE.minor}px;color:${t.text};letter-spacing:-.01em}
      .muted{color:${t.dim}}
-     .sum{font-family:${DISPLAY};font-weight:600;letter-spacing:-.015em;
+     .sum{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;
        color:${k === 'dark' ? T.bright : T.field};padding-top:20px;
        border-top:1px solid ${t.rule};font-size:${ledeSize(l.summary)}px}`,
     `<div class="win">
@@ -679,7 +684,7 @@ function fileCard(k) {
      .h{font-size:${TYPE.label}px;font-weight:600;color:${ink};letter-spacing:.01em}
      .hash{opacity:.55}
      .v{font-size:${TYPE.label}px;color:${t.dim};margin-top:5px;letter-spacing:-.005em}
-     .lede{flex:0 0 auto;font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;
+     .lede{flex:0 0 auto;font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;
        color:${t.text};line-height:1.06;
        font-size:${ledeSize(f.verdict)}px}
      .lede em{font-style:normal;color:${ink}}`,
@@ -731,7 +736,7 @@ function sequenceCard(k) {
      .node.on{background:${ink};border-color:${ink};color:${FIELD_FG}}
      .cap{font-family:${MONO};font-size:${TYPE.micro}px;line-height:1.35;color:${t.text};
        text-align:center;letter-spacing:-.005em}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.02em;
+     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
        color:${t.text};font-size:${ledeSize(s.verdict)}px}
      .h em{font-style:normal;color:${ink}}`,
     `<div class="l">${esc(s.label)}</div>
@@ -765,7 +770,7 @@ function checklistCard(k) {
      /* The label is the lede here: it states the finding, and the named items
         below are the evidence for it. Promoting the items instead would give the
         card three ledes and none of them would be the point. */
-     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;color:${t.text};
+     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;color:${t.text};
        line-height:1.06;font-size:${ledeSize(c.label)}px}
      .item{display:flex;align-items:baseline;gap:20px;padding:13px 0;
        border-bottom:1px solid ${t.rule}}
@@ -774,7 +779,7 @@ function checklistCard(k) {
        transform:translateY(2px)}
      .mark.off{background:transparent;border:2px solid ${t.hair}}
      .txt b{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.major}px;
-       letter-spacing:-.02em;color:${t.text}}
+       letter-spacing:-.025em;color:${t.text}}
      .txt i{font-style:normal;font-family:${MONO};font-size:${TYPE.micro}px;color:${t.dim};
        margin-left:14px;letter-spacing:.02em}
      .note{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
@@ -806,7 +811,7 @@ function annotatedCard(k) {
      .top{display:flex;flex-direction:column;gap:8px}
      /* The intro is the lede — it is the finding. The flagged claims are the
         evidence and sit one step down the ramp. */
-     .h{font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;color:${t.text};
+     .h{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;color:${t.text};
        line-height:1.06;font-size:${ledeSize(a.intro)}px}
      .sub{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.04em;color:${t.dim}}
      .sp{padding:11px 0}
@@ -845,7 +850,7 @@ function versusCard(k) {
      /* A table has no natural lede — every cell is peer content — so this one is
         stated. Without it the largest thing on the card was a 40px cell, which is
         11px on a phone, and the card said nothing at the size most people see. */
-     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.02em;color:${t.text};
+     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;color:${t.text};
        line-height:1.06;font-size:${ledeSize(v.verdict)}px}
      .lede em{font-style:normal;color:${ink}}
      .grid{display:grid;grid-template-columns:auto 1fr 1fr;column-gap:34px;align-items:baseline}
@@ -856,9 +861,9 @@ function versusCard(k) {
      .k{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.1em;
        text-transform:uppercase;color:${t.dim};white-space:nowrap}
      .a{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
-       letter-spacing:-.015em;color:${t.dim}}
+       letter-spacing:-.025em;color:${t.dim}}
      .b{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
-       letter-spacing:-.015em;color:${t.text}}`,
+       letter-spacing:-.025em;color:${t.text}}`,
     `${
       v.verdict
         ? `<div class="lede">${v.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>`
@@ -880,7 +885,7 @@ function ogHtml() {
   return doc(
     `body{display:flex;flex-direction:column;background:${t.bg};font-family:${SANS}}
      .head{flex:1 1 auto;display:flex;align-items:center;padding:0 68px}
-     h1{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.015em;
+     h1{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.025em;
        color:${t.text};font-size:${fitSize('x'.repeat(chars), 58, 38, 62)}px}
      .evidence{flex:0 0 194px;display:flex}
      .cell{flex:1 1 0;display:flex;flex-direction:column;justify-content:center;gap:13px;
