@@ -5,28 +5,17 @@ import {
   MARKET_STORM_DISCLAIMER,
   MARKET_STORM_METHOD,
   type MarketStormReport,
-  type Tone,
   type DataTable as DataTableType,
   type SourceRef,
   type HeadlineVsReal as HeadlineVsRealType,
   type ThroughLine as ThroughLineType,
 } from '@/data/marketStorm';
-
 /* ---- tone → token classes (bull=green, bear=red, warn=amber). Tone is
    carried by text color, a small dot, or a tinted header — never a colored
-   side/top rail on a card (a documented AI-UI tell the house rejects). ---- */
-const toneText: Record<Tone, string> = {
-  bull: 'text-bull',
-  bear: 'text-bear',
-  warn: 'text-warn',
-  neutral: 'text-text-primary',
-};
-const toneDot: Record<Tone, string> = {
-  bull: 'bg-bull',
-  bear: 'bg-bear',
-  warn: 'bg-warn',
-  neutral: 'bg-text-secondary',
-};
+   side/top rail on a card (a documented AI-UI tell the house rejects).
+   Moved to ./tone when the index started showing figures too: a second copy
+   is how a bull turns green on one surface and neutral on another. ---- */
+import { toneText, toneDot } from './tone';
 
 /* ---- inline markdown (bold/italic/code/links) with no block wrapper ---- */
 function Inline({ children }: { children: string }) {
