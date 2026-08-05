@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { marketStormReports, getReportBySlug } from '@/data/marketStorm';
 import { SectionContainer, Badge, Button } from '@/components/ui';
 import ReportView from '@/components/market-storm/ReportView';
+import HeroImage from '@/components/HeroImage';
 import SubscribeForm from '@/components/SubscribeForm';
 import { formatDate } from '@/lib/format';
 
@@ -106,6 +107,18 @@ export default async function MarketStormDetail({
             ))}
           </div>
         </div>
+
+        {/* The generated card. A report's shape matches a post's for these
+            four fields, so the shared component takes it unchanged. */}
+        {report.heroImage && (
+          <figure className="mt-10 overflow-hidden rounded-xl border border-border">
+            <HeroImage
+              post={{ ...report, title: report.title }}
+              priority
+              className="h-auto w-full object-cover"
+            />
+          </figure>
+        )}
 
         {/* The full structured report */}
         <ReportView report={report} />
