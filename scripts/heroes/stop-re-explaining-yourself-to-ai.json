@@ -8,21 +8,6 @@
     "label": "What replaced it",
     "text": "One file I wrote and control"
   },
-  "file": {
-    "name": "CLAUDE",
-    "ext": ".md",
-    "lines": [
-      {
-        "h": "who I am",
-        "v": "enterprise dev \u2192 AI builder"
-      },
-      {
-        "h": "how I work",
-        "v": "direct \u00b7 fast"
-      }
-    ],
-    "verdict": "I wrote it. The model didn't."
-  },
   "headline": [
     {
       "t": "I stopped re-explaining myself. "

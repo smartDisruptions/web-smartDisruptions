@@ -1,11 +1,11 @@
 {
   "tone": "good",
   "before": {
-    "label": "What it looked like it needed",
+    "label": "Looked like it needed",
     "text": "A server, a database, a monthly bill"
   },
   "after": {
-    "label": "What it actually took",
+    "label": "Actually took",
     "text": "A script, a timer, a text file"
   },
   "headline": [
@@ -20,28 +20,5 @@
       "t": "."
     }
   ],
-  "alt": "A two-column comparison: a server, a cron host, a database and a monthly bill on one side; a script, a timer, a text file and $0 on the other.",
-  "versus": {
-    "left": {
-      "name": "Looked like"
-    },
-    "right": {
-      "name": "Took"
-    },
-    "rows": [
-      {
-        "l": "A server",
-        "r": "A script"
-      },
-      {
-        "l": "A database",
-        "r": "A text file"
-      },
-      {
-        "l": "A monthly bill",
-        "r": "$0"
-      }
-    ],
-    "verdict": "Runs on *nothing*."
-  }
+  "alt": "A two-column comparison: a server, a cron host, a database and a monthly bill on one side; a script, a timer, a text file and $0 on the other."
 }

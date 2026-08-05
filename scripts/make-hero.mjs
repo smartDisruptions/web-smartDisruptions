@@ -19,17 +19,38 @@
  *
  * THE TEMPLATES, AND WHY THE SPEC PICKS ONE
  * -----------------------------------------
+ * FIELD NOTES
  *   evidence key   template    the picture
  *   —              split       two panels, the second a saturated field
  *   count          count       one block per unit, filled for the ones that broke
- *   log            console     the run that produced the finding
- *   record         receipt     a ledger of findings, verdict stamped across it
- *   statement      field       one colour, one sentence reversed out of it
- *   file           file        a document as itself, filename in the chrome
  *   sequence       sequence    ordered events on a rail
- *   checklist      checklist   a set of named peers, each with its own state
  *   annotated      annotated   a passage with its problems marked
- *   versus         versus      two named alternatives across the same dimensions
+ *
+ * MARKET STORM (see #54 — a different content type, and not mine to prune)
+ *   ledger · quote · scorecard · logo
+ *
+ * THE BAR, AND WHY SIX TEMPLATES WERE RETIRED
+ * -------------------------------------------
+ * There were ten of these. `console`, `receipt`, `versus`, `checklist`, `file`
+ * and `field` are gone, and the six posts that used them are splits now.
+ *
+ * The rule said a new template had to be a genuinely different *shape of
+ * evidence*, and each of those six cleared it **on paper** — every one had its
+ * own data key. None cleared it **in the picture**. A console, a receipt, a
+ * versus table and a checklist all resolve to *two or three facts in a frame*,
+ * which is precisely what a split is. Rendering the same posts both ways settled
+ * it: the split was bigger, clearer, more colourful, and said the same thing.
+ * The key was different; the image was not.
+ *
+ * So the bar is not "does this need its own data" — it is **can a split not draw
+ * this**. The three that survived pass that:
+ *
+ *   count      seven filled blocks is a quantity you see, not a number you read
+ *   sequence   a split has no way to express order
+ *   annotated  three claims, each with its own underline and fault label
+ *
+ * A proposed template that a split could carry is a restyle of the split, and
+ * the honest move is to improve the split.
  *
  * **The template is derived from the spec's shape, never named in it.** Each
  * template owns one evidence key; carrying that key is what selects it. There is
@@ -48,7 +69,7 @@
  * evidence, and if two of these look right then the spec has not yet decided
  * what the article is about.
  *
- * See REGISTRY below for how to add a sixth.
+ * See REGISTRY below for how to add one.
  *
  * THE SOCIAL CARD DOES NOT VARY
  * -----------------------------
@@ -409,40 +430,6 @@ const REGISTRY = [
         : null,
   },
   {
-    name: 'console',
-    key: 'log',
-    render: (k) => logCard(k),
-    check: (l) => (l.lines?.length ? null : 'log.lines is empty'),
-  },
-  {
-    name: 'receipt',
-    key: 'record',
-    render: (k) => receiptCard(k),
-    check: (r) => (r.rows?.length ? null : 'record.rows is empty'),
-  },
-  {
-    name: 'field',
-    key: 'statement',
-    render: (k) => fieldCard(k),
-    check: (s) =>
-      s.loud
-        ? null
-        : 'statement.loud is required — it is the line that carries',
-  },
-  {
-    name: 'file',
-    key: 'file',
-    render: (k) => fileCard(k),
-    check: (f) =>
-      !f.lines?.length
-        ? 'file.lines is empty'
-        : f.lines.length > 4
-          ? `file.lines has ${f.lines.length}; above 4 the card stops reading at grid size`
-          : !f.verdict
-            ? 'file.verdict is required — a file card is all small mono, so the caption is the only thing a phone can read'
-            : null,
-  },
-  {
     name: 'sequence',
     key: 'sequence',
     render: (k) => sequenceCard(k),
@@ -451,17 +438,6 @@ const REGISTRY = [
         ? 'sequence.steps is empty'
         : s.steps.length > MAX_STEPS
           ? `sequence.steps has ${s.steps.length}; above ${MAX_STEPS} the rail crowds`
-          : null,
-  },
-  {
-    name: 'checklist',
-    key: 'checklist',
-    render: (k) => checklistCard(k),
-    check: (c) =>
-      !c.items?.length
-        ? 'checklist.items is empty'
-        : c.items.length > 4
-          ? `checklist.items has ${c.items.length}; above 4 the names stop being readable`
           : null,
   },
   {
@@ -480,21 +456,6 @@ const REGISTRY = [
         : a.spans.length > 3
           ? `annotated.spans has ${a.spans.length}; three flagged claims is the ceiling`
           : null,
-  },
-  {
-    name: 'versus',
-    key: 'versus',
-    render: (k) => versusCard(k),
-    check: (v) =>
-      !v.rows?.length
-        ? 'versus.rows is empty'
-        : !v.left?.name || !v.right?.name
-          ? 'versus needs left.name and right.name — the columns are the point'
-          : v.rows.length > 4
-            ? `versus.rows has ${v.rows.length}; above 4 the table gets cramped`
-            : !v.verdict
-              ? 'versus.verdict is required — a table has no natural lede, so it has to be stated'
-              : null,
   },
   /* ---- Market Storm ----------------------------------------------------
      Three templates for the research reports, and they are deliberately their
@@ -850,198 +811,22 @@ function countCard(k) {
   );
 }
 
-/* CONSOLE — the run that produced the finding. Severity chips carry the colour,
-   which is the one place in the system where a bright ink is unambiguously
-   encoding state rather than decorating. */
-function logCard(k) {
-  const t = THEMES[k];
-  const l = spec.log;
-  const ink = (name) => {
-    const tn = TONES[name] ?? T;
-    return k === 'dark' ? tn.bright : tn.field;
-  };
-  const lines = l.lines
-    .map(
-      (ln) => `
-      <div class="line">
-        <span class="chip" style="color:${ink(ln.tone)};border-color:${ink(ln.tone)}">${esc(ln.chip)}</span>
-        <span class="txt${ln.muted ? ' muted' : ''}">${esc(ln.text)}</span>
-      </div>`
-    )
-    .join('');
-  return doc(
-    `body{background:${t.bg};font-family:${MONO};padding:76px 60px}
-     .win{height:100%;background:${t.surface};border:1px solid ${t.rule};border-radius:12px;
-       overflow:hidden;display:flex;flex-direction:column}
-     .bar{display:flex;align-items:center;gap:10px;padding:16px 22px;background:${t.lift};
-       border-bottom:1px solid ${t.rule}}
-     .dot{width:12px;height:12px;border-radius:50%;background:${t.rule}}
-     .name{margin-left:8px;font-size:${TYPE.micro}px;color:${t.dim};letter-spacing:.06em}
-     .body{flex:1;padding:26px 30px;display:flex;flex-direction:column;gap:20px;
-       justify-content:center}
-     .line{display:flex;align-items:center;gap:18px}
-     .chip{border:1px solid;border-radius:3px;padding:3px 10px;font-size:${TYPE.micro}px;
-       font-weight:600;letter-spacing:.1em;white-space:nowrap}
-     .txt{font-size:${TYPE.minor}px;color:${t.text};letter-spacing:-.01em}
-     .muted{color:${t.dim}}
-     .sum{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;
-       color:${k === 'dark' ? T.bright : T.field};padding-top:20px;
-       border-top:1px solid ${t.rule};font-size:${ledeSize(l.summary)}px}`,
-    `<div class="win">
-       <div class="bar">
-         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-         <span class="name">${esc(l.name)}</span>
-       </div>
-       <div class="body">
-         ${lines}
-         ${l.summary ? `<div class="sum">${esc(l.summary)}</div>` : ''}
-       </div>
-     </div>`
-  );
-}
 
 /* RECEIPT — a ledger of findings with the verdict stamped across it. Where
    Split stages one belief against one truth, this is for a post that produced a
    *set* of findings: the rows are the audit, the stamp is what it concluded.
    Colour arrives once, in the stamp and the row that went wrong, which is why
    this is the quietest of the five and the right one when the finding is dry. */
-function receiptCard(k) {
-  const t = THEMES[k];
-  const r = spec.record;
-  const rows = r.rows
-    .map(
-      (row) => `
-      <div class="row">
-        <span class="k">${esc(row.label)}</span>
-        <span class="v${row.tone ? ' hit' : ''}"
-          ${row.tone ? `style="color:${k === 'dark' ? (TONES[row.tone] ?? T).bright : (TONES[row.tone] ?? T).field}"` : ''}
-        >${esc(row.value)}</span>
-      </div>`
-    )
-    .join('');
-  const stampInk = k === 'dark' ? T.bright : T.field;
-  return doc(
-    `body{background:${t.bg};font-family:${MONO};padding:56px 68px}
-     .sheet{height:100%;background:${t.surface};border:1px solid ${t.rule};padding:38px 44px;
-       display:flex;flex-direction:column;justify-content:space-between}
-     .top{display:flex;justify-content:space-between;align-items:baseline;
-       padding-bottom:18px;border-bottom:2px solid ${t.hair}}
-     .who{font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-       color:${t.text}}
-     .when{font-size:${TYPE.micro}px;color:${t.dim};letter-spacing:.08em}
-     .row{display:flex;justify-content:space-between;align-items:baseline;gap:32px;
-       padding:20px 0;border-bottom:1px dashed ${t.rule}}
-     .k{font-size:${TYPE.micro}px;letter-spacing:.1em;text-transform:uppercase;color:${t.dim}}
-     .v{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;letter-spacing:-.01em;
-       color:${t.text};text-align:right}
-     .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:28px}
-     /* The stamp is this template's lede — it is the verdict, which is the whole
-        point of a record. It is set in the display face rather than mono: at
-        lede size, mono uppercase with tracking ran about 980px wide, wrapped to
-        two lines, and squeezed the note beside it into a column one word wide. */
-     .stamp{flex:0 1 auto;border:3px solid ${stampInk};color:${stampInk};
-       font-family:${DISPLAY};font-weight:600;letter-spacing:-.005em;padding:10px 20px;
-       transform:rotate(-3deg);line-height:1.1;
-       font-size:${ledeSize(r.stamp)}px}
-     .note{flex:0 0 auto;font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.1em;
-       text-transform:uppercase;color:${t.dim};text-align:right;white-space:pre-line}`,
-    `<div class="sheet">
-       <div class="top">
-         <span class="who">${esc(r.title ?? 'Record')}</span>
-       </div>
-       ${rows}
-       <div class="foot">
-         ${r.stamp ? `<span class="stamp">${esc(r.stamp)}</span>` : '<span></span>'}
-
-       </div>
-     </div>`
-  );
-}
 
 /* FIELD — one saturated ground with the sentence reversed out of it.
    The least evidence of the five by a distance, so it is only right when the
    sentence *is* the finding and there is nothing to show beside it. A post with
    a number or a log has something better to put here. */
-function fieldCard(k) {
-  const t = THEMES[k];
-  const s = spec.statement;
-  const chars = `${s.quiet ?? ''}${s.loud}`.length;
-  return doc(
-    `body{background:${T.field};font-family:${SANS};display:flex;flex-direction:column}
-     .main{flex:1;display:flex;flex-direction:column;justify-content:center;
-       padding:0 78px;gap:26px}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.0;letter-spacing:-.03em;
-       color:${FIELD_FG};font-size:${fitSize('x'.repeat(chars), LEDE_SOLO, TYPE.lede, 34)}px}
-     .q{color:rgba(249,245,236,.55)}
-     .sub{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.08em;color:rgba(249,245,236,.78)}
-     footer{flex:0 0 74px;background:${t.bg};display:flex;align-items:center;
-       justify-content:space-between;padding:0 78px;font-family:${MONO};font-size:${TYPE.micro}px;
-       letter-spacing:.12em;text-transform:uppercase;color:${t.dim}}`,
-    `<div class="main">
-       <div class="h">${s.quiet ? `<span class="q">${esc(s.quiet)}</span><br>` : ''}${esc(s.loud)}</div>
-
-     </div>
-     <footer>
-       <span>${esc(fm.category ?? '')}</span>
-       <span>smartdisruptions.com</span>
-     </footer>`
-  );
-}
 
 /* FILE — a document as itself: the filename in the chrome, the contents below.
    For a post whose evidence is a file someone can go and write — a config, a
    context file, a spec. Distinct from `console`, which shows what a machine
    *emitted*; this shows what a person *wrote*. */
-function fileCard(k) {
-  const t = THEMES[k];
-  const f = spec.file;
-  const ink = k === 'dark' ? T.bright : T.field;
-  const lines = f.lines
-    .map(
-      (ln) => `
-      <div class="ln">
-        <div class="h"><span class="hash">#</span> ${esc(ln.h)}</div>
-        <div class="v">${esc(ln.v)}</div>
-      </div>`
-    )
-    .join('');
-  return doc(
-    `body{background:${t.bg};font-family:${MONO};padding:52px 72px;display:flex;
-       flex-direction:column;gap:26px}
-     /* A file card is all small mono by nature — that is the metaphor and it is
-        worth keeping — so the lede sits under it as a caption rather than being
-        forced inside the window. The card is the evidence; this is the finding. */
-     .win{flex:1 1 auto;min-height:0;background:${t.surface};border:1px solid ${t.rule};
-       border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
-     .bar{display:flex;align-items:center;gap:10px;padding:15px 22px;background:${t.lift};
-       border-bottom:1px solid ${t.rule}}
-     .dot{width:11px;height:11px;border-radius:50%;background:${t.rule}}
-     .fn{margin-left:10px;font-size:${TYPE.label}px;font-weight:600;letter-spacing:.02em;
-       color:${t.text}}
-     .fn em{font-style:normal;color:${ink}}
-     .body{flex:1;padding:22px 30px;display:flex;flex-direction:column;
-       justify-content:center;gap:18px}
-     .h{font-size:${TYPE.label}px;font-weight:600;color:${ink};letter-spacing:.01em}
-     .hash{opacity:.55}
-     .v{font-size:${TYPE.label}px;color:${t.dim};margin-top:5px;letter-spacing:-.005em}
-     .lede{flex:0 0 auto;font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;
-       color:${t.text};line-height:1.06;
-       font-size:${ledeSize(f.verdict)}px}
-     .lede em{font-style:normal;color:${ink}}`,
-    `<div class="win">
-       <div class="bar">
-         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-         <span class="fn">${esc(f.name)}<em>${esc(f.ext ?? '')}</em></span>
-       </div>
-       <div class="body">${lines}</div>
-     </div>
-     ${
-       f.verdict
-         ? `<div class="lede">${f.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>`
-         : ''
-     }`
-  );
-}
 
 /* SEQUENCE — ordered events on a rail. For a post whose evidence is that things
    happened in an order: six prompts, four deploys, a migration. The numbers are
@@ -1084,49 +869,6 @@ function sequenceCard(k) {
   );
 }
 
-/* CHECKLIST — a set of named peers, each with its own state. Not a tally (that
-   is `count`, where the units are identical) and not a ledger of findings (that
-   is `record`, which ends in a verdict). This is "here are the three things",
-   where the names are the content. Markers are drawn, never emoji. */
-function checklistCard(k) {
-  const t = THEMES[k];
-  const c = spec.checklist;
-  const ink = k === 'dark' ? T.bright : T.field;
-  const items = c.items
-    .map(
-      (it) => `
-      <div class="item">
-        <span class="mark${it.off ? ' off' : ''}"></span>
-        <span class="txt"><b>${esc(it.text)}</b></span>
-      </div>`,
-    )
-    .join('');
-  return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
-       justify-content:center;gap:34px;padding:0 76px}
-     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
-       text-transform:uppercase;color:${t.dim}}
-     /* The label is the lede here: it states the finding, and the named items
-        below are the evidence for it. Promoting the items instead would give the
-        card three ledes and none of them would be the point. */
-     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;color:${t.text};
-       line-height:1.06;font-size:${ledeSize(c.label)}px}
-     .item{display:flex;align-items:baseline;gap:20px;padding:13px 0;
-       border-bottom:1px solid ${t.rule}}
-     .item:last-of-type{border-bottom:0}
-     .mark{flex:0 0 auto;width:20px;height:20px;border-radius:5px;background:${ink};
-       transform:translateY(2px)}
-     .mark.off{background:transparent;border:2px solid ${t.hair}}
-     .txt b{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.major}px;
-       letter-spacing:-.025em;color:${t.text}}
-     .txt i{font-style:normal;font-family:${MONO};font-size:${TYPE.micro}px;color:${t.dim};
-       margin-left:14px;letter-spacing:.02em}
-     .note{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
-    `<div class="lede">${esc(c.label)}</div>
-     <div>${items}</div>
-`,
-  );
-}
 
 /* ANNOTATED — a passage with its problems marked. For a post whose evidence is
    that something *reads fine and isn't*: the claim stays legible, the flag names
@@ -1167,51 +909,6 @@ function annotatedCard(k) {
   );
 }
 
-/* VERSUS — two named alternatives across the same dimensions. For build-vs-buy,
-   mine-vs-theirs, before-the-rewrite-vs-after. Distinct from `split`, which is
-   one belief against one truth on a single axis; this compares two things that
-   both exist, on several. */
-function versusCard(k) {
-  const t = THEMES[k];
-  const v = spec.versus;
-  const ink = k === 'dark' ? T.bright : T.field;
-  const rows = v.rows
-    .map(
-      (r) => `
-      <div class="r"><span class="a">${esc(r.l)}</span></div>
-      <div class="r"><span class="b">${esc(r.r)}</span></div>`
-    )
-    .join('');
-  return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
-       justify-content:center;padding:0 72px;gap:30px}
-     /* A table has no natural lede — every cell is peer content — so this one is
-        stated. Without it the largest thing on the card was a 40px cell, which is
-        11px on a phone, and the card said nothing at the size most people see. */
-     .lede{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;color:${t.text};
-       line-height:1.06;font-size:${ledeSize(v.verdict)}px}
-     .lede em{font-style:normal;color:${ink}}
-     .grid{display:grid;grid-template-columns:1fr 1fr;column-gap:44px;align-items:baseline}
-     .hd{font-family:${MONO};font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.13em;
-       text-transform:uppercase;padding-bottom:13px;border-bottom:2px solid ${t.hair}}
-     .hd.one{color:${t.dim}} .hd.two{color:${ink}}
-     .r{padding:15px 0;border-bottom:1px solid ${t.rule}}
-     .a{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
-       letter-spacing:-.025em;color:${t.dim}}
-     .b{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.minor}px;
-       letter-spacing:-.025em;color:${t.text}}`,
-    `${
-      v.verdict
-        ? `<div class="lede">${v.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>`
-        : ''
-    }
-     <div class="grid">
-       <div class="hd one">${esc(v.left.name)}</div>
-       <div class="hd two">${esc(v.right.name)}</div>
-       ${rows}
-     </div>`
-  );
-}
 
 /** The social card. One design for every template — see the header. */
 function ogHtml() {

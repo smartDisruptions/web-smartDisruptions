@@ -1,26 +1,12 @@
 {
   "tone": "warn",
   "before": {
-    "label": "What the AI built",
-    "text": "A payment system, then a website"
+    "label": "It built",
+    "text": "A payment system, then a site"
   },
   "after": {
-    "label": "What it handed back",
-    "text": "The same three things, twice"
-  },
-  "checklist": {
     "label": "What only I could do",
-    "items": [
-      {
-        "text": "The keys"
-      },
-      {
-        "text": "The money"
-      },
-      {
-        "text": "The final yes"
-      }
-    ]
+    "text": "The keys, the money, the final yes"
   },
   "headline": [
     {
@@ -34,5 +20,5 @@
       "t": "."
     }
   ],
-  "alt": "Three marked items under the heading what only I could do \u2014 the keys, the money, and the final yes \u2014 each with a short gloss."
+  "alt": "Two panels: what the AI built \u2014 a payment system, then a website \u2014 above the three things only I could do: the keys, the money, the final yes."
 }

@@ -8,23 +8,6 @@
     "label": "What the URL returned",
     "text": "200 OK \u2014 public the whole time"
   },
-  "log": {
-    "name": "curl \u00b7 no session, no password",
-    "lines": [
-      {
-        "chip": "ASSUMED",
-        "tone": "good",
-        "text": "Private",
-        "muted": true
-      },
-      {
-        "chip": "200 OK",
-        "tone": "bad",
-        "text": "17,798 bytes \u00b7 43 tasks"
-      }
-    ],
-    "summary": "Public the whole time."
-  },
   "headline": [
     {
       "t": "I assumed my task list was private. The URL returned "
