@@ -1689,8 +1689,586 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
   ],
 };
 
+const spcxQ2_2026: MarketStormReport = {
+  slug: 'spcx-q2-2026',
+  ticker: 'SPCX',
+  company: 'Space Exploration Technologies Corp.',
+  title:
+    'SpaceX spent $2.35 of capex for every dollar of revenue — and its own share price just pushed a bigger unlock into December',
+  excerpt:
+    'The first quarterly report from the largest IPO in history: revenue up 92% to $7.8B, the operating loss cut from $970M to $143M, and capex of $18.4B — 2.35× revenue, against a $13.2B consensus. Nearly all of it is AI. One customer that did not exist last quarter is now a fifth of company revenue, $13.3B of the debt funding the build comes from a sitting director’s firm, and the stock was too weak to trigger an early share release — which moves a larger block to December instead. STORM put four AI agents on the print, then had skeptics try to refute every load-bearing claim against the 10-Q.',
+  catalyst:
+    'Q2 2026 — first earnings as a public company, reported August 4, 2026',
+  publishDate: '2026-08-05',
+  tags: ['SPCX', 'Starlink', 'AI-infrastructure', 'earnings', 'capex'],
+  verdict:
+    'Amazon’s capex quietly exceeded its operating cash flow. Microsoft’s moved off the reported line. Palantir had none at all. SpaceX spent 2.35× its revenue in a single quarter — and the question that decides the stock is whether the customer paying for it stays.',
+  priceStrip: [
+    { k: 'IPO · Jun 12', v: '$135.00' },
+    { k: 'High · Jun 16', v: '$225.64' },
+    { k: 'Close · Aug 4', v: '$125.33', tone: 'bull' },
+    { k: 'After hours', v: '$115.98', tone: 'bear' },
+    { k: 'Market cap', v: '~$1.65T' },
+    { k: 'P/S · Q2 ann.', v: '~53×', tone: 'bear' },
+  ],
+  summary: `Revenue grew **92%** to **$7.814B** and all three segments accelerated. The operating loss narrowed from $(970)M to **$(143)M**. Those are good numbers, and the stock rose 9.4% into the print. Then capex landed: **$18.369B in one quarter — 2.35× revenue**, against a ~$13.2B consensus, of which **$15.828B was AI** against $2.561B of AI revenue. Shares fell 7.5% after hours. Underneath, three things the headline doesn't carry: **Adjusted EBITDA of $3.538B is 90% depreciation and stock comp**, and the 10-Q publishes no useful-life table for the assets generating that depreciation; a **single customer went from under 10% of revenue to 19.5%** in one quarter and is ~60% of the AI segment; and **$13.329B of the debt funding the build is a failed sale-leaseback with a firm run by a sitting director**. H1 free cash flow was **−$25.0B** against ~$105B of liquidity.`,
+  headlineVsReal: [
+    {
+      headline:
+        '"Adjusted EBITDA of $3.5 billion, up 191% from $1.2 billion" — the number leading the release and most of the coverage.',
+      real: 'Loss from operations of **$(143)M** and a net loss of **$(541)M**. The gap is $4.079B, and **90% of it is depreciation ($2,848M) plus stock compensation ($831M)**.',
+      gap: 'Depreciation is **36.4% of revenue** this quarter. Whether that is a "real" cost is not philosophical here: PP&E went $42.6B → $65.7B in six months against $28.5B of capex and $5.3B of depreciation, which reconciles to within $52M — essentially all the capex is capitalising into an asset base that must depreciate. And the disclosure that would let you check the assumption **is not in the filing**: the 10-Q names useful lives as a critical estimate but publishes **no useful-life table for property, plant and equipment** at all. For a company where depreciation *is* the headline metric, that is the number that matters most and it isn’t there.',
+    },
+    {
+      headline:
+        '"On pace to reach **$100 billion in annualized recurring revenue** by the end of the year" — the CFO, on the earnings call.',
+      real: 'Q2 revenue of $7.814B annualises to about **$31B**. The claim implies more than tripling the run rate in roughly five months.',
+      gap: 'It is not a GAAP figure, it carries no reconciliation, and it rests on cloud deals that have not started: the Google agreement is described as ramping from **October**, and another **$6.7B** was contracted in the first weeks of July. It may well prove right — the contracts appear to be real. But "annualized recurring revenue" here is a company-defined forward measure of capacity yet to be delivered, quoted alongside audited figures, and the two should not be read at the same weight.',
+    },
+    {
+      headline:
+        '"Closed multiple industry-leading Cloud Services Agreements resulting in **$14.1 billion of contracted sales**" — the second bullet of the release.',
+      real: 'One customer is **19.5% of total company revenue** — about $1.52B — up from under 10% a quarter ago, and roughly **60% of the entire AI segment**.',
+      gap: 'The 10-Q’s own risk factors say AI infrastructure revenue "is concentrated in a small number of customers" and that the cloud agreements "may be terminated by either party upon **90 days’ notice**" after an initial ramp. Against that, the IPO prospectus describes the Anthropic arrangement as roughly **325,000 GPUs at ~$1.25B/month through May 2029** — a long term, not a rolling quarter. Both statements are in SpaceX’s own filings and they are genuinely hard to hold at once. What is not in doubt: **$15.8B of quarterly capex is being deployed against revenue whose concentration the company itself flags as a risk.**',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$7.81B',
+      delta: '+92% YoY',
+      note: 'Beat the ~$6.72B consensus; all three segments accelerated.',
+      tone: 'bull',
+    },
+    {
+      label: 'Total capex',
+      value: '$18.37B',
+      delta: '2.35× revenue',
+      note: 'Against a ~$13.2B consensus. This is why the stock fell.',
+      tone: 'bear',
+    },
+    {
+      label: 'AI capex vs AI revenue',
+      value: '6.2×',
+      delta: '$15.83B vs $2.56B',
+      note: 'AI capex was $749M a year ago — a 21× increase.',
+      tone: 'bear',
+    },
+    {
+      label: 'Loss from operations',
+      value: '$(143)M',
+      delta: '▲ from $(970)M',
+      note: 'Genuine improvement — the operating loss nearly closed.',
+      tone: 'bull',
+    },
+    {
+      label: 'Adjusted EBITDA',
+      value: '$3.54B',
+      delta: '⚠ 90% add-backs',
+      note: 'D&A ($2,848M) + stock comp ($831M) of a $4,079M bridge.',
+      tone: 'warn',
+    },
+    {
+      label: 'Starlink subscribers',
+      value: '12.0M',
+      delta: 'doubled YoY',
+      note: 'But ARPU fell $85 → $66; revenue per sub down ~28%.',
+      tone: 'warn',
+    },
+    {
+      label: 'Customer B',
+      value: '19.5%',
+      delta: 'of total revenue',
+      note: 'Under 10% last quarter. ~60% of the AI segment.',
+      tone: 'warn',
+    },
+    {
+      label: 'H1 free cash flow',
+      value: '−$25.0B',
+      delta: '~18mo runway',
+      note: 'OCF $3.5B vs capex $28.5B, against ~$105B liquidity.',
+      tone: 'bear',
+    },
+  ],
+  printTableTitle: 'Q2 2026 — the first public quarter, by segment',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 2026', align: 'right' },
+      { label: 'vs Q2 2025', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Revenue',
+          '$7,814M',
+          '+92%',
+          'Beat ~$6.72B consensus; Q1 2026 was $4,694M',
+        ],
+      },
+      {
+        cells: [
+          'Loss from operations',
+          '$(143)M',
+          'from $(970)M',
+          'Nearly closed — the real improvement in the print',
+        ],
+      },
+      {
+        cells: [
+          'Net loss / EPS',
+          '$(541)M / $(0.09)',
+          'from $(1,008)M',
+          'On 5,864M weighted shares (part-quarter post-IPO)',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Adjusted EBITDA',
+          '$3,538M',
+          '+191%',
+          '⚠ 90% of the bridge is D&A $2,848M + SBC $831M',
+        ],
+      },
+      {
+        cells: [
+          '— Space revenue',
+          '$962M',
+          '+29%',
+          'Launches FELL 46 → 38; mass to orbit 652t → 485t',
+        ],
+      },
+      {
+        cells: [
+          '— Space operating loss',
+          '$(542)M',
+          'from $(369)M',
+          'Entirely a +$383M rise in Starship R&D',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          '— Connectivity revenue',
+          '$4,291M',
+          '+66%',
+          'The only segment profitable at the operating line',
+        ],
+      },
+      {
+        cells: [
+          '— Connectivity operating income',
+          '$1,656M',
+          '+79%',
+          'Carries the entire company',
+        ],
+      },
+      {
+        cells: [
+          '— Starlink subscribers / ARPU',
+          '12.0M / $66',
+          'from 6.0M / $85',
+          '⚠ Subs doubled, ARPU −22%, revenue per sub −28%',
+        ],
+      },
+      {
+        cells: [
+          '— Enterprise & government',
+          '$1,806M',
+          '+108%',
+          'Now 42% of Connectivity, from 33.5%',
+        ],
+      },
+      {
+        cells: [
+          '— AI revenue',
+          '$2,561M',
+          '+247%',
+          '+213% sequentially; $1.6B of it new cloud services',
+        ],
+      },
+      {
+        cells: [
+          '— AI operating loss',
+          '$(1,257)M',
+          'from $(1,524)M',
+          'Gross margin 25.2% → 56.8% — a real improvement',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Total capex',
+          '$18,369M',
+          'from $2,825M',
+          '⚠ 2.35× revenue; consensus was ~$13.2B',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          '— AI capex',
+          '$15,828M',
+          'from $749M',
+          '⚠ 6.2× AI revenue; a 21× year-over-year increase',
+        ],
+      },
+      {
+        cells: [
+          'Nameplate compute',
+          '1.4 GW',
+          'from 0.4 GW',
+          'Colossus II build-out; 1.0 GW at Q1',
+        ],
+      },
+      {
+        cells: [
+          'H1 operating cash flow',
+          '$3,466M',
+          'from $351M',
+          'Against $28,476M of H1 capex',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'H1 free cash flow',
+          '−$25,010M',
+          '—',
+          '⚠ ~18 months of runway at the Q2 exit rate',
+        ],
+      },
+      {
+        cells: [
+          'Cash + marketable securities',
+          '$100.0B',
+          'from $24.7B',
+          '~$105B with the $5B undrawn revolver',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Related-party debt',
+          '$13,329M',
+          'from $4,507M',
+          '⚠ 33.9% of debt; a sitting director’s firm',
+        ],
+      },
+      {
+        cells: [
+          'Related-party interest expense',
+          '$327M',
+          'from $0',
+          '⚠ 52% of the quarter’s $629M interest expense',
+        ],
+      },
+      {
+        cells: [
+          'Customer A / Customer B',
+          '18.3% / 19.5%',
+          '16.7% / <10%',
+          '⚠ 37.8% of revenue in two customers',
+        ],
+      },
+      {
+        cells: [
+          'Backlog',
+          '$47,461M',
+          '—',
+          '56% books within a year; $14,286M already deferred revenue',
+        ],
+      },
+      {
+        cells: [
+          'Non-cancelable obligations',
+          '$27,955M',
+          '—',
+          '⚠ $22,244M of it falls in 2027 alone',
+        ],
+      },
+    ],
+  },
+  bull: [
+    '**Revenue +92% with all three segments accelerating**, and the operating loss nearly closed — $(970)M → $(143)M in a year.',
+    '**Connectivity is a genuine profit engine:** $1,656M of operating income, +79%, on 12.0M Starlink subscribers (doubled) and Enterprise & Government revenue +108%.',
+    '**The AI segment really did improve, not just get re-added-back.** Of the $1,755M sequential swing in AI Adjusted EBITDA, **69% came from the GAAP operating loss narrowing**, and AI gross margin went 25.2% → 56.8% year over year.',
+    '**The Space decline is reallocation, not lost customers** — customer launches actually *rose* 9 → 10 with flat customer payload mass; the entire drop is internal Starlink deployment during the V2→V3 changeover.',
+    '**~$105B of liquidity** and investment-grade access: $85.7B of IPO proceeds plus a $25B bond at a 5.855% weighted average.',
+    '**The demand is contracted, not hoped for:** $14.1B of cloud agreements signed in the quarter, $6.7B more in July, and a $47.5B backlog of which 56% books inside a year.',
+  ],
+  bear: [
+    '**Capex was 2.35× revenue** — $18.37B against $7.81B — and beat consensus by $5B. AI capex alone was 6.2× AI revenue.',
+    '**H1 free cash flow was −$25.0B.** At the Q2 exit rate the ~$105B of liquidity is roughly **18 months**, and capex nearly doubled sequentially.',
+    '**One customer is 19.5% of company revenue** and ~60% of the AI segment, from effectively nothing in Q1 — against risk-factor language about 90-day termination.',
+    '**$13.3B of the debt is a failed sale-leaseback with a sitting director’s firm**, carrying 52% of the interest expense.',
+    '**Starlink ARPU fell 22%** ($85 → $66) and revenue per subscriber ~28%, while subscriber count doubled.',
+    '**$27,955M of non-cancelable obligations**, with **$22,244M concentrated in 2027** — the year the capex bill comes due.',
+    '**Colossus II’s power is under legal challenge:** the NAACP is seeking to enjoin the mobile gas turbines running it under the Clean Air Act.',
+  ],
+  theQuestion: `Every AI-infrastructure report in this section has come down to a version of the same question, and here it is in its most extreme form: **is $18.4B of quarterly capex a land grab into demand that already exists in contract form — or is it a purpose-built campus for one customer?** Customer B went from under 10% of revenue to 19.5% in a single quarter and is ~60% of the AI segment. The prospectus suggests a term through 2029; the risk factors say 90 days' notice. Which of those two sentences turns out to govern is, more or less, the entire investment.`,
+  analysis: `## Valuation — an unusual problem, because there are no earnings to divide by
+
+At the **$115.98** after-hours print the market values SpaceX near **$1.65T** on ~13.17B shares. There is no P/E: the company lost $541M in the quarter and $9.36B over the trailing twelve months. So the multiples are all revenue-based, and they are extreme by any standard.
+
+| Multiple | Value | Context |
+| --- | --- | --- |
+| Price / sales (trailing) | **85.6×** | TTM revenue ~$19.3B |
+| **Price / sales (Q2 annualised)** | **~53×** | On $31.3B of run-rate revenue |
+| Price / sales (forward) | 32.4× | Implies ~$51B of forward revenue |
+| EV / EBITDA | 313.5× | On the *adjusted* measure |
+| Price / book | 19.2× | Book value inflated by $85.7B of IPO proceeds |
+| P/E | n/a | Trailing net loss of $9.36B |
+
+The forward multiple is the interesting one. At 32.4× the market is already underwriting roughly **$51B of forward revenue** — a 63% increase on the current run rate. That is not a sceptical price. It is a price that assumes the cloud contracts ramp on schedule and the Starlink subscriber curve holds.
+
+Context matters on the drawdown, though, and it cuts both ways. The stock is **48.6% below its $225.64 June high** and **14.1% below the $135 IPO price** — so a great deal of enthusiasm has already come out. It also *rose 9.4%* on the day of the print and gave back 7.5% after hours, which tells you the market liked the revenue and disliked the capex, in that order.
+
+## The capex — where this sits on the spectrum
+
+This section has now looked at four companies in the same AI-infrastructure cycle, and they form a clean spectrum of how much of the future is being paid for today:
+
+| Company | Capex vs revenue | Where the strain shows |
+| --- | --- | --- |
+| Palantir | **0.75% of revenue** | Nowhere — it shows in the price instead |
+| Microsoft | ~32% of quarterly revenue | $329B of leases *off* the capex line |
+| Amazon | ~105% of operating cash flow | Free cash flow turned negative |
+| **SpaceX** | **235% of revenue** | Everywhere at once |
+
+SpaceX is not a more aggressive version of the hyperscalers. It is a different kind of company doing the same thing with a twentieth of the revenue base. **AI capex went from $749M to $15,828M in a year — a 21× increase** — while AI revenue went from $737M to $2,561M. The build is running roughly six years ahead of the revenue it serves.
+
+Some of that asset isn't even depreciating yet. Construction-in-progress went **$4.6B → $12.6B**, and the 10-Q says it is "primarily comprised of ongoing construction and expansion of the facilities and equipment as well as AI infrastructure that has not yet been placed in service." So forward depreciation rises sharply as that lands — which is precisely the line that Adjusted EBITDA adds back.
+
+## The customer
+
+Note 3 of the 10-Q discloses two customers above 10% of consolidated revenue. **Customer A at 18.3%** spans all three segments and is long-standing — it was 20.9%, 24.2% and 25.2% of revenue in 2025, 2024 and 2023, so it predates the cloud business entirely. **Customer B at 19.5%** is new: it did not clear 10% in any prior period, it relates only to the AI segment, and at ~$1.52B it is roughly **95% of the $1.6B of incremental cloud revenue** the release attributes to the new agreements.
+
+Put plainly: **essentially all of the AI segment's revenue growth this quarter came from one counterparty that was not material three months ago.**
+
+The company doesn't name it in the 10-Q, but it isn't a secret either — the IPO prospectus describes an Anthropic arrangement of roughly 325,000 GPUs at about $1.25B/month running to May 2029, and the CFO named Google and Anthropic on the call, with the Google agreement ramping from October. Note 17 lists only Tesla and Valor as related parties, so **the cloud customers are arm's-length** — a reading worth ruling out explicitly, and it is ruled out.
+
+> **The tension the filings don't resolve.** The risk factors say cloud agreements "may be terminated by either party upon 90 days' notice." The prospectus describes a term running to 2029. Both are SpaceX's own words. The honest position is that the *contracted* term is long and the *cancellation* right is short, and only one of those gets tested if the AI capex cycle turns.
+
+## The financing — a director's firm holds a third of the debt
+
+This is the disclosure most worth reading slowly. Of $39,364M of total debt, **$13,329M — 33.9% — is owed to Valor Equity Partners**, whose founder, CEO and Chief Investment Officer **Antonio Gracias serves on SpaceX's board**. It comes from three equipment lease agreements for AI infrastructure hardware (November 2025, January 2026, April 2026, the last through CTC Property LLC), all of which **failed sale-leaseback accounting** — meaning the assets stay on SpaceX's balance sheet and the proceeds book as debt. SpaceX guarantees the lessees' payments. The balance nearly **tripled in six months**, from $4,507M, and it carries **$327M of the quarter's $629M interest expense — 52%**.
+
+None of that is hidden; it is all in Notes 9 and 17. And the terms are not obviously off-market: the 10-Q's Other Financings paragraph states these arrangements carry an **average fixed interest rate of 5.9%**, against 5.855% weighted average on the public investment-grade notes.
+
+There is, however, a gap the filing does not reconcile. **$327M of quarterly interest against an average related-party balance of roughly $8.9B annualises to the mid-teens**, not 5.9%. Failed sale-leaseback accounting can produce interest expense that exceeds a stated coupon, so there are innocent explanations — but the filing gives balances and interest and a rate that don't sit together, and does not explain why. It is the single thing I would most want asked on the next call.
+
+## Risk — each isolated, do not blur
+
+1. **The capex/funding gap (dominant).** −$25.0B of H1 free cash flow, capex nearly doubling sequentially, ~$105B of liquidity — roughly 18 months at the Q2 exit rate before the company needs the capital markets again. It has investment-grade access today. That is a condition, not a guarantee.
+2. **Customer concentration.** 37.8% of revenue in two customers; ~60% of the AI segment in one that appeared this quarter.
+3. **The depreciation assumption.** 90% of Adjusted EBITDA is D&A and stock comp, $12.6B of asset is not yet in service, and **the 10-Q publishes no useful-life table**. If GPU lives are shorter than assumed, the adjustment does the damage on the way back.
+4. **Starlink unit economics.** ARPU −22% and revenue per subscriber −28% while subscribers doubled. Management attributes it to international mix and cheaper plans; the filing gives no like-for-like or US-only ARPU, so a price cut in mature markets cannot be ruled out.
+5. **The 2027 obligation wall.** $22,244M of the $27,955M of non-cancelable commitments falls in 2027.
+6. **Governance.** A third of the debt and half the interest expense run to a board member's firm, with an unreconciled implied rate.
+7. **Operational and legal.** The NAACP is seeking a preliminary injunction against the gas turbines powering Colossus II under the Clean Air Act; separately, multiple class actions over Grok's image generation, with a $354M litigation accrual.
+
+## The lockup — the stock's weakness made the overhang bigger, not smaller
+
+The mechanics here are genuinely non-obvious and worth getting right, because they are two days away.
+
+On **August 6**, up to **911.5M shares** (excluding affiliates) come free — about **1.43× the entire 638.9M-share IPO float**, roughly $106B at the after-hours price. That much was widely reported and is correct.
+
+What was less noticed: a *second* tranche of **455.8M "Additional Release Shares"** was also scheduled for that date — but only if the stock closed at least 30% above the $135 IPO price (**$175.50**) on five of the ten trading days ending on the earnings date. Over that window (July 22 – August 4) the closes ran $108.37 to $118.24. **The highest close was 32.6% below the trigger. Zero of ten days qualified.**
+
+So those shares do not release now. Under the prospectus's alternative branch they roll to **December 8, 2026 — where up to 797.6M shares come free instead of 328.4M.** The weak share price didn't avoid the dilution. It deferred it, and made the December block **469M shares larger**.
+
+Two caveats: every figure is an "up to," assuming no option exercises or RSU settlements after March 31; and the lockup, price condition included, is waivable with Goldman Sachs' written consent.
+
+## Time horizon & position sizing (kept separate)
+
+**Horizon.** The next 90 days are dominated by mechanics rather than fundamentals — the August 6 unlock, the October ramp of the Google agreement, the Cursor close in Q3, and a Q3 print that will show whether Customer B's revenue is a step or a spike. The actual thesis resolves on a **3–5 year** horizon: does 1.4 GW of compute and a doubling Starlink constellation generate returns above a depreciation base that is compounding faster than revenue?
+
+**Sizing considerations (not a recommendation).** SpaceX is the highest-beta expression of the same AI-capex cycle that drives Amazon, Microsoft and Nvidia — it does not diversify an AI-infrastructure basket, it concentrates it, and it adds two risks the others do not carry: a single-customer AI revenue base and a funding requirement that returns in roughly 18 months. Against that, Connectivity is a real, growing, profitable business that would be worth something substantial on its own, and the Space franchise has no competitor at its cadence. A position here is not one bet; it is three businesses with one balance sheet, two of which lose money at the operating line.`,
+  invalidation: {
+    bull: [
+      'Customer B’s revenue does not repeat in Q3 — proving the AI step-up was a spike, not a run rate.',
+      'The Google agreement slips past its October ramp, or the $6.7B of July contracts do not convert on schedule.',
+      'Capex stays near $18B/quarter without the revenue inflecting — pulling the funding requirement forward from ~18 months.',
+      'Forward depreciation on the $12.6B of construction-in-progress compresses the AI segment back below breakeven on an adjusted basis.',
+      'Starlink ARPU keeps falling at 20%+ while subscriber growth decelerates — the consumer business stops compounding.',
+    ],
+    bear: [
+      'Q3 shows Customer B repeating *and* Google ramping — concentration falls because the denominator grows, not because anyone leaves.',
+      'The August 6 unlock clears without a sustained break, removing the mechanical overhang that has driven the stock since June.',
+      'Free cash flow inflects as the CIP balance converts to revenue-generating capacity and capex normalises off the Q2 spike.',
+      'Starship V3 reaches rapid reuse, validating the cost-to-orbit claim that underwrites the whole Starlink deployment economics.',
+    ],
+  },
+  verification: {
+    confirmed: 6,
+    partlyTrue: 4,
+    corrected: 3,
+    confirmedNote:
+      'Confirmed against the Q2 2026 8-K and 10-Q: revenue $7,814M / +92% and the segment tables · capex $18,369M with $15,828M in AI · the Adjusted EBITDA bridge (D&A $2,848M + SBC $831M = 90% of $4,079M) · Note 3 concentration (Customer A 18.3%, Customer B 19.5%) · Note 17 related-party debt $13,329M with Valor and $327M of interest · Note 16 obligations $27,955M with $22,244M in 2027 · H1 free cash flow −$25,010M.',
+    items: [
+      {
+        kind: 'corrected',
+        title:
+          'Our own draft: the related-party debt is not undisclosed-rate, and it is not obviously off-market',
+        text: 'A first pass at this report described the Valor arrangements as carrying no disclosed rate, and derived a mid-teens implied rate from the balances. The 10-Q’s Other Financings paragraph does state a rate: **an average fixed 5.9% as of June 30, 2026** (5.5% at December 31), against 5.855% on the public notes. The correct framing is not "expensive related-party debt" but "**a disclosed 5.9% that the interest expense does not reconcile to**" — $327M against an average balance near $8.9B annualises to the mid-teens, and failed sale-leaseback accounting may explain the difference. The filing does not.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'Our own draft: "the AI segment’s EBITDA flip is 100% add-backs" was wrong',
+        text: 'The arithmetic is right — $(1,257)M + $1,885M D&A + $516M SBC + $2M restructuring = $1,146M — but the conclusion drawn from it was not. Of the **$1,755M sequential swing** from Q1’s $(609)M, **$1,212M (69%) came from the GAAP operating loss narrowing**, and AI gross margin expanded **25.2% → 44.3% → 56.8%** across three quarters. There is real operating improvement inside that segment, and an earlier draft denied it.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'The "$116B unlocks August 6" coverage is right — but the December figure changed',
+        text: 'We initially treated the widely published lockup number as the story. It is accurate: the 911.5M base tranche is unconditional. The finding is what happened to the *conditional* tranche — 455.8M shares needed five closes above $175.50 in the ten days to August 4, and **the best close was $118.24, with zero qualifying days**. Those shares roll forward, and the December 8 release becomes **up to 797.6M instead of 328.4M**.',
+      },
+      {
+        kind: 'partly',
+        title:
+          '"$14.1 billion of contracted sales" as evidence of demand durability',
+        text: 'The contracts are real and Note 2 defines contracted sales as the **non-cancellable, enforceable** portion, excluding cancellable future amounts — which is a stricter definition than most backlog metrics. But the risk factors say the cloud agreements "may be terminated by either party upon 90 days’ notice" after an initial ramp, and the prospectus describes the Anthropic term running to May 2029. Long contracted term, short cancellation right; the filings state both without reconciling them.',
+      },
+      {
+        kind: 'partly',
+        title: 'The Space segment decline as "reallocation, not deterioration"',
+        text: 'True for the quarter: customer launches rose 9 → 10, customer payload was flat at ~87t, and the entire decline was internal Starlink deployment. The $173M wider loss reconciles exactly to a $383M rise in Starship R&D. **But the six-month columns reverse it** — H1 customer launches fell 21 → 17 and H1 Space revenue fell $1,611M → $1,581M. The quarter is reallocation; the half-year is flat-to-down.',
+      },
+      {
+        kind: 'partly',
+        title: 'Starlink ARPU falling from $85 to $66',
+        text: 'Confirmed, and the 10-Q attributes it to "international expansion and the addition of lower priced service plans." Two caveats: consumer revenue per subscriber fell ~28%, *worse* than the 22.4% ARPU decline, implying the ARPU numerator is narrower than the reported consumer revenue line — a ~$277M gap the filing does not explain. And no like-for-like or US-only ARPU is given, so a price cut in mature markets cannot be ruled out.',
+      },
+      {
+        kind: 'partly',
+        title: 'H1 free cash flow of −$25.0B and "about 18 months of runway"',
+        text: 'The arithmetic holds ($3,466M − $28,476M). Two refinements: a first-time, unexplained **$1,195M "Proceeds from product rebates"** line sits directly under capex in investing activities, which if netted puts free cash flow nearer −$23.8B. And liquidity is ~**$105B** ($93.5B cash + $6.5B securities + $5B undrawn revolver), not the $115.7B gross raised — that figure double-counts note proceeds already used to repay the bridge loan.',
+      },
+    ],
+  },
+  openQuestions: [
+    'Why does $327M of quarterly related-party interest not reconcile to the disclosed 5.9% average fixed rate on those same arrangements? On an average balance near $8.9B it implies mid-teens. Failed sale-leaseback accounting may explain it; the filing does not.',
+    'What useful lives are assigned to servers and networking equipment? The 10-Q names useful lives as a critical estimate but publishes no PP&E table — and depreciation is 36.4% of revenue and 70% of the Adjusted EBITDA bridge.',
+    'Is Customer B’s ~$1.52B a run rate or a first-quarter catch-up? It went from roughly nothing to 19.5% of company revenue in one quarter, and Q3 is the first clean read.',
+    'What is the $1,195M of "Proceeds from product rebates" in investing activities? It is a first-time line, it is material, and the filing does not describe it.',
+  ],
+  soWhat: `The four reports in this section now trace one arc, and it is the most useful thing in them: **the AI buildout has stopped being a technology story and become a capital-markets story.**
+
+Look at what SpaceX actually is in this quarter. A rocket company that sells satellite internet, spending **$15.8 billion in three months** on GPUs — financed partly by a bond issue, partly by its IPO, and partly by lease agreements with a board member's investment firm — so that **AI labs can rent compute from it**. The customers are Anthropic and Google. The supplier of the batteries is Tesla. The power comes from mobile gas turbines that are being sued over.
+
+That is what "AI infrastructure" means in practice, and none of it is about model quality. It is about who can raise $100 billion and survive the eighteen months before it pays back.
+
+The practical read if you're building rather than investing: **the cheap inference you're using is being funded by an enormous, leveraged bet with a clock on it.** Four companies in this section have now shown the same shape from different angles — Amazon's cash flow went negative, Microsoft moved the spending off its capex line, SpaceX is spending 2.35× revenue, and Palantir is the one profiting from all of it without paying for any of it. Knowing which of those positions the company you depend on occupies is worth more than knowing its benchmark scores.`,
+  throughLine: {
+    text: `Four reports, one cycle — and SpaceX is the far end of it.
+
+Every AI-infrastructure print this section has examined came down to the same question in a different disguise: **how much of the future is being paid for today, and where does that show up?** Amazon's capex quietly exceeded its operating cash flow and free cash flow went negative. Microsoft's fell ~$15B on a lease *reclassification* while $329B of signed leases sat off the capex line entirely. Palantir was the mirror image — $14.6M of quarterly capex, no depreciation wave, nothing to hide, so the whole risk moved into the multiple.
+
+SpaceX takes it to the limit: **capex at 235% of revenue**, funded by an IPO, a bond, and a director's leasing vehicle, against an AI revenue base where one customer is 60% of the segment.
+
+Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Microsoft ~32% · Amazon ~105% of operating cash flow · SpaceX 235%.** That ordering is also, roughly, the order of how much has to go right.`,
+    links: [
+      { label: 'PLTR — the one with no capex at all', slug: 'pltr-q2-2026' },
+      {
+        label: 'MSFT — the capex that moved off the line',
+        slug: 'msft-q4-fy2026',
+      },
+      { label: 'AMZN — the first negative-cash quarter', slug: 'amzn-q2-2026' },
+    ],
+  },
+  sources: [
+    {
+      n: 1,
+      label: 'SpaceX Q2 2026 earnings release — 8-K Exhibit 99.1 (2026-08-04)',
+      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026052515/earningsreleaseq22608042.htm',
+      primary: true,
+    },
+    {
+      n: 2,
+      label:
+        'SpaceX Q2 2026 Form 10-Q — Notes 3, 9, 16, 17 (concentration, debt, obligations, related party)',
+      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026052535/spcx-20260630.htm',
+      primary: true,
+    },
+    {
+      n: 3,
+      label:
+        'SpaceX IPO prospectus (424B4) — lockup terms and cloud agreements',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001181412&type=424&dateb=&owner=include&count=10',
+      primary: true,
+    },
+    {
+      n: 4,
+      label:
+        'CNBC — SpaceX stock drops after first earnings report as AI costs soar',
+      url: 'https://www.cnbc.com/2026/08/04/spacex-spcx-earnings-live-updates-q2-2026.html',
+    },
+    {
+      n: 5,
+      label: 'stockanalysis.com — SPCX price, market cap and multiples',
+      url: 'https://stockanalysis.com/stocks/spcx/statistics/',
+    },
+    {
+      n: 6,
+      label: 'Investing.com — Q2 2026 earnings call transcript',
+      url: 'https://ca.investing.com/news/transcripts/earnings-call-transcript-spacex-beats-revenue-estimates-in-q2-2026-shares-swing-93CH-4775805',
+    },
+    {
+      n: 7,
+      label:
+        'TechCrunch — Musk repeatedly one-upped his execs on the first earnings call',
+      url: 'https://techcrunch.com/2026/08/04/elon-musk-repeatedly-one-upped-his-execs-on-spacexs-first-earnings-call/',
+    },
+    {
+      n: 8,
+      label: 'Benzinga — Q2 highlights: revenue +92%, backlog $47.5B',
+      url: 'https://www.benzinga.com/markets/earnings/26/08/60931182/spacex-q2-highlights-double-beat-revenue-up-92-backlog-hits-47-5-billion',
+    },
+    {
+      n: 9,
+      label: 'Investing.com — IPO lockup expiry mechanics and tranches',
+      url: 'https://www.investing.com/news/stock-market-news/spacex-ipo-lockup-expiry-123b-in-shares-set-to-unlock-in-early-august-2026-93CH-4796311',
+    },
+    {
+      n: 10,
+      label: 'Axios — stock falls under IPO price as lockup expirations loom',
+      url: 'https://www.axios.com/2026/07/17/spacex-lockup-stock-selloff',
+    },
+    {
+      n: 11,
+      label: 'CNBC — earnings date set, triggering the first big share unlock',
+      url: 'https://www.cnbc.com/2026/07/21/spacex-spcx-earnings-lock-up-expiration.html',
+    },
+    {
+      n: 12,
+      label:
+        'NPR — revenue rises as the once-soaring stock drifts back to Earth',
+      url: 'https://www.npr.org/2026/08/04/nx-s1-5918536/spacex-first-earnings-report-since-ipo',
+    },
+    {
+      n: 13,
+      label: 'Teslarati — first earnings beat while minimizing losses',
+      url: 'https://www.teslarati.com/spacex-spcx-q2-2026-earnings-results/',
+    },
+    {
+      n: 14,
+      label: 'Forbes — what to look for in SpaceX’s first earnings report',
+      url: 'https://www.forbes.com/sites/investor-hub/article/spacex-first-earnings-report-what-to-look-out-for/',
+    },
+    {
+      n: 15,
+      label: 'SpaceX Investor Relations',
+      url: 'https://ir.spacex.com',
+    },
+  ],
+};
+
 // Newest first — the section index renders in array order, without sorting.
 export const marketStormReports: MarketStormReport[] = [
+  spcxQ2_2026,
   pltrQ2_2026,
   msftQ4_FY2026,
   amznQ2_2026,
