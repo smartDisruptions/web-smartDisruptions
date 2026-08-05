@@ -102,6 +102,21 @@ export interface MarketStormReport {
   soWhat?: string; // markdown — the non-finance takeaway
   throughLine?: ThroughLine;
   sources: SourceRef[];
+  // The generated card, in both grounds. Same shape as a content post's, so
+  // <HeroImage> renders a report without knowing it is one. The social card
+  // stays the generated opengraph-image route rather than a file: it works for
+  // a report nobody has run the script for yet, which matters in a section
+  // where the next report is written the morning a company reports.
+  heroImage?: string;
+  heroImageLight?: string;
+  heroImageAlt?: string;
+  // Which of the Market Storm templates the hero was drawn with, mirroring the
+  // evidence key in scripts/heroes/<slug>.json. The index reads it to avoid
+  // printing the verification counts twice: a `ledger` hero IS those counts at
+  // display size, so the chips underneath it are pure duplication. Declaring it
+  // beats inferring it from the filename, which would be a guess that rots the
+  // first time a hero is redrawn.
+  heroTemplate?: 'quote' | 'scorecard' | 'ledger';
   ogImage?: string;
 }
 
@@ -400,6 +415,11 @@ On the counterweight side: **the marquee OpenAI $38B AWS deal is Nvidia GPUs —
 That is what "AI is cheap now" actually costs somebody. Every time an API call gets cheaper, it is because a company like this one front-loaded a decade of concrete, power, and silicon and is betting it can bill for it later. Amazon's free cash flow going negative is the first quarter where that bet showed up as an actual hole in the statement rather than a line in a slide deck.
 
 The practical read: if you build on top of this infrastructure, your costs are currently subsidised by a capex race between four companies. Useful to know while it lasts — and worth noticing that **power, not chips, is the binding constraint** Amazon named. That's the ceiling on how cheap inference gets.`,
+  heroImage: '/images/content/amzn-q2-2026-hero.webp',
+  heroImageLight: '/images/content/amzn-q2-2026-hero-light.webp',
+  heroImageAlt:
+    'A verification ledger for Amazon: five confirmed, three partly-true, one corrected.',
+  heroTemplate: 'ledger',
   sources: [
     {
       n: 1,
@@ -891,6 +911,11 @@ The OpenAI relationship is now genuinely two-sided. Microsoft holds ~27% as-conv
 Microsoft's capex figure fell from ~$190B to ~$175B and was widely reported as a pullback in AI spending. It wasn't. Leases were reclassified — the same buildings, counted differently. Meanwhile $329.1B of signed-but-uncommenced leases sit outside the capex line entirely, and the useful life of a datacenter was extended from 15 years to 25, which lowers annual depreciation on every asset in the fleet.
 
 None of that is fraud; it is all disclosed, and mostly defensible. But three separate accounting choices in one quarter all moved reported numbers the same direction, and the summary you read probably mentioned none of them. **The filing and the coverage of the filing are two different documents** — and only one of them is signed under penalty of law.`,
+  heroImage: '/images/content/msft-q4-fy2026-hero.webp',
+  heroImageLight: '/images/content/msft-q4-fy2026-hero-light.webp',
+  heroImageAlt:
+    'A four-tile scorecard for Microsoft: Azure growth, cloud margin, uncommenced leases and depreciation.',
+  heroTemplate: 'scorecard',
   sources: [
     {
       n: 1,
@@ -1548,6 +1573,11 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
       },
     ],
   },
+  heroImage: '/images/content/pltr-q2-2026-hero.webp',
+  heroImageLight: '/images/content/pltr-q2-2026-hero-light.webp',
+  heroImageAlt:
+    'A verification ledger for Palantir: six confirmed, three partly-true, four corrected.',
+  heroTemplate: 'ledger',
   sources: [
     {
       n: 1,
@@ -2176,6 +2206,11 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
       { label: 'AMZN — the first negative-cash quarter', slug: 'amzn-q2-2026' },
     ],
   },
+  heroImage: '/images/content/spcx-q2-2026-hero.webp',
+  heroImageLight: '/images/content/spcx-q2-2026-hero-light.webp',
+  heroImageAlt:
+    'A ticker board for SPCX showing revenue growth, capex, AI capex ratio and free cash flow.',
+  heroTemplate: 'quote',
   sources: [
     {
       n: 1,
