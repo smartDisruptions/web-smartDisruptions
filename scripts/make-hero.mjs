@@ -105,6 +105,10 @@ const FONT_DIR = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   'fonts'
 );
+const LOGO_DIR = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  'logos'
+);
 const W = 1200;
 const H = 630;
 
@@ -502,6 +506,17 @@ const REGISTRY = [
           ? 'ledger.finding is required — the counts are the texture, the finding is the point'
           : null,
   },
+  {
+    name: 'logo',
+    key: 'logo',
+    render: (k) => logoCard(k),
+    check: (l) =>
+      !l.file
+        ? 'logo.file is required — the mark to render'
+        : !existsSync(path.join(LOGO_DIR, l.file))
+          ? `logo.file "${l.file}" is not in scripts/logos/`
+          : null,
+  },
   { name: 'split', key: null, render: (k) => split(k) },
 ];
 
@@ -558,6 +573,35 @@ function chooseTemplate() {
     return REGISTRY.find((t) => t.name === 'split');
   }
   return picked;
+}
+
+/* LOGO — the company's mark, centred on the ground, and nothing else.
+   The plainest card here by an order of magnitude, which is the point: it is
+   for an index where the reader is scanning for a company, not reading a
+   finding.
+
+   It renders as a MASK rather than an <img>, so the mark takes the theme's
+   text colour instead of its own. Two of the four are otherwise unreadable —
+   SpaceX's wordmark is #005288 and Palantir's is black, and both vanish on
+   charcoal. Reversing to a single colour is the standard permitted treatment
+   on a dark ground, it keeps four different marks reading as one set, and it
+   stops the index turning into four competing brand palettes. Microsoft's
+   coloured squares go grey with everything else; that is the price.
+
+   The mark is capped at 46% of the frame's width. A logo that fills its card
+   reads as an advert for that company rather than as a label on ours. */
+function logoCard(k) {
+  const t = THEMES[k];
+  const l = spec.logo;
+  const file = path.join(LOGO_DIR, l.file);
+  const w = Math.round(W * (l.scale ?? 0.46));
+  return doc(
+    `body{background:${t.bg};display:flex;align-items:center;justify-content:center}
+     .m{width:${w}px;height:${Math.round(H * 0.42)}px;background:${t.text};
+       -webkit-mask:url('file://${file}') center/contain no-repeat;
+       mask:url('file://${file}') center/contain no-repeat}`,
+    `<div class="m"></div>`
+  );
 }
 
 /* QUOTE — the ticker board. A monospace symbol at display size over a rule of
@@ -1202,9 +1246,13 @@ function render(html, outWebp) {
 // real photograph. Those beat anything drawn here, so never replace one by
 // accident: --force is how you say you meant it.
 const hasHero = /^heroImage:/m.test(raw);
-const heroOut = path.join(OUT, `${slug}-hero.webp`);
-const heroLightOut = path.join(OUT, `${slug}-hero-light.webp`);
-const ogOut = path.join(OUT, `${slug}.webp`);
+// `out` lets a spec write under a different basename than the slug it belongs
+// to — a report needs BOTH a full hero for its page and a plain card image for
+// the index, and without this the second render overwrites the first.
+const outBase = spec.out ?? slug;
+const heroOut = path.join(OUT, `${outBase}-hero.webp`);
+const heroLightOut = path.join(OUT, `${outBase}-hero-light.webp`);
+const ogOut = path.join(OUT, `${outBase}.webp`);
 
 let wroteHero = false;
 if (hasHero && !force) {

@@ -1,0 +1,18 @@
+{
+ "title": "Microsoft — Market Storm",
+ "category": "Market Storm",
+ "out": "msft-q4-fy2026-card",
+ "logo": {
+  "file": "msft.svg",
+  "scale": 0.46
+ },
+ "before": {
+  "label": "Company",
+  "text": "Microsoft"
+ },
+ "after": {
+  "label": "Section",
+  "text": "Market Storm"
+ },
+ "alt": "Microsoft logo"
+}
