@@ -14,12 +14,17 @@ import Link from 'next/link';
 const qa = [
   {
     q: 'Who are you?',
-    a: 'Josh. Enterprise developer at a university by day — eleven years of Oracle SQL and Pro*C on systems a few thousand people quietly depend on. The rest of the time I build with AI: websites, apps, small tools, automations. Dad, and a BJJ coach for about two decades.',
+    a: 'Josh. A self-taught developer with a psychology degree — no CS background, which I lead with because it is the whole point. Enterprise developer at a university by day, twelve years there, on Oracle SQL and Pro*C systems a few thousand people quietly depend on. The rest of the time I build with AI. Dad, and a BJJ coach for about two decades.',
   },
   {
     q: 'What have you actually built?',
-    a: "A friend's restaurant takes real orders and real payments through a site I built — he placed the first test order himself. At work I replaced an $80k vendor product with something built in-house. Nine apps are live on this site. My son and I make games together, and one of them he built himself.",
+    a: 'At work, a replacement for an $80k vendor product, built in-house with an AI-native workflow. On my own: Review Growth System, a review-management SaaS with automated collection and AI-drafted replies; nine apps live on this site; thirty-odd projects in the last year. My son and I make games together, and one of them he built himself.',
     link: { href: '/apps', label: 'See the list' },
+  },
+  {
+    q: 'Anything you built and then threw away?',
+    a: 'Yes, and it is the one I would point at first. I built a friend’s food truck a complete online ordering system — menu, cart, checkout, Square payments — and then told him not to launch it. What went live was a menu with photos and a catering form to his inbox, because that was what his business needed. Building it was the cheap part; knowing it was the wrong thing to ship was the actual work.',
+    link: { href: '/content/food-truck-site-with-ai', label: 'Read the build' },
   },
   {
     q: 'Do you use AI to write these posts?',
@@ -28,7 +33,7 @@ const qa = [
   },
   {
     q: 'Who is this site for?',
-    a: "Someone who works for a living, can feel AI changing their field, and doesn't want to get left behind — which was me, two years ago. I teach up to my current level and keep raising the level. No jargon for its own sake, no course-selling, no pretending it's easier than it is.",
+    a: "Working professionals who want a practical path into building with AI — especially people with real-world experience and no traditional computer science background. That was me, and in most rooms it still is. I teach up to my current level and keep raising the level. No jargon for its own sake, no course-selling, no pretending it's easier than it is.",
   },
   {
     q: 'Why should I believe any of it?',
@@ -63,7 +68,8 @@ export default function AboutQA() {
               Ask me the awkward questions first.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-text-secondary">
-              I build real things with AI and write about how they actually get
+              Self-taught developer, psychology degree, no CS background. I
+              build real things with AI and write about how they actually get
               made. Here are the answers to what people usually want to know
               &mdash; including the one about whether AI writes this.
             </p>

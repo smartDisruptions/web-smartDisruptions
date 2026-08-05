@@ -16,31 +16,31 @@ const liveApps = apps.filter((a) => a.status === 'live');
 
 const proof = [
   {
+    figure: '$80k',
+    label: 'vendor product replaced',
+    detail:
+      'A university system I rebuilt in-house with an AI-native workflow, killing the renewal cost with it.',
+  },
+  {
+    figure: '0',
+    label: 'computer science degrees',
+    detail:
+      'Mine is a BS in psychology. I taught myself to build in 2008 and never stopped.',
+  },
+  {
     figure: `${liveApps.length}`,
-    label: 'apps live',
+    label: 'apps live on this site',
     detail: 'Deployed, linked, and used — not screenshots of a prototype.',
     href: '/apps',
     cta: 'See them',
   },
   {
     figure: '1',
-    label: 'real client, real orders',
+    label: 'build I talked a client out of',
     detail:
-      "A friend's restaurant takes payments through a site I built. He placed the first test order himself.",
+      'I built a friend’s food truck a full Square ordering system, then shipped him a menu and a catering form instead. It was what his business needed.',
     href: '/content/food-truck-site-with-ai',
     cta: 'Read the build',
-  },
-  {
-    figure: '11',
-    label: 'years as an enterprise dev',
-    detail:
-      'Oracle SQL and Pro*C at a university, on systems a few thousand people depend on.',
-  },
-  {
-    figure: '$80k',
-    label: 'vendor product replaced',
-    detail:
-      'Built in-house instead. That one taught me what "good enough to ship" means.',
   },
 ];
 
@@ -61,8 +61,9 @@ export default function AboutReceipts() {
             Josh Escusa
           </h1>
           <p className="mt-2 leading-relaxed text-text-secondary">
-            Enterprise developer by day. AI-native builder the rest of the time.
-            Dad, and a BJJ coach for about two decades.
+            Self-taught developer with a psychology degree. Enterprise developer
+            at a university by day, building the rest of the time. Dad, and a
+            BJJ coach for about two decades.
           </p>
 
           <div className="mt-6 flex flex-col gap-2 text-sm">
@@ -93,7 +94,8 @@ export default function AboutReceipts() {
           <p className="mt-6 max-w-2xl text-lg leading-[1.75] text-text-secondary">
             Everything I write about here, I did. The apps are deployed and I
             use them. The security holes I found were real holes in my own work.
-            When I say I shipped something, there&rsquo;s a live link behind it.
+            When I say I shipped something, there&rsquo;s a live link behind it
+            &mdash; and when I didn&rsquo;t ship it, I say that instead.
           </p>
 
           {/* The wall itself. */}

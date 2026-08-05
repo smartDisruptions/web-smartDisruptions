@@ -33,7 +33,7 @@ const templates = [
     id: 3,
     name: 'The Path',
     pitch:
-      'A timeline with a spine. Argues chronologically: the distance was walked, not jumped. Years need your confirmation.',
+      'A timeline with a spine, 2007 to now. The eighteen-year span is the argument — nobody skipped to the end. Dates are your real ones.',
     Component: AboutPath,
   },
   {
@@ -95,9 +95,10 @@ export default function AboutPreviewClient() {
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <p className="border-t border-border pt-6 text-sm text-text-secondary">
           Preview only &mdash; nothing here is the live About page. Flip the
-          theme in the nav to check both. Facts marked in my notes (years, the
-          $80k figure, app counts) need your confirmation before any of these
-          ships.
+          theme in the nav to check both. Copy is now reconciled against the
+          LinkedIn profile (2026-08-05): real dates, the psychology degree, and
+          the food truck told honestly &mdash; built, then deliberately not
+          shipped.
         </p>
       </div>
     </div>

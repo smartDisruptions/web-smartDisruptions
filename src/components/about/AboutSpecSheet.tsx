@@ -14,7 +14,13 @@ import Link from 'next/link';
 const fields = [
   {
     label: 'Role',
-    value: 'Enterprise developer at a university. Eleven years in.',
+    value:
+      'Enterprise developer at a university (twelve years, engineering since 2024). Founder of Smart Disruptions.',
+  },
+  {
+    label: 'Trained by',
+    value:
+      'Nobody. BS in psychology, 2007. Self-taught into web development in 2008 and into engineering on the job.',
   },
   {
     label: 'Day stack',
@@ -27,7 +33,12 @@ const fields = [
   {
     label: 'Shipped',
     value:
-      'A restaurant site taking real orders. An $80k vendor product replaced in-house. Nine apps live on this site. Games built with my son — one he built himself.',
+      'An $80k vendor product replaced in-house. Review Growth System, a review-management SaaS. Nine apps live on this site, thirty-odd projects in the last year. Games built with my son — one he built himself.',
+  },
+  {
+    label: 'Did not ship',
+    value:
+      'A full Square ordering system for a friend’s food truck. I built it, then talked him out of launching it — a menu and a catering form were what the business needed. Knowing that is the job now.',
   },
   {
     label: 'Writes about',
@@ -55,7 +66,8 @@ export default function AboutSpecSheet() {
             Josh Escusa
           </h1>
           <p className="mt-3 max-w-xl text-lg leading-relaxed text-text-secondary">
-            I build real things with AI and write down exactly how.
+            Self-taught developer with a psychology degree. I build real things
+            with AI and write down exactly how.
           </p>
         </div>
         <img

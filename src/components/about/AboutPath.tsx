@@ -6,34 +6,40 @@
  * next. Best for the reader the site is written for — someone who feels behind
  * and wants to see that the distance was walked, not jumped.
  *
- * NOTE: the years are Josh's to confirm. They are drawn from the vault's
- * career arc and should be corrected before this ships.
+ * The dates are real, taken from Josh's own work history. The eighteen-year
+ * span is the point of this template — it is the one layout where the slowness
+ * is the argument.
  */
 const milestones = [
   {
-    year: '2015',
-    title: 'Started at the university — in design, not engineering',
-    body: 'Design and content first, then communications. I was the person who could make things look right long before I was the person who could make them run.',
+    year: '2007',
+    title: 'Graduated with a psychology degree',
+    body: 'Not computer science. I mention it first because it is the part people assume must be missing from a story like this, and it is not — it just never came.',
   },
   {
-    year: '2019',
-    title: 'Moved into engineering',
-    body: 'Oracle SQL, Pro*C, Banner, Argos. Unglamorous systems a few thousand people depend on without ever knowing they exist. This is where I learned that shipping something small that works beats shipping something clever that does not.',
+    year: '2008',
+    title: 'Taught myself to build, in Seattle',
+    body: 'Websites and SEO for small businesses, self-employed, figuring it out as I went. Everything technical I can do today traces back to this, and none of it came from a classroom.',
   },
   {
-    year: '2023',
-    title: 'Started working with AI every single day',
-    body: 'Not "tried it." Every day, on real work, for three years now. Most of what I know about these tools I learned by being wrong in public and fixing it.',
+    year: '2014',
+    title: 'Joined a university — in design, not engineering',
+    body: 'Design and content for a student financial-wellness program. I was the person who could make things look right and read clearly, years before I was the person who could make them run.',
   },
   {
-    year: '2025',
-    title: 'Built things people outside my house actually use',
-    body: 'A friend’s restaurant taking real orders through a site I built. An $80k vendor product replaced in-house at work. Games my son and I made together — one of which he built himself.',
+    year: '2020',
+    title: 'Moved into communications',
+    body: 'Financial aid communications — turning regulations most people find impenetrable into something a student could act on. Unglamorous, and the single most useful writing training I have had.',
+  },
+  {
+    year: '2024',
+    title: 'Finally became an engineer, on the job',
+    body: 'Oracle SQL, Pro*C, Banner, Argos — the systems that move real money to real students. Ten years after I walked in the door. Last year I replaced an $80k vendor product with an app I built in-house.',
   },
   {
     year: '2026',
     title: 'Started teaching it — publicly, with receipts',
-    body: 'This site. Every post is something I shipped, written up honestly: the timeline, the method, the mistakes, and the parts worth copying.',
+    body: 'Founded Smart Disruptions and started writing. Every post is something I actually shipped: the timeline, the method, the mistakes, and the parts worth copying.',
     current: true,
   },
 ];
@@ -59,8 +65,10 @@ export default function AboutPath() {
 
       <p className="mt-8 text-lg leading-[1.75] text-text-secondary">
         I build real things with AI &mdash; websites, apps, small tools &mdash;
-        and I write about how they actually get made. None of this arrived at
-        once, which is the point of putting it in order.
+        and I write about how they actually get made. It took eighteen years and
+        a degree in the wrong subject to get here, which is exactly why
+        it&rsquo;s worth putting in order. Nobody skipped to the end, least of
+        all me.
       </p>
 
       {/* The spine. The border on the list draws it; each node's dot sits on
