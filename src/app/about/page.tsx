@@ -166,7 +166,8 @@ export default function AboutPage() {
         I&rsquo;ve worked with these tools daily for three years, and the
         interesting part isn&rsquo;t that I use them &mdash; everyone uses them.
         In 2023 I was copying answers out of a chat window. Now agents I built
-        publish articles while I&rsquo;m asleep.
+        write code, open their own pull requests, and merge them to production
+        before I wake up.
       </p>
 
       {/* The spine. The border on the list draws it; each node's dot sits on
