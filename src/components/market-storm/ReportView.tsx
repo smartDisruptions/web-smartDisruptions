@@ -62,10 +62,6 @@ function Inline({ children }: { children: string }) {
   );
 }
 
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="font-mono-accent text-accent">{children}</p>;
-}
-
 /* ---- report hero: ticker + verdict + method mark ---- */
 function ReportHero({ report }: { report: MarketStormReport }) {
   return (
@@ -90,25 +86,38 @@ function ReportHero({ report }: { report: MarketStormReport }) {
   );
 }
 
-/* ---- price strip ---- */
+/* ---- price strip ----
+   auto-fit rather than a fixed column count. It was `sm:grid-cols-5` against
+   reports that carry five OR six cells, so a six-cell strip dropped its last
+   stat onto a row of its own beside four empty slots — the most visible
+   unpolished thing on the page. auto-fit fills the row at whatever count the
+   report has and never orphans one.
+
+   The dividers are a 1px grid gap over a border-coloured ground rather than
+   per-cell borders, because a wrapped row makes `last:border-r-0` wrong on
+   every cell that happens to end a line. */
 function PriceStrip({ report }: { report: MarketStormReport }) {
   return (
-    <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-surface sm:grid-cols-5">
-      {report.priceStrip.map((cell, i) => (
-        <div
-          key={i}
-          className="border-b border-border px-4 py-3 sm:border-b-0 sm:border-r sm:last:border-r-0"
-        >
-          <div className="font-mono-accent text-text-secondary">{cell.k}</div>
-          <div
-            className={`mt-1 font-mono text-lg font-semibold [font-variant-numeric:tabular-nums] ${
-              toneText[cell.tone ?? 'neutral']
-            }`}
-          >
-            {cell.v}
+    <div className="overflow-hidden rounded-xl border border-border bg-border">
+      <div
+        className="grid gap-px"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        }}
+      >
+        {report.priceStrip.map((cell, i) => (
+          <div key={i} className="bg-surface px-4 py-3">
+            <div className="font-mono-accent text-text-secondary">{cell.k}</div>
+            <div
+              className={`mt-1 font-mono text-lg font-semibold [font-variant-numeric:tabular-nums] ${
+                toneText[cell.tone ?? 'neutral']
+              }`}
+            >
+              {cell.v}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -119,14 +128,6 @@ function PriceStrip({ report }: { report: MarketStormReport }) {
 function HeadlineVsRealBlock({ items }: { items: HeadlineVsRealType[] }) {
   return (
     <div>
-      <h2 className="font-display mb-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
-        The headline number vs. the filing
-      </h2>
-      <p className="mb-6 max-w-[62ch] text-text-secondary">
-        Every report in this section has found the same shape: the number that
-        leads the coverage is not the number the filing supports. Here is where
-        they part company.
-      </p>
       <div className="space-y-4">
         {items.map((item, i) => (
           <div
@@ -209,18 +210,9 @@ function KpiGrid({ report }: { report: MarketStormReport }) {
 }
 
 /* ---- structured data table (full width, star rows, right-aligned nums) ---- */
-function DataTableBlock({
-  table,
-  title,
-}: {
-  table: DataTableType;
-  title: string;
-}) {
+function DataTableBlock({ table }: { table: DataTableType }) {
   return (
     <div>
-      <h2 className="font-display mb-4 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
-        {title}
-      </h2>
       <div className="overflow-x-auto rounded-xl">
         <table className="w-full border-collapse text-left text-sm [font-variant-numeric:tabular-nums]">
           <thead className="bg-surface-elevated">
@@ -228,6 +220,7 @@ function DataTableBlock({
               {table.columns.map((col, i) => (
                 <th
                   key={i}
+                  scope="col"
                   className={`border-b border-border px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary ${
                     col.align === 'right' ? 'text-right' : 'text-left'
                   }`}
@@ -267,13 +260,6 @@ function DataTableBlock({
 function BullBear({ report }: { report: MarketStormReport }) {
   return (
     <div>
-      <h2 className="font-display mb-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
-        The central tension
-      </h2>
-      <p className="mb-6 max-w-[62ch] text-text-secondary">
-        The bull and bear don’t disagree on the facts. They disagree on one
-        thing — and it’s the whole investment.
-      </p>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Pole tone="bull" heading="The Bull holds" items={report.bull} />
         <Pole tone="bear" heading="The Bear presses" items={report.bear} />
@@ -323,12 +309,6 @@ function Pole({
 function Invalidation({ report }: { report: MarketStormReport }) {
   return (
     <div>
-      <h2 className="font-display mb-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
-        What would invalidate this view
-      </h2>
-      <p className="mb-6 max-w-[62ch] text-text-secondary">
-        The discipline: name in advance what would prove each side wrong.
-      </p>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="overflow-hidden rounded-xl border border-border bg-surface">
           <div className="border-b border-border px-6 py-3">
@@ -378,9 +358,9 @@ function VerificationLedger({ report }: { report: MarketStormReport }) {
   const v = report.verification;
   return (
     <div>
-      <h2 className="font-display mb-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+      <h3 className="font-display mb-2 text-xl font-semibold tracking-tight text-text-primary">
         Verification ledger
-      </h2>
+      </h3>
       <p className="mb-6 max-w-[62ch] text-text-secondary">
         A separate skeptic pass tried to refute every load-bearing claim against
         primary sources. Where it bit:
@@ -440,9 +420,9 @@ function VerificationLedger({ report }: { report: MarketStormReport }) {
 function OpenQuestions({ report }: { report: MarketStormReport }) {
   return (
     <div>
-      <h2 className="font-display mb-6 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+      <h3 className="font-display mb-6 text-xl font-semibold tracking-tight text-text-primary">
         Open questions
-      </h2>
+      </h3>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {report.openQuestions.map((q, i) => (
           <div
@@ -466,9 +446,6 @@ function OpenQuestions({ report }: { report: MarketStormReport }) {
 function SoWhat({ report }: { report: MarketStormReport }) {
   return (
     <div className="rounded-2xl border border-border bg-accent/[0.06] p-6 sm:p-8">
-      <p className="font-mono-accent mb-3 text-accent">
-        So what — if you don’t trade stocks
-      </p>
       <ArticleBody className="max-w-[62ch] [&>p:last-child]:mb-0">
         {report.soWhat ?? ''}
       </ArticleBody>
@@ -546,7 +523,7 @@ function Sources({ sources }: { sources: SourceRef[] }) {
   );
 }
 
-/* ---- shared disclaimer + method note ---- */
+/* ---- shared disclaimer ---- */
 export function Disclaimer() {
   return (
     <div className="rounded-lg border border-border bg-fill px-4 py-3 text-xs leading-relaxed text-text-secondary">
@@ -561,62 +538,176 @@ export function Disclaimer() {
   );
 }
 
-function MethodNote() {
+/* ---- the whole report body, in a fixed, reusable sequence ---- */
+/* A numbered stop on the walkthrough. The reports are long and technical, and
+   a reader who does not do this for a living needs to know where they are and
+   that there is an end. The number is the cheapest possible progress bar. */
+function Stop({
+  n,
+  title,
+  lede,
+  children,
+}: {
+  n: number;
+  title: string;
+  lede?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8">
-      <p className="font-mono-accent mb-3 text-accent">How this was made</p>
-      <p className="max-w-[62ch] leading-relaxed text-text-primary/85">
-        <Inline>{MARKET_STORM_METHOD}</Inline>
-      </p>
-    </div>
+    <section>
+      {/* The number sits ABOVE the title, not beside it. Inline, it pushed
+          every h2 29px to the right of the content it heads — so the page had
+          one left edge for its headings and a different one for everything
+          under them, all the way down. A single flush edge is most of what
+          reads as "aligned". */}
+      <div className="border-b border-border pb-4">
+        <p className="font-mono-accent text-accent [font-variant-numeric:tabular-nums]">
+          {String(n).padStart(2, '0')}
+        </p>
+        <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+          {title}
+        </h2>
+      </div>
+      {lede && <p className="mt-5 max-w-[62ch] text-text-secondary">{lede}</p>}
+      <div className="mt-6">{children}</div>
+    </section>
   );
 }
 
-/* ---- the whole report body, in a fixed, reusable sequence ---- */
+/**
+ * The report, as a walkthrough.
+ *
+ * The order here is the argument, and it changed for two reasons Josh named.
+ *
+ * REDUNDANCY. The reports were carrying every key figure four times over — once
+ * in the summary prose, again as data in the scorecard and table, again as a
+ * bull/bear bullet, and again inside the long-form analysis. Palantir's "93%"
+ * appeared in twelve separate sections. The data blocks are the ones that show
+ * a number best, so they keep it; the prose around them was cut back to what
+ * the visuals cannot say.
+ *
+ * THE META GOES LAST. The disclaimer opened the article and the method note
+ * closed it, so a reader met a caveat about AI research before a single fact
+ * about the company. Everything about *how the research was made* — method,
+ * verification ledger, open questions, disclaimer — now sits together at the
+ * end under one heading. The company is the article; the method is the
+ * appendix that earns it.
+ *
+ * The numbered stops exist because these run long and technical. A reader who
+ * does not do this for a living should be able to see where they are.
+ */
 export default function ReportView({ report }: { report: MarketStormReport }) {
   return (
     <div className="mt-8 space-y-14">
-      <Disclaimer />
       <ReportHero report={report} />
       <PriceStrip report={report} />
 
-      <section>
-        <Eyebrow>The one-paragraph read</Eyebrow>
-        <ArticleBody className="mt-3 max-w-[62ch]">
-          {report.summary}
-        </ArticleBody>
-      </section>
+      <Stop n={1} title="What happened" lede={undefined}>
+        <ArticleBody className="max-w-[62ch]">{report.summary}</ArticleBody>
+      </Stop>
+
+      <Stop
+        n={2}
+        title="The numbers that matter"
+        lede="The figures the rest of this rests on, and which way each one cuts."
+      >
+        <KpiGrid report={report} />
+      </Stop>
 
       {report.headlineVsReal && report.headlineVsReal.length > 0 && (
-        <HeadlineVsRealBlock items={report.headlineVsReal} />
+        <Stop
+          n={3}
+          title="The headline vs. the filing"
+          lede="Every report in this section has found the same shape: the number that leads the coverage is not the number the filing supports."
+        >
+          <HeadlineVsRealBlock items={report.headlineVsReal} />
+        </Stop>
       )}
 
-      <section>
-        <Eyebrow>The scorecard</Eyebrow>
-        <p className="mb-4 mt-1 max-w-[62ch] text-text-secondary">
-          One quarter, two opposite signals — the operating business against the
-          cash statement.
-        </p>
-        <KpiGrid report={report} />
-      </section>
+      {/* The full print, collapsed.
 
-      <DataTableBlock
-        table={report.printTable}
+          Every KPI card above is also a row in here — 8 of 8 on Amazon, 6 of 9
+          on Palantir. Deleting the duplicate rows was the obvious fix and the
+          wrong one: this table's job is letting somebody check the arithmetic,
+          and a reference table missing its headline figures cannot do that.
+
+          So it keeps every row and stops competing for attention instead. The
+          walkthrough reader never opens it; the one who wants to verify gets
+          the complete print. */}
+      <Stop
+        n={report.headlineVsReal?.length ? 4 : 3}
         title={report.printTableTitle}
-      />
+      >
+        <details className="group rounded-xl border border-border bg-surface">
+          <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
+            <span
+              className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
+              aria-hidden
+            >
+              &#9654;
+            </span>
+            Show the full print — {report.printTable.rows.length} rows, every
+            figure this report rests on
+          </summary>
+          <div className="border-t border-border p-5">
+            <DataTableBlock table={report.printTable} />
+          </div>
+        </details>
+      </Stop>
 
-      <BullBear report={report} />
+      <Stop
+        n={report.headlineVsReal?.length ? 5 : 4}
+        title="The central tension"
+        lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
+      >
+        <BullBear report={report} />
+      </Stop>
 
-      {/* Long-form analysis: valuation, AI-compute, risk, horizon */}
-      <ArticleBody className="max-w-[62ch]">{report.analysis}</ArticleBody>
+      <Stop
+        n={report.headlineVsReal?.length ? 6 : 5}
+        title="What would prove this wrong"
+        lede="The discipline: name in advance what would break each side of the case."
+      >
+        <Invalidation report={report} />
+      </Stop>
 
-      <Invalidation report={report} />
-      <VerificationLedger report={report} />
-      <OpenQuestions report={report} />
-      {report.soWhat && <SoWhat report={report} />}
+      {report.soWhat && (
+        <Stop
+          n={report.headlineVsReal?.length ? 7 : 6}
+          title="What this means if you don’t trade stocks"
+        >
+          <SoWhat report={report} />
+        </Stop>
+      )}
+
+      {/* What is left of the long-form: the reasoning the blocks above cannot
+          carry — valuation arithmetic, the risks ranked, the horizon. */}
+      <Stop
+        n={report.headlineVsReal?.length ? 8 : 7}
+        title="The longer read"
+        lede="Valuation, the risks in order, and the horizon this resolves on."
+      >
+        <ArticleBody className="max-w-[62ch]">{report.analysis}</ArticleBody>
+      </Stop>
+
       {report.throughLine && <ThroughLineBlock line={report.throughLine} />}
+
+      {/* ---- How the research was made. Everything meta, together, at the end. ---- */}
+      <div className="space-y-10 rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8">
+        <div>
+          <p className="font-mono-accent mb-2 text-accent">
+            How this was researched
+          </p>
+          <p className="max-w-[62ch] leading-relaxed text-text-primary/85">
+            <Inline>{MARKET_STORM_METHOD}</Inline>
+          </p>
+        </div>
+        <VerificationLedger report={report} />
+        <OpenQuestions report={report} />
+        <Disclaimer />
+      </div>
+
       <Sources sources={report.sources} />
-      <MethodNote />
     </div>
   );
 }
