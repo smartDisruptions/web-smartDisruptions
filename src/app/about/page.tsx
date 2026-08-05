@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'About — SmartDisruptions',
   description:
-    'Self-taught developer with a psychology degree. Three years of daily work with LLMs, from prompting to agent teams that run without me — and an honest note about where AI fits in the writing.',
+    'Self-taught developer. Three years of daily work with LLMs, from prompting to agent teams that build, test, and hand me the pull request — and an honest note about where AI fits in the writing.',
 };
 
 /**
@@ -25,14 +25,9 @@ export const metadata: Metadata = {
  */
 const milestones = [
   {
-    year: '2007',
-    title: 'Graduated with a psychology degree',
-    body: 'Not computer science. I mention it first because it is the part people assume must be missing from a story like this, and it is not — it just never came.',
-  },
-  {
     year: '2008',
     title: 'Taught myself to build, in Seattle',
-    body: 'Websites and SEO for small businesses, self-employed, figuring it out as I went. Everything technical I can do today traces back to this, and none of it came from a classroom.',
+    body: 'Websites and SEO for small businesses, self-employed, figuring it out as I went. Everything technical I can do today traces back to this — self-taught then, and still the way I pick up anything new.',
   },
   {
     year: '2014',
@@ -68,7 +63,7 @@ const milestones = [
   {
     year: 'Now',
     title: 'Running a team that works while I sleep',
-    body: 'Scheduled agents with names and job descriptions: one tidies the knowledge base nightly, one sweeps it weekly for rot, one drafts the day’s writing before I wake up. Each has a trust level — some apply their own changes, some only report, some only draft. In August one of them published an article end to end, opened its own pull request, merged it, and went live with nobody watching.',
+    body: 'Scheduled agents with names and job descriptions: one tidies the knowledge base nightly, one sweeps it weekly for rot, one drafts the day’s writing before I wake up. Each has a trust level, and the ceiling is deliberate — they work in development, they push to a test build, and they hand me a pull request and a preview link. I read it and I decide what goes live. Making that last step automatic would be easy, and I do not want it: the point of the whole setup is that judgment is the part I keep.',
     current: true,
   },
 ];
@@ -113,7 +108,7 @@ const skills = [
   {
     term: 'Graduated autonomy',
     plain:
-      'Every scheduled agent has a trust tier: apply, report, or draft only. Nothing touching my name, my money, or production runs without me.',
+      'Every scheduled agent has a trust tier: apply, report, or draft only. Agents reach development and a test build; production is a decision I make, and nothing touching my name or my money happens without me.',
   },
   {
     term: 'Rule distillation',
@@ -166,8 +161,9 @@ export default function AboutPage() {
         I&rsquo;ve worked with these tools daily for three years, and the
         interesting part isn&rsquo;t that I use them &mdash; everyone uses them.
         In 2023 I was copying answers out of a chat window. Now agents I built
-        write code, open their own pull requests, and merge them to production
-        before I wake up.
+        write code, ship it to a test build, and have a pull request and a
+        preview waiting for me when I wake up &mdash; and I am the one who
+        decides whether it goes live.
       </p>
 
       {/* The spine. The border on the list draws it; each node's dot sits on
