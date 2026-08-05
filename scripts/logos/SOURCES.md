@@ -14,6 +14,7 @@ SmartDisruptions, nor altered in shape.
 | `amzn.svg` | [Amazon logo.svg](https://commons.wikimedia.org/wiki/File:Amazon_logo.svg) | Public domain |
 | `msft.svg` | [Microsoft logo (2012).svg](https://commons.wikimedia.org/wiki/File:Microsoft_logo_(2012).svg) | Public domain |
 | `pltr.svg` | [Palantir Technologies logo.svg](https://commons.wikimedia.org/wiki/File:Palantir_Technologies_logo.svg) | Public domain |
+| `amd.svg` | [AMD Logo.svg](https://commons.wikimedia.org/wiki/File:AMD_Logo.svg) | Public domain |
 | `spcx.svg` | [SpaceX-Logo.svg](https://commons.wikimedia.org/wiki/File:SpaceX-Logo.svg) | Public domain |
 
 Retrieved 2026-08-05 from the Commons API, not screenshotted — a screenshot of

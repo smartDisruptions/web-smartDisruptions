@@ -2231,8 +2231,501 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
   ],
 };
 
+const amdQ2_2026: MarketStormReport = {
+  slug: 'amd-q2-2026',
+  ticker: 'AMD',
+  company: 'Advanced Micro Devices, Inc.',
+  title:
+    'AMD has promised 16% of itself to two customers at a penny a share — and none of it is in the earnings yet',
+  excerpt:
+    'Revenue grew 50% to a record $11.5B, Data Center more than doubled, and AMD beat on revenue, EPS and guidance. The stock fell 9% anyway. Underneath: the eye-catching growth rates are measured against a base carrying an $800M charge, $483M of the profit is investment gains, and Note 12 of the 10-Q discloses warrants for 320 million shares — about 16% of the company — issued to OpenAI and Meta at one cent each, none of it in the diluted share count. STORM put four AI agents on the print, then had skeptics try to refute every load-bearing claim against the filings.',
+  catalyst: 'Q2 2026 earnings — reported August 4, 2026',
+  publishDate: '2026-08-05',
+  tags: ['AMD', 'Instinct', 'earnings', 'AI-infrastructure', 'dilution'],
+  verdict:
+    'A double beat and a raised outlook met a 9% drop, which is usually the market seeing something the release does not lead with. Here there are three such things, and the largest one is not in the income statement at all.',
+  priceStrip: [
+    { k: 'Price · Aug 5', v: '$487.80' },
+    { k: 'After hrs · Aug 4', v: '−8.9%', tone: 'bear' },
+    { k: '52-wk change', v: '+175%', tone: 'bull' },
+    { k: 'Market cap', v: '~$795B' },
+    { k: 'Fwd P/E', v: '44.1×', tone: 'warn' },
+    { k: 'Street target', v: '~$579' },
+  ],
+  summary: `AMD had the best quarter in its history and the stock fell nine percent. Revenue grew 50% to a record $11.5 billion, the Data Center business more than doubled, and the company beat on revenue, profit *and* its forecast for next quarter. That combination usually means the market has noticed something the press release does not put up front. It has: the most striking growth figures are measured against a year-ago quarter that carried an $800 million write-off, a fifth of the pre-tax profit came from investment gains rather than selling chips, and the single largest number in this report is not in the financial statements at all — it is in a footnote.`,
+  headlineVsReal: [
+    {
+      headline:
+        'Nothing. This one is not in the release, the slides, or the call — it is **Note 12 of the 10-Q**, filed the following morning.',
+      real: 'AMD has issued warrants for **320 million shares — about 16% of the company — to OpenAI and Meta, at an exercise price of one cent**. Total proceeds if every share is exercised: **$3.2 million**.',
+      gap: 'None of it has vested, so AMD states verbatim that the warrants "had no impact on the Condensed Consolidated Financial Statements", and they are correspondingly absent from the 1,659M diluted share count that produced the $1.38 EPS. Fully vested, that EPS becomes about **$1.16**. This is not hidden — it is disclosed in the filing and the vesting is genuinely demanding: Instinct purchase milestones of up to 6 GW each, stock-price thresholds escalating to **$600 a share**, and further conditions on top. But the same note says the warrants "will be classified as liabilities until certain conditions for equity classification are met", which makes this deferred cost, not waived cost. **Meta\'s first tranche can vest on shipment of the initial gigawatt — possibly as soon as this quarter.**',
+    },
+    {
+      headline:
+        '"Operating income ($M) … Up **1585%**" and "Gross margin … Up **14 ppts**" — printed in AMD\'s own summary table.',
+      real: 'About **+199%** and **+3.6 points** against a comparable base. On non-GAAP, +245% becomes about **+82%**.',
+      gap: 'Both figures are measured against a Q2 2025 that AMD itself footnotes as carrying **$800M of inventory charges** from the US export controls on MI308. Add it back and the year-ago operating line is +$666M rather than −$134M, which is what makes 1,585% arithmetically possible — it is a percentage change off a negative base. AMD published the ex-charge margin restatement in *last* year\'s release ("approximately 54%") and did not carry it forward into this one. The underlying business is genuinely excellent; the growth rates are the wrong size.',
+    },
+    {
+      headline:
+        '"Net income $2,297M … diluted earnings per share **$1.38**", up 156%.',
+      real: 'About **$0.98** stripping the investment gains and taxing what is left at the statutory 21%.',
+      gap: '**$483M of the $598M "other income" — 81% of it — is gains on long-term investments**, which AMD removes from its own non-GAAP figures. The effective tax rate was **9.8%** (the 10-Q\'s number) against a 21% statutory rate and the 13% AMD itself uses for normalisation. To AMD\'s credit the $1.66 non-GAAP EPS contains **none** of the gain and adds $161M of tax back — the non-GAAP number is the conservative one here, which is not the usual direction of travel.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$11.54B',
+      delta: '+50% YoY',
+      note: 'A record, and it beat the ~$11.25B consensus.',
+      tone: 'bull',
+    },
+    {
+      label: 'Data Center revenue',
+      value: '$6.72B',
+      delta: '+107% YoY',
+      note: '58% of the company; operating margin 31.3%.',
+      tone: 'bull',
+    },
+    {
+      label: 'Gaming revenue',
+      value: '$779M',
+      delta: '▼ 31% YoY',
+      note: 'The one segment going backwards, on semi-custom.',
+      tone: 'bear',
+    },
+    {
+      label: 'Client & Gaming op. income',
+      value: '$582M',
+      delta: '▼ 24% on +6% revenue',
+      note: 'Margin 21.2% → 15.2%. Negative operating leverage.',
+      tone: 'bear',
+    },
+    {
+      label: 'Warrants outstanding',
+      value: '320M sh',
+      delta: '⚠ ~16% of the company',
+      note: 'OpenAI + Meta at $0.01. None vested; none in EPS.',
+      tone: 'warn',
+    },
+    {
+      label: 'Investment gains',
+      value: '$483M',
+      delta: '81% of other income',
+      note: '19% of pre-tax profit, from marks not chips.',
+      tone: 'warn',
+    },
+    {
+      label: 'Effective tax rate',
+      value: '9.8%',
+      delta: 'vs 21% statutory',
+      note: 'FDDEI and R&D credits; Q1 was 14.8%.',
+      tone: 'warn',
+    },
+    {
+      label: 'Q3 guide',
+      value: '~$13B',
+      delta: '+41% YoY',
+      note: 'Above consensus; non-GAAP margin flat at ~56%.',
+      tone: 'bull',
+    },
+  ],
+  printTableTitle: 'Q2 2026 — the facts everything hangs on',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 2026', align: 'right' },
+      { label: 'vs Q2 2025', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Revenue',
+          '$11,536M',
+          '+50%',
+          'Record; beat ~$11.25B consensus. Q1 was $10,253M',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'GAAP operating income',
+          '$1,990M',
+          'from $(134)M',
+          '⚠ "+1585%" is a change off a negative base',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          '— same, on a clean base',
+          '$1,990M',
+          '+199%',
+          'Adding back the $800M MI308 charge AMD footnotes',
+        ],
+      },
+      {
+        cells: [
+          'Non-GAAP operating income',
+          '$3,094M',
+          '+82% clean',
+          'Printed as +245%; base was $897M + $800M',
+        ],
+      },
+      {
+        cells: [
+          'GAAP gross margin',
+          '54%',
+          '+3.6 pts clean',
+          '⚠ Printed "+14 ppts"; clean base is 50.2%',
+        ],
+      },
+      {
+        cells: [
+          'Non-GAAP gross margin',
+          '56%',
+          '+2.5 pts clean',
+          'AMD restated FY25 ex-charge as "approximately 54%"',
+        ],
+      },
+      {
+        cells: [
+          'Other income, net',
+          '$598M',
+          'from $98M',
+          '⚠ $483M of it is long-term investment gains',
+        ],
+      },
+      {
+        cells: [
+          'Income before taxes',
+          '$2,551M',
+          '—',
+          'Operating is 96% of the $2,068M ex-gain figure',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Income tax provision',
+          '$252M',
+          '9.8% rate',
+          '⚠ vs 21% statutory and AMD’s own 13% normalisation',
+        ],
+      },
+      {
+        cells: [
+          'GAAP diluted EPS',
+          '$1.38',
+          'vs $0.54',
+          '⚠ ~$0.98 ex-gains at 21%; ~$1.16 if warrants vest',
+        ],
+      },
+      {
+        cells: [
+          'Non-GAAP diluted EPS',
+          '$1.66',
+          'vs $0.48',
+          'Beat ~$1.55–1.60. Contains none of the gain',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          '— Data Center',
+          '$6,718M',
+          '+107%',
+          '$2,103M op. income, 31.3% margin, +226% clean',
+        ],
+      },
+      {
+        cells: ['— Client', '$3,062M', '+23%', 'Ryzen strength'],
+      },
+      {
+        cells: ['— Gaming', '$779M', '−31%', '⚠ Semi-custom console decline'],
+      },
+      {
+        cells: [
+          '— Client & Gaming op. income',
+          '$582M',
+          '−24%',
+          '⚠ Margin 21.2% → 15.2% on rising revenue',
+        ],
+      },
+      {
+        cells: [
+          '— Embedded',
+          '$977M',
+          '+19%',
+          '$386M op. income, 39.5% margin',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Warrants (10-Q Note 12)',
+          '320M sh',
+          '$0.01 each',
+          '⚠ OpenAI + Meta; none vested; absent from EPS',
+        ],
+      },
+      {
+        cells: [
+          'Diluted shares',
+          '1,659M',
+          '—',
+          '1,979M if the warrants fully vest',
+        ],
+      },
+      {
+        cells: [
+          'Q3 2026 outlook',
+          '~$13.0B',
+          '+41%',
+          '±$300M; non-GAAP gross margin ~56%, flat QoQ',
+        ],
+      },
+    ],
+  },
+  bull: [
+    '**Data Center more than doubled to $6.7B** and earned a **31.3% operating margin** — on a clean base that is +226% operating income, which needs no distorted comparison to be extraordinary.',
+    '**The beat was across the board:** revenue $11.54B vs ~$11.25B, non-GAAP EPS $1.66 vs ~$1.55–1.60, and a Q3 guide of ~$13B above consensus.',
+    '**Non-GAAP is the conservative number here.** It excludes all $483M of investment gains and *adds back* $161M of tax to reach a 13% rate — the opposite of the usual direction, and a point in AMD’s favour on disclosure.',
+    '**96% of durable pre-tax income is operating income.** Strip the marks and the earnings are still overwhelmingly from selling chips.',
+    '**The customer list is the moat:** Helios is named as deploying at Anthropic, Meta, Microsoft, OpenAI and Oracle. Warrants aside, those are the buyers who matter.',
+    '**Embedded quietly earns 39.5% operating margins** on $977M — the highest-margin segment, growing 19%, and almost never discussed.',
+  ],
+  bear: [
+    '**320M warrants at a penny** — about 16% of the company to OpenAI and Meta — sit outside the share count. Fully vested, $1.38 becomes ~$1.16.',
+    '**The headline growth rates are the wrong size.** +1,585% is +199% on a comparable base; +14 points of gross margin is +3.6.',
+    '**A fifth of pre-tax profit is investment gains**, and the tax rate was 9.8% against a 21% statutory rate.',
+    '**Client & Gaming operating income fell 24% while its revenue rose 6%** — margin 21.2% → 15.2%. Negative operating leverage in the segment meant to be ballast.',
+    '**The Anthropic deal contributes nothing to FY2026.** "Up to 2 gigawatts", first gigawatt beginning H1 2027, with no disclosed firm minimum, dollar value or cancellation terms.',
+    '**Guidance implies no further margin gain** — non-GAAP gross margin flat at ~56% in Q3 even as Data Center mix keeps rising.',
+    '**At 44× forward earnings and 12.5× forward sales**, after a 175% year, the price already assumes the doubling continues.',
+  ],
+  theQuestion: `**Is 16% of the company a fair price for the customer list, or the tell that the customer list had to be bought?** AMD gave OpenAI and Meta warrants over 320 million shares at a cent each, vesting on gigawatt-scale purchase milestones. If the chips are as good as this quarter suggests, that equity was unnecessary and expensive. If they needed the sweetener to displace Nvidia at those two accounts, then the 107% Data Center growth is being purchased in stock — and the bill arrives exactly when the revenue does.`,
+  analysis: `## Valuation — the price already owns the second doubling
+
+At **$487.80** the market pays about **$795B** for AMD: **44.1× forward earnings**, **12.5× forward sales**, and 125× trailing. The stock is up **175% in a year**, which is most of why a double beat produced a 9% drop — a beat has to be enormous to move a price that has already moved.
+
+| Multiple (at $487.80) | Value |
+| --- | --- |
+| Forward P/E | **44.1×** |
+| Trailing P/E | 125.2× |
+| Price / sales (forward) | 12.5× |
+| EV / EBITDA | 82.4× |
+| Price / free cash flow | 94.4× |
+| 52-week change | **+175%** |
+
+The Street mean target is about **$579**, roughly 19% above the price, in an unusually wide range — UBS at $730, Jefferies $640, Mizuho $625, Wedbush $600, Susquehanna $500, with outliers to $1,250. That dispersion is the honest signal: nobody disputes the Data Center trajectory, and nobody agrees what it is worth.
+
+One thing the multiple does *not* yet price, because it cannot: if the warrants vest, the share count goes from 1,659M to roughly 1,979M. Every per-share figure above is calculated on the smaller number.
+
+## The warrants — the largest number in this report
+
+It is worth stating the mechanics plainly, because this is disclosed rather than hidden and the detail matters.
+
+In **October 2025** AMD issued OpenAI warrants over **160 million shares**. In **February 2026** it issued Meta warrants over another **160 million**. Exercise price: **one cent**. Total proceeds to AMD if every share is exercised: **$3.2 million**, against a stake worth roughly $156B at today's price.
+
+Vesting is genuinely demanding, and three conditions stack: Instinct purchase milestones of **up to 6 GW each**, share-price thresholds escalating to **$600**, and further technical and commercial conditions before exercise. None had vested at 27 June 2026, which is why AMD can state that they "had no impact on the Condensed Consolidated Financial Statements."
+
+Two things follow that cut in opposite directions, and both are true.
+
+**In AMD's favour:** this quarter's growth was *not* bought with the warrants. Volume MI450 and Helios shipments to those two customers begin in the second half, which is precisely why no purchase milestone has vested. The 50% revenue growth and 107% Data Center growth are unencumbered.
+
+**Against:** the same note says the warrants "will be classified as liabilities until certain conditions for equity classification are met." That is deferred cost, not waived cost — and **Meta's first tranche can vest on shipment of the initial gigawatt, which could happen as soon as this quarter.** The equity cost and the warrant-linked revenue arrive together, in future periods, and only one of them is currently in anyone's model.
+
+## Risk — each isolated, do not blur
+
+1. **Dilution timing (the one that is new).** ~16% of the company is contingent on milestones that begin landing in the second half. Every per-share figure quoted today runs on the pre-warrant count.
+2. **Comparison-base flattery.** The headline growth rates are 3–8× the comparable figures. That is a presentation problem rather than a business problem, but it sets expectations the business then has to meet.
+3. **Client & Gaming going backwards on profit.** Operating income −24% on +6% revenue is the clearest negative signal in the segment table, and Gaming's −31% is a semi-custom cycle AMD does not control.
+4. **Earnings quality.** 19% of pre-tax profit from investment marks, at a 9.8% tax rate driven by FDDEI and R&D credits rather than a one-off. Both are reversible.
+5. **The Anthropic option.** "Up to 2 GW" with no firm minimum, no disclosed dollar value and no cancellation terms, first deliveries H1 2027, plus AMD committing up to **$5B of its own cash** into Anthropic. Read it as an option, not a backlog.
+6. **Supply, not demand.** Guidance holds gross margin flat at ~56% while Data Center mix rises, which usually means Helios ramp costs — a good problem, and still a cap on near-term margin.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** The next two quarters are unusually legible: Helios volume shipments start, the first warrant tranches can vest, and Q3 is guided to ~$13B. The thesis resolves over **2–3 years** on one question — does AMD hold a genuine second position in AI training silicon, or is it the second source that gets squeezed when supply loosens? Under a year you are trading the multiple, which has already moved 175%.
+
+**Sizing considerations (not a recommendation).** AMD is the highest-beta way to own the same AI-capex cycle as Nvidia without owning Nvidia, so it concentrates rather than diversifies an AI-infrastructure position. It also carries a risk none of the others do: a known, disclosed, contingent 16% dilution whose trigger is *good news*. A position sized on today's EPS is sized on a share count that the company's own success would change.`,
+  invalidation: {
+    bull: [
+      'Warrant tranches vest faster than revenue scales, so the per-share arithmetic deteriorates while the top line still looks strong.',
+      'Client & Gaming operating income keeps falling on flat-to-rising revenue — the negative operating leverage is structural, not a cycle.',
+      'Non-GAAP gross margin stays flat or slips through 2027 as Helios ramps, showing the rack business is dilutive to margin at scale.',
+      'The Anthropic "up to 2 GW" quietly slips or shrinks, confirming it was an option rather than a commitment.',
+    ],
+    bear: [
+      'Data Center holds 100%+ growth for another two quarters with margins near 31%, proving the second source is now a first choice.',
+      'A warrant tranche vests *and* the associated revenue lands large enough that the dilution is obviously worth it.',
+      'Client & Gaming margin recovers as the semi-custom cycle turns, restoring the ballast.',
+      'AMD discloses firm terms on Anthropic — a dollar value, a minimum, a schedule — converting the option into a backlog.',
+    ],
+  },
+  verification: {
+    confirmed: 5,
+    partlyTrue: 4,
+    corrected: 2,
+    confirmedNote:
+      'Confirmed against AMD’s Q2 2026 8-K Exhibit 99.1 and the Q2 10-Q: revenue $11,536M / +50% and the segment table · GAAP operating income $1,990M against $(134)M · other income $598M with $483M of investment gains stripped in AMD’s own reconciliation · the 9.8% effective tax rate stated in the 10-Q · Note 12’s 320M warrants to OpenAI and Meta at $0.01 with none vested.',
+    items: [
+      {
+        kind: 'corrected',
+        title:
+          '"Operating income up 1,585%" and "gross margin up 14 points" are not comparable figures',
+        text: 'Both are measured against a Q2 2025 carrying **$800M of MI308 export-control charges** that AMD footnotes in the same table. Add it back: operating income growth is **~+199%** (non-GAAP **~+82%**, not +245%) and GAAP gross margin expansion is **~+3.6 points** (50.2% → 53.8%), not 14. The 1,585% figure is a percentage change off a *negative* base, which makes it arithmetically meaningless as a growth rate. AMD published the ex-charge restatement in last year’s release and did not carry it forward.',
+      },
+      {
+        kind: 'corrected',
+        title: 'Our own draft: the gigawatt-to-GPU arithmetic was wrong',
+        text: 'A first pass converted Anthropic’s "2 gigawatts" at ~140 kW per Helios rack, giving ~790,000–1,030,000 GPUs and $58–75B of hardware. The rack-power input was wrong by roughly 1.76×. The AMD/Schneider Electric co-engineered reference design specifies **up to 246 kW per rack**, and hands-on reporting puts the bus bar at **225–245 kW**. At 72 GPUs per rack the correct range is about **7,300–8,900 racks and 523,000–640,000 GPUs**, or ~$38–47B — and AMD has never defined whether its "gigawatt" means IT load or facility power, so even this is a band.',
+      },
+      {
+        kind: 'partly',
+        title: 'The warrants represent "19.3% of the company"',
+        text: 'The 320M shares and $0.01 exercise price are confirmed verbatim in Note 12, as is "no impact on the Condensed Consolidated Financial Statements." But 19.3% divides by the *pre-issuance* 1,659M diluted count. Against a post-issuance 1,979M the stake is **~16.2%**, and the EPS effect is $1.38 → **~$1.16** rather than the larger haircut the higher figure implies.',
+      },
+      {
+        kind: 'partly',
+        title: 'The Anthropic partnership as evidence of committed demand',
+        text: '"Up to 2 gigawatts" with the first gigawatt beginning H1 2027 is confirmed verbatim, as is the absence of any disclosed minimum, dollar value or cancellation right. A structural tell the release does not surface: AMD filed 8-Ks with Item 1.01 (material definitive agreement) **and** Item 3.02 (unregistered equity sales) for the OpenAI and Meta warrants, and filed no equivalent for Anthropic. It contributes **zero FY2026 revenue**.',
+      },
+      {
+        kind: 'partly',
+        title: 'The 9.8% effective tax rate as an earnings-quality problem',
+        text: 'The rate is confirmed in the 10-Q (9.8% for the quarter, 11.8% for the half; Q1 was 14.8%). But the 10-Q attributes it to **foreign-derived deduction eligible income and R&D tax credits** — recurring structural items, not a discrete one-off. Calling it a one-time flatter would be wrong; calling it durable at 9.8% would also be wrong, since the same drivers produced 14.8% one quarter earlier.',
+      },
+      {
+        kind: 'partly',
+        title: 'The "gross margin miss" that drove the after-hours drop',
+        text: 'Coverage attributed the 9% fall partly to a margin miss of "54% versus 56% consensus". AMD’s **GAAP** gross margin was 54% and its **non-GAAP** was exactly 56% — and sell-side consensus for AMD gross margin is conventionally non-GAAP. On that basis the quarter met the number rather than missing it, and the comparison circulating is between two different measures.',
+      },
+    ],
+  },
+  openQuestions: [
+    'What are the exact vesting schedules and stock-price thresholds on each warrant tranche? Note 12 gives the ceiling (6 GW each, escalating to $600) but not the tranche-by-tranche steps — which is what decides whether dilution lands in Q3 2026 or 2029.',
+    'What does AMD mean by a "gigawatt" — IT load or facility power? The difference is roughly 240,000 GPUs on the Anthropic deal, and the company has never defined it.',
+    'Why did the effective tax rate fall from 14.8% in Q1 to 9.8% in Q2 when the 10-Q attributes both to the same structural drivers? Nothing discrete is disclosed to explain the step.',
+    'Is Client & Gaming’s 6-point margin decline the semi-custom cycle or something structural? Revenue rose while operating income fell 24%, and the release does not decompose it.',
+  ],
+  soWhat: `If you want one lesson from this quarter that applies well beyond AMD, it is this: **when a supplier gives its customers equity, look at what it is buying.**
+
+AMD handed OpenAI and Meta the right to about 16% of the company for a cent a share. Not cash, not a discount — ownership, vesting as they buy gigawatts of chips. That is a company deciding the most valuable thing it can spend is its own stock, in order to be designed into somebody else's AI build.
+
+Read it charitably and it is alignment: the customers only get paid if AMD's chips ship at enormous scale, which means they are motivated to make them succeed. Read it sceptically and it is the cost of being second — Nvidia does not need to hand out warrants to get customers.
+
+The practical read if you are building rather than investing: **the AI chip market has one dominant supplier and a credible second one, and the second one is paying in equity to stay credible.** That is good news for anyone buying compute, because it is what competition looks like before prices move — and it is the clearest evidence yet that the alternatives to the market leader are real enough to be worth subsidising.`,
+  throughLine: {
+    text: `Anthropic now appears as a counterparty in three of the five reports in this section, which is worth noticing on its own.
+
+Amazon invests up to $25B in it and takes back a $100B+ AWS commitment. SpaceX's single largest AI customer — 19.5% of total company revenue — is almost certainly Anthropic at ~$1.25B a month. And AMD announces up to 2 GW of MI450 for it while committing up to $5B of its own cash back into it.
+
+The same pattern keeps recurring across four very different balance sheets: **the supplier funds the customer, and the customer funds the supplier's growth number.** None of it is improper and all of it is disclosed. But when the same handful of AI labs sit on both sides of the ledger at Amazon, SpaceX and AMD simultaneously, the diversification in an "AI infrastructure basket" is thinner than the ticker count suggests.`,
+    links: [
+      {
+        label: 'SPCX — one customer, 60% of the AI segment',
+        slug: 'spcx-q2-2026',
+      },
+      {
+        label: 'AMZN — funding Anthropic, billing Anthropic',
+        slug: 'amzn-q2-2026',
+      },
+      { label: 'PLTR — the one with no capex at all', slug: 'pltr-q2-2026' },
+    ],
+  },
+  cardImage: '/images/content/amd-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/amd-q2-2026-card-hero-light.webp',
+  cardImageAlt: 'AMD logo',
+  sources: [
+    {
+      n: 1,
+      label: 'AMD Q2 2026 earnings release — 8-K Exhibit 99.1 (2026-08-04)',
+      url: 'https://www.sec.gov/Archives/edgar/data/2488/000000248826000121/q22026991.htm',
+      primary: true,
+    },
+    {
+      n: 2,
+      label:
+        'AMD Q2 2026 Form 10-Q — Note 12 (Warrants), Note 11, tax and investment disclosures',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000002488&type=10-Q&dateb=&owner=include&count=5',
+      primary: true,
+    },
+    {
+      n: 3,
+      label:
+        'AMD Q2 2025 earnings release — the $800M MI308 charge and the ex-charge margin restatement',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1257/amd-reports-second-quarter-2025-financial-results',
+      primary: true,
+    },
+    {
+      n: 4,
+      label: 'AMD Investor Relations — Q2 2026 results',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1295/amd-reports-second-quarter-2026-financial-results',
+      primary: true,
+    },
+    {
+      n: 5,
+      label: 'CNBC — AMD earnings report Q2 2026',
+      url: 'https://www.cnbc.com/2026/08/04/amd-earnings-report-q2-2026.html',
+    },
+    {
+      n: 6,
+      label: 'Benzinga — stock tumbles nearly 9% after hours despite a Q2 beat',
+      url: 'https://www.benzinga.com/markets/tech/26/08/60936941/amd-earnings-stock-after-hours-wall-street-forecast',
+    },
+    {
+      n: 7,
+      label:
+        'Investing.com — Q2 2026 slides: data center revenue doubles, stock falls after hours',
+      url: 'https://www.investing.com/news/company-news/amd-q2-2026-slides-data-center-revenue-doubles-stock-falls-after-hours-93CH-4836240',
+    },
+    {
+      n: 8,
+      label: 'stockanalysis.com — AMD price, market cap and multiples',
+      url: 'https://stockanalysis.com/stocks/amd/statistics/',
+    },
+    {
+      n: 9,
+      label:
+        'The Register — Helios hands-on: 225–245 kW bus bar, 72 GPUs per rack',
+      url: 'https://www.theregister.com/',
+    },
+    {
+      n: 10,
+      label:
+        'Schneider Electric + AMD — co-engineered Helios reference design (up to 246 kW/rack)',
+      url: 'https://www.se.com/us/en/',
+    },
+    {
+      n: 11,
+      label: 'Benzinga — Wall Street price targets ahead of Q2',
+      url: 'https://www.benzinga.com/analyst-stock-ratings/price-target/26/08/60901453/',
+    },
+    {
+      n: 12,
+      label: 'TIKR — what the stock needed to show after the Anthropic deal',
+      url: 'https://www.tikr.com/blog/amd-reports-q2-2026-earnings-august-4-what-the-stock-needs-to-show-after-its-anthropic-deal',
+    },
+    {
+      n: 13,
+      label: 'StockTitan — full Q2 2026 release tables',
+      url: 'https://www.stocktitan.net/news/AMD/amd-reports-second-quarter-2026-financial-s9qsl4zgkkw3.html',
+    },
+    {
+      n: 14,
+      label: 'AMD Newsroom — Anthropic partnership, up to 2 GW of MI450',
+      url: 'https://newsroom.amd.com/',
+    },
+  ],
+};
+
 // Newest first — the section index renders in array order, without sorting.
 export const marketStormReports: MarketStormReport[] = [
+  amdQ2_2026,
   spcxQ2_2026,
   pltrQ2_2026,
   msftQ4_FY2026,
