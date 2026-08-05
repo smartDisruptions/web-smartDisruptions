@@ -28,7 +28,9 @@
   --color-foreground: var(--sd-text-primary);
   --color-border: var(--sd-border);
   --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-display), Georgia, 'Times New Roman', serif;
+  /* Sans fallbacks: the display face is Instrument Sans now, and falling back
+     to Georgia would swap the whole page to a serif if the font ever failed. */
+  --font-display: var(--font-display), system-ui, -apple-system, sans-serif;
   --font-mono:
     ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
 }
