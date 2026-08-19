@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:posts": "node --import ./scripts/ts-resolve-register.mjs scripts/test-posts.mjs",
-    "test": "npm run test:posts"
+    "test:evidence": "node --import ./scripts/ts-resolve-register.mjs scripts/test-evidence.mjs",
+    "test": "npm run test:posts && npm run test:evidence"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
