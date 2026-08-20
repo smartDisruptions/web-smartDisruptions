@@ -234,11 +234,11 @@ export const apps: App[] = [
   },
   {
     slug: 'field-office',
-    name: 'Field Office',
+    name: 'The Pembroke File',
     description:
-      'An escape-room résumé — five locked drawers, five puzzles, and every answer written somewhere in the file.',
+      'A stolen-diamond mystery played through a locked filing cabinet — five drawers, five puzzles, and a name that was never filed.',
     longDescription:
-      'A résumé you play instead of read. A filing cabinet sits in a dark office after hours, five drawers sealed behind five locks — a brass combination dial, a letter lock, a switch bank, a wire board, and a lever. Each drawer holds one chapter of a real career, and each lock’s answer is printed in the documents you have already opened, so solving the cabinet means actually reading the file. Physical puzzles gate the locks: a torn page to reassemble, a jammed card tray to slide open, a sorting frame, a junction box that relights the desk lamp, and a pencil rubbing that raises the final word out of a blank notepad. Verlet-integrated chain physics, synthesized Web Audio, keyboard paths for every puzzle, and progress that survives reloads — all in a single HTML file with zero dependencies.',
+      'A noir mystery you solve by actually reading the case. The Pembroke Diamond — thirty-four carats — left the Ashford Museum in three minutes of dark, and the insurance investigator who worked the claim vanished, leaving his file locked in a cabinet: five drawers behind a brass dial, a letter lock, an alarm panel, a wire board, and a lever. Every answer is written somewhere in the documents you have already opened, and each drawer turns the case — an inside job, a rehearsed route, a canvass that came back empty, an appraisal that proves the stone was glass. Physical puzzles gate the locks: the museum’s shuffled night-reel plates, the investigator’s reconstruction torn to twelve pieces, a jammed card tray, a sabotaged lamp circuit — and a pencil rubbing that raises the one name he never dared file out of a blank desk pad. Verlet chain physics, synthesized Web Audio, keyboard paths for every puzzle, progress that survives reloads — all in a single HTML file with zero dependencies.',
     thumbnailUrl: '/images/apps/field-office-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/field-office-1.png',
@@ -249,9 +249,9 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'Five two-stage rooms where working an object produces the document that opens the lock',
+      'A five-act mystery where every clue is diegetic — the puzzles are the case artifacts',
       'Sliding-block and 8-puzzle boards generated and difficulty-verified by breadth-first search',
-      'A pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it',
+      'A pencil-rubbing canvas where the final name is never drawn — only revealed by shading around it',
       'Zero-dependency single-file build with keyboard access and reduced-motion support throughout',
     ],
     buildDate: '2026-08',
