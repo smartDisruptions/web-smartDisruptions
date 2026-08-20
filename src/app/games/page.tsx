@@ -8,7 +8,14 @@ import { SectionContainer, Card } from '@/components/ui';
 // The Arcade is an explicit, curated line-up — Pebble Kart (built for Gabe)
 // leads, then the rest of the playable builds. The games keep their own /apps
 // categories; this list just defines what shows in the cabinet, and its order.
-const ARCADE_GAME_SLUGS = ['pebble-kart', 'flappy-bird', 'grove', 'aureum-snake', 'cloth-simulator'];
+const ARCADE_GAME_SLUGS = [
+  'pebble-kart',
+  'field-office',
+  'flappy-bird',
+  'grove',
+  'aureum-snake',
+  'cloth-simulator',
+];
 
 const games: App[] = ARCADE_GAME_SLUGS.map((slug) =>
   apps.find((app) => app.slug === slug),

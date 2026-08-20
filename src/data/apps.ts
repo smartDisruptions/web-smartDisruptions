@@ -233,6 +233,33 @@ export const apps: App[] = [
     liveUrl: 'https://pebble-kart-ten.vercel.app',
   },
   {
+    slug: 'field-office',
+    name: 'Field Office',
+    description:
+      'An escape-room résumé — five locked drawers, five puzzles, and every answer written somewhere in the file.',
+    longDescription:
+      'A résumé you play instead of read. A filing cabinet sits in a dark office after hours, five drawers sealed behind five locks — a brass combination dial, a letter lock, a switch bank, a wire board, and a lever. Each drawer holds one chapter of a real career, and each lock’s answer is printed in the documents you have already opened, so solving the cabinet means actually reading the file. Physical puzzles gate the locks: a torn page to reassemble, a jammed card tray to slide open, a sorting frame, a junction box that relights the desk lamp, and a pencil rubbing that raises the final word out of a blank notepad. Verlet-integrated chain physics, synthesized Web Audio, keyboard paths for every puzzle, and progress that survives reloads — all in a single HTML file with zero dependencies.',
+    thumbnailUrl: '/images/apps/field-office-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/field-office-1.png',
+      '/images/apps/field-office-2.png',
+      '/images/apps/field-office-3.png',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API', 'CSS3'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Five two-stage rooms where working an object produces the document that opens the lock',
+      'Sliding-block and 8-puzzle boards generated and difficulty-verified by breadth-first search',
+      'A pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it',
+      'Zero-dependency single-file build with keyboard access and reduced-motion support throughout',
+    ],
+    buildDate: '2026-08',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: 'https://app-field-office.vercel.app',
+  },
+  {
     slug: 'grove',
     name: 'Grove',
     description:
