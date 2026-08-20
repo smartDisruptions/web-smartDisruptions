@@ -3233,8 +3233,474 @@ What makes CoreWeave the clarifying case is that it has none of the others\u2019
   ],
 };
 
+const nbisQ2_2026: MarketStormReport = {
+  slug: 'nbis-q2-2026',
+  ticker: 'NBIS',
+  company: 'Nebius Group N.V.',
+  title:
+    'Nebius has never reported an operating profit — every dollar of bottom-line profit it has shown is a mark on a stake in another company',
+  excerpt:
+    'Revenue grew 454% to $582M. The operating loss widened. Nebius has reported net income in both of the last two first-halves, and in both cases the entire profit is a non-cash revaluation of its stake in ClickHouse — $597.4M in 2025, $780.6M in 2026. Q2 2026 is the control case: no mark, and a $190.4M loss. Underneath sits a useful-life extension that cut this quarter’s depreciation by $43M, customer prepayments supplying 97.6% of operating cash flow, and a complete rotation of the top of the customer base in twelve months.',
+  catalyst: 'Q2 2026 results — filed on Form 6-K, August 12, 2026',
+  publishDate: '2026-08-20',
+  tags: [
+    'NBIS',
+    'AI-infrastructure',
+    'earnings-quality',
+    'neocloud',
+    'depreciation',
+  ],
+  verdict:
+    'The AI cloud business is growing at a rate almost nothing in public markets matches, and the group has never once earned money from operations. Both of those are true, and the gap between them is filled by a private-company valuation, a depreciation estimate that lengthened in January, and $4.3 billion of convertible notes with another $4.5 billion proposed eight days after this print.',
+  priceStrip: [
+    { k: 'Price · Aug 20', v: '$223.90' },
+    { k: '52-wk change', v: '+209%', tone: 'bull' },
+    { k: 'Market cap', v: '$61.4B' },
+    { k: 'EV / sales (TTM)', v: '46.9\u00d7', tone: 'bear' },
+    { k: 'Net cash', v: '\u2212$2.2B' },
+    { k: 'Short interest', v: '22.0%', tone: 'bear' },
+  ],
+  summary: `Nebius rents out AI computing power, and it is growing faster than almost anything on a public market — revenue up 454% in a year. It has also never made a profit from running that business. In both of the last two first-halves it reported net income anyway, and both times the profit came from re-valuing a stake it holds in a different company, the database maker ClickHouse. This quarter there was no such mark, and the result was a $190 million loss. Everything else in this report is about the machinery that sits between those two facts.`,
+  headlineVsReal: [
+    {
+      headline:
+        '"Net income from continuing operations was **$430.8 million** in the six months ended June 30, 2026" — the group has now reported first-half net income two years running.',
+      real: 'A loss of about **$(349.8)M** once the ClickHouse revaluation is removed. In 2025 the same arithmetic gives **$(199.2)M**.',
+      gap: 'The H1 2026 profit sits against a **$780.6M** non-cash gain from remeasuring the ClickHouse stake; H1 2025\u2019s $398.2M profit sat against a **$597.4M** gain. In both years the mark is larger than the profit. **Q2 2026 is the control case** \u2014 the gain was nil and the company lost $190.4M. Loss from operations, meanwhile, has been negative in every period disclosed: $(111.2)M, $(175.9)M, $(231.5)M, $(303.9)M. The mark is real, disclosed, and follows ClickHouse\u2019s January Series D. It is also a **Level 3 back-solve valuation** of a private company, remeasured on a single date, 16 January 2026.',
+    },
+    {
+      headline:
+        'The operating loss widened from $(111.2)M to $(175.9)M \u2014 **58%** \u2014 while revenue grew 454%.',
+      real: 'Closer to **97%** on the depreciation policy that was in force three months earlier.',
+      gap: 'Effective 1 January 2026 Nebius extended the useful life of servers and network equipment **from four years to five**. The filing quantifies it: the change **cut Q2 depreciation by $43.0M and reduced the Q2 net loss by $34.1M** ($86.1M and $75.7M for the half). On the prior estimate the Q2 operating loss would have been roughly $(218.9)M. Worth saying clearly in both directions \u2014 five years is still **shorter than CoreWeave\u2019s six**, and shorter than Alphabet or Microsoft. Nebius lengthened toward the industry norm rather than past it. But it lengthened, and it lengthened into the quarter where the loss was going to widen.',
+    },
+    {
+      headline:
+        '"Net cash provided by operating activities" of **$4,504.1M** in the first half \u2014 against $(352.0)M a year earlier.',
+      real: '**97.6% of it is customers paying in advance.** Deferred revenue contributed **$4,395.0M** of that $4,504.1M.',
+      gap: 'Deferred revenue on the balance sheet went from $1,577.5M to **$5,975.2M** in six months. That is a genuine vote of confidence from large customers and it funds the build \u2014 but it is a liability, not earnings, and it converts to revenue over one to five years. Strip it and underlying operating cash generation is roughly **$109M** against **$8,130.3M** of capital spending. Free cash flow for the half was $(3,626.2)M.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$582.3M',
+      delta: '+454% YoY',
+      note: 'AI cloud alone $574.9M, up 514%.',
+      tone: 'bull',
+    },
+    {
+      label: 'Loss from operations',
+      value: '$(175.9)M',
+      delta: 'widened 58%',
+      note: '~97% on the pre-January depreciation policy.',
+      tone: 'bear',
+    },
+    {
+      label: 'ClickHouse revaluation',
+      value: '$780.6M',
+      delta: 'H1; nil in Q2',
+      note: 'Exceeds the $430.8M of H1 net income it produced.',
+      tone: 'warn',
+    },
+    {
+      label: 'Depreciation & amortisation',
+      value: '$259.7M',
+      delta: '44.6% of revenue',
+      note: 'Exceeds group Adjusted EBITDA of $236.2M.',
+      tone: 'warn',
+    },
+    {
+      label: 'Top three customers',
+      value: '59%',
+      delta: 'of Q2 revenue',
+      note: 'Last year’s top two both fell below 10%.',
+      tone: 'warn',
+    },
+    {
+      label: 'H1 capex',
+      value: '$8.13B',
+      delta: '8.3\u00d7 H1 revenue',
+      note: 'FY guide $20\u201325B against $3.0\u20133.4B of revenue.',
+      tone: 'bear',
+    },
+    {
+      label: 'Remaining performance obligations',
+      value: '$37.5B',
+      delta: 'only 36% in 24 mths',
+      note: '40% falls in months 25\u201348; the rest later.',
+      tone: 'neutral',
+    },
+    {
+      label: 'Convertible notes',
+      value: '$4.3B + $4.5B',
+      delta: 'raised, then proposed',
+      note: 'Second offering announced 8 days after the print.',
+      tone: 'bear',
+    },
+  ],
+  printTableTitle: 'Q2 2026 — the facts everything hangs on',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 2026', align: 'right' },
+      { label: 'vs Q2 2025', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Revenues',
+          '$582.3M',
+          '+454%',
+          'From $105.1M. H1 $981.3M from $156.0M',
+        ],
+      },
+      {
+        cells: [
+          '\u2014 Nebius AI cloud',
+          '$574.9M',
+          '+514%',
+          'Segment Adjusted EBITDA $285.7M from $9.5M',
+        ],
+      },
+      {
+        cells: [
+          '\u2014 TripleTen (edtech)',
+          '$10.0M',
+          '\u221219%',
+          'Adjusted EBITDA $(9.4)M',
+        ],
+      },
+      {
+        cells: [
+          '\u2014 Avride (autonomy)',
+          '$1.0M',
+          'from $0.2M',
+          'Adjusted EBITDA $(40.1)M',
+        ],
+      },
+      {
+        cells: [
+          'Depreciation & amortisation',
+          '$259.7M',
+          '+245%',
+          '\u26a0 44.6% of revenue; exceeds group Adj. EBITDA',
+        ],
+      },
+      { cells: ['Total operating costs', '$758.2M', 'from $216.3M', '\u2014'] },
+      {
+        star: true,
+        cells: [
+          'Loss from operations',
+          '$(175.9)M',
+          'from $(111.2)M',
+          '\u26a0 Negative in every period disclosed',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Useful-life change impact',
+          '+$43.0M',
+          'Q2 depreciation',
+          '\u26a0 4\u21925 years from 1 Jan; cut net loss by $34.1M',
+        ],
+      },
+      {
+        cells: [
+          'Interest expense',
+          '$(119.1)M',
+          'from $(4.8)M',
+          'Roughly 25\u00d7; H1 $(182.8)M',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'ClickHouse revaluation gain',
+          'nil',
+          'vs $597.4M',
+          '\u26a0 H1 $780.6M; carrying $737.1M \u2192 $1,517.7M',
+        ],
+      },
+      {
+        cells: ['Other income, net', '$81.5M', 'from $24.6M', 'Not operating'],
+      },
+      {
+        cells: [
+          'Net income / (loss)',
+          '$(190.4)M',
+          'from +$502.5M',
+          'H1 +$430.8M \u2014 all of it downstream of the mark',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'H1 operating cash flow',
+          '+$4,504.1M',
+          'from $(352.0)M',
+          '\u26a0 $4,395.0M of it is deferred revenue',
+        ],
+      },
+      {
+        cells: [
+          'Deferred revenue',
+          '$5,975.2M',
+          'from $1,577.5M',
+          'Recognised over one to five years',
+        ],
+      },
+      {
+        cells: [
+          'H1 capital expenditure',
+          '$8,130.3M',
+          'from $1,054.5M',
+          '\u26a0 8.3\u00d7 H1 revenue; FCF $(3,626.2)M',
+        ],
+      },
+      {
+        cells: [
+          'Cash and equivalents',
+          '$8,042.1M',
+          '\u2014',
+          'Against $8,499.0M of non-current debt',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Customer concentration',
+          '24 / 21 / 14%',
+          '59% combined',
+          '\u26a0 Prior year’s 39% and 15% both now below 10%',
+        ],
+      },
+      {
+        cells: [
+          'Unsatisfied RPO',
+          '$37,490.6M',
+          '36% ≤24 mths',
+          '40% in months 25\u201348; remainder later',
+        ],
+      },
+      {
+        cells: [
+          'Convertible notes',
+          '$4,337.5M',
+          'gross, H1',
+          '\u26a0 A further $4.50B proposed on 19 August',
+        ],
+      },
+    ],
+  },
+  bull: [
+    '**Revenue grew 454%**, and the AI cloud business alone grew 514% to $574.9M. Very little in public markets compounds at that rate.',
+    '**The cloud segment does make money on its own terms:** Adjusted EBITDA of $285.7M against $9.5M a year ago, on a segment basis.',
+    '**Customers are pre-paying for capacity.** Deferred revenue went $1,577.5M to $5,975.2M in six months \u2014 the build is being funded partly by the people who will use it.',
+    '**$37.5B of remaining performance obligations**, disclosed in the filing rather than as a marketing figure, and explicitly net of the group’s estimate of variable consideration.',
+    '**A five-year server life is shorter than the peer set** \u2014 CoreWeave uses six, as do Alphabet and (at the top of its range) Microsoft. Even after lengthening, Nebius depreciates faster than the companies it competes with.',
+    '**The balance sheet is far cleaner than the closest comparable:** net debt of $2.2B against CoreWeave’s $46.0B, on $8.0B of cash.',
+    '**The ClickHouse and Toloka stakes are real assets**, and the ClickHouse mark follows an arm’s-length Series D that Nebius did not participate in.',
+  ],
+  bear: [
+    '**No operating profit in any period disclosed**, and the loss widened as revenue grew 454%.',
+    '**Every dollar of reported first-half profit, in both years, is smaller than the ClickHouse mark that produced it.** Q2 had no mark and printed a $190.4M loss.',
+    '**A depreciation estimate lengthened in January**, cutting Q2 depreciation by $43.0M and the loss by $34.1M, into the quarter where the loss widened anyway.',
+    '**97.6% of operating cash flow is customer prepayment**, not earnings \u2014 a liability that converts over one to five years.',
+    '**The top of the customer base rotated completely in twelve months:** last year’s 39% and 15% customers both fell below 10%, replaced by three at 24%, 21% and 14%.',
+    '**Capex was 8.3\u00d7 revenue in the half**, and the FY guide of $20\u201325B against $3.0\u20133.4B of revenue is roughly 7\u00d7.',
+    '**$4.3B of converts raised, and $4.50B more proposed eight days after this print** \u2014 roughly $8.8B of convertible debt inside eight months against $981M of half-year revenue.',
+    '**46.9\u00d7 trailing EV/sales against CoreWeave’s 12.7\u00d7**, with 22% of the shares sold short.',
+  ],
+  theQuestion: `**Is the ClickHouse stake a distraction or the point?** Read it one way and it is noise: a non-cash mark on a side holding, irrelevant to whether the AI cloud works, and the operating numbers are what matter \u2014 in which case Nebius is a hypergrowth infrastructure business that has not yet crossed into profit, valued accordingly. Read it the other way and it is the only thing that has ever made this group money, it arrived on a single day in January from a private round the company did not participate in, and it papers over a business whose losses widen as it scales. The filing supports both readings. What it does not support is the reading where the group has earned anything from operations.`,
+  analysis: `## Valuation \u2014 the mirror image of its closest peer
+
+At **$223.90** Nebius is worth **$61.4B**, with an enterprise value of **$63.5B**. The two neoclouds now covered in this section are almost photographic negatives of each other:
+
+| | Nebius | CoreWeave |
+| --- | --- | --- |
+| Enterprise value | $63.5B | $96.2B |
+| Total debt | $10.2B | $51.6B |
+| Net cash | \u2212$2.2B | \u2212$46.0B |
+| **EV / sales (trailing)** | **46.9\u00d7** | **12.7\u00d7** |
+| 52-week change | +209% | \u22126% |
+| Short interest | **22.0%** | 11.1% |
+
+Nebius has the cleaner balance sheet by an order of magnitude and the richer multiple by nearly four times. On 2026 guidance the gap narrows but does not close \u2014 roughly 19\u00d7 EV/revenue against CoreWeave\u2019s ~7\u00d7.
+
+**22% of the shares are sold short**, the highest this section has covered. That cuts both ways and is worth holding lightly: it means a large group of professionals has taken the bear side of exactly the argument above, and it means the price carries mechanical squeeze risk that has nothing to do with the filings.
+
+## What a 6-K does not tell you
+
+This is the first foreign private issuer in this section, and the structure matters more than it sounds.
+
+Nebius is Dutch-domiciled and files **6-K and 20-F, not 10-Q and 10-K**. The August 12 accession contains three documents: a cover, the MD&A, and the financial statements. There is no press release exhibit and no investor deck.
+
+The consequence is concrete. **Every headline operating metric the stock trades on \u2014 annualised run-rate revenue, contracted megawatts, revenue guidance, capex guidance \u2014 appears in none of them.** ARR of $3.0B at end-June, the $7\u20139B exit-ARR target, FY revenue of $3.0\u20133.4B, capex of $20\u201325B and a year-end contracted-power target raised to 5 GW all come from the earnings call and the company\u2019s own website. A US filer would have furnished the release as an 8-K exhibit; CoreWeave\u2019s release points directly at its 10-Q.
+
+None of that is improper \u2014 it is what the foreign-private-issuer regime permits. But it means the audited-adjacent record and the numbers in the headlines are two different documents, and only one of them is filed.
+
+What the filing *does* disclose is better than expected in two places: **RPO of $37,490.6M**, with the honest detail that only **36% is expected to convert within 24 months** and 40% falls in months 25\u201348; and a full **customer-concentration table**.
+
+## The customer table is the most interesting page in the filing
+
+| Customer | Q2 2025 | Q2 2026 |
+| --- | --- | --- |
+| A | 39% | under 10% |
+| B | 15% | under 10% |
+| C | under 10% | **24%** |
+| D | under 10% | **21%** |
+| E | under 10% | **14%** |
+
+The entire top of the customer base turned over in twelve months. Three unnamed customers are now **59% of revenue**, and the two that were 54% between them a year ago are both gone from the table.
+
+At 454% growth this is what you would expect \u2014 new customers arriving so much larger than the old ones that the old ones drop below the threshold. It is not evidence of churn on its own. But it does mean the revenue base has no demonstrated persistence at the top, and the filing names none of them.
+
+## Risk \u2014 each isolated, do not blur
+
+1. **Earnings quality (dominant).** No operating profit in any disclosed period; all reported bottom-line profit downstream of a Level 3 mark on a private company, remeasured on one date.
+2. **The depreciation estimate.** A four-to-five-year extension worth $43.0M a quarter, taken effective January, in a business where depreciation already exceeds group Adjusted EBITDA.
+3. **The funding gap.** FY capex guidance of $20\u201325B against $8.1B spent in the half implies $12\u201317B still to fund, against $8.0B of cash \u2014 which is what the $4.50B convertible proposal on 19 August is for.
+4. **Prepayment dependence.** 97.6% of operating cash flow is deferred revenue. If bookings slow, the cash flow statement deteriorates before the income statement does.
+5. **Customer concentration.** 59% in three unnamed customers, with a fully rotated roster.
+6. **Conglomerate drag.** Avride and TripleTen contributed $(49.5)M of Adjusted EBITDA loss in the quarter, roughly 28% of the group operating loss, on $11.0M of combined revenue.
+7. **Dilution.** ~$8.8B of convertible notes raised or proposed inside eight months, plus prefunded warrants and treasury share sales in the H1 financing line.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** The near term is mechanical: whether the $4.50B convertible offering prices and on what terms, and whether Q3 shows operating loss narrowing rather than widening now that the depreciation change is in the base. The thesis resolves over **2\u20133 years** on one question \u2014 does the AI cloud reach operating profit before the capital markets tire of funding it?
+
+**Sizing considerations (not a recommendation).** Nebius is the cleanest balance sheet and the richest multiple in the neocloud pair, which is an unusual combination and probably not a stable one. It also carries something none of the others do: a material part of the equity story is a stake in a private company whose value is set by other people\u2019s funding rounds. With 22% of shares short, the price will move for reasons unrelated to any of this.`,
+  invalidation: {
+    bull: [
+      'Q3 shows the operating loss widening again, now that the useful-life change is fully in the base and can no longer flatter the comparison.',
+      'Deferred revenue stops growing \u2014 the prepayment engine reverses and operating cash flow falls sharply while revenue still looks strong.',
+      'The $4.50B convertible offering prices on materially worse terms than the H1 raise, or is pulled.',
+      'A top-three customer drops below 10% again, showing the roster rotation is churn rather than growth.',
+    ],
+    bear: [
+      'The AI cloud segment reaches group-level operating profit \u2014 the first time the business earns money without a mark.',
+      'RPO converts faster than the disclosed 36%-in-24-months schedule, showing the backlog is nearer than the filing implies.',
+      'Customer concentration falls because the denominator grew, with named investment-grade counterparties replacing unnamed ones.',
+      'Capex intensity falls toward peer levels while growth holds, showing the 8.3\u00d7 was a build phase rather than a run rate.',
+    ],
+  },
+  verification: {
+    confirmed: 7,
+    partlyTrue: 2,
+    corrected: 1,
+    confirmedNote:
+      'Verified directly against the Q2 2026 6-K exhibits, quoted verbatim where it matters: the four-to-five-year useful-life extension and its $43.0M / $34.1M quarterly impact \u00b7 the ClickHouse remeasurement of 16 January 2026 taking carrying value $737.1M \u2192 $1,517.7M \u00b7 deferred revenue contributing $4,395.0M of $4,504.1M of operating cash flow \u00b7 the customer-concentration table \u00b7 RPO of $37,490.6M with 36% inside 24 months \u00b7 the full income statement \u00b7 the 19 August 6-K proposing $4.50B of convertible notes.',
+    items: [
+      {
+        kind: 'corrected',
+        title: 'The adversarial verification pass did not run on this report',
+        text: 'Stated plainly because it is the method this section advertises. The four grounded interviews completed and produced six load-bearing claims, but **all six skeptic agents failed on a session limit** before they could attempt a refutation. Rather than publish the interviews unchecked, every load-bearing claim above was **verified by hand against the primary filings** \u2014 the figures in the confirmed note are quoted from the 6-K exhibits, not from an agent\u2019s summary. That is single-pass verification rather than adversarial verification, and it is weaker: nobody was tasked with trying to break these claims. Read this report with that discount applied. Two claims that could not be verified against a filing are marked below.',
+      },
+      {
+        kind: 'partly',
+        title: 'The guidance figures every headline used',
+        text: 'ARR of $3.0B at end-June, an FY2026 exit-ARR target of $7\u20139B, revenue guidance of $3.0\u20133.4B, capex of $20\u201325B, and a year-end contracted-power target of 5 GW are all **call-sourced, not filed**. The August 12 accession contains no press release exhibit and no deck, and the MD&A contains no ARR, megawatt, gigawatt or guidance figure at all. They are reported here as management statements from the earnings call, which is a materially weaker basis than the rest of this report. One source also reported contracted power as "over 4 GW" against the transcript\u2019s 5 GW; both are recorded and neither is averaged.',
+      },
+      {
+        kind: 'partly',
+        title: 'Whether the $4.50B convertible offering has priced',
+        text: 'The 19 August 6-K describes a **proposed** offering \u2014 $2.75B due 2030 and $1.75B due 2034, plus up to $675M of additional notes, "subject to market and other conditions". One research pass asserted it had priced upsized; **EDGAR shows no filing after 19 August**, so that could not be confirmed and is not stated as fact here. Treat the offering as announced and not yet completed as of this report.',
+      },
+    ],
+  },
+  openQuestions: [
+    'Who are Customers C, D and E? Three unnamed counterparties are 59% of revenue, the prior year’s top two have both dropped below the disclosure threshold, and a foreign private issuer is not required to name them.',
+    'What is the AI cloud segment’s operating loss on its own? The filing gives segment Adjusted EBITDA of $285.7M and a group operating loss of $(175.9)M, but does not push depreciation down to the segment — so the profitability of the actual business is not directly disclosed.',
+    'What happens to operating cash flow when deferred revenue stops compounding? It supplied 97.6% of the half’s operating cash, and the filing says it unwinds over one to five years.',
+    'Why extend server lives from four to five years effective January 2026, when Amazon shortened its own estimate the same month a year earlier citing the pace of AI development? The filing gives the assessment but not the underlying usage data.',
+  ],
+  soWhat: `There is a habit worth taking from this one, and it costs nothing: **when a company reports a profit, check which line it came from.**
+
+Nebius reported net income in both of the last two first-halves. Both times, the number came from re-valuing a stake it owns in a different company — not from selling anything. This quarter there was no re-valuation, and the same business posted a $190 million loss. Nothing was hidden; it is all in the filing, in plain language, with the dates and the amounts.
+
+The point is not that Nebius did anything wrong. It is that "the company was profitable" and "the business made money" are different sentences, and only one of them was true. That distinction shows up constantly once you look for it — a one-off gain, an asset sale, a mark on an investment, a tax item.
+
+The practical version: **read the line above the bottom line.** Operating income tells you whether the business works. Net income tells you what happened to everything else as well. When those two disagree, the disagreement is usually the story.`,
+  throughLine: {
+    text: `This section has now looked at seven companies in the same AI-capital cycle, and Nebius completes a pair that is worth seeing together.
+
+Nebius and CoreWeave do the same thing — rent out GPUs — and have arranged themselves as near-opposites. CoreWeave carries **$51.6B of debt and trades at 12.7\u00d7 trailing revenue**; Nebius carries **$10.2B and trades at 46.9\u00d7**. One has the leverage, the other has the multiple. Both spend multiples of their revenue on capital equipment, and both depend on depreciation estimates that nobody has yet tested through a full replacement cycle.
+
+Ranked by capital spending against revenue, the picture is consistent: Palantir at 0.75%, Microsoft around 32%, Amazon at roughly 105% of operating cash flow, SpaceX at 235%, CoreWeave at about 290%, and Nebius\u2019s first half at **828%**. AMD sits outside the scale entirely \u2014 it sells the chips the rest are buying.`,
+    links: [
+      {
+        label: 'CRWV \u2014 the same business, the opposite balance sheet',
+        slug: 'crwv-q2-2026',
+      },
+      { label: 'SPCX \u2014 capex at 235% of revenue', slug: 'spcx-q2-2026' },
+      {
+        label: 'AMD \u2014 selling the chips the rest are buying',
+        slug: 'amd-q2-2026',
+      },
+    ],
+  },
+  cardImage: '/images/content/nbis-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/nbis-q2-2026-card-hero-light.webp',
+  cardImageAlt: 'Nebius logo',
+  sources: [
+    {
+      n: 1,
+      label:
+        'Nebius Q2 2026 Form 6-K, Exhibit 99.1 \u2014 Operating and Financial Review (2026-08-12)',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d1.htm',
+      primary: true,
+    },
+    {
+      n: 2,
+      label:
+        'Nebius Q2 2026 Form 6-K, Exhibit 99.2 \u2014 financial statements: useful-life change, ClickHouse remeasurement, customer concentration, RPO',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d2.htm',
+      primary: true,
+    },
+    {
+      n: 3,
+      label:
+        'Nebius Form 6-K (2026-08-19) \u2014 proposed $4.50B convertible senior notes offering',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926098590/tm2623513d1_ex99-1.htm',
+      primary: true,
+    },
+    {
+      n: 4,
+      label: 'Nebius newsroom \u2014 Q2 2026 results and shareholder letter',
+      url: 'https://nebius.com/newsroom',
+    },
+    {
+      n: 5,
+      label:
+        'Nebius Q2 2026 earnings call transcript \u2014 the only source for ARR, power and guidance',
+      url: 'https://www.fool.com/earnings/call-transcripts/2026/08/19/nebius-nbis-q2-2026-earnings-call-transcript/',
+    },
+    {
+      n: 6,
+      label:
+        'stockanalysis.com \u2014 NBIS price, enterprise value and short interest',
+      url: 'https://stockanalysis.com/stocks/nbis/statistics/',
+    },
+    {
+      n: 7,
+      label: 'stockanalysis.com \u2014 CRWV, for the peer comparison',
+      url: 'https://stockanalysis.com/stocks/crwv/statistics/',
+    },
+    {
+      n: 8,
+      label: 'Nebius EDGAR filing index (CIK 0001513845)',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=6-K&dateb=&owner=include&count=10',
+      primary: true,
+    },
+  ],
+};
+
 // Newest first — the section index renders in array order, without sorting.
 export const marketStormReports: MarketStormReport[] = [
+  nbisQ2_2026,
   crwvQ2_2026,
   amdQ2_2026,
   spcxQ2_2026,

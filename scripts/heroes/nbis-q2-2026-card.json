@@ -1,0 +1,9 @@
+{
+ "title": "Nebius — Market Storm",
+ "category": "Market Storm",
+ "out": "nbis-q2-2026-card",
+ "logo": { "file": "nbis.svg", "scale": 0.50 },
+ "before": { "label": "Company", "text": "Nebius" },
+ "after": { "label": "Section", "text": "Market Storm" },
+ "alt": "Nebius logo"
+}
