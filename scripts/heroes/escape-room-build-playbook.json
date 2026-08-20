@@ -1,0 +1,37 @@
+{
+  "tone": "info",
+  "before": {
+    "label": "What I typed",
+    "text": "Playtest notes, out loud"
+  },
+  "after": {
+    "label": "What that built",
+    "text": "A five-drawer mystery game",
+    "detail": "7 steps · AI wrote all 2,673 lines"
+  },
+  "headline": [
+    {
+      "t": "AI wrote the game. These "
+    },
+    {
+      "t": "seven steps",
+      "tone": "info"
+    },
+    {
+      "t": " were mine."
+    }
+  ],
+  "sequence": {
+    "steps": [
+      { "text": "pitch" },
+      { "text": "skeleton" },
+      { "text": "core rule" },
+      { "text": "playtest", "mark": true },
+      { "text": "story", "mark": true },
+      { "text": "senses" },
+      { "text": "ship" }
+    ],
+    "verdict": "*None of them* are code."
+  },
+  "alt": "A seven-step rail — pitch, skeleton, core rule, playtest, story, senses, ship — with playtest and story marked as the steps where the game got good; none of the steps are code."
+}
