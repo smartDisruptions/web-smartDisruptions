@@ -18,7 +18,6 @@ heroImage: /images/content/escape-room-ate-my-resume-hero.webp
 heroImageLight: /images/content/escape-room-ate-my-resume-hero-light.webp
 heroImageAlt: "Split card: the assignment — my résumé as an escape room — against what shipped: a stolen-diamond noir with the résumé cut, the same puzzles, and thirty-three prompts of which none were code."
 ogImage: /images/content/escape-room-ate-my-resume.webp
-liveAt: 2026-08-20T23:00:00.000Z
 ---
 There's a game on my site now called The Pembroke File. A thirty-four-carat diamond leaves a museum in three minutes of dark, the insurance investigator who worked the claim disappears, and his locked filing cabinet is sitting in front of you — five drawers, five locks, and every answer written somewhere in the documents you've already opened.
 
