@@ -35,6 +35,11 @@ Use `status: draft` only for a genuine stub with nothing worth looking at yet �
 the New Article button in Studio does this. Anything with real prose in it
 should be staged, because the whole point is that he can read it.
 
+**`status` controls rendering, not access.** A `draft` or `staged` article is
+invisible on the live site and fully readable on GitHub the moment it is
+committed, because this repository is public. See *This is a public folder*
+below before putting anything here that is not meant to be read yet.
+
 ## Frontmatter
 
 ```yaml
@@ -271,6 +276,44 @@ public/images/content/<slug>.webp
 
 The hero spec (`scripts/heroes/<slug>.json`) is tooling, not content — it goes
 to `main` with the rest of the scripts, never on `dev`.
+
+## `src/content/posts/` is a public folder
+
+**This repository is public. Everything in this folder is readable by anyone,
+on GitHub, the moment it is committed — regardless of `status`.**
+
+`status` decides what the *site* renders. It is not access control and it never
+was. A `staged` article is invisible on smartdisruptions.com and sitting in
+plain sight at github.com/smartDisruptions/web-smartDisruptions. Both of those
+things are true at once, and only the first one is obvious.
+
+That is fine for what lives here today: articles that are going to be published
+anyway, where the only cost of an early read is a spoiled surprise. It is not
+fine for anything else.
+
+**So: paid, member-only, client-confidential or embargoed content never goes in
+this folder.** Not with `status: draft`, not behind a feature flag, not
+"temporarily". If it must not be read yet by anyone, it does not belong in a
+public git repository, and no frontmatter field changes that.
+
+When paid or gated content does arrive, the shape it needs is different in kind,
+not in degree:
+
+- **The content lives outside the repo** — in a database or a private content
+  repo the site reads at request time. Not in `src/content/`.
+- **The gate runs on the server, per request** — check the session, check the
+  entitlement, and only then fetch and return the words. Never ship the content
+  and hide it in the client, because a static page has already handed it over
+  before anything gets a chance to hide it. `/content/[slug]` is prerendered
+  today, which is exactly the property that makes this a rule rather than a
+  preference.
+- **Secrets stay in environment variables.** The pattern is already in this
+  repo: `/api/subscribe` holds no privileged key, and the service-role key that
+  can actually write lives inside Supabase. Copy that shape.
+
+The reasoning is the same one that produced the honest-copy rule and the
+liveness rule: a control that has never been watched denying anybody is a
+belief, not a control. `status` has never denied anybody anything on GitHub.
 
 ## Voice
 
