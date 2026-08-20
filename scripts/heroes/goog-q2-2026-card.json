@@ -1,0 +1,9 @@
+{
+ "title": "Alphabet — Market Storm",
+ "category": "Market Storm",
+ "out": "goog-q2-2026-card",
+ "logo": { "file": "goog.svg", "scale": 0.50 },
+ "before": { "label": "Company", "text": "Alphabet" },
+ "after": { "label": "Section", "text": "Market Storm" },
+ "alt": "Google logo"
+}
