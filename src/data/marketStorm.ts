@@ -3699,7 +3699,523 @@ Ranked by capital spending against revenue, the picture is consistent: Palantir 
 };
 
 // Newest first — the section index renders in array order, without sorting.
+const googQ2_2026: MarketStormReport = {
+  slug: 'goog-q2-2026',
+  ticker: 'GOOGL',
+  company: 'Alphabet Inc.',
+  title:
+    'Alphabet reported $112 billion of profit and negative free cash flow in the same quarter',
+  excerpt:
+    'Net income rose 298%. Operating income rose 30%. The gap is a $99.0 billion gain on equity securities that is 99.7% unrealized — $278M of it was actually realized — and the cash flow statement backs the whole thing straight out. Underneath: $44.9 billion of capital spending in three months, free cash flow of negative $5.9 billion, a second straight quarter of zero buybacks, $49.6 billion of stock and preferred sold in June, and purchase commitments that went from $149 billion to $811 billion in six months.',
+  catalyst: 'Q2 2026 earnings — reported July 22, 2026',
+  publishDate: '2026-08-20',
+  tags: ['GOOGL', 'AI-infrastructure', 'earnings-quality', 'capex', 'cloud'],
+  verdict:
+    'The most profitable quarter in the company’s history, and it consumed more cash than it produced. $77.1 billion of the $112.1 billion never touched cash — it is a mark on stakes Alphabet has largely agreed not to sell, and the largest of them has fallen about $21 billion since the quarter closed. Strip the mark and the operating business grew about 30%, which is a very good quarter and not a 294% one.',
+  priceStrip: [
+    { k: 'Price · Aug 20', v: '$342.10' },
+    { k: 'Market cap', v: '$4.18T' },
+    { k: 'Trailing P/E, screened', v: '17.3×', tone: 'warn' },
+    { k: 'Trailing P/E, ex-marks', v: '~30.6×', tone: 'bear' },
+    { k: 'Forward P/E', v: '25.9×' },
+    { k: 'Price / free cash flow', v: '79.1×', tone: 'bear' },
+  ],
+  summary: `Alphabet had the biggest profit quarter any company has ever reported, and in the same three months it spent more cash than it took in. Both are true and they are connected by one line on the income statement: a **$99.0 billion gain on equity securities**, almost none of which involved selling anything. Alphabet marked up the value of stakes it holds in other companies — chiefly SpaceX, which went public in June, and a private company it does not name — and booked the increase as profit. That is permitted, disclosed, and normal accounting. It is also not money. Of the $99.0 billion, **$278 million was actually realized**; the cash flow statement removes the other $99.0 billion on the very next page.
+
+Meanwhile the real business did something genuinely remarkable and something genuinely uncomfortable. Google Cloud grew **82%** and its operating margin went from 20.7% to 35.6%. And Alphabet spent **$44.9 billion on capital equipment in one quarter** — double a year ago — which pushed free cash flow to **negative $5.9 billion**, kept share repurchases at zero for a second straight quarter, and sat alongside **$49.6 billion** of stock and preferred sold in June.`,
+  headlineVsReal: [
+    {
+      headline:
+        'Diluted EPS of **$9.11**, up **294%**; net income available to common of **$112.1 billion**, up 298%.',
+      real: 'About **$2.84** and **$35.0 billion** on the operating business — up roughly 23% and 24%.',
+      gap: 'Alphabet quantifies this itself, in footnote (1) to the segment table: “the net effect of the gain on equity securities of $99.0 billion **increased the provision for income tax, net income, and diluted net income per common share by $21.9 billion, $77.1 billion, and $6.26**, respectively.” So $6.26 of the $9.11 — **68.7%** — is the mark. Comparing like with like matters: Q2 2025 also carried a $1,286M equity gain, and on the same ex-gain basis last year was about $2.22, so operating EPS grew roughly **28%**. That lines up with the +30% operating income growth, which is the honest read of the quarter.',
+    },
+    {
+      headline:
+        'Stock screeners show Alphabet on a trailing P/E of **17.3×** — the cheapest of the mega-caps.',
+      real: 'Roughly **30.6×** once the marks come out of trailing earnings.',
+      gap: 'The tell is visible on the screen without opening a filing: the **forward** P/E is 25.9× and the **trailing** P/E is 17.3×. Forward above trailing, on a company compounding revenue at 24%, is arithmetically impossible unless trailing earnings contain something that is not repeating. They do — and not once. Strip Q2’s $6.26, then strip Q1 2026’s mark as well (the 10-Q’s six-month equity gain of $135,946M less Q2’s $99,031M leaves **$36,915M in Q1**, about another $2.34 a share), and clean trailing EPS is roughly **$11.18**. On forward earnings Alphabet is more expensive than Microsoft (24.6×) and 52% dearer than Meta (17.1×). On cash it is starker still: price to free cash flow of **79.1×**, against 53.7× for Microsoft and 34.0× for Meta.',
+    },
+    {
+      headline:
+        'Alphabet bought back **no stock** and sold **$49.6 billion** of equity and preferred — widely tied to the $94 billion SpaceX stake it is not allowed to sell.',
+      real: 'The chronology does not support it. Repurchases were **already zero in Q1 2026**, and the June raise **priced before the SpaceX IPO**.',
+      gap: 'This one is a correction to our own first draft, so it is worth being blunt about. The Q1 2026 10-Q says verbatim: “In the three months ended March 31, 2026, there were no repurchases,” with the same $69.5 billion remaining as at June 30 — **six weeks before SpaceX listed on June 12**, when the stake was still an unrestricted private holding. The public offering and the Berkshire placement closed **June 4** and the preferred **June 5**, before the IPO existed to restrict anything. Alphabet states a different reason four separate times: proceeds are for “general corporate purposes, **including capital expenditures to scale AI infrastructure and global compute**.” The 10-Q even supplies the mechanical link between the two events: “if we are utilizing the repurchase program at the time of any future offerings of our equity securities … we may be required to suspend share repurchases.” The causation runs **raise → pause**, and the raise is about capex. An illiquid stake is a reason the paper gain cannot fund anything; it is not the reason for the raise.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$119.80B',
+      delta: '+24% YoY',
+      note: '+23% constant currency; 12th straight double-digit quarter.',
+      tone: 'bull',
+    },
+    {
+      label: 'Free cash flow',
+      value: '$(5.86)B',
+      delta: 'negative',
+      note: '$39.1B of operating cash against $44.9B of capex.',
+      tone: 'bear',
+    },
+    {
+      label: 'Google Cloud revenue',
+      value: '$24.77B',
+      delta: '+82% YoY',
+      note: 'Operating margin 20.7% → 35.6%.',
+      tone: 'bull',
+    },
+    {
+      label: 'Gain on equity securities',
+      value: '$99.03B',
+      delta: '99.7% unrealized',
+      note: 'Only $278M realized. $6.26 of the $9.11 EPS.',
+      tone: 'warn',
+    },
+    {
+      label: 'Operating income',
+      value: '$40.77B',
+      delta: '+30% YoY',
+      note: 'Margin 32% → 34%. This is the real growth rate.',
+      tone: 'bull',
+    },
+    {
+      label: 'Q2 capital spending',
+      value: '$44.92B',
+      delta: '2.0× a year ago',
+      note: 'H1 $80.6B. FY guide raised to $195–205B.',
+      tone: 'bear',
+    },
+    {
+      label: 'Purchase commitments',
+      value: '$811.0B',
+      delta: '5.4× since December',
+      note: 'Against trailing-twelve-month free cash flow of $53.3B.',
+      tone: 'bear',
+    },
+    {
+      label: 'Share repurchases',
+      value: '$0',
+      delta: '2nd straight quarter',
+      note: '$69.5B of a $70.0B authorization untouched.',
+      tone: 'warn',
+    },
+  ],
+  printTableTitle: 'Q2 2026 — the figures this report rests on',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 2026', align: 'right' },
+      { label: 'vs Q2 2025', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Revenues',
+          '$119,796M',
+          '+24%',
+          'From $96,428M. +23% in constant currency',
+        ],
+      },
+      {
+        cells: ['— Google Search & other', '$63,271M', '+17%', 'From $54,190M'],
+      },
+      {
+        cells: ['— YouTube ads', '$11,055M', '+13%', 'From $9,796M'],
+      },
+      {
+        cells: [
+          '— Google Cloud',
+          '$24,768M',
+          '+82%',
+          'From $13,624M. 59% of AWS’s size, up from 44%',
+        ],
+        star: true,
+      },
+      {
+        cells: ['Operating income', '$40,770M', '+30%', 'Margin 32% → 34%'],
+      },
+      {
+        cells: [
+          '— Google Cloud operating income',
+          '$8,814M',
+          '+212%',
+          'From $2,826M. Margin 20.7% → 35.6%',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          '— Other Bets',
+          '$(1,799)M',
+          'loss widened',
+          'On revenue of $382M, from $373M',
+        ],
+      },
+      {
+        cells: [
+          '— Alphabet-level activities',
+          '$(5,789)M',
+          '+72% loss',
+          'Holds shared AI model R&D; absorbs 40% of Cloud’s gain',
+        ],
+      },
+      {
+        cells: [
+          'Gain on equity securities, net',
+          '$99,031M',
+          'from $1,286M',
+          '$77,354M non-marketable + $21,399M marketable + $278M realized',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Other income (expense), net',
+          '$97,983M',
+          'from $2,662M',
+          '“primarily the result of net unrealized gains on our equity securities”',
+        ],
+      },
+      {
+        cells: [
+          'Provision for income taxes',
+          '$26,560M',
+          'from $5,737M',
+          'Effective rate 19.1% from 16.9%; $21.9B of it on the gain',
+        ],
+      },
+      {
+        cells: [
+          'Net income available to common',
+          '$112,107M',
+          '+298%',
+          'About $35,007M excluding the gain',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Diluted EPS',
+          '$9.11',
+          '+294%',
+          'About $2.84 excluding the gain',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Purchases of property and equipment',
+          '$(44,924)M',
+          '2.0×',
+          'From $(22,446)M. H1 $(80,598)M from $(39,643)M',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Free cash flow (company non-GAAP)',
+          '$(5,855)M',
+          'negative',
+          'From $10,116M in Q1 2026. TTM $53,273M',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Repurchases of stock',
+          '$0',
+          'from $(13,238)M',
+          'Also zero in Q1 2026; $69.5B of $70.0B unused',
+        ],
+      },
+      {
+        cells: [
+          'June equity + preferred issued',
+          '$49.6B net',
+          'new',
+          '$20.5B public + $10.0B Berkshire + $19.0B 6.25% convertible preferred',
+        ],
+      },
+    ],
+  },
+  bull: [
+    'The operating business grew 30% at a $480 billion annual revenue run rate, with margin expanding from 32% to 34%. At that size, both of those at once is rare.',
+    'Google Cloud grew 82% and nearly doubled its operating margin, and the expansion is concentrated in labour — compensation grew 25.7% against 81.8% revenue growth, falling from 40.5% to 28.0% of Cloud revenue. That is operating leverage, not an accounting estimate.',
+    'The capital is being raised on excellent terms. The $49.6 billion cost roughly 1.1–1.2% of dilution and about $1.19 billion a year in coupon, and Berkshire Hathaway took $10.0 billion of it in a private placement.',
+    'The depreciation bill is genuinely ahead of the company rather than behind it: assets not yet in service went from $78.6 billion to $122.8 billion in six months. Revenue from that capital has not started, and neither has most of its cost.',
+    'Search still grew 17% and YouTube ads 13%, twelve quarters into a story about search being disrupted.',
+  ],
+  bear: [
+    'Free cash flow was negative $5.9 billion. The release’s own four-quarter reconciliation — $24.5B, $24.6B, $10.1B, $(5.9)B — shows the trend, and capex guidance was raised to $195–205 billion for 2026 with 2027 to “increase significantly.”',
+    'Purchase commitments reached $811.0 billion at June 30, from $149.1 billion at December 31. Even allowing that some of the jump is a widened disclosure basis, energy agreements run 2–26 years with take-or-pay obligations through 2054.',
+    '$112.1 billion of net income contains $77.1 billion of non-cash mark, and the largest single position behind it — 551,189,500 SpaceX shares — was worth $94.2 billion at June 30 and about $73.2 billion on August 20. That is roughly $21 billion of the gain already gone.',
+    'The tax on the mark is real and the mark is not. The $21.9 billion is a deferred liability on an unrealized gain; if the marks reverse, so does it, but the quarter has already reported both.',
+    'Trailing multiples across the market are polluted for this stock, in both directions and for at least two quarters running. Anyone screening on trailing P/E is looking at 17.3× for a business trading near 30×.',
+  ],
+  theQuestion: `Alphabet’s operating business grew 30% and its cloud arm grew 82% with margins that nearly doubled. In the same three months it spent $44.9 billion on capital, produced less cash than it spent, sold $49.6 billion of stock and preferred, and signed its way to $811 billion of purchase commitments.
+
+Is that a company converting a lead into an unassailable one — or one whose lead now costs more to hold than the business earns?`,
+  analysis: `## What the $99 billion actually is — and what our own first draft got wrong
+
+The 10-Q decomposes the gain exactly:
+
+| Component | Q2 2026 |
+| --- | --- |
+| Unrealized gain, non-marketable (measurement alternative) | $77,354M |
+| Unrealized gain, marketable and other | $21,399M |
+| **Realized** | **$278M** |
+| Total | $99,031M |
+
+The obvious reading of that table — and the one this report started with — is that 78% of the gain came from a private company Alphabet never names, and that the SpaceX IPO is the smaller piece. **That reading is wrong**, and the same filing refutes it.
+
+SpaceX sat in the *non-marketable* bucket until it listed on **June 12**. Its step-up **to** the IPO price therefore ran through the $77,354M line, not the $21,399M one. The roll-forward makes this checkable: cumulative upward adjustments in the measurement-alternative book went $80,792M to $85,732M while $77,544M of gross upward gain was recognised in the quarter, so about **$72.6 billion of upward adjustment left the bucket**; add cost and the carrying value removed is roughly **$74.8 billion**. Alphabet’s **551,189,500 SpaceX shares at the $135 IPO price come to $74.41 billion** — a 0.6% match. The $21,399M is only the post-IPO move from $135 to $170.86.
+
+So the gain **is** primarily SpaceX. Reconstructed, the split is roughly **$60 billion SpaceX and $36 billion the private company**. Stated plainly: **Alphabet does not disclose the split, and neither does any source.** That figure is a reconstruction from the filing’s own roll-forward, not a disclosure, and it is presented as such.
+
+What survives from the original concern is a balance-sheet fact rather than an income-statement one: at June 30 the non-marketable book stands at **$124.3 billion**, of which **$87.9 billion was remeasured to Level 2 during the quarter** off an unnamed private company’s funding round. That is a real, undisclosed, unverifiable forward exposure. It is just not where most of this quarter’s gain came from.
+
+## The mark is already reversing
+
+Alphabet’s 13F, filed August 7, gives the position to the share: **551,189,500 SpaceX Class A shares at $94,176,237,970** — $170.86 each, and 93% of the entire $101.2 billion marketable equity book. The 10-Q footnotes it as **$80.0 billion “subject to short-term restrictions on the ability to sell”** plus **$14.1 billion “subject to long-term restrictions … through the third quarter of 2027.”**
+
+Worth stating precisely, because it is easy to overstate: this is a **temporary contractual lockup, not a legal prohibition**, and SpaceX’s lockup releases in nine staggered tranches — a first tranche of 911.5 million company-wide shares freed on **August 6**. Under ASU 2022-03 a contractual sale restriction is not reflected in fair value, which is exactly why the position carries at the unadjusted $170.86.
+
+SPCX closed at **$139.65 on August 19** and traded at **$132.85 on August 20**. At that last price the same 551,189,500 shares are worth about **$73.2 billion** — roughly **$21 billion below the June 30 mark**, or about **−$1.33 a diluted share** after tax at the 22.1% rate Alphabet itself disclosed on the Q2 gain.
+
+That is an as-of estimate, not an accrual. Q3’s mark is set by the September 30 close, and it assumes Alphabet still holds every share unhedged. But the direction is the point: **about a fifth of the largest profit ever reported has evaporated in seven weeks**, and none of it was ever cash.
+
+## The cash question, which is the real story
+
+Strip the marks and this is a capital-expenditure quarter, and an extraordinary one.
+
+Capex went **$22,446M to $44,924M** — doubled — and the half is **$80,598M** against $39,643M. Operating cash flow was **$39.1 billion**. Subtract the two and free cash flow is **$(5,855)M**. The company’s own four-quarter reconciliation reads $24,461M, $24,551M, $10,116M, $(5,855)M: the slide is not one bad quarter, it is four quarters of capex outrunning a cash machine.
+
+Management is explicit about all of it. CFO Anat Ashkenazi attributed the negative free cash flow to “our investments in CapEx,” described the rationale for the raise as “a resilient … strong balance sheet,” and guided **2026 capex to $195–205 billion**, up from $180–190 billion, with 2027 to “increase significantly.” The market heard it: the stock fell between **5.4% and 7%** on July 23 depending on the source — its worst day in fourteen months — on a quarter that beat.
+
+The funding stack assembled in June is worth listing, because it is more than the headline:
+
+- **$20.5 billion** public offering — 29M Class A at $355.1982 and 29M Class C at $351.8018
+- **$10.0 billion** private placement of 14M Class A + 14M Class C to Berkshire Hathaway’s National Indemnity
+- **$19.0 billion** of 6.25% mandatory convertible preferred, converting on or about **May 15, 2029**, with $1.0 billion of capped calls struck 50% above the offering prices
+- a **$40.0 billion at-the-market programme** established June 1, unused at quarter-end
+- **$20.3 billion** of senior notes issued the same quarter
+
+Dilution from the equity and preferred is genuinely small — about 86 million shares now plus at most ~54 million on conversion, roughly **1.1–1.2%** of the 12,230 million outstanding, at about $1.19 billion a year of coupon. The ATM would add roughly another 0.9% if used. This is cheap money. The question the terms answer is *how* Alphabet is funding the build; the question they raise is *why it needs to*.
+
+## Google Cloud: how much of the 82% is real
+
+Most of it, with three qualifiers that matter.
+
+**It is not a depreciation trick.** No change in useful-life estimate is disclosed in the Q1 or Q2 2026 10-Q, the six-year server life from the FY2025 10-K still stands, and depreciation rose about 42% year on year to roughly $7.1 billion. The margin expansion is concentrated in labour: Cloud compensation grew **25.7%** against **81.8%** revenue growth, falling from 40.5% to 28.0% of Cloud revenue and contributing about 84% of the 14.85-point expansion. Incremental margin was 53.7%.
+
+**But allocation cannot be ruled out from the filing.** Note 15 says centrally-managed technical-infrastructure costs “including the associated depreciation” are allocated to segments “generally based on usage, headcount, or revenue,” and Alphabet never discloses the amount allocated to Cloud. Cloud’s depreciation burden is unobservable. Separately — and this is the sharper point — **shared AI model R&D is deliberately not allocated to any segment**. It sits in “Alphabet-level activities,” whose loss widened from $(3,372)M to $(5,789)M, absorbing **$2,417 million, or 40% of Cloud’s entire $5,988 million operating-income increase**.
+
+**And it is not like-for-like with AWS or Azure.** Google Cloud includes Workspace; AWS does not. It also includes a first full quarter of **Wiz** ($29.5 billion, closed March 11, contribution undisclosed, zero in the year-ago base) and new **TPU system hardware revenue** that Alphabet does not disaggregate — management called the 2026 contribution “relatively small,” said growth “accelerated meaningfully even after excluding the impact of TPU system sales,” and expects the majority of those agreements to land in 2027 (inventory quadrupled to $10.0 billion on TPU hardware, so 2027 will look different). In the same quarter **AWS grew 37% to $42,232M at a 39.4% segment margin** — above Google Cloud’s. Microsoft publishes no Azure-only margin or dollar figure at all.
+
+The base matters too: Google Cloud is now **59% of AWS’s size**, up from 44%. Growing 82% off a base under half your rival’s is a different achievement from growing 37% off the bigger one — better in some readings, less impressive in others, and not the same thing.
+
+## $811 billion
+
+Alphabet’s disclosed “material purchase commitments and other contractual obligations” went **$149.1B (Dec 31) → $332.4B (Mar 31) → $811.0B (Jun 30)** — 5.4× in six months, with $200.7 billion falling short-term. Within it, Note 10 discloses **$707.0 billion of “expected future fixed or guaranteed commitments,”** the significant majority long-term supply agreements, with energy agreements running **2 to 26 years and take-or-pay obligations through 2054**. Add $85.2 billion of leases not yet commenced and $21.9 billion of variable-interest-entity funding commitments and the gross figure is roughly **$918 billion**.
+
+Two honest deflations. Some of the jump is **scope, not spending**: “long-term supply agreements” appears nowhere in the FY2025 10-K, which used a narrower measurement basis, and the companion disclosure went $7.7B → $232.7B → $707.0B on an acknowledged widening in Q1 2026. And obligations running to 2054 measured against one capex-depressed year of free cash flow is a stress indicator, not a solvency ratio — $811 billion is about four years of spending at guided 2026 capex.
+
+But the buildout underneath it is not a disclosure artifact: $80.6 billion of half-year capex against $39.6 billion, a $49.6 billion equity raise, buybacks at zero, and a negative free-cash-flow quarter all point the same way.
+
+## The one number nobody explains
+
+Back out Alphabet’s own footnoted $21.9 billion of tax and the residual effective rate on the operating business is **11.7%** — well below the 16.9% of a year ago. On six months, which washes out interim lumpiness, it is **14.1% against 16.3%**: a real decline of about 2 points, roughly half what the quarterly figures suggest, and neither the 10-Q nor the call explains it. The likeliest driver is a larger stock-based-compensation windfall benefit given the share price, which is a genuine tax benefit but a share-price-dependent one. Normalising at Alphabet’s own H1 ex-gain rate gives about **$2.76** rather than $2.84 — a 3% haircut on the clean anchor, worth knowing about and not worth panicking over.
+
+## Risk — each isolated, do not blur
+
+1. **Cash generation (dominant).** Negative free cash flow, capex guided to $195–205 billion for 2026 and higher in 2027, funded increasingly from capital markets rather than operations.
+2. **Mark reversal.** About $21 billion of the reported gain is already gone at the August 20 SPCX price, and $94.1 billion of the position remains restricted into Q3 2027.
+3. **The unnamed private company.** $87.9 billion remeasured to Level 2 in one quarter off a funding round, inside a $124.3 billion non-marketable book, with no name, no ownership percentage and no cost basis disclosed.
+4. **Commitment scale.** $811 billion, some of it take-or-pay to 2054, signed against a demand curve nobody can yet see past 2027.
+5. **Comparability.** Cloud’s headline growth and margin are not measured on the same basis as AWS’s or Azure’s, and Alphabet’s segments do not sum to consolidated operating income while Amazon’s do.
+6. **Screen pollution.** Two consecutive quarters of enormous marks make every trailing multiple on this stock wrong, and the error is in the flattering direction.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** The near term is mechanical: the September 30 SPCX close sets the Q3 mark, and Q3 free cash flow against a capex run rate now above $45 billion a quarter says whether Q2 was the trough or the trend. The thesis resolves over **two to three years** on one question — does the compute Alphabet is buying produce revenue at a margin that justifies $200 billion a year, before the commitments become due?
+
+**Sizing considerations (not a recommendation).** Alphabet is the only company in this section that could fund a build of this size from its own operations and is choosing not to. The balance sheet is not the risk. The risk is that the screened multiple looks like a value stock and the real one does not, and that two of the last two quarters’ earnings were set by other people’s share prices.`,
+  invalidation: {
+    bull: [
+      'Q3 free cash flow stays negative or worsens while capex guidance rises again — the raise becomes a recurring requirement rather than a one-off.',
+      'The Q3 equity mark reverses hard: SPCX below roughly $135 at September 30 would put the position under its own IPO price and turn the Q2 gain into a Q3 loss.',
+      'Google Cloud growth decelerates sharply once Wiz is in the base and the TPU hardware timing normalises, showing the 82% was partly composition.',
+      'The unnamed private company’s next round marks down, taking a bite out of the $124.3 billion non-marketable book with no warning and no name attached.',
+    ],
+    bear: [
+      'Free cash flow returns to positive in Q3 or Q4 while capex stays at guidance — showing Q2 was a timing trough, not a structural inversion.',
+      'Google Cloud sustains 60%-plus growth with margins holding above 30% for two more quarters, at which point the base-size objection stops mattering.',
+      'Alphabet begins disclosing the SpaceX and private-company split, or the segments start summing to consolidated operating income, removing the comparability discount.',
+      'TPU system revenue lands at scale in 2027 as guided, giving Alphabet a hardware line that Amazon and Microsoft do not have and that changes the cloud margin comparison structurally.',
+    ],
+  },
+  verification: {
+    confirmed: 0,
+    partlyTrue: 4,
+    corrected: 2,
+    confirmedNote:
+      'Confirmed against Alphabet’s own filings: every raw figure in this report was verified directly against the Q2 2026 8-K Exhibit 99.1, the Q2 2026 10-Q, the Q1 2026 10-Q and the August 7 Form 13F — the income statement and cash-flow lines, the equity-securities decomposition ($77,354M / $21,399M / $278M), the footnoted $21.9B / $77.1B / $6.26 tax and EPS effect, the $80.0B and $14.1B SpaceX restriction footnotes, the 551,189,500-share 13F position, the Q1 2026 “there were no repurchases” language, the June offering terms, and the $811.0B commitment disclosure. What did not survive was the interpretation layer: of six load-bearing claims put to adversarial skeptics, none passed clean.',
+    items: [
+      {
+        kind: 'corrected',
+        title: 'This report’s original thesis about the $99 billion was wrong',
+        text: 'The first draft read the 10-Q’s $77,354M non-marketable line as a mark on the unnamed private company, concluding that the SpaceX IPO was the *smaller* part of the gain and that about 69% of net income traced to one company Alphabet never names. **The skeptic pass refuted it using the same filing.** SpaceX sat in the non-marketable bucket until it listed on June 12, so its step-up to the IPO price ran through that very line: the Q2 roll-forward shows roughly $74.8 billion of carrying value leaving the measurement-alternative bucket, against 551,189,500 shares × the $135 IPO price = $74.41 billion — a 0.6% match. The gain **is** primarily SpaceX. The 69% figure was also misapplied: it is the share of net income attributable to the *entire* $99.0 billion gain after tax, not to one slice, and it was originally computed by dividing a pre-tax number by an after-tax one. The corrected reconstruction — roughly $60 billion SpaceX, $36 billion the private company — is stated in the analysis **as a reconstruction, because Alphabet discloses no split and neither does any source.**',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'The buyback-and-raise story that everyone told, including us, is not supported by the chronology',
+        text: 'The tempting narrative: Alphabet stopped repurchasing and sold $49.6 billion of stock because its enormous new SpaceX stake is locked up and cannot fund anything. **Every number in that sentence is right and the causation is wrong.** Repurchases were already zero in Q1 2026 — the Q1 10-Q says so verbatim, with the same $69.5 billion remaining — six weeks before SpaceX listed and before any restriction existed. The equity and preferred priced June 4–5, ahead of the June 12 IPO. Alphabet gives a different reason four times over (“capital expenditures to scale AI infrastructure and global compute”), the CFO said the same on the call, and the 10-Q’s own risk factors note that an issuer may have to suspend repurchases while selling equity. The raise and the pause are a capex story that predates the listing.',
+      },
+      {
+        kind: 'partly',
+        title: 'The Cloud margin expansion is real, but not fully observable',
+        text: 'The claim that no accounting estimate manufactured the 20.7% → 35.6% expansion **holds** — no useful-life change is disclosed, the six-year server life stands, depreciation rose ~42%. Two caveats survive. Alphabet extended data-centre and office-building lives from a maximum of 25 to 40 years between the FY2023 and FY2024 10-Ks with no change-in-estimate disclosure or quantification anywhere; that predates the comparison period so it cannot manufacture the expansion, but “last changed January 2023” is true only of servers. And Note 15 confirms technical-infrastructure depreciation is allocated to segments on usage, headcount or revenue without disclosing the amount — so allocation cannot be excluded from the filing, only from the narrative.',
+      },
+      {
+        kind: 'partly',
+        title: 'The AWS and Azure comparison, in both directions',
+        text: 'The non-comparability holds and is sharper than first stated: Alphabet’s segments do not sum to consolidated operating income while Amazon’s do exactly, because shared frontier-model R&D sits unallocated. But two details were overstated. Workspace is in the year-ago base too, so it distorts the *level*, not the growth rate. And the unallocated Alphabet-level loss grew 72%, which is faster than total revenue (+24%) but **slower** than Google Cloud (+82%) — so it is not evidence that Cloud’s margin is being flattered at an accelerating rate.',
+      },
+      {
+        kind: 'partly',
+        title: 'The $811 billion is real but the 5.4× is not clean',
+        text: '“Long-term supply agreements” appears nowhere in the FY2025 10-K, which used a narrower measurement basis; the companion Note 10 disclosure went $7.7B (content licences only) → $232.7B → $707.0B on an acknowledged scope widening in Q1 2026. Part of the increase is **expanded disclosure, not new spending**, and the two cannot be separated from public filings. One component also moved the other way: variable-interest-entity commitments fell 46% during Q2 as the milestone-contingent portion went $40.0B → $20.0B. The buildout is nonetheless real, evidenced independently by capex, the raise and the cash flow.',
+      },
+      {
+        kind: 'partly',
+        title: 'The clean EPS anchor of $2.84 embeds an unexplained tax rate',
+        text: 'Backing out the footnoted $21.9 billion leaves an 11.7% residual effective rate on the operating business, against 16.9% a year ago. The skeptic pass killed the tempting explanation — that $21.9B is a lazy statutory-rate allocation — by showing 22.1% **is** Alphabet’s statutory rate (21.0% federal + 1.0% state), that ASC 740 *requires* a deferred tax liability on an unrealised mark to be measured at the enacted rate, and that the two methods converge here because Alphabet’s rate-reducing items (FDII, R&D credits, foreign tax credits, stock comp) are operations-generated and do not attach to an equity mark. The residual decline is real but about half the headline size: 14.1% versus 16.3% on a six-month basis. Normalising at that rate gives about $2.76 rather than $2.84.',
+      },
+    ],
+  },
+  openQuestions: [
+    'Which private company is the $87.9 billion Level 2 remeasurement? Alphabet names SpaceX four times and the other holding zero times, discloses no ownership percentage and no cost basis, and the position now sits inside a $124.3 billion non-marketable book.',
+    'What is the split of the $99.0 billion between SpaceX and the private company? Alphabet does not disclose it, no press source has it, and the roughly $60B/$36B figure in this report is reconstructed from the measurement-alternative roll-forward.',
+    'How much of Google Cloud’s technical-infrastructure depreciation is allocated to the segment? Note 15 says it is allocated on usage, headcount or revenue, and never says how much — which is the one number that would settle whether the 35.6% margin is comparable to AWS’s 39.4%.',
+    'Why did the operating-business tax rate fall about two points with no explanation in either the 10-Q or the call, and how much of it is stock-comp windfall that unwinds if the share price does?',
+  ],
+  soWhat: `Here is the habit this quarter is worth, and it takes about ten seconds.
+
+**When a company reports a profit, check whether the cash moved.**
+
+Alphabet reported $112 billion of net income. $77 billion of it came from writing up the value of shares it owns in other companies — not from selling them. Of a $99 billion gain, **$278 million was actually realised**. Everything else was a re-pricing. You do not have to take anyone’s word for this: the cash flow statement removes the entire $99 billion on the next page, in a line called “gain on debt and equity securities, net.” That subtraction is the company telling you, in its own filing, that the profit was not cash.
+
+And here is the part that makes it more than a technicality. The largest of those stakes — SpaceX — was worth $94 billion when the quarter closed on June 30. By August 20 the same shares were worth about $73 billion. **Roughly a fifth of the biggest profit ever reported evaporated in seven weeks**, and no money ever changed hands in either direction.
+
+The practical version, and it works on any company: **find operating income, then find net income.** Operating income is what the business earned by doing its job. Net income is that plus everything else that happened — investments, one-off gains, tax items, asset sales. When the two disagree by a lot, the disagreement *is* the story, and it is usually in the paragraph nobody quotes.
+
+There is a second habit hiding in this one. When a stock screener showed Alphabet on a P/E of 17 while the forward P/E was 26, that impossible pair was the tell. **A trailing multiple below a forward multiple, on a growing company, means the trailing earnings contain something that is not coming back.** You do not need a filing to spot that — just the willingness to notice when two numbers on the same screen cannot both be describing the same business.`,
+  throughLine: {
+    text: `This section has now looked at eight companies in the same AI-capital cycle, and Alphabet is the one that was supposed to be immune.
+
+The recurring finding across these reports is that **the number in the headline is not the number the filing supports**, and it keeps arriving the same way: a non-cash mark on a stake in another company. Microsoft’s headline EPS growth was powered by a mark on a private stake. Nebius has never earned an operating profit and every dollar of bottom-line profit it has shown is a revaluation of its ClickHouse stake. Alphabet is the same mechanism at a scale that dwarfs both — $99.0 billion in one quarter, and $36.9 billion in the quarter before it.
+
+It also closes a loop this section opened itself. The mark that drives Alphabet’s record quarter was created by the **SpaceX IPO** — the event covered here in June, from the other side. One report’s catalyst is another’s accounting entry.
+
+Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 32%, **Alphabet at 37.5%**, Amazon at roughly 105% of operating cash flow, SpaceX at 235%, CoreWeave at about 290%, and Nebius’s first half at 828%. AMD sits outside the scale entirely — it sells the chips the rest are buying. Alphabet lands near the low end of that ladder and still could not fund the quarter from operations, which is the most useful single fact in this report: **at the current pace of the buildout, being the most profitable company in the world is not sufficient.**`,
+    links: [
+      {
+        label: 'SPCX — the IPO that created this mark',
+        slug: 'spcx-q2-2026',
+      },
+      {
+        label: 'MSFT — the same mechanism, one quarter earlier',
+        slug: 'msft-q4-fy2026',
+      },
+      {
+        label: 'NBIS — the same mechanism, all of the profit',
+        slug: 'nbis-q2-2026',
+      },
+    ],
+  },
+  cardImage: '/images/content/goog-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/goog-q2-2026-card-hero-light.webp',
+  cardImageAlt: 'Google logo',
+  sources: [
+    {
+      n: 1,
+      label:
+        'Alphabet Q2 2026 Form 8-K, Exhibit 99.1 — earnings release, income statement, cash flow, free-cash-flow reconciliation and the $21.9B / $77.1B / $6.26 footnote (2026-07-22)',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm',
+      primary: true,
+    },
+    {
+      n: 2,
+      label:
+        'Alphabet Q2 2026 Form 10-Q — equity-securities decomposition, the SpaceX restriction footnotes, Note 10 purchase commitments, Note 11 the June offerings, Note 14 income taxes, Note 15 segment allocation',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm',
+      primary: true,
+    },
+    {
+      n: 3,
+      label:
+        'Alphabet Q1 2026 Form 10-Q — “In the three months ended March 31, 2026, there were no repurchases”, the chronology that refutes the buyback narrative',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000048/goog-20260331.htm',
+      primary: true,
+    },
+    {
+      n: 4,
+      label:
+        'Alphabet Form 13F-HR (2026-08-07) — 551,189,500 SpaceX Class A shares at $94,176,237,970',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000073/information_table.xml',
+      primary: true,
+    },
+    {
+      n: 5,
+      label:
+        'Alphabet FY2025 Form 10-K — the six-year server useful life and the statutory rate reconciliation',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm',
+      primary: true,
+    },
+    {
+      n: 6,
+      label:
+        'Alphabet Q2 2026 earnings call transcript — capex guidance of $195–205B, the balance-sheet rationale, TPU system revenue timing',
+      url: 'https://stockanalysis.com/stocks/googl/transcripts/657320-q2-2026/',
+    },
+    {
+      n: 7,
+      label:
+        'stockanalysis.com — GOOGL price, market cap, trailing and forward P/E, price to free cash flow',
+      url: 'https://stockanalysis.com/stocks/googl/statistics/',
+    },
+    {
+      n: 8,
+      label:
+        'stockanalysis.com — SPCX price, for the mark-to-market since June 30',
+      url: 'https://stockanalysis.com/stocks/spcx/',
+    },
+    {
+      n: 9,
+      label:
+        'CNBC — SpaceX lockup, first tranche of 911.5M shares released 2026-08-06',
+      url: 'https://www.cnbc.com/2026/08/06/spacex-faces-test-as-shares-unlock-allowing-early-investors-cash-out.html',
+    },
+    {
+      n: 10,
+      label:
+        'Schaeffer’s Research — the July 23 reaction, worst day in fourteen months on the capex guide',
+      url: 'https://www.schaeffersresearch.com/content/news/2026/07/23/alphabet-stock-eyes-worst-day-in-14-months-on-capex-spending',
+    },
+    {
+      n: 11,
+      label: 'Alphabet EDGAR filing index (CIK 0001652044)',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001652044&type=10-Q&dateb=&owner=include&count=10',
+      primary: true,
+    },
+  ],
+};
+
 export const marketStormReports: MarketStormReport[] = [
+  googQ2_2026,
   nbisQ2_2026,
   crwvQ2_2026,
   amdQ2_2026,
