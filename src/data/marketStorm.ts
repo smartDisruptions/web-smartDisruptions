@@ -2723,8 +2723,519 @@ The same pattern keeps recurring across four very different balance sheets: **th
   ],
 };
 
+const crwvQ2_2026: MarketStormReport = {
+  slug: 'crwv-q2-2026',
+  ticker: 'CRWV',
+  company: 'CoreWeave, Inc.',
+  title:
+    'CoreWeave doubled its revenue and earned less doing it — one line on the income statement explains both',
+  excerpt:
+    'Revenue grew 112% to $2.58B and the stock rose 14%. But adjusted operating income FELL 36%, from $200M to $128M, and the reason is a single line: depreciation. Strip it out and operating costs grew 94% against 112% revenue — real operating leverage. Put it back and the sign flips. Underneath sits $35.1B of debt at rates up to 15%, interest expense equal to 25% of revenue, and $35.5B of signed leases the company states are not on its balance sheet. STORM put four AI agents on the print, then had skeptics try to refute every load-bearing claim against the 10-Q.',
+  catalyst: 'Q2 2026 earnings — reported August 11, 2026',
+  publishDate: '2026-08-19',
+  tags: ['CRWV', 'AI-infrastructure', 'earnings', 'leverage', 'depreciation'],
+  verdict:
+    'The market read this as a beat and bid it up 14%. The filing describes a company whose interest bill is a quarter of its revenue, whose debt costs as much as 15%, and which has $35.5 billion of signed leases sitting outside the balance sheet it just reported.',
+  priceStrip: [
+    { k: 'Price · Aug 19', v: '$90.87' },
+    { k: 'On the print', v: '+14%', tone: 'bull' },
+    { k: '52-wk change', v: '−6.1%', tone: 'bear' },
+    { k: 'Market cap', v: '$50.1B' },
+    { k: 'Enterprise value', v: '$96.2B', tone: 'warn' },
+    { k: 'Short interest', v: '11.1%', tone: 'bear' },
+  ],
+  summary: `CoreWeave rents out AI computing power, and business is booming: revenue more than doubled to $2.58 billion and the shares jumped 14%. Yet the company earned *less* profit than a year ago on twice the sales. That sounds impossible, and it has a single, unglamorous explanation — the chips wear out. CoreWeave buys GPUs with borrowed money, and the cost of writing those chips down over their useful life is now growing faster than the revenue they generate. Everything else in this report — the debt, the interest bill, the leases — follows from that one fact.`,
+  headlineVsReal: [
+    {
+      headline:
+        '"CoreWeave reached an important inflection point this quarter as our scale began to translate into **expanding operating leverage**." — the CEO, first line of the release.',
+      real: 'Adjusted operating income **fell 36%**, from $200M to $128M, while revenue grew 112%. Adjusted EBITDA margin compressed from **62% to 59%**.',
+      gap: 'Both can be argued, and the difference is which comparison you use. Sequentially adjusted operating income did improve — $21M in Q1 to $128M in Q2 — which is presumably what the quote means. Year over year it moved the other way. The mechanism is precise: **excluding depreciation, operating expenses grew 94% against revenue\u2019s 112%** — genuine operating leverage. Include the $1,393M of depreciation and amortisation, up 149%, and the sign flips. Depreciation is not a rounding item here; it is the business.',
+    },
+    {
+      headline:
+        '"**Adjusted EBITDA $1,510M**, a 59% margin" — the profitability figure that leads the non-GAAP table.',
+      real: '**92% of it is a depreciation add-back.** The bridge from the $(626)M net loss adds $1,393M of D&A, $640M of net interest, $165M of stock comp and $62M of tax.',
+      gap: 'To CoreWeave\u2019s credit, its *other* non-GAAP measure is the honest one: **adjusted operating income leaves depreciation in**, adding back only stock comp, $1M of acquisition costs and $11M of acquired-intangible amortisation. That is why one measure shows $1.51B of profit and the other shows $128M on the same quarter. The gap between them, $1,382M, is the cost of the chips being used up. And it is going to grow: accumulated depreciation is only **11% of gross PP&E**, and **$11.9B of construction in progress** is not depreciating at all yet.',
+    },
+    {
+      headline:
+        '"Revenue backlog **approximately $104 billion**", up 246% year over year.',
+      real: 'The GAAP measure inside it, unsatisfied remaining performance obligations, went **$98.8B to $103.7B** in the quarter — **+$4.9B, or +5.0%**.',
+      gap: 'The definitions are word-for-word identical across the two consecutive 10-Qs, so the sequential comparison is clean. Against ~$2.52B of revenue recognised from committed contracts, that implies roughly **$7.4B of gross bookings in Q2 — against ~$40B in Q1 2026** and ~$16.6B in Q2 2025. It is the first quarter in six where gross bookings came in below the year-ago quarter. The backlog is real and it is enormous; the growth in it is lumpy and front-loaded, and "+246%" describes a step that mostly happened last quarter.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$2.58B',
+      delta: '+112% YoY',
+      note: 'Beat ~$2.56B consensus; the stock rose 14%.',
+      tone: 'bull',
+    },
+    {
+      label: 'Adjusted operating income',
+      value: '$128M',
+      delta: '\u25bc 36% YoY',
+      note: 'Fell while revenue doubled. Depreciation-inclusive.',
+      tone: 'bear',
+    },
+    {
+      label: 'Operating income (GAAP)',
+      value: '$(49)M',
+      delta: 'from +$19M',
+      note: 'Went negative. Margin (2)% against 2%.',
+      tone: 'bear',
+    },
+    {
+      label: 'Interest expense, net',
+      value: '$640M',
+      delta: '25% of revenue',
+      note: 'Up 140%. Already net of $79M capitalised.',
+      tone: 'bear',
+    },
+    {
+      label: 'Depreciation & amortisation',
+      value: '$1.39B',
+      delta: '+149% YoY',
+      note: '92% of Adjusted EBITDA. Growing faster than revenue.',
+      tone: 'warn',
+    },
+    {
+      label: 'Total debt',
+      value: '$35.1B',
+      delta: 'vs $5.0B equity',
+      note: '89.6% recourse to CoreWeave, Inc. Rates to 15%.',
+      tone: 'bear',
+    },
+    {
+      label: 'Leases not yet commenced',
+      value: '$35.5B',
+      delta: '\u26a0 off balance sheet',
+      note: 'Company\u2019s own words. Commencing 2026\u20132029.',
+      tone: 'warn',
+    },
+    {
+      label: 'Active power',
+      value: '1.5 GW',
+      delta: '+~500 MW in Q2',
+      note: '3.7 GW contracted; >1.85 GW targeted by year end.',
+      tone: 'bull',
+    },
+  ],
+  printTableTitle: 'Q2 2026 — the facts everything hangs on',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 2026', align: 'right' },
+      { label: 'vs Q2 2025', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Revenue',
+          '$2,575M',
+          '+112%',
+          'From $1,212M. Beat ~$2.56B consensus',
+        ],
+      },
+      {
+        cells: [
+          'Cost of revenue',
+          '$879M',
+          '34% of rev',
+          '\u26a0 Was 26% \u2014 an 8-point deterioration',
+        ],
+      },
+      {
+        cells: [
+          'Technology & infrastructure',
+          '$1,507M',
+          'from $670M',
+          'Where most depreciation sits',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Operating income (loss)',
+          '$(49)M',
+          'from +$19M',
+          '\u26a0 Went negative on doubled revenue',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Interest expense, net',
+          '$(640)M',
+          'from $(267)M',
+          '\u26a0 25% of revenue; net of $79M capitalised',
+        ],
+      },
+      {
+        cells: ['Other income, net', '$125M', 'from $6M', 'Not operating'],
+      },
+      {
+        cells: [
+          'Loss before income taxes',
+          '$(564)M',
+          'from $(242)M',
+          '\u2014',
+        ],
+      },
+      {
+        cells: [
+          'Provision for income taxes',
+          '$62M',
+          'on a pre-tax loss',
+          'Valuation allowance on US deferred tax assets',
+        ],
+      },
+      {
+        cells: [
+          'Net loss / per share',
+          '$(626)M / $(1.14)',
+          'from $(290)M',
+          'On 551M weighted shares',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Adjusted operating income',
+          '$128M',
+          '\u25bc from $200M',
+          '\u26a0 Depreciation-inclusive. Margin 16% \u2192 5%',
+        ],
+      },
+      {
+        cells: [
+          'Adjusted EBITDA',
+          '$1,510M',
+          '59% margin',
+          'Was 62%. 92% of it is the D&A add-back',
+        ],
+      },
+      {
+        cells: [
+          'D&A on property & equipment',
+          '$1,382M',
+          '+149%',
+          'Against 112% revenue growth',
+        ],
+      },
+      {
+        cells: [
+          'Gross PP&E / accumulated dep.',
+          '$52.6B / $(5.9)B',
+          '11% depreciated',
+          'A young fleet \u2014 D&A accelerates from here',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Construction in progress',
+          '$11,918M',
+          '23% of gross PP&E',
+          '\u26a0 Earning nothing, depreciating nothing \u2014 yet',
+        ],
+      },
+      {
+        cells: [
+          'Total debt (carrying)',
+          '$35,068M',
+          'vs $5,024M equity',
+          '\u26a0 89.6% recourse; $10.6B matures inside 18 months',
+        ],
+      },
+      {
+        star: true,
+        cells: [
+          'Leases not yet commenced',
+          '$35,500M',
+          'off-balance-sheet',
+          '\u26a0 Excludes 393 MW capped at $14.7B and 355 MW more',
+        ],
+      },
+      {
+        cells: [
+          'Unsatisfied RPO',
+          '$103.7B',
+          '+5.0% QoQ',
+          'From $98.8B. Backlog quoted as ~$104B',
+        ],
+      },
+      {
+        cells: [
+          'Q2 operating cash flow',
+          '+$679M',
+          'from $(251)M',
+          'Against $(7,166)M of investing outflow',
+        ],
+      },
+      {
+        cells: [
+          'Q2 debt issued / repaid',
+          '$13,457M / $(3,884)M',
+          '\u2014',
+          'Financing supplied $10,071M in the quarter',
+        ],
+      },
+      {
+        cells: [
+          'FY2026 guidance',
+          '$12.4\u201313.2B',
+          'capex $35\u201339B',
+          '\u26a0 Capex ~2.9\u00d7 revenue; adj. op. income $960M\u2013$1.15B',
+        ],
+      },
+    ],
+  },
+  bull: [
+    '**Revenue grew 112% to $2.58B** and beat consensus, on a backlog of roughly $104B that the filings support as real rather than padded.',
+    '**Strip depreciation and the operating leverage is genuine:** operating expenses grew 94% against 112% revenue growth. The underlying business scales.',
+    '**Operating cash flow turned positive** — +$679M in the quarter against $(251)M a year ago, and +$3,663M across the half.',
+    '**Adjusted operating income is the conservative measure and CoreWeave leads with it anyway.** It leaves $1,382M of depreciation in, which most companies in this position would have found a way to add back.',
+    '**The six-year depreciable life is at the hyperscaler norm**, not beyond it — Alphabet uses six years, Microsoft two to six, Amazon five to six. This is not an aggressive assumption.',
+    '**Physical delivery is real:** active power up ~500 MW to 1.5 GW in a quarter, 3.7 GW contracted, and the first bring-up of NVIDIA Vera Rubin NVL72 in the industry.',
+    '**A 25% price increase across SKUs in July** — imposed into this demand environment, which is not something a commodity supplier can do.',
+  ],
+  bear: [
+    '**Adjusted operating income fell 36% while revenue doubled.** Depreciation is growing faster than the revenue the depreciating assets produce.',
+    '**Interest expense is 25% of revenue.** Coverage on adjusted operating income is **0.20\u00d7**; on GAAP operating income it is **negative**, and the gap widens in the Q3 guide.',
+    '**$35.1B of debt against $5.0B of equity**, 89.6% recourse to the parent, at rates running to **15%**, with **$10.6B maturing inside 18 months** against $5.5B of cash.',
+    '**$35.5B of signed leases sit off the balance sheet** by the company\u2019s own statement — and that figure excludes a site capped at **$14.7B** over sixteen years plus 355 MW more.',
+    '**Depreciation has years of acceleration ahead:** the fleet is only 11% depreciated and $11.9B of construction in progress has not started yet.',
+    '**Gross bookings decelerated hard** — roughly $7.4B in Q2 against ~$40B in Q1, the first quarter in six below its year-ago comparison.',
+    '**Cost of revenue went from 26% to 34% of revenue** — unit costs are scaling faster than price.',
+  ],
+  theQuestion: `**Is depreciation a real cost here, or an accounting artefact that a long-lived asset outruns?** Everything turns on it. If a GPU bought today is still earning in six years, CoreWeave is a capital-intensive business with genuine 94%-versus-112% operating leverage and a $104B backlog to fill. If AI silicon is economically obsolete in three, then the depreciation line is not conservative enough, the $35.1B of debt was borrowed against assets that decay faster than they amortise, and the interest bill arrives regardless. The six-year life is at the industry norm — but Amazon looked at the same question in 2025 and moved its own estimate the other way.`,
+  analysis: `## Valuation \u2014 the market cap is not the price
+
+At **$90.87** CoreWeave\u2019s equity is worth **$50.1B**. Its **enterprise value is $96.2B** \u2014 nearly double, because the debt is roughly half the enterprise. Any multiple quoted on market cap alone describes a levered slice rather than the business.
+
+| Multiple | Value |
+| --- | --- |
+| Price / sales (forward) | 2.6\u00d7 |
+| **EV / sales (trailing)** | **12.7\u00d7** |
+| EV / adjusted EBITDA | 25.4\u00d7 |
+| Price / book | 10.0\u00d7 |
+| Net cash position | **\u2212$46.0B** |
+| Short interest | **11.1% of shares** |
+
+That first pair is the whole valuation argument in two rows. On the equity, CoreWeave looks like a cheap hypergrowth name at 2.6\u00d7 forward sales. On the enterprise, it is at 12.7\u00d7 trailing sales with $51.6B of total debt and negative $13.66B of trailing free cash flow.
+
+Two facts sit oddly together and both are true: the stock rose **14%** on this print, and it is **down 6.1% over 52 weeks** in which revenue more than doubled. Short interest is **11.1% of shares outstanding** \u2014 by a wide margin the most-shorted name this section has covered. The sell-side average target is $143.26. Nobody is neutral on this one.
+
+## The depreciation question, which is the whole report
+
+CoreWeave charged **$1,393M of depreciation and amortisation** this quarter, up **149%** against 112% revenue growth. That single line does three things at once.
+
+It is **92% of Adjusted EBITDA** \u2014 the $1,510M figure is the $(626)M net loss plus D&A, interest, stock comp and tax. It is **99.2% inside adjusted operating income**, which is why that measure reads $128M rather than $1.5B, and why it fell 36%. And it is **the thing that flips the sign on operating leverage**: excluding it, operating expenses grew 94% against 112% revenue; including it, the company posted a $(49)M operating loss.
+
+The forward path is worse before it is better, for two disclosed reasons. Accumulated depreciation is **$5.9B against $52.6B of gross PP&E \u2014 11%**. On a six-year life that is a young fleet with most of its depreciation ahead of it. And **$11.9B of construction in progress**, 23% of gross PP&E, is currently earning nothing and depreciating nothing; when it lands it hits the income statement with no grace period.
+
+> **The correction our own skeptic pass insisted on.** A first draft called the six-year life "unusually aggressive." It is not. Alphabet depreciates servers and network equipment generally over six years, Microsoft states two to six, Amazon five to six. CoreWeave is at the norm. What is true is that **Amazon moved the other way** \u2014 cutting a subset of servers from six years to five effective January 2025, citing "the increased pace of technology development, particularly in the area of artificial intelligence and machine learning," at a cost of $1.4B in extra depreciation. One large buyer of the same equipment concluded it wears out faster than six years.
+
+## The capital structure
+
+**$35,068M of debt against $5,024M of equity.** Of that, **89.6% is recourse** \u2014 a direct obligation of, or unconditionally guaranteed by, CoreWeave, Inc. Only $3,663M is non-recourse.
+
+The rates are the part that does not appear in any summary: the first delayed-draw term loan carries **15%**, the Magnetar facility 12%, recourse OEM arrangements 11%, and four of the five senior notes 10%. **$10.6B matures inside roughly eighteen months** against $5.5B of unrestricted cash. Since quarter-end the company has added a $2.6B facility at SOFR+5.5% and drawn $1.2B on its revolver.
+
+> **A distinction worth keeping straight, because the skeptic pass corrected us on it.** "Low non-recourse debt" is not the same as "no ring-fencing." Note 10 discloses that beyond the non-recourse facility, further borrowings sit in **bankruptcy-remote special-purpose subsidiaries** whose assets "may be used only to settle the obligations of those entities" \u2014 covering **$18.2B** of non-current debt. There is a great deal of structural separation here. It simply runs alongside a parent guarantee rather than instead of one.
+
+Then the item that is not on the balance sheet at all. Note 8 discloses **$35.5B of estimated future undiscounted payments on leases that have been executed but had not commenced** at 30 June, running 2026\u20132029 on seven-to-sixteen-year terms. CoreWeave states plainly that these "were not included in our condensed consolidated balance sheet." That figure **excludes** two cost-plus arrangements: one site with 393 MW still undelivered, capped at **$14.7B over sixteen years**, and others with 355 MW undelivered.
+
+So the obligations are roughly $35.1B on the balance sheet and $35.5B more beside it, against $5.0B of equity.
+
+## Risk \u2014 each isolated, do not blur
+
+1. **Interest against profit (dominant).** $640M of quarterly interest against $128M of adjusted operating income is 0.20\u00d7 coverage, and negative on GAAP. Q3 guidance pairs $200\u2013260M of adjusted operating income against $860\u2013940M of interest \u2014 the gap widens in dollars, not narrows.
+2. **The depreciation assumption.** Six years is the norm; if AI silicon is economically obsolete sooner, the charge is understated and the debt was raised against faster-decaying collateral.
+3. **Refinancing.** $10.6B due inside eighteen months against $5.5B of cash, at a company whose existing paper runs to 15%. This works while capital markets stay open.
+4. **The off-balance-sheet leases.** $35.5B commencing over four years, plus capped arrangements excluded from it.
+5. **Bookings deceleration.** ~$7.4B of gross bookings in Q2 against ~$40B in Q1. One quarter is not a trend, and it is the first below its year-ago comparison in six.
+6. **Unit costs.** Cost of revenue 26% \u2192 34% of revenue. The 25% July price increase reads partly as pass-through rather than pure pricing power.
+7. **Concentration and counterparties.** The customer roster is a handful of AI labs and hyperscalers whose own capex plans set CoreWeave\u2019s revenue.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** The next two quarters are about mechanics: whether the July price increase holds, whether Q3 bookings recover from ~$7.4B, and whether the $10.6B of near maturities refinances at better than 15%. The thesis resolves over **3\u20135 years** on the depreciation question \u2014 does a GPU bought in 2026 still earn in 2032?
+
+**Sizing considerations (not a recommendation).** This is the most levered expression of the AI-capex cycle in this section, and leverage cuts both ways: the equity is a thin slice on top of a large, expensive, largely recourse debt stack, which is why the stock can rise 14% on a print and still be down over a year of doubling revenue. An 11% short interest means the price carries mechanical squeeze risk in both directions that has nothing to do with the filings. Position size here is a statement about the capital markets staying open, not only about AI demand.`,
+  invalidation: {
+    bull: [
+      'Adjusted operating income falls again year over year in Q3 \u2014 confirming depreciation is outrunning the revenue it produces rather than a single quarter\u2019s timing.',
+      'Gross bookings stay near $7B for a second and third quarter, turning a lumpy backlog into a decelerating one.',
+      'The $10.6B of near maturities refinances at or above current rates, showing the capital markets repricing the credit rather than rewarding the growth.',
+      'Cost of revenue keeps climbing past 34% of revenue, showing the July price increase was pass-through and did not stick.',
+    ],
+    bear: [
+      'Adjusted operating income turns positive year over year while revenue growth stays above 80% \u2014 depreciation stops outrunning it.',
+      'A large refinancing lands materially inside 10%, repricing the whole stack and turning the interest line from a ceiling into a tailwind.',
+      'Bookings re-accelerate toward Q1\u2019s ~$40B, showing Q2 was a gap between large contracts rather than a slowdown.',
+      'Free cash flow inflects as construction in progress converts to revenue-earning capacity and capex normalises off the $35\u201339B guide.',
+    ],
+  },
+  verification: {
+    confirmed: 5,
+    partlyTrue: 5,
+    corrected: 2,
+    confirmedNote:
+      'Confirmed against CoreWeave\u2019s Q2 2026 8-K Exhibit 99.1 and the Q2 10-Q: revenue $2,575M / +112% with a $(49)M operating loss \u00b7 interest expense net $640M and the $62M tax provision on a pre-tax loss \u00b7 the adjusted-operating-income bridge, which adds back no depreciation \u00b7 $35,068M of debt against $5,024M of equity, 89.6% recourse \u00b7 Note 8\u2019s $35.5B of executed-but-not-commenced leases stated as off the balance sheet.',
+    items: [
+      {
+        kind: 'corrected',
+        title:
+          'Our own draft: the six-year depreciable life is not "unusually aggressive"',
+        text: 'A first pass framed CoreWeave\u2019s six-year life on technology equipment as an outlier. It is the norm: **Alphabet** depreciates servers and network equipment generally over six years, **Microsoft** states two to six, **Amazon** five to six. The genuinely notable fact is the opposite of the one drafted \u2014 **Amazon moved from six years to five** for a subset of servers effective January 2025, citing "the increased pace of technology development, particularly in the area of artificial intelligence and machine learning", at a cost of $1.4B in additional depreciation. CoreWeave did extend its own estimate from five to six years effective January 2023, which is a real lever; it just lands it at the industry standard rather than past it.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'Our own draft: "almost no ring-fencing in the capital structure" was wrong',
+        text: 'The recourse arithmetic is right \u2014 89.6% of the $35,068M is a direct or guaranteed obligation of CoreWeave, Inc. But low non-recourse debt is not the same as no ring-fencing, and Note 10 refutes the stronger claim directly: beyond the non-recourse facility, further borrowings sit in **bankruptcy-remote special-purpose consolidated subsidiaries** whose assets "may be used only to settle the obligations of those entities", covering **$18.2B** of non-current debt. Structural separation and parent recourse coexist here.',
+      },
+      {
+        kind: 'partly',
+        title: '"Expanding operating leverage"',
+        text: 'Defensible **sequentially** \u2014 adjusted operating income went $21M in Q1 to $128M in Q2. Year over year it fell 36% while revenue grew 112%, and adjusted EBITDA margin compressed 62% \u2192 59%. The mechanism is exact: excluding depreciation, operating expenses grew 94% against 112% revenue growth; including it, the sign flips. The quote is a sequential claim standing next to annual comparisons.',
+      },
+      {
+        kind: 'partly',
+        title: 'Interest coverage, and one figure not to repeat',
+        text: '$128M of adjusted operating income against $640M of interest is **0.20\u00d7**, and that flatters it \u2014 GAAP operating income was $(49)M, so coverage is negative, and the $640M is already net of $79M of capitalised interest. But a tempting shorthand is arithmetically false and we cut it: FY2026 adjusted operating income guidance of **$960M\u2013$1.15B is larger** than the $860\u2013940M of Q3 interest, not smaller. The honest version is that the gap widens in dollars \u2014 $512M in Q2, ~$670M guided for Q3.',
+      },
+      {
+        kind: 'partly',
+        title: 'The $104B backlog',
+        text: 'Real, and larger than the GAAP measure by design. Unsatisfied RPO went **$98.8B \u2192 $103.7B**, +5.0% sequentially, under a definition word-for-word identical across consecutive 10-Qs. Implied gross bookings of roughly **$7.4B in Q2** against ~$40B in Q1 2026 and ~$16.6B in Q2 2025 \u2014 the first quarter in six below its year-ago figure. "Up 246% year over year" is accurate and describes a step that mostly happened in Q1.',
+      },
+      {
+        kind: 'partly',
+        title: 'The $62M tax provision on a $(564)M pre-tax loss',
+        text: 'Not an anomaly and not a one-off. Note 12 states effective rates of **(11)% and (20)%** and explains that CoreWeave "recorded income tax expense in all periods presented despite experiencing losses before income taxes primarily due to limitations on the Company\u2019s ability to realize certain tax benefits, which has resulted in the Company maintaining a valuation allowance on its U.S. deferred tax assets." It owes cash tax in profitable jurisdictions while barred from booking a benefit on US losses \u2014 a position that says something about expected near-term US profitability.',
+      },
+      {
+        kind: 'partly',
+        title: 'Adjusted EBITDA as a profitability measure',
+        text: '$1,510M at a 59% margin, and **92% of it is the depreciation add-back**. The margin also compressed from 62%. The measure is not wrong \u2014 it is a cash-proximate figure for a business with real cash costs below the D&A line \u2014 but at a company whose entire question is whether its assets decay faster than they amortise, adding back the amortisation is adding back the question.',
+      },
+    ],
+  },
+  openQuestions: [
+    'What is the economic life of an AI GPU? CoreWeave says six years and sits at the industry norm; Amazon moved a subset to five in 2025 citing the pace of AI development. Nothing in either filing settles which is right, and the entire thesis turns on it.',
+    'What does the $11.9B of construction in progress do to the depreciation run-rate when it lands? The filings give the balance but no schedule for when it enters service.',
+    'Why did gross bookings fall to roughly $7.4B in Q2 from about $40B in Q1? Lumpy contracting is the benign explanation and the likely one, but neither the release nor the call decomposes it.',
+    'At what rate does the $10.6B of near-term maturities refinance? Existing paper runs from 10% to 15%, and nothing yet shows where the marginal dollar prices.',
+  ],
+  soWhat: `There is a question underneath this quarter that matters to anyone renting AI computing power, which is now almost everyone building with it: **how long does a GPU last?**
+
+CoreWeave says six years. It borrowed roughly $35 billion against that answer, and it charges about $1.4 billion a quarter to write the chips down. If six years is right, the economics work and the depreciation is just the accounting catching up with a business that scales. If the real answer is three or four \u2014 because each new generation is dramatically faster per dollar and per watt \u2014 then the charge is too small, the assets behind the debt decay quicker than the loans amortise, and the interest bill arrives anyway.
+
+Nobody actually knows yet. The industry has never run a full replacement cycle on this class of hardware. Amazon looked at the question in 2025 and shortened its own estimate; Alphabet and Microsoft have not.
+
+The practical read: **the price you pay for AI compute today is set by somebody\u2019s assumption about how long their hardware lasts.** When that assumption tightens across the industry, rented compute gets more expensive \u2014 and it will tighten first at whoever is most levered to being wrong.`,
+  throughLine: {
+    text: `Six reports in, this section has been circling one question in different costumes, and CoreWeave asks it most directly: **how much of the future is being paid for today, and what happens if the assets do not last as long as the financing?**
+
+Ranked by capital spending against revenue, the six line up cleanly \u2014 Palantir at 0.75%, Microsoft around 32%, Amazon at roughly 105% of operating cash flow, SpaceX at 235%, and CoreWeave\u2019s guided $35\u201339B against $12.4\u201313.2B of revenue at roughly **290%**. AMD sits outside that scale entirely: it sells the chips the other five are buying, and pays for its customers in warrants rather than capex.
+
+What makes CoreWeave the clarifying case is that it has none of the others\u2019 shock absorbers. No advertising business, no cloud franchise, no software margin, no $100B of cash \u2014 just the assets, the debt, and the depreciation schedule sitting between them.`,
+    links: [
+      { label: 'SPCX \u2014 capex at 235% of revenue', slug: 'spcx-q2-2026' },
+      {
+        label: 'MSFT \u2014 the capex that moved off the line',
+        slug: 'msft-q4-fy2026',
+      },
+      {
+        label: 'PLTR \u2014 the one with no capex at all',
+        slug: 'pltr-q2-2026',
+      },
+    ],
+  },
+  cardImage: '/images/content/crwv-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/crwv-q2-2026-card-hero-light.webp',
+  cardImageAlt: 'CoreWeave logo',
+  sources: [
+    {
+      n: 1,
+      label:
+        'CoreWeave Q2 2026 earnings release \u2014 8-K Exhibit 99.1 (2026-08-11)',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000362/coreweave2q26earningspress.htm',
+      primary: true,
+    },
+    {
+      n: 2,
+      label:
+        'CoreWeave Q2 2026 Form 10-Q \u2014 Notes 2, 8, 10 and 12 (RPO, leases not yet commenced, debt, tax)',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm',
+      primary: true,
+    },
+    {
+      n: 3,
+      label:
+        'CoreWeave FY2025 Form 10-K \u2014 useful-life policy and the 2023 five-to-six-year change',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000104/crwv-20251231.htm',
+      primary: true,
+    },
+    {
+      n: 4,
+      label: 'CoreWeave Q1 2026 Form 10-Q \u2014 the $98.8B RPO comparison',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q&dateb=&owner=include&count=6',
+      primary: true,
+    },
+    {
+      n: 5,
+      label: 'CoreWeave Investor Relations \u2014 Q2 2026 results',
+      url: 'https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/default.aspx',
+    },
+    {
+      n: 6,
+      label: 'CNBC \u2014 CoreWeave Q2 earnings report 2026',
+      url: 'https://www.cnbc.com/2026/08/11/coreweave-crwv-q2-earnings-report-2026.html',
+    },
+    {
+      n: 7,
+      label:
+        'The Motley Fool \u2014 Q2 2026 earnings call transcript (guidance and Q3 interest)',
+      url: 'https://www.fool.com/earnings/call-transcripts/2026/08/18/coreweave-crwv-q2-2026-earnings-call-transcript/',
+    },
+    {
+      n: 8,
+      label:
+        'Seeking Alpha \u2014 FY2026 revenue guidance and the 1.85 GW power target',
+      url: 'https://seekingalpha.com/news/4631186-coreweave-expects-12_4b-13_2b-of-2026-revenue-while-raising-year-end-active-power-target-to',
+    },
+    {
+      n: 9,
+      label:
+        'stockanalysis.com \u2014 CRWV price, enterprise value and short interest',
+      url: 'https://stockanalysis.com/stocks/crwv/statistics/',
+    },
+    {
+      n: 10,
+      label:
+        'Investing.com \u2014 Q2 2026 slides: revenue doubles, backlog surges',
+      url: 'https://www.investing.com/news/company-news/coreweave-q2-2026-slides-revenue-doubles-backlog-surges-246-93CH-4852949',
+    },
+    {
+      n: 11,
+      label:
+        'Amazon FY2025 Form 10-K \u2014 the six-to-five-year server life change',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001018724&type=10-K&dateb=&owner=include&count=5',
+      primary: true,
+    },
+  ],
+};
+
 // Newest first — the section index renders in array order, without sorting.
 export const marketStormReports: MarketStormReport[] = [
+  crwvQ2_2026,
   amdQ2_2026,
   spcxQ2_2026,
   pltrQ2_2026,

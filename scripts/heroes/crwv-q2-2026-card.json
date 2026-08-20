@@ -1,0 +1,9 @@
+{
+ "title": "CoreWeave — Market Storm",
+ "category": "Market Storm",
+ "out": "crwv-q2-2026-card",
+ "logo": { "file": "crwv.svg", "scale": 0.58 },
+ "before": { "label": "Company", "text": "CoreWeave" },
+ "after": { "label": "Section", "text": "Market Storm" },
+ "alt": "CoreWeave logo"
+}

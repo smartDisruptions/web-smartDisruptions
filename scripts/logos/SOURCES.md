@@ -12,6 +12,7 @@ SmartDisruptions, nor altered in shape.
 | File | Source | Copyright |
 |---|---|---|
 | `amzn.svg` | [Amazon logo.svg](https://commons.wikimedia.org/wiki/File:Amazon_logo.svg) | Public domain |
+| `crwv.svg` | [CoreWeave logo.svg](https://commons.wikimedia.org/wiki/File:CoreWeave_logo.svg) | Public domain |
 | `msft.svg` | [Microsoft logo (2012).svg](https://commons.wikimedia.org/wiki/File:Microsoft_logo_(2012).svg) | Public domain |
 | `pltr.svg` | [Palantir Technologies logo.svg](https://commons.wikimedia.org/wiki/File:Palantir_Technologies_logo.svg) | Public domain |
 | `amd.svg` | [AMD Logo.svg](https://commons.wikimedia.org/wiki/File:AMD_Logo.svg) | Public domain |
