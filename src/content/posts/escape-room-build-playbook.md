@@ -18,7 +18,7 @@ heroImage: /images/content/escape-room-build-playbook-hero.webp
 heroImageLight: /images/content/escape-room-build-playbook-hero-light.webp
 heroImageAlt: A seven-step rail — pitch, skeleton, core rule, playtest, story, senses, ship — with playtest and story marked as the steps where the game got good; none of the steps are code.
 ogImage: /images/content/escape-room-build-playbook.webp
-liveAt: 2026-08-22T16:00:00.000Z
+liveAt: 2026-08-22T13:30:00.000Z
 ---
 There's a five-drawer mystery game leading [the arcade on my site](https://www.smartdisruptions.com/games) called The Pembroke File. An AI wrote all 2,673 lines of it. It didn't start as a mystery at all — it evolved out of an interactive-résumé experiment, and [the story of how the game ate the résumé](https://www.smartdisruptions.com/content/escape-room-ate-my-resume) is its own post.
 
