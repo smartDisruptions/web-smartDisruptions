@@ -64,11 +64,25 @@ export interface ThroughLine {
   links: { label: string; slug: string }[];
 }
 
+/**
+ * Which shelf a source sits on.
+ *
+ * The list runs to forty or fifty entries on a full report, and at that length
+ * a flat column stops being a record and becomes a wall — the reader cannot
+ * tell the 10-Q from a blog post skimming it. Grouping restores the one thing
+ * a source list is for: seeing what the conclusions actually rest on.
+ *
+ * Absent, it is inferred from `primary` (filing, else analysis), so the two
+ * reports written before this field existed keep rendering correctly.
+ */
+export type SourceKind = 'filing' | 'company' | 'data' | 'analysis';
+
 export interface SourceRef {
   n: number;
   label: string;
   url: string;
   primary?: boolean;
+  kind?: SourceKind;
   secondaryUrl?: string;
   secondaryLabel?: string;
 }
@@ -1015,7 +1029,7 @@ None of that is fraud; it is all disclosed, and mostly defensible. But three sep
     {
       n: 19,
       label:
-        'Alphabet Q2 2026 earnings release — Google Cloud +82% (2026-07-22)',
+        'Alphabet IR — Q2 2026 earnings release (PDF, the IR copy of the 8-K exhibit)',
       url: 'https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf',
       primary: true,
     },
@@ -1537,9 +1551,7 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
       label: 'Palantir Q2 2026 press release (SEC 8-K, Exhibit 99.1)',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000039/a2026q2ex991pressrelease.htm',
       primary: true,
-      secondaryUrl:
-        'https://www.sec.gov/Archives/edgar/data/0001321655/000132165526000039/pltr-20260803.htm',
-      secondaryLabel: '8-K',
+      kind: 'filing',
     },
     {
       n: 2,
@@ -1547,6 +1559,7 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
         'Palantir Q2 2026 Form 10-Q (filed 2026-08-04) — RPO, Note 10 tax, equity-securities marks',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000041/pltr-20260630.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 3,
@@ -1554,120 +1567,316 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
         'Palantir Q2 2025 press release — the year-ago TCV and customer-count comp',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165525000105/a2025q2ex991pressrelease.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 4,
       label:
-        'Palantir Q2 2026 earnings call transcript — total RDV $13.1B, customer count 1,049',
-      url: 'https://seekingalpha.com/article/4929675-palantir-technologies-inc-pltr-q2-2026-earnings-call-transcript',
-    },
-    {
-      n: 5,
-      label:
         'Palantir Q1 2026 press release — the sequential and guidance trail',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000026/a2026q1ex991pressrelease.htm',
       primary: true,
+      kind: 'filing',
     },
     {
-      n: 6,
+      n: 5,
       label: 'Palantir Q4 2025 results — FY25 base and the original FY26 guide',
       url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000004/a2025q4ex991earningsrelease.htm',
       primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 6,
+      label: 'Palantir Form 10-Q, period ended 2025-09-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165525000131/pltr-20250930.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 7,
-      label:
-        'CNBC — Palantir stock rises 30% on commercial revenue, AI sovereignty (2026-08-04)',
-      url: 'https://www.cnbc.com/2026/08/04/palantir-2q-earnings-ai-sovereign-tools.html',
+      label: 'Palantir Form 10-Q, period ended 2025-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165525000106/pltr-20250630.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 8,
-      label: 'CNBC — Palantir Q2 2026 earnings (2026-08-03)',
-      url: 'https://www.cnbc.com/2026/08/03/palantir-pltr-earnings-q2-2026.html',
+      label: 'Palantir Form 10-Q, period ended 2026-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1321655/000132165526000028/pltr-20260331.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 9,
-      label:
-        'stockanalysis.com — PLTR statistics (price, market cap, multiples)',
-      url: 'https://stockanalysis.com/stocks/pltr/statistics/',
+      label: 'SEC EDGAR — Palantir filing index',
+      url: 'https://data.sec.gov/submissions/CIK0001321655.json',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 10,
-      label: 'GuruFocus — Q2 2026 earnings call highlights',
-      url: 'https://www.gurufocus.com/news/9000347/palantir-technologies-inc-pltr-q2-2026-earnings-call-highlights-record-93-revenue-growth-and-raised-guidance-signal-unprecedented-ai-demand',
+      label: 'SEC EDGAR — Palantir filing index',
+      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001321655/us-gaap/EarningsPerShareDiluted.json',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 11,
-      label: 'Seeking Alpha — Q2 2026 earnings call presentation',
-      url: 'https://seekingalpha.com/article/4929655-palantir-technologies-inc-2026-q2-results-earnings-call-presentation',
+      label: 'Palantir — Overview • Ontology • Palantir',
+      url: 'https://www.palantir.com/docs/foundry/ontology/overview',
+      kind: 'company',
     },
     {
       n: 12,
-      label:
-        'TradingKey — earnings preview: 8 straight beats, 40% off its high',
-      url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262068882-palantir-pltr-earnings-preview-august-3-2026-options-swing-triangle-tradingkey',
+      label: 'Palantir — Core concepts • Palantir',
+      url: 'https://www.palantir.com/docs/foundry/ontology/core-concepts',
+      kind: 'company',
     },
     {
       n: 13,
-      label: 'TradingKey — surges 15% after Q2 results, guidance raised',
-      url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262072328-palantir-q2-earnings-sweep-expectations-stock-surges-15-tradingkey',
+      label: 'Palantir — Action types • Overview • Palantir',
+      url: 'https://www.palantir.com/docs/foundry/action-types/overview',
+      kind: 'company',
     },
     {
       n: 14,
-      label:
-        '24/7 Wall St. — after the blowout, where the stock could head next',
-      url: 'https://247wallst.com/investing/2026/08/04/after-palantirs-blowout-earnings-heres-where-the-stock-could-head-next/',
+      label: 'Palantir — Palantir AIP Bootcamp',
+      url: 'https://www.palantir.com/platforms/aip/bootcamp/',
+      kind: 'company',
     },
     {
       n: 15,
-      label: 'TIKR — down 34% from its 52-week high, the path to $212 by 2028',
-      url: 'https://www.tikr.com/blog/palantir-stock-is-down-34-from-its-52-week-high-heres-the-path-to-212-by-2028',
+      label:
+        'Business Wire — Palantir reports Q2 2026: U.S. commercial revenue +149% YoY, revenue +93% YoY, raises FY2026 guidance',
+      url: 'https://www.businesswire.com/news/home/20260802523449/en/Palantir-Reports-Q2-2026-U.S.-Comm-Revenue-Growth-of-149-YY-and-Revenue-Growth-of-93-YY-Raises-FY-2026-Revenue-Guidance-to-82-YY-Growth-and-U.S.-Comm-Revenue-Guidance-to-134-YY-Crushing-Consensus-Expectations',
+      kind: 'company',
     },
     {
       n: 16,
       label:
-        'StockTitan — Karp Form 4: 397,744 Class A shares sold (2026-05-20)',
-      url: 'https://www.stocktitan.net/sec-filings/PLTR/form-4-palantir-technologies-inc-insider-trading-activity-48a8d6e385ad.html',
+        'Business Wire — Palantir reports Q1 2026: U.S. revenue +104% YoY, revenue +85% YoY, raises FY2026 guidance',
+      url: 'https://www.businesswire.com/news/home/20260503338048/en/Palantir-Reports-Q1-2026-U.S.-Revenue-Growth-of-104-YY-and-Revenue-Growth-of-85-YY-Raises-FY-2026-Revenue-Guidance-to-71-YY-Growth-and-U.S.-Comm-Revenue-Guidance-to-120-YY-Crushing-Consensus-Expectations',
+      kind: 'company',
     },
     {
       n: 17,
-      label: 'TipRanks — Karp continues to sell company stock',
-      url: 'https://www.tipranks.com/news/palantir-pltr-ceo-alex-karp-continues-to-sell-company-stock',
+      label: 'Palantir IR — Q1 2026 Form 10-Q (PDF)',
+      url: 'https://investors.palantir.com/files/2026%20Q1%20PLTR%2010-Q.pdf',
+      kind: 'company',
     },
     {
       n: 18,
-      label:
-        'MarketBeat — Palantir Q2 2026 earnings report (consensus vs actual)',
-      url: 'https://www.marketbeat.com/earnings/reports/2026-8-3-palantir-technologies-inc-stock/',
+      label: 'Palantir IR — Palantir IR',
+      url: 'https://investors.palantir.com/news-details/2026/Palantir-Reports-Q1-2026-U-S--Revenue-Growth-of-104-YY-and-Revenue-Growth-of-85-YY-Raises-FY-2026-Revenue-Guidance-to-71-YY-Growth-and-U-S--Comm-Revenue-Guidance-to-120-YY-Crushing-Consensus-Expectations/',
+      kind: 'company',
     },
     {
       n: 19,
-      label: 'Yahoo Finance — what to expect from Palantir’s Q2 2026 report',
-      url: 'https://finance.yahoo.com/markets/stocks/articles/expect-palantir-q2-2026-earnings-124258336.html',
+      label: 'Business Wire — En',
+      url: 'https://www.businesswire.com/news/home/20260802523449/en/',
+      kind: 'company',
     },
     {
       n: 20,
-      label:
-        'AOL / Fortune — Karp on frontier labs wanting to "colonize your enterprise"',
-      url: 'https://www.aol.com/articles/palantir-ceo-alex-karp-says-002758000.html',
+      label: 'Palantir IR — 2025%20fy%20pltr%2010 k',
+      url: 'https://investors.palantir.com/files/2025%20FY%20PLTR%2010-K.pdf',
+      kind: 'company',
     },
     {
       n: 21,
       label:
-        'FinancialContent — sustained insider selling [low-confidence secondary]',
-      url: 'https://markets.financialcontent.com/stocks/article/marketminute-2026-3-10-palantir-shares-dip-as-sustained-insider-selling-shadows-dominant-ai-footprint',
+        'stockanalysis.com — PLTR statistics (price, market cap, multiples)',
+      url: 'https://stockanalysis.com/stocks/pltr/statistics/',
+      kind: 'data',
     },
     {
       n: 22,
-      label:
-        'Palantir Investor Relations — CEO letters and investor presentations',
-      url: 'https://investors.palantir.com',
+      label: 'GuruFocus — Q2 2026 earnings call highlights',
+      url: 'https://www.gurufocus.com/news/9000347/palantir-technologies-inc-pltr-q2-2026-earnings-call-highlights-record-93-revenue-growth-and-raised-guidance-signal-unprecedented-ai-demand',
+      kind: 'data',
     },
     {
       n: 23,
+      label: 'TipRanks — Karp continues to sell company stock',
+      url: 'https://www.tipranks.com/news/palantir-pltr-ceo-alex-karp-continues-to-sell-company-stock',
+      kind: 'data',
+    },
+    {
+      n: 24,
+      label:
+        'TIKR — Palantir’s Q2 Earnings Call Produced Its Largest-Ever Guidance Raise. Here’s What Changed',
+      url: 'https://www.tikr.com/blog/palantirs-q2-earnings-call-produced-its-largest-ever-guidance-raise-heres-what-changed',
+      kind: 'data',
+    },
+    {
+      n: 25,
+      label:
+        'stockanalysis.com — Palantir Technologies (PLTR) Stock Price & Overview',
+      url: 'https://stockanalysis.com/stocks/pltr/',
+      kind: 'data',
+    },
+    {
+      n: 26,
+      label:
+        'TradingView — PLTR Stock Price — Palantir Technologies Stock Chart',
+      url: 'https://www.tradingview.com/symbols/NASDAQ-PLTR/',
+      kind: 'data',
+    },
+    {
+      n: 27,
+      label:
+        'TIKR — Palantir Q1 2026 Earnings: U.S. Revenue Crosses 100% Growth for the First Time',
+      url: 'https://www.tikr.com/blog/palantir-q1-2026-earnings-u-s-revenue-crosses-100-growth-for-the-first-time',
+      kind: 'data',
+    },
+    {
+      n: 28,
+      label: 'GuruFocus — Palantir price-to-sales ratio',
+      url: 'https://www.gurufocus.com/term/ps-ratio/PLTR',
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label:
+        'Macrotrends — Palantir Technologies Price to Sales Ratio 2019-2026 | PLTR',
+      url: 'https://www.macrotrends.net/stocks/charts/PLTR/palantir-technologies/price-sales',
+      kind: 'data',
+    },
+    {
+      n: 30,
+      label: 'stockanalysis.com — Stock Comparison Tool',
+      url: 'https://stockanalysis.com/stocks/compare/pltr-vs-nvda-vs-msft-vs-crm-vs-snow/',
+      kind: 'data',
+    },
+    {
+      n: 31,
+      label: 'GuruFocus — Palantir accounts receivable history',
+      url: 'https://www.gurufocus.com/term/accounts-receivable/PLTR',
+      kind: 'data',
+    },
+    {
+      n: 32,
+      label:
+        'GuruFocus — Palantir technologies inc pltr q2 earnings report gaap eps of 041 exceeds estimates revenue hits 1935 billiong',
+      url: 'https://www.gurufocus.com/news/8999291/palantir-technologies-inc-pltr-q2-earnings-report-gaap-eps-of-041-exceeds-estimates-revenue-hits-1935-billiongf-score-81100-130-undervalued',
+      kind: 'data',
+    },
+    {
+      n: 33,
+      label: 'MLQ.ai — Q1 2026 earnings',
+      url: 'https://mlq.ai/stocks/PLTR/q1-2026-earnings/',
+      kind: 'data',
+    },
+    {
+      n: 34,
+      label: 'GuruFocus — market commentary referenced during research',
+      url: 'https://www.gurufocus.com/news/9000347/',
+      kind: 'data',
+    },
+    {
+      n: 35,
+      label:
+        'Palantir Q2 2026 earnings call transcript — total RDV $13.1B, customer count 1,049',
+      url: 'https://seekingalpha.com/article/4929675-palantir-technologies-inc-pltr-q2-2026-earnings-call-transcript',
+      kind: 'analysis',
+    },
+    {
+      n: 36,
+      label:
+        'CNBC — Palantir stock rises 30% on commercial revenue, AI sovereignty (2026-08-04)',
+      url: 'https://www.cnbc.com/2026/08/04/palantir-2q-earnings-ai-sovereign-tools.html',
+      kind: 'analysis',
+    },
+    {
+      n: 37,
+      label: 'CNBC — Palantir Q2 2026 earnings (2026-08-03)',
+      url: 'https://www.cnbc.com/2026/08/03/palantir-pltr-earnings-q2-2026.html',
+      kind: 'analysis',
+    },
+    {
+      n: 38,
+      label: 'Seeking Alpha — Q2 2026 earnings call presentation',
+      url: 'https://seekingalpha.com/article/4929655-palantir-technologies-inc-2026-q2-results-earnings-call-presentation',
+      kind: 'analysis',
+    },
+    {
+      n: 39,
+      label:
+        'TradingKey — earnings preview: 8 straight beats, 40% off its high',
+      url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262068882-palantir-pltr-earnings-preview-august-3-2026-options-swing-triangle-tradingkey',
+      kind: 'analysis',
+    },
+    {
+      n: 40,
+      label: 'TradingKey — surges 15% after Q2 results, guidance raised',
+      url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262072328-palantir-q2-earnings-sweep-expectations-stock-surges-15-tradingkey',
+      kind: 'analysis',
+    },
+    {
+      n: 41,
+      label:
+        '24/7 Wall St. — after the blowout, where the stock could head next',
+      url: 'https://247wallst.com/investing/2026/08/04/after-palantirs-blowout-earnings-heres-where-the-stock-could-head-next/',
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label: 'TIKR — down 34% from its 52-week high, the path to $212 by 2028',
+      url: 'https://www.tikr.com/blog/palantir-stock-is-down-34-from-its-52-week-high-heres-the-path-to-212-by-2028',
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label:
+        'StockTitan — Karp Form 4: 397,744 Class A shares sold (2026-05-20)',
+      url: 'https://www.stocktitan.net/sec-filings/PLTR/form-4-palantir-technologies-inc-insider-trading-activity-48a8d6e385ad.html',
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label:
+        'MarketBeat — Palantir Q2 2026 earnings report (consensus vs actual)',
+      url: 'https://www.marketbeat.com/earnings/reports/2026-8-3-palantir-technologies-inc-stock/',
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label: 'Yahoo Finance — what to expect from Palantir’s Q2 2026 report',
+      url: 'https://finance.yahoo.com/markets/stocks/articles/expect-palantir-q2-2026-earnings-124258336.html',
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label:
+        'AOL / Fortune — Karp on frontier labs wanting to "colonize your enterprise"',
+      url: 'https://www.aol.com/articles/palantir-ceo-alex-karp-says-002758000.html',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label:
+        'FinancialContent — sustained insider selling [low-confidence secondary]',
+      url: 'https://markets.financialcontent.com/stocks/article/marketminute-2026-3-10-palantir-shares-dip-as-sustained-insider-selling-shadows-dominant-ai-footprint',
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label:
+        'Palantir Investor Relations — CEO letters and investor presentations',
+      url: 'https://investors.palantir.com',
+      kind: 'analysis',
+    },
+    {
+      n: 49,
       label:
         'stockanalysis.com — NVDA statistics (the same-day sales-multiple comparison)',
       url: 'https://stockanalysis.com/stocks/nvda/statistics/',
+      kind: 'analysis',
+    },
+    {
+      n: 50,
+      label: 'Bdemerson — Palantir vs Databricks: How They Differ',
+      url: 'https://www.bdemerson.com/article/palantir-vs-databricks',
+      kind: 'analysis',
     },
   ],
 };
@@ -2150,6 +2359,7 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
       label: 'SpaceX Q2 2026 earnings release — 8-K Exhibit 99.1 (2026-08-04)',
       url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026052515/earningsreleaseq22608042.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 2,
@@ -2157,6 +2367,7 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
         'SpaceX Q2 2026 Form 10-Q — Notes 3, 9, 16, 17 (concentration, debt, obligations, related party)',
       url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026052535/spcx-20260630.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 3,
@@ -2164,69 +2375,313 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
         'SpaceX IPO prospectus (424B4) — lockup terms and cloud agreements',
       url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001181412&type=424&dateb=&owner=include&count=10',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 4,
-      label:
-        'CNBC — SpaceX stock drops after first earnings report as AI costs soar',
-      url: 'https://www.cnbc.com/2026/08/04/spacex-spcx-earnings-live-updates-q2-2026.html',
+      label: 'SEC EDGAR — SpaceX filing index',
+      url: 'https://data.sec.gov/submissions/CIK0001181412.json',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 5,
-      label: 'stockanalysis.com — SPCX price, market cap and multiples',
-      url: 'https://stockanalysis.com/stocks/spcx/statistics/',
+      label: 'SpaceX Form 424B4 filed 2026-06-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/spaceexplorationtechnologi.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 6,
-      label: 'Investing.com — Q2 2026 earnings call transcript',
-      url: 'https://ca.investing.com/news/transcripts/earnings-call-transcript-spacex-beats-revenue-estimates-in-q2-2026-shares-swing-93CH-4775805',
+      label: 'SpaceX Form 8-K filed 2026-08-04',
+      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026052515/spcx-20260804.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 7,
-      label:
-        'TechCrunch — Musk repeatedly one-upped his execs on the first earnings call',
-      url: 'https://techcrunch.com/2026/08/04/elon-musk-repeatedly-one-upped-his-execs-on-spacexs-first-earnings-call/',
+      label: 'SpaceX Form 8-K filed 2026-06-15',
+      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026043288/spaceexplorationtechnologi.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 8,
-      label: 'Benzinga — Q2 highlights: revenue +92%, backlog $47.5B',
-      url: 'https://www.benzinga.com/markets/earnings/26/08/60931182/spacex-q2-highlights-double-beat-revenue-up-92-backlog-hits-47-5-billion',
+      label: 'SpaceX Form FWP filed 2026-06-05',
+      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026041150/spacexagreementfwp.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 9,
-      label: 'Investing.com — IPO lockup expiry mechanics and tranches',
-      url: 'https://www.investing.com/news/stock-market-news/spacex-ipo-lockup-expiry-123b-in-shares-set-to-unlock-in-early-august-2026-93CH-4796311',
+      label:
+        'stockanalysis.com — Space Exploration Technologies (SPCX) Stock Forecast & Price Targets',
+      url: 'https://stockanalysis.com/stocks/spcx/forecast/',
+      kind: 'data',
     },
     {
       n: 10,
-      label: 'Axios — stock falls under IPO price as lockup expirations loom',
-      url: 'https://www.axios.com/2026/07/17/spacex-lockup-stock-selloff',
+      label: 'TipRanks — Forecast',
+      url: 'https://www.tipranks.com/stocks/spcx/forecast',
+      kind: 'data',
     },
     {
       n: 11,
-      label: 'CNBC — earnings date set, triggering the first big share unlock',
-      url: 'https://www.cnbc.com/2026/07/21/spacex-spcx-earnings-lock-up-expiration.html',
+      label: 'GuruFocus — Palantir price-to-sales ratio',
+      url: 'https://www.gurufocus.com/term/ps-ratio/PLTR',
+      kind: 'data',
     },
     {
       n: 12,
-      label:
-        'NPR — revenue rises as the once-soaring stock drifts back to Earth',
-      url: 'https://www.npr.org/2026/08/04/nx-s1-5918536/spacex-first-earnings-report-since-ipo',
+      label: 'GuruFocus — Microsoft price-to-sales ratio',
+      url: 'https://www.gurufocus.com/term/ps-ratio/MSFT',
+      kind: 'data',
     },
     {
       n: 13,
-      label: 'Teslarati — first earnings beat while minimizing losses',
-      url: 'https://www.teslarati.com/spacex-spcx-q2-2026-earnings-results/',
+      label: 'GuruFocus — Alphabet',
+      url: 'https://www.gurufocus.com/term/ps/NAS:GOOGL/PS-Ratio/Alphabet',
+      kind: 'data',
     },
     {
       n: 14,
-      label: 'Forbes — what to look for in SpaceX’s first earnings report',
-      url: 'https://www.forbes.com/sites/investor-hub/article/spacex-first-earnings-report-what-to-look-out-for/',
+      label: 'GuruFocus — Amazon price-to-sales ratio',
+      url: 'https://www.gurufocus.com/term/ps-ratio/AMZN',
+      kind: 'data',
     },
     {
       n: 15,
+      label: 'CompaniesMarketCap — SpaceX (SPCX) - Market capitalization',
+      url: 'https://companiesmarketcap.com/spacex/marketcap/',
+      kind: 'data',
+    },
+    {
+      n: 16,
+      label:
+        'CNBC — SpaceX stock drops after first earnings report as AI costs soar',
+      url: 'https://www.cnbc.com/2026/08/04/spacex-spcx-earnings-live-updates-q2-2026.html',
+      kind: 'analysis',
+    },
+    {
+      n: 17,
+      label: 'stockanalysis.com — SPCX price, market cap and multiples',
+      url: 'https://stockanalysis.com/stocks/spcx/statistics/',
+      kind: 'analysis',
+    },
+    {
+      n: 18,
+      label: 'Investing.com — Q2 2026 earnings call transcript',
+      url: 'https://ca.investing.com/news/transcripts/earnings-call-transcript-spacex-beats-revenue-estimates-in-q2-2026-shares-swing-93CH-4775805',
+      kind: 'analysis',
+    },
+    {
+      n: 19,
+      label:
+        'TechCrunch — Musk repeatedly one-upped his execs on the first earnings call',
+      url: 'https://techcrunch.com/2026/08/04/elon-musk-repeatedly-one-upped-his-execs-on-spacexs-first-earnings-call/',
+      kind: 'analysis',
+    },
+    {
+      n: 20,
+      label: 'Benzinga — Q2 highlights: revenue +92%, backlog $47.5B',
+      url: 'https://www.benzinga.com/markets/earnings/26/08/60931182/spacex-q2-highlights-double-beat-revenue-up-92-backlog-hits-47-5-billion',
+      kind: 'analysis',
+    },
+    {
+      n: 21,
+      label: 'Investing.com — IPO lockup expiry mechanics and tranches',
+      url: 'https://www.investing.com/news/stock-market-news/spacex-ipo-lockup-expiry-123b-in-shares-set-to-unlock-in-early-august-2026-93CH-4796311',
+      kind: 'analysis',
+    },
+    {
+      n: 22,
+      label: 'Axios — stock falls under IPO price as lockup expirations loom',
+      url: 'https://www.axios.com/2026/07/17/spacex-lockup-stock-selloff',
+      kind: 'analysis',
+    },
+    {
+      n: 23,
+      label: 'CNBC — earnings date set, triggering the first big share unlock',
+      url: 'https://www.cnbc.com/2026/07/21/spacex-spcx-earnings-lock-up-expiration.html',
+      kind: 'analysis',
+    },
+    {
+      n: 24,
+      label:
+        'NPR — revenue rises as the once-soaring stock drifts back to Earth',
+      url: 'https://www.npr.org/2026/08/04/nx-s1-5918536/spacex-first-earnings-report-since-ipo',
+      kind: 'analysis',
+    },
+    {
+      n: 25,
+      label: 'Teslarati — first earnings beat while minimizing losses',
+      url: 'https://www.teslarati.com/spacex-spcx-q2-2026-earnings-results/',
+      kind: 'analysis',
+    },
+    {
+      n: 26,
+      label: 'Forbes — what to look for in SpaceX’s first earnings report',
+      url: 'https://www.forbes.com/sites/investor-hub/article/spacex-first-earnings-report-what-to-look-out-for/',
+      kind: 'analysis',
+    },
+    {
+      n: 27,
       label: 'SpaceX Investor Relations',
       url: 'https://ir.spacex.com',
+      kind: 'company',
+    },
+    {
+      n: 28,
+      label: 'S21 Q4Cdn — Spacex reports second quarter 2026 results',
+      url: 'https://s21.q4cdn.com/184289198/files/doc_financials/2026/q2/SpaceX-Reports-Second-Quarter-2026-Results.pdf',
+      kind: 'analysis',
+    },
+    {
+      n: 29,
+      label:
+        'Yahoo Finance — SpaceX lock-up expiry could release $116 billion worth of shares (NASDAQ:SPCX)',
+      url: 'https://finance.yahoo.com/markets/stocks/articles/spacex-lock-expiry-could-release-104117091.html',
+      kind: 'analysis',
+    },
+    {
+      n: 30,
+      label:
+        'Yahoo Finance — SpaceX stock hits new all-time low as AI capex jumps in Q2',
+      url: 'https://finance.yahoo.com/technology/article/spacexs-q2-results-top-estimates-but-stock-drops-on-ai-capex-costs-132323178.html',
+      kind: 'analysis',
+    },
+    {
+      n: 31,
+      label: 'Quartz — Spacex stock market cap decline earnings',
+      url: 'https://qz.com/spacex-stock-market-cap-decline-earnings-072826',
+      kind: 'analysis',
+    },
+    {
+      n: 32,
+      label: 'SpaceX IR — Q2 2026 earnings event details',
+      url: 'https://ir.spacex.com/events/event-details/2026/SpaceX-Q2-2026-Earnings/default.aspx',
+      kind: 'company',
+    },
+    {
+      n: 33,
+      label:
+        "SemiAnalysis — xAI's Colossus 2 - First Gigawatt Datacenter In The World, Unique RL Methodology, Capital Raise",
+      url: 'https://newsletter.semianalysis.com/p/xais-colossus-2-first-gigawatt-datacenter',
+      kind: 'analysis',
+    },
+    {
+      n: 34,
+      label: 'Axios — Amazon google microsoft dominate data centers',
+      url: 'https://www.axios.com/2026/06/26/amazon-google-microsoft-dominate-data-centers',
+      kind: 'analysis',
+    },
+    {
+      n: 35,
+      label:
+        'Datacenterknowledge — AI-First Hyperscalers: 2026’s Sprint Meets the Power Bottleneck',
+      url: 'https://www.datacenterknowledge.com/hyperscalers/hyperscalers-in-2026-what-s-next-for-the-world-s-largest-data-center-operators-',
+      kind: 'analysis',
+    },
+    {
+      n: 36,
+      label: 'Seeking Alpha — Access to this page has been denied',
+      url: 'https://seekingalpha.com/news/4594541-google-amazon-meta-microsoft-could-add-up-to-34-gigawatts-of-compute-by-2027-ms',
+      kind: 'analysis',
+    },
+    {
+      n: 37,
+      label:
+        "Tech Times — Falcon 9 Fills Starlink's V3 Gap as Starship Abort Delays Gigabit Debut",
+      url: 'https://www.techtimes.com/articles/321048/20260720/falcon-9-fills-starlinks-v3-gap-starship-abort-delays-gigabit-debut.htm',
+      kind: 'analysis',
+    },
+    {
+      n: 38,
+      label:
+        'Keeptrack Space — Starship 13 Deploys First Starlink V3 Sats, X Report 26 Jul 2026 - KeepTrack',
+      url: 'https://keeptrack.space/x-report/spacex-brief-2026-07-26',
+      kind: 'analysis',
+    },
+    {
+      n: 39,
+      label: 'Starship-Spacex Fandom — Starship flight test 13',
+      url: 'https://starship-spacex.fandom.com/wiki/Starship_Flight_Test_13',
+      kind: 'analysis',
+    },
+    {
+      n: 40,
+      label:
+        'Lightreading — 115 MHz off the shelf: What the EchoStar approvals actually mean',
+      url: 'https://www.lightreading.com/regulatory-politics/spacex-is-now-a-spectrum-holder-not-just-a-satellite-operator',
+      kind: 'analysis',
+    },
+    {
+      n: 41,
+      label:
+        'Spacenews — FCC approves SpaceX spectrum deal with $2.4 billion escrow condition',
+      url: 'https://spacenews.com/fcc-approves-spacex-spectrum-deal-with-2-4-billion-escrow-condition/',
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label:
+        'Insidetowers — FCC OKs EchoStar Spectrum Sale, With Conditions - Inside Towers',
+      url: 'https://insidetowers.com/fcc-oks-echostar-spectrum-sale-with-conditions/',
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label:
+        'Tech Times — SpaceX AI1 Orbital Data Center Bets on Space Power and Cooling: Economics Stay Unproven',
+      url: 'https://www.techtimes.com/articles/318103/20260610/spacex-ai1-orbital-data-center-bets-space-power-cooling-economics-stay-unproven.htm',
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label:
+        "Tom's Hardware — SpaceX unveils 11-million-square-foot Gigasat factory, a new manufacturing facility for space-based data centers — aims for 1 GW/year of space AI compute by late 2027 from i",
+      url: 'https://www.tomshardware.com/tech-industry/big-tech/spacex-unveils-11-million-square-foot-gigasat-factory-a-new-manufacturing-facility-for-space-based-data-centers-aims-for-1-gw-year-of-space-ai-compute-by-late-2027-from-its-satellites',
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label:
+        'Useluminix — Data Centers in Space: Feasibility & Economics (Mid-2026)',
+      url: 'https://www.useluminix.com/reports/industry-analysis/data-centers-in-space',
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label:
+        'Fortune — SpaceX revenue surges to $7.8 billion, blowing past Wall Street expectations by nearly $1 billion',
+      url: 'https://fortune.com/2026/08/04/spacex-revenue-surges-92-to-7-8-billion-blowing-past-wall-street-expectations-by-nearly-1-billion/',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label:
+        "TradingKey — SpaceX's Q2 2026 revenue increased by 92% year-over-year, with AI revenue surging by 247%：However, a sharp increase in capital expenditures caused its stock price to fall by mor",
+      url: 'https://www.tradingkey.com/analysis/stocks/us-stocks/262074436-spacex-q2-revenue-92-percent-ai-income-247-percent-capex-double-stock-drop-tradingkey',
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label: 'Seeking Alpha — Access to this page has been denied',
+      url: 'https://seekingalpha.com/news/4625315-spacex-shares-fall-after-ai-spending-surge-overshadows-quarterly-beat',
+      kind: 'analysis',
+    },
+    {
+      n: 49,
+      label:
+        'Dailygazette — Musk’s SpaceX adds billions in debt while cutting interest costs | Tribune',
+      url: 'https://www.dailygazette.com/tribune/musk-s-spacex-adds-billions-in-debt-while-cutting-interest-costs/article_eb65e4ea-6dcb-5537-9305-00a1935d4f0b.html',
+      kind: 'analysis',
+    },
+    {
+      n: 50,
+      label: 'Quartz — Spacex stock ipo price below',
+      url: 'https://qz.com/spacex-stock-ipo-price-below-071526',
+      kind: 'analysis',
     },
   ],
 };
@@ -2646,6 +3101,7 @@ The same pattern keeps recurring across four very different balance sheets: **th
       label: 'AMD Q2 2026 earnings release — 8-K Exhibit 99.1 (2026-08-04)',
       url: 'https://www.sec.gov/Archives/edgar/data/2488/000000248826000121/q22026991.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 2,
@@ -2653,72 +3109,329 @@ The same pattern keeps recurring across four very different balance sheets: **th
         'AMD Q2 2026 Form 10-Q — Note 12 (Warrants), Note 11, tax and investment disclosures',
       url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000002488&type=10-Q&dateb=&owner=include&count=5',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 3,
-      label:
-        'AMD Q2 2025 earnings release — the $800M MI308 charge and the ex-charge margin restatement',
-      url: 'https://ir.amd.com/news-events/press-releases/detail/1257/amd-reports-second-quarter-2025-financial-results',
+      label: 'AMD Form 10-Q, period ended 2026-06-27',
+      url: 'https://www.sec.gov/Archives/edgar/data/2488/000000248826000123/amd-20260627.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 4,
-      label: 'AMD Investor Relations — Q2 2026 results',
-      url: 'https://ir.amd.com/news-events/press-releases/detail/1295/amd-reports-second-quarter-2026-financial-results',
+      label: 'AMD Form 8-K filed 2026-02-23',
+      url: 'https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 5,
-      label: 'CNBC — AMD earnings report Q2 2026',
-      url: 'https://www.cnbc.com/2026/08/04/amd-earnings-report-q2-2026.html',
+      label: 'SEC EDGAR — AMD filing index',
+      url: 'https://www.sec.gov/Archives/edgar/data/2488/000119312525230895/',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 6,
-      label: 'Benzinga — stock tumbles nearly 9% after hours despite a Q2 beat',
-      url: 'https://www.benzinga.com/markets/tech/26/08/60936941/amd-earnings-stock-after-hours-wall-street-forecast',
+      label: 'AMD Form 8-K filed 2025-08-05',
+      url: 'https://www.sec.gov/Archives/edgar/data/2488/000000248825000106/q22025991.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 7,
-      label:
-        'Investing.com — Q2 2026 slides: data center revenue doubles, stock falls after hours',
-      url: 'https://www.investing.com/news/company-news/amd-q2-2026-slides-data-center-revenue-doubles-stock-falls-after-hours-93CH-4836240',
+      label: 'SEC EDGAR — AMD filing index',
+      url: 'https://data.sec.gov/submissions/CIK0000002488.json',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 8,
-      label: 'stockanalysis.com — AMD price, market cap and multiples',
-      url: 'https://stockanalysis.com/stocks/amd/statistics/',
+      label: 'AMD Form 10-Q, period ended 2026-03-28',
+      url: 'https://www.sec.gov/Archives/edgar/data/2488/000000248826000076/amd-20260328.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 9,
-      label:
-        'The Register — Helios hands-on: 225–245 kW bus bar, 72 GPUs per rack',
-      url: 'https://www.theregister.com/',
+      label: 'AMD Form 10-K, period ended 2025-12-27',
+      url: 'https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 10,
       label:
-        'Schneider Electric + AMD — co-engineered Helios reference design (up to 246 kW/rack)',
-      url: 'https://www.se.com/us/en/',
+        'AMD Q2 2025 earnings release — the $800M MI308 charge and the ex-charge margin restatement',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1257/amd-reports-second-quarter-2025-financial-results',
+      primary: true,
+      kind: 'company',
     },
     {
       n: 11,
-      label: 'Benzinga — Wall Street price targets ahead of Q2',
-      url: 'https://www.benzinga.com/analyst-stock-ratings/price-target/26/08/60901453/',
+      label: 'AMD Investor Relations — Q2 2026 results',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1295/amd-reports-second-quarter-2026-financial-results',
+      primary: true,
+      kind: 'company',
     },
     {
       n: 12,
-      label: 'TIKR — what the stock needed to show after the Anthropic deal',
-      url: 'https://www.tikr.com/blog/amd-reports-q2-2026-earnings-august-4-what-the-stock-needs-to-show-after-its-anthropic-deal',
+      label:
+        'AMD Investor Relations — August 5, 2026 - 10-Q: Quarterly report [Sections 13 or 15(d)]',
+      url: 'https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000123/amd-20260627.htm',
+      kind: 'company',
     },
     {
       n: 13,
-      label: 'StockTitan — full Q2 2026 release tables',
-      url: 'https://www.stocktitan.net/news/AMD/amd-reports-second-quarter-2026-financial-s9qsl4zgkkw3.html',
+      label:
+        'AMD Investor Relations — May 6, 2026 - 10-Q: Quarterly report [Sections 13 or 15(d)]',
+      url: 'https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000076/amd-20260328.htm',
+      kind: 'company',
     },
     {
       n: 14,
+      label:
+        'AMD Investor Relations — February 4, 2026 - 10-K: Annual report [Section 13 and 15(d), not S-K Item 405]',
+      url: 'https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000018/amd-20251227.htm',
+      kind: 'company',
+    },
+    {
+      n: 15,
+      label:
+        'AMD Investor Relations — AMD and Anthropic Announce Strategic Partnership to Deploy Up to 2 Gigawatts of AMD Instinct MI450 Series GPUs :: Advanced Micro Devices, Inc. (AMD)',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1292/amd-and-anthropic-announce-strategic-partnership-to-deploy-up-to-2-gigawatts-of-amd-instinct-mi450-series-gpus',
+      kind: 'company',
+    },
+    {
+      n: 16,
+      label:
+        'AMD Investor Relations — August 6, 2025 - 10-Q: Quarterly report [Sections 13 or 15(d)]',
+      url: 'https://ir.amd.com/financial-information/sec-filings/content/0000002488-25-000108/amd-20250628.htm',
+      kind: 'company',
+    },
+    {
+      n: 17,
+      label: 'AMD — Amd instinct mi455x brochure',
+      url: 'https://www.amd.com/content/dam/amd/en/documents/products/accelerators/instinct/amd-instinct-mi455x_brochure.pdf',
+      kind: 'company',
+    },
+    {
+      n: 18,
+      label: 'AMD — AMD Delivers Breakthrough MLPerf Training 6.0 Results',
+      url: 'https://www.amd.com/en/blogs/2026/amd-delivers-breakthrough-mlperf-training-6-0-results.html',
+      kind: 'company',
+    },
+    {
+      n: 19,
+      label:
+        'AMD Investor Relations — AMD and Anthropic Announce Strategic Partnership to Deploy Up to 2 Gigawatts of AMD Instinct MI450 Series GPUs :: Advanced Micro Devices, Inc. (AMD)',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1292/',
+      kind: 'company',
+    },
+    {
+      n: 20,
+      label:
+        'AMD Investor Relations — AMD Reports Second Quarter 2026 Financial Results :: Advanced Micro Devices, Inc. (AMD)',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1295/',
+      kind: 'company',
+    },
+    {
+      n: 21,
+      label: 'AMD Newsroom — AMD Reports Second Quarter 2026 Earnings',
+      url: 'https://newsroom.amd.com/news/amd-2q-2026-earnings/',
+      kind: 'company',
+    },
+    {
+      n: 22,
+      label:
+        'AMD Newsroom — AMD and Anthropic Announce Strategic Partnership to Deploy up to 2 Gigawatts of AMD Instinct MI450 Series GPUs',
+      url: 'https://newsroom.amd.com/news/amd-anthropic-strategic-partnership/',
+      kind: 'company',
+    },
+    {
+      n: 23,
+      label:
+        'AMD Investor Relations — AMD and OpenAI Announce Strategic Partnership to Deploy 6 Gigawatts of AMD GPUs :: Advanced Micro Devices, Inc. (AMD)',
+      url: 'https://ir.amd.com/news-events/press-releases/detail/1260/amd-and-openai-announce-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus',
+      kind: 'company',
+    },
+    {
+      n: 24,
+      label: 'stockanalysis.com — AMD price, market cap and multiples',
+      url: 'https://stockanalysis.com/stocks/amd/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 25,
+      label:
+        'stockanalysis.com — Advanced Micro Devices (AMD) Stock Forecast & Price Targets',
+      url: 'https://stockanalysis.com/stocks/amd/forecast/',
+      kind: 'data',
+    },
+    {
+      n: 26,
+      label: 'stockanalysis.com — NVIDIA (NVDA) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/nvda/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 27,
+      label: 'GuruFocus — NVIDIA forward P/E ratio',
+      url: 'https://www.gurufocus.com/term/forward-pe-ratio/NVDA',
+      kind: 'data',
+    },
+    {
+      n: 28,
+      label: 'CompaniesMarketCap — AMD (AMD) - Market capitalization',
+      url: 'https://companiesmarketcap.com/amd/marketcap/',
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label:
+        'MLQ.ai — AMD Helios MI455X Rack-Scale Platform Surfaces with 72-GPU Design, UALink-over-Ethernet Interconnect',
+      url: 'https://mlq.ai/news/amd-helios-mi455x-rack-scale-platform-surfaces-with-72-gpu-design-ualink-over-ethernet-interconnect/',
+      kind: 'data',
+    },
+    {
+      n: 30,
+      label: 'CNBC — AMD earnings report Q2 2026',
+      url: 'https://www.cnbc.com/2026/08/04/amd-earnings-report-q2-2026.html',
+      kind: 'analysis',
+    },
+    {
+      n: 31,
+      label: 'Benzinga — stock tumbles nearly 9% after hours despite a Q2 beat',
+      url: 'https://www.benzinga.com/markets/tech/26/08/60936941/amd-earnings-stock-after-hours-wall-street-forecast',
+      kind: 'analysis',
+    },
+    {
+      n: 32,
+      label:
+        'Investing.com — Q2 2026 slides: data center revenue doubles, stock falls after hours',
+      url: 'https://www.investing.com/news/company-news/amd-q2-2026-slides-data-center-revenue-doubles-stock-falls-after-hours-93CH-4836240',
+      kind: 'analysis',
+    },
+    {
+      n: 33,
+      label:
+        'The Register — Helios hands-on: 225–245 kW bus bar, 72 GPUs per rack',
+      url: 'https://www.theregister.com/',
+      kind: 'analysis',
+    },
+    {
+      n: 34,
+      label:
+        'Schneider Electric + AMD — co-engineered Helios reference design (up to 246 kW/rack)',
+      url: 'https://www.se.com/us/en/',
+      kind: 'analysis',
+    },
+    {
+      n: 35,
+      label: 'Benzinga — Wall Street price targets ahead of Q2',
+      url: 'https://www.benzinga.com/analyst-stock-ratings/price-target/26/08/60901453/',
+      kind: 'analysis',
+    },
+    {
+      n: 36,
+      label: 'TIKR — what the stock needed to show after the Anthropic deal',
+      url: 'https://www.tikr.com/blog/amd-reports-q2-2026-earnings-august-4-what-the-stock-needs-to-show-after-its-anthropic-deal',
+      kind: 'analysis',
+    },
+    {
+      n: 37,
+      label: 'StockTitan — full Q2 2026 release tables',
+      url: 'https://www.stocktitan.net/news/AMD/amd-reports-second-quarter-2026-financial-s9qsl4zgkkw3.html',
+      kind: 'analysis',
+    },
+    {
+      n: 38,
       label: 'AMD Newsroom — Anthropic partnership, up to 2 GW of MI450',
       url: 'https://newsroom.amd.com/',
+      kind: 'analysis',
+    },
+    {
+      n: 39,
+      label:
+        'Globenewswire — Amd reports second quarter 2026 financial results',
+      url: 'https://www.globenewswire.com/news-release/2026/08/04/3338848/0/en/AMD-Reports-Second-Quarter-2026-Financial-Results.html',
+      kind: 'analysis',
+    },
+    {
+      n: 40,
+      label:
+        'Yahoo Finance — AMD’s (NASDAQ:AMD) Q2 Sales Top Estimates But Stock Drops',
+      url: 'https://finance.yahoo.com/markets/stocks/articles/amd-nasdaq-amd-q2-sales-202412914.html',
+      kind: 'analysis',
+    },
+    {
+      n: 41,
+      label:
+        'Yahoo Finance — AMD tops Q2 earnings estimates and provides strong outlook, but leaves investors unimpressed',
+      url: 'https://finance.yahoo.com/technology/article/amd-to-report-q2-earnings-as-chip-stocks-continue-to-waver-110000620.html',
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label: 'Finbold — Analysts update AMD stock price target',
+      url: 'https://finbold.com/analysts-update-amd-stock-price-target-2/',
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label:
+        'Benzinga — Top wall street forecasters revamp amd expectations ahead of q2 earnings',
+      url: 'https://www.benzinga.com/analyst-stock-ratings/price-target/26/08/60901453/top-wall-street-forecasters-revamp-amd-expectations-ahead-of-q2-earnings',
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label:
+        'Investing.com — AMD beats Q2 2026 estimates, stock reverses after hours (call transcript)',
+      url: 'https://ca.investing.com/news/transcripts/earnings-call-transcript-amd-beats-q2-2026-estimates-stock-reverses-after-hours-93CH-4775912',
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label:
+        'CNBC — AMD to invest up to $5B in Anthropic as part of computing power deal',
+      url: 'https://www.cnbc.com/2026/07/22/amd-anthropic-ai-chip-investment.html',
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label: 'Chipsandcheese — AMD’s Instinct MI455X: Aiming for the Sun',
+      url: 'https://chipsandcheese.com/p/amds-instinct-mi455x-aiming-for-the',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label:
+        'The Register — AMD shines a light on its Helios rack-scale compute platform',
+      url: 'https://www.theregister.com/2025/06/12/amd_helios_dc/',
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label:
+        'Naddod — Nvidia vera rubin nvl144 next generation high performance computing platform',
+      url: 'https://www.naddod.com/blog/nvidia-vera-rubin-nvl144-next-generation-high-performance-computing-platform',
+      kind: 'analysis',
+    },
+    {
+      n: 49,
+      label:
+        "Igorslab De — AMD's MLPerf Training 6.0 Results: Instinct MI355X Performance",
+      url: 'https://www.igorslab.de/en/amd-mlperf-training-6-0-instinct-mi355x-approaches-blackwell-scales-multiple-servers/',
+      kind: 'analysis',
+    },
+    {
+      n: 50,
+      label:
+        'Thundercompute — ROCm vs CUDA: GPU Computing Comparison (August 2026)',
+      url: 'https://www.thundercompute.com/blog/rocm-vs-cuda-gpu-computing',
+      kind: 'analysis',
     },
   ],
 };
@@ -3165,70 +3878,325 @@ What makes CoreWeave the clarifying case is that it has none of the others\u2019
     {
       n: 1,
       label:
-        'CoreWeave Q2 2026 earnings release \u2014 8-K Exhibit 99.1 (2026-08-11)',
+        'CoreWeave Q2 2026 earnings release \\u2014 8-K Exhibit 99.1 (2026-08-11)',
       url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000362/coreweave2q26earningspress.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 2,
       label:
-        'CoreWeave Q2 2026 Form 10-Q \u2014 Notes 2, 8, 10 and 12 (RPO, leases not yet commenced, debt, tax)',
+        'CoreWeave Q2 2026 Form 10-Q \\u2014 Notes 2, 8, 10 and 12 (RPO, leases not yet commenced, debt, tax)',
       url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 3,
       label:
-        'CoreWeave FY2025 Form 10-K \u2014 useful-life policy and the 2023 five-to-six-year change',
+        'CoreWeave FY2025 Form 10-K \\u2014 useful-life policy and the 2023 five-to-six-year change',
       url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000104/crwv-20251231.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 4,
-      label: 'CoreWeave Q1 2026 Form 10-Q \u2014 the $98.8B RPO comparison',
+      label: 'CoreWeave Q1 2026 Form 10-Q \\u2014 the $98.8B RPO comparison',
       url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q&dateb=&owner=include&count=6',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 5,
-      label: 'CoreWeave Investor Relations \u2014 Q2 2026 results',
-      url: 'https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/default.aspx',
+      label:
+        'Amazon FY2025 Form 10-K \\u2014 the six-to-five-year server life change',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001018724&type=10-K&dateb=&owner=include&count=5',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 6,
-      label: 'CNBC \u2014 CoreWeave Q2 earnings report 2026',
-      url: 'https://www.cnbc.com/2026/08/11/coreweave-crwv-q2-earnings-report-2026.html',
+      label: 'Nebius Form 6-K Exhibit 99.1 (earnings release) filed 2026-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094568/tm2622968d1_ex99-1.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 7,
-      label:
-        'The Motley Fool \u2014 Q2 2026 earnings call transcript (guidance and Q3 interest)',
-      url: 'https://www.fool.com/earnings/call-transcripts/2026/08/18/coreweave-crwv-q2-2026-earnings-call-transcript/',
+      label: 'SEC EDGAR — CoreWeave filing index',
+      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001769628/us-gaap/RevenueRemainingPerformanceObligation.json',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 8,
-      label:
-        'Seeking Alpha \u2014 FY2026 revenue guidance and the 1.85 GW power target',
-      url: 'https://seekingalpha.com/news/4631186-coreweave-expects-12_4b-13_2b-of-2026-revenue-while-raising-year-end-active-power-target-to',
+      label: 'CoreWeave Form 8-K filed 2025-09-09',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962825000047/crwv-20250909.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 9,
-      label:
-        'stockanalysis.com \u2014 CRWV price, enterprise value and short interest',
-      url: 'https://stockanalysis.com/stocks/crwv/statistics/',
+      label: 'Amazon Form 10-K, period ended 2025-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 10,
       label:
-        'Investing.com \u2014 Q2 2026 slides: revenue doubles, backlog surges',
-      url: 'https://www.investing.com/news/company-news/coreweave-q2-2026-slides-revenue-doubles-backlog-surges-246-93CH-4852949',
+        'CoreWeave Form 8-K Exhibit 99.1 (earnings release) filed 2026-08-07',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000357/ex991pr.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 11,
-      label:
-        'Amazon FY2025 Form 10-K \u2014 the six-to-five-year server life change',
-      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001018724&type=10-K&dateb=&owner=include&count=5',
+      label: 'Alphabet Form 10-K, period ended 2025-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm',
       primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 12,
+      label: 'Microsoft Form 10-K, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 13,
+      label: 'Nebius Form 6-K Exhibit 99.1 (earnings release) filed 2026-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926064092/nbis-20260331xex99d1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 14,
+      label: 'CoreWeave Form 10-Q, period ended 2026-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000222/crwv-20260331.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 15,
+      label: 'CoreWeave Form 8-K filed 2026-05-07',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000220/coreweave1q26earningspress.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 16,
+      label: 'CoreWeave Form 8-K filed 2025-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962825000039/coreweave2q25earningspress.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 17,
+      label: 'CoreWeave Form 8-K filed 2025-11-10',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962825000059/coreweave3q25earningspress.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 18,
+      label: 'CoreWeave Form 8-K filed 2026-02-26',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000094/coreweave4q25earningspress.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 19,
+      label: 'CoreWeave Investor Relations \\u2014 Q2 2026 results',
+      url: 'https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/default.aspx',
+      kind: 'company',
+    },
+    {
+      n: 20,
+      label:
+        'CoreWeave IR — Q2 2026 earnings call, corrected transcript (11 August 2026, PDF)',
+      url: 'https://s205.q4cdn.com/133937190/files/doc_financials/2026/q2/CRWV-US-CORRECTED-TRANSCRIPT-CoreWeave-Q2-2026-Earnings-Call-11August2026.pdf',
+      kind: 'company',
+    },
+    {
+      n: 21,
+      label: 'CoreWeave IR — 2026 03 ddtl 4 overview',
+      url: 'https://s205.q4cdn.com/133937190/files/doc_presentations/2026/Mar/2026-03-DDTL-4-Overview.pdf',
+      kind: 'company',
+    },
+    {
+      n: 22,
+      label:
+        'stockanalysis.com \\u2014 CRWV price, enterprise value and short interest',
+      url: 'https://stockanalysis.com/stocks/crwv/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 23,
+      label: 'stockanalysis.com — CoreWeave (CRWV) Stock Price & Overview',
+      url: 'https://stockanalysis.com/stocks/crwv/',
+      kind: 'data',
+    },
+    {
+      n: 24,
+      label: 'stockanalysis.com — Nebius Group (NBIS) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/nbis/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 25,
+      label: 'stockanalysis.com — NVIDIA (NVDA) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/nvda/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 26,
+      label: 'stockanalysis.com — Microsoft (MSFT) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/msft/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 27,
+      label: 'stockanalysis.com — Amazon.com (AMZN) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/amzn/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 28,
+      label:
+        'TradingView — CoreWeave, Inc. Stock 12‑Month Price Target Raised to $142.29, Implies 58% Upside — TradingView News',
+      url: 'https://www.tradingview.com/news/tradingview:ecc666e81ee54:0-coreweave-inc-stock-12-month-price-target-raised-to-142-29-implies-58-upside/',
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label:
+        'QuiverQuant — COREWEAVE ($CRWV) Releases Q2 2026 Earnings, Stock Rises',
+      url: 'https://www.quiverquant.com/news/COREWEAVE+($CRWV',
+      kind: 'data',
+    },
+    {
+      n: 30,
+      label: 'CNBC \\u2014 CoreWeave Q2 earnings report 2026',
+      url: 'https://www.cnbc.com/2026/08/11/coreweave-crwv-q2-earnings-report-2026.html',
+      kind: 'analysis',
+    },
+    {
+      n: 31,
+      label:
+        'The Motley Fool \\u2014 Q2 2026 earnings call transcript (guidance and Q3 interest)',
+      url: 'https://www.fool.com/earnings/call-transcripts/2026/08/18/coreweave-crwv-q2-2026-earnings-call-transcript/',
+      kind: 'analysis',
+    },
+    {
+      n: 32,
+      label:
+        'Seeking Alpha \\u2014 FY2026 revenue guidance and the 1.85 GW power target',
+      url: 'https://seekingalpha.com/news/4631186-coreweave-expects-12_4b-13_2b-of-2026-revenue-while-raising-year-end-active-power-target-to',
+      kind: 'analysis',
+    },
+    {
+      n: 33,
+      label:
+        'Investing.com \\u2014 Q2 2026 slides: revenue doubles, backlog surges',
+      url: 'https://www.investing.com/news/company-news/coreweave-q2-2026-slides-revenue-doubles-backlog-surges-246-93CH-4852949',
+      kind: 'analysis',
+    },
+    {
+      n: 34,
+      label: 'The Motley Fool — Why CoreWeave Stock Is Down 11.8%',
+      url: 'https://www.fool.com/investing/2026/08/18/why-coreweave-stock-is-down-11/',
+      kind: 'analysis',
+    },
+    {
+      n: 35,
+      label:
+        'Investing.com — Bernstein raises coreweave stock price target on strong results',
+      url: 'https://www.investing.com/news/analyst-ratings/bernstein-raises-coreweave-stock-price-target-on-strong-results-93CH-4855403',
+      kind: 'analysis',
+    },
+    {
+      n: 36,
+      label:
+        "Yahoo Finance — CoreWeave stock soars after earnings and 'an important inflection point'",
+      url: 'https://finance.yahoo.com/technology/article/coreweave-to-report-second-quarter-results-amid-spending-margin-concerns-193036479.html',
+      kind: 'analysis',
+    },
+    {
+      n: 37,
+      label:
+        'Coreweave — CoreWeave Completes Industry-First Bring-Up and Validation of NVIDIA Vera Rubin NVL72',
+      url: 'https://www.coreweave.com/news/coreweave-completes-industry-first-bring-up-of-nvidia-vera-rubin-nvl72',
+      kind: 'analysis',
+    },
+    {
+      n: 38,
+      label:
+        'Hpcwire — HPCwire - Since 1987 – Covering the Fastest Computers in the World and the People Who Run Them',
+      url: 'https://www.hpcwire.com/off-the-wire/coreweave-completes-industry-first-bring-up-and-validation-of-nvidia-vera-rubin-nvl72/',
+      kind: 'analysis',
+    },
+    {
+      n: 39,
+      label:
+        'Trendforce — AI Server Demand to Drive Memory Contract Price Increases in 2Q26 as CSPs Secure Supply via Long-Term Agreements',
+      url: 'https://www.trendforce.com/presscenter/news/20260331-12995.html',
+      kind: 'analysis',
+    },
+    {
+      n: 40,
+      label:
+        'Investing.com — CoreWeave tops Q2 2026 estimates, shares jump 13.5% (call transcript)',
+      url: 'https://www.investing.com/news/transcripts/earnings-call-transcript-coreweave-tops-q2-2026-estimates-shares-jump-135-93CH-4852937',
+      kind: 'analysis',
+    },
+    {
+      n: 41,
+      label: 'StockTitan — CoreWeave Q2 2026 Form 10-Q, filing summary',
+      url: 'https://www.stocktitan.net/sec-filings/CRWV/10-q-core-weave-inc-quarterly-earnings-report-d3b596a1f167.html',
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label:
+        'CNBC — The question everyone in AI asking: How long before a GPU depreciates?',
+      url: 'https://www.cnbc.com/2025/11/14/ai-gpu-depreciation-coreweave-nvidia-michael-burry.html',
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label:
+        'Fortune — As data-center operator CoreWeave prepares for earnings, stock bears worry its finances are emblematic of an AI bubble',
+      url: 'https://fortune.com/2025/11/08/coreweave-earnings-debt-ai-infrastructure-bubble/',
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label:
+        'Gadallon Substack — CoreWeave Is a Cloud Company. Its Economics Are a Spread Trade',
+      url: 'https://gadallon.substack.com/p/coreweave-is-a-cloud-company-its',
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label:
+        '24/7 Wall St. — CoreWeave Sinks 7% as Rising Yields Test the Most Leveraged AI Landlord',
+      url: 'https://247wallst.com/investing/2026/08/18/coreweave-sinks-7-as-rising-yields-test-the-most-leveraged-ai-landlord/',
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label:
+        'Tech Times — CoreWeave Q2 2026: $129B backlog grew $29.6B in six weeks despite 50% default odds',
+      url: 'https://www.techtimes.com/articles/324054/20260812/coreweave-q2-2026-129b-backlog-grew-296b-six-weeks-despite-50-default-odds.htm',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label: 'Seeking Alpha — Access to this page has been denied',
+      url: 'https://seekingalpha.com/article/4935865-coreweave-q2-contracts-are-getting-shorter-debt-isnt',
+      kind: 'analysis',
     },
   ],
 };
@@ -3649,51 +4617,284 @@ Ranked by capital spending against revenue, the picture is consistent: Palantir 
     {
       n: 1,
       label:
-        'Nebius Q2 2026 Form 6-K, Exhibit 99.1 \u2014 Operating and Financial Review (2026-08-12)',
+        'Nebius Q2 2026 Form 6-K, Exhibit 99.1 \\u2014 Operating and Financial Review (2026-08-12)',
       url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d1.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 2,
       label:
-        'Nebius Q2 2026 Form 6-K, Exhibit 99.2 \u2014 financial statements: useful-life change, ClickHouse remeasurement, customer concentration, RPO',
+        'Nebius Q2 2026 Form 6-K, Exhibit 99.2 \\u2014 financial statements: useful-life change, ClickHouse remeasurement, customer concentration, RPO',
       url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d2.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 3,
       label:
-        'Nebius Form 6-K (2026-08-19) \u2014 proposed $4.50B convertible senior notes offering',
+        'Nebius Form 6-K (2026-08-19) \\u2014 proposed $4.50B convertible senior notes offering',
       url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926098590/tm2623513d1_ex99-1.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 4,
-      label: 'Nebius newsroom \u2014 Q2 2026 results and shareholder letter',
-      url: 'https://nebius.com/newsroom',
-    },
-    {
-      n: 5,
-      label:
-        'Nebius Q2 2026 earnings call transcript \u2014 the only source for ARR, power and guidance',
-      url: 'https://www.fool.com/earnings/call-transcripts/2026/08/19/nebius-nbis-q2-2026-earnings-call-transcript/',
-    },
-    {
-      n: 6,
-      label:
-        'stockanalysis.com \u2014 NBIS price, enterprise value and short interest',
-      url: 'https://stockanalysis.com/stocks/nbis/statistics/',
-    },
-    {
-      n: 7,
-      label: 'stockanalysis.com \u2014 CRWV, for the peer comparison',
-      url: 'https://stockanalysis.com/stocks/crwv/statistics/',
-    },
-    {
-      n: 8,
       label: 'Nebius EDGAR filing index (CIK 0001513845)',
       url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=6-K&dateb=&owner=include&count=10',
       primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 5,
+      label: 'Nebius Form 6-K Exhibit 99.1 (earnings release) filed 2026-03-16',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926027886/tm268879d1_ex99-1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 6,
+      label: 'Nebius Form 6-K Exhibit 99.1 (earnings release) filed 2026-07-17',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926084452/tm2620683d1_ex99-1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 7,
+      label: 'CoreWeave Form 8-K filed 2026-08-11',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000362/coreweave2q26earningspress.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 8,
+      label: 'Nebius Form 6-K filed 2026-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/index.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 9,
+      label: 'Nebius Form 6-K filed 2026-08-19',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926098590/tm2623513d1_6k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 10,
+      label: 'Nebius Form 6-K Exhibit 99.1 (earnings release) filed 2026-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094568/tm2622968d1_ex99-1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 11,
+      label: 'Nebius Form 6-K filed 2026-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812x6k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 12,
+      label: 'SEC EDGAR — Nebius filing index',
+      url: 'https://data.sec.gov/submissions/CIK0001513845.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 13,
+      label: 'Nebius Form 6-K Exhibit 99.1 (earnings release) filed 2026-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094568/tm2622968d1_ex99-2.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 14,
+      label: 'Nebius newsroom \\u2014 Q2 2026 results and shareholder letter',
+      url: 'https://nebius.com/newsroom',
+      kind: 'company',
+    },
+    {
+      n: 15,
+      label: 'Nebius — Q2 2026 shareholder letter (PDF)',
+      url: 'https://assets.nebius.com/assets/a6ecfd85-a6cb-4967-8ef7-9a25bd261f9c/SHLQ226.pdf',
+      kind: 'company',
+    },
+    {
+      n: 16,
+      label:
+        'CoreWeave IR — CoreWeave Reports Strong Second Quarter 2026 Results',
+      url: 'https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/default.aspx',
+      kind: 'company',
+    },
+    {
+      n: 17,
+      label:
+        'Nebius — Nebius to triple capacity at Finland data center to 75 MW',
+      url: 'https://nebius.com/newsroom/nebius-to-triple-capacity-at-finland-data-center-to-75-mw',
+      kind: 'company',
+    },
+    {
+      n: 18,
+      label: 'Nebius — Nebius to construct 310 MW AI factory in Finland',
+      url: 'https://nebius.com/newsroom/nebius-to-construct-310-mw-ai-factory-in-finland',
+      kind: 'company',
+    },
+    {
+      n: 19,
+      label:
+        'Nebius — Nebius Group announces pricing of upsized private offering of $4.0 billion of convertible senior notes',
+      url: 'https://nebius.com/newsroom/nebius-group-announces-pricing-of-upsized-private-offering-of-4-0-billion-of-convertible-senior-notes',
+      kind: 'company',
+    },
+    {
+      n: 20,
+      label:
+        'Nebius — Nebius Group announces proposed private offering of $4.50 billion of convertible senior notes',
+      url: 'https://nebius.com/newsroom/nebius-group-announces-proposed-private-offering-of-4-50-billion-of-convertible-senior-notes',
+      kind: 'company',
+    },
+    {
+      n: 21,
+      label: 'Nebius — Nebius reports second quarter 2026 financial results',
+      url: 'https://nebius.com/newsroom/nebius-reports-second-quarter-2026-financial-results',
+      kind: 'company',
+    },
+    {
+      n: 22,
+      label:
+        'stockanalysis.com \\u2014 NBIS price, enterprise value and short interest',
+      url: 'https://stockanalysis.com/stocks/nbis/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 23,
+      label: 'stockanalysis.com \\u2014 CRWV, for the peer comparison',
+      url: 'https://stockanalysis.com/stocks/crwv/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 24,
+      label: 'stockanalysis.com — Nebius Group (NBIS) Stock Price & Overview',
+      url: 'https://stockanalysis.com/stocks/nbis/',
+      kind: 'data',
+    },
+    {
+      n: 25,
+      label: 'Macrotrends — Nebius Group Market Cap 2012-2026 | NBIS',
+      url: 'https://www.macrotrends.net/stocks/charts/NBIS/nebius-group/market-cap',
+      kind: 'data',
+    },
+    {
+      n: 26,
+      label: 'stockanalysis.com — CoreWeave (CRWV) Stock Price & Overview',
+      url: 'https://stockanalysis.com/stocks/crwv/',
+      kind: 'data',
+    },
+    {
+      n: 27,
+      label:
+        'stockanalysis.com — Nebius Group (NBIS) Stock Price History 2011-2026',
+      url: 'https://stockanalysis.com/stocks/nbis/history/',
+      kind: 'data',
+    },
+    {
+      n: 28,
+      label: 'stockanalysis.com — Nebius Group (NBIS) Financials Overview',
+      url: 'https://stockanalysis.com/stocks/nbis/financials/',
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label: 'CompaniesMarketCap — Nebius Group (NBIS) - Market capitalization',
+      url: 'https://companiesmarketcap.com/nebius-group/marketcap/',
+      kind: 'data',
+    },
+    {
+      n: 30,
+      label: 'Robinhood — Nebius Group: NBIS Stock Price Quote & News',
+      url: 'https://robinhood.com/us/en/stocks/NBIS/',
+      kind: 'data',
+    },
+    {
+      n: 31,
+      label:
+        'stockanalysis.com — Nebius Group (NBIS) Stock Forecast & Analyst Price Targets',
+      url: 'https://stockanalysis.com/stocks/nbis/forecast/',
+      kind: 'data',
+    },
+    {
+      n: 32,
+      label:
+        'TipRanks — Strong set up ahead of q2 earnings says goldman sachs analyst on nebius stock nbis assigning a street high tar',
+      url: 'https://www.tipranks.com/news/strong-set-up-ahead-of-q2-earnings-says-goldman-sachs-analyst-on-nebius-stock-nbis-assigning-a-street-high-target',
+      kind: 'data',
+    },
+    {
+      n: 33,
+      label:
+        'Nebius Q2 2026 earnings call transcript \\u2014 the only source for ARR, power and guidance',
+      url: 'https://www.fool.com/earnings/call-transcripts/2026/08/19/nebius-nbis-q2-2026-earnings-call-transcript/',
+      kind: 'analysis',
+    },
+    {
+      n: 34,
+      label:
+        'The Motley Fool — Nebius Just Signed $46 Billion in AI Cloud Deals With Microsoft and Meta. Can This Stock 10X?',
+      url: 'https://www.fool.com/investing/2026/04/02/nebius-just-signed-46-billion-in-ai-cloud-deals-wi/',
+      kind: 'analysis',
+    },
+    {
+      n: 35,
+      label: 'CNBC — CoreWeave (CRWV) Q2 earnings report 2026',
+      url: 'https://www.cnbc.com/2026/08/11/coreweave-crwv-q2-earnings-report-2026.html',
+      kind: 'analysis',
+    },
+    {
+      n: 36,
+      label:
+        'StockTitan — Nebius reports second quarter 2026 financial qwyhxubfo15t',
+      url: 'https://www.stocktitan.net/news/NBIS/nebius-reports-second-quarter-2026-financial-qwyhxubfo15t.html',
+      kind: 'analysis',
+    },
+    {
+      n: 37,
+      label:
+        'Wccftech — CoreWeave (CRWV) Depreciates Its GPUs Over 6 Years, While Its Competitor Nebius Uses A 4-Year Depreciation Period',
+      url: 'https://wccftech.com/coreweave-crwv-depreciates-its-gpus-over-6-years-while-its-competitor-nebius-uses-a-4-year-depreciation-period/',
+      kind: 'analysis',
+    },
+    {
+      n: 38,
+      label: 'Seeking Alpha — Access to this page has been denied',
+      url: 'https://seekingalpha.com/news/4631437-nebius-surges-after-q2-beat-plans-to-continue-investing-in-capex',
+      kind: 'analysis',
+    },
+    {
+      n: 39,
+      label:
+        'The Motley Fool — Stock Market Today, Aug. 19: Nebius Falls 10% on $4.5 Billion Convertible Note Offering',
+      url: 'https://www.fool.com/coverage/stock-market-today/2026/08/19/stock-market-today-aug-19-nebius-falls-10-on-usd4-5-billion-convertible-note-offering/',
+      kind: 'analysis',
+    },
+    {
+      n: 40,
+      label:
+        'Investing.com — Nebius prices 5 billion convertible notes offering',
+      url: 'https://uk.investing.com/news/stock-market-news/nebius-prices-5-billion-convertible-notes-offering-93CH-4840180',
+      kind: 'analysis',
+    },
+    {
+      n: 41,
+      label: 'Seeking Alpha — Access to this page has been denied',
+      url: 'https://seekingalpha.com/news/4631186-coreweave-expects-12_4b-13_2b-of-2026-revenue-while-raising-year-end-active-power-target-to',
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label: 'TheStreet — thestreet.com',
+      url: 'https://www.thestreet.com/investing/stocks/nbis-bofa-bank-of-america-raises-nebius-stock-price-target-after-q2-earnings-august-2026',
+      kind: 'analysis',
     },
   ],
 };
@@ -4146,6 +5347,7 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
         'Alphabet Q2 2026 Form 8-K, Exhibit 99.1 — earnings release, income statement, cash flow, free-cash-flow reconciliation and the $21.9B / $77.1B / $6.26 footnote (2026-07-22)',
       url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 2,
@@ -4153,6 +5355,7 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
         'Alphabet Q2 2026 Form 10-Q — equity-securities decomposition, the SpaceX restriction footnotes, Note 10 purchase commitments, Note 11 the June offerings, Note 14 income taxes, Note 15 segment allocation',
       url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 3,
@@ -4160,6 +5363,7 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
         'Alphabet Q1 2026 Form 10-Q — “In the three months ended March 31, 2026, there were no repurchases”, the chronology that refutes the buyback narrative',
       url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000048/goog-20260331.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 4,
@@ -4167,6 +5371,7 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
         'Alphabet Form 13F-HR (2026-08-07) — 551,189,500 SpaceX Class A shares at $94,176,237,970',
       url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000073/information_table.xml',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 5,
@@ -4174,42 +5379,308 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
         'Alphabet FY2025 Form 10-K — the six-year server useful life and the statutory rate reconciliation',
       url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm',
       primary: true,
+      kind: 'filing',
     },
     {
       n: 6,
-      label:
-        'Alphabet Q2 2026 earnings call transcript — capex guidance of $195–205B, the balance-sheet rationale, TPU system revenue timing',
-      url: 'https://stockanalysis.com/stocks/googl/transcripts/657320-q2-2026/',
+      label: 'Alphabet EDGAR filing index (CIK 0001652044)',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001652044&type=10-Q&dateb=&owner=include&count=10',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 7,
-      label:
-        'stockanalysis.com — GOOGL price, market cap, trailing and forward P/E, price to free cash flow',
-      url: 'https://stockanalysis.com/stocks/googl/statistics/',
+      label: 'Amazon Form 8-K Exhibit 99.1 (earnings release) filed 2026-07-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 8,
       label:
-        'stockanalysis.com — SPCX price, for the mark-to-market since June 30',
-      url: 'https://stockanalysis.com/stocks/spcx/',
+        'Microsoft Form 8-K Exhibit 99.1 (earnings release) filed 2026-07-29',
+      url: 'https://www.sec.gov/Archives/edgar/data/789019/000119312526323632/msft-ex99_1.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 9,
-      label:
-        'CNBC — SpaceX lockup, first tranche of 911.5M shares released 2026-08-06',
-      url: 'https://www.cnbc.com/2026/08/06/spacex-faces-test-as-shares-unlock-allowing-early-investors-cash-out.html',
+      label: 'Alphabet Form 424B2 filed 2026-08-07',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000119312526340264/d32286d424b2.htm',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 10,
-      label:
-        'Schaeffer’s Research — the July 23 reaction, worst day in fourteen months on the capex guide',
-      url: 'https://www.schaeffersresearch.com/content/news/2026/07/23/alphabet-stock-eyes-worst-day-in-14-months-on-capex-spending',
+      label: 'SEC EDGAR — Alphabet filing index',
+      url: 'https://data.sec.gov/submissions/CIK0001652044.json',
+      primary: true,
+      kind: 'filing',
     },
     {
       n: 11,
-      label: 'Alphabet EDGAR filing index (CIK 0001652044)',
-      url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001652044&type=10-Q&dateb=&owner=include&count=10',
+      label: 'Alphabet Form 10-Q, period ended 2025-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204425000062/goog-20250630.htm',
       primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 12,
+      label: 'Amazon Form 10-Q, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/amzn-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 13,
+      label: 'Alphabet Form 10-K, period ended 2024-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 14,
+      label: 'Alphabet Form 10-K, period ended 2023-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 15,
+      label: 'Alphabet Form 10-Q, period ended 2025-09-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 16,
+      label:
+        'Alphabet IR — Q2 2026 earnings release (PDF, the IR copy of the 8-K exhibit)',
+      url: 'https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf',
+      kind: 'company',
+    },
+    {
+      n: 17,
+      label: 'Alphabet IR — Q2 2026 Form 10-Q (PDF)',
+      url: 'https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/GOOG-10-Q-Q2-2026.pdf',
+      kind: 'company',
+    },
+    {
+      n: 18,
+      label: 'About Amazon — Amazon Q2 2026 earnings report: Read the release',
+      url: 'https://www.aboutamazon.com/news/company-news/amazon-earnings-q2-2026-report',
+      kind: 'company',
+    },
+    {
+      n: 19,
+      label: 'Microsoft — FY26 Q4 - Press Releases - Investor Relations',
+      url: 'https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast',
+      kind: 'company',
+    },
+    {
+      n: 20,
+      label: 'Google Cloud documentation — TPU7x (Ironwood)',
+      url: 'https://docs.cloud.google.com/tpu/docs/tpu7x',
+      kind: 'company',
+    },
+    {
+      n: 21,
+      label:
+        'Google — The Keyword — Sundar Pichai shares news from Google Cloud Next 2026',
+      url: 'https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/cloud-next-2026-sundar-pichai/',
+      kind: 'company',
+    },
+    {
+      n: 22,
+      label: 'Anthropic — Expanding our use of Google Cloud TPUs and Services',
+      url: 'https://www.anthropic.com/news/expanding-our-use-of-google-cloud-tpus-and-services',
+      kind: 'company',
+    },
+    {
+      n: 23,
+      label:
+        'Anthropic — Anthropic expands partnership with Google and Broadcom for multiple gigawatts of next-generation compute',
+      url: 'https://www.anthropic.com/news/google-broadcom-partnership-compute',
+      kind: 'company',
+    },
+    {
+      n: 24,
+      label:
+        'Google — The Keyword — Google signed 1 GW of data center demand response',
+      url: 'https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/demand-response-data-center-milestone/',
+      kind: 'company',
+    },
+    {
+      n: 25,
+      label: 'Google — The Keyword — Google completes acquisition of Wiz',
+      url: 'https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/wiz-acquisition/',
+      kind: 'company',
+    },
+    {
+      n: 26,
+      label:
+        'Alphabet Q2 2026 earnings call transcript — capex guidance of $195–205B, the balance-sheet rationale, TPU system revenue timing',
+      url: 'https://stockanalysis.com/stocks/googl/transcripts/657320-q2-2026/',
+      kind: 'data',
+    },
+    {
+      n: 27,
+      label:
+        'stockanalysis.com — GOOGL price, market cap, trailing and forward P/E, price to free cash flow',
+      url: 'https://stockanalysis.com/stocks/googl/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 28,
+      label:
+        'stockanalysis.com — SPCX price, for the mark-to-market since June 30',
+      url: 'https://stockanalysis.com/stocks/spcx/',
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label: 'Macrotrends — Alphabet PE Ratio 2012-2026 | GOOGL',
+      url: 'https://www.macrotrends.net/stocks/charts/GOOGL/alphabet/pe-ratio',
+      kind: 'data',
+    },
+    {
+      n: 30,
+      label:
+        'QuiverQuant — Alphabet Stock (GOOGL) Opinions on Recent AI Developments and Earnings',
+      url: 'https://www.quiverquant.com/news/Alphabet+Stock+(GOOGL',
+      kind: 'data',
+    },
+    {
+      n: 31,
+      label: 'stockanalysis.com — Microsoft (MSFT) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/msft/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 32,
+      label: 'stockanalysis.com — Amazon.com (AMZN) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/amzn/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 33,
+      label: 'stockanalysis.com — Meta Platforms (META) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/meta/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 34,
+      label:
+        'Macrotrends — Space Exploration Technologies - Stock Price History | SPCX',
+      url: 'https://www.macrotrends.net/stocks/charts/SPCX/spacex/stock-price-history',
+      kind: 'data',
+    },
+    {
+      n: 35,
+      label:
+        'CNBC — SpaceX lockup, first tranche of 911.5M shares released 2026-08-06',
+      url: 'https://www.cnbc.com/2026/08/06/spacex-faces-test-as-shares-unlock-allowing-early-investors-cash-out.html',
+      kind: 'analysis',
+    },
+    {
+      n: 36,
+      label:
+        'Schaeffer’s Research — the July 23 reaction, worst day in fourteen months on the capex guide',
+      url: 'https://www.schaeffersresearch.com/content/news/2026/07/23/alphabet-stock-eyes-worst-day-in-14-months-on-capex-spending',
+      kind: 'analysis',
+    },
+    {
+      n: 37,
+      label:
+        "The Motley Fool — Alphabet Just Revealed a $94 Billion Stake in SpaceX -- and It Can't Sell a Single Share Yet",
+      url: 'https://www.fool.com/investing/2026/07/23/alphabet-just-revealed-a-94-billion-stake-in-space/',
+      kind: 'analysis',
+    },
+    {
+      n: 38,
+      label: 'Investing.com — Alphabet Q2 2026 earnings call transcript',
+      url: 'https://www.investing.com/news/transcripts/earnings-call-transcript-alphabet-beats-q2-2026-estimates-as-93CH-4807140',
+      kind: 'analysis',
+    },
+    {
+      n: 39,
+      label:
+        'Investing.com — Alphabet beats Q2 2026 estimates, shares fall on capex surge (call transcript)',
+      url: 'https://www.investing.com/news/transcripts/earnings-call-transcript-alphabet-beats-q2-2026-estimates-shares-fall-on-capex-surge-93CH-4807140',
+      kind: 'analysis',
+    },
+    {
+      n: 40,
+      label: 'SemiAnalysis — Google TPUv7: The 900lb Gorilla In the Room',
+      url: 'https://newsletter.semianalysis.com/p/tpuv7-google-takes-a-swing-at-the',
+      kind: 'analysis',
+    },
+    {
+      n: 41,
+      label:
+        'DataCenterDynamics — Google increases server life to six years will save billions of dollars',
+      url: 'https://www.datacenterdynamics.com/en/news/google-increases-server-life-to-six-years-will-save-billions-of-dollars/',
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label:
+        'DataCenterDynamics — Google signs power deal with nextenergy to restart iowas 615mw duane arnold nuclear plant for ai data centers',
+      url: 'https://www.datacenterdynamics.com/en/news/google-signs-power-deal-with-nextenergy-to-restart-iowas-615mw-duane-arnold-nuclear-plant-for-ai-data-centers/',
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label:
+        'The Motley Fool — Stock Market Today, July 23: Alphabet Slides 7% After Announcing 2026 Capex of Roughly $200 Billion',
+      url: 'https://www.fool.com/coverage/stock-market-today/2026/07/23/stock-market-today-july-23-alphabet-slides-7-after-announcing-2026-capex-of-roughly-usd200-billion/',
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label:
+        'Yahoo Finance — Google falls more than 6% on capex growth expectations despite earnings beat',
+      url: 'https://finance.yahoo.com/technology/article/google-falls-more-than-6-on-capex-growth-expectations-despite-earnings-beat-202407124.html',
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label: 'CNBC — Google (GOOG) Q2 2026 earnings report: Live updates',
+      url: 'https://www.cnbc.com/2026/07/22/google-earnings-q2-goog-live-updates.html',
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label:
+        'CNBC — SpaceX stock rebounds, closing above $135 IPO price for first time in weeks',
+      url: 'https://www.cnbc.com/2026/08/10/spacex-spcx-stock-ipo-price.html',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label: 'Quartz — Amazon Q2 2026 earnings and AWS cloud growth',
+      url: 'https://qz.com/amazon-q2-2026-earnings-aws-cloud-growth-073026',
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label:
+        'Fortune — Anthropic and SpaceX just handed Google the biggest profit quarter in company history—on paper',
+      url: 'https://fortune.com/2026/07/22/anthropic-spacex-investments-google-earnings-biggest-ever-profit-quarter/',
+      kind: 'analysis',
+    },
+    {
+      n: 49,
+      label:
+        "Bloomberg — Alphabet's future spending commitments soar to $811 billion",
+      url: 'https://www.bloomberg.com/news/articles/2026-07-23/alphabet-s-future-spending-commitments-soar-to-811-billion',
+      kind: 'analysis',
+    },
+    {
+      n: 50,
+      label: 'Steady Compounding — Alphabet Q2 2026: The $707 Billion Footnote',
+      url: 'https://steadycompounding.com/investing/alphabet-q2-2026/',
+      kind: 'analysis',
     },
   ],
 };

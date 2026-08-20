@@ -7,6 +7,7 @@ import {
   type MarketStormReport,
   type DataTable as DataTableType,
   type SourceRef,
+  type SourceKind,
   type HeadlineVsReal as HeadlineVsRealType,
   type ThroughLine as ThroughLineType,
 } from '@/data/marketStorm';
@@ -465,49 +466,123 @@ function ThroughLineBlock({ line }: { line: ThroughLineType }) {
 }
 
 /* ---- sources ---- */
+/**
+ * The source list, grouped and counted.
+ *
+ * A full report cites forty to fifty documents. Rendered flat that is a wall
+ * the reader skims past, and skimming past it defeats the purpose — the whole
+ * point of publishing the list is that someone can see the conclusions rest on
+ * filings rather than on other people's articles. So the count leads, the
+ * primary documents come first, and each shelf is labelled.
+ */
+const SOURCE_GROUPS: { kind: SourceKind; title: string; blurb: string }[] = [
+  {
+    kind: 'filing',
+    title: 'Filings and primary documents',
+    blurb: 'What the company told a regulator. Every load-bearing figure traces here.',
+  },
+  {
+    kind: 'company',
+    title: 'Company disclosures',
+    blurb: 'Releases, decks, transcripts and engineering posts — the company speaking, unaudited.',
+  },
+  {
+    kind: 'data',
+    title: 'Market and pricing data',
+    blurb: 'Prices, multiples and market values, as of the dates given in the report.',
+  },
+  {
+    kind: 'analysis',
+    title: 'Reporting and analysis',
+    blurb: 'Third-party coverage, used for context and for checking claims against a second pair of eyes.',
+  },
+];
+
+function sourceKind(s: SourceRef): SourceKind {
+  return s.kind ?? (s.primary ? 'filing' : 'analysis');
+}
+
 function Sources({ sources }: { sources: SourceRef[] }) {
+  const groups = SOURCE_GROUPS.map((g) => ({
+    ...g,
+    items: sources.filter((s) => sourceKind(s) === g.kind),
+  })).filter((g) => g.items.length > 0);
+
+  const primaryCount = groups
+    .filter((g) => g.kind === 'filing' || g.kind === 'company')
+    .reduce((n, g) => n + g.items.length, 0);
+
   return (
     <div>
-      <h2 className="font-display mb-6 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
         Sources
       </h2>
-      <ol
-        className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2"
-        role="list"
-      >
-        {sources.map((s) => (
-          <li key={s.n} className="flex gap-3 text-sm leading-snug">
-            <span className="font-mono text-xs font-bold text-accent [font-variant-numeric:tabular-nums]">
-              {s.n}
-            </span>
-            <span className="text-text-secondary">
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`underline decoration-border underline-offset-2 hover:text-accent hover:decoration-accent ${
-                  s.primary ? 'font-semibold text-bull' : 'text-text-primary/80'
-                }`}
-              >
-                {s.label}
-              </a>
-              {s.secondaryUrl && (
-                <>
-                  {' · '}
-                  <a
-                    href={s.secondaryUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-xs underline decoration-border underline-offset-2 hover:text-accent hover:decoration-accent"
-                  >
-                    {s.secondaryLabel ?? 'primary'}
-                  </a>
-                </>
-              )}
-            </span>
-          </li>
+      <p className="mb-8 mt-2 text-sm text-text-secondary">
+        <strong className="text-text-primary [font-variant-numeric:tabular-nums]">
+          {sources.length} documents
+        </strong>{' '}
+        consulted for this report
+        {primaryCount > 0 && (
+          <>
+            {' — '}
+            <strong className="text-text-primary [font-variant-numeric:tabular-nums]">
+              {primaryCount}
+            </strong>{' '}
+            of them filings or first-party disclosures
+          </>
+        )}
+        {'. Every link was checked before publication.'}
+      </p>
+
+      <div className="space-y-8">
+        {groups.map((g) => (
+          <section key={g.kind}>
+            <h3 className="font-mono-accent text-accent">{g.title}</h3>
+            <p className="mt-1 text-xs leading-relaxed text-text-secondary">
+              {g.blurb}
+            </p>
+            <ol
+              className="mt-4 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2"
+              role="list"
+            >
+              {g.items.map((s) => (
+                <li key={s.n} className="flex gap-3 text-sm leading-snug">
+                  <span className="font-mono text-xs font-bold text-accent [font-variant-numeric:tabular-nums]">
+                    {s.n}
+                  </span>
+                  <span className="text-text-secondary">
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`underline decoration-border underline-offset-2 hover:text-accent hover:decoration-accent ${
+                        s.primary
+                          ? 'font-semibold text-bull'
+                          : 'text-text-primary/80'
+                      }`}
+                    >
+                      {s.label}
+                    </a>
+                    {s.secondaryUrl && (
+                      <>
+                        {' · '}
+                        <a
+                          href={s.secondaryUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-xs underline decoration-border underline-offset-2 hover:text-accent hover:decoration-accent"
+                        >
+                          {s.secondaryLabel ?? 'primary'}
+                        </a>
+                      </>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </section>
         ))}
-      </ol>
+      </div>
     </div>
   );
 }
