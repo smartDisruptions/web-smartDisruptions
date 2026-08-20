@@ -14,6 +14,7 @@ SmartDisruptions, nor altered in shape.
 | `amzn.svg` | [Amazon logo.svg](https://commons.wikimedia.org/wiki/File:Amazon_logo.svg) | Public domain |
 | `crwv.svg` | [CoreWeave logo.svg](https://commons.wikimedia.org/wiki/File:CoreWeave_logo.svg) | Public domain |
 | `msft.svg` | [Microsoft logo (2012).svg](https://commons.wikimedia.org/wiki/File:Microsoft_logo_(2012).svg) | Public domain |
+| `nbis.svg` | [Nebius media kit](https://nebius.com/media-kit) | Publisher-supplied press asset — **not** Commons PD; see note below |
 | `pltr.svg` | [Palantir Technologies logo.svg](https://commons.wikimedia.org/wiki/File:Palantir_Technologies_logo.svg) | Public domain |
 | `amd.svg` | [AMD Logo.svg](https://commons.wikimedia.org/wiki/File:AMD_Logo.svg) | Public domain |
 | `spcx.svg` | [SpaceX-Logo.svg](https://commons.wikimedia.org/wiki/File:SpaceX-Logo.svg) | Public domain |
@@ -29,3 +30,5 @@ ground. A single-colour reversed treatment is the standard permitted use on a
 dark background, it keeps the four cards reading as one set, and it stops the
 index from becoming four competing brand palettes. The cost is Microsoft's four
 coloured squares, which go grey with the rest.
+
+**One mark has different provenance.** Nebius's logo is not on Wikimedia Commons; the file on English Wikipedia is tagged *Fair use* and copyrighted, and that rationale covers Wikipedia's own article rather than this site. It was taken instead from **Nebius's own media kit**, which the company publishes for press use and which ships a white variant — i.e. the publisher anticipates exactly the reversed treatment these cards apply. The `NEBIUS-outline-black.svg` file is used because the colour variant masks to a solid block.
