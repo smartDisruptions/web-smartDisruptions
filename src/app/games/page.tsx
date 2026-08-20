@@ -5,16 +5,17 @@ import Link from 'next/link';
 import { apps, type App } from '@/data/apps';
 import { SectionContainer, Card } from '@/components/ui';
 
-// The Arcade is an explicit, curated line-up — Pebble Kart (built for Gabe)
-// leads, then the rest of the playable builds. The games keep their own /apps
-// categories; this list just defines what shows in the cabinet, and its order.
+// The Arcade is an explicit, curated line-up — The Pembroke File leads (Josh's
+// call, 2026-08-20), then Cloth Simulator and Grove, then the rest. The games
+// keep their own /apps categories; this list just defines what shows in the
+// cabinet, and its order.
 const ARCADE_GAME_SLUGS = [
-  'pebble-kart',
   'field-office',
-  'flappy-bird',
-  'grove',
-  'aureum-snake',
   'cloth-simulator',
+  'grove',
+  'pebble-kart',
+  'flappy-bird',
+  'aureum-snake',
 ];
 
 const games: App[] = ARCADE_GAME_SLUGS.map((slug) =>
