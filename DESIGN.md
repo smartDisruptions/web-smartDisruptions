@@ -167,7 +167,7 @@ heading and its body copy.** Those two are now the only things holding the
 hierarchy up. Reaching for a serif somewhere to "add contrast back" is the wrong
 repair — it would put a third face on a page that has a considered two.
 
-## Market Storm data semantics (bull / bear / caution)
+## Semantic data inks (bull / bear / caution)
 
 The Market Storm reports carry financial data with a real bull/bear polarity, so
 they get three semantic inks beyond the single warm accent — `bull` (green),
@@ -178,6 +178,14 @@ everything else: they are **on-token** (`--sd-bull/bear/warn` + soft tints), the
 clears WCAG AA in both themes (`bear`/`warn` reuse the already-verified
 `arcade-red-ink` / `badge-secondary` values). The accent stays burnt-orange; these
 are a separate semantic axis, not a second accent.
+
+**The Evidence Engine reuses the same three inks**, and deliberately did not
+introduce a fourth axis. A capability verdict has exactly the polarity these
+encode — `evidenced` holds, `attested only` partly holds, `refused` does not —
+so the values are already right and already AA-verified in both themes. The
+rule that comes with the reuse: these inks may only carry a **verdict about the
+data**, never a decorative highlight. A green heading that is not asserting
+"this holds" is a bug, in either section.
 
 ## Accessibility is a floor, not a goal
 

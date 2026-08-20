@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Skills from '@/components/about/Skills';
 
 export const metadata: Metadata = {
   title: 'About — SmartDisruptions',
@@ -68,75 +69,6 @@ const milestones = [
   },
 ];
 
-/**
- * The vocabulary section. Josh does all of these; several he built by
- * deriving the idea himself, without knowing the field already had a word
- * for it. Naming them is the point — you cannot claim a skill you can't
- * name, and an About page is where the claiming happens.
- */
-const skills = [
-  {
-    term: 'Context engineering',
-    plain:
-      'Designing what the model knows before it is asked anything — the file it reads first, and what that file points at.',
-  },
-  {
-    term: 'Retrieval over a knowledge graph',
-    plain:
-      'Every note describes itself, so one command returns the whole map; a documented two-hop rule keeps agents from wandering. A retrieval policy, written before I knew the term.',
-  },
-  {
-    term: 'Multi-agent orchestration',
-    plain:
-      'Splitting one question across parallel agents with different angles, then synthesizing. Twelve at once on the last research run.',
-  },
-  {
-    term: 'Adversarial verification',
-    plain:
-      'A finding does not count until independent agents have tried to refute it. Eight load-bearing claims, six survived, two got caveats.',
-  },
-  {
-    term: 'Role-conditioned review',
-    plain:
-      'The same work read through deliberately different lenses — product, design, engineering. Where they disagree is the interesting part.',
-  },
-  {
-    term: 'Plan-then-execute',
-    plain:
-      'Planning separated from building, so I approve a plan instead of discovering four hundred lines of surprise.',
-  },
-  {
-    term: 'Graduated autonomy',
-    plain:
-      'Every scheduled agent has a trust tier: apply, report, or draft only. Agents reach development and a test build; production is a decision I make, and nothing touching my name or my money happens without me.',
-  },
-  {
-    term: 'Rule distillation',
-    plain:
-      'Turning a strong model’s judgment into checkable rules, so cheaper and smaller models inherit the same behaviour.',
-  },
-  {
-    term: 'Regression tripwires',
-    plain:
-      'A cheap always-run test fenced around the part that must not change, so agents can move fast everywhere else. Mine guards aid math, twenty-three assertions, every single run.',
-  },
-  {
-    term: 'Idempotent job design',
-    plain:
-      'Any job that can half-finish has to look for its own wreckage before it looks for new work. Learned from a publisher that reported success six times while stuck.',
-  },
-  {
-    term: 'Tool integration (MCP)',
-    plain:
-      'Wiring agents into the systems I already use — the browser, the database, the deploy platform, the calendar — through a common protocol.',
-  },
-  {
-    term: 'Prototype-then-migrate',
-    plain:
-      'Explore the product as a throwaway prototype, run critique loops until it is genuinely good, and only then rebuild it properly.',
-  },
-];
-
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-20 sm:py-24">
@@ -156,7 +88,7 @@ export default function AboutPage() {
         </div>
       </header>
 
-      <p className="mt-8 text-lg leading-[1.75] text-text-secondary">
+      <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
         I build real things with AI and write about how they actually get made.
         I&rsquo;ve worked with these tools daily for three years, and the
         interesting part isn&rsquo;t that I use them &mdash; everyone uses them.
@@ -195,29 +127,7 @@ export default function AboutPage() {
         ))}
       </ol>
 
-      {/* The skills. Deliberately plain-language on the right-hand side — the
-          terms carry credibility, the sentences are for the reader who doesn't
-          have them yet, which is most of the audience. */}
-      <section className="mt-16 border-t border-border pt-12">
-        <h2 className="font-display text-2xl font-semibold text-text-primary sm:text-3xl">
-          Skills I picked up along the way
-        </h2>
-        <p className="mt-3 leading-[1.75] text-text-secondary">
-          Three years in, almost none of this is prompting any more. Each one
-          came out of a build that needed it rather than a course I took.
-        </p>
-
-        <dl className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
-          {skills.map((s) => (
-            <div key={s.term}>
-              <dt className="font-semibold text-text-primary">{s.term}</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-text-secondary">
-                {s.plain}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+      <Skills />
 
       {/* The disclosure gets its own frame so it reads as a standing policy
           rather than a life event. */}

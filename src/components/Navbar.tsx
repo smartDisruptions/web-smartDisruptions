@@ -66,21 +66,21 @@ export default function Navbar() {
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
           >
-          <span
-            className={`block h-0.5 w-6 bg-text-primary transition-transform ${
-              mobileMenuOpen ? 'translate-y-2 rotate-45' : ''
-            }`}
-          />
-          <span
-            className={`block h-0.5 w-6 bg-text-primary transition-opacity ${
-              mobileMenuOpen ? 'opacity-0' : ''
-            }`}
-          />
-          <span
-            className={`block h-0.5 w-6 bg-text-primary transition-transform ${
-              mobileMenuOpen ? '-translate-y-2 -rotate-45' : ''
-            }`}
-          />
+            <span
+              className={`block h-0.5 w-6 bg-text-primary transition-transform ${
+                mobileMenuOpen ? 'translate-y-2 rotate-45' : ''
+              }`}
+            />
+            <span
+              className={`block h-0.5 w-6 bg-text-primary transition-opacity ${
+                mobileMenuOpen ? 'opacity-0' : ''
+              }`}
+            />
+            <span
+              className={`block h-0.5 w-6 bg-text-primary transition-transform ${
+                mobileMenuOpen ? '-translate-y-2 -rotate-45' : ''
+              }`}
+            />
           </button>
         </div>
       </div>
