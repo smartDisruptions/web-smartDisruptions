@@ -9,7 +9,6 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/content', label: 'Writing' },
   { href: '/market-storm', label: 'Market Storm' },
-  { href: '/evidence', label: 'Evidence' },
   { href: '/apps', label: 'Apps' },
   { href: '/games', label: 'Arcade' },
   { href: '/about', label: 'About' },
@@ -40,9 +39,7 @@ export default function Navbar() {
         {/* Right side: links (desktop) + theme toggle + hamburger (mobile) */}
         <div className="flex items-center gap-3 sm:gap-5">
           {/* Desktop links */}
-          {/* lg, not md: a seventh link overflows the row beside the wordmark
-              between 768px and ~820px. */}
-          <ul className="hidden items-center gap-7 lg:flex" role="list">
+          <ul className="hidden items-center gap-8 md:flex" role="list">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
@@ -64,7 +61,7 @@ export default function Navbar() {
 
           {/* Mobile hamburger */}
           <button
-            className="flex flex-col gap-1.5 lg:hidden"
+            className="flex flex-col gap-1.5 md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
@@ -90,7 +87,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-border lg:hidden">
+        <div className="border-t border-border md:hidden">
           <ul className="flex flex-col gap-2 px-4 py-4" role="list">
             {navLinks.map((link) => (
               <li key={link.href}>

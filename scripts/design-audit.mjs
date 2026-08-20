@@ -28,9 +28,6 @@ const ROUTES = [
   '/privacy',
   '/content/what-ai-handed-back',
   '/market-storm/amzn-q2-2026',
-  '/evidence',
-  '/evidence/josh',
-  '/evidence/josh/samurai-kitchen',
 ];
 
 const VIEWPORTS = [
