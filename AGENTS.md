@@ -323,6 +323,44 @@ person, plain, short paragraphs, receipts over claims, peer-to-peer with no
 labels for the reader, honest about what went wrong. If a draft reads like
 generic AI prose, it is wrong.
 
+# Market Storm sources
+
+**Every external claim in a report needs a source in the list, and the list is
+the evidence that the research happened.** A report whose Sources block is ten
+Alphabet filings while the prose compares Alphabet to AWS, Azure and Meta is
+not sourced — it is sourced for the easy half.
+
+Three rules, all of them written after breaking them:
+
+1. **A claim about another company needs that company's document.** The
+   Alphabet report quoted AWS at $42,232M and a 39.4% margin, said Microsoft
+   publishes no Azure-only margin, and priced both against Meta — with eleven
+   sources, all of them Alphabet's. Comparisons are exactly the claims a reader
+   cannot check from the subject's own filing, so they are the ones that most
+   need a link.
+
+2. **A range attributed to "the sources" needs every source in the range.**
+   "The stock fell between 5.4% and 7% depending on the source" shipped citing
+   one source. If the report says sources disagree — and the house rule is to
+   report both numbers and never average them — then both numbers have to be
+   reachable, or the disagreement is unverifiable and should not be claimed.
+
+3. **List what the research actually used, and only that.** The STORM run
+   behind a report cites forty to seventy documents; carrying eleven into the
+   report throws away most of the evidence. Harvest the URLs the agents cited
+   in their findings — not every URL that appeared in a search result — check
+   that each one resolves, and label each with what it supports. Do not pad the
+   list with links nothing in the article rests on: a source list is a claim,
+   and an inflated one is the same kind of error as an unsourced figure.
+
+**Target depth: up to 50 per report**, grouped by `kind` — `filing`, `company`,
+`data`, `analysis`. The renderer leads with the count and puts filings first,
+because the point of publishing the list is that a reader can see the
+conclusions rest on filings rather than on other people's articles.
+
+`scripts/check-sources.mjs` walks every report and fails on a dead link, so a
+rotted URL is caught before a reader finds it.
+
 ## Checks
 
 ```bash
