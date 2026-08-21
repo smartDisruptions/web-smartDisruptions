@@ -286,6 +286,33 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: 'https://app-grove.vercel.app',
   },
+  {
+    slug: 'going-traveling',
+    name: 'Going Traveling',
+    description:
+      'A 12-day Japan trip planner with two full day plans to switch between, a budget that scales with your party, and an allergy system you point at your own allergens.',
+    longDescription:
+      'A planning tool for a twelve-day trip through Tokyo, Hakone and Kyoto, built around the problem every itinerary has: the good options are the ones near where you already are. Every day carries two complete plans whose stops were chosen for proximity, and each swappable option is priced in travel minutes from the plan it is sitting in — so an option that pulls you across the city says so before you pick it, not after. Non-travel days can borrow any plan from any other day in the same city. Underneath sit 106 destinations, each with a map link and a review link verified against an independent geocode rather than guessed. The allergy section is configurable rather than baked in: choose from eleven allergens and the page rewrites itself — where each one sits in Japan\u2019s labelling law, where it hides, every meal format ranked for it, what to order by name, and a bilingual card to hand across a counter. The budget holds anything bought in Japan in yen and converts at a rate you set, scaling by party size, so a solo trip correctly costs more than half a trip for two. It ships as one self-contained HTML file with 91 photographs inlined, and works offline.',
+    thumbnailUrl: '/images/apps/going-traveling-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/going-traveling-1.webp',
+      '/images/apps/going-traveling-2.webp',
+      '/images/apps/going-traveling-3.webp',
+    ],
+    techStack: ['HTML5', 'Vanilla JavaScript', 'CSS3', 'SVG', 'Node.js'],
+    category: 'Travel',
+    status: 'live',
+    outcomes: [
+      'Configurable allergy system covers 11 allergens against Japan\u2019s 8-mandatory / 20-recommended labelling law, generating a bilingual card from your selection',
+      'Every swappable itinerary option is priced in travel minutes from the plan it sits in, so a bad geographic choice is visible before you make it',
+      '106 destinations carry map and review links verified against an independent geocode, not assumed',
+      'Ships as one self-contained HTML file with 91 photographs inlined \u2014 no network, no dependencies, works offline',
+    ],
+    buildDate: '2026-08',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: 'https://going-traveling.vercel.app',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
