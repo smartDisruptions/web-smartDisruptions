@@ -3,9 +3,9 @@ title: I turned my résumé into an escape room — the game got good when I cut
 slug: escape-room-ate-my-resume
 excerpt: I pitched my AI an escape room where reading my résumé is how you get out. Thirty-three prompts later, a stolen-diamond noir leads my site's arcade — and the résumé is gone. I never wrote a line of code. What I did instead turned out to be the actual job.
 category: Build Breakdown
-publishDate: 2026-08-20
+publishDate: 2026-08-21
 tags: [ai, games, playtesting, shipping]
-status: staged
+status: published
 channels:
   - name: linkedin
     status: planned
