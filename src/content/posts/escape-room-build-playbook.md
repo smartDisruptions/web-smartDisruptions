@@ -3,9 +3,9 @@ title: AI wrote every line of my game. These seven steps were mine.
 slug: escape-room-build-playbook
 excerpt: The Pembroke File shipped as one 2,673-line file, and AI wrote all of it. What I supplied was seven decisions — and if you want to build a game like this, those are the transferable part. The how, the what, and the why of each step. None of them is code.
 category: Working With AI
-publishDate: 2026-08-20
+publishDate: 2026-08-22
 tags: [ai, games, guide, playtesting]
-status: staged
+status: published
 channels:
   - name: linkedin
     status: planned
