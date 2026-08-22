@@ -17,6 +17,7 @@ import {
    Moved to ./tone when the index started showing figures too: a second copy
    is how a bull turns green on one surface and neutral on another. ---- */
 import { toneText, toneDot } from './tone';
+import MethodBlock from './Method';
 
 /* ---- inline markdown (bold/italic/code/links) with no block wrapper ---- */
 function Inline({ children }: { children: string }) {
@@ -479,22 +480,26 @@ const SOURCE_GROUPS: { kind: SourceKind; title: string; blurb: string }[] = [
   {
     kind: 'filing',
     title: 'Filings and primary documents',
-    blurb: 'What the company told a regulator. Every load-bearing figure traces here.',
+    blurb:
+      'What the company told a regulator. Every load-bearing figure traces here.',
   },
   {
     kind: 'company',
     title: 'Company disclosures',
-    blurb: 'Releases, decks, transcripts and engineering posts — the company speaking, unaudited.',
+    blurb:
+      'Releases, decks, transcripts and engineering posts — the company speaking, unaudited.',
   },
   {
     kind: 'data',
     title: 'Market and pricing data',
-    blurb: 'Prices, multiples and market values, as of the dates given in the report.',
+    blurb:
+      'Prices, multiples and market values, as of the dates given in the report.',
   },
   {
     kind: 'analysis',
     title: 'Reporting and analysis',
-    blurb: 'Third-party coverage, used for context and for checking claims against a second pair of eyes.',
+    blurb:
+      'Third-party coverage, used for context and for checking claims against a second pair of eyes.',
   },
 ];
 
@@ -766,6 +771,11 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
             <Inline>{MARKET_STORM_METHOD}</Inline>
           </p>
         </div>
+        {/* The section-wide description above says what STORM is; this says what
+            happened on THIS run — who was in the room, how deep the refutation
+            pass went, and what capped it. Reports written before the run record
+            was captured render the description alone. */}
+        <MethodBlock method={report.method} />
         <VerificationLedger report={report} />
         <OpenQuestions report={report} />
         <Disclaimer />

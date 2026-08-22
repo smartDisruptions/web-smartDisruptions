@@ -87,6 +87,64 @@ export interface SourceRef {
   secondaryLabel?: string;
 }
 
+/**
+ * One agent in a run, and the stake it was told to take.
+ *
+ * These are adversarial on purpose: the short-seller is instructed to justify a
+ * position against the company, the skeptics are told to REFUTE rather than
+ * check. What survives that is what gets written up.
+ */
+export interface AgentRole {
+  role: string;
+  probe: string; // what this agent was pointed at
+}
+
+/**
+ * How a report was actually produced.
+ *
+ * WHY THIS IS PUBLISHED
+ * ---------------------
+ * Not every report is researched the same way, and for a while that difference
+ * was invisible. The eight earnings reads run four perspectives and send the
+ * top handful of claims to skeptics; the thesis pieces run five and refute
+ * every load-bearing claim there is. Rendering the roster and the verification
+ * depth on each report turns an inconsistency into the thing the section is
+ * actually about — "the finance is the payload; the method is the point".
+ *
+ * `claimsSurfaced` vs `claimsVerified` is the number that matters most, and the
+ * one a reader cannot infer from anything else on the page: six of twenty-three
+ * claims refuted-tested is a different promise from all forty-five.
+ */
+export interface ResearchMethod {
+  /** An earnings read on one company, or a thesis across the whole cycle. */
+  kind: 'earnings' | 'thesis';
+  perspectives: AgentRole[];
+  turnsEach: number;
+  /** Load-bearing claims the report tracks in its verification ledger. */
+  claimsSurfaced: number;
+  /**
+   * Of those, how many went through the ADVERSARIAL pass — an agent told to
+   * refute the claim rather than check it. Optional because two reports predate
+   * run-record capture and the split is not recoverable; the badge says
+   * "tracked" rather than "refuted-tested" when it is absent, instead of
+   * quietly implying a rigour that was not measured.
+   */
+  claimsVerified?: number;
+  /** Whether every load-bearing claim was refuted-tested, or only the top few. */
+  verificationScope: 'all' | 'top-n' | 'unrecorded';
+  /** Agents that actually ran. 0 when the run record was not retained. */
+  agentCount: number;
+  runDate: string; // ISO 'YYYY-MM-DD'
+  /** Primary filings and offering documents opened during the run, if counted. */
+  primaryDocsOpened?: number;
+  /**
+   * Anything that capped the run, stated plainly. The first pass at the thesis
+   * report had web fetching blocked and opened no primary filing at all — a
+   * limitation that has to travel with the work, not sit in a commit message.
+   */
+  limitations?: string[];
+}
+
 export interface MarketStormReport {
   slug: string;
   ticker: string;
@@ -121,6 +179,18 @@ export interface MarketStormReport {
   // a company, and a logo answers that faster than any amount of type; on the
   // report page there is room for the finding, so the hero earns its place
   // there. Same reason the social card never varies while heroes do.
+  /**
+   * How this one was researched. Optional so a report written before the field
+   * existed still renders; the UI falls back to the section-wide description.
+   */
+  method?: ResearchMethod;
+  /**
+   * The pinned thesis piece at the top of the index. At most one report should
+   * carry this — `featuredReport()` takes the first and the rest fall into the
+   * normal grid, so a stale flag degrades into an ordinary card rather than a
+   * second hero.
+   */
+  featured?: boolean;
   cardImage?: string;
   cardImageLight?: string;
   cardImageAlt?: string;
@@ -421,6 +491,36 @@ On the counterweight side: **the marquee OpenAI $38B AWS deal is Nvidia GPUs —
 That is what "AI is cheap now" actually costs somebody. Every time an API call gets cheaper, it is because a company like this one front-loaded a decade of concrete, power, and silicon and is betting it can bill for it later. Amazon's free cash flow going negative is the first quarter where that bet showed up as an actual hole in the statement rather than a line in a slide deck.
 
 The practical read: if you build on top of this infrastructure, your costs are currently subsidised by a capex race between four companies. Useful to know while it lasts — and worth noticing that **power, not chips, is the binding constraint** Amazon named. That's the ceiling on how cheap inference gets.`,
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 9,
+    verificationScope: 'unrecorded',
+    agentCount: 0,
+    runDate: '2026-07-30',
+    limitations: [
+      'Run record not retained. The roster shown is the section standard — every recovered run used exactly these four — but it is an inference for this report, not a recording, and the split between adversarial and by-hand checking is not recoverable.',
+    ],
+  },
   cardImage: '/images/content/amzn-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/amzn-q2-2026-card-hero-light.webp',
   cardImageAlt: 'Amazon logo',
@@ -909,6 +1009,36 @@ The OpenAI relationship is now two-sided. Microsoft holds ~27% as-converted at *
 Microsoft's capex figure fell from ~$190B to ~$175B and was widely reported as a pullback in AI spending. It wasn't. Leases were reclassified — the same buildings, counted differently. Meanwhile $329.1B of signed-but-uncommenced leases sit outside the capex line entirely, and the useful life of a datacenter was extended from 15 years to 25, which lowers annual depreciation on every asset in the fleet.
 
 None of that is fraud; it is all disclosed, and mostly defensible. But three separate accounting choices in one quarter all moved reported numbers the same direction, and the summary you read probably mentioned none of them. **The filing and the coverage of the filing are two different documents** — and only one of them is signed under penalty of law.`,
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 9,
+    verificationScope: 'unrecorded',
+    agentCount: 0,
+    runDate: '2026-08-03',
+    limitations: [
+      'Run record not retained. The roster shown is the section standard — every recovered run used exactly these four — but it is an inference for this report, not a recording, and the split between adversarial and by-hand checking is not recoverable.',
+    ],
+  },
   cardImage: '/images/content/msft-q4-fy2026-card-hero.webp',
   cardImageLight: '/images/content/msft-q4-fy2026-card-hero-light.webp',
   cardImageAlt: 'Microsoft logo',
@@ -1541,6 +1671,34 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
         slug: 'msft-q4-fy2026',
       },
     ],
+  },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 13,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-04',
   },
   cardImage: '/images/content/pltr-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/pltr-q2-2026-card-hero-light.webp',
@@ -2350,6 +2508,34 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
       { label: 'AMZN — the first negative-cash quarter', slug: 'amzn-q2-2026' },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 13,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-04',
+  },
   cardImage: '/images/content/spcx-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/spcx-q2-2026-card-hero-light.webp',
   cardImageAlt: 'SpaceX logo',
@@ -3090,6 +3276,37 @@ The same pattern keeps recurring across four very different balance sheets: **th
         slug: 'amzn-q2-2026',
       },
       { label: 'PLTR — the one with no capex at all', slug: 'pltr-q2-2026' },
+    ],
+  },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 11,
+    claimsVerified: 5,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-05',
+    limitations: [
+      'One of the six skeptic agents returned nothing; that claim was checked by hand instead.',
     ],
   },
   cardImage: '/images/content/amd-q2-2026-card-hero.webp',
@@ -3871,6 +4088,34 @@ What makes CoreWeave the clarifying case is that it has none of the others\u2019
       },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 12,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-19',
+  },
   cardImage: '/images/content/crwv-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/crwv-q2-2026-card-hero-light.webp',
   cardImageAlt: 'CoreWeave logo',
@@ -4610,6 +4855,37 @@ Ranked by capital spending against revenue, the picture is consistent: Palantir 
       },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 10,
+    claimsVerified: 0,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-20',
+    limitations: [
+      'All six skeptic agents died on a session limit before they could attempt a refutation. Every load-bearing claim was verified by hand against the 6-K exhibits instead — single-pass checking, not adversarial checking, and weaker for it.',
+    ],
+  },
   cardImage: '/images/content/nbis-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/nbis-q2-2026-card-hero-light.webp',
   cardImageAlt: 'Nebius logo',
@@ -5337,6 +5613,34 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
       },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 6,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-20',
+  },
   cardImage: '/images/content/goog-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/goog-q2-2026-card-hero-light.webp',
   cardImageAlt: 'Google logo',
@@ -5685,7 +5989,916 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
   ],
 };
 
+const aiCapexThesis2026: MarketStormReport = {
+  slug: 'ai-capex-abundance-or-bubble',
+  ticker: 'AI CAPEX',
+  company: 'The hyperscaler buildout',
+  title:
+    'IT investment just passed its dot-com peak — and three of the four biggest spenders stopped paying for it out of cash',
+  excerpt:
+    'Private fixed investment in information-processing equipment and software reached 4.97% of GDP in Q2 2026 — the highest reading in the 79 years BEA has published the series, above the 4.46% of the dot-com peak. Over the same year, the share of hyperscaler capital spending funded by long-term debt went from 25% to 65%. This report tested 33 load-bearing claims against 83 primary documents. None was refuted, and the answer to "boom or bubble" is neither: the risk moved from the asset side to the liability side, and the largest single disclosed exposure rests on a consolidation judgment the auditor flagged by name.',
+  catalyst: 'Standing thesis — verified against filings through August 2026',
+  publishDate: '2026-08-22',
+  featured: true,
+  tags: ['AI-infrastructure', 'capex', 'earnings-quality', 'macro', 'thesis'],
+  verdict:
+    'Neither a boom that pays for itself nor a bubble about to pop. Across 33 load-bearing claims checked against 83 primary documents, not one was refuted — and what survived is that the risk moved. It is no longer in the valuations, and it is not in the depreciation schedules: three of the four biggest spenders shortened or held their asset lives. It is in leases that have not commenced, guarantees that are not liabilities yet, and one consolidation judgment the auditor called out by name.',
+  priceStrip: [
+    { k: 'IT investment / GDP', v: '4.97%', tone: 'warn' },
+    { k: 'Dot-com peak, 2000Q4', v: '4.46%' },
+    { k: 'Big-four TTM capex', v: '$510.7B' },
+    { k: 'Debt-funded, H1 2026', v: '65%', tone: 'bear' },
+    { k: 'Debt-funded, H1 2025', v: '25%' },
+    { k: 'Claims refuted', v: '0 of 33', tone: 'bull' },
+  ],
+  summary: `Two things are true at once, and almost every argument about an AI bubble picks one and ignores the other.
+
+The first: **the money is real and it is enormous.** The four biggest spenders put **$510.7 billion** into capital equipment in the twelve months to June 2026 — about **1.57% of the entire US economy**, and roughly **32%** of everything America spent on information-processing equipment and software. That line item is now **4.97% of GDP, the highest since the series began in 1947**, above the dot-com peak.
+
+The second: **it has stopped being paid for out of earnings.** A year ago, Meta, Alphabet and Amazon funded about a quarter of their capital spending with borrowed money. In the first half of 2026 they funded **almost two-thirds** of it that way. Amazon went from 1.3% to 68%. Alphabet stopped buying back its own stock and raised $105.8 billion of outside capital in six months instead.
+
+What this report went looking for was the mechanism that breaks. It did not find the one everybody names. It found a different one, and it is not in the numbers on the income statement — it is in the obligations sitting just off the edge of the balance sheet.`,
+  headlineVsReal: [
+    {
+      headline:
+        'The hyperscalers are **stretching depreciation schedules** to manufacture earnings — the oldest trick in the capital-intensive playbook.',
+      real: 'Not in the current filings. **Amazon shortened.** Microsoft held. Meta lengthened once, eighteen months ago.',
+      gap: 'Effective 1 January 2025 Amazon moved **a subset of servers and networking equipment from six years to five** — costing it **$1.4B of extra depreciation, $1.0B of net income and $0.10 a share**, primarily at AWS, and citing the pace of AI development as the reason. Microsoft still discloses **“two to six years”**, unchanged. Meta is the one lengthener: its FY2025 10-K raised most servers to **5.5 years**, worth **$2.92B less depreciation and $1.00 a share** — real, disclosed, and quantified, but a single change already in the base. This is the most-repeated bear argument in the sector and the filings do not support it today. A short thesis that rests on it is resting on 2023.',
+    },
+    {
+      headline:
+        'A **power and transformer stall** will halt the buildout — the queues are years long and the equipment is sold out.',
+      real: 'Slippage runs in **quarters, not years**, and the binding constraint in 2026 turned out to be **paperwork**.',
+      gap: 'We ran a cohort test on EIA-860M rather than quoting queue statistics: of **590 units and 49,221 MW** promising commercial operation in the first half of 2026, by the June vintage **54.3% were operating**, 44.0% were still planned and only **0.7% had been cancelled**. Median slip: **four months**. Only **1.9% of slipped megawatts** moved out beyond a year. Meanwhile ERCOT’s first large-load batch screened out **~294 GW of a 498 GW universe on eligibility alone** — 274 GW had filed no qualifying study, 20 GW missed a dynamic-model deadline. That is an administrative gate, not a physical one. The equipment story is real but it is **rationing, not a wall**: GE Vernova booked 12.1 GW of gas turbine orders in Q2 and shipped 3.3 GW, roughly 4:1, with shipments actually *down* year over year.',
+    },
+    {
+      headline:
+        '**“The Fed found AI raises productivity by 1.1%”** — the number that ends most arguments about whether any of this works.',
+      real: 'It is a **modelled figure derived from a survey question**, not a measurement, and its own authors say so.',
+      gap: 'Bick, Blandin and Deming asked workers to imagine a counterfactual — *“imagine that LAST WEEK you did not have access to Generative AI. How many additional hours of work would you have needed?”* — then fed the self-reported answer through **“a standard model of aggregate production”**, wage-weighted, from 5.4% of hours saved among users and 1.4% across all workers. The authors head a section **“Potential Gains May Not Yet Be Fully Captured in Measured Productivity”** and flag on-the-job leisure themselves. The November 2025 update revised it to **up to 1.3%** — and, to their credit, added an independent check against BLS and BEA industry data, correlation 0.32, which they explicitly say **“cannot be interpreted as causal.”** Meanwhile the measured series disagrees: **utilization-adjusted total factor productivity fell 0.42%** over the four quarters to Q2 2026 while labour productivity rose 2.2% — which is the signature of capital deepening bought by the capex itself, not of a technology making workers better.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'IT investment, share of GDP',
+      value: '4.97%',
+      delta: 'highest since 1947',
+      note: 'Above the 4.46% dot-com peak. Top four readings in 79 years are the last four quarters.',
+      tone: 'warn',
+    },
+    {
+      label: 'Debt-funded capex share',
+      value: '65%',
+      delta: 'from 25% a year ago',
+      note: 'Meta, Alphabet and Amazon, first half. Amazon went 1.3% → 68%.',
+      tone: 'bear',
+    },
+    {
+      label: 'Big-four capex, TTM',
+      value: '$510.7B',
+      delta: '1.57% of GDP',
+      note: 'About 32% of all US information-processing equipment and software investment.',
+      tone: 'neutral',
+    },
+    {
+      label: 'Leases not yet commenced',
+      value: '$830B',
+      delta: 'four filers',
+      note: 'Microsoft $329.1B · Meta $279.0B · Amazon $137.2B · Alphabet $85.2B. On no balance sheet.',
+      tone: 'bear',
+    },
+    {
+      label: 'Meta’s exposure on one venture',
+      value: '$46.0B',
+      delta: 'vs $2.9B carried',
+      note: 'A 15.8× gap. The auditor made the consolidation judgment a critical audit matter.',
+      tone: 'warn',
+    },
+    {
+      label: 'Utilization-adjusted TFP',
+      value: '−0.42%',
+      delta: 'four quarters to Q2',
+      note: 'Labour productivity rose 2.2% — the gain is capital deepening, not efficiency.',
+      tone: 'bear',
+    },
+    {
+      label: 'Microsoft debt raised for capex',
+      value: '$0',
+      delta: '2nd straight year',
+      note: '$115.9B of capex, funded from $182.9B of operating cash — and still bought back stock.',
+      tone: 'bull',
+    },
+    {
+      label: 'Claims refuted by verification',
+      value: '0 of 33',
+      delta: '100% primary-sourced',
+      note: '30 needed a correction. None collapsed.',
+      tone: 'bull',
+    },
+  ],
+  printTableTitle: 'The figures this thesis rests on',
+  printTable: {
+    columns: [
+      { label: 'Figure' },
+      { label: 'Value', align: 'right' },
+      { label: 'Comparison', align: 'right' },
+      { label: 'Source' },
+    ],
+    rows: [
+      {
+        cells: [
+          'IT equipment + software investment, share of GDP',
+          '4.97%',
+          'vs 4.46% in 2000Q4',
+          'BEA — highest of 318 quarters since 1947',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Big-four capex, twelve months to 2026-06-30',
+          '$510.70B',
+          '1.57% of GDP',
+          'XBRL: MSFT $115.95B · AMZN $173.03B · GOOGL $132.40B · META $89.33B',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Capex funded by long-term debt, H1 2026',
+          '64.9%',
+          'from 25.4%',
+          '$148.1B of $228.1B — Meta, Alphabet, Amazon cash flow statements',
+        ],
+        star: true,
+      },
+      {
+        cells: ['— Meta', '51%', 'from 0%', '$24.91B of $49.11B'],
+      },
+      {
+        cells: ['— Amazon', '68%', 'from 1.3%', '$67.00B of $98.41B'],
+      },
+      {
+        cells: [
+          '— Alphabet',
+          '70%',
+          'from 79%',
+          '$56.23B of $80.60B — the one that fell',
+        ],
+      },
+      {
+        cells: [
+          '— Oracle, FY2026',
+          '~98%',
+          'from 0% in FY2024',
+          'Capex $55.66B (+162%), 83% of revenue; free cash flow −$23.69B',
+        ],
+      },
+      {
+        cells: [
+          '— Microsoft, FY2026',
+          '0%',
+          '2nd straight year',
+          '$115.95B capex, $0 debt issued, $22.3B repurchased',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Leases not yet commenced',
+          '~$830B',
+          'four filers',
+          'MSFT $329.1B · META $279.0B · AMZN $137.2B · GOOGL $85.2B',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Meta “Venture” maximum exposure to loss',
+          '$46.03B',
+          'vs $2.92B carrying value',
+          '20% interest; ~$28B residual value guarantee; EY critical audit matter',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Alphabet credit-derivative backstops to data-centre entities',
+          '$43.79B',
+          'from $16.94B in 6 months',
+          'Recognised fair-value liability just $815M',
+        ],
+      },
+      {
+        cells: [
+          'Oracle remaining performance obligations',
+          '$638B',
+          'from $138B (+362%)',
+          'Revenue +17%. Only ~12% converts within 12 months',
+        ],
+      },
+      {
+        cells: [
+          'Microsoft commercial RPO',
+          '$678B',
+          '+84%',
+          'Weighted-average duration ~2.3 years; ~30% inside 12 months',
+        ],
+      },
+      {
+        cells: [
+          'Amazon customer commitments not yet recognised',
+          '~$496B',
+          'from $244B in six months',
+          'Weighted-average remaining life 6.4 years',
+        ],
+      },
+      {
+        cells: [
+          'CoreWeave total liabilities / equity',
+          '$72.0B / $5.0B',
+          '90% of debt recourse',
+          'Net interest expense $640M = 24.9% of revenue',
+        ],
+      },
+      {
+        cells: [
+          'CCC & lower high-yield spread',
+          '10.35%',
+          'broad HY 2.75%, IG 0.82%',
+          'Widest CCC print of 2026 — but stress is confined to that tier',
+        ],
+      },
+      {
+        cells: [
+          'Utilization-adjusted total factor productivity',
+          '−0.42%',
+          'four quarters to 2026Q2',
+          'SF Fed. Labour productivity +2.2% over the same window',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Gas capacity entering service, H1 2026',
+          '2.89 GW',
+          'pipeline claims 11.3 GW in 2027',
+          'EIA-860M. A ~3.2× step-up demanded of the supply chain',
+        ],
+      },
+      {
+        cells: [
+          'Median slip, units promising H1 2026 operation',
+          '4 months',
+          '0.7% cancelled',
+          'EIA-860M cohort test, 590 units / 49,221 MW',
+        ],
+        star: true,
+      },
+    ],
+  },
+  bull: [
+    'The demand is contracted, not hoped for. Microsoft carries $678B of commercial remaining performance obligations at a ~2.3-year weighted duration with ~30% landing inside twelve months; Amazon discloses ~$496B of customer commitments not yet recognised; CoreWeave reports 98% of revenue under committed take-or-pay contracts.',
+    'The platform layer is profitable and getting more so. Google Cloud went from a 20.7% operating margin to 35.6% in a year — and Q1 was 32.9%, so it is a trend rather than a one-quarter artifact.',
+    'Nobody is hiding the ball on depreciation. Amazon shortened server lives and took a $1.0B net income hit to do it. Microsoft has not moved. The single most-cited earnings-quality bear argument is simply not present in the current filings.',
+    'The physical constraint is rationing, not a wall. Half of the capacity promising to arrive in H1 2026 arrived; the median slip was four months; 0.7% was cancelled.',
+    'Microsoft proves the buildout can be funded from operations at full scale: $115.9B of capex, zero debt issued for a second consecutive year, and $22.3B of stock still repurchased.',
+  ],
+  bear: [
+    'The obligation has moved somewhere the balance sheet does not show it. Roughly $830B of leases have been signed and not yet commenced across four filers, against a data-centre securitization market a fraction of that size.',
+    'Meta discloses a maximum exposure to loss of $46.03B on a venture it carries at $2.92B, and stays unconsolidated by conceding it does not control the campus remarketing. Ernst & Young made that judgment a critical audit matter — an auditor publicly signalling the answer is contestable.',
+    'Alphabet’s credit-derivative backstops to data-centre entities went from $16.94B to $43.79B in six months, with only $815M recognised as a liability.',
+    'The funding mix inverted in a single year: 25% to 65% debt-funded. Amazon’s trailing free cash flow is now negative $7.6B against +$18.2B a year earlier, and Oracle funded ~98% of a 162% capex increase with borrowed money.',
+    'The productivity is not in the aggregate data. Utilization-adjusted TFP fell 0.42% over the year to Q2 2026 while the investment share of GDP hit a 79-year high — the measured gain is capital deepening bought by the spending itself.',
+    'Backlog quality varies enormously and the weakest is the largest: only ~12% of Oracle’s $638B RPO converts within twelve months.',
+  ],
+  theQuestion: `Every argument about an AI bubble is really an argument about where the risk sits.
+
+The bears point at valuations and depreciation schedules. This report checked both against the filings and neither is where the fragility is: three of the four biggest spenders shortened or held their asset lives, and the platform margins are expanding.
+
+But in the same twelve months, the share of the buildout funded by borrowed money went from a quarter to two-thirds, roughly $830 billion of leases were signed that have not commenced, and the single largest disclosed exposure is a $46 billion number sitting against a $2.9 billion carrying value on a judgment the auditor flagged.
+
+So: is this a boom being financed prudently against contracted demand — or has the industry moved its risk to the one place quarterly earnings do not report it?`,
+  analysis: `## What this run did differently, and why it matters
+
+This question was researched once before, on 2026-08-21, and that pass is the reason this one exists. Web fetching was blocked in that environment, so **no agent opened a single primary filing** — every figure was search-surfaced text *about* a document. Of 45 load-bearing claims, only 3 survived unchanged: 21 needed correcting, 12 could not be verified at all, and **9 were refuted outright**. The failure modes were consistent: stale figures quoted in the present tense, numbers misattributed between banks, and a dozen outlets restating one analyst note being mistaken for a dozen sources.
+
+This run opened **83 primary documents**. Of 33 load-bearing claims, **every one was checked against a primary source**, and the tally is: **3 confirmed clean, 30 confirmed with a correction, 0 refuted, 0 unverifiable.**
+
+That difference — 9 refuted and 12 unverifiable, versus none of either — is the single best argument for the method this section is built on. The corrections that remain are refinements of magnitude and basis, not demolitions. Where the earlier pass concluded that a power-and-transformer *stall* was the likeliest outcome, the physical data does not support it, and that conclusion has been dropped.
+
+## The finding: the risk moved, it did not disappear
+
+Start with the thing that is genuinely unprecedented. Private fixed investment in information-processing equipment and software reached **4.97% of GDP in 2026Q2** — the highest of the **318 quarters** BEA has published since 1947, above the **4.46%** of the dot-com peak in 2000Q4 and far above 1995Q1's 3.24%. The **top four readings in seventy-nine years are the last four quarters.**
+
+Worth being precise about the deflator, because it cuts the opposite way from the usual objection: IT prices fall while the GDP deflator rises, so a real-terms comparison *flatters today* rather than 2000. In real terms the gap is roughly **3.6×**, against 1.11× in nominal terms. Recomputing in real terms reinforces the headline rather than reversing it.
+
+Against that, the four biggest spenders put **$510.70 billion** into capital equipment in the twelve months to June 2026 — **1.57% of GDP at an annual rate**, and **31.7%** of the entire national information-processing equipment-and-software line. Two caveats travel with that 31.7%, one of which the original claim had backwards: data-centre shells and land are counted as *structures*, not IT equipment, so they cannot appear in the denominator at all — and excluding finance leases makes the capex figure **too small**, not too large. Microsoft alone added **$24.6B of finance-lease right-of-use assets** in FY2026 on top of the $115.9B, with a further **$329.1B of datacenter leases not yet commenced**.
+
+## Where the money now comes from
+
+This is the change that happened inside twelve months, and it is the spine of the thesis.
+
+| | H1 2025 | H1 2026 |
+| --- | --- | --- |
+| Meta | 0% | **51%** |
+| Amazon | 1.3% | **68%** |
+| Alphabet | 79% | **70%** |
+| **Combined** | **25.4%** | **64.9%** |
+
+That is the share of cash capital spending covered by long-term debt proceeds — **$148.1B against $228.1B** in the first half of 2026. Alphabet is the one that fell, which matters: the shift is not uniform, and stating it as a clean industry-wide inversion overstates it.
+
+Two other filings sharpen the picture from opposite ends. **Oracle** funded roughly **98%** of a **162% increase** in capex with borrowed money — $46.09B of notes and term loans plus $3.35B of short-term capex financing plus $4.95B of mandatory convertible preferred, against **zero debt issuance in FY2024**. Its borrowings went **$92.6B to $129.5B in one year** and free cash flow was **−$23.69B**.
+
+And **Microsoft is the counterexample, at the largest scale of all**: FY2026 capex of **$115,948M** with **"Proceeds from issuance of debt: 0"** — its *second consecutive* year at zero — while still repurchasing $22.3B of stock and paying $26.4B of dividends out of $182.9B of operating cash flow. Any thesis that says "the industry can no longer fund this from earnings" has to explain the biggest spender doing exactly that.
+
+Alphabet sits in between, and its behaviour is the most interesting: it took repurchases to **zero** in H1 2026 (from $28.31B) while leaving its $70.0B authorisation untouched, and raised **$30.50B of common stock** — including a $10.0B private placement to Berkshire Hathaway — plus **$19.06B of 6.25% mandatory convertible preferred**, on top of $56.23B of debt. **$105.8B of external capital in six months against $80.6B of capex.**
+
+## The part that is not on the balance sheet
+
+Here is the actual fragility, and it is not a valuation.
+
+**Leases signed and not yet commenced**, at 30 June 2026: Microsoft **$329.1B**, Meta **$279.0B**, Amazon **$137.2B**, Alphabet **$85.2B**. Roughly **$830 billion** of contracted obligation that appears on no balance sheet because the leases have not started. For scale, that is many multiples of every data-centre securitization outstanding combined — the structure everyone watches is not where the exposure is.
+
+Then the structures themselves. Meta's Louisiana venture — never named in the filing, just **"the Venture"** — is a 20% membership interest in roughly **$27B of estimated development cost**, with an aggregate initial lease commitment of **~$12.31B** commencing **2029**, and **residual value guarantees with an aggregate threshold of ~$28 billion**. Meta carries it at **$2.92B** and discloses a **maximum exposure to loss of $46.03B**. A **15.8× gap** between the carrying value and the company's own statement of what it could lose.
+
+The reason it stays off the balance sheet is a single narrow judgment, quoted from the filing: decisions about **"remarketing the data center campus"** were determined to have the most significant impact on the Venture's economic performance, and *"we do not have the power to direct"* them. Meta simultaneously provides the venture's construction management and property management services.
+
+**Ernst & Young made that a critical audit matter** — the third of three in the FY2025 audit — citing the *"significant judgment required in determining the activities that most significantly affect the VIE's economic performance."* That is an auditor stating publicly that the answer is contestable. A second structure on the same template, in El Paso, was disclosed as a subsequent event with a further **~$13B** of residual value guarantees.
+
+Alphabet's version is different in form and the same in kind: **credit-derivative backstops to data-centre entities went from $16.94B to $43.79B in six months** — 2.6× — with a recognised fair-value liability of just **$815M**. On default, Alphabet *"retain[s] the right to assume the underlying leases for internal use or to sublease to third parties."*
+
+## What is *not* wrong, and this is most of the bear case
+
+Three widely-repeated arguments did not survive contact with the filings.
+
+**Depreciation games are not live.** Amazon **shortened** a subset of servers from six years to five effective 1 January 2025, taking $1.4B of extra depreciation and $1.0B of net income to do it, citing AI-driven technology pace. Microsoft is unchanged at "two to six years." Meta is the only lengthener — most servers to 5.5 years, worth $2.92B and $1.00 a share — and that was eighteen months ago and is already in the base.
+
+**The power wall is a rationing system, not a wall.** The cohort test is in the "headline vs the filing" section above; the summary is that half the promised capacity arrived, the median slip was four months, and 0.7% was cancelled. The equipment market is genuinely tight — GE Vernova is booking gas turbine orders roughly **4:1 against shipments**, and shipments actually **fell** year over year — and Siemens Energy's Grid Technologies book-to-bill of 1.48 on a €51bn backlog says transformers are queued and priced years out. But queued is not cancelled.
+
+**Credit stress is real and confined.** The CCC & lower high-yield spread was **10.35%** on 20 August 2026, the widest print of 2026 — but broad high yield was **2.75%**, near its 2026 tight, and investment grade was **0.82%**. And the CCC level is still below the **11.37%** reached in April 2025, so this is a 2026 high rather than a multi-year extreme. The dispersion is the signal: the marginal borrower is being repriced while the index is not.
+
+**CoreWeave is the marginal borrower made concrete**: **$72.0B of total liabilities on $5.0B of equity**, debt **90% recourse**, and net interest expense of **$640M — 24.9% of revenue** — against an operating loss of just $(49)M. Revenue grew 112%; the net loss more than doubled to $(626)M, and interest is the largest single contributor. The neocloud problem is the balance sheet, not the gross margin. Its disclosed **$5.1B of OEM and software license financing at 9–11%** is vendor financing named as such.
+
+## Risk — each isolated, do not blur
+
+1. **Off-balance-sheet obligation (dominant).** ~$830B of uncommenced leases, ~$41B of announced residual value guarantees at Meta alone, $43.8B of Alphabet backstops carried at $815M.
+2. **The consolidation judgment.** One auditor has already flagged it. If a structure of this type consolidates, the change lands on the balance sheet of the largest companies in the index at once.
+3. **Funding-mix reversal.** 25% to 65% in a year, with Amazon's trailing free cash flow now negative.
+4. **Backlog conversion.** Oracle's $638B at ~12% inside twelve months is the weakest near-term conversion of any filer opened.
+5. **Marginal-borrower credit.** Confined to CCC today; the transmission risk is that it stops being confined.
+6. **The productivity gap.** Utilization-adjusted TFP negative while investment hits a 79-year high. If the efficiency never shows up, the depreciation does anyway.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** The near term is mechanical: whether the uncommenced-lease balances keep compounding, and whether any filer consolidates a venture of this type. The thesis resolves over **two to three years** on one question — do the contracted backlogs convert into cash at a margin that services the debt raised to build them?
+
+**Sizing considerations (not a recommendation).** The single most useful discriminator in this report is not a growth rate; it is **who is funding the build from operations and who is funding it from capital markets.** Microsoft at zero debt and Oracle at 98% are running the same strategy with opposite balance sheets, and only one of them needs the credit window to stay open.`,
+  invalidation: {
+    bull: [
+      'Any filer consolidates a data-centre venture of the Meta type, or an auditor escalates the critical audit matter — the off-balance-sheet obligation becomes an on-balance-sheet one across several megacaps at once.',
+      'Uncommenced lease balances keep compounding at the H1 2026 rate while backlog conversion does not, widening the gap between contracted cost and contracted revenue.',
+      'CCC spreads stop being confined — broad high yield follows the lowest tier wider, which is the transmission mechanism from marginal borrower to buildout.',
+      'Amazon or Alphabet posts a second consecutive negative free-cash-flow year while capex guidance rises again.',
+    ],
+    bear: [
+      'Utilization-adjusted TFP turns positive and stays there for consecutive quarters — the efficiency gain shows up in the aggregate data rather than only in task-level studies.',
+      'The debt-funded share falls back toward the 2025 level as operating cash flow catches up with capex, with Microsoft the template rather than the exception.',
+      'Oracle-style backlogs start converting at the rate the filings imply, particularly the ~12%-inside-12-months tranche.',
+      'Uncommenced leases begin commencing on schedule and appear as ordinary lease liabilities without incident — the obligation was always real and always disclosed.',
+    ],
+  },
+  verification: {
+    confirmed: 3,
+    partlyTrue: 30,
+    corrected: 0,
+    confirmedNote:
+      'Confirmed against primary documents: 33 load-bearing claims were surfaced and all 33 went to an adversarial pass instructed to refute rather than check, opening 83 primary documents between them — SEC filings and XBRL facts, BEA and BLS series, San Francisco and St. Louis Fed research, EIA-860M workbooks, ERCOT and PJM auction filings. Not one claim was refuted and not one was unverifiable. Thirty needed a correction to a magnitude, a basis or a caveat, and the substantive ones are below.',
+    items: [
+      {
+        kind: 'partly',
+        title:
+          'The uncommenced-lease total was understated by a third — it omitted Meta',
+        text: 'The claim put leases not yet commenced at ~$551B across three filers. Verification found **Meta discloses a further $278.99B** through 2036, on terms up to 30 years, taking the real figure to roughly **$830B**. An error in the conservative direction, but the largest single component was missing.',
+      },
+      {
+        kind: 'partly',
+        title:
+          'The funding shift is not uniform, and Alphabet moved the other way',
+        text: 'The 25% → 65% inversion holds in aggregate ($148.1B of $228.1B, versus $32.1B of $126.3B). But **Alphabet’s gross debt-funded ratio FELL, from 79.2% to 69.8%** — the headline reads as an industry-wide inversion and two of the three companies drove it. Microsoft is a full counterexample, and it was at zero for a *second* consecutive year, not newly so.',
+      },
+      {
+        kind: 'partly',
+        title: 'The GDP-share caveat was backwards',
+        text: 'The claim cautioned that a real-terms comparison would flatter 2000 over today. It is the reverse: because IT deflators fall while the GDP deflator rises, **a chained-real comparison flatters today** — roughly a 3.6× gap in real terms against 1.11× nominal. Recomputing in real terms reinforces the finding rather than reversing it. Separately, the 31.7% overlap figure is an upper bound because data-centre structures and land are not in the denominator at all, and excluding finance leases makes the numerator too small.',
+      },
+      {
+        kind: 'partly',
+        title: 'CoreWeave’s customer concentration did not actually improve',
+        text: 'The largest single customer fell from 71% to 36% of revenue, which reads as diversification. It is not: **Customer B rose from under 10% to 26%** over the same period. Aggregate concentration is roughly unchanged; the composition rotated. Reading the top-customer line alone gives the opposite conclusion to the table it sits in.',
+      },
+      {
+        kind: 'partly',
+        title:
+          'The "Fed productivity" study now has an external check its critics do not mention',
+        text: 'The claim that the 1.1% figure is modelled from a self-reported counterfactual rather than measured is exactly right, and the authors say so themselves. But the **November 2025 update added a triangulation against BLS and BEA industry data** — detrended industry productivity growth correlated 0.32 with survey-measured time savings — while stating it *"cannot be interpreted as causal."* Anyone using this study to argue the gains are absent from the data should know the same authors now offer corroborating external evidence. Also: the 1.3% is a **cumulative level effect** since ChatGPT’s release, not an annual rate.',
+      },
+      {
+        kind: 'partly',
+        title: 'Fermi’s tenant lease did not exist at the balance-sheet date',
+        text: 'The claim described an 11 GW project against one executed lease for 222 MW — roughly 50:1. Verification found it worse: **at 2026-06-30 there was no tenant lease at all.** The TensorWave lease came after. The ratio the claim used to illustrate the announced-versus-contracted gap was, at the reporting date, undefined.',
+      },
+    ],
+  },
+  openQuestions: [
+    'What happens to reported leverage across the megacaps if one data-centre venture of the Meta type consolidates? Ernst & Young has already called the judgment a critical audit matter, and no filer discloses what consolidation would do to its balance sheet.',
+    'What are Anthropic’s and OpenAI’s actual economics? Neither has a public registration statement — EDGAR returns only SPVs and feeder funds — so every circulating revenue and profitability figure for the two largest model labs is unaudited and unfilable, including the ones this report’s bull case would otherwise lean on.',
+    'How much of the ~$830B of uncommenced leases is cancellable, and on what terms? Microsoft notes some are "subject to contractual conditions"; none of the four filers quantifies the break cost.',
+    'Does the ERCOT eligibility screen represent demand that evaporates or demand that refiles? ~294 GW of a 498 GW universe failed on paperwork, and whether that is speculative interconnection spam or real projects missing a deadline changes the load forecast by hundreds of gigawatts.',
+  ],
+  soWhat: `If you take one habit from this, take this one: **when someone tells you a company is spending beyond its means, ask where the money came from — and then ask what it promised that has not started yet.**
+
+The headline argument about AI is about valuations. That turns out to be the least interesting part. What actually changed in the last twelve months is duller and more consequential: the biggest companies in the world went from paying for their buildout out of profits to borrowing about two-thirds of it, and they signed roughly **$830 billion** of leases that have not started, which appear on no balance sheet because a lease you have signed but not begun is not yet a liability.
+
+None of that is hidden. It is all in the filings, in plain language, with the numbers attached. Meta says outright that it could lose **$46 billion** on something it carries at **$2.9 billion**. Its auditor added a note saying that judgment was hard.
+
+The transferable version, for anything — not just AI: **an obligation you have committed to but not yet started is invisible in this quarter's numbers and completely real.** It applies to a company signing data-centre leases and it applies to a household signing a mortgage that begins next year. The place to look is never the headline; it is the section of the filing labelled "commitments" — the part that describes the future the company has already agreed to.
+
+And one about research itself. This exact question was researched a day earlier without access to primary documents, and **9 of its 45 claims turned out to be wrong** with another 12 unverifiable. Same question, same method, same effort — the only variable was whether the agents could open the actual filing. That gap is the whole argument for reading the source.`,
+  throughLine: {
+    text: `This is the report the other eight are evidence for.
+
+Every company report in this section found a version of the same thing: **the number in the headline is not the number the filing supports.** Microsoft's EPS growth was powered by a mark on a private stake. Nebius has never earned an operating profit and every dollar of bottom-line profit it has shown is a revaluation of a stake in another company. Alphabet's record quarter was 69% a non-cash mark on shares it had agreed not to sell. Those are three instances of one pattern, and this report is the pattern stated directly.
+
+Ranked by capital spending against revenue, the ladder still holds: Palantir at 0.75%, Microsoft around 32%, Alphabet at 37.5%, Amazon at roughly 105% of operating cash flow, SpaceX at 235%, CoreWeave at about 290%, and Nebius's first half at 828%. AMD sits outside it — it sells the chips the rest are buying.
+
+What this report adds is the funding side of that ladder. **Microsoft is at the low end and pays cash; Oracle is at the high end and borrows 98%.** Same buildout, opposite balance sheets — and only one of them needs the credit window to stay open.`,
+    links: [
+      {
+        label: 'GOOGL — the mark, and the negative cash quarter',
+        slug: 'goog-q2-2026',
+      },
+      {
+        label: 'CRWV — the marginal borrower, in detail',
+        slug: 'crwv-q2-2026',
+      },
+      {
+        label: 'NBIS — profit that is entirely a revaluation',
+        slug: 'nbis-q2-2026',
+      },
+    ],
+  },
+  method: {
+    kind: 'thesis',
+    perspectives: [
+      {
+        role: 'Capital-markets analyst',
+        probe:
+          'How the build is financed, and where the obligation actually sits.',
+      },
+      {
+        role: 'Macro economist',
+        probe:
+          'Whether the productivity actually shows up in aggregate data, or only in task-level studies.',
+      },
+      {
+        role: 'Grid and infrastructure engineer',
+        probe:
+          'The physical ceiling — power, transformers, interconnect queues, and build time.',
+      },
+      {
+        role: 'Short seller',
+        probe:
+          'The specific mechanism by which this breaks, and what breaks first.',
+      },
+      {
+        role: 'Demand-side analyst',
+        probe:
+          'Whether the revenue on the other side of the capex is real and durable.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 33,
+    claimsVerified: 33,
+    verificationScope: 'all',
+    agentCount: 15,
+    runDate: '2026-08-22',
+    primaryDocsOpened: 83,
+  },
+  cardImage: '/images/content/ai-capex-thesis-card-hero.webp',
+  cardImageLight: '/images/content/ai-capex-thesis-card-hero-light.webp',
+  cardImageAlt: 'Market Storm — the standing thesis on AI capital spending',
+  sources: [
+    {
+      n: 1,
+      label: 'SEC EDGAR — Amazon filing index and XBRL facts',
+      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001018724/us-gaap/PaymentsToAcquireProductiveAssets.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 2,
+      label: 'SEC EDGAR — Microsoft filing index and XBRL facts',
+      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0000789019/us-gaap/PaymentsToAcquirePropertyPlantAndEquipment.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 3,
+      label: 'SEC EDGAR — Alphabet filing index and XBRL facts',
+      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001652044/us-gaap/PaymentsToAcquirePropertyPlantAndEquipment.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 4,
+      label: 'SEC EDGAR — Meta filing index and XBRL facts',
+      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001326801/us-gaap/PaymentsToAcquirePropertyPlantAndEquipment.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 5,
+      label: 'Amazon Form 10-K, period ended 2025-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 6,
+      label: 'Microsoft Form 10-K, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 7,
+      label: 'Alphabet Form 10-K, period ended 2025-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 8,
+      label: 'Meta — SEC filing, accession 0001628280-26-003942',
+      url: 'https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 9,
+      label: 'Meta — SEC filing, accession 0001628280-26-050705',
+      url: 'https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 10,
+      label: 'Oracle — SEC filing, accession 0001193125-26-277521',
+      url: 'https://www.sec.gov/Archives/edgar/data/1341439/000119312526277521/orcl-20260531.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 11,
+      label: 'CoreWeave Form 10-Q, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 12,
+      label: 'NVIDIA — SEC filing, accession 0001045810-26-000052',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000052/nvda-20260426.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 13,
+      label: 'Alphabet Form 10-Q, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 14,
+      label: 'Amazon Form 10-Q, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/amzn-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 15,
+      label: 'SEC EDGAR — full-text search',
+      url: 'https://efts.sec.gov/LATEST/search-index?q=%22data+center%22&forms=ABS-15G',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 16,
+      label: 'SEC EDGAR — Meta filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0001326801.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 17,
+      label:
+        'SEC EDGAR — registrant search for "Anthropic": returns only SPVs and feeder funds, no registration statement',
+      url: 'https://www.sec.gov/cgi-bin/browse-edgar?company=Anthropic&action=getcompany',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 18,
+      label: 'SpaceX Form S-1/A filed 2026-06-03',
+      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026040364/spaceexplorationtechnologib.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 19,
+      label: 'SEC EDGAR — Microsoft filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0000789019.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 20,
+      label: 'Company — SEC filing, accession 0001996810-26-000148',
+      url: 'https://www.sec.gov/Archives/edgar/data/1996810/000199681026000148/gev-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 21,
+      label: 'Company — SEC filing, accession 0001050915-26-000025',
+      url: 'https://www.sec.gov/Archives/edgar/data/1050915/000105091526000025/pwr-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 22,
+      label: 'Company — SEC filing, accession 0002071778-26-000051',
+      url: 'https://www.sec.gov/Archives/edgar/data/2071778/000207177826000051/frmi-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 23,
+      label: 'SEC EDGAR — company filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0001996810.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 24,
+      label: 'SEC EDGAR — company filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0001050915.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 25,
+      label: 'SEC EDGAR — company filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0002071778.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 26,
+      label: 'SEC EDGAR — CoreWeave filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0001769628.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 27,
+      label: 'St. Louis Fed — Impact generative ai work productivity',
+      url: 'https://www.stlouisfed.org/on-the-economy/2025/feb/impact-generative-ai-work-productivity',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 28,
+      label: 'St. Louis Fed — State generative ai adoption 2025',
+      url: 'https://www.stlouisfed.org/on-the-economy/2025/nov/state-generative-ai-adoption-2025',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label: 'St. Louis Fed — Ai productivity what firms say earnings calls',
+      url: 'https://www.stlouisfed.org/on-the-economy/2026/jul/ai-productivity-what-firms-say-earnings-calls',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 30,
+      label:
+        'Federal Reserve — The Fed - Monitoring AI Adoption in the US Economy',
+      url: 'https://www.federalreserve.gov/econres/notes/feds-notes/monitoring-ai-adoption-in-the-u-s-economy-20260403.html',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 31,
+      label: 'Bureau of Labor Statistics — Prod2.nr0',
+      url: 'https://www.bls.gov/news.release/prod2.nr0.htm',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 32,
+      label: 'San Francisco Fed — Total Factor Productivity',
+      url: 'https://www.frbsf.org/research-and-insights/data-and-indicators/total-factor-productivity-tfp/',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 33,
+      label: 'San Francisco Fed — El2026 14.pdf',
+      url: 'https://www.frbsf.org/wp-content/uploads/el2026-14.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 34,
+      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=a679rc1q027sbea',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=A679RC1Q027SBEA',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 35,
+      label: 'US Census Bureau — Release.pdf',
+      url: 'https://www.census.gov/construction/c30/pdf/release.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 36,
+      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=gdp',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=GDP',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 37,
+      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=bamlh0a3hyc',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A3HYC',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 38,
+      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=bamlh0a0hym2',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 39,
+      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=bamlc0a0cm',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLC0A0CM',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 40,
+      label: 'emp.lbl.gov — Queued%20up%202026%20edition.pdf',
+      url: 'https://emp.lbl.gov/sites/default/files/2026-06/Queued%20Up%202026%20Edition.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 41,
+      label: 'ERCOT — Ercot senate july 29 panel 1 assessing the grid.pdf',
+      url: 'https://www.ercot.com/files/docs/2026/07/29/ERCOT-Senate-July-29-Panel-1-Assessing-The-Grid.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 42,
+      label: 'ERCOT — Ercot largeload update april2026 b c  hearing.pdf',
+      url: 'https://www.ercot.com/files/docs/2026/04/01/ERCOT_LargeLoad_Update_April2026_B-C_-Hearing.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 43,
+      label: 'ERCOT — 8 interconnection and grid analysis update.pdf',
+      url: 'https://www.ercot.com/files/docs/2026/05/24/8-Interconnection-and-Grid-Analysis-Update.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 44,
+      label: 'ERCOT — March tac report.pdf',
+      url: 'https://www.ercot.com/files/docs/2026/03/12/March-TAC-Report.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 45,
+      label: 'EIA — December generator2025',
+      url: 'https://www.eia.gov/electricity/data/eia860m/archive/xls/december_generator2025.xlsx',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 46,
+      label: 'EIA — June generator2026',
+      url: 'https://www.eia.gov/electricity/data/eia860m/xls/june_generator2026.xlsx',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 47,
+      label: 'PJM — 2028 2029 bra results report.pdf',
+      url: 'https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2028-2029/2028-2029-bra-results-report.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 48,
+      label:
+        'gov.texas.gov — Thomas gleeson pablo vegas data centers directive letter to puct ercot august 2026 .pdf',
+      url: 'https://gov.texas.gov/uploads/files/press/Thomas_Gleeson_Pablo_Vegas_Data_Centers_Directive_Letter_to_PUCT_ERCOT_August_2026_.pdf',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 49,
+      label: 'ERCOT — Market Notice Details',
+      url: 'https://www.ercot.com/services/comm/mkt_notices/M-A080326-01',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 50,
+      label:
+        'Structured Finance Association — Sfa research corner how data center abs and cmbs fit in a broader financing ecosystem.pdf',
+      url: 'https://structuredfinance.org/wp-content/uploads/2026/07/SFA-Research-Corner_How-Data-Center-ABS-and-CMBS-Fit-in-a-Broader-Financing-Ecosystem.pdf',
+      kind: 'analysis',
+    },
+    {
+      n: 51,
+      label: "TechCrunch — Anthropic's annualized revenue surges to $65B",
+      url: 'https://techcrunch.com/2026/08/17/anthropics-annualized-revenue-surges-to-65b/',
+      kind: 'analysis',
+    },
+    {
+      n: 52,
+      label: 'Where’s Your Ed At — Anthropic\'s "Profitability" Swindle',
+      url: 'https://www.wheresyoured.at/anthropics-profitability-swindle/',
+      kind: 'analysis',
+    },
+    {
+      n: 53,
+      label: 'platform.claude.com — Pricing - Claude Platform Docs',
+      url: 'https://platform.claude.com/docs/en/about-claude/pricing',
+      kind: 'analysis',
+    },
+    {
+      n: 54,
+      label:
+        'assets.siemens-energy.com — Earnings release q3 fy2026 en pdf original%20file.pdf',
+      url: 'https://assets.siemens-energy.com/dam/d0147174-31a9-4a78-b062-b49d00428fc4/earnings-release-q3-fy2026-en-pdf_Original%20file.pdf',
+      kind: 'analysis',
+    },
+    {
+      n: 55,
+      label:
+        'Mitsubishi Heavy Industries — investor presentation — gas turbine order book (PDF)',
+      url: 'https://www.mhi.com/finance/library/result/pdf/fy20261q/presentation.pdf',
+      kind: 'analysis',
+    },
+    {
+      n: 56,
+      label:
+        'Utility Dive — Facing an estimated 474 GW of interconnection requests, Texas hits pause on data centers',
+      url: 'https://www.utilitydive.com/news/texas-hits-pause-data-center-interconnections/827046/',
+      kind: 'analysis',
+    },
+    {
+      n: 57,
+      label:
+        'Gibson Dunn — What Governor Abbott’s Data Center Audit Directive Means for ERCOT and the Batch Zero Study Process - Gibson Dunn',
+      url: 'https://www.gibsondunn.com/what-governor-abbotts-data-center-audit-directive-means-for-ercot-and-the-batch-zero-study-process/',
+      kind: 'analysis',
+    },
+    {
+      n: 58,
+      label: 'NERC — 2025 Long-Term Reliability Assessment (PDF)',
+      url: 'https://www.nerc.com/globalassets/our-work/assessments/nerc_ltra_2025.pdf',
+      kind: 'analysis',
+    },
+  ],
+};
+
 export const marketStormReports: MarketStormReport[] = [
+  aiCapexThesis2026,
   googQ2_2026,
   nbisQ2_2026,
   crwvQ2_2026,
@@ -5695,6 +6908,23 @@ export const marketStormReports: MarketStormReport[] = [
   msftQ4_FY2026,
   amznQ2_2026,
 ];
+
+/**
+ * The pinned thesis piece, if there is one.
+ *
+ * Takes the FIRST report flagged `featured` rather than asserting there is only
+ * one, so a second flag left on an older report degrades into an ordinary card
+ * instead of rendering two heroes.
+ */
+export function featuredReport(): MarketStormReport | undefined {
+  return marketStormReports.find((r) => r.featured);
+}
+
+/** Everything that is not the pinned piece, newest first — the normal grid. */
+export function unfeaturedReports(): MarketStormReport[] {
+  const f = featuredReport();
+  return marketStormReports.filter((r) => r !== f);
+}
 
 export function getReportBySlug(slug: string): MarketStormReport | undefined {
   return marketStormReports.find((r) => r.slug === slug);

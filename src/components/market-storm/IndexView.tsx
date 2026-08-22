@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {
-  marketStormReports,
+  featuredReport,
+  unfeaturedReports,
   type MarketStormReport,
   type Kpi,
 } from '@/data/marketStorm';
@@ -9,6 +10,10 @@ import { Disclaimer } from '@/components/market-storm/ReportView';
 import { toneText } from '@/components/market-storm/tone';
 import HeroImage from '@/components/HeroImage';
 import { formatDate } from '@/lib/format';
+import {
+  MethodBadge,
+  verificationLine,
+} from '@/components/market-storm/Method';
 
 /**
  * Reports per page.
@@ -21,15 +26,20 @@ import { formatDate } from '@/lib/format';
  */
 export const REPORTS_PER_PAGE = 6;
 
+/**
+ * The pinned piece is excluded from the grid and from the page maths — it has
+ * its own slot above, and showing it twice on page 1 would be the duplicate the
+ * whole featured treatment is meant to avoid.
+ */
 export const totalReportPages = Math.max(
   1,
-  Math.ceil(marketStormReports.length / REPORTS_PER_PAGE),
+  Math.ceil(unfeaturedReports().length / REPORTS_PER_PAGE)
 );
 
-/** `marketStormReports` is authored newest-first, so page 1 is the newest. */
+/** Authored newest-first, so page 1 is the newest. */
 export function reportsOnPage(page: number): MarketStormReport[] {
   const start = (page - 1) * REPORTS_PER_PAGE;
-  return marketStormReports.slice(start, start + REPORTS_PER_PAGE);
+  return unfeaturedReports().slice(start, start + REPORTS_PER_PAGE);
 }
 
 /**
@@ -80,7 +90,9 @@ function CardFigures({ kpis }: { kpis: Kpi[] }) {
     <div className="overflow-hidden rounded-lg border border-border bg-border">
       <div
         className="grid gap-px"
-        style={{ gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))` }}
+        style={{
+          gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))`,
+        }}
       >
         {/* Grid cells in a row already stretch to the tallest, so each one is a
             column with the label at the top and the figure pushed to the
@@ -179,13 +191,111 @@ function ReportCard({ report }: { report: MarketStormReport }) {
               built out of that page's parts. */}
           <div className="mt-auto pt-4">
             <CardFigures kpis={report.kpis} />
-            <div className="mt-3 text-right text-sm font-medium text-accent">
-              Read &rarr;
+            {/* How this one was researched, in one line. Agent count plus
+                refutation depth — deliberately not the four role names, which
+                are identical on every card and would read as chrome, the same
+                failure as the verification chips this card already dropped. */}
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <MethodBadge method={report.method} />
+              <span className="shrink-0 text-sm font-medium text-accent">
+                Read &rarr;
+              </span>
             </div>
           </div>
         </div>
       </article>
     </Link>
+  );
+}
+
+/**
+ * The pinned thesis piece.
+ *
+ * WHY IT LOOKS DIFFERENT FROM THE CARDS
+ * -------------------------------------
+ * Because it IS different. The eight below are earnings reads on one company;
+ * this is a read on the whole cycle, produced by a different run shape — more
+ * perspectives, and every load-bearing claim sent to a refutation pass rather
+ * than the top handful. Rendering it as a bigger card would say "same thing,
+ * more important", which is the wrong claim. It gets its own frame, its verdict
+ * in full, and its roster named on the index, because the roster is precisely
+ * what distinguishes it.
+ */
+function FeaturedReport({ report }: { report: MarketStormReport }) {
+  const m = report.method;
+  return (
+    <section className="mx-auto mt-12 max-w-6xl">
+      <div className="flex items-baseline gap-3">
+        <p className="font-mono-accent text-accent">The standing thesis</p>
+        <span className="h-px flex-1 bg-border" aria-hidden="true" />
+        <p className="font-mono text-xs text-text-secondary">
+          {formatDate(report.publishDate)}
+        </p>
+      </div>
+
+      <Link
+        href={`/market-storm/${report.slug}`}
+        className="group mt-4 block rounded-2xl border border-accent/25 bg-surface transition-all hover:border-accent/50 hover:shadow-[0_18px_50px_-20px_var(--sd-card-shadow)]"
+      >
+        <div className="grid grid-cols-1 gap-8 p-6 sm:p-8 lg:grid-cols-[1.15fr_1fr]">
+          <div>
+            <p className="truncate font-mono text-[0.7rem] uppercase tracking-wide text-text-secondary">
+              {report.catalyst}
+            </p>
+            <h2 className="font-display mt-3 text-2xl font-semibold leading-tight tracking-tight text-text-primary transition-colors group-hover:text-accent sm:text-[2rem]">
+              {report.title}
+            </h2>
+            <p className="mt-4 max-w-[62ch] leading-relaxed text-text-secondary">
+              {report.excerpt}
+            </p>
+            <div className="mt-5 text-sm font-medium text-accent">
+              Read the thesis &rarr;
+            </div>
+          </div>
+
+          {/* The roster, on the index. This is the answer to "which agents
+              worked on this one" without needing to open the report. */}
+          {m && (
+            <div className="self-start rounded-xl border border-border bg-surface-elevated p-5">
+              <p className="font-mono-accent text-text-secondary">
+                {m.perspectives.length} agents, {m.turnsEach} grounded turns
+                each
+              </p>
+              <ul className="mt-3 space-y-1.5" role="list">
+                {m.perspectives.map((persp, i) => (
+                  <li
+                    key={persp.role}
+                    className="flex items-baseline gap-2 text-sm text-text-primary"
+                  >
+                    <span className="font-mono text-[0.7rem] font-bold text-accent [font-variant-numeric:tabular-nums]">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    {persp.role}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 border-t border-border pt-3 font-mono text-xs leading-relaxed text-text-secondary">
+                Then{' '}
+                <strong className="text-text-primary">
+                  {verificationLine(m)}
+                </strong>
+                {m.primaryDocsOpened !== undefined && (
+                  <>
+                    {' '}
+                    against{' '}
+                    <strong className="text-text-primary [font-variant-numeric:tabular-nums]">
+                      {m.primaryDocsOpened}
+                    </strong>{' '}
+                    primary documents
+                  </>
+                )}
+                .
+              </p>
+            </div>
+          )}
+        </div>
+      </Link>
+    </section>
   );
 }
 
@@ -312,7 +422,7 @@ function Pagination({ page, total }: { page: number; total: number }) {
                   </Link>
                 )}
               </li>
-            ),
+            )
           )}
         </ol>
 
@@ -324,8 +434,12 @@ function Pagination({ page, total }: { page: number; total: number }) {
         </PageArrow>
       </div>
 
+      {/* Counts the paginated set, not every report — the pinned thesis has its
+          own slot above and is not in this grid, so including it here would
+          promise a card the reader can never find by paging. */}
       <p className="font-mono text-xs text-text-secondary [font-variant-numeric:tabular-nums]">
-        Page {page} of {total} &middot; {marketStormReports.length} reports
+        Page {page} of {total} &middot; {unfeaturedReports().length} company
+        reports
       </p>
     </nav>
   );
@@ -340,6 +454,7 @@ function Pagination({ page, total }: { page: number; total: number }) {
  * told what this section is just as much as one arriving on page 1.
  */
 export default function MarketStormIndexView({ page }: { page: number }) {
+  const featured = featuredReport();
   return (
     <SectionContainer className="py-20">
       {/* Header */}
@@ -365,17 +480,25 @@ export default function MarketStormIndexView({ page }: { page: number }) {
           legible: one line of roles, one line of what happens to them. */}
       <div className="mx-auto mt-10 max-w-3xl text-center">
         <p className="font-mono-accent text-text-secondary">
-          Four agents, one catalyst
+          Agents with opposing stakes, one catalyst
         </p>
+        {/* Deliberately no fixed agent count and no "every claim" here. The
+            earnings reads run four perspectives and refute-test the top
+            load-bearing claims; the thesis pieces run five and test all of
+            them. Stating one number in the section header made the other shape
+            look like an error, which is the whole reason each report now
+            publishes its own roster and depth. */}
         <p className="mt-3 text-[0.95rem] leading-relaxed text-text-secondary">
-          {STAKES.join(' · ')} — they interview each other grounded in live web
-          search, then a separate skeptic pass tries to{' '}
-          <strong className="text-text-primary">refute</strong> every
-          load-bearing claim against primary sources. What survives is written
+          {STAKES.join(' · ')} — and a fifth on the thesis pieces. They
+          interview each other grounded in live web search, then a separate pass
+          tries to <strong className="text-text-primary">refute</strong> the
+          load-bearing claims against primary sources. What survives is written
           up{' '}
           <strong className="text-text-primary">
-            with the caveats it earned.
-          </strong>
+            with the caveats it earned
+          </strong>{' '}
+          — and every report shows its own roster and how deep the refutation
+          went.
         </p>
       </div>
 
@@ -383,6 +506,31 @@ export default function MarketStormIndexView({ page }: { page: number }) {
       <div className="mx-auto mt-10 max-w-3xl">
         <Disclaimer />
       </div>
+
+      {/* The pinned thesis, page 1 only. On page 2 it would read as a header
+          rather than a pin, and the reader arriving there is looking for the
+          older reports, not the standing view. */}
+      {page === 1 && featured && <FeaturedReport report={featured} />}
+
+      {page === 1 && featured && (
+        <div className="mx-auto mt-14 max-w-6xl">
+          <div className="flex items-baseline gap-3">
+            <p className="font-mono-accent text-accent">
+              The companies, one quarter at a time
+            </p>
+            <span className="h-px flex-1 bg-border" aria-hidden="true" />
+          </div>
+          <p className="mt-3 max-w-[70ch] text-[0.95rem] leading-relaxed text-text-secondary">
+            Each of these reads a single company&rsquo;s filing.{' '}
+            <strong className="text-text-primary">
+              Four agents rather than five
+            </strong>
+            , and the top load-bearing claims go to the refutation pass rather
+            than all of them — every card says which, and every report names its
+            own roster.
+          </p>
+        </div>
+      )}
 
       {/* Reports — three up, which needs the wider container to work. At
           max-w-5xl a third column puts each card at 325px, under the 341px they
