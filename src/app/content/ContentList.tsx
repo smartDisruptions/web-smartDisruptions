@@ -141,9 +141,10 @@ export default function ContentList({
           Field notes
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-          Honest build breakdowns and field notes — the timeline, the method,
-          and the parts worth copying. Only what I&apos;ve actually shipped and
-          learned.
+          Plain-language guides from things I&apos;ve actually built with AI —
+          what mattered, why, and one thing you can try tonight. If you&apos;re
+          good at your job and new to this, these are written for you. Start
+          with the featured piece below.
         </p>
       </div>
 
