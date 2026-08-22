@@ -87,6 +87,64 @@ export interface SourceRef {
   secondaryLabel?: string;
 }
 
+/**
+ * One agent in a run, and the stake it was told to take.
+ *
+ * These are adversarial on purpose: the short-seller is instructed to justify a
+ * position against the company, the skeptics are told to REFUTE rather than
+ * check. What survives that is what gets written up.
+ */
+export interface AgentRole {
+  role: string;
+  probe: string; // what this agent was pointed at
+}
+
+/**
+ * How a report was actually produced.
+ *
+ * WHY THIS IS PUBLISHED
+ * ---------------------
+ * Not every report is researched the same way, and for a while that difference
+ * was invisible. The eight earnings reads run four perspectives and send the
+ * top handful of claims to skeptics; the thesis pieces run five and refute
+ * every load-bearing claim there is. Rendering the roster and the verification
+ * depth on each report turns an inconsistency into the thing the section is
+ * actually about — "the finance is the payload; the method is the point".
+ *
+ * `claimsSurfaced` vs `claimsVerified` is the number that matters most, and the
+ * one a reader cannot infer from anything else on the page: six of twenty-three
+ * claims refuted-tested is a different promise from all forty-five.
+ */
+export interface ResearchMethod {
+  /** An earnings read on one company, or a thesis across the whole cycle. */
+  kind: 'earnings' | 'thesis';
+  perspectives: AgentRole[];
+  turnsEach: number;
+  /** Load-bearing claims the report tracks in its verification ledger. */
+  claimsSurfaced: number;
+  /**
+   * Of those, how many went through the ADVERSARIAL pass — an agent told to
+   * refute the claim rather than check it. Optional because two reports predate
+   * run-record capture and the split is not recoverable; the badge says
+   * "tracked" rather than "refuted-tested" when it is absent, instead of
+   * quietly implying a rigour that was not measured.
+   */
+  claimsVerified?: number;
+  /** Whether every load-bearing claim was refuted-tested, or only the top few. */
+  verificationScope: 'all' | 'top-n' | 'unrecorded';
+  /** Agents that actually ran. 0 when the run record was not retained. */
+  agentCount: number;
+  runDate: string; // ISO 'YYYY-MM-DD'
+  /** Primary filings and offering documents opened during the run, if counted. */
+  primaryDocsOpened?: number;
+  /**
+   * Anything that capped the run, stated plainly. The first pass at the thesis
+   * report had web fetching blocked and opened no primary filing at all — a
+   * limitation that has to travel with the work, not sit in a commit message.
+   */
+  limitations?: string[];
+}
+
 export interface MarketStormReport {
   slug: string;
   ticker: string;
@@ -121,6 +179,18 @@ export interface MarketStormReport {
   // a company, and a logo answers that faster than any amount of type; on the
   // report page there is room for the finding, so the hero earns its place
   // there. Same reason the social card never varies while heroes do.
+  /**
+   * How this one was researched. Optional so a report written before the field
+   * existed still renders; the UI falls back to the section-wide description.
+   */
+  method?: ResearchMethod;
+  /**
+   * The pinned thesis piece at the top of the index. At most one report should
+   * carry this — `featuredReport()` takes the first and the rest fall into the
+   * normal grid, so a stale flag degrades into an ordinary card rather than a
+   * second hero.
+   */
+  featured?: boolean;
   cardImage?: string;
   cardImageLight?: string;
   cardImageAlt?: string;
@@ -421,6 +491,36 @@ On the counterweight side: **the marquee OpenAI $38B AWS deal is Nvidia GPUs —
 That is what "AI is cheap now" actually costs somebody. Every time an API call gets cheaper, it is because a company like this one front-loaded a decade of concrete, power, and silicon and is betting it can bill for it later. Amazon's free cash flow going negative is the first quarter where that bet showed up as an actual hole in the statement rather than a line in a slide deck.
 
 The practical read: if you build on top of this infrastructure, your costs are currently subsidised by a capex race between four companies. Useful to know while it lasts — and worth noticing that **power, not chips, is the binding constraint** Amazon named. That's the ceiling on how cheap inference gets.`,
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 9,
+    verificationScope: 'unrecorded',
+    agentCount: 0,
+    runDate: '2026-07-30',
+    limitations: [
+      'Run record not retained. The roster shown is the section standard — every recovered run used exactly these four — but it is an inference for this report, not a recording, and the split between adversarial and by-hand checking is not recoverable.',
+    ],
+  },
   cardImage: '/images/content/amzn-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/amzn-q2-2026-card-hero-light.webp',
   cardImageAlt: 'Amazon logo',
@@ -909,6 +1009,36 @@ The OpenAI relationship is now two-sided. Microsoft holds ~27% as-converted at *
 Microsoft's capex figure fell from ~$190B to ~$175B and was widely reported as a pullback in AI spending. It wasn't. Leases were reclassified — the same buildings, counted differently. Meanwhile $329.1B of signed-but-uncommenced leases sit outside the capex line entirely, and the useful life of a datacenter was extended from 15 years to 25, which lowers annual depreciation on every asset in the fleet.
 
 None of that is fraud; it is all disclosed, and mostly defensible. But three separate accounting choices in one quarter all moved reported numbers the same direction, and the summary you read probably mentioned none of them. **The filing and the coverage of the filing are two different documents** — and only one of them is signed under penalty of law.`,
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 9,
+    verificationScope: 'unrecorded',
+    agentCount: 0,
+    runDate: '2026-08-03',
+    limitations: [
+      'Run record not retained. The roster shown is the section standard — every recovered run used exactly these four — but it is an inference for this report, not a recording, and the split between adversarial and by-hand checking is not recoverable.',
+    ],
+  },
   cardImage: '/images/content/msft-q4-fy2026-card-hero.webp',
   cardImageLight: '/images/content/msft-q4-fy2026-card-hero-light.webp',
   cardImageAlt: 'Microsoft logo',
@@ -1541,6 +1671,34 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
         slug: 'msft-q4-fy2026',
       },
     ],
+  },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 13,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-04',
   },
   cardImage: '/images/content/pltr-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/pltr-q2-2026-card-hero-light.webp',
@@ -2350,6 +2508,34 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
       { label: 'AMZN — the first negative-cash quarter', slug: 'amzn-q2-2026' },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 13,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-04',
+  },
   cardImage: '/images/content/spcx-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/spcx-q2-2026-card-hero-light.webp',
   cardImageAlt: 'SpaceX logo',
@@ -3090,6 +3276,37 @@ The same pattern keeps recurring across four very different balance sheets: **th
         slug: 'amzn-q2-2026',
       },
       { label: 'PLTR — the one with no capex at all', slug: 'pltr-q2-2026' },
+    ],
+  },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 11,
+    claimsVerified: 5,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-05',
+    limitations: [
+      'One of the six skeptic agents returned nothing; that claim was checked by hand instead.',
     ],
   },
   cardImage: '/images/content/amd-q2-2026-card-hero.webp',
@@ -3871,6 +4088,34 @@ What makes CoreWeave the clarifying case is that it has none of the others\u2019
       },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 12,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-19',
+  },
   cardImage: '/images/content/crwv-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/crwv-q2-2026-card-hero-light.webp',
   cardImageAlt: 'CoreWeave logo',
@@ -4610,6 +4855,37 @@ Ranked by capital spending against revenue, the picture is consistent: Palantir 
       },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 10,
+    claimsVerified: 0,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-20',
+    limitations: [
+      'All six skeptic agents died on a session limit before they could attempt a refutation. Every load-bearing claim was verified by hand against the 6-K exhibits instead — single-pass checking, not adversarial checking, and weaker for it.',
+    ],
+  },
   cardImage: '/images/content/nbis-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/nbis-q2-2026-card-hero-light.webp',
   cardImageAlt: 'Nebius logo',
@@ -5337,6 +5613,34 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
       },
     ],
   },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Segment margins, cash generation, and what the operating business actually earned.',
+      },
+      {
+        role: 'Short seller',
+        probe: 'What breaks the bull case, and by what mechanism.',
+      },
+      {
+        role: 'Industry engineer',
+        probe: 'Whether the technology and the moat are real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe: 'What the price already assumes.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 6,
+    claimsVerified: 6,
+    verificationScope: 'top-n',
+    agentCount: 12,
+    runDate: '2026-08-20',
+  },
   cardImage: '/images/content/goog-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/goog-q2-2026-card-hero-light.webp',
   cardImageAlt: 'Google logo',
@@ -5695,6 +5999,23 @@ export const marketStormReports: MarketStormReport[] = [
   msftQ4_FY2026,
   amznQ2_2026,
 ];
+
+/**
+ * The pinned thesis piece, if there is one.
+ *
+ * Takes the FIRST report flagged `featured` rather than asserting there is only
+ * one, so a second flag left on an older report degrades into an ordinary card
+ * instead of rendering two heroes.
+ */
+export function featuredReport(): MarketStormReport | undefined {
+  return marketStormReports.find((r) => r.featured);
+}
+
+/** Everything that is not the pinned piece, newest first — the normal grid. */
+export function unfeaturedReports(): MarketStormReport[] {
+  const f = featuredReport();
+  return marketStormReports.filter((r) => r !== f);
+}
 
 export function getReportBySlug(slug: string): MarketStormReport | undefined {
   return marketStormReports.find((r) => r.slug === slug);
