@@ -1,0 +1,20 @@
+{
+  "tone": "warn",
+  "before": {
+    "label": "What it opened",
+    "text": "0 original documents"
+  },
+  "after": {
+    "label": "What it handed me",
+    "text": "45 confident claims",
+    "detail": "9 false · 12 uncheckable · no warning"
+  },
+  "headline": [
+    { "t": "It opened " },
+    { "t": "nothing", "tone": "warn" },
+    { "t": ". The report read " },
+    { "t": "perfectly", "tone": "warn" },
+    { "t": "." }
+  ],
+  "alt": "Split card: the research pass opened zero original documents, and handed back 45 confident claims — nine of them false, twelve uncheckable, with no warning that anything was wrong."
+}
