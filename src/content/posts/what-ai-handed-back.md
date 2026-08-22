@@ -1,5 +1,5 @@
 ---
-title: My AI built the whole thing — then handed me back the list of what it couldn't do
+title: My AI built the whole thing. It handed back the keys, the money, and the final yes.
 slug: what-ai-handed-back
 excerpt: Twice in one day, my AI built something end to end — a payment system, then a whole website — and both times handed me a short list of what it couldn't do. Nothing on either list was hard. Every item was the same three things — and they map exactly where your job with AI actually is now.
 category: Working With AI

@@ -1,5 +1,5 @@
 ---
-title: I built my friend's food truck site with AI — here's what actually happened
+title: I built my friend's food truck a full ordering system. I shipped the simple version.
 slug: food-truck-site-with-ai
 excerpt: I built a full online-ordering system with Square payments for my friend Robert’s food truck — and then shipped something much simpler. The real skill wasn’t building the impressive version. It was knowing what not to ship.
 category: Build Breakdown
