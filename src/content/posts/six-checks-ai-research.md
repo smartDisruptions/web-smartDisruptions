@@ -5,7 +5,7 @@ excerpt: I had a research report with 45 claims in it. Nine were false and twelv
 category: Working With AI
 publishDate: 2026-08-22
 tags: [ai, research, verification, workflow]
-status: staged
+status: published
 channels:
   - name: linkedin
     status: planned
