@@ -9,6 +9,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/content', label: 'Writing' },
   { href: '/market-storm', label: 'Market Storm' },
+  { href: '/websites', label: 'Websites' },
   { href: '/apps', label: 'Apps' },
   { href: '/games', label: 'Arcade' },
   { href: '/about', label: 'About' },
