@@ -319,6 +319,25 @@ export function getAppBySlug(slug: string): App | undefined {
   return apps.find((app) => app.slug === slug);
 }
 
+/**
+ * The Arcade line-up, in cabinet order. Josh's call on the ordering.
+ *
+ * This lives here rather than in the games page because /apps reads it too —
+ * anything in the arcade is deliberately absent from the catalogue, so the two
+ * pages must not keep separate lists that can drift apart.
+ */
+export const ARCADE_SLUGS = [
+  'field-office',
+  'cloth-simulator',
+  'broom-blade',
+  'grove',
+  'pebble-kart',
+  'aureum-snake',
+];
+
+/** Projects with a full write-up on /websites, so they skip the catalogue. */
+export const WEBSITE_SLUGS = ['samurai-kitchen'];
+
 export function getAppCategories(): string[] {
   return Array.from(new Set(apps.map((app) => app.category)));
 }

@@ -2,16 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { apps } from '@/data/apps';
+import { apps, ARCADE_SLUGS, WEBSITE_SLUGS } from '@/data/apps';
 import { SectionContainer, Card, Badge } from '@/components/ui';
 
-const WEBSITE_SLUGS = ['samurai-kitchen'];
 
 export default function AppsGallery() {
-  // Samurai Kitchen moved to /websites, where it gets a full write-up rather
-  // than a card. The data stays put so /apps/samurai-kitchen and the sitemap
-  // keep working — this list only controls what shows in the catalogue.
-  const catalogue = apps.filter((app) => !WEBSITE_SLUGS.includes(app.slug));
+  // The catalogue is what is left once the games have their own cabinet and
+  // the sites have their own write-ups. Every entry still exists in the data,
+  // so /apps/[slug] and the sitemap keep resolving — this only controls the
+  // grid.
+  const elsewhere = [...ARCADE_SLUGS, ...WEBSITE_SLUGS];
+  const catalogue = apps.filter((app) => !elsewhere.includes(app.slug));
 
   // Categories come from what is actually on show, so removing the only
   // Commerce entry does not leave an empty filter behind.

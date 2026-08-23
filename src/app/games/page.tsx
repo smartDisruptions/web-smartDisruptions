@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { apps, type App } from '@/data/apps';
+import { apps, ARCADE_SLUGS, type App } from '@/data/apps';
 import { SectionContainer, Card } from '@/components/ui';
 
 // The Arcade is an explicit, curated line-up — The Pembroke File leads (Josh's
@@ -18,7 +18,7 @@ const ARCADE_GAME_SLUGS = [
   'aureum-snake',
 ];
 
-const games: App[] = ARCADE_GAME_SLUGS.map((slug) =>
+const games: App[] = ARCADE_SLUGS.map((slug) =>
   apps.find((app) => app.slug === slug),
 ).filter((app): app is App => app !== undefined);
 
