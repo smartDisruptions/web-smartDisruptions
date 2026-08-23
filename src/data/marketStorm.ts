@@ -7402,8 +7402,7 @@ On capital spending against revenue: Palantir at 0.75%, Microsoft around 32%, Al
   },
   cardImage: '/images/content/iren-q3-fy2026-card-hero.webp',
   cardImageLight: '/images/content/iren-q3-fy2026-card-hero-light.webp',
-  cardImageAlt:
-    'IREN reported $144.8m of quarterly revenue against $3.1bn of annual recurring revenue under contract that has not started generating revenue',
+  cardImageAlt: 'IREN logo',
   sources: [
     {
       n: 1,
