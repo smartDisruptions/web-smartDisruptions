@@ -39,7 +39,7 @@ const milestones = [
     era: 'Three years with LLMs',
     year: '2023',
     title: 'Prompting. Just prompting.',
-    body: 'ChatGPT, then Claude, every day — but the shape was a chat window and a lot of copy-paste. I was asking for answers and pasting them somewhere myself. Most people I talk to are still here, and there is nothing wrong with being here. It is just not where it ends.',
+    body: 'ChatGPT, then Claude, every day — but the shape was a chat window and a lot of copy-paste. I was asking for answers and pasting them somewhere myself. That was the shape of it for a long time, and it works. It is just not where it ends.',
   },
   {
     year: '2024',
