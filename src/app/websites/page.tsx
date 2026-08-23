@@ -43,6 +43,28 @@ type Study = {
 
 const studies: Study[] = [
   {
+    eyebrow: 'Own work · live',
+    name: 'The Pembroke File',
+    what: 'A locked-cabinet noir mystery, and the site that has to sell it.',
+    image: '/images/websites/pembroke-file.png',
+    imageAlt: 'The Pembroke File site — a dark case room lit by a single desk lamp.',
+    href: 'https://web-pembroke-file.vercel.app',
+    hrefLabel: 'The Pembroke File',
+    problem:
+      'A five-puzzle mystery that runs entirely in a browser tab — no install, no account, no loading screen. The whole game is a single 130 KB file with nothing behind it: no framework, no build step, and not one network call, so it plays offline and will still play in a decade.',
+    decisionLabel: 'What is built into it',
+    decision: [
+      'The puzzles are real mechanisms rather than riddles. A lamp is rewired on a cable that hangs and swings under Verlet physics on canvas. A sliding-block tray was generated and then solved exhaustively by breadth-first search before shipping, so its seventeen-move minimum is a measured fact instead of a guess. Every sound — the drawer, the dial, the flourish when the last lock gives — is synthesised at runtime, which is why there is nothing to download.',
+      'It is built to be played by everyone. Each of the five puzzles has a keyboard route to its solution, motion respects the reduced-motion setting, and progress survives a closed tab, so a drawer opened tonight is still open tomorrow.',
+      'The site around it was built with the same care as the game. The case room drifts behind the words as you scroll, dust moves through the lamplight, and the five drawers slide open in sequence as you reach them. Its original artwork was generated for it and compressed from 4.2 MB to 176 KB, so all of that atmosphere costs almost nothing to load.',
+    ],
+    receipts: [
+      { value: '0', label: 'Dependencies, network calls' },
+      { value: '130 KB', label: 'The entire game' },
+      { value: '176 KB', label: 'Artwork, down from 4.2 MB' },
+    ],
+  },
+  {
     eyebrow: 'Client work · live',
     name: 'Samurai Kitchen',
     what: 'A food truck and catering business, taking orders online.',
@@ -63,28 +85,6 @@ const studies: Study[] = [
       { value: 'Live', label: 'Ordering and card payments' },
       { value: 'Loyalty', label: 'Points earned and redeemed' },
       { value: 'Catering', label: 'Tiered package pricing' },
-    ],
-  },
-  {
-    eyebrow: 'Own work · live',
-    name: 'The Pembroke File',
-    what: 'A locked-cabinet noir mystery, and the site that has to sell it.',
-    image: '/images/websites/pembroke-file.png',
-    imageAlt: 'The Pembroke File site — a dark case room lit by a single desk lamp.',
-    href: 'https://web-pembroke-file.vercel.app',
-    hrefLabel: 'The Pembroke File',
-    problem:
-      'A five-puzzle mystery that runs entirely in a browser tab — no install, no account, no loading screen. The whole game is a single 130 KB file with nothing behind it: no framework, no build step, and not one network call, so it plays offline and will still play in a decade.',
-    decisionLabel: 'What is built into it',
-    decision: [
-      'The puzzles are real mechanisms rather than riddles. A lamp is rewired on a cable that hangs and swings under Verlet physics on canvas. A sliding-block tray was generated and then solved exhaustively by breadth-first search before shipping, so its seventeen-move minimum is a measured fact instead of a guess. Every sound — the drawer, the dial, the flourish when the last lock gives — is synthesised at runtime, which is why there is nothing to download.',
-      'It is built to be played by everyone. Each of the five puzzles has a keyboard route to its solution, motion respects the reduced-motion setting, and progress survives a closed tab, so a drawer opened tonight is still open tomorrow.',
-      'The site around it was built with the same care as the game. The case room drifts behind the words as you scroll, dust moves through the lamplight, and the five drawers slide open in sequence as you reach them. Its original artwork was generated for it and compressed from 4.2 MB to 176 KB, so all of that atmosphere costs almost nothing to load.',
-    ],
-    receipts: [
-      { value: '0', label: 'Dependencies, network calls' },
-      { value: '130 KB', label: 'The entire game' },
-      { value: '176 KB', label: 'Artwork, down from 4.2 MB' },
     ],
   },
 ];

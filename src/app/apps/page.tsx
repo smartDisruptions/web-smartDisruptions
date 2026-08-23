@@ -2,16 +2,25 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { apps, getAppCategories } from '@/data/apps';
+import { apps } from '@/data/apps';
 import { SectionContainer, Card, Badge } from '@/components/ui';
 
+const WEBSITE_SLUGS = ['samurai-kitchen'];
+
 export default function AppsGallery() {
-  const categories = getAppCategories();
+  // Samurai Kitchen moved to /websites, where it gets a full write-up rather
+  // than a card. The data stays put so /apps/samurai-kitchen and the sitemap
+  // keep working — this list only controls what shows in the catalogue.
+  const catalogue = apps.filter((app) => !WEBSITE_SLUGS.includes(app.slug));
+
+  // Categories come from what is actually on show, so removing the only
+  // Commerce entry does not leave an empty filter behind.
+  const categories = Array.from(new Set(catalogue.map((a) => a.category)));
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const filtered = activeCategory
-    ? apps.filter((app) => app.category === activeCategory)
-    : apps;
+    ? catalogue.filter((app) => app.category === activeCategory)
+    : catalogue;
 
   return (
     <SectionContainer className="py-20">
