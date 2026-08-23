@@ -51,7 +51,7 @@ const studies: Study[] = [
     href: 'https://samuraikitchencatering.com',
     hrefLabel: 'samuraikitchencatering.com',
     problem:
-      'It replaced a dated WordPress site that could not take an order — every catering enquiry arrived as unstructured email and nothing could be paid for online. What went up in its place is a commerce platform, not a brochure.',
+      'It replaced a dated WordPress site that could not take an order — every catering enquiry arrived as unstructured email and nothing could be paid for online. What went up in its place handles the whole order, end to end.',
     decisionLabel: 'What is built into it',
     decision: [
       'Customers browse a categorised menu with dietary tags, build a cart, and pay by card without leaving the site. Checkout runs on Square Web Payments, so card details never touch the server and the business inherits Square\'s compliance rather than having to earn it.',
@@ -96,14 +96,12 @@ export default function WebsitesPage() {
         <RevealOnScroll>
           <p className="font-mono-accent text-accent">Websites</p>
           <h1 className="font-display mt-3 max-w-[20ch] text-4xl leading-[1.1] font-semibold tracking-tight text-text-primary sm:text-5xl">
-Two sites, and what they can actually do
+Two sites, up close
           </h1>
           <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
-            Most portfolio pages show you a screenshot and a list of
-            technologies. These two are written up properly instead — a
-            restaurant taking real card payments with a loyalty programme
-            running underneath, and a game with physics, synthesised sound and
-            solver-verified puzzles that fits in a single file.
+            Two sites, both live. One is a restaurant that takes orders and
+            payments online. The other is a mystery game that runs in a browser
+            tab. Each is written up below — what it does, and how it works.
           </p>
         </RevealOnScroll>
       </SectionContainer>
@@ -180,11 +178,10 @@ Two sites, and what they can actually do
 Want one of these?
             </h2>
             <p className="mt-4 max-w-[62ch] leading-[1.75] text-text-secondary">
-              Both were built the same way: a working version fast, then the
-              depth that makes it worth keeping — real payments, real
-              accessibility, real speed. If your business needs a site that
-              takes orders rather than one that just describes you, that is
-              exactly the work.
+              Both were built the same way: something working early, then the
+              slower work of making it fast, accessible and safe enough to hand
+              to real customers. If you need a site that takes orders, that is
+              the work I do.
             </p>
           </div>
         </RevealOnScroll>
