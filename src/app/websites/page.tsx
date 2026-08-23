@@ -5,20 +5,26 @@ import { SectionContainer, RevealOnScroll } from '@/components/ui';
 export const metadata: Metadata = {
   title: 'Websites',
   description:
-    'Two sites built end to end, and the decisions behind them — a restaurant taking real orders, and a game that had to sell craft you cannot see.',
+    'Two sites built end to end — a restaurant taking card payments with a loyalty programme underneath, and a game with physics, synthesised sound and solver-verified puzzles in a single file.',
 };
 
 /**
  * WEBSITES — deliberately not another grid.
  *
  * /apps is a catalogue: eleven things, scannable, categorised. This page is the
- * opposite shape on purpose — two projects, at length, each carrying the one
- * decision that actually mattered. A prospective client reads this; the
- * catalogue is for people already browsing.
+ * opposite shape on purpose — two projects at length, each showing what it is
+ * actually capable of.
  *
- * Every number below was verified against the live site or the build journal
- * before it was written. This page argues for hiring him, so an unchecked claim
- * costs more here than anywhere else on the site.
+ * TONE (Josh's call, 2026-08-23): lead with capability, not with defects. An
+ * earlier draft opened on a payment vulnerability and a dead database. Both
+ * were true and both read as competence to an engineer — but a restaurant
+ * owner reads them as risk. Rigour is stated as a property of the work
+ * ("payments are settled server-side"), never as a war story about what was
+ * once wrong. Bug-fixing is fine to discuss; failure is not the pitch.
+ *
+ * Every claim was verified against the live site or the build journal first.
+ * This page argues for hiring him, so an unchecked claim costs more here than
+ * anywhere else on the site.
  */
 
 type Study = {
@@ -45,18 +51,18 @@ const studies: Study[] = [
     href: 'https://samuraikitchencatering.com',
     hrefLabel: 'samuraikitchencatering.com',
     problem:
-      'The old site was a dated WordPress build that could not take an order. Everything ran through phone calls and a contact form, which meant catering enquiries arrived as unstructured email and nothing could be paid for online.',
-    decisionLabel: 'The decision that mattered',
+      'It replaced a dated WordPress site that could not take an order — every catering enquiry arrived as unstructured email and nothing could be paid for online. What went up in its place is a commerce platform, not a brochure.',
+    decisionLabel: 'What is built into it',
     decision: [
-      'Before publicising that the site was built with AI, it got a full security pass — thirteen routes read line by line, on the principle that announcing how something was made paints a target on it.',
-      'That pass found one genuine money-handling hole: the server trusted the payment amount sent by the browser. It also found an admin area where any signed-in user counted as an administrator.',
-      'The payment hole was fixed. The admin hole was not — the feature behind it was deleted instead. It existed only to hold a feedback inbox nobody was reading, so removing it removed the vulnerability rather than guarding it. That is 1,447 fewer lines and one fewer thing to get wrong later.',
-      'The same pass turned up a database that had been quietly dead for three months. Nothing the owner used had broken, because the parts he actually needed had never depended on it.',
+      'Customers browse a categorised menu with dietary tags, build a cart, and pay by card without leaving the site. Checkout runs on Square Web Payments, so card details never touch the server and the business inherits Square\'s compliance rather than having to earn it.',
+      'A loyalty programme runs underneath: diners earn points on every order and redeem them at checkout, which is the part that turns a first order into a second. Catering is handled separately, with pre-built platter packages priced in tiers — the revenue the old contact form was quietly losing.',
+      'Three of Square\'s systems are wired in at once — payments, live catalogue, and loyalty — with Supabase behind them. Prices are settled server-side against the real catalogue, so an order is always charged what the kitchen actually set.',
+      'The owner ran a full order through it himself, start to finish, before it went anywhere near a customer.',
     ],
     receipts: [
-      { value: '1,447', label: 'Lines deleted, not patched' },
-      { value: '3 mo', label: 'Backend dead, nothing broke' },
-      { value: 'Live', label: 'Ordering, Square payments' },
+      { value: 'Live', label: 'Ordering and card payments' },
+      { value: 'Loyalty', label: 'Points earned and redeemed' },
+      { value: 'Catering', label: 'Tiered package pricing' },
     ],
   },
   {
@@ -68,12 +74,12 @@ const studies: Study[] = [
     href: 'https://web-pembroke-file.vercel.app',
     hrefLabel: 'The Pembroke File',
     problem:
-      'The game is one HTML file with no dependencies and no network calls at all. Its puzzle boards were checked by exhaustive search before shipping, its sound is generated rather than downloaded, and every puzzle can be solved without a mouse. None of that is visible while playing — which is the problem, because invisible craft cannot sell anything.',
-    decisionLabel: 'The decision that mattered',
+      'A five-puzzle mystery that runs entirely in a browser tab — no install, no account, no loading screen. The whole game is a single 130 KB file with nothing behind it: no framework, no build step, and not one network call, so it plays offline and will still play in a decade.',
+    decisionLabel: 'What is built into it',
     decision: [
-      'Two audiences wanted opposite pages. Someone deciding whether to play needs atmosphere and a promise that the puzzles are fair. Someone deciding whether to hire needs the engineering.',
-      'So there are two pages, and the front one never explains a puzzle. Describing how a lock works is proof of design to one reader and a spoiler to the other — the same five drawers are teased on one page and taken apart on the second, which is linked quietly from the footer.',
-      'The artwork was generated rather than photographed, which is honest here in a way it would not be for a restaurant: there is no real office and no real diamond for it to misrepresent. It arrived as 4.2 MB and ships at 176 KB, sitting behind dark scrims so the words stay readable.',
+      'The puzzles are real mechanisms rather than riddles. A lamp is rewired on a cable that hangs and swings under Verlet physics on canvas. A sliding-block tray was generated and then solved exhaustively by breadth-first search before shipping, so its seventeen-move minimum is a measured fact instead of a guess. Every sound — the drawer, the dial, the flourish when the last lock gives — is synthesised at runtime, which is why there is nothing to download.',
+      'It is built to be played by everyone. Each of the five puzzles has a keyboard route to its solution, motion respects the reduced-motion setting, and progress survives a closed tab, so a drawer opened tonight is still open tomorrow.',
+      'The site around it was built with the same care as the game. The case room drifts behind the words as you scroll, dust moves through the lamplight, and the five drawers slide open in sequence as you reach them. Its original artwork was generated for it and compressed from 4.2 MB to 176 KB, so all of that atmosphere costs almost nothing to load.',
     ],
     receipts: [
       { value: '0', label: 'Dependencies, network calls' },
@@ -90,14 +96,14 @@ export default function WebsitesPage() {
         <RevealOnScroll>
           <p className="font-mono-accent text-accent">Websites</p>
           <h1 className="font-display mt-3 max-w-[20ch] text-4xl leading-[1.1] font-semibold tracking-tight text-text-primary sm:text-5xl">
-            Two sites, and the decisions behind them
+Two sites, and what they can actually do
           </h1>
           <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
             Most portfolio pages show you a screenshot and a list of
-            technologies. These are the two where something interesting had to
-            be decided, so that is what is written down — one restaurant taking
-            real orders, and one game whose best work is invisible while you
-            play it.
+            technologies. These two are written up properly instead — a
+            restaurant taking real card payments with a loyalty programme
+            running underneath, and a game with physics, synthesised sound and
+            solver-verified puzzles that fits in a single file.
           </p>
         </RevealOnScroll>
       </SectionContainer>
@@ -171,13 +177,14 @@ export default function WebsitesPage() {
         <RevealOnScroll>
           <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
             <h2 className="font-display text-xl font-semibold text-text-primary">
-              Want one of these?
+Want one of these?
             </h2>
             <p className="mt-4 max-w-[62ch] leading-[1.75] text-text-secondary">
-              Both of these were built the same way — fast first version, then
-              the unglamorous work of making it safe and fast enough to put in
-              front of real people. If you run a business that needs a site that
-              actually does something, that is the work.
+              Both were built the same way: a working version fast, then the
+              depth that makes it worth keeping — real payments, real
+              accessibility, real speed. If your business needs a site that
+              takes orders rather than one that just describes you, that is
+              exactly the work.
             </p>
           </div>
         </RevealOnScroll>
