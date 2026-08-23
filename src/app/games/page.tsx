@@ -15,7 +15,6 @@ const ARCADE_GAME_SLUGS = [
   'grove',
   'broom-blade',
   'pebble-kart',
-  'flappy-bird',
   'aureum-snake',
 ];
 

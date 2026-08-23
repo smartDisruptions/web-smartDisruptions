@@ -179,33 +179,6 @@ export const apps: App[] = [
     liveUrl: 'https://app-snake-smoky.vercel.app',
   },
   {
-    slug: 'flappy-bird',
-    name: 'Flappy Bird Primo',
-    description:
-      'A polished Flappy Bird remake with pixel-art visuals, particle effects, slow-motion near-misses, and screen shake — built with PixiJS.',
-    longDescription:
-      'A GPU-accelerated Flappy Bird clone built with PixiJS and TypeScript, featuring hand-drawn pixel-art sprites generated entirely in code. The bird navigates procedurally spawned pipe gaps with realistic gravity and flap physics. Near-miss detection triggers a cinematic slow-motion effect, rewarding precise play. Death sequences include freeze frames, screen shake, particle explosions, and a flash overlay for dramatic impact. A share button generates challenge URLs with embedded scores. The game runs at 60fps with responsive canvas scaling, nearest-neighbor rendering for crisp pixel art, and touch/keyboard input support for cross-device play.',
-    thumbnailUrl: '/images/apps/flappy-bird-thumbnail.webp',
-    screenshotUrls: [
-      '/images/apps/flappy-bird-1.png',
-      '/images/apps/flappy-bird-2.png',
-      '/images/apps/flappy-bird-3.png',
-    ],
-    techStack: ['Vite', 'TypeScript', 'PixiJS', 'HTML5', 'CSS3'],
-    category: 'Game',
-    status: 'live',
-    outcomes: [
-      'GPU-accelerated 2D rendering via PixiJS delivers smooth 60fps gameplay',
-      'Near-miss slow-motion system adds cinematic tension to precise pipe navigation',
-      'Procedural sprite generation creates all pixel-art assets without external images',
-      'Death sequence with freeze frames, screen shake, and particle explosions provides satisfying feedback',
-    ],
-    buildDate: '2026-03',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://app-flappy-bird-primo.vercel.app',
-  },
-  {
     slug: 'pebble-kart',
     name: 'Pebble Kart',
     description:
