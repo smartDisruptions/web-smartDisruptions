@@ -1,0 +1,25 @@
+{
+  "tone": "good",
+  "before": {
+    "label": "The assignment",
+    "text": "My résumé, as an escape room"
+  },
+  "after": {
+    "label": "What shipped",
+    "text": "A noir mystery — résumé cut",
+    "detail": "Same puzzles · 33 prompts · none of them code"
+  },
+  "headline": [
+    {
+      "t": "My résumé became an escape room. The résumé "
+    },
+    {
+      "t": "didn't survive",
+      "tone": "good"
+    },
+    {
+      "t": "."
+    }
+  ],
+  "alt": "Split card: the assignment — my résumé as an escape room — against what shipped: a stolen-diamond noir with the résumé cut, the same puzzles, and thirty-three prompts of which none were code."
+}
