@@ -284,14 +284,14 @@ export const skillGroups: SkillGroup[] = [
         name: 'Game development',
         plain:
           'Game loops, collision, input, audio and the feel work that separates a demo from something worth playing.',
-        used: "The arcade is five cabinets. Flappy Bird Primo is the one I would point at first: fifteen modules, swept collision detection so nothing tunnels through a pipe at speed, and a full juice catalogue — particles, screen shake, a slow-motion beat on a near miss. Two of the cabinets are my son's.",
-        apps: ['flappy-bird', 'aureum-snake', 'grove'],
+        used: "The arcade is six cabinets. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an artifact you pick up and read, sliding-block and 8-puzzle boards generated and difficulty-checked by breadth-first search, Verlet chain physics on the wires, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. Two of the cabinets are my son's.",
+        apps: ['field-office', 'aureum-snake', 'grove'],
         links: [
           {
             kind: 'site',
             label: 'The arcade',
             href: '/games',
-            detail: 'all five, playable in the browser',
+            detail: 'all six, playable in the browser',
           },
         ],
       },
@@ -436,11 +436,12 @@ const appBySlug = new Map(apps.map((a) => [a.slug, a]));
 
 /** Arcade cabinets, so an app can be labelled as a game rather than a tool. */
 const ARCADE = new Set([
-  'pebble-kart',
-  'flappy-bird',
-  'grove',
-  'aureum-snake',
+  'field-office',
   'cloth-simulator',
+  'grove',
+  'broom-blade',
+  'pebble-kart',
+  'aureum-snake',
 ]);
 
 /**
