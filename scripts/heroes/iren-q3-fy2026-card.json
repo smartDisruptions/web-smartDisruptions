@@ -1,0 +1,21 @@
+{
+ "title": "IREN — Market Storm",
+ "category": "Market Storm",
+ "out": "iren-q3-fy2026-card",
+ "tone": "warn",
+ "before": {
+   "label": "Revenue, quarter to 31 March",
+   "text": "$144.8m, falling"
+ },
+ "after": {
+   "label": "ARR under contract",
+   "text": "$3.1bn",
+   "detail": "None of it revenue-generating yet"
+ },
+ "headline": [
+   { "t": "IREN is switching off the revenue that works to build the revenue that " },
+   { "t": "starts in 2027", "tone": "warn" },
+   { "t": "." }
+ ],
+ "alt": "IREN reported $144.8m of quarterly revenue, down from the prior quarter, against $3.1bn of annual recurring revenue under contract that has not started generating revenue."
+}
