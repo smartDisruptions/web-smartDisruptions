@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local runtime state from the impeccable auditor (pid, port, heartbeat)
+.impeccable/
