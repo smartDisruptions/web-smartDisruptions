@@ -313,6 +313,33 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: 'https://going-traveling.vercel.app',
   },
+  {
+    slug: 'broom-blade',
+    name: 'Broom & Blade',
+    description:
+      'A chore tracker that plays like an RPG — chores are guild-board quests paying XP and gold, heroes level up and gear up, and a nightly mystery box rewards a clean sweep.',
+    longDescription:
+      'Built for my household: a candlelit guild hall where the chores hang as parchment quest slips on a board. Completing one pays XP and gold — XP climbs the hero through titles from Dust Squire to Legend of the Loom, gold buys avatar gear in the Armory, and every piece of gear carries a hidden flavor line and origin tale you can only read once you own it. Each family member runs their own hero on the same board; a Tourney Board compares the party on a radar crest and ranked duel bars, and a Skill Grove grows a glowing rune for every chore you master. Sealing a quest takes a held press, not a tap, so a scroll can never claim one by accident. Clear every daily quest and a hooded merchant offers three mystery boxes — a fortune, a gift, or a curse — and every fifth clean-sweep day he bows with a choice: a purse of gold, or a box holding one of thirty relics that cannot be bought, from a booger to Mjölnir. It ships as one HTML file with zero dependencies, installs to the home screen as a PWA, and synthesizes every sound with the Web Audio API.',
+    thumbnailUrl: '/images/apps/broom-blade-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/broom-blade-1.webp',
+      '/images/apps/broom-blade-2.webp',
+      '/images/apps/broom-blade-3.webp',
+    ],
+    techStack: ['HTML5', 'Vanilla JavaScript', 'CSS3', 'SVG', 'Web Audio API'],
+    category: 'Productivity',
+    status: 'live',
+    outcomes: [
+      'Chores become quests with XP, gold, titles, and per-chore skill ranks — a full progression loop in a single HTML file',
+      'Hold-to-seal completion and a password-gated reset make it safe in a kid\u2019s hands without an approval queue',
+      'Every one of 67 items carries hidden flavor text and an origin tale, revealed only once earned',
+      'A nightly mystery-box chance and a five-day clean-sweep milestone turn a finished board into a ritual worth keeping',
+    ],
+    buildDate: '2026-08',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: 'https://broom-blade.vercel.app',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {

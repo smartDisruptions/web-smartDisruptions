@@ -13,6 +13,7 @@ const ARCADE_GAME_SLUGS = [
   'field-office',
   'cloth-simulator',
   'grove',
+  'broom-blade',
   'pebble-kart',
   'flappy-bird',
   'aureum-snake',
