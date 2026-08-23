@@ -3,7 +3,7 @@ title: AI research reads like the truth. Here are six checks I run before I beli
 slug: six-checks-ai-research
 excerpt: I had a research report with 45 claims in it. Nine were false and twelve couldn't be checked at all — because not one of the agents had opened a single original document. It read perfectly. Here are the six checks I run now, and the one that catches the most.
 category: Working With AI
-publishDate: 2026-08-22
+publishDate: 2026-08-23
 tags: [ai, research, verification, workflow]
 status: published
 channels:
