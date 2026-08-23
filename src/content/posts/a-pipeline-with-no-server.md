@@ -1,5 +1,5 @@
 ---
-title: I gave my net-worth tracker a memory, then moved it while it was still running
+title: My net-worth tracker runs daily with no server. I moved it without missing a day.
 slug: a-pipeline-with-no-server
 excerpt: A daily job that records my portfolio, built from a scheduled task and a text file — no server, no database, no API keys. Then I had to move it to a new home without it missing a day, which turned out to be the more useful half of the story.
 category: Build Breakdown
