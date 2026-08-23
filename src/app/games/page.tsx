@@ -338,15 +338,11 @@ function CRTScreen({
             className="h-44 w-full object-cover transition-transform duration-500 ease-out group-hover/screen:scale-110"
           />
 
-          {/* Screen scanlines */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 mix-blend-multiply"
-            style={{
-              backgroundImage:
-                'repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0px, rgba(0,0,0,0.22) 1px, transparent 1px, transparent 3px)',
-            }}
-          />
+          {/* No scanlines over the screen. Josh's call, 2026-08-23: the grain
+              read as dirt on the artwork rather than as a CRT, and it was
+              multiplying 22% black across every thumbnail. The cabinet still
+              reads as a cabinet from the frame, the vignette and the glare —
+              the parts that shape light rather than sit on top of it. */}
 
           {/* Vignette */}
           <div
