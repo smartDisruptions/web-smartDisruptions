@@ -1,5 +1,5 @@
 ---
-title: I was about to publish an article about my dashboard. First I checked whether it was safe.
+title: Before writing about my dashboard, I checked it. My private task list was public.
 slug: my-private-task-list-was-public
 excerpt: I'd written a post about a tool I built. Before publishing it, I stopped to check whether anything it touched could be broken into — and found my own task list, personal items included, readable by anyone with the URL. The cause was a free-tier default that works the opposite way most people assume.
 category: Working With AI

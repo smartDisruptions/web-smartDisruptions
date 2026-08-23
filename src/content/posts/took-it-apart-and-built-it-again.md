@@ -1,5 +1,5 @@
 ---
-title: I built my own dashboard for my site — then took it apart and built it again
+title: I built my site's dashboard inside my site — so it went down whenever the site did.
 slug: took-it-apart-and-built-it-again
 excerpt: Six hours in, I had a working dashboard for my own site. Then I said the architecture was wrong and pulled it out into its own app. The mistake is one almost everyone makes on their first internal tool, and it only becomes visible after the thing exists.
 category: Working With AI

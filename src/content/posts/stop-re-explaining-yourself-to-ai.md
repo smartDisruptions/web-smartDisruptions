@@ -1,5 +1,5 @@
 ---
-title: I stopped re-explaining myself to my AI — here's the one file that did it
+title: I stopped re-explaining myself to my AI. The fix was one file I write by hand.
 slug: stop-re-explaining-yourself-to-ai
 excerpt: "Claude and ChatGPT remember things about me now — but it's their memory, built automatically and locked inside one tool. What actually changed how I work was the opposite: a file about myself that I wrote and control. It started as a CLAUDE.md and grew into a second brain."
 category: Working With AI
