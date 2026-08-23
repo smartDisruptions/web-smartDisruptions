@@ -20,9 +20,9 @@ export const apps: App[] = [
     slug: 'samurai-kitchen',
     name: 'Samurai Kitchen',
     description:
-      'Modern restaurant platform with online ordering, Square payments, and a loyalty rewards program.',
+      'Restaurant platform with online ordering, Square payments, and a loyalty rewards program.',
     longDescription:
-      'A full-service restaurant website replacing an outdated WordPress site with a fast, mobile-first ordering experience. Customers browse a categorized menu with dietary tags, build a cart, and pay securely through Square Web Payments. A built-in loyalty program lets diners earn and redeem points on every order. The catering section offers pre-built platter packages with tiered sizing and pricing. An admin dashboard handles feedback management and configuration — all backed by Supabase for data persistence and Square APIs for payments, catalog, and loyalty.',
+      'A full-service restaurant website replacing an outdated WordPress site with a fast, mobile-first ordering experience. Customers browse a categorized menu with dietary tags, build a cart, and pay securely through Square Web Payments. A built-in loyalty program lets diners earn and redeem points on every order. The catering section offers pre-built platter packages with tiered sizing and pricing — all backed by Supabase for data persistence and Square APIs for payments, catalog, and loyalty.',
     thumbnailUrl: '/images/apps/samurai-kitchen-thumbnail.png',
     screenshotUrls: [
       '/images/apps/samurai-kitchen-1.webp',
@@ -41,15 +41,15 @@ export const apps: App[] = [
     buildDate: '2025-02',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
-    liveUrl: 'https://samurai-kitchen-web.vercel.app',
+    liveUrl: 'https://samuraikitchencatering.com',
   },
   {
     slug: 'pomodoro-timer',
     name: 'Pomodoro Timer',
     description:
-      'A full-featured focus timer with analytics, achievements, and task tracking — built to actually improve how you work.',
+      'A focus timer with analytics, achievements, and task tracking.',
     longDescription:
-      'More than just a countdown clock. This Pomodoro Timer includes a complete productivity suite with session-linked task management, a 12-week activity heatmap, streak tracking, and an XP-based achievement system with 10 unlockable badges. Customizable focus, short break, and long break durations adapt to your workflow, while ambient sound and fullscreen focus mode eliminate distractions. Post-session reflections let you rate focus quality over time. All data persists locally with JSON export for full data ownership.',
+      'A Pomodoro timer with session-linked task management, a 12-week activity heatmap, streak tracking, and an XP-based achievement system with 10 unlockable badges. Customizable focus, short break, and long break durations adapt to your workflow, while ambient sound and fullscreen focus mode eliminate distractions. Post-session reflections let you rate focus quality over time. All data persists locally with JSON export for full data ownership.',
     thumbnailUrl: '/images/apps/pomodoro-thumbnail.png',
     screenshotUrls: [
       '/images/apps/pomodoro-1.png',
@@ -128,9 +128,9 @@ export const apps: App[] = [
     slug: 'ai-diary',
     name: 'AI Diary',
     description:
-      'AI-powered personal journal with mood tracking, personality analysis, and an intelligent companion chat.',
+      'A personal journal with mood tracking, personality analysis, and a companion chat.',
     longDescription:
-      'A thoughtful journaling app that combines daily writing with AI-driven insights. Write freely about your day, and the app analyzes your entries to reveal mood patterns, Big Five personality traits, and writing style metrics over time. A companion chat powered by Claude provides reflective conversation and can extract actionable todos from your entries. The mood timeline tracks emotional valence across 90 data points, while the profile page surfaces emotion patterns, vocabulary level, and topic trends. All data persists locally in the browser for complete privacy — no server-side storage of personal content.',
+      'A journaling app that combines daily writing with AI-driven insights. Write freely about your day, and the app analyzes your entries to reveal mood patterns, Big Five personality traits, and writing style metrics over time. A companion chat powered by Claude provides reflective conversation and can extract actionable todos from your entries. The mood timeline tracks emotional valence across 90 data points, while the profile page surfaces emotion patterns, vocabulary level, and topic trends. All data persists locally in the browser for complete privacy — no server-side storage of personal content.',
     thumbnailUrl: '/images/apps/ai-diary-thumbnail.png',
     screenshotUrls: [
       '/images/apps/ai-diary-1.png',
@@ -157,7 +157,7 @@ export const apps: App[] = [
     description:
       'Art Deco snake game with rank progression, chain scoring, and Web Audio sound effects — all in a single HTML file.',
     longDescription:
-      'A luxurious take on the classic snake game, wrapped in an Art Deco aesthetic of gold and obsidian. Players guide a serpent across an 18x18 grid, eating food to grow while avoiding collisions. A chain-scoring system rewards consecutive catches, and a rank progression ladder (I through X) tracks mastery across sessions. The entire game — visuals, logic, and synthesized sound effects — ships as a single HTML file with zero dependencies. D-pad touch controls, pause and game-over overlays, persistent high scores via localStorage, and Web Audio API–driven sound design deliver a polished mobile-first experience.',
+      'A take on the classic snake game, in an Art Deco palette of gold and obsidian. Players guide a serpent across an 18x18 grid, eating food to grow while avoiding collisions. A chain-scoring system rewards consecutive catches, and a rank progression ladder (I through X) tracks mastery across sessions. The entire game — visuals, logic, and synthesized sound effects — ships as a single HTML file with zero dependencies. D-pad touch controls, pause and game-over overlays, persistent high scores via localStorage, and Web Audio API–driven sound design. Built mobile-first.',
     thumbnailUrl: '/images/apps/aureum-snake-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/aureum-snake-1.png',
@@ -211,7 +211,7 @@ export const apps: App[] = [
     description:
       'A stolen-diamond mystery played through a locked filing cabinet — five drawers, five puzzles, and a name that was never filed.',
     longDescription:
-      'A noir mystery you solve by actually reading the case. The Pembroke Diamond — thirty-four carats — left the Ashford Museum in three minutes of dark, and the insurance investigator who worked the claim vanished, leaving his file locked in a cabinet: five drawers behind a brass dial, a letter lock, an alarm panel, a wire board, and a lever. Every answer is written somewhere in the documents you have already opened, and each drawer turns the case — an inside job, a rehearsed route, a canvass that came back empty, an appraisal that proves the stone was glass. Physical puzzles gate the locks: the museum’s shuffled night-reel plates, the investigator’s reconstruction torn to twelve pieces, a jammed card tray, a sabotaged lamp circuit — and a pencil rubbing that raises the one name he never dared file out of a blank desk pad. Verlet chain physics, synthesized Web Audio, keyboard paths for every puzzle, progress that survives reloads — all in a single HTML file with zero dependencies.',
+      'A noir mystery you solve by reading the case. The Pembroke Diamond — thirty-four carats — left the Ashford Museum in three minutes of dark, and the insurance investigator who worked the claim vanished, leaving his file locked in a cabinet: five drawers behind a brass dial, a letter lock, an alarm panel, a wire board, and a lever. Every answer is written somewhere in the documents you have already opened, and each drawer turns the case — an inside job, a rehearsed route, a canvass that came back empty, an appraisal that proves the stone was glass. Physical puzzles gate the locks: the museum’s shuffled night-reel plates, the investigator’s reconstruction torn to twelve pieces, a jammed card tray, a sabotaged lamp circuit — and a pencil rubbing that raises the one name he never dared file out of a blank desk pad. Verlet chain physics, synthesized Web Audio, keyboard paths for every puzzle, progress that survives reloads — all in a single HTML file with zero dependencies.',
     thumbnailUrl: '/images/apps/field-office-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/field-office-1.png',

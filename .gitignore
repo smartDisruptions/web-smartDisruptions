@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local runtime state from the impeccable auditor (pid, port, heartbeat).
+# config.json stays tracked — only the per-run state is machine-local.
+.impeccable/questions/
