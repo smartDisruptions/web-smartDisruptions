@@ -6897,8 +6897,857 @@ What this report adds is the funding side of that ladder. **Microsoft is at the 
   ],
 };
 
+const irenQ3_FY2026: MarketStormReport = {
+  slug: 'iren-q3-fy2026',
+  ticker: 'IREN',
+  company: 'IREN Limited',
+  title:
+    'IREN swapped $30 million of bitcoin revenue for $30 million of AI revenue — and its total came out $28,000 lower than a year ago',
+  excerpt:
+    'Revenue was $144,795k in the quarter to 31 March 2026 against $144,823k in the same quarter a year earlier — flat to within 0.02% after a year of transformation, because AI Cloud added $30.1m and bitcoin mining lost $30.1m. The $(247.8)m net loss contains $318.9m of non-cash charges, which is $71m more than the whole loss; operating cash flow was positive $75.3m. And the $9.7bn Microsoft contract contributed exactly zero to GAAP remaining performance obligations, because nil tranches had been accepted. The first one was accepted on 13 August.',
+  catalyst:
+    'Q3 FY2026 results — reported May 7, 2026, plus filings through August 2026',
+  publishDate: '2026-08-23',
+  tags: [
+    'IREN',
+    'AI-infrastructure',
+    'neocloud',
+    'earnings-quality',
+    'bitcoin',
+  ],
+  verdict:
+    'A company deliberately switching off the only profitable business it has ever had, before the business replacing it has billed a dollar to its largest customer. Both halves are real: the Microsoft contract is a firm minimum commitment, not the ceiling the bear case assumes, and there is $7.6bn of cash behind the build. But after twelve months of transformation the top line has not moved, and the number the market is capitalising is management arithmetic on signed paper rather than anything GAAP recognises.',
+  priceStrip: [
+    { k: 'Price · Aug 21', v: '$41.88' },
+    { k: 'Enterprise value', v: '$16.72B' },
+    { k: 'Revenue, Q3 FY26', v: '$144.8M', tone: 'warn' },
+    { k: 'Same quarter, FY25', v: '$144.8M' },
+    { k: 'GAAP RPO', v: '$710.3M', tone: 'bear' },
+    { k: 'EV / GAAP RPO', v: '23.5×', tone: 'bear' },
+  ],
+  summary: `IREN mines bitcoin and is turning itself into an AI cloud. The transition is real, it is enormous, and the most striking thing in the filing is what it has produced so far: **nothing, on the top line.**
+
+Revenue in the quarter to 31 March was **$144,795,000**. In the same quarter a year earlier it was **$144,823,000**. Down twenty-eight thousand dollars — **0.02%** — because AI Cloud revenue grew by about $30.1m and bitcoin mining revenue fell by about $30.1m. The company's own release never makes that comparison; it anchors to the sequential quarter, which fell.
+
+The headline loss looks worse than the business. Of the **$(247.8)m** net loss, **$318.9m is non-cash** — impairments, depreciation, share comp and a mark on capped calls — which is *more than the entire loss*. Operating cash flow was **positive $75.3m**.
+
+And the contracts everyone quotes had not started. At the balance-sheet date the **$9.7bn Microsoft contract contributed exactly zero** to remaining performance obligations, because IREN books them only as tranches are delivered and accepted, and there had been **nil**. The first one was accepted on **13 August**.`,
+  headlineVsReal: [
+    {
+      headline:
+        '**"$3.1bn of ARR under contract"**, rising to a **">$4bn"** CY26 target — the number that carries the whole equity story.',
+      real: 'GAAP remaining performance obligations were **$710.3m**, of which **$308.0m** falls in the next twelve months.',
+      gap: 'These are not two views of the same thing. The ARR figure is management arithmetic on signed paper — IREN’s own footnote builds it as **$1.9bn Microsoft ($9.7bn ÷ 5) + $0.7bn NVIDIA ($3.4bn ÷ 5) + $0.5bn Prince George** — and the footnote says plainly that it "includes amounts that are not yet revenue-generating until the relevant GPUs are delivered, commissioned, and in service." The GAAP figure counts only what has been delivered and accepted. Note 5 of the 10-Q states it verbatim: *"The Group includes amounts in unsatisfied RPO only for tranches that have been delivered and accepted, **of which there have been nil as of the reporting date.**"* So the gap between the headline and the accounting is **10.1×** — and annualised current revenue of $579m is nearly **double the entire GAAP twelve-month backlog**.',
+    },
+    {
+      headline:
+        'The bear case: **$9.7bn is a ceiling, not a commitment** — Microsoft pays only for GPUs it accepts, so the number is marketing.',
+      real: 'The contract says the opposite, in terms. This report went looking for the ceiling and **found a floor**.',
+      gap: 'The Statement of Work is filed — Exhibit 10.3 to the December quarter’s 10-Q — and **Section 3.2.a.v** reads: *"The Service Fees are non-refundable, non-cancellable and constitute a firm minimum commitment by Microsoft to Partner regardless of whether Microsoft utilises any or all of the Services."* Exhibit F then **disapplies Sections 7–17 of Microsoft’s standard PO terms**, which deletes the termination-for-convenience right that would otherwise let Microsoft walk. Its only exits are narrow: a per-tranche termination if IREN misses the delivery window, and a 60-day-cure material-breach right that **expressly carves out late delivery as not a material breach**. On any other termination, Section 6.c makes Microsoft *"pay an amount equal to the TCV less any Service Fees already paid."* The ceiling is real too — fees "will not exceed **$9,666,845,337.60**" — but a cap on price is not the same as an absence of commitment. **The risk here is execution, not demand.**',
+    },
+    {
+      headline:
+        'A **$(247.8)m quarterly loss**, widening from $(155.4)m — a company burning cash on a bet.',
+      real: '**Operating cash flow was positive $75.3m.** The loss is transition accounting.',
+      gap: 'Non-cash charges total **$318.9m**: impairment **$140.4m**, depreciation and amortisation **$121.2m**, share-based compensation **$31.5m**, the capped-call mark **$23.7m** and a held-for-sale mark **$2.0m**. That is **$71m more than the entire net loss**. The impairment alone is 57% of it, and it is the deliberate write-down of mining hardware being decommissioned — with Note 22 warning that **approximately $520 million more** is expected after the balance-sheet date. Segment cash margins are healthy: bitcoin mining **68.2%**, AI Cloud **86.3%** — though neither is a true gross margin, because the $121.2m of depreciation is not pushed down to segments. What the loss actually measures is the cost of demolition, not of operations.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$144.80M',
+      delta: '−0.02% YoY',
+      note: '$144,795k vs $144,823k. AI Cloud +$30.1m, mining −$30.1m.',
+      tone: 'warn',
+    },
+    {
+      label: 'GAAP remaining performance obligations',
+      value: '$710.3M',
+      delta: '$0 from Microsoft',
+      note: 'Nil tranches accepted at the balance-sheet date. $308.0m due within 12 months.',
+      tone: 'bear',
+    },
+    {
+      label: 'Operating cash flow',
+      value: '+$75.3M',
+      delta: 'against a $(247.8)M loss',
+      note: '$318.9m of the loss is non-cash — $71m more than the loss itself.',
+      tone: 'bull',
+    },
+    {
+      label: 'AI Cloud revenue',
+      value: '$33.6M',
+      delta: '+839% YoY',
+      note: 'From $3.6m. Up 94% sequentially. 86.3% cash margin.',
+      tone: 'bull',
+    },
+    {
+      label: 'Bitcoin share of revenue',
+      value: '76.8%',
+      delta: 'being switched off',
+      note: 'FY2025 was 96.7% bitcoin — on +$86.9m of GAAP net income.',
+      tone: 'warn',
+    },
+    {
+      label: 'Further impairment expected',
+      value: '~$520M',
+      delta: 'management estimate',
+      note: 'On top of $140.4m this quarter. Mining hardware still carries at $1,041.8m gross.',
+      tone: 'bear',
+    },
+    {
+      label: 'Commitments',
+      value: '$11.90B',
+      delta: '32× in nine months',
+      note: '$11.90bn of it payable within twelve months, against $2.21bn of cash at 31 March.',
+      tone: 'bear',
+    },
+    {
+      label: 'Cash',
+      value: '$7.6B',
+      delta: 'at 30 June',
+      note: 'From $2.21bn at 31 March. Includes $1.7bn restricted against the Microsoft GPU financing.',
+      tone: 'bull',
+    },
+  ],
+  printTableTitle:
+    'Q3 FY2026 — the quarter ended 31 March, and what has happened since',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q3 FY2026', align: 'right' },
+      { label: 'Comparison', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Total revenue',
+          '$144,795k',
+          'vs $144,823k in Q3 FY25',
+          'Down $28k, or 0.02%, year over year',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          '— Bitcoin mining',
+          '$111,160k',
+          '76.8% of revenue',
+          'Cash margin 68.2% ex-depreciation',
+        ],
+      },
+      {
+        cells: [
+          '— AI Cloud services',
+          '$33,635k',
+          '+839% YoY, +94% QoQ',
+          'From $3,581k. Cash margin 86.3% ex-depreciation',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Operating loss',
+          '$(233,523)k',
+          '',
+          'After $140.4m impairment and $121.2m D&A',
+        ],
+      },
+      {
+        cells: [
+          'Net loss',
+          '$(247,827)k',
+          'from $(155.4)m in Q2',
+          'EPS $(0.74)',
+        ],
+      },
+      {
+        cells: [
+          'Non-cash charges within that loss',
+          '$318.9M',
+          '$71M more than the loss',
+          'Impairment 140.4 · D&A 121.2 · SBC 31.5 · capped calls 23.7 · AHFS 2.0',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Net cash from operating activities',
+          '+$75,300k',
+          'positive',
+          'Deferred revenue +$73.8m offset by an AR build of $(67.4)m',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Adjusted EBITDA',
+          '$59.5M',
+          'from $75.3M',
+          'Down 21%; margin flat at 41%',
+        ],
+      },
+      {
+        cells: [
+          'Unsatisfied RPO (GAAP)',
+          '$710,272k',
+          '$307,950k within 12 months',
+          'Nil Microsoft tranches accepted — $0 of the $9.7bn is in here',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          '"ARR under contract" (management)',
+          '$3.1B',
+          '10.1× the GAAP figure',
+          '$1.9bn Microsoft + $0.7bn NVIDIA + $0.5bn Prince George',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Commitments',
+          '$11,902,471k',
+          'from $368,805k at 30 June 2025',
+          '$11,899,054k payable within twelve months',
+        ],
+      },
+      {
+        cells: [
+          'Cash and equivalents',
+          '$2,213,274k',
+          '~$7.6bn at 30 June',
+          'The June figure includes $1.7bn restricted',
+        ],
+      },
+      {
+        cells: [
+          'Convertible principal',
+          '$3,745.7M',
+          '$6,745.7M after 14 May',
+          'Five series at 31 March; a sixth added $3.0bn at ~$73.07',
+        ],
+      },
+      {
+        cells: [
+          'Hardware 3 project financing',
+          '~$3.6B',
+          'executed 29 May',
+          '$1.5bn DDTL at SOFR+2.25% + $2.1bn of 5.96% notes due 2031; 1.05:1.00 DSCR',
+        ],
+      },
+      {
+        cells: [
+          'NVIDIA investment rights',
+          '30,000,000 shares',
+          'at $70.00, to 2031',
+          'Up to ~$2.1bn gross; vest on deliveries of up to 600,000 NVIDIA GPUs',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Secured power',
+          '4,510MW',
+          '"5GW" in the release',
+          'Across seven sites, on connection agreements or equivalents',
+        ],
+      },
+      {
+        cells: [
+          'AI IT load accepted by a customer',
+          '~50MW',
+          'from ~3MW a year ago',
+          'Horizon 1, accepted by Microsoft on 13 August 2026 — first of four',
+        ],
+        star: true,
+      },
+    ],
+  },
+  bull: [
+    'The Microsoft contract is a firm minimum commitment, not a ceiling. Section 3.2.a.v of the filed Statement of Work calls the Service Fees "non-refundable, non-cancellable and… a firm minimum commitment by Microsoft… regardless of whether Microsoft utilises any or all of the Services," and Exhibit F deletes Microsoft’s termination-for-convenience right. On any other termination Microsoft pays the total contract value less fees already paid.',
+    'The operating business generates cash today. Operating cash flow was positive $75.3m in a quarter that reported a $(247.8)m loss, and both segments run cash margins above 68%.',
+    'AI Cloud revenue is compounding fast off a small base — $3.6m to $33.6m in a year, up 94% sequentially, at an 86.3% cash margin before depreciation.',
+    'The funding is in place rather than hoped for: ~$7.6bn of cash at 30 June, a $3.0bn convertible issued in May, and a ~$3.6bn project financing at the Hardware 3 SPV secured against the GPUs and the Microsoft cash flows.',
+    'Delivery is no longer theoretical. Horizon 1 — 50MW of IT load, the first of four — was delivered to and accepted by Microsoft on 13 August 2026, and IREN reached NVIDIA Exemplar Cloud status on GB300 NVL72.',
+  ],
+  bear: [
+    'After twelve months of transformation the top line is flat to within 0.02%. Every dollar of AI Cloud growth has so far replaced a dollar of bitcoin revenue rather than adding to it.',
+    'The number the equity story rests on is not an accounting figure. "$3.1bn ARR under contract" is total contract value divided by term; GAAP remaining performance obligations were $710.3m, and only $308.0m of that falls in the next twelve months.',
+    'IREN is deliberately switching off the only profitable business it has ever had. FY2025 revenue was $501.0m, 96.7% of it bitcoin mining, on +$86.9m of GAAP net income — and roughly $520m of further impairment is expected as the mining fleet is retired.',
+    'Commitments reached $11.90bn, with $11.90bn of that payable within twelve months, against $2.21bn of cash at the balance-sheet date. The June cash build closes the gap but the obligation is enormous relative to the business that exists.',
+    'Dilution is structural, not incidental. Shares outstanding rose 32.3% in nine months, the antidilutive overhang is 192.4m shares, and a $6.0bn shelf sits behind it — with the NVIDIA rights adding 30m more at a strike the stock is 40% below.',
+    'Delivery has already slipped once: Horizon 1 was targeted for energization by the end of calendar 2025 and was accepted in August 2026, about eighteen months after announcement.',
+  ],
+  theQuestion: `IREN is doing something almost no public company does on purpose: turning off a profitable business before the business replacing it has billed its largest customer a dollar.
+
+The bull case is that this is simply what a transition looks like from the inside — the contract is a firm commitment, the cash is raised, the first 50MW has been accepted, and the revenue arrives in 2027 whether or not the income statement shows it today.
+
+The bear case is that the top line has been flat for a year, the $3.1bn everyone quotes is arithmetic rather than accounting, and $11.9bn of commitments fall due inside twelve months.
+
+Both readings use the same filings. The question is whether you are looking at a company mid-transition, or at one that has swapped a working business for a promissory note.`,
+  analysis: `## The number the release does not print
+
+IREN's Q3 FY26 release leads with a sequential comparison: revenue "decreased to $144.8m (vs. Q2 FY26 $184.7m)". That is true and it is the less interesting number.
+
+The year-over-year figure is not in the release at all. Q3 FY26 revenue was **$144,795,000**. Q3 FY25 revenue was **$144,823,000**. The difference is **twenty-eight thousand dollars**, or **0.02%**.
+
+Underneath that stillness, everything moved. AI Cloud services went from **$3,581k to $33,635k** — up 839%, and up 94% on the prior quarter. Bitcoin mining fell by almost exactly the same amount. A company that has raised billions, signed a $9.7bn contract and rebuilt itself around GPUs has, after a full year, precisely the revenue it started with.
+
+That is not an accusation. It is what a substitution looks like when the two curves cross. But it is the fact a reader most needs and the one the release does not surface.
+
+## What the loss actually measures
+
+The $(247.8)m net loss reads like a company in trouble. It is mostly demolition.
+
+| Non-cash charge | Amount |
+| --- | --- |
+| Impairment | $140.4M |
+| Depreciation and amortisation | $121.2M |
+| Share-based compensation | $31.5M |
+| Capped-call mark | $23.7M |
+| Assets held for sale | $2.0M |
+| **Total** | **$318.9M** |
+
+That is **$71m more than the entire net loss**, and **net cash from operating activities was positive $75.3m** — with working-capital swings roughly cancelling, so the figure is close to clean. Segment cash margins ex-depreciation are **68.2%** for mining and **86.3%** for AI Cloud. Neither is a true gross margin, because the $121.2m of depreciation sits as a reconciling item in the segment note rather than being pushed down — a caveat worth carrying, particularly for the AI Cloud figure, which is the margin the bull case leans on and which has never been charged for the GPUs producing it.
+
+The impairment is the point: it is the deliberate write-down of mining hardware being decommissioned, and **Note 22 warns of approximately $520 million more to come**. Mining hardware still carries at **$1,041.8m gross** against GPU hardware at **$811.4m** — the asset base being destroyed is still larger than the one replacing it.
+
+## The contract, read rather than characterised
+
+This is where the report changed its own mind.
+
+The natural bear reading of a $9.7bn headline is that it is a ceiling: Microsoft pays only for GPUs it accepts, so the number describes an opportunity rather than an obligation. That reading is wrong, and the document that settles it is filed — the Statement of Work went in as **Exhibit 10.3** to the December quarter's 10-Q.
+
+**Section 3.2.a.v**: *"The Service Fees are non-refundable, non-cancellable and constitute a firm minimum commitment by Microsoft to Partner regardless of whether Microsoft utilises any or all of the Services, except as otherwise provided for in this Agreement."*
+
+**Exhibit F** disapplies Sections 7–17 of Microsoft's standard purchase-order terms, which removes the Section 14 termination-for-convenience right that would otherwise let Microsoft walk at will. What remains are two narrow exits: a per-tranche termination if IREN misses the Delivery Delay Window, and a 60-day-cure material-breach right that **expressly carves out late delivery as not a material breach**. On any other termination, **Section 6.c** requires Microsoft to *"pay an amount equal to the TCV less any Service Fees already paid."*
+
+The ceiling half is real — fees *"will not exceed $9,666,845,337.60"*, total contract value shrinks by the tranche value of anything terminated, and billing multiplies GPU quantity *"less any GPUs that have not been Accepted by Microsoft."* But a cap on price is not an absence of commitment. **The risk in this contract is IREN's execution, not Microsoft's demand.** There is also a $1,932,839,884.80 upfront payment schedule — exactly 20% of tranche value — credited back pro rata after the 24th month.
+
+## And yet none of it was in the accounts
+
+Both things are true at once, which is the whole report.
+
+**Note 5**: *"The Group includes amounts in unsatisfied RPO only for tranches that have been delivered and accepted, of which there have been nil as of the reporting date."*
+
+So at 31 March, a **firmly committed $9.7bn contract contributed exactly zero** to remaining performance obligations. Total unsatisfied RPO was **$710,272k**, of which **$307,950k** falls in the twelve months to March 2027. Against the "$3.1bn ARR under contract" headline that is a **10.1× gap** — and annualised current revenue of $579m is nearly double the entire GAAP twelve-month backlog.
+
+The first tranche was accepted on **13 August 2026**: Horizon 1, 50MW of IT load, the first of four buildings totalling approximately 200MW. Twelve months earlier IREN had, on its own co-CEO's account, *"approximately 3MW of self-built AI Cloud capacity."* The FY2025 10-K had targeted Horizon 1 for energization by the end of calendar 2025; acceptance came about eighteen months after the project was announced.
+
+## NVIDIA on three sides of the table
+
+NVIDIA is IREN's GPU supplier, a **$3.4bn customer** under a five-year cloud services agreement, and a prospective shareholder: investment rights over **30,000,000 ordinary shares at $70.00**, up to roughly **$2.1bn gross**, running to 7 May 2031.
+
+The mechanism is the part worth knowing. Those rights *"vest based on certain volumes of deliveries of up to 600,000 NVIDIA GPUs"* — so NVIDIA's right to buy IREN equity is earned as IREN buys NVIDIA hardware. Roughly one share per twenty GPUs.
+
+Two honest qualifications. The $2.1bn is a **ceiling**, payable only on full exercise and subject to regulatory limits — and at $41.88 the stock is **40% below** the $70.00 strike, so none of it is money today. And the Q3 10-Q contains **no related-party disclosure of NVIDIA anywhere** — the phrase does not appear in the filing, its exhibits or its XBRL. That is defensible on timing, since both agreements were signed on 7 May, after the balance-sheet date. It is worth watching whether the FY2026 10-K takes a different view.
+
+## The balance sheet
+
+Commitments went from **$368,805k at 30 June 2025 to $11,902,471k at 31 March 2026** — 32× — with **$11,899,054k payable within twelve months** against $2,213,274k of cash at that date.
+
+The funding response was fast and large. **$3.0bn** of 1.00% convertible notes due 2033 on 14 May, at a ~$73.07 conversion price, with $201.3m spent on capped calls. Then on 29 May a **~$3.6bn secured project financing** at the Hardware 3 SPV: a $1.5bn delayed-draw term loan at SOFR+2.25% and $2.1bn of 5.96% senior notes due 2031, secured against the Hardware 3 assets *including the GPUs and the Microsoft cash flows*, with a 1.05:1.00 debt-service-coverage covenant. Cash reached **~$7.6bn at 30 June**, of which **$1.7bn is restricted** against that facility.
+
+The dilution is structural. Shares outstanding rose **32.3% in nine months**; the antidilutive overhang is **192.4m shares**, 86.2m of it from converts; a **$6.0bn shelf** was filed in March. Worth correcting a tempting simplification: it is not true that every strike is out of the money. The 2029 and 2030 converts have conversion prices of **$13.64 and $16.81** on $445.7m of principal — deeply *in* the money at $41.88. It is the newest layers ($51.40, $70.00, $73.07, $85.63) that are not.
+
+## What the price assumes
+
+At the 21 August close of **$41.88**, enterprise value is about **$16.72bn**. Set against headline total contract value of roughly **$15.9bn** — the $9.7bn Microsoft and $3.4bn NVIDIA contracts plus $2.8bn announced on 20 July — that is about **1.05× EV to contract value**.
+
+That is *more expensive* than CoreWeave, at $94.48bn of EV against $103.7bn of RPO (**0.91×**, or ~0.73× including the >$25bn of early-Q3 commitments it discloses but excludes), and cheaper than Nebius at $62.22bn against $37.5bn of RPO (**1.66×**).
+
+But the comparison is not like-for-like, and that matters more than the ranking: IREN is measured on total contract value, CoreWeave on RPO plus committed backlog, Nebius on strict ASC 606 RPO. **On its own GAAP RPO of $710.3m, IREN trades at 23.5×** — and at roughly **124× annualised AI Cloud revenue**. The screen EV is also stale in both directions: it predates the May convertible and the Hardware 3 draw, and equally predates the cash build to $7.6bn and the 11,981,668 shares issued for Mirantis on 3 August.
+
+## Risk — each isolated, do not blur
+
+1. **Acceptance (dominant).** Revenue exists only as tranches are delivered and accepted. The Limited Parent Guarantee explicitly covers *"any shortfall in Hardware 3's payment obligations attributable to a tranche of GPU services that Microsoft does not accept or terminates"* — the company has guaranteed the consequence of its own delivery risk.
+2. **The transition gap.** Bitcoin revenue is being switched off on a schedule; GPU revenue arrives on an acceptance schedule. The two are not synchronised, and roughly $520m of further impairment sits between them.
+3. **Near-term commitments.** $11.9bn falling due inside twelve months is a very large number against a business with $579m of annualised revenue, even with $7.6bn of cash.
+4. **Dilution.** A 32.3% share-count increase in nine months, 192.4m of overhang, a $6.0bn shelf, and 30m NVIDIA rights.
+5. **Concentration.** Two customers — Microsoft and NVIDIA — account for essentially the entire contracted story.
+6. **Schedule.** Horizon 1 slipped from a calendar-2025 energization target to an August 2026 acceptance. Three more Horizons are targeted for 2026.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** The near term is mechanical and unusually legible: how many of the remaining three Horizon tranches are accepted before the FY2026 10-K, and what happens to GAAP RPO when they are. Watch the RPO line, not the ARR headline — it is the one that moves only when revenue becomes real.
+
+**Sizing considerations (not a recommendation).** IREN is the only company in this section that owns its power and its land rather than leasing capacity, which is a genuinely different risk profile from the other neoclouds — slower to build, harder to displace. It is also the only one deliberately destroying a profitable business to fund the new one. The multiple embeds delivery on a schedule that has already slipped once.`,
+  invalidation: {
+    bull: [
+      'Horizon 2, 3 or 4 slips materially past 2026, or a tranche is rejected — the acceptance gate is where the contract meets the income statement, and the Limited Parent Guarantee puts that risk back on IREN.',
+      'GAAP RPO does not climb sharply in the FY2026 and Q1 FY2027 filings. If accepted tranches are not converting the $9.7bn into recognised backlog, the "ARR under contract" figure never becomes accounting.',
+      'The further impairment materially exceeds the ~$520m estimate, or mining revenue falls faster than AI Cloud revenue replaces it, so the flat top line starts declining.',
+      'Equity issuance continues at a share price well below the $70.00 NVIDIA strike, compounding dilution at the worst possible price.',
+    ],
+    bear: [
+      'The remaining Horizon tranches are accepted on schedule and GAAP RPO jumps toward the contracted figure — at which point the 23.5× EV/RPO multiple recalculates on a very different denominator.',
+      'AI Cloud revenue keeps roughly doubling sequentially, so the substitution stops being one-for-one and the top line finally moves.',
+      'NVIDIA exercises investment rights, which requires the stock above $70 and would signal the supplier-customer-shareholder loop closing in IREN’s favour.',
+      'Owning power and land proves to be the moat management claims: IREN energises 2027 capacity while leasing-based competitors are still queuing for interconnection.',
+    ],
+  },
+  verification: {
+    confirmed: 2,
+    partlyTrue: 17,
+    corrected: 3,
+    confirmedNote:
+      'Confirmed against IREN’s own filings: 22 load-bearing claims were surfaced and all 22 went to an adversarial pass instructed to refute rather than check, opening 62 primary documents — the Q3 FY26 10-Q and its segment, revenue, commitments and subsequent-events notes, the FY2025 10-K, the filed Microsoft Statement of Work, the May convertible and Hardware 3 financing 8-Ks, the NVIDIA securities purchase agreement, the August Form D and the 20 July business update. Three claims were refuted outright, and all three are below because each one changes the reading.',
+    items: [
+      {
+        kind: 'corrected',
+        title:
+          'The bear case on the Microsoft contract is wrong, and the filing says so',
+        text: 'This report started from the natural reading — that $9.7bn is a tranche-by-tranche **ceiling** rather than a commitment, because Microsoft is billed only for accepted GPUs. **Refuted by the contract itself.** The Statement of Work is filed as Exhibit 10.3 to the December-quarter 10-Q, and Section 3.2.a.v reads: *"The Service Fees are non-refundable, non-cancellable and constitute a firm minimum commitment by Microsoft to Partner regardless of whether Microsoft utilises any or all of the Services."* Exhibit F disapplies Sections 7–17 of Microsoft’s standard PO terms, deleting termination for convenience; the material-breach right carves out late delivery; and Section 6.c makes Microsoft pay total contract value less fees paid on any other termination. The price cap is real; the absence of commitment is not.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          '"All AI Cloud revenue is generated in Canada" is a filing artifact, not a fact about the data centres',
+        text: 'The 10-Q’s disaggregation does say all bitcoin mining revenue was generated in Australia and all AI Cloud revenue in Canada — which reads as though the Texas sites produce nothing. **The same sentence says the geography is "based on the location of the contracting entity", not the data centre.** IREN’s Australian and Canadian entities contract the revenue; the machines are elsewhere. A report inferring anything about site-level production from that line would be inferring it from a legal-entity map.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'Not every strike is out of the money — the oldest converts are deep in',
+        text: 'A tidy line — that at $41.88 every strike in the capital structure is underwater — is **false**. The 2029 and 2030 convertible notes carry conversion prices of **$13.64 and $16.81**, on $445.7m of principal outstanding at 31 March, and their capped calls cap at $20.98 and $25.86. All four are well in the money. What is out of the money is everything issued since: $51.40, $70.00 (NVIDIA), $73.07 and $85.63. Related: the "$38.80 per Mirantis share" figure is a derived number — the Form D reports only $464,866,211 sold to 183 investors, and the share count comes from a separate 8-K — and the consideration was a fixed share count set at signing, not a negotiated price.',
+      },
+      {
+        kind: 'partly',
+        title: 'The ARR denominators moved after the quarter',
+        text: 'The report’s ratios use the $3.1bn and $3.7bn figures management gave on 7 May. The **20 July business update raised the CY26 target to "more than $4bn"**, of which ~85% is now under contract (~$3.4bn), and added $2.8bn of new multi-year contracts, taking headline total contract value to roughly $15.9bn. On the restated denominators the same $134.5m of annualised AI Cloud revenue is ~4.0% and ~3.4% rather than 4.3% and 3.6%. Also worth stating: the numerator and denominator do not fully overlap — Microsoft and NVIDIA contributed nil revenue in the quarter, so this is a coverage ratio, not a percentage complete.',
+      },
+      {
+        kind: 'partly',
+        title: 'Adjusted EBITDA fell 21%; only the margin was flat',
+        text: 'An early draft had Adjusted EBITDA flat quarter on quarter. It **fell from $75.3m to $59.5m — down 21%.** What was flat was the *margin*, at 41% in both quarters. IREN’s own release states the decline plainly; the error was ours.',
+      },
+      {
+        kind: 'partly',
+        title: 'The enterprise value is stale in both directions',
+        text: 'The $16.72bn screen figure is built from 31 March balance-sheet debt and the 30 April share count. It therefore misses the $3.0bn May convertible and the Hardware 3 drawdowns — but it equally misses the cash build to ~$7.6bn at 30 June and the 11,981,668 shares issued for Mirantis on 3 August. **The net direction of the error is genuinely ambiguous**, so this report does not claim published multiples understate the multiple. Separately, the peer comparison is basis-inconsistent by construction: IREN on total contract value, CoreWeave on RPO plus committed backlog, Nebius on strict ASC 606 RPO.',
+      },
+    ],
+  },
+  openQuestions: [
+    'How many Horizon tranches have been accepted since 31 March, and what has that done to GAAP remaining performance obligations? The RPO line is the only place the $9.7bn becomes accounting, and the FY2026 10-K is the first filing that will show it.',
+    'Will the FY2026 10-K treat NVIDIA as a related party? It is supplier, $3.4bn customer and holder of rights over 30m shares, and the phrase does not appear anywhere in the Q3 filing — defensible on timing, since both agreements post-date the balance sheet.',
+    'How much of the ~$3.6bn Hardware 3 facility is drawn? The 20 July update discloses $1.7bn of restricted cash tied to it, which is evidence of drawdown, but the schedule is not disclosed.',
+    'What is AI Cloud gross margin after depreciation? The 86.3% figure excludes the $121.2m of D&A that is not pushed down to segments — and the GPUs producing that revenue are the largest depreciating asset the company owns.',
+  ],
+  soWhat: `Here is the habit worth taking, and it applies well beyond this company: **when a business tells you what it has under contract, find out what its accountants counted.**
+
+IREN says it has "$3.1bn of ARR under contract." Its own filing says remaining performance obligations were **$710.3m**. Both numbers are honest. They measure different things: the first is total contract value divided by the term, the second is what has actually been delivered and accepted. IREN even explains the difference in a footnote — it just does not put the smaller number in the headline, and nobody would.
+
+The gap is not a scandal. It is a schedule. But it is the difference between "we will earn this" and "we have earned this", and only one of those two numbers has to survive an audit.
+
+The second habit is simpler and I nearly missed it here: **check the same quarter last year, not just last quarter.** IREN's release compares to the previous quarter, where revenue fell. Compare to the same quarter a year earlier and revenue is *identical* — $144,795k against $144,823k. A whole year of transformation, thirty million dollars of new AI revenue, thirty million dollars of old bitcoin revenue gone, and a top line that has not moved. Neither comparison is dishonest. Only one of them tells you what the transition has actually produced so far.`,
+  throughLine: {
+    text: `IREN is the fourth neocloud in this section and the one that owns its own power.
+
+CoreWeave and Nebius rent or build into capacity; IREN holds grid connection agreements over 4,510MW of it across seven sites. That is a slower path and a harder one to displace, and it shows up in the numbers as a company with enormous secured power and almost no accepted load — roughly 50MW of AI IT load a customer has signed for, against ~3MW twelve months ago.
+
+It also sits at the sharp end of the pattern the standing thesis describes. **The obligation arrives before the revenue does**: $11.9bn of commitments payable inside twelve months, against $710.3m of GAAP backlog and $579m of annualised revenue. And the funding came from exactly where that report said the industry's funding now comes from — a $3.0bn convertible in May and a $3.6bn secured project financing in May, pledged against the GPUs and the customer's own cash flows.
+
+On capital spending against revenue: Palantir at 0.75%, Microsoft around 32%, Alphabet at 37.5%, Amazon at roughly 105% of operating cash flow, SpaceX at 235%, CoreWeave at about 290%, Nebius's first half at 828% — and IREN's nine-month investing outflow of $2.61bn against $278m of nine-month revenue is off that scale entirely.`,
+    links: [
+      {
+        label:
+          'The standing thesis — the obligation arrives before the revenue',
+        slug: 'ai-capex-abundance-or-bubble',
+      },
+      {
+        label: 'CRWV — the same business, leased rather than owned',
+        slug: 'crwv-q2-2026',
+      },
+      {
+        label: 'NBIS — profit that is entirely a revaluation',
+        slug: 'nbis-q2-2026',
+      },
+    ],
+  },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'What the operating business earns today, stripped of impairments and mark-to-market noise.',
+      },
+      {
+        role: 'Short seller',
+        probe:
+          'The gap between contracted headlines and delivered revenue, and what breaks first.',
+      },
+      {
+        role: 'AI-infrastructure engineer',
+        probe:
+          'Whether the megawatts, the GPUs and the delivery schedule are physically real.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe:
+          'Strictly what the price assumes, on a company with falling revenue and enormous contracted backlog.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 22,
+    claimsVerified: 22,
+    verificationScope: 'all',
+    agentCount: 12,
+    runDate: '2026-08-23',
+    primaryDocsOpened: 62,
+  },
+  cardImage: '/images/content/iren-q3-fy2026-card-hero.webp',
+  cardImageLight: '/images/content/iren-q3-fy2026-card-hero-light.webp',
+  cardImageAlt: 'IREN logo',
+  sources: [
+    {
+      n: 1,
+      label: 'SEC EDGAR — IREN filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0001878848.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 2,
+      label: 'IREN Form 8-K filed 2026-05-07',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000025/irenreportsq3fy26results.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 3,
+      label: 'IREN Form 10-Q, period ended 2026-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000026/iren-20260331.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 4,
+      label: 'IREN Form 10-K, period ended 2025-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884825000063/iren-20250630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 5,
+      label: 'IREN Form 8-K filed 2026-05-29',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126023427/ef20075181_8k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 6,
+      label: 'IREN Form 8-K filed 2026-08-04',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126031053/ny20079234x2_8k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 7,
+      label: 'IREN Form D filed 2026-08-18',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126033473/primary_doc.xml',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 8,
+      label: 'IREN Form 8-K filed 2025-11-02',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036125040072/ef20058139_8k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 9,
+      label: 'IREN Form 8-K filed 2026-05-11',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126021285/ef20073507_8k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 10,
+      label: 'IREN Form 8-K Exhibit 99.1 (press release) filed 2026-07-20',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126028871/ef20078253_ex99-1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 11,
+      label: 'IREN Form 8-K Exhibit 99.1 (press release) filed 2026-08-13',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126032638/ef20080141_ex99-1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 12,
+      label: 'IREN Form 8-K filed 2026-07-20',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126028871/ef20078253_8k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 13,
+      label: 'IREN Form 8-K filed 2026-08-13',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126032638/ef20080141_8k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 14,
+      label: 'IREN Form 8-K filed 2026-05-07',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000025/index.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 15,
+      label: 'IREN Form 10-Q, period ended 2025-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000015/iren-20251231.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 16,
+      label: 'IREN Form 6-K filed 2025-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884825000043/iren-20250331.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 17,
+      label: 'IREN Form 6-K filed 2025-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884825000043/index.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 18,
+      label: 'IREN Form 6-K filed 2025-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884825000043/q3fy25resultspressreleas.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 19,
+      label: 'IREN Form 6-K filed 2025-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884825000043/iren-20250331_d2.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 20,
+      label: 'IREN Form 8-K filed 2026-05-07',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000025/iren-20260507.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 21,
+      label: 'IREN Form 424B7 filed 2026-08-04',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126031055/index.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 22,
+      label: 'IREN Form 10-Q, period ended 2026-03-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000026/0001878848-26-000026.txt',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 23,
+      label: 'IREN Form 8-K filed 2026-05-08',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000028/index.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 24,
+      label: 'IREN Form 8-K filed 2026-05-08',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000187884826000028/irentranscript.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 25,
+      label: 'IREN Form 424B7 filed 2026-08-04',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126031055/ny20079234x1_424b7.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 26,
+      label: 'IREN Form 8-K filed 2026-08-13',
+      url: 'https://www.sec.gov/Archives/edgar/data/1878848/000114036126032638/index.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 27,
+      label: 'SEC EDGAR — CoreWeave filing index and XBRL facts',
+      url: 'https://data.sec.gov/submissions/CIK0001769628.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 28,
+      label: 'CoreWeave Form 10-Q, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 29,
+      label: 'CoreWeave Form 8-K filed 2026-08-11',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000362/index.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 30,
+      label: 'CoreWeave Form 8-K filed 2026-08-11',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000362/coreweave2q26earningspress.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 31,
+      label: 'CoreWeave Form 8-K filed 2026-08-11',
+      url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000362/crwv-20260811.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 32,
+      label: 'Nebius Form 6-K Exhibit 99.1 (press release) filed 2026-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094568/tm2622968d1_ex99-1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 33,
+      label: 'Nebius Form 6-K Exhibit 99.1 (press release) filed 2026-08-12',
+      url: 'https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d2.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 34,
+      label:
+        'IREN — IREN Investor Presentations | Earnings Calls, Updates & Presentations',
+      url: 'https://iren.com/investor/events-and-presentations',
+      kind: 'company',
+    },
+    {
+      n: 35,
+      label: 'IREN — IREN Stock Chart | Live NASDAQ:IREN Price & Market Data',
+      url: 'https://iren.com/investors/stock',
+      kind: 'company',
+    },
+    {
+      n: 36,
+      label:
+        'Nebius — NVIDIA GB300 NVL72 on Nebius AI Cloud — Rack-Scale AI Reasoning Infrastructure',
+      url: 'https://nebius.com/compute/gb300',
+      kind: 'company',
+    },
+    {
+      n: 37,
+      label:
+        'Nebius — Nebius achieves NVIDIA Exemplar Cloud on NVIDIA GB300 for training: Validated performance for hyperscale AI',
+      url: 'https://nebius.com/blog/posts/nebius-achieves-nvidia-exemplar-cloud-on-nvidia-gb300-for-training',
+      kind: 'company',
+    },
+    {
+      n: 38,
+      label:
+        'Nscale — AI cloud provider site, used for the neocloud comparison',
+      url: 'https://www.nscale.com/blog/nscale-achieves-nvidia-exemplar-cloud-status-on-nvidia-gb300-nvl72',
+      kind: 'company',
+    },
+    {
+      n: 39,
+      label: 'stockanalysis.com — IREN Limited (IREN) Stock Price & Overview',
+      url: 'https://stockanalysis.com/stocks/iren/',
+      kind: 'data',
+    },
+    {
+      n: 40,
+      label: 'TradingView — IREN Stock Price and Chart',
+      url: 'https://www.tradingview.com/symbols/NASDAQ-IREN/',
+      kind: 'data',
+    },
+    {
+      n: 41,
+      label: 'Yahoo Finance — Iren',
+      url: 'https://finance.yahoo.com/quote/IREN/',
+      kind: 'data',
+    },
+    {
+      n: 42,
+      label: 'stockanalysis.com — IREN Limited (IREN) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/iren/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 43,
+      label: 'stockanalysis.com — CoreWeave (CRWV) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/crwv/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 44,
+      label: 'stockanalysis.com — Nebius Group (NBIS) Statistics & Valuation',
+      url: 'https://stockanalysis.com/stocks/nbis/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 45,
+      label: 'Investing.com — Iris energy',
+      url: 'https://www.investing.com/equities/iris-energy',
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label: 'cnn.com — IREN Stock Quote Price and Forecast',
+      url: 'https://www.cnn.com/markets/stocks/IREN',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label: 'cnbc.com — IREN: IREN Limited - Stock Price, Quote and News',
+      url: 'https://www.cnbc.com/quotes/IREN',
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label: 'tipranks.com — Financials',
+      url: 'https://www.tipranks.com/stocks/iren/financials',
+      kind: 'analysis',
+    },
+    {
+      n: 49,
+      label: 'tipranks.com — Market cap',
+      url: 'https://www.tipranks.com/stocks/iren/market-cap',
+      kind: 'analysis',
+    },
+    {
+      n: 50,
+      label:
+        "24/7 Wall St. — IREN's $3.4 Billion NVIDIA Deal Points To Something Big Around The Corner",
+      url: 'https://247wallst.com/investing/2026/05/22/irens-3-4-billion-nvidia-deal-points-to-something-big-around-the-corner/',
+      kind: 'analysis',
+    },
+  ],
+};
+
 export const marketStormReports: MarketStormReport[] = [
   aiCapexThesis2026,
+  irenQ3_FY2026,
   googQ2_2026,
   nbisQ2_2026,
   crwvQ2_2026,

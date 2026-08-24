@@ -1,0 +1,9 @@
+{
+ "title": "IREN — Market Storm",
+ "category": "Market Storm",
+ "out": "iren-q3-fy2026-card",
+ "logo": { "file": "iren.svg", "scale": 0.50, "knockout": ["#0B344F"] },
+ "before": { "label": "Company", "text": "IREN" },
+ "after": { "label": "Section", "text": "Market Storm" },
+ "alt": "IREN logo"
+}

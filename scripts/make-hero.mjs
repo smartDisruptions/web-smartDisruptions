@@ -600,14 +600,53 @@ function chooseTemplate() {
 
    The mark is capped at 46% of the frame's width. A logo that fills its card
    reads as an advert for that company rather than as a label on ours. */
+/**
+ * A company mark, reversed to the theme.
+ *
+ * TWO WAYS TO DRAW ONE, AND WHY
+ * -----------------------------
+ * The default is a CSS mask filled with the theme's text colour. That is the
+ * right treatment for a mark whose shapes ARE the logo — a wordmark, or a
+ * device with real gaps in it — and it is what every mark here used until IREN.
+ *
+ * A mask cannot draw a KNOCKOUT logo: one where the wordmark is a hole punched
+ * through a solid device and only reads because of colour contrast. Mask the
+ * whole file and the letters union with the block they sit on, and the card
+ * renders a solid slab. IREN is exactly this — a green parallelogram with the
+ * letters set in navy on top of it.
+ *
+ * So `logo.knockout` lists the source fills that should come back as the
+ * BACKGROUND colour instead of the text colour. The SVG is then inlined and
+ * recoloured rather than masked, which keeps the mark monochrome — two theme
+ * tokens, no brand palette — while preserving the shape that makes it legible.
+ */
 function logoCard(k) {
   const t = THEMES[k];
   const l = spec.logo;
   const file = path.join(LOGO_DIR, l.file);
   const w = Math.round(W * (l.scale ?? 0.46));
+  const h = Math.round(H * 0.42);
+
+  if (l.knockout?.length) {
+    const svg = readFileSync(file, 'utf8')
+      // Drop any full-bleed background plate; the card supplies its own ground.
+      .replace(/<rect\b[^>]*\/>/g, '')
+      .replace(/fill="([^"]+)"/g, (m, c) =>
+        c === 'none'
+          ? m
+          : `fill="${l.knockout.includes(c) ? t.bg : t.text}"`
+      )
+      .replace(/<svg\b/, `<svg style="width:${w}px;height:${h}px"`);
+    return doc(
+      `body{background:${t.bg};display:flex;align-items:center;justify-content:center}
+       svg{width:${w}px;height:${h}px}`,
+      svg
+    );
+  }
+
   return doc(
     `body{background:${t.bg};display:flex;align-items:center;justify-content:center}
-     .m{width:${w}px;height:${Math.round(H * 0.42)}px;background:${t.text};
+     .m{width:${w}px;height:${h}px;background:${t.text};
        -webkit-mask:url('file://${file}') center/contain no-repeat;
        mask:url('file://${file}') center/contain no-repeat}`,
     `<div class="m"></div>`
