@@ -5,14 +5,14 @@ import { SectionContainer, RevealOnScroll } from '@/components/ui';
 export const metadata: Metadata = {
   title: 'Websites',
   description:
-    'Two sites built end to end — a restaurant taking card payments with a loyalty programme underneath, and a game with physics, synthesised sound and solver-verified puzzles in a single file.',
+    'Three sites built end to end — a game with physics, synthesised sound and solver-verified puzzles in a single file, a scroll-driven brand launch page, and a restaurant taking card payments with a loyalty programme underneath.',
 };
 
 /**
  * WEBSITES — deliberately not another grid.
  *
  * /apps is a catalogue: eleven things, scannable, categorised. This page is the
- * opposite shape on purpose — two projects at length, each showing what it is
+ * opposite shape on purpose — three projects at length, each showing what it is
  * actually capable of.
  *
  * TONE (Josh's call, 2026-08-23): lead with capability, not with defects. An
@@ -65,6 +65,29 @@ const studies: Study[] = [
     ],
   },
   {
+    eyebrow: 'Concept work · live',
+    name: 'VOLTIC',
+    what: 'A launch page for an energy drink that does not exist.',
+    image: '/images/websites/voltic.webp',
+    imageAlt:
+      'The VOLTIC site — a matte black energy drink can lit cyan and lime, beaded with condensation.',
+    href: 'https://web-voltic.vercel.app',
+    hrefLabel: 'web-voltic.vercel.app',
+    problem:
+      'A brand page built the way the big product launches are built — a can that turns as you scroll, layers moving at their own depth, type the size of the screen. The brand is invented, so nothing here was licensed or borrowed: the can, the photographs and the turntable it rotates on were all generated for this build, and the site was designed around what came back. It ships as a single document with its stylesheet and script inlined, so nothing has to be fetched before the page can draw.',
+    decisionLabel: 'What is built into it',
+    decision: [
+      'The centrepiece is a pinned section where scrolling turns the can. Scroll position maps onto twenty-four frames of a generated turntable with a live degree readout beside it; halfway through, the can dissolves and a nutrition panel takes the stage. The turn stops at 135° on purpose — a generated video will not render legible small print, so the can is never asked to show a back panel it cannot spell, and the facts are set as real type instead.',
+      'Motion is declared in the markup rather than scripted element by element: each layer carries its own scroll speed and pointer depth, and a single animation loop reads them and writes transforms, nothing else. Layout is measured once and re-measured only on resize, which is what keeps a page this busy smooth. Ask your system to reduce motion and the whole thing renders static, with every section still in place.',
+      'It is built to be used by everyone and to arrive fast. The first key press reveals a skip link, every focus stop is visible, and the scroll-driven canvas describes in words what it is doing. A regression suite holds that line on every run — an accessibility audit at six scroll positions, plus a sweep for broken requests and console errors — and fails rather than ships. All of the imagery together is about a megabyte, and the turntable loads only once its section is near.',
+    ],
+    receipts: [
+      { value: '0', label: 'Accessibility violations, six scroll states' },
+      { value: '1', label: 'Document — stylesheet and script inlined' },
+      { value: '436 KB', label: 'The whole 24-frame turntable' },
+    ],
+  },
+  {
     eyebrow: 'Client work · live',
     name: 'Samurai Kitchen',
     what: 'A food truck and catering business, taking orders online.',
@@ -96,12 +119,13 @@ export default function WebsitesPage() {
         <RevealOnScroll>
           <p className="font-mono-accent text-accent">Websites</p>
           <h1 className="font-display mt-3 max-w-[20ch] text-4xl leading-[1.1] font-semibold tracking-tight text-text-primary sm:text-5xl">
-Two sites, up close
+Three sites, up close
           </h1>
           <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
-            Two sites, both live. One is a restaurant that takes orders and
-            payments online. The other is a mystery game that runs in a browser
-            tab. Each is written up below — what it does, and how it works.
+            Three sites, all live. One is a mystery game that runs in a browser
+            tab. One is a brand launch page for a product that does not exist.
+            One is a restaurant that takes orders and payments online. Each is
+            written up below — what it does, and how it works.
           </p>
         </RevealOnScroll>
       </SectionContainer>
@@ -178,10 +202,10 @@ Two sites, up close
 Want one of these?
             </h2>
             <p className="mt-4 max-w-[62ch] leading-[1.75] text-text-secondary">
-              Both were built the same way: something working early, then the
-              slower work of making it fast, accessible and safe enough to hand
-              to real customers. If you need a site that takes orders, that is
-              the work I do.
+              All three were built the same way: something working early, then
+              the slower work of making it fast, accessible and safe enough to
+              hand to real customers. If you need a site that takes orders, that
+              is the work I do.
             </p>
           </div>
         </RevealOnScroll>
