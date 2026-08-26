@@ -33,6 +33,9 @@ type Study = {
   what: string;
   image: string;
   imageAlt: string;
+  /** The file's real pixel size. Wrong values here re-introduce the crop. */
+  imageWidth: number;
+  imageHeight: number;
   href: string;
   hrefLabel: string;
   problem: string;
@@ -48,6 +51,8 @@ const studies: Study[] = [
     what: 'A locked-cabinet noir mystery, and the site that has to sell it.',
     image: '/images/websites/pembroke-file.png',
     imageAlt: 'The Pembroke File site — a dark case room lit by a single desk lamp.',
+    imageWidth: 1200,
+    imageHeight: 630,
     href: 'https://web-pembroke-file.vercel.app',
     hrefLabel: 'The Pembroke File',
     problem:
@@ -71,6 +76,8 @@ const studies: Study[] = [
     image: '/images/websites/voltic.webp',
     imageAlt:
       'The VOLTIC site — a matte black energy drink can lit cyan and lime, beaded with condensation.',
+    imageWidth: 1200,
+    imageHeight: 750,
     href: 'https://web-voltic.vercel.app',
     hrefLabel: 'web-voltic.vercel.app',
     problem:
@@ -94,6 +101,8 @@ const studies: Study[] = [
     what: 'A food truck and catering business, taking orders online.',
     image: '/images/websites/samurai-kitchen.webp',
     imageAlt: 'The Samurai Kitchen site, catering-first with online ordering.',
+    imageWidth: 1200,
+    imageHeight: 750,
     href: 'https://samuraikitchencatering.com',
     hrefLabel: 'samuraikitchencatering.com',
     problem:
@@ -157,15 +166,30 @@ Three sites, up close
                   </a>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+                {/*
+                  Each shot is its own shape (1200×630, 1200×750), so the cell
+                  must not stretch: `self-start` keeps the grid from matching
+                  the taller text column, and the image renders at its own
+                  aspect ratio. It used to be h-full + object-cover, which on a
+                  desktop-width screen cropped the sides clean off the VOLTIC
+                  hero. A screenshot is evidence — cropping it loses the point.
+
+                  The anchor is a sibling of the text link, never a wrapper
+                  around it: an <a> inside an <a> is invalid HTML and broke
+                  hydration on /apps once already (web PR #19).
+                */}
+                <a
+                  href={s.href}
+                  className="block self-start overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-accent"
+                >
                   <Image
                     src={s.image}
                     alt={s.imageAlt}
-                    width={1200}
-                    height={630}
-                    className="h-full w-full object-cover"
+                    width={s.imageWidth}
+                    height={s.imageHeight}
+                    className="h-auto w-full"
                   />
-                </div>
+                </a>
               </div>
 
               <div className="mt-12 border-l border-border pl-8 sm:pl-10">
