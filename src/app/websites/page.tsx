@@ -5,7 +5,7 @@ import { SectionContainer, RevealOnScroll } from '@/components/ui';
 export const metadata: Metadata = {
   title: 'Websites',
   description:
-    'Three sites built end to end — a game with physics, synthesised sound and solver-verified puzzles in a single file, a scroll-driven brand launch page, and a restaurant ordering system taking card payments with a loyalty programme underneath.',
+    'Three live sites, explained in plain language — a mystery game that runs in a browser tab, a launch page for an invented energy drink, and a restaurant ordering demo that takes card payments.',
 };
 
 /**
@@ -25,6 +25,11 @@ export const metadata: Metadata = {
  * Every claim was verified against the live site or the build journal first.
  * This page argues for hiring him, so an unchecked claim costs more here than
  * anywhere else on the site.
+ *
+ * READING LEVEL (Josh's call, 2026-08-26): written for a non-technical
+ * reader — short bullets under each study, no jargon. The person deciding
+ * whether to hire is a business owner, not an engineer. Plain words are a
+ * constraint, not a licence to round up: everything stated is still verified.
  */
 
 type Study = {
@@ -48,25 +53,27 @@ const studies: Study[] = [
   {
     eyebrow: 'Own work · live',
     name: 'The Pembroke File',
-    what: 'A locked-cabinet noir mystery, and the site that has to sell it.',
+    what: 'A locked-cabinet mystery game, and the page that has to sell it.',
     image: '/images/websites/pembroke-file.png',
-    imageAlt: 'The Pembroke File site — a dark case room lit by a single desk lamp.',
+    imageAlt:
+      'The Pembroke File site — a dark case room lit by a single desk lamp.',
     imageWidth: 1200,
     imageHeight: 630,
     href: 'https://web-pembroke-file.vercel.app',
     hrefLabel: 'The Pembroke File',
     problem:
-      'A five-puzzle mystery that runs entirely in a browser tab — no install, no account, no loading screen. The whole game is a single 130 KB file with nothing behind it: no framework, no build step, and not one network call, so it plays offline and will still play in a decade.',
+      'A mystery game with five puzzles, played entirely in your browser tab — nothing to install, no account to make, no loading screen. The whole game is one small file with nothing behind it, so it works with no internet connection and will still work in a decade.',
     decisionLabel: 'What is built into it',
     decision: [
-      'The puzzles are real mechanisms rather than riddles. A lamp is rewired on a cable that hangs and swings under Verlet physics on canvas. A sliding-block tray was generated and then solved exhaustively by breadth-first search before shipping, so its seventeen-move minimum is a measured fact instead of a guess. Every sound — the drawer, the dial, the flourish when the last lock gives — is synthesised at runtime, which is why there is nothing to download.',
-      'It is built to be played by everyone. Each of the five puzzles has a keyboard route to its solution, motion respects the reduced-motion setting, and progress survives a closed tab, so a drawer opened tonight is still open tomorrow.',
-      'The site around it was built with the same care as the game. The case room drifts behind the words as you scroll, dust moves through the lamplight, and the five drawers slide open in sequence as you reach them. Its original artwork was generated for it and compressed from 4.2 MB to 176 KB, so all of that atmosphere costs almost nothing to load.',
+      'The puzzles are little machines, not trick questions. A lamp really swings on its cable, and a sliding-tile puzzle was solved by a program before shipping — so its seventeen-move minimum is a measured fact, not a guess.',
+      'Every sound — the drawer, the dial, the flourish when the last lock opens — is made by the game as you play, so there is nothing extra to download.',
+      'Anyone can play it. Every puzzle can be solved with just a keyboard, and progress saves itself — a drawer opened tonight is still open tomorrow.',
+      'The page selling the game got the same care as the game: the case room drifts as you scroll, dust moves through the lamplight, and the artwork was shrunk from 4.2 MB to 176 KB, so all that atmosphere loads in a blink.',
     ],
     receipts: [
-      { value: '0', label: 'Dependencies, network calls' },
-      { value: '130 KB', label: 'The entire game' },
-      { value: '176 KB', label: 'Artwork, down from 4.2 MB' },
+      { value: '0', label: 'Downloads, installs or internet calls' },
+      { value: '130 KB', label: 'The entire game — less than one phone photo' },
+      { value: '176 KB', label: 'All the artwork, compressed from 4.2 MB' },
     ],
   },
   {
@@ -81,18 +88,20 @@ const studies: Study[] = [
     href: 'https://web-voltic.vercel.app',
     hrefLabel: 'web-voltic.vercel.app',
     problem:
-      'A brand page built the way the big product launches are built — a can you can turn in your hands, layers moving at their own depth, type the size of the screen. The brand is invented, so nothing here was licensed or borrowed: the photographs were generated for this build and the site was designed around what came back. The can at the centre of it is not a photograph at all. It is live 3D, so it is correct from every angle rather than only the ones a camera caught.',
+      'A brand page built the way the big product launches are built — a drink can you can spin, layers that drift as you scroll, type the size of the screen. The brand is invented, so nothing here was borrowed: the photos were generated for this build, and the site was designed around them. The can at the centre is not a photo at all — it is a live 3D model, so it looks right from every angle.',
     decisionLabel: 'What is built into it',
     decision: [
-      'The centrepiece is a pinned section where scrolling turns the can through a full circle — and you can grab it and spin it yourself. It is real geometry wearing a label typeset in the fonts the site itself uses, carrying the exact nutrition values, which is the point rather than a detail: a generated image can invent a second logo, misspell a panel, or drift off its own rotation, and none of that is possible once the label is type and the turn is computed. The rotation eases to about a quarter speed as the back comes round, so the panel gets read time, and then the can dissolves and a nutrition card lands. Even the condensation is built rather than photographed — a height map of domes and a matching roughness map, because what reads as wet is a glossy droplet against a matte body, not a picture of a droplet.',
-      'Getting the can to turn took two passes at the same problem. The first is generated footage pinned to real stills at both ends — a photograph of the front, and that same photograph edited to carry the back panel — because a video model will not render legible small print on its own, and a turn that ends on an unreadable label is not worth having. That version still ships, one query string away. Rebuilding the can as geometry took it further: the label is typeset rather than pinned, so every angle is correct, not only the two the footage was anchored to.',
-      'Motion is declared in the markup rather than scripted element by element: each layer carries its own scroll speed and pointer depth, and one animation loop reads them and writes transforms, nothing else — and once scrolling settles it writes nothing at all. The page paints from a single 33 KB document with its stylesheet and script inlined; the 3D engine is a separate download that never touches that path, arriving after load as the section approaches.',
-      'The first key press reveals a skip link, every focus stop is visible, and the turning can describes in words what it is doing. A regression suite holds that line on every run — an accessibility audit at six scroll positions, plus a sweep for broken requests and console errors — and fails rather than ships.',
+      'Scroll, and the can turns a full circle. Or grab it and spin it yourself.',
+      'The can is a real 3D model wearing a label typed in the site’s own fonts, with the real nutrition numbers on the back. AI-generated images tend to invent extra logos or garble small print — a model wearing typed text cannot.',
+      'The spin slows down as the back of the can comes round, so there is time to read the panel. Then the can fades out and a nutrition card takes its place.',
+      'Getting the can to turn took two builds. The first stitched AI-generated video to real photos at each end — it still exists, tucked behind a special web address. Rebuilding the can in 3D went further: now every angle is correct, not just the two the video was pinned to.',
+      'Even the condensation is built rather than photographed — tiny glossy droplets on a matte can, because the shine is what makes it look cold.',
+      'The page draws from one small file, and the 3D engine downloads quietly afterwards, so nothing slows the first view. An automated accessibility check runs at six points down the page and blocks the release if anything fails.',
     ],
     receipts: [
-      { value: '0', label: 'Accessibility violations, six scroll states' },
-      { value: '33 KB', label: 'The document that paints the page' },
-      { value: '360°', label: 'Live geometry, legible from every angle' },
+      { value: '0', label: 'Accessibility problems found by automated checks' },
+      { value: '33 KB', label: 'The file that draws the whole page' },
+      { value: '360°', label: 'A real 3D can, readable from every angle' },
     ],
   },
   {
@@ -107,17 +116,19 @@ const studies: Study[] = [
     href: 'https://japanese-sushi-website.vercel.app',
     hrefLabel: 'japanese-sushi-website.vercel.app',
     problem:
-      'A whole restaurant ordering system, running as a demo anyone can use. Kitsune Kitchen is invented — the name, the fox mark, the address, the phone number — and the site says so in its own footer. The machinery underneath is not: it is the ordering platform built for a working food business, rebranded to a fictional one so the whole thing can be clicked through without putting a real client on the internet.',
+      'A complete restaurant ordering system, running as a demo anyone can try. Kitsune Kitchen is invented — the name, the fox logo, the address, the phone number — and the site says so in its own footer. The machinery underneath is real: it is the ordering platform built for a working food business, given a made-up brand so anyone can click through the whole thing without bothering a real kitchen.',
     decisionLabel: 'What is built into it',
     decision: [
-      'Customers pick a category — curry, sushi and bowls, plates, sides — build a cart, leave a name and phone for pickup, and pay by card without leaving the site. The menu is not typed into the page: it comes from the kitchen\u2019s Square catalogue, so a price, a description and an item\u2019s options are whatever the kitchen actually set. That is the difference between a menu that is a picture and a menu that is a product — a curry listed "from $12.10" with a Customize step is really three proteins at three prices.',
-      'Checkout runs on Square Web Payments: the card is tokenised in the browser and the credentials stay on the server, so card details never reach it. Every Square call — catalogue, orders, payments, loyalty — goes through the site\u2019s own API routes rather than the browser, and the provider behind each one is a switch, so the same build runs against mock services, a sandbox, or a live merchant account without changing a line of code.',
-      'There is more behind it than a menu: catering enquiries, a locations page, a loyalty programme on Square\u2019s Loyalty API, a customer feedback route, and a password-gated admin area where an owner can change what the site says and read what customers sent back.',
-      'Because it is a demo rather than a business, it is built to be handed to a stranger. The footer states plainly that the restaurant is fictional, the phone number is a 555 number, and the address goes nowhere — nobody clicks through it expecting dinner.',
+      'Pick a category — curry, sushi and bowls, plates, sides — build a cart, leave a name and phone number for pickup, and pay by card without leaving the site.',
+      'The menu is not typed into the page. It comes straight from the kitchen’s Square till system, so every price, description and option is whatever the kitchen actually set — a curry listed “from $12.10” really is three proteins at three prices.',
+      'Payments are handled by Square, the company behind millions of shop card readers. Your card number goes to them directly and never touches this site.',
+      'The same build runs in three modes — pretend payments for testing, Square’s practice mode, or a real business account — without changing a line of code.',
+      'There is more behind the menu: catering enquiries, a locations page, a loyalty points programme, a customer feedback form, and a password-protected owner’s area for editing the site and reading what customers sent.',
+      'Because it is a demo, it is safe to hand to a stranger: the footer says the restaurant is fictional, the phone number is a 555 number, and the address goes nowhere — nobody orders dinner by mistake.',
     ],
     receipts: [
-      { value: '4', label: 'Square systems wired in' },
-      { value: '0', label: 'Card details reaching the server' },
+      { value: '4', label: 'Square systems connected' },
+      { value: '0', label: 'Card numbers this site ever sees' },
       { value: 'Fictional', label: 'Restaurant — the footer says so' },
     ],
   },
@@ -134,9 +145,9 @@ Three sites, up close
           </h1>
           <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
             Three sites, all live. One is a mystery game that runs in a browser
-            tab. One is a brand launch page for a product that does not exist.
-            One is a sushi counter that takes orders online. Each is
-            written up below — what it does, and how it works.
+            tab. One is a launch page for a drink that does not exist. One is a
+            sushi counter that takes orders online. Each is written up below in
+            plain language — what it does, and how it works.
           </p>
         </RevealOnScroll>
       </SectionContainer>
@@ -197,11 +208,11 @@ Three sites, up close
                 <p className="font-mono-accent mb-6 text-accent">
                   {s.decisionLabel}
                 </p>
-                <div className="max-w-[62ch] space-y-4 leading-[1.75] text-text-secondary">
-                  {s.decision.map((para) => (
-                    <p key={para.slice(0, 32)}>{para}</p>
+                <ul className="max-w-[62ch] list-disc space-y-3 pl-5 leading-[1.75] text-text-secondary marker:text-accent">
+                  {s.decision.map((item) => (
+                    <li key={item.slice(0, 32)}>{item}</li>
                   ))}
-                </div>
+                </ul>
               </div>
 
               <dl className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
@@ -228,10 +239,10 @@ Three sites, up close
 Want one of these?
             </h2>
             <p className="mt-4 max-w-[62ch] leading-[1.75] text-text-secondary">
-              All three were built the same way: something working early, then
-              the slower work of making it fast, accessible and safe enough to
-              hand to real customers. If you need a site that takes orders, that
-              is the work I do.
+              All three were built the same way: get something working early,
+              then do the slower work of making it fast, easy for everyone to
+              use, and safe enough to hand to real customers. If you need a site
+              that takes orders, that is the work I do.
             </p>
           </div>
         </RevealOnScroll>
