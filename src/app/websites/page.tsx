@@ -5,14 +5,14 @@ import { SectionContainer, RevealOnScroll } from '@/components/ui';
 export const metadata: Metadata = {
   title: 'Websites',
   description:
-    'Two sites built end to end — a restaurant taking card payments with a loyalty programme underneath, and a game with physics, synthesised sound and solver-verified puzzles in a single file.',
+    'Three sites built end to end — a game with physics, synthesised sound and solver-verified puzzles in a single file, a scroll-driven brand launch page, and a restaurant taking card payments with a loyalty programme underneath.',
 };
 
 /**
  * WEBSITES — deliberately not another grid.
  *
  * /apps is a catalogue: eleven things, scannable, categorised. This page is the
- * opposite shape on purpose — two projects at length, each showing what it is
+ * opposite shape on purpose — three projects at length, each showing what it is
  * actually capable of.
  *
  * TONE (Josh's call, 2026-08-23): lead with capability, not with defects. An
@@ -65,6 +65,30 @@ const studies: Study[] = [
     ],
   },
   {
+    eyebrow: 'Concept work · live',
+    name: 'VOLTIC',
+    what: 'A launch page for an energy drink that does not exist.',
+    image: '/images/websites/voltic.webp',
+    imageAlt:
+      'The VOLTIC site — a matte black energy drink can lit cyan and lime, beaded with condensation.',
+    href: 'https://web-voltic.vercel.app',
+    hrefLabel: 'web-voltic.vercel.app',
+    problem:
+      'A brand page built the way the big product launches are built — a can you can turn in your hands, layers moving at their own depth, type the size of the screen. The brand is invented, so nothing here was licensed or borrowed: the photographs were generated for this build and the site was designed around what came back. The can at the centre of it is not a photograph at all. It is live 3D, so it is correct from every angle rather than only the ones a camera caught.',
+    decisionLabel: 'What is built into it',
+    decision: [
+      'The centrepiece is a pinned section where scrolling turns the can through a full circle — and you can grab it and spin it yourself. It is real geometry wearing a label typeset in the fonts the site itself uses, carrying the exact nutrition values, which is the point rather than a detail: a generated image can invent a second logo, misspell a panel, or drift off its own rotation, and none of that is possible once the label is type and the turn is computed. The rotation eases to about a quarter speed as the back comes round, so the panel gets read time, and then the can dissolves and a nutrition card lands. Even the condensation is built rather than photographed — a height map of domes and a matching roughness map, because what reads as wet is a glossy droplet against a matte body, not a picture of a droplet.',
+      'Getting the can to turn took two passes at the same problem. The first is generated footage pinned to real stills at both ends — a photograph of the front, and that same photograph edited to carry the back panel — because a video model will not render legible small print on its own, and a turn that ends on an unreadable label is not worth having. That version still ships, one query string away. Rebuilding the can as geometry took it further: the label is typeset rather than pinned, so every angle is correct, not only the two the footage was anchored to.',
+      'Motion is declared in the markup rather than scripted element by element: each layer carries its own scroll speed and pointer depth, and one animation loop reads them and writes transforms, nothing else — and once scrolling settles it writes nothing at all. The page paints from a single 33 KB document with its stylesheet and script inlined; the 3D engine is a separate download that never touches that path, arriving after load as the section approaches.',
+      'The first key press reveals a skip link, every focus stop is visible, and the turning can describes in words what it is doing. A regression suite holds that line on every run — an accessibility audit at six scroll positions, plus a sweep for broken requests and console errors — and fails rather than ships.',
+    ],
+    receipts: [
+      { value: '0', label: 'Accessibility violations, six scroll states' },
+      { value: '33 KB', label: 'The document that paints the page' },
+      { value: '360°', label: 'Live geometry, legible from every angle' },
+    ],
+  },
+  {
     eyebrow: 'Client work · live',
     name: 'Samurai Kitchen',
     what: 'A food truck and catering business, taking orders online.',
@@ -96,12 +120,13 @@ export default function WebsitesPage() {
         <RevealOnScroll>
           <p className="font-mono-accent text-accent">Websites</p>
           <h1 className="font-display mt-3 max-w-[20ch] text-4xl leading-[1.1] font-semibold tracking-tight text-text-primary sm:text-5xl">
-Two sites, up close
+Three sites, up close
           </h1>
           <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
-            Two sites, both live. One is a restaurant that takes orders and
-            payments online. The other is a mystery game that runs in a browser
-            tab. Each is written up below — what it does, and how it works.
+            Three sites, all live. One is a mystery game that runs in a browser
+            tab. One is a brand launch page for a product that does not exist.
+            One is a restaurant that takes orders and payments online. Each is
+            written up below — what it does, and how it works.
           </p>
         </RevealOnScroll>
       </SectionContainer>
@@ -178,10 +203,10 @@ Two sites, up close
 Want one of these?
             </h2>
             <p className="mt-4 max-w-[62ch] leading-[1.75] text-text-secondary">
-              Both were built the same way: something working early, then the
-              slower work of making it fast, accessible and safe enough to hand
-              to real customers. If you need a site that takes orders, that is
-              the work I do.
+              All three were built the same way: something working early, then
+              the slower work of making it fast, accessible and safe enough to
+              hand to real customers. If you need a site that takes orders, that
+              is the work I do.
             </p>
           </div>
         </RevealOnScroll>
