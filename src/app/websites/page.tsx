@@ -5,7 +5,7 @@ import { SectionContainer, RevealOnScroll } from '@/components/ui';
 export const metadata: Metadata = {
   title: 'Websites',
   description:
-    'Three sites built end to end — a game with physics, synthesised sound and solver-verified puzzles in a single file, a scroll-driven brand launch page, and a restaurant taking card payments with a loyalty programme underneath.',
+    'Three sites built end to end — a game with physics, synthesised sound and solver-verified puzzles in a single file, a scroll-driven brand launch page, and a restaurant ordering system taking card payments with a loyalty programme underneath.',
 };
 
 /**
@@ -96,28 +96,29 @@ const studies: Study[] = [
     ],
   },
   {
-    eyebrow: 'Client work · live',
-    name: 'Samurai Kitchen',
-    what: 'A food truck and catering business, taking orders online.',
-    image: '/images/websites/samurai-kitchen.webp',
-    imageAlt: 'The Samurai Kitchen site, catering-first with online ordering.',
+    eyebrow: 'Demo build · live',
+    name: 'Kitsune Kitchen',
+    what: 'A sushi counter that takes orders online — a working demo, not a real restaurant.',
+    image: '/images/websites/kitsune-kitchen.webp',
+    imageAlt:
+      'The Kitsune Kitchen site — "Sliced Fresh Daily" in red over sushi on black, with a fox-mark roundel.',
     imageWidth: 1200,
     imageHeight: 750,
-    href: 'https://samuraikitchencatering.com',
-    hrefLabel: 'samuraikitchencatering.com',
+    href: 'https://japanese-sushi-website.vercel.app',
+    hrefLabel: 'japanese-sushi-website.vercel.app',
     problem:
-      'It replaced a dated WordPress site that could not take an order — every catering enquiry arrived as unstructured email and nothing could be paid for online. What went up in its place handles the whole order, end to end.',
+      'A whole restaurant ordering system, running as a demo anyone can use. Kitsune Kitchen is invented — the name, the fox mark, the address, the phone number — and the site says so in its own footer. The machinery underneath is not: it is the ordering platform built for a working food business, rebranded to a fictional one so the whole thing can be clicked through without putting a real client on the internet.',
     decisionLabel: 'What is built into it',
     decision: [
-      'Customers browse a categorised menu with dietary tags, build a cart, and pay by card without leaving the site. Checkout runs on Square Web Payments, so card details never touch the server and the business inherits Square\'s compliance rather than having to earn it.',
-      'A loyalty programme runs underneath: diners earn points on every order and redeem them at checkout, which is the part that turns a first order into a second. Catering is handled separately, with pre-built platter packages priced in tiers — the revenue the old contact form was quietly losing.',
-      'Three of Square\'s systems are wired in at once — payments, live catalogue, and loyalty — with Supabase behind them. Prices are settled server-side against the real catalogue, so an order is always charged what the kitchen actually set.',
-      'The owner ran a full order through it himself, start to finish, before it went anywhere near a customer.',
+      'Customers pick a category — curry, sushi and bowls, plates, sides — build a cart, leave a name and phone for pickup, and pay by card without leaving the site. The menu is not typed into the page: it comes from the kitchen\u2019s Square catalogue, so a price, a description and an item\u2019s options are whatever the kitchen actually set. That is the difference between a menu that is a picture and a menu that is a product — a curry listed "from $12.10" with a Customize step is really three proteins at three prices.',
+      'Checkout runs on Square Web Payments: the card is tokenised in the browser and the credentials stay on the server, so card details never reach it. Every Square call — catalogue, orders, payments, loyalty — goes through the site\u2019s own API routes rather than the browser, and the provider behind each one is a switch, so the same build runs against mock services, a sandbox, or a live merchant account without changing a line of code.',
+      'There is more behind it than a menu: catering enquiries, a locations page, a loyalty programme on Square\u2019s Loyalty API, a customer feedback route, and a password-gated admin area where an owner can change what the site says and read what customers sent back.',
+      'Because it is a demo rather than a business, it is built to be handed to a stranger. The footer states plainly that the restaurant is fictional, the phone number is a 555 number, and the address goes nowhere — nobody clicks through it expecting dinner.',
     ],
     receipts: [
-      { value: 'Live', label: 'Ordering and card payments' },
-      { value: 'Loyalty', label: 'Points earned and redeemed' },
-      { value: 'Catering', label: 'Tiered package pricing' },
+      { value: '4', label: 'Square systems wired in' },
+      { value: '0', label: 'Card details reaching the server' },
+      { value: 'Fictional', label: 'Restaurant — the footer says so' },
     ],
   },
 ];
@@ -134,7 +135,7 @@ Three sites, up close
           <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
             Three sites, all live. One is a mystery game that runs in a browser
             tab. One is a brand launch page for a product that does not exist.
-            One is a restaurant that takes orders and payments online. Each is
+            One is a sushi counter that takes orders online. Each is
             written up below — what it does, and how it works.
           </p>
         </RevealOnScroll>

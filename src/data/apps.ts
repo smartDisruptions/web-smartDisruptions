@@ -336,7 +336,14 @@ export const ARCADE_SLUGS = [
 ];
 
 /** Projects with a full write-up on /websites, so they skip the catalogue. */
-export const WEBSITE_SLUGS = ['samurai-kitchen'];
+// Slugs that live on /websites as a full write-up and are therefore filtered out
+// of the /apps catalogue, so nothing is listed twice.
+//
+// Emptied 2026-08-26: Samurai Kitchen came off /websites (replaced by the
+// Kitsune Kitchen demo), so it returns to the catalogue here rather than
+// disappearing from the site altogether — this list is the only thing that was
+// hiding it.
+export const WEBSITE_SLUGS: string[] = [];
 
 export function getAppCategories(): string[] {
   return Array.from(new Set(apps.map((app) => app.category)));
