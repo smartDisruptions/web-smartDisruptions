@@ -160,6 +160,27 @@ export const skillGroups: SkillGroup[] = [
         ],
       },
       {
+        id: 'generated-media',
+        name: 'Art-directing generated imagery',
+        plain:
+          'Getting usable product photos, video and 3D out of AI image tools — on a fixed budget, with a plan for what they cannot do.',
+        used: 'For VOLTIC, an energy drink that does not exist, every visual was generated: the hero can, the splash photography, a turntable video. The spend had a hard ceiling written into the code, so the pipeline stops before the budget does. And when no video model would render the tiny print on the back of the can, I stopped fighting it — the can became a real 3D model wearing a label typed in the site’s own fonts, so every angle is correct because it is built, not painted.',
+        links: [
+          {
+            kind: 'site',
+            label: 'VOLTIC',
+            href: 'https://web-voltic.vercel.app',
+            detail: 'the launch page, every image generated',
+          },
+          {
+            kind: 'site',
+            label: 'The write-up',
+            href: '/websites',
+            detail: 'what is built into it, in plain language',
+          },
+        ],
+      },
+      {
         id: 'graduated-autonomy',
         name: 'Graduated autonomy',
         plain:
@@ -276,16 +297,24 @@ export const skillGroups: SkillGroup[] = [
         name: 'Physics, canvas and real-time rendering',
         plain:
           'Maths that has to hold up sixty times a second — orbital mechanics, cloth, collisions.',
-        used: 'A Mars transfer simulation that models a real Hohmann transfer window, and a cloth simulator running Verlet integration with constraint relaxation and tearing. Both are hand-written on a canvas with no engine underneath, which is the only way I would have learned what the maths actually does.',
+        used: 'A Mars transfer simulation that models a real launch window, and a cloth simulator where every thread stretches, folds and tears. Both are hand-written with no game engine underneath, which is the only way I would have learned what the maths actually does. The newest rep is a 3D drink can rendered live in the browser, spun by scroll or by hand.',
         apps: ['spacex-mars', 'cloth-simulator'],
+        links: [
+          {
+            kind: 'site',
+            label: 'The VOLTIC can',
+            href: 'https://web-voltic.vercel.app',
+            detail: 'live 3D, spun by scroll',
+          },
+        ],
       },
       {
         id: 'game-dev',
         name: 'Game development',
         plain:
           'Game loops, collision, input, audio and the feel work that separates a demo from something worth playing.',
-        used: "The arcade is six cabinets. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an artifact you pick up and read, sliding-block and 8-puzzle boards generated and difficulty-checked by breadth-first search, Verlet chain physics on the wires, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. Two of the cabinets are my son's.",
-        apps: ['field-office', 'aureum-snake', 'grove'],
+        used: "The arcade is six cabinets. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. The newest cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
+        apps: ['field-office', 'broom-blade', 'aureum-snake', 'grove'],
         links: [
           {
             kind: 'site',
@@ -393,7 +422,7 @@ export const skillGroups: SkillGroup[] = [
         name: 'Writing in public',
         plain:
           'Publishing how the work actually went, including the parts where I was wrong.',
-        used: 'Eleven articles so far, all about my own builds, and the ones people respond to are the ones where something broke. The rule I write to is receipts over claims: if I cannot point at the thing, I do not say it.',
+        used: 'Fourteen articles so far, all about my own builds, and the ones people respond to are the ones where something broke. The rule I write to is receipts over claims: if I cannot point at the thing, I do not say it.',
         links: [
           {
             kind: 'site',

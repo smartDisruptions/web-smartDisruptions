@@ -23,48 +23,53 @@ export const metadata: Metadata = {
  * Chosen from five candidate layouts previewed side by side; the other four
  * (letter, receipts wall, spec sheet, interview) are in git history on
  * design/about-page-templates if one is ever worth revisiting.
+ *
+ * READING LEVEL (Josh's call, 2026-08-26, same rule as /websites): plain
+ * words, short bodies, jargon glossed the first time it appears ("a pull
+ * request — a packaged-up change I can review"). The timeline stays — it is
+ * already the navigable shape — and a three-stop jump nav covers the rest.
  */
 const milestones = [
   {
     year: '2008',
     title: 'Taught myself to build, in Seattle',
-    body: 'Websites and SEO for small businesses, self-employed, figuring it out as I went. Everything technical I can do today traces back to this — self-taught then, and still the way I pick up anything new.',
+    body: 'Websites and search rankings for small businesses, self-employed, figuring it out as I went. Everything technical I do today traces back to this — self-taught then, and still the way I pick up anything new.',
   },
   {
     year: '2014',
     title: 'Joined a university — in design, not engineering',
-    body: 'Design and content first, then financial aid communications: turning regulations most people find impenetrable into something a student could act on. Unglamorous, and the best writing training I have had.',
+    body: 'Design and content first, then financial aid communications: turning dense regulations into something a student could actually act on. Unglamorous — and the best writing training I have ever had.',
   },
   {
     era: 'Three years with LLMs',
     year: '2023',
     title: 'Prompting. Just prompting.',
-    body: 'ChatGPT, then Claude, every day — but the shape was a chat window and a lot of copy-paste. I was asking for answers and pasting them somewhere myself. That was the shape of it for a long time, and it works. It is just not where it ends.',
+    body: 'ChatGPT, then Claude, every day. The shape was a chat window and a lot of copy-paste: I asked for answers and moved them somewhere myself. That works. It is just not where it ends.',
   },
   {
     year: '2024',
     title: 'Became an engineer at work — with the tools already in hand',
-    body: 'Ten years after walking into the university, I moved into engineering: Oracle SQL, Pro*C, Java, HTML, CSS, Banner, Argos — the systems that quietly move real money to real students.',
+    body: 'Ten years after walking into the university, I moved into engineering: Oracle SQL, Java, Banner — the systems that quietly move real money to real students.',
   },
   {
     year: '2025',
     title: 'Stopped asking for answers and started handing over the work',
-    body: 'The shift from chat to agents: the model reads my actual files, runs the commands, opens the pull request. That changes what you are for. I stopped being the person typing and became the person deciding — the architect, with the agents as implementation leverage.',
+    body: 'The shift from chat to agents: the AI reads my actual files, runs the commands, and opens a pull request — a packaged-up change I can review and approve. I stopped being the person typing and became the person deciding.',
   },
   {
     year: 'Early 2026',
     title: 'Built pipelines instead of prompts',
-    body: 'Spec, then plan, then build, then QA, then ship — as named steps I invoke, not a conversation I steer. Reviews run as panels: the same work read by a product lens, a design lens, an engineering lens, and I arbitrate where they disagree. One research run put twelve agents on a question in parallel and came back with a cited report.',
+    body: 'Instead of steering one long conversation, I run named steps: spec, plan, build, check, ship. Reviews run as panels — the same work read through a product lens, a design lens and an engineering lens, with me settling the disagreements. One research run put twelve AIs on a single question at once and came back with a cited report.',
   },
   {
     year: 'Mid 2026',
     title: 'Gave it memory — one file, then a whole brain',
-    body: 'It started as a single file the agent reads before anything else. It became a linked wiki of every project, decision, and person I build for, plus a graph I can browse from my phone. Now a fresh session already knows who I am. I tested it cold once: six of ten questions right, citing where each answer came from, and the misses were things I had never written down.',
+    body: 'It started as one file the AI reads before anything else. It grew into a linked wiki of every project, decision and person I build for, plus a map of it I can browse from my phone. Now a fresh session already knows who I am. Tested cold, it answered six of ten questions from the notes alone — and the misses were things I had never written down.',
   },
   {
     year: 'Now',
     title: 'Running a team that works while I sleep',
-    body: 'Scheduled agents with names and job descriptions: one tidies the knowledge base nightly, one sweeps it weekly for rot, one drafts the day’s writing before I wake up. Each has a trust level, and the ceiling is deliberate — they work in development, they push to a test build, and they hand me a pull request and a preview link. I read it and I decide what goes live. Making that last step automatic would be easy, and I do not want it: the point of the whole setup is that judgment is the part I keep.',
+    body: 'Scheduled AI workers with names and job descriptions: one tidies the knowledge base nightly, one checks it weekly for rot, one drafts the day’s writing before I wake up. None of them can touch the live site — they work on a test copy and hand me the result to approve. Making that last step automatic would be easy, and I do not want it: judgment is the part I keep.',
     current: true,
   },
 ];
@@ -98,9 +103,30 @@ export default function AboutPage() {
         decides whether it goes live.
       </p>
 
+      {/* Three stops, so nobody has to scroll blind to find the part they
+          came for. Plain anchor links — no JavaScript. */}
+      <nav aria-label="On this page" className="mt-8 flex flex-wrap gap-2">
+        {[
+          ['#story', 'My story'],
+          ['#skills', 'What I can do'],
+          ['#the-writing', 'About the writing'],
+        ].map(([href, label]) => (
+          <a
+            key={href}
+            href={href}
+            className="rounded-full border border-border bg-surface px-4 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+
       {/* The spine. The border on the list draws it; each node's dot sits on
           top of the line via a negative offset. */}
-      <ol className="mt-14 border-l border-border pl-8 sm:pl-10">
+      <ol
+        id="story"
+        className="mt-14 scroll-mt-24 border-l border-border pl-8 sm:pl-10"
+      >
         {milestones.map((m) => (
           <li key={m.year} className="relative pb-12 last:pb-0">
             {/* An era label marks where the story changes gear, without
@@ -131,7 +157,13 @@ export default function AboutPage() {
 
       {/* The disclosure gets its own frame so it reads as a standing policy
           rather than a life event. */}
-      <div className="mt-14 rounded-2xl border border-border bg-surface p-6 sm:p-8">
+      {/* id is "the-writing", not "writing" — the Skills list already owns
+          #writing (the "Writing in public" row), and a duplicate id would
+          send this jump link to the wrong element. */}
+      <div
+        id="the-writing"
+        className="mt-14 scroll-mt-24 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+      >
         <h2 className="font-display text-xl font-semibold text-text-primary">
           One thing about the writing
         </h2>
