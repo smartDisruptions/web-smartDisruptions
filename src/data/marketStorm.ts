@@ -7745,8 +7745,965 @@ On capital spending against revenue: Palantir at 0.75%, Microsoft around 32%, Al
   ],
 };
 
+const erocQ2_2026: MarketStormReport = {
+  slug: 'eroc-q2-2026',
+  ticker: 'EROC',
+  company: 'ERock, Inc.',
+  title:
+    'ERock promotes a $1.7bn backlog and its accountants signed off on $1.8bn — the first company in this section where the headline number is the conservative one',
+  excerpt:
+    'Three bear cases went into this report and the filings refuted all three. The promoted backlog is smaller than GAAP remaining performance obligations, not larger. The full-year guide does not need a margin miracle — hold Q2 gross margin and first-half operating costs flat and the low end nearly clears on volume alone. And the celebrated $(0.06) EPS is not an Up-C attribution trick so much as a 19-day stub period. What survives is physical: $528.4m of customer money is already collected against $71.6m of first-half revenue, and the whole year now rests on a Houston factory that started assembling in Q2.',
+  catalyst: 'Q2 2026 earnings — reported August 11, 2026',
+  publishDate: '2026-08-26',
+  tags: [
+    'EROC',
+    'AI-infrastructure',
+    'data-center-power',
+    'earnings-quality',
+    'IPO',
+  ],
+  verdict:
+    'A ten-week-old IPO trading 39% below its offer price, holding more customer deposits than its entire guided second half of revenue, whose remaining risk is not demand, not funding and not accounting — it is whether a company that only began assembling its own product in 2025 can ship roughly five times its first half out of a plant that opened this quarter.',
+  priceStrip: [
+    { k: 'Close · Aug 25', v: '$13.11' },
+    { k: 'IPO · Jun 11', v: '$21.50', tone: 'bear' },
+    { k: 'Enterprise value', v: '~$2.25B' },
+    { k: 'H1 revenue', v: '$71.6M', tone: 'warn' },
+    { k: 'FY26 guide', v: '$435–465M' },
+    { k: 'Customer deposits', v: '$528.4M', tone: 'bull' },
+  ],
+  summary: `ERock assembles natural-gas reciprocating-engine generators and sells them, increasingly, to AI data centres that cannot wait for a grid connection. It listed on 11 June 2026 at $21.50 and traded as low as $8.88 seven weeks later. Then on 11 August it reported a quarter in which revenue **fell 41.7%** year over year and announced a backlog up roughly **ten times**, including a **470 MW equipment order from Anthropic** — and the stock rose.
+
+Both halves of that are real, and the interesting part is what happened when this report tried to take the bear side.
+
+**It lost, three times.** The promoted backlog of **$1.7bn** turns out to be *smaller* than the audited figure: GAAP remaining performance obligations at 30 June were approximately **$1.8bn**. The full-year guide of **$435–465m** against **$71.6m** of first-half revenue looks like it needs a margin transformation; run the bridge and it needs volume, not margin. And the **$(0.06)** loss per share that beat a $(0.28) consensus is not mainly an Up-C attribution artifact — it covers **19 days**.
+
+What is left after all that is the thing worth watching. Customer prepayments rose **$358.4m** in six months to **$528.4m**, which is *more than the entire second half the company has guided to*. The money is in. The contracts are in. The question is a building in Houston.`,
+  headlineVsReal: [
+    {
+      headline:
+        '**"Contracted Power System Sales Backlog of approximately $1.7 billion, up 10x year over year"** — the number every write-up of this quarter led with.',
+      real: 'GAAP remaining performance obligations at the same date were approximately **$1.8bn**. The audited number is the *bigger* one.',
+      gap: 'This is the reverse of the pattern every other report in this section has found, and it is worth being precise about why. The two figures measure different scopes and the difference runs both ways. Backlog is a management-defined operating metric — the registration statements describe it as **"signed customer commitments with defined delivery schedules"** — and it covers **power system sales only**. RPO is the ASC 606 disclosure and additionally carries multi-year **ongoing services** obligations, which pushes it up; it simultaneously excludes usage-based variable consideration and any contract with an original duration of a year or less, which pushes it down. The bear claim this report started with — that roughly $320m of promoted backlog sat outside GAAP — came from a pre-IPO article comparing a **June backlog against a December RPO table**, and that table totals **$339.5m at 31 December 2025**, not $1.38bn. On matched dates the sign inverts. **The promoted metric is not the inflated one here.**',
+    },
+    {
+      headline:
+        'The obvious bear case: **$435–465m of full-year revenue against $71.6m in the first half** requires a swing from a −37% first-half adjusted-EBITDA margin to +8–9%, which no company does in two quarters.',
+      real: 'Hold Q2 gross margin **and** first-half operating costs flat, and the low end of the EBITDA guide is roughly **92% cleared on volume alone**.',
+      gap: 'Run the arithmetic rather than the adjective. Q2 gross margin was **18.6%**; first-half adjusted operating expense is about **$40m**. Apply the guided second-half revenue at that same unimproved margin: $363.4m × 18.6% = **$67.6m** of gross profit, less $40m of opex, is **+$27.6m** — against the **+$29.9m** needed to reach the bottom of the $3–9m guide. Let opex grow a quarter, to $50m, and the required gross margin is **~22.0%** — which is simply last year’s 22.2%, not a record. So the "margin miracle" framing is wrong, and it is wrong in a way that matters: it points the reader at the wrong variable. This guide is a **fixed-cost-absorption** story. It breaks if the boxes do not ship, not if margins fail to expand.',
+    },
+    {
+      headline:
+        '**$(0.06) per share against a $(0.28) consensus** — a 79% earnings beat, reported as evidence the business is turning.',
+      real: 'That figure covers **11–30 June**, about **19 days**. Consolidated Q2 net loss was **$67.7m**.',
+      gap: 'The tempting explanation is the Up-C structure: continuing unitholders hold **79.95%** of ER Holdings’ economics, so most of the loss is pushed to non-controlling interests. That is real but it is the *smaller* effect. At ERock, Inc.’s ~20.05% economic interest, a **$(2.98)m** attributed loss implies a post-IPO consolidated loss of only about **$14.9m** — meaning roughly **$52.8m of the quarter’s $67.7m sits in the pre-IPO period and never enters the Class A denominator at all**, including essentially the whole **$48.8m loss on debt extinguishment**, which the filing places before the IPO. Two distortions stacked, and the period cutoff is much the larger. Note also that $67.7m is a **three-month** figure; adding Q1’s $(17.2)m puts the true first-half net loss near **$84.9m**.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$39.88M',
+      delta: '−41.7% YoY',
+      note: 'But +26% sequentially from $31.7M, and ahead of consensus. Both directions are real.',
+      tone: 'warn',
+    },
+    {
+      label: 'Customer deposits held',
+      value: '$528.4M',
+      delta: '+$358.4M in 6 months',
+      note: 'Exceeds the entire implied H2 revenue by $135–165M. From $170.0M at 31 Dec.',
+      tone: 'bull',
+    },
+    {
+      label: 'GAAP remaining performance obligations',
+      value: '~$1.8B',
+      delta: 'above the $1.7B backlog',
+      note: 'The audited figure is larger than the promoted one — the reverse of this section’s usual finding.',
+      tone: 'bull',
+    },
+    {
+      label: 'H1 revenue vs FY guide',
+      value: '$71.6M',
+      delta: 'of $435–465M',
+      note: 'H2 must deliver $363–393M — roughly 84% of the year in two quarters.',
+      tone: 'bear',
+    },
+    {
+      label: 'Cash, net of deposits',
+      value: '~$98.2M',
+      delta: 'from $626.6M gross',
+      note: '84% of the cash is customer money owed as hardware. $34.2M more is restricted LC collateral.',
+      tone: 'warn',
+    },
+    {
+      label: 'Operating cash flow, H1',
+      value: '+$268.9M',
+      delta: 'from $0.4M',
+      note: 'Entirely the deposit build. Strip deposits out and H1 operations consumed ~$90M.',
+      tone: 'warn',
+    },
+    {
+      label: 'Price vs IPO',
+      value: '−39%',
+      delta: '$21.50 → $13.11',
+      note: 'In eleven weeks. $21.50 is still the 52-week high; the low was $8.88 on 29 July.',
+      tone: 'bear',
+    },
+    {
+      label: 'Tradeable float',
+      value: '~19M shares',
+      delta: 'of 219.4M exchanged',
+      note: '171.2M Class B units unlock around mid-December. Short interest is 29.9% of float.',
+      tone: 'bear',
+    },
+  ],
+  printTableTitle:
+    'Q2 2026 — the quarter ended 30 June, and what the guide needs from the two after it',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 / H1 2026', align: 'right' },
+      { label: 'Comparison', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Total revenue, Q2',
+          '$39,878k',
+          'vs ~$68.5M in Q2 2025',
+          'Down 41.7% YoY — but up 26% on Q1’s $31,736k',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          '— Power system product',
+          '$16,163k',
+          'from $43.3M',
+          'The whole story of the decline: −$27.1M',
+        ],
+      },
+      {
+        cells: [
+          '— Installation services',
+          '$10,351k',
+          'from $14.1M',
+          'Also fell, −26.6% — so the drop is not "entirely equipment"',
+        ],
+      },
+      {
+        cells: [
+          '— Ongoing services',
+          '$13,364k',
+          '+20.8% YoY, −15% QoQ',
+          'Down from $15.7M in Q1; Q1 carried non-recurring campaign maintenance',
+        ],
+      },
+      {
+        cells: [
+          'Total revenue, H1',
+          '$71,614k',
+          'vs $92,566k in H1 2025',
+          'Down 22.6% — though Q1 alone was up 31.6% YoY',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Gross margin, Q2',
+          '18.6%',
+          'from 22.2%',
+          'The guide needs ~22.0% back, not a record',
+        ],
+      },
+      {
+        cells: [
+          'Operating loss, Q2',
+          '$(19.8)M',
+          '',
+          'Against Q2 G&A of ~$27.3M',
+        ],
+      },
+      {
+        cells: [
+          'Net loss, Q2 (consolidated)',
+          '$(67.7)M',
+          'H1 ~$(84.9)M',
+          'Includes a $48,774k loss on debt extinguishment, pre-IPO',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Net loss attributable to ERock, Inc.',
+          '$(2.98)M',
+          '$(0.06)/share',
+          'Covers 11–30 June only, on 48,174,023 weighted Class A shares',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Adjusted EBITDA, H1',
+          '$(26.9)M',
+          'Q2 $(14.0)M · Q1 $(12.4)M',
+          'FY guide of $3–9M implies +$29.9M to +$35.9M in H2',
+        ],
+      },
+      {
+        cells: [
+          'Contract liabilities',
+          '$528,405k',
+          'from $170,025k at 31 Dec',
+          'Customer prepayments — more than the entire guided H2',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Cash and equivalents',
+          '$626,636k',
+          '$660.9M incl. restricted',
+          '$34.2M restricted as LC collateral for one major customer',
+        ],
+      },
+      {
+        cells: [
+          'Operating cash flow, H1',
+          '+$268.9M',
+          'from $0.4M',
+          'AR +$68.0M and prepaids +$13.8M consumed $89.5M of the deposit inflow',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Outstanding debt',
+          'None',
+          '$250M ABL undrawn',
+          'True of borrowings; the TRA and the deposits are not borrowings',
+        ],
+      },
+      {
+        cells: [
+          'Contracted backlog (management)',
+          '~$1.7B',
+          'up ~10x YoY',
+          'From ~$1.28B at 31 March. Power system sales only',
+        ],
+      },
+      {
+        cells: [
+          'Remaining performance obligations (GAAP)',
+          '~$1.8B',
+          'above the backlog',
+          '"A significant portion over the next one to two years"',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Backlog converting in 2026 (management)',
+          '$360–390M',
+          'vs a $435–465M guide',
+          'Leaves $45–105M of the guide outside backlog conversion',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Installed capacity',
+          '1,104MW',
+          '+12.8%',
+          'A deployed-fleet metric across ~400 sites, not generation ERock owns',
+        ],
+      },
+      {
+        cells: [
+          'Shares, fully exchanged',
+          '219,400,080',
+          '48.2M Class A + 171.2M Class B',
+          'The Class A float actually tradeable is ~19M',
+        ],
+        star: true,
+      },
+    ],
+  },
+  bull: [
+    'The audited backlog is larger than the promoted one. GAAP remaining performance obligations were approximately $1.8bn at 30 June against a headline Contracted Power System Sales Backlog of ~$1.7bn — so the number the market repeated is, unusually, the conservative one.',
+    'The customer has already paid. Contract liabilities rose $358.4m in six months to $528.4m, which exceeds the entire implied second half of guided revenue by $135–165m. This is not a company hoping demand shows up; it is a company holding the deposits.',
+    'The guide does not require a margin transformation. At Q2’s own 18.6% gross margin and first-half opex held flat, guided second-half volume alone produces roughly 92% of the adjusted EBITDA needed to clear the bottom of the range.',
+    'Texas policy is pushing customers toward exactly this product. On 3 August the Governor ordered an audit of roughly 474 GW of ERCOT large-load interconnection requests — about 90% of it data centres — and ERCOT paused its Batch Zero process. BNEF estimates the audit could delay 49.8 GW of load. A customer served behind the meter is not in that queue.',
+    'The factory is sold out. Management states assembly capacity is committed through 2027 and into 2028, with the Hyperion Houston facility beginning operations during the quarter and Titan plus Hyperion targeting ~1.2 GW/yr of assembly by year-end.',
+    'The product wins on the specification that matters for this application: full load acceptance in as little as 10 seconds against up to 45 for competing gas solutions. Bloom’s fuel cells are more efficient (~60% vs 30–40%) and deploy faster, but do not do transient response.',
+    'Fuel is a tailwind, not a risk. Waha traded negative for 118 of the first 131 days of 2026, at times near −$10/MMBtu, with 29.7 Bcf/d of new Texas pipeline capacity planned for 2026–27.',
+    'The sell side moved up, not down, after the print: Morgan Stanley $21→$23 and BofA $16→$19 on 17 August, Evercore ISI initiating Outperform at $28. No target was cut. Mean target $22.88 against a $13.11 close.',
+  ],
+  bear: [
+    'The whole year is two quarters away from being falsifiable. First-half revenue was $71.6m against a $435–465m guide, so the second half must deliver $363–393m — about 84% of the year. Strip out ongoing services, which does not need to ramp, and power system sales must go from $42.4m to roughly $330–365m, near 8x.',
+    'The ramp and the first full-scale run of a new plant are the same event. The S-1 concedes "a limited history of assembling our power systems in our own facilities" — in-house assembly began in 2025 — and Hyperion only started operating in Q2.',
+    'Management’s own backlog-conversion number does not obviously reconcile to the guide. It expects $360–390m of backlog to convert in 2026; with $71.6m already booked, the guide needs $45–105m of revenue from somewhere other than backlog conversion, or that figure is second-half-only.',
+    'The cash position is mostly not the company’s. Of $626.6m unrestricted, $528.4m is customer money owed as delivered hardware and $34.2m more is restricted as letter-of-credit collateral for a single customer. Net of deposits it is about $98.2m — and stripping deposits out, first-half operations consumed roughly $90m.',
+    'Concentration on every axis: over 80% of sales from Texas, roughly half of 2025 sales from three clients, and a backlog whose growth is dominated by one 470 MW order from one customer.',
+    'The Anthropic order is an equipment purchase, with O&M contracted separately — one-time hardware margin, not the long-lived microgrid annuity the pre-IPO business was built on. That is a lower-quality backlog dollar, and it explains a 2.5x revenue guide carrying only $3–9m of adjusted EBITDA.',
+    'The float is roughly 19m shares against 219.4m fully exchanged, and 171.2m Class B units unlock around mid-December — the same weeks in which Q4 delivery either proves or disproves the thesis. Short interest is already 29.9% of float.',
+    'About a third of the ~$554m of net IPO proceeds went to pre-IPO holders rather than into the business — roughly $156.9m purchasing Class B units and $27.8m of blocker-merger cash — including ~$119.9m to sponsor-affiliated funds.',
+    'The same Texas audit that pushes customers toward on-site generation explicitly examines on-site generation, and the PUCT has affirmed that emergency curtailment of a co-located data centre is not capped by the capacity of its paired behind-the-meter generator. Behind the meter is not a clean regulatory bypass.',
+    'The "proprietary engine" is an assembled design on a multi-sourced supply chain. The S-1 concedes limited and in some cases sole-sourced suppliers using proprietary processes with no comparable alternative "without considerable delay" — in a market where Cummins data-centre allocation is reported sold out through 2028 and lead times run ~42 weeks.',
+  ],
+  theQuestion: `Every argument this report brought against ERock came back weaker than it went in.
+
+The backlog is not inflated — the audited figure is larger. The guide does not need a margin miracle — it needs volume at an unimproved margin. The EPS beat is distorted, but by a 19-day stub period rather than the Up-C structure everyone points at. And the money is not a hope: $528.4m of it is already sitting on the balance sheet as customer deposits, more than the entire second half the company has guided to.
+
+So the bear case has to be made somewhere harder. It is this: a company that began assembling its own product in 2025, in a plant that opened this quarter, has to ship roughly eight times its first-half equipment revenue in six months — and roughly 171m locked shares come free at exactly the moment we find out whether it did.
+
+That is not an accounting question or a demand question. It is a manufacturing question, and manufacturing questions are answered by Q3.`,
+  analysis: `## What the market got wrong in ERock's favour
+
+Market Storm has now written eleven of these, and ten of them found the same shape: the number in the press release is bigger than the number the filing supports. ERock is the first one that runs the other way, and it is worth being exact about it because the exception is more instructive than the rule.
+
+The headline is **"Contracted Power System Sales Backlog increased to approximately $1.7 billion, up 10x year-over-year."** That is a management-defined operating metric — the registration statements describe it as "signed customer commitments with defined delivery schedules," it is not an ASC 606 disclosure, and it is not auditable line-for-line against the financial statements. All of that is a fair caveat and it is worth keeping.
+
+But the GAAP figure sitting next to it, in the 10-Q's own remaining-performance-obligation note, is approximately **$1.8 billion**, expected to be recognised over "the next one to two years." The audited number is the larger one.
+
+This report went looking for the opposite. The natural short thesis — and the one in circulation — held that GAAP RPO was $1.38bn against a $1.7bn promoted backlog, a ~$320m gap. That comparison came from an article published on **13 June 2026**, two days after the IPO and two months before this quarter, and the RPO table it cites is dated **31 December 2025** and totals **$339.5m**. It is a June backlog measured against a December accounting table. On matched dates the sign inverts.
+
+The two metrics genuinely do measure different things, and the differences run in both directions: RPO additionally carries multi-year ongoing-services obligations, which lifts it above a power-system-sales-only backlog; RPO also excludes usage-based variable consideration and contracts with an original duration of a year or less, which pulls it down. A spread of $100m either way between two differently-scoped metrics is bookkeeping. What it is not is evidence of promotion.
+
+## What the guide actually requires
+
+Here is the arithmetic everyone starts from, and it is correct.
+
+First-half revenue was **$71,614k** — Q1 $31,736k plus Q2 $39,878k — against full-year guidance of **$435–465m**. So the second half must produce **$363.4m–$393.4m**, roughly **84% of the year in two quarters**, and about **5.1x to 5.5x** the entire first half.
+
+Three qualifications, all of which the arithmetic alone hides.
+
+**The base is worse than 5.1x, not better.** Of that $71.6m, **$29,178k is ongoing services** — a recurring installed-base line running $13–16m a quarter that does not need to ramp at all. Strip it out and the burden falls entirely on power system sales: from **$42,436k in the first half to roughly $330–365m in the second**, which is closer to **8x**.
+
+**But the comparison to "5.5x growth" is unfair in the other direction.** The right like-for-like base is the prior second half, not the current first half. FY2025 revenue was $183.1m against first-half 2025 of $92.6m, so second-half 2025 was about **$90.5m** — making the implied year-over-year step about **4.0x–4.3x**. And the "first half declined 22.6%" framing is entirely a Q2 artifact: **Q1 2026 was up 31.6% year over year**, and Q2 was **up 26% sequentially** and beat consensus. A single quarter of equipment-delivery timing is doing all the work in that percentage.
+
+**And the "per-quarter average" is a construct management contradicted.** $182–197m per quarter is arithmetic, not guidance. Power system product revenue is recognised point-in-time on delivery, and the company guided to a ramp *through* year-end, with Hyperion reaching ~1.2 GW of annual assembly capacity only by then. Q3 will land well below $182m and Q4 well above $197m. The average understates the real Q4 requirement.
+
+## The margin question is the wrong question
+
+The tidy bear line is that first-half adjusted EBITDA of **$(26.9)m** — a −37% margin — has to become **+$29.9m to +$35.9m**, an 8–9% margin, in six months.
+
+Stated that way it sounds impossible. Run the bridge and it is mostly absorption.
+
+| Input | Figure |
+| --- | --- |
+| Q2 gross margin | 18.6% |
+| H1 adjusted operating expense | ~$40M |
+| Guided H2 revenue (low end) | $363.4M |
+| Gross profit at unimproved margin | $67.6M |
+| Less H1-level opex | −$40M |
+| **Implied H2 adjusted EBITDA** | **+$27.6M** |
+| Needed for the low end of guidance | +$29.9M |
+
+That is **92% of the way there with no margin improvement whatsoever**. Allow operating expense to grow a quarter, to $50m, and the required gross margin is about **22.0%** — which is simply last year's 22.2%.
+
+So the guide is a fixed-cost-absorption story, and the honest bear case has to attack **delivery**, not margin. That distinction is not pedantry: it tells you which line in the Q3 print falsifies the thesis. Watch power system product revenue. Do not watch gross margin.
+
+One correction to carry: the widely-repeated first-half adjusted EBITDA of $(26.4)m — the sum of the two quarterly figures management spoke on the call — is **$(26.9)m** on the company's own six-month reconciliation. There is no Q1 10-Q; ERock listed on 11 June and this is its first periodic report, so the Q1 figure exists only as unaudited management commentary on a non-GAAP measure the company defines itself, with an "other items management deems non-operational" clause doing real work.
+
+## The $(0.06) that covers nineteen days
+
+The reported loss per share was **$(0.06)** against a consensus near $(0.28), and it was widely written up as a 79% beat.
+
+Consolidated net loss for the quarter was **$67.7m**.
+
+The Up-C structure is the explanation people reach for, and it is partly right: continuing unitholders hold **79.95%** of ER Holdings' economics, so most of the consolidated loss is allocated to non-controlling interests, which carry **$207.3m** on the balance sheet. But that is the smaller effect. At ERock, Inc.'s ~20.05% economic interest, a $(2.98)m attributed loss back-solves to a post-IPO consolidated loss of only about **$14.9m** — which means roughly **$52.8m of the quarter's $67.7m sits in the pre-IPO period** and never enters the Class A denominator at all. That includes essentially the entire **$48,774k loss on debt extinguishment** from converting notes and repaying a $30m term loan, both of which the filing places before the offering.
+
+Two distortions stacked, and the period cutoff is by far the larger. The weighted share count tells the story on its own: **48,174,023** Class A shares, for a period running **11 to 30 June**.
+
+While correcting: $67.7m is a **three-month** figure, not a half-year one. Q1 added $(17.2)m, so first-half consolidated net loss is nearer **$84.9m**.
+
+## The deposits are the balance sheet
+
+This is the part of the quarter that deserved the headline and did not get it.
+
+Contract liabilities — customer prepayments on undelivered systems — went from **$170,025k at 31 December to $528,405k at 30 June**, a **$358.4m** build in six months. That single line is what produced first-half operating cash flow of **$268.9m**, against $0.4m in the comparable period.
+
+Three things follow, and two of them cut against the company.
+
+**It is the strongest fact in the bull case.** $528.4m of collected customer money exceeds the entire guided second half by $135–165m. Whatever else is uncertain here, the customers have committed cash, not just signatures. The CFO describes "significant upfront deposits… given market conditions," with milestone payments tied to long-lead equipment purchases and generator delivery.
+
+**It is also most of the cash.** "Ended the quarter debt-free with $626.6m" is true of borrowings and misleading as a liquidity statement: **84% of that cash is an unperformed obligation**, and a further **$34.2m** of the $660.9m headline is restricted as letter-of-credit collateral in favour of one major customer. Unrestricted cash net of contract liabilities is about **$98.2m**.
+
+**And the cash build is the IPO, not the deposits.** Cash went from $108,097k to $626,636k — a rise of **$518.5m against ~$554.0m of IPO net proceeds**. Everything else combined, including $268.9m of deposit-driven operating inflow less capital spending, inventory and the ~$33m debt paydown, netted to a **drain**. Strip the deposits out of operating cash flow and first-half operations consumed roughly **$90m**: accounts receivable rose **$68.0m** to $101,790k and prepaid expenses **$13.8m**, together absorbing $89.5m of the inflow, with inventory at $106,059k pre-built for the ramp.
+
+One timing caveat this report could not settle: a single unconfirmed read of the pre-IPO balance sheet put contract liabilities near **$471m at 31 March**, which would place ~84% of the deposit build in Q1 — before the Anthropic order was disclosed — and make Q2's sequential addition only ~$57m. That figure could not be corroborated and is flagged, not used.
+
+## Whether the megawatts are physically real
+
+The product is the **RockBlock**: reciprocating natural-gas engine generator strings scaling in 0.5 MW increments from 1.5 to 3.5 MW per unit, assembled in-house. Not turbines, not fuel cells. Its differentiator is transient response — full load acceptance in as little as **10 seconds** against up to 45 for competing gas solutions — and a diesel-replacement footprint, rather than thermal efficiency, where Bloom's fuel cells at ~60% beat it comfortably.
+
+"Proprietary" is doing work in that sentence. ERock assembles; the S-1's own risk factors describe suppliers that are "limited and in some cases sole-sourced," using proprietary processes, with no comparable alternative "without considerable delay." The company's engine lineage runs through a long-term mutual-exclusivity supply agreement with Power Solutions International for gensets built on PSI's 21.9-litre natural-gas heavy-duty engine. **Nameplate assembly capacity is not the same as deliverable megawatts** when upstream components are allocated in the same 2028-constrained market as everyone else's — Cummins data-centre allocation reported sold out through 2028, Caterpillar backlog around $63bn, industry lead times near 42 weeks.
+
+The economics work and are improving. Modern medium-speed simple-cycle recips run ~8,000–8,400 Btu/kWh HHV at $1,250–1,650/kW installed with >96% availability. Thunder Said models a 5 MW unit needing 8–10¢/kWh for a 10% IRR at 60% utilisation — above ERCOT North's $47.39/MWh baseline forecast, but EIA's high-demand case has that hub up ~79% by 2027, and at near-zero Waha gas with baseload utilisation the case is far stronger than a 60%-utilisation model implies. Fuel is a tailwind: **Waha traded negative for 118 of the first 131 days of 2026**, at times near −$10/MMBtu, with 44.9 Bcf/d of new US pipeline capacity planned for 2026–27, two-thirds of it originating in Texas.
+
+Permitting is manageable rather than blocking. TCEQ's Air Quality Standard Permit for Natural Gas Electric Generating Units took effect on 30 January 2025 and lets many gas EGUs skip case-by-case new-source review; TCEQ issued a 7.65 GW West Texas air permit in 2026. The scale is real — a recip-engine data centre in Tom Green County applied with **419.3 tons/yr of projected NOx** — but Texas will permit this class of plant.
+
+## The policy event that is both cases at once
+
+The sharpest thing in this research is that one directive is simultaneously the bull case and the bear case, and I did not expect that to be true of a single event.
+
+On **3 August 2026 — eight days before this 10-Q** — the Governor of Texas directed the PUCT and ERCOT to verify and audit every data-centre project in the interconnection queue before any additional projects advance, and said non-compliant projects should be denied grid access. ERCOT tracked **474.7 GW** of large-load requests as of June 2026, **420.8 GW** of it data centres, and responded the same day that it would miss its **7 August Batch Zero** deadline. BNEF estimates the audit could delay **49.8 GW** of data-centre load and cost projects up to **$15bn**.
+
+That is the single strongest demand driver imaginable for on-site generation. A customer served behind the meter is not waiting in a frozen queue — which is precisely why a backlog went up ten times.
+
+And the audit **explicitly examines on-site generation**. SB 6, effective June 2025 with PUCT implementation due by 31 December 2026, covers loads at or above 75 MW, mandates curtailment protocols for large loads interconnecting after 31 December 2025, and imposes reliability studies and PUCT approval on co-location arrangements with behind-the-meter generation. The PUCT has already affirmed that **emergency curtailment of a co-located data centre is not capped by the capacity of its paired behind-the-meter generator**.
+
+So behind the meter reduces exposure to the queue; it does not exempt the customer from Texas policy. And with over 80% of ERock's sales in Texas, the concentration and the tailwind are the same fact.
+
+## What the price assumes
+
+At the **25 August close of $13.11**, on **219,400,080 fully-exchanged shares** — 48,174,023 Class A plus 171,226,057 Class B as of 7 August — market capitalisation is about **$2.876bn**, and with $626.6m of cash against no borrowings, enterprise value is roughly **$2.25bn**.
+
+State a divergence rather than average it: **stockanalysis.com reports 273.30m shares and a $4.16bn market cap** — about 54m shares and $1.28bn above the 10-Q cover count — which is the sort of Up-C share-count error that puts a screen's multiple 60% too high. This report uses the filing's count.
+
+On that basis:
+
+| Multiple | ERock |
+| --- | --- |
+| EV / FY26 guided revenue | ~5.0x (4.8–5.2x across the range) |
+| EV / TTM revenue | ~13.9x |
+| EV / contracted backlog | ~1.32x |
+| EV / installed MW | ~$2.04M |
+| EV / FY26 guided adj. EBITDA | ~375x — meaningless |
+
+Against retrievable comparables — GE Vernova at **5.9x** EV/revenue, Powell Industries at about **7.6x** EV/sales, Bloom Energy at roughly **22x** price/sales — ERock at 5.0x on guided revenue screens genuinely *cheap*. On trailing revenue it is 13.9x, or 21.2x on GuruFocus's higher enterprise value against a stated ~3.5x peer median.
+
+**The entire valuation argument is the denominator.** At 5.0x the stock is cheaper than GE Vernova; at trailing revenue it is four times the peer median. Which of those is the real multiple is decided by whether the second half ships.
+
+Two structural facts sit under the price. About **a third of the ~$554m of net IPO proceeds went to pre-IPO holders** — roughly $156.9m purchasing Class B units and $27.8m of blocker-merger cash, including ~$119.9m to sponsor-affiliated funds — so "money raised" and "money into the business" differ materially. And the tradeable float is only about **19m shares**, smaller than the 27.9m-share IPO itself, with short interest of 5.7m shares reading as **29.9% of float** or 2.08% of shares outstanding depending on which base you use. The 39% de-rate from $21.50 happened in a stock where almost nothing is actually tradeable. That is a thin-float price, not a considered one — and **171.2m Class B units become exchangeable around mid-December**.
+
+Worth noting against the bear case: the stock is **up** since the print, from $11.25 on 11 August to $13.11 on 25 August, and every analyst action afterwards was a raise or a bullish initiation — Morgan Stanley $21→$23, BofA $16→$19, Evercore ISI initiating at $28, Barclays at Overweight. **No target was cut.** Mean target $22.88, low $19, 8 buys and 0 sells.
+
+## Risk — each isolated, do not blur
+
+1. **Delivery (dominant).** Power system sales must go from $42.4m in the first half to roughly $330–365m in the second, out of a facility that began operating in Q2 at a company with, by its own admission, a limited history of assembling its own systems.
+2. **Supply chain.** The engine is assembled around sole-sourced components in a market where large-genset slots are allocated into 2028. Assembly nameplate does not equal deliverable megawatts.
+3. **Concentration.** Over 80% of sales in Texas; roughly half of 2025 sales from three clients; backlog growth dominated by one 470 MW order.
+4. **Backlog quality.** The Anthropic order is equipment with O&M contracted separately — one-time hardware margin, not the recurring microgrid annuity the pre-IPO business was built on.
+5. **Texas policy.** The August audit and SB 6 cut both ways, and the PUCT has ruled that a paired behind-the-meter generator does not cap curtailment of a co-located load.
+6. **Supply of stock.** ~19m float, 171.2m units unlocking around mid-December, a TRA paying 85% of net cash tax savings to pre-IPO holders, and 29.9%-of-float short interest — all landing in the same weeks that Q4 delivery resolves.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** Unusually legible and unusually near. The Q3 print is where the arithmetic becomes falsifiable: if Q3 power system revenue is not materially above $100m, the full-year guide is arithmetically dead regardless of backlog. Watch power system product revenue and the contract-liability balance — a deposit balance that keeps building while revenue does not is the signal that delivery, not demand, is the constraint.
+
+**Sizing considerations (not a recommendation).** This is a ten-week-old listing with one periodic filing, a ~19m-share float, a lock-up expiry inside four months, and a full-year outcome concentrated in a single quarter of factory output. Whatever the multiple says, the position sizing that matters here is governed by liquidity and event concentration rather than by valuation. It is also the second report in this section — after IREN — where the company owns the physical bottleneck rather than renting it, which is a genuinely different risk profile from the neoclouds and correlates with them less than the ticker tape currently suggests.`,
+  invalidation: {
+    bull: [
+      'Q3 power system revenue comes in below roughly $100m. The full-year guide requires a ramp that shows up in that one line, and no amount of backlog substitutes for shipped units.',
+      'The contract-liability balance keeps building while revenue does not. Deposits growing against flat delivery is the specific signature of a manufacturing constraint rather than a demand one.',
+      'Hyperion misses its ~1.2 GW year-end assembly target, or a sole-sourced engine component slips — the S-1 concedes no comparable alternative "without considerable delay".',
+      'The mid-December unlock of 171.2m Class B units meets a Q4 delivery miss in the same weeks, against a ~19m-share float.',
+      'The Texas audit or SB 6 implementation extends to constraining behind-the-meter co-location, removing the regulatory asymmetry that is currently driving the backlog.',
+    ],
+    bear: [
+      'Q3 and Q4 deliver, and the full-year number lands inside $435–465m. At that point EV/revenue of ~5.0x is a realised multiple rather than a promise, and it is cheaper than GE Vernova.',
+      'Gross margin returns toward 22% as the plant absorbs fixed costs, which — per the bridge above — is all the adjusted EBITDA guide actually needs.',
+      'Backlog keeps converting into GAAP remaining performance obligations rather than stalling as management-defined commitments; RPO already exceeds the promoted backlog, and that relationship holding is the tell.',
+      'A second and third named hyperscale customer appear at Anthropic scale, breaking the three-client and single-order concentration.',
+      'The El Paso Electric 366 MW facility serving a Meta campus proves out the regulated-utility channel, which is structurally more durable than one-off equipment orders.',
+    ],
+  },
+  verification: {
+    confirmed: 0,
+    partlyTrue: 5,
+    corrected: 3,
+    confirmedNote:
+      'Thirty-two load-bearing claims were surfaced across four perspectives and eight of them went to an adversarial pass instructed to refute rather than check. None came back clean — every one was qualified and three were wrong in a way that changes the reading. That is an unusual result and it has a specific cause, stated here rather than buried: this run could not open a single primary document. SEC EDGAR is blocked by the network policy of the environment the research ran in, along with the wire service, the transcript hosts and every filing mirror, so filing text reached the agents through search indexing rather than a rendered document. Figures reconcile across multiple independent channels to the thousand — the six-month line items sum exactly to the reported total from three directions — but nothing below was read off a filing. The three corrections are the ones that changed the story.',
+    items: [
+      {
+        kind: 'corrected',
+        title:
+          'The promoted backlog is smaller than the audited one — the bear claim had the sign inverted',
+        text: 'This report began from the reading in circulation: that GAAP remaining performance obligations were **$1.38bn against a $1.7bn promoted backlog**, roughly $320m of headline sitting outside the accounts. **Refuted.** The 10-Q for the quarter ended 30 June discloses RPO of approximately **$1.8bn** — above the promoted figure. The $1.38bn number traces to a single Seeking Alpha bear article published **13 June 2026**, two days after the IPO and two months before this print, and the S-1 RPO table it draws on is dated **31 December 2025** and totals **$339,464k**, banded 2026 $154,561k / 2027 $20,114k. The "$336m due in 2026" in the claim is within rounding of that **total row**, which is what misreading the table as a single-year line would produce. On matched dates the relationship inverts at both dates: $1.7bn backlog against ~$1.8bn RPO at June, and ~$1.3bn backlog against a higher RPO at March. What survives is the narrow definitional point — backlog is management-defined, described as "signed customer commitments with defined delivery schedules," and is not auditable line-for-line. What does not survive is the conclusion drawn from it.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'The guide needs volume, not margin — and pointing at margin points the reader at the wrong line',
+        text: 'The claim was that first-half adjusted EBITDA of $(26.4)m implies a swing to +$29.4m–$35.4m, an 8–9% second-half margin against −37% in the first — framed as a margin transformation no company achieves in two quarters. **Two errors.** The base is wrong: the company reports six-month adjusted EBITDA of **$(26.9)m**, not $(26.4)m — the $(26.4)m is the sum of two figures management spoke on the call, and there is no Q1 10-Q behind it because ERock listed on 11 June and this is its first periodic report. The framing is worse. Hold Q2 gross margin at **18.6%** and first-half opex at ~**$40m**, then apply guided second-half revenue: $363.4m × 18.6% = **$67.6m**, less $40m, is **+$27.6m** — about **92%** of the $29.9m needed for the low end, with **zero margin improvement**. Let opex grow to $50m and the required margin is ~22.0%, which is last year’s number. The guide is fixed-cost absorption. The real risk is a 5x volume ramp in two quarters, which is serious — but it is a different line in the print.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'The $(0.06) covers nineteen days, and $67.7m is a quarter, not a half',
+        text: 'The claim held that first-half net loss was **$67.7m** including the $48.8m extinguishment charge, against $(2.98)m attributable — explained as an **Up-C attribution effect**. Both halves are off. **Period:** $67.7m, the $19.8m operating loss and the $39.9m of revenue are all **three-month** figures; Q1 added $(17.2)m, so the first-half loss is nearer **$84.9m**. **Mechanism:** the $(0.06) does not cover the quarter — it covers **11–30 June**, roughly 19 days, on 48,174,023 weighted Class A shares ($2.98m ÷ 48.174m = $0.062). At ERock, Inc.’s ~20.05% economic interest, a $2.98m attributed loss implies a post-IPO consolidated loss of about **$14.9m**, meaning roughly **$52.8m of the $67.7m sits pre-IPO** and never reaches the Class A denominator — including essentially all of the extinguishment charge, which the filing places before the offering. The non-controlling-interest split explains the $14.9m → $2.98m step; the period cutoff explains the much larger one. The claim’s direction survives — headline EPS badly understates the consolidated loss — but its arithmetic and its explanation do not.',
+      },
+      {
+        kind: 'partly',
+        title:
+          'The 5.1x figure is real; the base it is measured against is not the fair one',
+        text: 'H1 2026 revenue of **$71,614k** against H1 2025 of $92,566k is −22.6%, and $435–465m less $71.6m does give **$363.4–393.4m**, or 5.07x–5.49x the first half. All correct to the cent. Three qualifications. The like-for-like base is the prior **second** half (~$90.5m, derived from FY2025 $183.1m less H1 2025), which makes the implied step **4.0x–4.3x** year over year rather than 5.1x–5.5x. The "H1 fell 22.6%" framing is a single-quarter artifact — **Q1 2026 was up 31.6% YoY** and Q2 was **up 26% sequentially** and beat consensus. And the guidance was **initiated on 11 August with the $71.6m already known**, so the ramp is the plan as filed, not a gap the arithmetic uncovered. Pushing the other way: strip out the $29,178k of ongoing services that does not need to ramp and the burden on power system sales is closer to **8x**.',
+      },
+      {
+        kind: 'partly',
+        title:
+          'The revenue decline is not "entirely equipment" — installation fell a quarter too',
+        text: 'Q2 line items are exact — product **$16,163k**, installation services **$10,351k**, ongoing services **$13,364k**, summing to the reported $39,878k. But installation services fell from **$14.1m to $10.4m, −26.6%**, so calling the decline entirely equipment is self-contradicting: of the $30.9m gross decline, product is ~88% and installation ~12%. That matters because installation is the labour attach the bull case says scales with deployments. And "recurring services grew" is true year over year (+20.8%) and **false sequentially** — the line fell **15% from $15.7m in Q1**, with the filing attributing the drop to non-recurring campaign maintenance in Q1. So the line labelled ongoing services is not purely recurring, and its latest move is down.',
+      },
+      {
+        kind: 'partly',
+        title:
+          'The deposits are real; the one-to-three-quarter lag is a verbal generalisation',
+        text: 'Contract liabilities of **$528,405k against $170,025k** at 31 December are exact, as is the **$358.4m** increase driving $268.9m of first-half operating cash flow. The CFO’s "typically, call it one to three quarters" is genuine, but it is a spoken generalisation about a typical project — the most conflicted possible source for a duration — and the filing’s own RPO note runs the other way: ~$1.8bn over "the next one to two years", with production commitments extending through **2028**. Arithmetic agrees with the filing: the $528.4m balance **exceeds the entire implied second half by $135–165m**, so it cannot clear inside two quarters. Also flagged and unused: one uncorroborated read put contract liabilities near **$471m at 31 March**, which would place ~84% of the build in Q1, pre-IPO — it could not be confirmed a second time.',
+      },
+      {
+        kind: 'partly',
+        title:
+          '"Debt-free with $626.6m" is true and the causal story attached to it is backwards',
+        text: 'Cash of **$626,636k**, $660.9m including restricted, no outstanding borrowings and an undrawn $250m ABL all hold up across four channels including the CFO’s own words. The claim that cash exceeds the $554.0m of IPO net proceeds **because of deposits** is arithmetically inverted: $108,097k of opening cash plus $554.0m is $662.1m against $626.6m actually on hand, so unrestricted cash rose **$518.5m — $35.5m less than the raise alone**. Everything non-IPO netted to a drain. Two further qualifications: **$34.2m** of the $660.9m is restricted as letter-of-credit collateral for one major customer, and net of the $528.4m of contract liabilities the unrestricted balance is about **$98.2m**. "No outstanding debt" is a statement about borrowed money; it says nothing about the tax receivable agreement or lease obligations.',
+      },
+      {
+        kind: 'partly',
+        title:
+          '"Best-ever quarter of $68.5m" cannot be established from the public record',
+        text: 'The superlative used to dramatise the ramp — that $182–197m per quarter is 2.7–2.9x the best quarter ERock has ever printed — is not supportable. ERock listed on 11 June 2026 and its first 10-Q shows only Q2 and H1 2026 against 2025 comparatives; the Q3/Q4 2025 split inside a ~$90.5m second half **has never been published**. A Q4 2025 anywhere from $68.5m to $90.5m is arithmetically possible. Call it the largest quarter **in the disclosed record**, not the best ever. Separately, the per-quarter average is itself a construct management contradicted: product revenue is point-in-time on delivery and the ramp runs through year-end, so Q3 lands well below $182m and Q4 well above $197m.',
+      },
+    ],
+  },
+  openQuestions: [
+    'What is the post-Anthropic GAAP remaining performance obligation, read from the filing itself rather than through a search index? The ~$1.8bn figure is the single most load-bearing number in this report and it is the one most in need of a primary read.',
+    'Does management’s $360–390m of 2026 backlog conversion reconcile to $435–465m of guided revenue with $71.6m already booked? Either ~$45–105m of the guide comes from outside backlog conversion, or that figure is second-half-only. This is the first question to put to IR and the fastest place for the guide to break.',
+    'What are the cancellation and termination terms of the 470 MW Anthropic purchase order? The CFO’s "what we put into contracted backlog is firm" is management characterisation on a call, not contract language, and no exhibit could be read. IREN’s Microsoft statement of work is the precedent for how much this changes a reading.',
+    'What is the booked tax receivable agreement liability? The obligation to pay 85% of net cash tax savings to pre-IPO holders is disclosed, but no dollar amount could be retrieved — and it is a permanent claim ahead of Class A holders at a company with no taxable income.',
+    'Were contract liabilities near $471m at 31 March? If so, roughly 84% of the deposit build happened pre-IPO and pre-Anthropic, and Q2’s sequential addition was only ~$57m — which would materially change how much of this quarter is actually new.',
+    'Is the 1,104 MW installed-capacity figure the deployed fleet or something narrower? Independent sources put it at ~1,000–1,059 MW across ~400 sites, and it is a metric about equipment ERock has sold and services, not generation it owns.',
+  ],
+  soWhat: `The habit worth taking from this one is uncomfortable, because it runs against the instinct that usually serves you well.
+
+**Check the sceptical claim as hard as the promotional one.** Every previous report in this section found the same thing — the headline number is bigger than the number the filing supports — and by the eleventh one that pattern has become a prior. So when a bear article said the promoted backlog exceeded the audited backlog by $320m, it fit, and it nearly went in. It was wrong. The audited figure is the *larger* one, and the $320m gap was manufactured by comparing a June number to a December table. The article was published two days after the IPO by someone taking the short side, and the two months since had produced a filing that reversed it.
+
+A pattern that has held ten times is exactly the thing that stops you checking the eleventh.
+
+The second habit is more portable and it is the one I would actually use at work: **when a claim sounds impossible, build the bridge before you agree with it.** "This company needs its margin to swing from −37% to +9% in six months" sounds like a fantasy, and it was repeated all over the coverage. Four lines of arithmetic — hold the margin flat, hold the costs flat, apply the guided volume — and you land 92% of the way to the number with no improvement at all. The guide is not a margin claim. It is a shipping claim.
+
+That distinction is not academic. It tells you which line to read first in the next quarterly print, and it is the difference between watching the right number and watching a number that was never going to move.`,
+  throughLine: {
+    text: `ERock is the second company in this section that owns a physical bottleneck rather than renting one, and the first whose bottleneck is a factory.
+
+IREN holds grid connection agreements over 4,510MW and is building its own capacity; CoreWeave and Nebius lease into someone else’s. ERock is a step further upstream again — it does not own the data centre or the power plant, it **assembles the generators** and, increasingly, sells them outright. That makes it the only name here whose limiting constraint is a production line rather than a lease, an interconnection queue or a GPU allocation.
+
+It also sits at the far end of the pattern the standing thesis describes, but inverted in a way worth naming. Everywhere else in this section **the obligation arrives before the revenue does** — commitments, capex and financing all land years ahead of the cash. ERock is the one company where **the customer’s money arrived first**: $528.4m of deposits collected against $71.6m of first-half revenue. The risk did not disappear; it moved. It is no longer whether the demand or the funding shows up, it is whether the hardware does.
+
+And it is the clearest read yet on how the capex cycle reaches ground. Alphabet at 37.5% of operating cash flow, Amazon at roughly 105%, SpaceX at 235%, CoreWeave near 290% — those are the numbers being spent. ERock is the counterparty they are spent *at*: a 470 MW order from Anthropic that is a purchase of engines, not a lease of compute. When people ask what the AI build-out looks like when it stops being a number in a 10-K, it looks like a leased shed in Houston trying to open on schedule.`,
+    links: [
+      {
+        label:
+          'The standing thesis — the obligation arrives before the revenue',
+        slug: 'ai-capex-abundance-or-bubble',
+      },
+      {
+        label: 'IREN — the other company that owns its own bottleneck',
+        slug: 'iren-q3-fy2026',
+      },
+      {
+        label: 'CRWV — the same demand, leased rather than built',
+        slug: 'crwv-q2-2026',
+      },
+    ],
+  },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'Whether first-half revenue and cash flow can reconcile to a full-year guide that requires 84% of the year in two quarters.',
+      },
+      {
+        role: 'Short seller',
+        probe:
+          'The gap between a $1.7bn backlog headline and $71.6m of delivered revenue, and what breaks first.',
+      },
+      {
+        role: 'Power / data-center infrastructure engineer',
+        probe:
+          'Whether 470 MW of behind-the-meter gas generation is physically buildable, permittable and fuellable on the promised schedule.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe:
+          'What the price assumes on a ten-week-old IPO trading 39% below offer, once the Up-C Class B units are counted.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 32,
+    claimsVerified: 8,
+    verificationScope: 'top-n',
+    agentCount: 13,
+    runDate: '2026-08-26',
+    limitations: [
+      'No primary document was opened. SEC EDGAR (www.sec.gov and data.sec.gov) is blocked by the network egress policy of the environment this run executed in, as are the wire service, both transcript hosts, erock.com and every filing mirror. Filing text reached the agents through search indexing of those documents rather than a rendered page, and no figure in this report was read off a filing.',
+      'Figures were therefore corroborated by triangulation rather than by reading: the six-month line items ($21,320k product + $21,116k installation + $29,178k ongoing services) sum exactly to the reported $71,614k, and the quarterly figures reconcile from three independent directions. That is strong evidence and it is not the same as verification.',
+      'Only 8 of 32 load-bearing claims went to the adversarial pass. The remaining 24 are sourced but unrefuted, and should be read as such.',
+      'The Q3/Q4 2025 revenue split has never been published, so every claim in circulation about a "best-ever quarter" — including one this report started with — is unverifiable in both directions.',
+      'Share counts, the 424B4 use-of-proceeds breakdown and the remaining-performance-obligation note are the figures most worth re-reading against the filings from an unblocked network before anyone acts on them.',
+      'That re-reading was done before publication, from an unblocked network, against the Q2 2026 10-Q itself. Every load-bearing figure reconciled exactly: Contracted Power System Sales Backlog of "approximately $1.7 billion" and remaining performance obligations of "approximately $1.8 billion" — the inversion this report is built on — plus revenue of $39,878k against $68,458k, contract liabilities of $528,405k from $170,025k, operating cash flow of $268,939k from $436k, and cash of $626,636k. Nothing moved. The triangulation held, and the report is no longer resting on it alone.',
+    ],
+  },
+  cardImage: '/images/content/eroc-q2-2026-card-hero.webp',
+  cardImageLight: '/images/content/eroc-q2-2026-card-hero-light.webp',
+  cardImageAlt:
+    'ERock booked $71.6 million of revenue in the first half of 2026 while holding $528.4 million of customer deposits',
+  sources: [
+    {
+      n: 1,
+      label:
+        'ERock Form 10-Q, period ended 2026-06-30 — revenue disaggregation, contract liabilities, RPO, share counts (text reached this run through search indexing; sec.gov could not be opened)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0002110029/000119312526346922/eroc-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 2,
+      label:
+        'ERock Form 8-K Exhibit 99.1 — Q2 2026 earnings release and FY2026 guidance initiation',
+      url: 'https://www.sec.gov/Archives/edgar/data/0002110029/000119312526344714/eroc-ex99_1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 3,
+      label:
+        'ERock Form S-1 — UP-C structure, tax receivable agreement, backlog definition, RockBlock specification, sole-source supplier risk factors',
+      url: 'https://www.sec.gov/Archives/edgar/data/2110029/000119312526227199/d12401ds1.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 4,
+      label:
+        'ERock Form S-1/A — Titan and Hyperion facilities, 180-day lock-up, registration rights agreement, RPO table at 2025-12-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/2110029/000119312526249668/d12401ds1a.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 5,
+      label: 'ERock Form 424B4 — IPO pricing and use of proceeds',
+      url: 'https://www.sec.gov/Archives/edgar/data/2110029/000119312526265898/d12401d424b4.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 6,
+      label: 'SEC EDGAR — ERock, Inc. submissions index, CIK 0002110029',
+      url: 'https://data.sec.gov/submissions/CIK0002110029.json',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 7,
+      label:
+        'ERock Form 4 — Energy Impact Partners affiliated funds, Class B unit purchase using ~$119.9M of offering proceeds',
+      url: 'https://www.stocktitan.net/sec-filings/EROC/form-4-e-rock-inc-insider-trading-activity-26fca87fd4dc.html',
+      kind: 'filing',
+    },
+    {
+      n: 8,
+      label:
+        'ERock — Q2 2026 results press release: $1.7B backlog, 470 MW Anthropic order, $626.6M cash, FY26 guidance',
+      url: 'https://www.businesswire.com/news/home/20260811144024/en/ERock-Reports-Second-Quarter-2026-Results',
+      kind: 'company',
+    },
+    {
+      n: 9,
+      label:
+        'ERock — RockBlock product page: 0.5 MW increments, 10-second load acceptance, CARB DG',
+      url: 'https://erock.com/rock-block/',
+      kind: 'company',
+    },
+    {
+      n: 10,
+      label: 'ERock — natural gas generators overview',
+      url: 'https://erock.com/natural-gas-generators/',
+      kind: 'company',
+    },
+    {
+      n: 11,
+      label:
+        'Enchanted Rock — mutual exclusivity supply agreement with Power Solutions International for the 21.9 L natural-gas engine',
+      url: 'https://www.prnewswire.com/news-releases/enchanted-rock-signs-mutually-exclusive-supply-agreement-with-power-solutions-international-300391667.html',
+      kind: 'company',
+    },
+    {
+      n: 12,
+      label:
+        'Power Solutions International — the same supply agreement, supplier side',
+      url: 'https://investors.psiengines.com/news-releases/news-release-details/power-solutions-international-signs-mutually-exclusive-supply',
+      kind: 'company',
+    },
+    {
+      n: 13,
+      label: 'Bloom Energy — 2026 Data Center Power Report',
+      url: 'https://www.bloomenergy.com/wp-content/uploads/2026-power-report.pdf',
+      kind: 'company',
+    },
+    {
+      n: 14,
+      label:
+        'TCEQ — Air Quality Standard Permit for Natural Gas Electric Generating Units, effective 2025-01-30',
+      url: 'https://www.tceq.texas.gov/permitting/air/newsourcereview/combustion/egu_sp.html',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 15,
+      label: 'TCEQ — the natural gas EGU standard permit document itself',
+      url: 'https://www.tceq.texas.gov/downloads/permitting/air/nsr/combustion/ngegu-standard-permit.pdf',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 16,
+      label:
+        'EIA — 44.9 Bcf/d of new US natural gas pipeline capacity planned for 2026–2027, 29.7 Bcf/d of it from Texas',
+      url: 'https://www.eia.gov/todayinenergy/detail.php?id=67707',
+      kind: 'data',
+    },
+    {
+      n: 17,
+      label:
+        'stockanalysis.com — EROC overview: 2026-08-25 close $13.11, TTM revenue $162.19M',
+      url: 'https://stockanalysis.com/stocks/eroc/',
+      kind: 'data',
+    },
+    {
+      n: 18,
+      label:
+        'stockanalysis.com — EROC statistics: the divergent 273.30M share count and $4.16B market cap this report does not use',
+      url: 'https://stockanalysis.com/stocks/eroc/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 19,
+      label:
+        'Investing.com — ERock quote, $13.08 and ~$2.87B market cap on 2026-08-26',
+      url: 'https://www.investing.com/equities/erock',
+      kind: 'data',
+    },
+    {
+      n: 20,
+      label:
+        'MarketBeat — EROC analyst forecast distribution, post-print target raises, short interest and days to cover',
+      url: 'https://www.marketbeat.com/stocks/NYSE/EROC/forecast/',
+      kind: 'data',
+    },
+    {
+      n: 21,
+      label: 'CNN Markets — EROC target distribution and ratings split',
+      url: 'https://www.cnn.com/markets/stocks/EROC',
+      kind: 'data',
+    },
+    {
+      n: 22,
+      label: 'CNBC — EROC quote and news',
+      url: 'https://www.cnbc.com/quotes/EROC',
+      kind: 'data',
+    },
+    {
+      n: 23,
+      label: 'TradingView — EROC price and chart, NYSE',
+      url: 'https://www.tradingview.com/symbols/NYSE-EROC/',
+      kind: 'data',
+    },
+    {
+      n: 24,
+      label: 'Yahoo Finance — ERock, Inc. quote and history',
+      url: 'https://finance.yahoo.com/quote/EROC/',
+      kind: 'data',
+    },
+    {
+      n: 25,
+      label: 'Simply Wall St — ERock earnings and revenue history',
+      url: 'https://simplywall.st/stocks/us/capital-goods/nyse-eroc/erock/past',
+      kind: 'data',
+    },
+    {
+      n: 26,
+      label:
+        'multiples.vc — GE Vernova 5.9x EV/revenue, $263B cap / $254B EV as of 2026-08-21',
+      url: 'https://multiples.vc/public-comps/ge-vernova-valuation-multiples',
+      kind: 'data',
+    },
+    {
+      n: 27,
+      label:
+        'multiples.vc — Quanta Services $99B cap / $105B EV as of 2026-07-13',
+      url: 'https://multiples.vc/public-comps/quanta-services-valuation-multiples',
+      kind: 'data',
+    },
+    {
+      n: 28,
+      label: 'Factors Today — Powell Industries at ~7.6x EV/sales',
+      url: 'https://www.factorstoday.com/research/POWL',
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label:
+        'TradingView — 10-Q summary: Q2 revenue $39.9M, net loss attributable $(2.98)M, EPS $(0.06), line-item disaggregation',
+      url: 'https://www.tradingview.com/news/tradingview:daa387a8d2cc4:0-erock-inc-q2-2026-revenue-39-9m-net-loss-2-98m-eps-0-06-10-q-summary/',
+      kind: 'analysis',
+    },
+    {
+      n: 30,
+      label:
+        'TradingKey — Q2 2026: revenue down 42% YoY, consolidated net loss $67.7M including the $48.8M extinguishment charge, $1.7B backlog',
+      url: 'https://www.tradingkey.com/news/earnings/262097037-tradingkey',
+      kind: 'analysis',
+    },
+    {
+      n: 31,
+      label:
+        'Seeking Alpha — ERock, Inc. Q2 2026 earnings call transcript: Hyperion, capacity sold out into 2028, El Paso Electric 366 MW, backlog conversion',
+      url: 'https://seekingalpha.com/article/4935540-erock-inc-eroc-q2-2026-earnings-call-transcript',
+      kind: 'analysis',
+    },
+    {
+      n: 32,
+      label:
+        'Investing.com — Q2 2026 call transcript: adjusted EBITDA by quarter, the CFO on deposits and the one-to-three-quarter recognition lag',
+      url: 'https://www.investing.com/news/transcripts/earnings-call-transcript-erock-jumps-23-after-q2-2026-revenue-surge-93CH-4855247',
+      kind: 'analysis',
+    },
+    {
+      n: 33,
+      label:
+        'Investing.com — record backlog and the Anthropic deal as an equipment purchase order with O&M contracted separately',
+      url: 'https://www.investing.com/news/earnings/erock-soars-14-on-record-backlog-anthropic-deal-93CH-4852899',
+      kind: 'analysis',
+    },
+    {
+      n: 34,
+      label:
+        'Investing.com — Q2 2026 slide deck coverage: Hyperion operations begun, 1.2 GW by year-end',
+      url: 'https://www.investing.com/news/company-news/erock-q2-2026-slides-ai-power-demand-drives-record-backlog-93CH-4855296',
+      kind: 'analysis',
+    },
+    {
+      n: 35,
+      label:
+        'Investing.com — Barclays initiates EROC at Overweight on power scarcity',
+      url: 'https://www.investing.com/news/analyst-ratings/barclays-initiates-erock-stock-with-overweight-on-power-scarcity-93CH-4776181',
+      kind: 'analysis',
+    },
+    {
+      n: 36,
+      label:
+        'Seeking Alpha — the pre-IPO bear case this report tested and could not sustain: the $1.38B RPO figure, Texas and client concentration',
+      url: 'https://seekingalpha.com/article/4914741-erock-back-up-player-does-not-deserve-my-backing',
+      kind: 'analysis',
+    },
+    {
+      n: 37,
+      label:
+        'GuruFocus — Q2 revenue beat versus consensus, EV/sales against the peer median',
+      url: 'https://www.gurufocus.com/news/9025833/erock-eroc-surpasses-revenue-expectations-with-3988m-q2-market-pricing-in-growth-despite-losses',
+      kind: 'analysis',
+    },
+    {
+      n: 38,
+      label: 'GuruFocus — IPO priced at $21.50, midpoint of a $20–23 range',
+      url: 'https://www.gurufocus.com/news/8910366/eroc-secures-2150-per-share-in-2791m-offering',
+      kind: 'analysis',
+    },
+    {
+      n: 39,
+      label: 'StockTitan — 10-Q coverage: the quarter ended debt-free',
+      url: 'https://www.stocktitan.net/sec-filings/EROC/10-q-e-rock-inc-quarterly-earnings-report-56e755a2d8da.html',
+      kind: 'analysis',
+    },
+    {
+      n: 40,
+      label:
+        'Daily Political — Q2 call highlights: 2026 backlog conversion range, H2 EBITDA-positive expectation',
+      url: 'https://www.dailypolitical.com/2026/08/12/erock-q2-earnings-call-highlights.html',
+      kind: 'analysis',
+    },
+    {
+      n: 41,
+      label:
+        'Kalkine — the 52-week low of $8.88 on 2026-07-29 and the post-IPO decline',
+      url: 'https://kalkine.com/news/industrials/erock-nyseeroc-falls-more-than-10-approaching-52-week-low-in-post-ipo-decline',
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label:
+        'Electron Economics — the Titan and Hyperion assembly history, and the competitive squeeze against Caterpillar, Cummins and Wartsila',
+      url: 'https://electroneconomics.substack.com/p/enchanted-rocks-ipo-is-a-bet-on-backlog',
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label:
+        'Holland & Knight — the 2026-08-03 Abbott directive to audit the ERCOT data-center interconnection queue',
+      url: 'https://www.hklaw.com/en/insights/publications/2026/08/texas-gov-abbott-directs-data-center-audit',
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label:
+        'Utility Dive — Texas pauses data-center interconnections; ~474 GW of large-load requests',
+      url: 'https://www.utilitydive.com/news/texas-hits-pause-data-center-interconnections/827046/',
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label:
+        'POWER Magazine — BNEF estimates the Texas audit could delay 49.8 GW of load and cost projects up to $15B',
+      url: 'https://www.powermag.com/texas-audit-could-delay-49-8-gw-of-data-center-load-cost-projects-up-to-15-billion-bnef-warns/',
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label:
+        'White & Case — the PUCT affirms curtailment of a co-located data center is not capped by its paired behind-the-meter generator',
+      url: 'https://www.whitecase.com/insight-alert/puct-affirms-curtailment-authority-over-co-located-data-centers-first-net-metering',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label:
+        'Bracewell — Texas SB 6: the large-load interconnection and curtailment regime',
+      url: 'https://www.bracewell.com/resources/texas-senate-bill-6-ushers-in-major-overhaul-of-large-load-interconnection-and-grid-access-rules/',
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label:
+        'POWER Magazine — engine power plants surge: OEM backlogs, the INNIO 2.3 GW VoltaGrid order, Wartsila US orders',
+      url: 'https://www.powermag.com/engine-power-plants-surge-as-data-centers-drive-unprecedented-demand/',
+      kind: 'analysis',
+    },
+    {
+      n: 49,
+      label:
+        'Thunder Said Energy — levelized cost of reciprocating gas engines: 8–10 cents/kWh for a 10% IRR at 60% utilisation',
+      url: 'https://thundersaidenergy.com/downloads/reciprocating-gas-engines-levelized-costs/',
+      kind: 'analysis',
+    },
+    {
+      n: 50,
+      label:
+        'P&GJ — Waha traded negative for 118 of the first 131 days of 2026',
+      url: 'https://pgjonline.com/news/2026/march/permian-pipeline-constraints-push-waha-gas-prices-negative-for-25th-straight-day',
+      kind: 'analysis',
+    },
+  ],
+};
+
 export const marketStormReports: MarketStormReport[] = [
   aiCapexThesis2026,
+  erocQ2_2026,
   irenQ3_FY2026,
   googQ2_2026,
   nbisQ2_2026,

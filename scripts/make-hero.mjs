@@ -119,7 +119,13 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+// The Mac path stays the default because that is where cards are normally made.
+// CHROME_PATH overrides it so a cloud session — which has Chromium but no
+// /Applications — can render one too; the same escape hatch the web-voltic
+// regression suite needed for the same reason.
+const CHROME =
+  process.env.CHROME_PATH ||
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const POSTS = 'src/content/posts';
 const OUT = 'public/images/content';
 const FONT_DIR = path.join(
@@ -632,9 +638,7 @@ function logoCard(k) {
       // Drop any full-bleed background plate; the card supplies its own ground.
       .replace(/<rect\b[^>]*\/>/g, '')
       .replace(/fill="([^"]+)"/g, (m, c) =>
-        c === 'none'
-          ? m
-          : `fill="${l.knockout.includes(c) ? t.bg : t.text}"`
+        c === 'none' ? m : `fill="${l.knockout.includes(c) ? t.bg : t.text}"`
       )
       .replace(/<svg\b/, `<svg style="width:${w}px;height:${h}px"`);
     return doc(
@@ -816,7 +820,7 @@ function split(k) {
        ${after.label ? `<div class="l">${esc(after.label)}</div>` : ''}
        <div class="h">${esc(after.text)}</div>
 
-     </div>`,
+     </div>`
   );
 }
 
@@ -846,10 +850,9 @@ function countCard(k) {
     `<div class="l">${esc(c.of)} ${esc(c.unit)}</div>
      <div class="blocks">${blocks}</div>
      <div class="h"><em>${esc(c.hit)} of ${esc(c.of)}</em>${c.verdict ? ` ${esc(c.verdict)}` : ''}</div>
-`,
+`
   );
 }
-
 
 /* RECEIPT — a ledger of findings with the verdict stamped across it. Where
    Split stages one belief against one truth, this is for a post that produced a
@@ -904,10 +907,9 @@ function sequenceCard(k) {
        color:${t.text};font-size:${ledeSize(s.verdict)}px}
      .h em{font-style:normal;color:${ink}}`,
     `     <div class="rail">${steps}</div>
-     ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}`,
+     ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}`
   );
 }
-
 
 /* ANNOTATED — a passage with its problems marked. For a post whose evidence is
    that something *reads fine and isn't*: the claim stays legible, the flag names
@@ -947,7 +949,6 @@ function annotatedCard(k) {
      <div>${spans}</div>`
   );
 }
-
 
 /** The social card. One design for every template — see the header. */
 function ogHtml() {
@@ -1012,6 +1013,12 @@ function render(html, outWebp) {
       '--hide-scrollbars',
       '--virtual-time-budget=3000',
       '--allow-file-access-from-files',
+      // Chrome refuses to run as root without this. That is only ever true in a
+      // container, so it is added by detection rather than always: on a Mac the
+      // sandbox stays on, which is the point of having one.
+      ...(typeof process.getuid === 'function' && process.getuid() === 0
+        ? ['--no-sandbox']
+        : []),
       `--screenshot=${outWebp}`,
       `--window-size=${W},${H}`,
       `file://${htmlPath}`,
@@ -1055,7 +1062,7 @@ if (hasHero && !force) {
     console.warn(
       `  ! ${words} words on this image; the budget is ${budget}.\n` +
         `    At 341px most of them are under 11px and read as grey noise. The card\n` +
-        `    beside it already carries the title and the excerpt — cut, don't shrink.`,
+        `    beside it already carries the title and the excerpt — cut, don't shrink.`
     );
   } else {
     console.log(`  words: ${words}/${budget}`);
