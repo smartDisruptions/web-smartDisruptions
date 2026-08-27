@@ -45,6 +45,8 @@ const ODD_BOT_CODES = new Map([
   // renders), and the NPR piece on SpaceX's first post-IPO quarter.
   ['www.amd.com', new Set([0])],
   ['www.npr.org', new Set([0])],
+  // Verified in a browser: the Enchanted Rock supply-agreement release loads.
+  ['investors.psiengines.com', new Set([0])],
 ]);
 
 function isBotFiltered(url, code) {
