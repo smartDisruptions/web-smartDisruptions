@@ -2,14 +2,8 @@
  "title": "ERock — Market Storm",
  "category": "Market Storm",
  "out": "eroc-q2-2026-card",
- "tone": "good",
- "before": {
-   "label": "Revenue booked, first half 2026",
-   "text": "$71.6M"
- },
- "after": {
-   "label": "Customer cash already collected",
-   "text": "$528.4M"
- },
- "alt": "ERock booked $71.6 million of revenue in the first half of 2026 while holding $528.4 million of customer deposits — more than its entire guided second half."
+ "logo": { "file": "eroc.svg", "scale": 0.50 },
+ "before": { "label": "Company", "text": "ERock" },
+ "after": { "label": "Section", "text": "Market Storm" },
+ "alt": "ERock logo"
 }
