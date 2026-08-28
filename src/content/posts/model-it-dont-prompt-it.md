@@ -18,6 +18,7 @@ channels:
   - name: substack
     status: planned
     note: "577 credits is what it cost me to learn where AI image tools actually break.\n\nI needed a can of a made-up energy drink to spin on a web page. The AI gave me a different can every time — because it isn't photographing an object, it's imagining a fresh picture on every try. And it can't write small text: my nutrition label came back with invented numbers. 170 calories on a zero-calorie drink.\n\nThe fix: a can is just a cylinder. I had the AI build the can as a real 3D object wearing a label I typed myself, and every angle became right automatically. No 3D skills involved — I just changed what I asked for.\n\nThe rule that survived: if it has to look the same twice, build it. If it only appears once, generate it. AI made every background and splash shot on that site, and it's genuinely great at those.\n\nFull story, with the live can you can spin: https://www.smartdisruptions.com/content/model-it-dont-prompt-it"
+liveAt: 2026-08-29T00:00:00.000Z
 ---
 I built a website for a made-up energy drink called VOLTIC. The showpiece is the can: it turns as you scroll down the page, and you can grab it and spin it yourself. It's live at [web-voltic.vercel.app](https://web-voltic.vercel.app) — go spin the can before you read how it nearly didn't work.
 
