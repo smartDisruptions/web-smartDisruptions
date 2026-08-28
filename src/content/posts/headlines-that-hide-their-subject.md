@@ -5,7 +5,7 @@ excerpt: I had fourteen articles up and a nagging feeling the titles weren't wor
 category: Working With AI
 publishDate: 2026-08-24
 tags: [writing, headlines, editing, ai]
-status: staged
+status: draft
 channels:
   - name: linkedin
     status: planned
