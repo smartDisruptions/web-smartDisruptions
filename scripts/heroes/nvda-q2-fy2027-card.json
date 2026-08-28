@@ -1,0 +1,15 @@
+{
+ "title": "NVIDIA — Market Storm",
+ "category": "Market Storm",
+ "out": "nvda-q2-fy2027-card",
+ "tone": "warn",
+ "before": {
+   "label": "Market value added next day",
+   "text": "+$442 billion"
+ },
+ "after": {
+   "label": "Operating cash flow",
+   "text": "Halved to $24.1bn"
+ },
+ "alt": "NVIDIA added $442 billion of market value the day after guiding gross margin down, in a quarter when its operating cash flow halved to $24.1 billion and it returned $26.0 billion to shareholders."
+}

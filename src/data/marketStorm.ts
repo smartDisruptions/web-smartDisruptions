@@ -8700,8 +8700,961 @@ And it is the clearest read yet on how the capex cycle reaches ground. Alphabet 
   ],
 };
 
+const nvdaQ2_FY2027: MarketStormReport = {
+  slug: 'nvda-q2-fy2027',
+  ticker: 'NVDA',
+  company: 'NVIDIA Corporation',
+  title:
+    'NVIDIA added $442 billion the day after warning on margins — and in the same quarter its receivables aged fifteen days',
+  excerpt:
+    'The quarter was reported everywhere as a margin warning overridden by a growth number. Both halves are shakier than they read. The margin does not recover — 72-73% is below the 75.0% just posted, and NVIDIA’s own word is "settling". Q2 was the peak operating margin; every guided quarter after it is lower. The widely-repeated concentration scare runs backwards on a like-for-like basis. And the 70% growth figure that moved the stock is not a filed guide at all. What actually changed sits below the revenue line: operating cash flow halved to $24.1bn while $26.0bn went out to shareholders.',
+  catalyst: 'Q2 FY2027 earnings — reported August 26, 2026',
+  publishDate: '2026-08-28',
+  tags: [
+    'NVDA',
+    'AI-infrastructure',
+    'semiconductors',
+    'earnings-quality',
+    'memory',
+  ],
+  verdict:
+    'The most profitable large hardware company in history just told the market its margin steps down permanently, that its cash conversion halved, and that it is lending its balance sheet to the customers buying its chips — and the market added $442 billion because a number that is not a guide was 26 points above consensus.',
+  priceStrip: [
+    { k: 'Close · Aug 27', v: '$227.98', tone: 'bull' },
+    { k: 'One-day move', v: '+8.74% · $442B', tone: 'bull' },
+    { k: 'Market cap', v: '$5.51T' },
+    { k: 'Q2 revenue', v: '$96.2B · +106%', tone: 'bull' },
+    { k: 'Gross margin', v: '75.0% → 71–72%', tone: 'warn' },
+    { k: 'Operating cash flow', v: '$24.1B', tone: 'bear' },
+  ],
+  summary: `NVIDIA reported its July quarter on 26 August. Revenue was **$96.2bn**, up 106% year over year. Data Center was **$89.0bn**, about 93% of the company. Then it guided gross margin **down** — to 74.0% next quarter, bottoming at **71–72%** the quarter after — and blamed memory prices.
+
+The stock fell. It closed the regular session down 1.6% and dropped another 1.8% after hours. Bloomberg's headline that night was *"Nvidia Sales Forecast Tops Estimates but Shares Fall on AI Spending Concerns."* It was on track to fall after a fifth consecutive earnings beat.
+
+Then, on the call, the CFO said something NVIDIA had never said before: a **year-ahead revenue expectation, roughly 70% growth** for fiscal 2028, against a consensus near 44%. The next day the stock closed **$227.98, up 8.74%** — adding **$442bn**, the second-largest single-day market-cap gain in history.
+
+So a 300-basis-point margin reset was repriced as a rounding error against a 26-point beat on a growth *rate*. That trade may well be right. But three of the things everyone repeated about this quarter do not survive being checked, and the number that genuinely deteriorated was on none of the front pages.`,
+  headlineVsReal: [
+    {
+      headline:
+        'Margins **bottom at 71–72% and then recover to 72–73%** in fiscal 2028 as price increases land — a dip, then a rebound.',
+      real: '**72–73% is below the 75.0% NVIDIA just posted.** The company’s own word is *"settling"*, not recovering.',
+      gap: 'This is a sign inversion, and it changes what the reader models. The only recovery is roughly **one point off the trough**; against the current run-rate this is a **permanent 2–3 point reset**. A reader who takes "recovery" at face value models margin returning toward 75% — the guide says it does not. Two further hardenings crept into the retelling. **"Already-executed price increases"**: the transcript phrase is *"as executed price increases take effect in Q1"*, and the corroborating evidence is Reuters reporting that customers had been **notified of possible increases of more than 15%** on systems shipping in early 2027 — notification of possible increases, not booked contracts. And **"memory, not mix"** is an inference nobody stated: NVIDIA’s own commentary uses mix language in the same document, and the Q3 guide is reported as reflecting both tight memory **and** the cost of scaling liquid-cooled full-rack systems, with the Vera Rubin ramp at roughly 20% of Q3 data-centre revenue. No bridge quantifying memory versus transition was given. The margin recovery also assumes memory stops getting worse — in the same breath the CFO said memory prices are *"headed even higher into next year."*',
+    },
+    {
+      headline:
+        '**Five customers are 70% of receivables, up from 56%** — the concentration risk is getting worse.',
+      real: 'On a like-for-like basis it **fell**. Top-three receivable concentration went from **56% to 49%**, and the largest single name from 23% to 22%.',
+      gap: 'The 70% figure is real and so is the 56% — they just are not the same measurement. **56% is a three-name total** (23%/19%/14% a year earlier; 25%/18%/13% at the January year-end). **70% is a five-name total** (22%/14%/13%/11%/10%). The jump comes entirely from two additional customers crossing the **10% disclosure threshold**, which is a *broadening* of the disclosed base, not a narrowing of the customer set. Comparing a five-name sum to a three-name sum is not a concentration comparison. The revenue half points the same way and was reported as if it pointed the other: a year ago **two** direct customers were 23% and 16% of revenue — 39% combined — and this quarter there is exactly **one**, at 16%. Watch for the fiscal trap here, because a lot of coverage fell into it: **the famous "39% from two mystery customers" is Q2 FY2026**, the year-ago quarter, not this one. One honest counterweight, though: *"direct customer"* is not the end buyer, and NVIDIA separately discloses that indirect customers can each exceed 10% — so some of this de-concentration may be demand routing through integrators rather than genuinely spreading out.',
+    },
+    {
+      headline:
+        'NVIDIA is guaranteeing **$105 billion** of OpenAI’s lease obligations — a circular-financing bombshell buried in the 10-Q.',
+      real: 'It was disclosed in a standalone **8-K on 17 August, nine days before the print**. The stock rose 8.74% with it fully public.',
+      gap: 'The structure is real and it is remarkable — multiple residual value guaranties on 20-year leases covering roughly **4.25 GW** at SB Energy’s PORTS-Pike campus in Ohio, exclusively hosting NVIDIA infrastructure for OpenAI, with an option on ~3.8 GW more and a **$1.5bn NVIDIA equity investment in SB Energy** alongside. But three things about the retelling are wrong. It is **not new information** and cannot be an unpriced catalyst. **$105bn is a notional cap, not an exposure**: NVIDIA owes the *shortfall* between a lease’s guaranteed minimum value and what is recovered by reletting or sale, it holds options to assume, relet, sell or defer, and **OpenAI is contractually obliged to reimburse** what NVIDIA pays. And there is **no live exposure today** — the guarantees phase in as data centres become ready for service, the first expected in **fiscal 2029**, and NVIDIA carries them as credit derivatives whose fair values it states were *"not material."* The genuinely damning detail is the one nobody leads with: **the guaranteed minimum value that determines the payout is disclosed nowhere**, so the real exposure cannot be computed from the filings at all. Also note the direction of travel — earlier reporting had NVIDIA weighing roughly **$250bn** of guarantees for the same campus. The filing revised that **down** to $105bn, and at least one reading of the market’s response was that it signalled *less demand rather than less risk*.',
+    },
+  ],
+  kpis: [
+    {
+      label: 'Revenue',
+      value: '$96.2B',
+      delta: '+106% YoY',
+      note: '+18% sequentially, ~5.7% above NVIDIA’s own guidance. Data Center $89.0B, +117%.',
+      tone: 'bull',
+    },
+    {
+      label: 'Operating cash flow',
+      value: '$24.1B',
+      delta: 'from $50.3B',
+      note: 'Halved sequentially — while $26.0B went out in buybacks and dividends.',
+      tone: 'bear',
+    },
+    {
+      label: 'Days sales outstanding',
+      value: '60 days',
+      delta: 'from 45',
+      note: 'AR $63.1B, on "extended payment terms" to certain investment-grade customers.',
+      tone: 'bear',
+    },
+    {
+      label: 'Supply commitments',
+      value: '$279B',
+      delta: 'from $119B',
+      note: 'More than doubled in one quarter, primarily memory. Against $56.6B of cash.',
+      tone: 'warn',
+    },
+    {
+      label: 'Gross margin',
+      value: '75.0%',
+      delta: '→ 71–72% trough',
+      note: 'Settles at 72–73% — below today. A step down, not a dip.',
+      tone: 'warn',
+    },
+    {
+      label: 'Operating margin',
+      value: '66.2%',
+      delta: 'the peak',
+      note: 'Every guided quarter after Q2 is lower; Q4 implies ~63%.',
+      tone: 'warn',
+    },
+    {
+      label: 'Total debt',
+      value: '$33.4B',
+      delta: 'from $8.5B',
+      note: 'Up ~$25B in two quarters. Net cash is now 0.4% of enterprise value.',
+      tone: 'warn',
+    },
+    {
+      label: 'Forward P/E',
+      value: '~24.4×',
+      delta: 'PEG ~0.35',
+      note: 'On the raised $9.34 FY2027 consensus. Cheap — if the growth is durable.',
+      tone: 'bull',
+    },
+  ],
+  printTableTitle:
+    'Q2 FY2027 — the quarter ended 26 July, and what the guide says about the ones after it',
+  printTable: {
+    columns: [
+      { label: 'Metric' },
+      { label: 'Q2 FY2027', align: 'right' },
+      { label: 'Comparison', align: 'right' },
+      { label: 'Note' },
+    ],
+    rows: [
+      {
+        cells: [
+          'Revenue',
+          '$96.22B',
+          '+106% YoY, +18% QoQ',
+          'About 5.7% above NVIDIA’s own guidance',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          '— Data Center',
+          '$89.0B',
+          '+117% YoY',
+          '~93% of total revenue',
+        ],
+      },
+      {
+        cells: [
+          'Gross margin',
+          '75.0%',
+          'GAAP and non-GAAP alike',
+          'Guided 74.0% ±50bp for Q3; trough 71–72% in Q4',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Operating income',
+          '$63.7B',
+          '66.2% margin',
+          'The peak — Q3 guides to ~65.5%, Q4 implies ~63%',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Operating expenses',
+          '$8.4B',
+          '+55% YoY, +10% QoQ',
+          'Against revenue +106% — leverage real but small',
+        ],
+      },
+      {
+        cells: [
+          'EPS',
+          '$2.46 GAAP',
+          '$2.22 non-GAAP',
+          'GAAP ABOVE non-GAAP — $7.8B of equity-securities gains',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Operating cash flow',
+          '$24.1B',
+          'from $50.3B in Q1',
+          'Working capital and cash taxes',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Returned to shareholders',
+          '~$26.0B',
+          'exceeds cash generated',
+          '~$99B left on the authorization',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Accounts receivable',
+          '$63.1B',
+          'DSO 60 days, from 45',
+          'From $38.5B in January — up 63%',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Inventory',
+          '$31.6B',
+          'from $25.8B',
+          'Built ahead of the Vera Rubin ramp',
+        ],
+      },
+      {
+        cells: [
+          'Supply and capacity commitments',
+          '$279B',
+          'from $119B at Q1',
+          'Primarily memory procurement',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Cash and marketable debt securities',
+          '$56.6B',
+          'debt $33.4B',
+          'Net cash ~$23.2B — 0.4% of enterprise value',
+        ],
+      },
+      {
+        cells: [
+          'Non-marketable equity securities',
+          '~$47.8B',
+          'from $42.3B',
+          'Stakes in companies that buy NVIDIA hardware',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Revenue concentration',
+          'one customer at 16%',
+          'was two at 23% + 16%',
+          'Disclosed direct-customer concentration FELL',
+        ],
+      },
+      {
+        cells: [
+          'Receivables concentration',
+          'five names, 70%',
+          'top three 49%, was 56%',
+          'The rise is a disclosure-threshold artifact',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Q3 FY2027 guidance',
+          '$108.0B ±2%',
+          'GM 74.0% ±50bp',
+          'The only formal outlook NVIDIA gave',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'FY2028 growth expectation',
+          '~70%',
+          'vs ~44% consensus',
+          'Verbal, on the call, explicitly supply-constrained',
+        ],
+        star: true,
+      },
+      {
+        cells: [
+          'Backlog cited on the call',
+          '>$2 trillion',
+          '',
+          'Management figure; not an accounting disclosure',
+        ],
+      },
+    ],
+  },
+  bull: [
+    'The operating business is not in question. Revenue $96.2bn (+106%), Data Center $89.0bn (+117%), a beat of about 5.7% against the company’s own guidance, and a Q3 guide of $108.0bn that implies another 12% sequentially.',
+    'Absolute gross profit keeps growing even as the percentage falls: roughly $72.1bn in Q2 against about $79.9bn implied by the Q3 guide. At $108bn of revenue, 100bp of margin is ~$1.08bn while the sequential revenue add is ~$11.8bn — growth outruns the reset by roughly ten to one, and every corner of the guidance band still clears Q2.',
+    'The margin problem is an input cost with a named fix, not lost pricing power or lost share. Memory is the cause, and NVIDIA has notified customers of price increases on systems shipping in early 2027.',
+    'The $279bn of supply commitments is the strongest evidence the growth expectation is real. Nobody prepays that against speculative demand — it is management putting the balance sheet behind its own forecast.',
+    'Demand is contracted rather than hoped for. AWS committed to a further two million GPUs through Q2 FY2029 after burning through a one-million-unit commitment made only five months earlier, taking its disclosed commitment above three million units. Management cited backlog above $2 trillion.',
+    'On the guided trajectory the stock is not expensive: about 24.4× the freshly-raised $9.34 FY2027 consensus, a PEG near 0.35, and roughly 14.6× a plausible FY2028 EPS. 61 analysts, consensus Strong Buy, mean target $319.57 — and no post-print cut found.',
+    'Operating expenses grew 55% against revenue growth of 106%, so opex keeps falling as a share of revenue — 9.31% to 8.80% to a guided 8.52%. The cost problem is entirely in cost of goods, not in discipline.',
+    'The competitive threat is real but structurally capped in the near term: custom accelerators consume the same HBM and the same advanced packaging. Share gains by TPUs or Trainium reallocate a fixed pool of memory stacks rather than adding units to the world.',
+  ],
+  bear: [
+    'The margin does not come back. 72–73% in fiscal 2028 is below the 75.0% just posted, and the company’s word is "settling". This is a permanent step down being widely read as a dip.',
+    'Q2 was the peak operating margin at 66.2%. Every guided quarter after it is lower — ~65.5% in Q3, and roughly 63% implied at the Q4 trough. Opex leverage gains about 79bp across three quarters while gross margin loses about 340bp.',
+    'Gross profit growth is decelerating even while rising: +$11.0bn in Q2, +$7.8bn implied in Q3. And NVIDIA has not guided Q4 revenue — hold revenue flat at $108bn into the 71–72% trough and gross profit *falls* $2.1–3.2bn. Revenue must grow 2.8–4.2% sequentially in Q4 simply to hold gross profit still.',
+    'Cash conversion halved. Operating cash flow fell from $50.3bn to $24.1bn while $26.0bn was returned to shareholders — the company distributed more than it generated from operations, and financed the gap from a balance sheet that added ~$25bn of debt in two quarters.',
+    'Receivables aged fifteen days in a single quarter, from 45 to 60, explicitly on extended payment terms to certain investment-grade customers. AR is $63.1bn, up 63% since January. That is vendor financing by another name.',
+    'NVIDIA now holds roughly $47.8bn of non-marketable equity in companies that buy its chips, plus ~$95.6bn of equity securities in total — and $7.8bn of gains on them is why GAAP EPS ($2.46) exceeded non-GAAP ($2.22) this quarter. Reported earnings are now partly a mark on the valuations of its own customers.',
+    'The 70% figure that moved the stock is not a filed guide. NVIDIA’s only formal outlook is Q3. The 70% is a verbal, explicitly supply-constrained expectation given on a call, and it carries none of the disclosure obligations of guidance.',
+    'The incremental dollar is less profitable than the average one: about 66% incremental gross margin on the Q3 guide, roughly nine points below the corporate average.',
+    'Net cash has stopped being a cushion. $23.2bn against a $5.48 trillion enterprise value is 0.4% — a rounding error, where it was once a meaningful floor.',
+    'The binding physical constraint is now power, and it is the one thing NVIDIA cannot buy its way around. Roughly 17 GW of new infrastructure in a single fiscal year sits against US data-centre demand projected to go from 31 GW to 66 GW by 2027, with grid interconnect approvals running 24–36 months.',
+  ],
+  theQuestion: `The market made a clean trade on 27 August: it swapped three quarters of margin for one year of growth, and paid $442 billion for the privilege.
+
+On the numbers that is defensible. At this scale revenue growth beats margin decay by roughly ten to one, the reset is an input cost with a named fix, and the stock is a sub-25× forward name with a PEG around 0.35. If the 70% lands, today’s price is paying for about one more year of growth and then nothing.
+
+The bear case cannot be "the multiple is too high", because it isn’t. It has to be one of two harder claims: that the numbers are not real, or that they are not repeatable.
+
+And that is exactly where this quarter got uncomfortable. Operating cash flow halved while $26 billion went out the door. Receivables aged fifteen days on terms extended to the customers. Debt quadrupled. NVIDIA holds $47.8 billion of equity in the companies buying its chips, and $7.8 billion of gains on that portfolio is why its GAAP earnings beat its own adjusted earnings.
+
+None of that is fraud, and none of it is even unusual for a company growing this fast. But every one of those lines makes NVIDIA's reported results more dependent on the financial health of its customers — at the same moment it is guaranteeing their leases and buying their equity.
+
+The question is not whether the chips sell. It is whether, three years from now, we look back and find that the last stretch of this growth was sold to people NVIDIA had financed.`,
+  analysis: `## What the market actually traded
+
+The sequence matters, because it is the whole story of the print.
+
+On **26 August** NVIDIA reported $96.2bn of revenue, up 106%, and guided gross margin **down**: 74.0% for Q3, bottoming at **71–72%** in Q4. The stock closed the regular session **down 1.6%** and fell another **1.8% after hours**. Bloomberg's headline that night: *"Nvidia Sales Forecast Tops Estimates but Shares Fall on AI Spending Concerns."*
+
+NVIDIA had beaten consensus five quarters running and the stock had fallen after four of them. This was on track to be the fifth.
+
+Then, on the call, CFO Colette Kress gave a **year-ahead revenue expectation for the first time**: roughly **70% growth in fiscal 2028**, against a consensus near **44%**. Jensen Huang added that demand is running *above* that and the number is what supply allows: *"Even though our demand is much greater than 70%, our supply allows us to confidently deliver 70%."*
+
+The next day NVDA closed **$227.98, up 8.74%** — **$442bn added**, the second-largest single-day market-cap gain ever recorded, behind Microsoft's $450bn less than a month earlier.
+
+So the trade was explicit: a **300-basis-point margin reset repriced as a rounding error against a 26-point beat on a growth rate**. Whether that is right is the report. But three of the things repeated about this quarter do not survive checking, and they break in different directions.
+
+## The margin does not recover
+
+The widely-reported shape is a dip: bottom at 71–72%, then recover to 72–73%.
+
+**72–73% is below the 75.0% NVIDIA just posted.** The company's own word for it is *"settling"*. The only recovery is roughly one point off the trough — against the current run-rate this is a **permanent reset of two to three points**, and a reader who models "recovery" as a return toward 75% has mis-modelled it.
+
+Two other softenings crept in on the way to the headlines. The price increases described as *already executed* are, in the transcript, *"executed price increases take effect in Q1"* — and the corroborating reporting is that customers were **notified of possible increases of more than 15%** on systems shipping in early 2027. Notification of possible increases is not a booked contract. And the neat *"memory, not mix"* attribution is an inference nobody made: NVIDIA's own commentary uses mix language in the same document, the Q3 guide is described as reflecting **both** tight memory and the cost of scaling liquid-cooled full-rack systems, and the Vera Rubin ramp is guided at about 20% of Q3 data-centre revenue with inventory built to ~$32bn. No bridge separating memory from transition was given.
+
+The blunt part is real, though, and it is worth quoting because it is unusual language from this company:
+
+> *"As you are already aware, we are experiencing extreme pricing conditions in memory. The magnitude of the price increase has exceeded our prior expectations and are headed even higher into next year."*
+
+Note the tension that creates with the recovery: the settling to 72–73% assumes memory stops getting worse, in the same breath that memory was said to be getting worse.
+
+## Q2 was the peak
+
+Here is the finding that the margin conversation obscured.
+
+| Quarter | Gross margin | Opex / revenue | Operating margin |
+| --- | --- | --- | --- |
+| Q1 FY2027 | 74.9% | 9.31% | 65.6% |
+| **Q2 FY2027** | **75.0%** | **8.80%** | **66.2%** |
+| Q3 FY2027 (guided) | 74.0% | 8.52% | ~65.5% |
+| Q4 FY2027 (trough) | 71–72% | ~8.4% | **~63%** |
+
+Operating expenses really are growing at half the rate of revenue, and opex as a share of revenue really is falling — about **79 basis points of leverage across three quarters**. But gross margin loses about **340 basis points** over the same span. The cost pressure is in cost of goods, where operating discipline cannot reach, and it is roughly four times the size of the gain.
+
+**Every guided quarter after Q2 has a lower operating margin than Q2.** That is not a catastrophe at 63%, and it is not what "operating leverage intact" describes either.
+
+There is a related subtlety on gross profit. It is true that absolute gross profit keeps rising — about $72.1bn in Q2 against ~$79.9bn implied by the Q3 guide, and every corner of the guidance band clears Q2. But that is a property of **revenue growth outrunning margin decay**, not of the reset being harmless, and Q3 is the quarter with the *smallest* margin step and the only one with a revenue guide behind it. NVIDIA has **not guided Q4**. Hold revenue flat at $108bn into the 71–72% trough and gross profit **declines $2.1–3.2bn**. Revenue has to grow 2.8–4.2% sequentially in Q4 just to keep gross profit still. Meanwhile the growth in gross profit dollars is already decelerating: **+$11.0bn** in Q2, **+$7.8bn** guided in Q3 — rising, with a negative second derivative.
+
+## The concentration scare runs backwards
+
+"Five customers are 70% of receivables, up from 56%" travelled widely this week. Both numbers are real. They are not the same measurement.
+
+**56% is a three-name total** — 23%/19%/14% a year earlier, and 25%/18%/13% at the January year-end. **70% is a five-name total** — 22%/14%/13%/11%/10%. The increase comes entirely from two additional customers **crossing the 10% disclosure threshold**, which broadens the disclosed base rather than narrowing the customer set.
+
+On a like-for-like top-three basis, receivable concentration **fell from 56% to 49%**, and the largest single name went from 23% to 22%.
+
+The revenue side moves the same way and was reported as though it moved the other. A year ago **two** direct customers were 23% and 16% of revenue — the famous "39% from two mystery customers". This quarter there is exactly **one**, at 16%. Q1 FY2027 had three at 21%/17%/16%. Disclosed direct-customer revenue concentration has been falling.
+
+**A fiscal-year trap caught a lot of coverage here:** the 39% figure is **Q2 FY2026**, the year-ago quarter, not this one. NVIDIA's fiscal year runs about eleven months ahead of the calendar, and this is the single most common error in writing about the company.
+
+One honest counterweight, because it cuts against the clean story: *"direct customer"* is not the end buyer. NVIDIA separately discloses that indirect customers may each individually exceed 10% of revenue. Some of this de-concentration is likely demand routing through integrators and neoclouds rather than genuinely spreading out — which matters, because a chain of intermediaries carrying credit for a few end-users is exactly what a 70% receivables cluster looks like.
+
+## What actually deteriorated
+
+This is the part that led no front page.
+
+**Operating cash flow halved.** $50.3bn in Q1 to **$24.1bn** in Q2 — on working capital and cash taxes. In the same quarter NVIDIA returned a record **~$26.0bn** to shareholders in buybacks and dividends. It **distributed more than it generated from operations**, with about $99bn left on the authorization.
+
+**Receivables aged fifteen days in one quarter.** DSO went **45 to 60**, on accounts receivable of **$63.1bn** — up 63% from $38.5bn in January. The stated reason is *"extended payment terms on large, multi-quarter agreements with certain investment-grade customers."* That is a decision to let the largest customers pay later, taken in the same quarter the balance-sheet exposure to those customers is at its most concentrated.
+
+**Debt quadrupled.** Total debt went from **$8.5bn** at the January year-end to **$33.4bn** — roughly $25bn raised inside two quarters, and one of the least-discussed lines in the release. Against $56.6bn of cash and marketable debt securities, **net cash is now ~$23.2bn, or 0.4% of enterprise value**. It used to be a cushion. It is now a rounding error.
+
+**Supply commitments more than doubled** to **$279bn** from $119bn, primarily memory procurement — a figure that checks out verbatim in the filing. Against $56.6bn of cash, that is an enormous forward claim, and it cuts both ways: it is simultaneously the best evidence the growth expectation is real and the single largest thing that breaks if it isn't. (Coverage framing the memory slice as "$160bn" is quoting the *increment*, $279bn minus $119bn, not a separate disclosure.)
+
+And an accounting change worth watching: **GAAP EPS of $2.46 exceeded non-GAAP EPS of $2.22.** That inversion is abnormal — non-GAAP is normally the higher figure — and it happens because roughly **$7.8bn of gains on equity securities** flow through GAAP and are excluded from non-GAAP. NVIDIA holds about **$95.6bn** of equity securities, of which **~$47.8bn is non-marketable** stakes in private companies. Its reported GAAP earnings are now materially levered to the valuations of firms that are also its customers.
+
+## The circularity question, stated precisely
+
+The bear case that gets the most airtime is circular financing, and it deserves precision rather than volume.
+
+What is disclosed: guarantees **capped at $105bn** providing credit support on land, power and shell buildout for roughly **4.25 GW** at SB Energy's PORTS-Pike campus in Ohio, exclusively hosting NVIDIA infrastructure under 20-year leases to **OpenAI**, with an option on ~3.8 GW more and a **$1.5bn NVIDIA equity investment in SB Energy** alongside. Plus about **$3.5bn** of maximum gross exposure on pre-existing guarantees to other AI cloud partners. Plus roughly **$47.8bn** of non-marketable equity in the ecosystem, including CoreWeave (a ~$2bn investment at $87.20 a share, alongside a **$6.3bn agreement to buy CoreWeave's unsold capacity through April 2032**), Nebius, IREN, and up to $100bn announced for OpenAI. Plus an August financing platform with Apollo, BlackRock, Blackstone, Brookfield, Goldman Sachs and KKR for debt vehicles **collateralised by NVIDIA chips**.
+
+Now the corrections, because the loud version gets three things wrong.
+
+**It is not new.** The $105bn was filed in a standalone 8-K on **17 August, nine days before the print**. The stock rose 8.74% with it fully public. It cannot be an unpriced catalyst.
+
+**$105bn is not an exposure.** NVIDIA owes the *shortfall* between a lease's guaranteed minimum value and what SB Energy recovers by reletting or sale; it holds options to assume, relet, sell or defer; and **OpenAI is contractually obliged to reimburse** amounts NVIDIA pays. There is **no live exposure today** — the guarantees phase in as sites become ready for service, the first expected in **fiscal 2029** — and NVIDIA carries them as credit derivatives whose fair values it states were *"not material."*
+
+**The direction of travel was down, not up.** Earlier reporting had NVIDIA weighing roughly **$250bn** for the same campus. The filing came in at $105bn, and one reading of the market's response to that revision was that it signalled *less demand rather than less risk*.
+
+The genuinely damning detail is the one that gets the least attention: **the guaranteed minimum value that determines any payout is disclosed nowhere.** The real exposure cannot be computed from the filings. That is the disclosure gap a short case should lead with, and it is a much better argument than the headline number.
+
+Management's own framing, from Kress: *"We recognize the scale of this support, and we know some will call this circular financing. We see it differently... We're not making loans... In this model, we get paid twice — once on the hardware sale, and again through the share of rental revenue."*
+
+"Paid twice" is a defence of the economics. It is not a defence of the demand being independent.
+
+## Can 70% actually be built
+
+Three constraints, and the binding one has moved twice.
+
+**Memory is the current gate.** Supplier capacity for 2027 is reported sold out across Samsung, SK hynix and Micron, with buyers receiving 60–70% of requested volume. TrendForce sees HBM contract prices rising 70–140% in 2027, and memory going from 47% to 68% of cloud-provider capex between 2026 and 2027. Rough arithmetic on industry HBM bit supply suggests roughly 14–15 million Rubin-class GPUs' worth of HBM4 exists industry-wide in 2027; at a 60–70% allocation NVIDIA gets 9–10 million. That is arithmetically sufficient for the guide and has essentially no slack — which is precisely why the price is doing what it is doing, and why NVIDIA prepaid $279bn to lock allocation.
+
+**Packaging is no longer the gate.** This is the inversion against 2024. TSMC's advanced-packaging capacity is heading toward 130–150k wafers a month, and one report published the day of the print has NVIDIA's CoWoS share *falling* to 45.6% in 2027 from 53.4% as AMD takes allocation. Even so the wafer math implies 11–18 million GPUs — comfortably above what HBM allows.
+
+**Power is the real gate, and it is the one that cannot be prepaid.** At roughly $40bn of revenue per gigawatt for Vera Rubin, ~$690bn of FY2028 revenue is about **17 GW of new AI infrastructure shipped in one fiscal year**. US data-centre demand is projected to go from 31 GW in 2025 to 66 GW by 2027; Gartner expects 40% of AI data centres to be power-constrained by 2027, with grid interconnect approvals running 24–36 months. One vendor's product line would be adding a quarter of all projected US data-centre load in twelve months.
+
+That is the honest version of "supply-constrained": **NVIDIA can buy HBM allocation with a prepayment. It cannot prepay a substation.**
+
+On competition — real, large, and structurally capped in the near term. Google holds roughly 58% of the custom cloud-accelerator market, Anthropic has access to up to a million Ironwood TPUs, AWS has over 500,000 Trainium2 in production, and forecasts put custom silicon near 45% of the AI chip market by 2028. But every TPU and every Trainium consumes the **same HBM and the same advanced packaging**. Share shifts reallocate a fixed pool of memory stacks; they do not add units to the world. In a supply-constrained market, competitive share loss and total-market growth are much less correlated than they look.
+
+## What the price assumes
+
+At the **27 August close of $227.98** on ~24.15bn shares, market capitalisation is **$5.51 trillion**. With $56.6bn of cash and marketable debt securities against $33.4bn of debt, enterprise value is about **$5.48 trillion**.
+
+| Multiple | NVDA |
+| --- | --- |
+| EV / TTM revenue (~$303B) | ~18.1× |
+| EV / revenue, as vendors show it | ~21.1× (a quarter stale) |
+| Forward P/E on raised FY2027 consensus ($9.34) | ~24.4× |
+| PEG | ~0.35 |
+| Price / TTM free cash flow ($127B) | ~43.4× |
+| Implied multiple on plausible FY2028 EPS (~$15.5) | ~14.6× |
+
+State the divergence rather than averaging it: data vendors currently show P/S near 21.7× and EV/revenue near 21.1×, which reverse-engineer to a **$254bn trailing revenue base — trailing through Q1, one quarter behind**. Both are arithmetically right; one is stale. This report uses the post-Q2 base.
+
+The striking thing is that **on the guided path this is not an expensive stock**. Forward P/E under 25× with a PEG near 0.35 is not a bubble multiple. Invert it: for $227.98 to be fair value at a plain 20× terminal multiple, you need sustainable EPS around **$11.40** — roughly 22% above the freshly-raised FY2027 consensus of $9.34. **The price is paying for about one more year of growth and then nothing.**
+
+Which is why the bear case cannot be about the multiple. It has to be that the numbers are not real, or not repeatable.
+
+The one multiple that is *not* cheap is **price to free cash flow at ~43×** — and it is the one attached to the metric whose quality this quarter called into question.
+
+Two further facts for positioning. Short interest is a non-factor at about **1.2% of shares outstanding**. And NVIDIA is roughly **7.8% of the S&P 500** — a single company at an index weight with little precedent, which makes it a systematic exposure for people who never chose it.
+
+## Risk — each isolated, do not blur
+
+1. **Cash conversion (the new one).** Operating cash flow halved while distributions hit a record and receivables aged fifteen days. If this repeats next quarter it stops being working-capital timing and becomes the story.
+2. **Customer credit.** $63.1bn of receivables on extending terms, $47.8bn of non-marketable equity in customers, $105bn of lease guarantees phasing from FY2029, and GAAP earnings now partly a mark on customer valuations. Every one of these makes NVIDIA's results depend on its buyers' balance sheets.
+3. **Memory cost.** A named, quantified input-cost shock with a fix that lands three quarters later, dependent on price increases customers have been *notified of* rather than contracted to.
+4. **Power.** The binding physical constraint on the guide, entirely outside NVIDIA's control and not addressable by prepayment.
+5. **The 70% is not a guide.** It carries the market's expectations but none of guidance's disclosure obligations.
+6. **Index concentration.** At ~7.8% of the S&P 500, a drawdown is not an NVDA event; it is an index event.
+
+## Horizon and sizing (kept separate)
+
+**Horizon.** Q3 is unusually legible. Watch three lines and ignore the margin headline: **operating cash flow** (does it recover toward the $50bn shape, or was Q2 the new normal), **DSO** (does 60 days hold, fall back toward 45, or keep climbing), and **Q4 revenue guidance** against the 71–72% trough — because at flat revenue, gross profit declines. The margin percentage is already known and already priced; the cash statement is not.
+
+**Sizing considerations (not a recommendation).** NVIDIA is the counterparty to nearly every other company covered in this section, which means an AI-infrastructure basket holding NVDA alongside the neoclouds is far less diversified than it looks — it is the same bet expressed four ways, and NVDA sits on both sides of several of those trades as supplier, shareholder and guarantor. The index weight compounds this: most readers already own a great deal of it without having decided to.`,
+  invalidation: {
+    bull: [
+      'Operating cash flow does not recover in Q3. One quarter of working-capital drag is timing; two is a business model where the customer pays late by design.',
+      'DSO keeps climbing past 60 days, or receivables grow faster than revenue again. That is the line where "extended payment terms" stops being a courtesy and starts being financing.',
+      'Q4 revenue guidance comes in below roughly 3% sequential growth, which is the level at which gross profit actually declines into the 71–72% trough.',
+      'Memory costs keep rising past the point the announced price increases offset, so the 72–73% settling level slips again — the guide already assumes memory stops worsening while management said it is worsening.',
+      'Power becomes visibly binding: announced gigawatts slip, interconnect queues extend, or a major customer defers a build for grid reasons rather than demand reasons.',
+      'A large customer NVIDIA has financed — through equity, a guarantee or extended terms — has a funding problem. The exposure is concentrated in exactly the names that owe the receivable.',
+    ],
+    bear: [
+      'Q3 lands at or above $108bn with operating cash flow back near prior levels and DSO reverting toward 45. That would make Q2 a timing artifact and the cash-quality thesis wrong.',
+      'The announced price increases convert into booked contracts and margin settles at or above 73%, ahead of the guide.',
+      'FY2028 tracks toward the ~70%, which on a ~$692bn revenue base and ~14.6× implied earnings makes today’s price look obviously cheap in hindsight.',
+      'Receivables concentration keeps falling on a like-for-like basis and indirect-customer disclosure shows genuine diversification rather than routing through integrators.',
+      'HBM supply expands faster than TrendForce projects, relieving both the cost pressure and the volume ceiling at once.',
+      'The guaranteed minimum values in the SB Energy structure are eventually disclosed and prove modest relative to the $105bn cap — removing the one genuinely unquantifiable exposure on the balance sheet.',
+    ],
+  },
+  verification: {
+    confirmed: 3,
+    partlyTrue: 1,
+    corrected: 4,
+    confirmedNote:
+      'Thirty load-bearing claims were surfaced across four perspectives and the top eight went to an adversarial pass instructed to refute rather than check. **Three came back clean, and they are the three this report leans on hardest.** Supply and capacity commitments of **$279bn**, up from $119bn, "primarily related to the procurement of memory" — with the note that coverage citing "$160bn of memory commitments" is quoting the increment, not a separate disclosure. Operating cash flow of **$24.1bn** against **~$26.0bn** returned to shareholders, down from $50.3bn the prior quarter — the company distributed more than it generated. And DSO of **60 days, up from 45**, on receivables of $63.1bn, attributed to "extended payment terms on large, multi-quarter agreements with certain investment-grade customers." All three reproduced verbatim across independent renderings with no variant readings. Four claims were wrong in ways that changed the reading, and one reversed a conclusion outright. The standing limitation applies and is stated rather than buried: SEC EDGAR is blocked by the network policy of the environment this ran in, along with NVIDIA’s newsroom, its investor CDN and every transcript host, so no primary document was opened. Figures were triangulated and cross-check internally — reported operating income plus operating expenses reconciles to implied gross profit within rounding — which is strong evidence and is not the same as verification.',
+    items: [
+      {
+        kind: 'corrected',
+        title: 'The concentration scare reverses on a like-for-like basis',
+        text: 'This report started from the widely-repeated claim that five customers are **70% of receivables, up from 56%** — worsening concentration. **The comparison is invalid.** 56% is a **three-name** total (23%/19%/14% a year earlier; 25%/18%/13% at the January year-end); 70% is a **five-name** total (22%/14%/13%/11%/10%). The rise comes entirely from two more customers **crossing the 10% disclosure threshold** — a broadening of the disclosed base. On matched top-three terms concentration **fell from 56% to 49%**, and the largest single name from 23% to 22%. The revenue side moves the same way: **two** direct customers at 23% and 16% a year ago versus **one** at 16% now. A fiscal trap sits underneath this and caught a lot of coverage — the famous "39% from two mystery customers" is **Q2 FY2026**, not this quarter. What survives: "direct customer" is not the end buyer, and NVIDIA discloses that indirect customers may individually exceed 10%, so some of the de-concentration may be routing through integrators.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'The margin "recovery" to 72–73% is a sign inversion — it is below where the company is now',
+        text: 'The claim was that margins bottom at 71–72% and **recover** to 72–73% on already-executed price increases. **72–73% is below the 75.0% NVIDIA just posted**, and its own word is *"settling"*. The only recovery is ~1 point off the trough; against the run-rate this is a permanent 2–3 point reset, and a reader modelling a return toward 75% has it wrong. Two further hardenings: *"already-executed"* overstates *"as executed price increases take effect in Q1"*, where the corroborating report is that customers were **notified of possible increases of more than 15%** on early-2027 systems — not booked contracts. And *"memory, not mix"* is an inference nobody stated: NVIDIA’s own commentary uses mix language in the same document, the Q3 guide is described as reflecting tight memory **and** the cost of scaling liquid-cooled full-rack systems, and no bridge quantifying the split was given. The recovery also assumes memory stops worsening, which management said in the same breath that it is not.',
+      },
+      {
+        kind: 'corrected',
+        title:
+          'The $105bn OpenAI guarantee was nine days old when the stock rose 8.74%',
+        text: 'Framed as a circular-financing bombshell buried in the 10-Q. It was filed in a **standalone 8-K on 17 August**, nine days before the print, and reported the same day — so it cannot be an unpriced catalyst. Two more corrections. **$105bn is a notional cap, not an exposure**: NVIDIA owes the *shortfall* between a lease’s guaranteed minimum value and what is recovered on reletting or sale, holds options to assume/relet/sell/defer, and **OpenAI must reimburse** what NVIDIA pays. And there is **no live exposure today** — the guarantees phase in as sites become ready for service, first expected in **fiscal 2029**, carried as credit derivatives whose fair values NVIDIA states were *"not material."* The direction of travel was also down: earlier reporting had ~$250bn under consideration for the same campus. **The finding that survives, and that a bear case should actually lead with: the guaranteed minimum value determining any payout is disclosed nowhere, so the real exposure cannot be computed from the filings.**',
+      },
+      {
+        kind: 'corrected',
+        title:
+          '"Operating leverage intact" describes a falling operating margin — Q2 was the peak',
+        text: 'Every number in the claim checks out and the conclusion does not. Opex grew 55% against revenue’s 106%, and opex as a share of revenue improves from 9.31% to 8.80% to a guided 8.52% — about **79bp of leverage across three quarters**. But gross margin loses about **340bp** over the same span. Operating margin therefore runs **65.6% (Q1) → 66.2% (Q2) → ~65.5% (Q3 guide) → ~63% (Q4 implied)**. Margin contracting as revenue scales is negative operating leverage at the operating line. **Q2 was the top, and every guided quarter after it is lower.** Two related notes: opex is not decelerating (+10% QoQ actual, +9.5% guided) so the tailwind reverses once revenue growth slows toward the guided ~70%; and the cost pressure sits in cost of goods where opex discipline cannot reach.',
+      },
+      {
+        kind: 'partly',
+        title:
+          'Gross profit rises — but "through the reset" tests only the smallest step',
+        text: 'The arithmetic holds: ~$72.1bn of gross profit in Q2 against ~$79.9bn implied by the Q3 guide, and the full corner range of the guidance bands ($77.8–82.1bn) still clears Q2. But **74.0% is the first step of the reset, not the reset.** NVIDIA has **not guided Q4 revenue**; hold revenue flat at $108bn into the 71–72% trough and gross profit **falls $2.1–3.2bn**, so revenue must grow 2.8–4.2% sequentially just to hold it level. Two further qualifications: incremental gross margin on the Q3 guide is about **66%**, roughly nine points below the corporate average, so the marginal dollar is materially less profitable; and gross-profit growth is already decelerating (**+$11.0bn** in Q2, **+$7.8bn** guided in Q3) — rising with a negative second derivative. Also flagged: the dollar figures appear in no NVIDIA document. They are derivation, and are presented here as such.',
+      },
+    ],
+  },
+  openQuestions: [
+    'Does operating cash flow recover in Q3, or was Q2 the new shape? This is the most important number in the next print and it will not be in the headline. One quarter of working-capital drag is timing; two is a business model.',
+    'What are the guaranteed minimum values inside the SB Energy structure? Without them the $105bn cap cannot be turned into an exposure, and this is the one materially unquantifiable item on the balance sheet.',
+    'How much of the falling direct-customer concentration is genuine diversification versus demand routing through integrators and neoclouds? NVIDIA discloses that indirect customers may individually exceed 10% but does not name or size them.',
+    'Have the announced price increases converted into contracts? The margin settling at 72–73% depends on it, and the public evidence so far is notification of possible increases above 15%, not booked terms.',
+    'What is NVIDIA’s revenue from entities it has funded, guaranteed or taken equity in? No filing quantifies it, and that disclosure gap — not the headline guarantee number — is the strongest form of the circularity question.',
+    'Does the ~70% FY2028 expectation ever become formal guidance? It is carrying the market’s expectations while sitting outside the disclosure regime that governs guidance.',
+  ],
+  soWhat: `Here is the habit this quarter is a worked example of, and it applies to any number that arrives wrapped in a percentage.
+
+**When a company changes a percentage, work out what it does to the dollars — and when it changes the dollars, work out what it does to the cash.**
+
+Everyone read NVIDIA's margin guide. It is a genuinely bad number, and it was the story on every front page for a day. But at $108bn of quarterly revenue, one point of margin is about $1.1bn while the sequential revenue increase is about $11.8bn. Growth beat the margin reset roughly ten to one. The percentage looked alarming and the dollars barely noticed.
+
+Meanwhile, two lines further down, operating cash flow halved and the company paid out more than it took in. That did make some coverage — but it was never the headline, and it is the number that actually describes something new about the business.
+
+The second habit is the one I keep relearning, and this report got caught by it before the checking pass: **when two numbers are compared, make sure they are the same measurement.**
+
+"Five customers are 70% of receivables, up from 56%" is a sentence built out of two true figures that measure different things — five names against three. On matched terms the number fell. It was repeated everywhere this week, including into the first draft of this report, because it *sounds* like a comparison and arithmetic does not object to being asked the wrong question.
+
+Both habits reduce to the same move. Before you react to a number, ask what it is a number *of*.`,
+  throughLine: {
+    text: `This is the eleventh report in this section and the first one about the company on the other side of nearly every trade in the previous ten.
+
+CoreWeave leases the chips. Nebius leases the chips. IREN owns the power and builds for the chips. ERock builds the generators that power the buildings that hold the chips. Alphabet, Microsoft and Amazon buy the chips while designing silicon to need fewer of them. **NVIDIA is the counterparty to all of it** — and in several cases it is more than the supplier: a ~$2bn shareholder in CoreWeave with a $6.3bn agreement to buy its unsold capacity, an investor in Nebius, holder of rights over IREN equity, and guarantor of up to $105bn of OpenAI's leases.
+
+That has a portfolio consequence worth stating plainly: **an AI-infrastructure basket holding NVDA alongside the neoclouds is one bet expressed four ways**, not four bets. NVIDIA sits on both sides of several of those positions.
+
+It also resolves the standing thesis from the other direction. Everywhere else in this section, **the obligation arrives before the revenue does** — commitments, capex and financing landing years ahead of cash. NVIDIA is where those obligations *become someone's revenue*, and this quarter it started behaving like the rest of the cycle: **$279bn of its own supply commitments, $33.4bn of debt against $8.5bn two quarters ago, and receivables aging fifteen days** because the customers are being given room.
+
+And it names the constraint the whole section keeps circling. IREN's bet was owning power. ERock's business is manufacturing it on site. NVIDIA's ~70% growth expectation implies roughly **17 GW of new infrastructure in a single fiscal year**, against US data-centre demand going from 31 GW to 66 GW by 2027. The bottleneck has moved from packaging to memory to the grid — and of those three, only the grid cannot be bought with a prepayment.`,
+    links: [
+      {
+        label:
+          'The standing thesis — the obligation arrives before the revenue',
+        slug: 'ai-capex-abundance-or-bubble',
+      },
+      {
+        label: 'CRWV — a customer NVIDIA owns a piece of and backstops',
+        slug: 'crwv-q2-2026',
+      },
+      {
+        label: 'EROC — the generators for the buildings that hold the chips',
+        slug: 'eroc-q2-2026',
+      },
+    ],
+  },
+  method: {
+    kind: 'earnings',
+    perspectives: [
+      {
+        role: 'Fundamentals analyst',
+        probe:
+          'What the margin reset costs in dollars rather than percentages, and where the quarter actually deteriorated.',
+      },
+      {
+        role: 'Short seller',
+        probe:
+          'Circular financing, customer concentration, and what breaks the growth expectation first.',
+      },
+      {
+        role: 'Semiconductor supply-chain engineer',
+        probe:
+          'Whether ~70% growth on a $96bn quarterly base is physically manufacturable — memory, packaging, power.',
+      },
+      {
+        role: 'Valuation watcher',
+        probe:
+          'What the price assumes after the second-largest one-day market-cap gain ever recorded.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 30,
+    claimsVerified: 8,
+    verificationScope: 'top-n',
+    agentCount: 13,
+    runDate: '2026-08-28',
+    primaryDocsOpened: 0,
+    limitations: [
+      'No primary document was opened. SEC EDGAR, NVIDIA’s newsroom and investor CDN, and every transcript host were blocked by the network egress policy of the environment this run executed in. Filing and transcript text reached the agents through search indexing rather than a rendered page.',
+      'Figures were corroborated by triangulation and internal cross-checks rather than by reading: reported operating income ($63.7bn) plus operating expenses ($8.4bn) reconciles to implied gross profit of $72.1bn on $96.2bn of revenue — 74.97%, which rounds to the stated 75.0%. That is strong evidence and it is not verification.',
+      'Quotes attributed to the earnings call are high-consensus reconstructions — identical wording across many independent outlets with no variant readings surfaced — but no transcript was read directly.',
+      'Only 8 of 30 load-bearing claims went to the adversarial pass. The remaining 22 are sourced but unrefuted and should be read as such.',
+      'Gross profit, cost of revenue, R&D and SG&A line items in dollars could not be obtained directly and are inferred from the operating-income and opex reconciliation.',
+      'The $3.5bn of "maximum gross exposure" on pre-existing data-centre guarantees and the $105bn SB Energy cap appear attributed to the same filing and could not be reconciled to each other; they are reported separately rather than combined.',
+      'This report was written two days after the print. Analyst revisions were still landing; no post-print target cut was found, but a complete raise-versus-cut tally was not obtainable at this remove.',
+    ],
+  },
+  cardImage: '/images/content/nvda-q2-fy2027-card-hero.webp',
+  cardImageLight: '/images/content/nvda-q2-fy2027-card-hero-light.webp',
+  cardImageAlt:
+    'NVIDIA added $442 billion of market value the day after guiding gross margin down, while its operating cash flow halved to $24.1 billion',
+  sources: [
+    {
+      n: 1,
+      label:
+        'NVIDIA Form 10-Q, period ended 2026-07-26 — supply commitments, customer and receivables concentration, the SB Energy guarantees (text reached this run through search indexing; sec.gov could not be opened)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000075/nvda-20260726.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 2,
+      label:
+        'NVIDIA Form 8-K Q2 FY2027 press release — headline results and Q3 outlook',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 3,
+      label:
+        'NVIDIA CFO Commentary on Q2 FY2027 results — operating cash flow, DSO, inventory, debt, shareholder returns',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27cfocommentary.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 4,
+      label:
+        'NVIDIA Form 8-K filed 2026-08-17 — the SB Energy residual value guaranties, capped at $105 billion',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000069/nvda-20260817.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 5,
+      label:
+        'NVIDIA Form 10-Q, period ended 2026-04-26 — the $119B commitments base and Q1 concentration',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000052/nvda-20260426.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 6,
+      label:
+        'NVIDIA Form 10-Q, period ended 2025-07-27 — the year-ago concentration comparatives',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581025000209/nvda-20250727.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 7,
+      label: 'NVIDIA newsroom — Q2 FY2027 financial results announcement',
+      url: 'https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027',
+      kind: 'company',
+    },
+    {
+      n: 8,
+      label:
+        'NVIDIA newsroom — Q4 and full-year FY2026 results, the $215.9B base',
+      url: 'https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-fourth-quarter-and-fiscal-2026',
+      kind: 'company',
+    },
+    {
+      n: 9,
+      label: 'NVIDIA newsroom — Q1 FY2027 results',
+      url: 'https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027',
+      kind: 'company',
+    },
+    {
+      n: 10,
+      label: 'Seeking Alpha — NVIDIA Q2 FY2027 earnings call transcript',
+      url: 'https://seekingalpha.com/article/4940563-nvidia-corporation-nvda-q2-2027-earnings-call-transcript',
+      kind: 'analysis',
+    },
+    {
+      n: 11,
+      label:
+        'MarketScreener — syndication of NVIDIA’s Q2 FY2027 CFO commentary: opex, DSO, cash flow, returns',
+      url: 'https://www.marketscreener.com/news/nvidia-second-quarter-2027-cfo-commentary-ce7858d9d18df324',
+      kind: 'analysis',
+    },
+    {
+      n: 12,
+      label:
+        'CNBC — Q2 FY2027 live coverage: the call, the FY2028 growth expectation, consensus comparison',
+      url: 'https://www.cnbc.com/2026/08/26/nvidia-nvda-earnings-report-q2-2027-live-updates.html',
+      kind: 'analysis',
+    },
+    {
+      n: 13,
+      label: 'CNBC — the ~70% growth forecast and what it implies for scale',
+      url: 'https://www.cnbc.com/2026/08/26/nvidia-70percent-growth-forecast-puts-it-on-track-to-be-tech-no-2-company.html',
+      kind: 'analysis',
+    },
+    {
+      n: 14,
+      label:
+        'Bloomberg — NVIDIA adds $442 billion in the second-biggest single-day stock surge on record',
+      url: 'https://www.bloomberg.com/news/articles/2026-08-27/nvidia-adds-442-billion-in-second-biggest-ever-stock-surge',
+      kind: 'analysis',
+    },
+    {
+      n: 15,
+      label:
+        'Bloomberg — the same-night headline: forecast tops estimates but shares fall on AI spending concerns',
+      url: 'https://www.bloomberg.com/news/articles/2026-08-26/nvidia-estimate-topping-forecast-fails-to-wow-investors',
+      kind: 'analysis',
+    },
+    {
+      n: 16,
+      label:
+        'implicator.ai — the 70% growth forecast set against the margin outlook',
+      url: 'https://www.implicator.ai/nvidia-70-percent-growth-forecast-margin-outlook/',
+      kind: 'analysis',
+    },
+    {
+      n: 17,
+      label:
+        'BigGo Finance — earnings call coverage carrying the Kress memory-pricing remarks',
+      url: 'https://finance.biggo.com/news/US_NVDA_2026-08-26',
+      kind: 'analysis',
+    },
+    {
+      n: 18,
+      label:
+        '24/7 Wall St. — the ~$27B sequential free cash flow decline and its working-capital attribution',
+      url: 'https://247wallst.com/investing/2026/08/28/nvidias-blockbuster-quarter-has-one-ugly-loose-end-27-billion-of-free-cash-flow-vanished/',
+      kind: 'analysis',
+    },
+    {
+      n: 19,
+      label:
+        '24/7 Wall St. — the 6% move framing on 2026-08-27, growth forecast over margin warning',
+      url: 'https://247wallst.com/investing/2026/08/27/nvidia-surges-6-as-a-70-growth-forecast-overrides-a-memory-margin-warning-amd-and-intel-tick-up/',
+      kind: 'analysis',
+    },
+    {
+      n: 20,
+      label:
+        '24/7 Wall St. — the four-straight-post-earnings-drops record going into the print',
+      url: 'https://247wallst.com/investing/2026/08/26/nvidia-has-fallen-after-four-straight-earnings-beats-heres-why-it-could-happen-again/',
+      kind: 'analysis',
+    },
+    {
+      n: 21,
+      label:
+        "Tom's Hardware — the memory commitment framing that quotes the increment rather than the total",
+      url: 'https://www.tomshardware.com/tech-industry/big-tech/nvidia-revenue-tops-usd96-billion-as-memory-commitments-soar-to-usd160-billion-ceo-jensen-huang-says-ai-has-reached-its-inflection-point',
+      kind: 'analysis',
+    },
+    {
+      n: 22,
+      label: 'Forbes — post-print read on concentration and demand risk',
+      url: 'https://www.forbes.com/sites/paulocarvao/2026/08/28/nvidia-earnings-ai-boom-demand-risks/',
+      kind: 'analysis',
+    },
+    {
+      n: 23,
+      label:
+        'Data Center Knowledge — the $105B guarantee backing OpenAI’s Ohio buildout, reported on the 8-K',
+      url: 'https://www.datacenterknowledge.com/data-center-construction/nvidia-backs-openai-s-ohio-data-center-buildout-with-105b-guarantee',
+      kind: 'analysis',
+    },
+    {
+      n: 24,
+      label:
+        'Axios — the SB Energy / OpenAI Ohio structure and the option on further gigawatts',
+      url: 'https://www.axios.com/2026/08/17/openai-nvidia-ohio-data-center-sb-energy',
+      kind: 'analysis',
+    },
+    {
+      n: 25,
+      label:
+        "Tom's Hardware — the earlier ~$250B guarantee under consideration, later filed at $105B",
+      url: 'https://www.tomshardware.com/tech-industry/data-centers/nvidia-weighs-250-billion-guarantee-so-openai-can-lease-softbanks-10-gigawatt-ohio-campus',
+      kind: 'analysis',
+    },
+    {
+      n: 26,
+      label:
+        'Fortune — the CDS repricing and the "less demand, not less risk" reading of the revision',
+      url: 'https://fortune.com/2026/08/26/nvidia-q2-growth-results-jensen-huang/',
+      kind: 'analysis',
+    },
+    {
+      n: 27,
+      label:
+        'Benzinga — Michael Burry naming the $105B guarantee as a circular-financing flag',
+      url: 'https://www.benzinga.com/markets/earnings/26/08/61486426/michael-burry-points-to-nvidias-105b-openai-guarantee-as-circular-financing-red-flag-whistling-past-the-graveyard',
+      kind: 'analysis',
+    },
+    {
+      n: 28,
+      label:
+        'io.fund — the catalogue of NVIDIA investments in customers and the chip-collateralised financing platform',
+      url: 'https://io-fund.com/ai-stocks/nvidia-coreweave-nebius-circular-financing-gpu-boom',
+      kind: 'analysis',
+    },
+    {
+      n: 29,
+      label: 'CNBC — NVIDIA equity investments passing $40B for the year',
+      url: 'https://www.cnbc.com/2026/05/09/nvidia-embraces-ai-investor-topping-40-billion-in-equity-bets-2026.html',
+      kind: 'analysis',
+    },
+    {
+      n: 30,
+      label:
+        'stockanalysis.com — NVDA statistics: share count, market cap, P/S, PEG, short interest',
+      url: 'https://stockanalysis.com/stocks/nvda/statistics/',
+      kind: 'data',
+    },
+    {
+      n: 31,
+      label: 'stockanalysis.com — NVDA market capitalisation history',
+      url: 'https://stockanalysis.com/stocks/nvda/market-cap/',
+      kind: 'data',
+    },
+    {
+      n: 32,
+      label:
+        'stockanalysis.com — NVDA analyst forecast: 61 analysts, mean $319.57, range $180–$515',
+      url: 'https://stockanalysis.com/stocks/nvda/forecast/',
+      kind: 'data',
+    },
+    {
+      n: 33,
+      label: 'GuruFocus — NVDA forward P/E as of 2026-08-28',
+      url: 'https://www.gurufocus.com/term/forward-pe-ratio/NVDA',
+      kind: 'data',
+    },
+    {
+      n: 34,
+      label: 'GuruFocus — NVDA trailing free cash flow',
+      url: 'https://www.gurufocus.com/term/total-free-cash-flow/NVDA',
+      kind: 'data',
+    },
+    {
+      n: 35,
+      label:
+        'Simply Wall St — post-print consensus revisions: FY2027 EPS $8.18 to $9.34',
+      url: 'https://simplywall.st/stocks/us/semiconductors/nasdaq-nvda/nvidia/future',
+      kind: 'data',
+    },
+    {
+      n: 36,
+      label:
+        'valueinvesting.io — a divergent forward P/E reading, reported rather than reconciled',
+      url: 'https://valueinvesting.io/NVDA/metric/forward-pe',
+      kind: 'data',
+    },
+    {
+      n: 37,
+      label:
+        'Short Interest Tracker — NVDA short interest at ~1.18% of shares outstanding',
+      url: 'https://shortinteresttracker.com/stock/NVDA',
+      kind: 'data',
+    },
+    {
+      n: 38,
+      label: 'Fintel — NVDA short interest cross-check at ~1.22% of float',
+      url: 'https://fintel.io/ss/us/nvda',
+      kind: 'data',
+    },
+    {
+      n: 39,
+      label:
+        'TrendForce — HBM contract prices projected to rise 70–140% in 2027',
+      url: 'https://www.trendforce.com/presscenter/news/20260602-13074.html',
+      kind: 'data',
+    },
+    {
+      n: 40,
+      label:
+        'TrendForce — server DRAM contract price increases and memory as a rising share of cloud capex',
+      url: 'https://www.trendforce.com/presscenter/news/20260825-13198.html',
+      kind: 'data',
+    },
+    {
+      n: 41,
+      label:
+        'TrendForce — HBM wafer input as a share of total DRAM wafer input through 2027',
+      url: 'https://www.trendforce.com/presscenter/news/20260730-13158.html',
+      kind: 'data',
+    },
+    {
+      n: 42,
+      label:
+        'TweakTown — reporting that 2027 DRAM and HBM capacity is sold out industry-wide',
+      url: 'https://www.tweaktown.com/news/113004/memory-capacity-for-all-of-2027-has-reportedly-been-booked-and-sold-with-no-more-dram-or-hbm-available/index.html',
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label:
+        'DigiTimes — NVIDIA’s CoWoS share falling to 45.6% in 2027 as AMD takes allocation',
+      url: 'https://www.digitimes.com/news/a20260826PD243/amd-cowos-tsmc-nvidia-demand.html',
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label: 'DigiTimes — NVIDIA’s booking of TSMC CoWoS expansion capacity',
+      url: 'https://www.digitimes.com/news/a20251210PD218/tsmc-cowos-capacity-nvidia-equipment.html',
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label:
+        'Goldman Sachs — US data-centre power demand projected to double by 2027',
+      url: 'https://www.goldmansachs.com/insights/articles/us-data-center-power-demand-projected-to-double-by-2027',
+      kind: 'data',
+    },
+    {
+      n: 46,
+      label:
+        'TechTimes — AWS committing to a further two million GPUs after exhausting its prior commitment',
+      url: 'https://www.techtimes.com/articles/325711/20260827/aws-adds-2-million-more-nvidia-gpus-prior-1-million-commitment-ran-out-early.htm',
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label:
+        'TechTimes — the CFO on demand implying ~140% growth against supply delivering about half',
+      url: 'https://www.techtimes.com/articles/325813/20260827/nvidia-cfo-says-demand-points-140-growth-supply-delivers-only-half.htm',
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label:
+        'Introl — custom silicon share projections and the hyperscaler accelerator landscape',
+      url: 'https://introl.com/blog/custom-silicon-inflection-2026-hyperscaler-asics-nvidia-gpu',
+      kind: 'analysis',
+    },
+    {
+      n: 49,
+      label: 'Investing.com — Melius raising its NVDA target after the print',
+      url: 'https://ca.investing.com/news/stock-market-news/melius-raises-nvidia-stock-price-target-on-strong-revenue-outlook-93CH-4818798',
+      kind: 'analysis',
+    },
+    {
+      n: 50,
+      label: 'TheStreet — Stifel raising its NVDA target after Q2 FY2027',
+      url: 'https://www.thestreet.com/investing/stocks/stifel-raises-nvidia-stock-price-target-after-q2-fy27-earnings',
+      kind: 'analysis',
+    },
+  ],
+};
+
 export const marketStormReports: MarketStormReport[] = [
   aiCapexThesis2026,
+  nvdaQ2_FY2027,
   erocQ2_2026,
   irenQ3_FY2026,
   googQ2_2026,
