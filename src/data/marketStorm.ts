@@ -8350,8 +8350,7 @@ And it is the clearest read yet on how the capex cycle reaches ground. Alphabet 
   },
   cardImage: '/images/content/eroc-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/eroc-q2-2026-card-hero-light.webp',
-  cardImageAlt:
-    'ERock booked $71.6 million of revenue in the first half of 2026 while holding $528.4 million of customer deposits',
+  cardImageAlt: 'ERock logo',
   sources: [
     {
       n: 1,

@@ -14,6 +14,7 @@ shape.
 |---|---|---|
 | `amzn.svg` | [Amazon logo.svg](https://commons.wikimedia.org/wiki/File:Amazon_logo.svg) | Public domain |
 | `iren.svg` | [IREN site asset](https://iren.com/icons/logo.svg) | Publisher-served asset — **not** Commons PD; knockout, see note below |
+| `eroc.svg` | [ERock site asset](https://erock.com/) — inline `<symbol id="logo">` | Publisher-served asset — **not** Commons PD; see note below |
 | `goog.svg` | [Google 2015 logo.svg](https://commons.wikimedia.org/wiki/File:Google_2015_logo.svg) | Public domain |
 | `crwv.svg` | [CoreWeave logo.svg](https://commons.wikimedia.org/wiki/File:CoreWeave_logo.svg) | Public domain |
 | `msft.svg` | [Microsoft logo (2012).svg](https://commons.wikimedia.org/wiki/File:Microsoft_logo_(2012).svg) | Public domain |
@@ -55,3 +56,17 @@ just drawn rather than stencilled.
 wrong, and the reason is worth keeping: "the mark does not mask" is a fact about
 the renderer, not about the mark. Check whether the logo is a knockout before
 concluding it cannot be reversed.
+
+**ERock's mark came out of the page, not a file.** There is no Commons logo —
+searching Commons for "Enchanted Rock" returns photographs of the Texas granite
+dome the company is named after, which is a trap worth naming: those are freely
+licensed and they are not the company. erock.com serves no logo file either.
+The mark is an inline `<symbol id="logo">` in the page's SVG sprite, referenced
+by `<use href="#logo">` from the header, and it was lifted from there as a
+standalone SVG. Same nominative-use basis as the rest; a third example of the
+publisher-served category alongside Nebius and IREN.
+
+It masks cleanly with no `knockout` needed — the striped device and the wordmark
+sit side by side rather than one being punched through the other, so a single
+colour reads correctly. Worth checking that before reaching for `knockout`: the
+option exists for overlapping marks, not for every two-colour one.
