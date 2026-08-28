@@ -1,0 +1,20 @@
+{
+  "tone": "warn",
+  "before": {
+    "label": "Teaching an AI to spin the can",
+    "text": "577 credits, still wrong"
+  },
+  "after": {
+    "label": "Building the can",
+    "text": "Right at every angle",
+    "detail": "the label is real type — it can't invent values"
+  },
+  "headline": [
+    { "t": "I spent " },
+    { "t": "577 credits", "tone": "warn" },
+    { "t": " on AI video. The fix was " },
+    { "t": "geometry", "tone": "good" },
+    { "t": "." }
+  ],
+  "alt": "Split card: 577 credits spent teaching a generative video model to rotate a can consistently, against the fix — building the can as real 3D geometry wearing a typeset label, correct at every angle."
+}
