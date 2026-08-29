@@ -5,7 +5,7 @@ excerpt: I burned 577 credits trying to get an AI to show the same can from ever
 category: Working With AI
 publishDate: 2026-08-28
 tags: [ai, images, 3d, product]
-status: staged
+status: published
 heroImage: /images/content/model-it-dont-prompt-it-hero.webp
 heroImageLight: /images/content/model-it-dont-prompt-it-hero-light.webp
 heroImageAlt: Split card - 577 credits spent teaching a generative video model to rotate a can consistently, against the fix - building the can as real 3D geometry wearing a typeset label, correct at every angle.
