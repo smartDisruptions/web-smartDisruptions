@@ -5994,104 +5994,104 @@ const aiCapexThesis2026: MarketStormReport = {
   ticker: 'AI CAPEX',
   company: 'The hyperscaler buildout',
   title:
-    'IT investment just passed its dot-com peak — and three of the four biggest spenders stopped paying for it out of cash',
+    'Computer and software spending just passed its dot-com record — and three of the four biggest spenders switched to borrowing to pay for it',
   excerpt:
-    'Private fixed investment in information-processing equipment and software reached 4.97% of GDP in Q2 2026 — the highest reading in the 79 years BEA has published the series, above the 4.46% of the dot-com peak. Over the same year, the share of hyperscaler capital spending funded by long-term debt went from 25% to 65%. This report tested 33 load-bearing claims against 83 primary documents. None was refuted, and the answer to "boom or bubble" is neither: the risk moved from the asset side to the liability side, and the largest single disclosed exposure rests on a consolidation judgment the auditor flagged by name.',
+    'American businesses now spend 4.97% of the whole economy on computers, chips and software — the highest in the 79 years the government has kept the record, above the 4.46% at the peak of the dot-com boom. In the same twelve months, the share of that spending the biggest tech companies paid for with borrowed money went from 25% to 65%. This report tested 33 claims against 83 actual filings. Not one was wrong. And the answer to "boom or bubble" is neither: the risk moved from what these companies own to what they owe — and the biggest single number is a promise that appears on nobody’s balance sheet.',
   catalyst: 'Standing thesis — verified against filings through August 2026',
   publishDate: '2026-08-22',
   featured: true,
   tags: ['AI-infrastructure', 'capex', 'earnings-quality', 'macro', 'thesis'],
   verdict:
-    'Neither a boom that pays for itself nor a bubble about to pop. Across 33 load-bearing claims checked against 83 primary documents, not one was refuted — and what survived is that the risk moved. It is no longer in the valuations, and it is not in the depreciation schedules: three of the four biggest spenders shortened or held their asset lives. It is in leases that have not commenced, guarantees that are not liabilities yet, and one consolidation judgment the auditor called out by name.',
+    'Not a boom that pays for itself, and not a bubble about to pop. Thirty-three claims went to the filings and not one came back wrong — and what survived is that the risk changed address. It is not in the share prices, and it is not in the accounting tricks everyone expects: three of the four biggest spenders write down their equipment faster than before, or the same. It is in leases that have been signed but not started, promises that do not count as debt yet, and one judgment call the auditor publicly said was hard.',
   priceStrip: [
-    { k: 'IT investment / GDP', v: '4.97%', tone: 'warn' },
+    { k: 'Computer spend, share of economy', v: '4.97%', tone: 'warn' },
     { k: 'Dot-com peak, 2000Q4', v: '4.46%' },
-    { k: 'Big-four TTM capex', v: '$510.7B' },
-    { k: 'Debt-funded, H1 2026', v: '65%', tone: 'bear' },
-    { k: 'Debt-funded, H1 2025', v: '25%' },
-    { k: 'Claims refuted', v: '0 of 33', tone: 'bull' },
+    { k: 'Big-four spending, 12 months', v: '$510.7B' },
+    { k: 'Paid for by borrowing, 2026', v: '65%', tone: 'bear' },
+    { k: 'A year earlier', v: '25%' },
+    { k: 'Claims proved wrong', v: '0 of 33', tone: 'bull' },
   ],
   summary: `Two things are true at once, and almost every argument about an AI bubble picks one and ignores the other.
 
-The first: **the money is real and it is enormous.** The four biggest spenders put **$510.7 billion** into capital equipment in the twelve months to June 2026 — about **1.57% of the entire US economy**, and roughly **32%** of everything America spent on information-processing equipment and software. That line item is now **4.97% of GDP, the highest since the series began in 1947**, above the dot-com peak.
+**The money is real, and it is enormous.** Microsoft, Amazon, Alphabet and Meta spent **$510.7 billion** on buildings and equipment in the twelve months to June 2026 — about **1.57% of the entire US economy**, and roughly **a third** of everything America spent on computers, chips and software. That national figure is now **4.97% of the economy, the highest since records began in 1947**, above the dot-com peak.
 
-The second: **it has stopped being paid for out of earnings.** A year ago, Meta, Alphabet and Amazon funded about a quarter of their capital spending with borrowed money. In the first half of 2026 they funded **almost two-thirds** of it that way. Amazon went from 1.3% to 68%. Alphabet stopped buying back its own stock and raised $105.8 billion of outside capital in six months instead.
+**And they have mostly stopped paying for it out of profits.** A year ago, Meta, Alphabet and Amazon borrowed about a quarter of what they spent. In the first half of 2026 they borrowed **almost two-thirds** of it. Amazon went from 1.3% to 68%. Alphabet stopped buying back its own shares entirely and raised $105.8 billion from outside investors in six months instead.
 
-What this report went looking for was the mechanism that breaks. It did not find the one everybody names. It found a different one, and it is not in the numbers on the income statement — it is in the obligations sitting just off the edge of the balance sheet.`,
+This report went looking for the thing that breaks. It did not find the one everybody names. It found a different one — and it is not in the profit figures. It is in the promises sitting just off the edge of the accounts.`,
   headlineVsReal: [
     {
       headline:
-        'The hyperscalers are **stretching depreciation schedules** to manufacture earnings — the oldest trick in the capital-intensive playbook.',
-      real: 'Not in the current filings. **Amazon shortened.** Microsoft held. Meta lengthened once, eighteen months ago.',
-      gap: 'Effective 1 January 2025 Amazon moved **a subset of servers and networking equipment from six years to five** — costing it **$1.4B of extra depreciation, $1.0B of net income and $0.10 a share**, primarily at AWS, and citing the pace of AI development as the reason. Microsoft still discloses **“two to six years”**, unchanged. Meta is the one lengthener: its FY2025 10-K raised most servers to **5.5 years**, worth **$2.92B less depreciation and $1.00 a share** — real, disclosed, and quantified, but a single change already in the base. This is the most-repeated bear argument in the sector and the filings do not support it today. A short thesis that rests on it is resting on 2023.',
+        'The big tech companies are **pretending their computers last longer than they do**, which makes profits look bigger. The oldest trick in the book.',
+      real: 'Not in the current filings. **Amazon went the other way.** Microsoft has not moved. Meta stretched once, eighteen months ago.',
+      gap: 'Here is the idea behind the accusation. When a company buys a server, it spreads the cost over the years it expects to use it. Say it lasts longer, and each year absorbs less of the cost — so profits look better without anything real changing. **But that is not what is happening.** From January 2025 Amazon moved some servers and networking gear from a six-year life to **five** — the *opposite* of the trick, and it cost the company **$1.4B of extra cost, $1.0B of profit and $0.10 a share**, mostly at AWS, because AI is making hardware obsolete faster. Microsoft still says **"two to six years"**, unchanged. Meta is the one that stretched: most servers to **5.5 years**, worth **$2.92B and $1.00 a share** — real, disclosed, and already baked into the numbers everyone is looking at. This is the most-repeated argument against these companies, and the filings do not support it today. Anyone still making it is describing 2023.',
     },
     {
       headline:
-        'A **power and transformer stall** will halt the buildout — the queues are years long and the equipment is sold out.',
-      real: 'Slippage runs in **quarters, not years**, and the binding constraint in 2026 turned out to be **paperwork**.',
-      gap: 'We ran a cohort test on EIA-860M rather than quoting queue statistics: of **590 units and 49,221 MW** promising commercial operation in the first half of 2026, by the June vintage **54.3% were operating**, 44.0% were still planned and only **0.7% had been cancelled**. Median slip: **four months**. Only **1.9% of slipped megawatts** moved out beyond a year. Meanwhile ERCOT’s first large-load batch screened out **~294 GW of a 498 GW universe on eligibility alone** — 274 GW had filed no qualifying study, 20 GW missed a dynamic-model deadline. That is an administrative gate, not a physical one. The equipment story is real but it is **rationing, not a wall**: GE Vernova booked 12.1 GW of gas turbine orders in Q2 and shipped 3.3 GW, roughly 4:1, with shipments actually *down* year over year.',
+        'The buildout will **hit a wall on electricity** — the waiting lists to plug into the grid run years long and the equipment is sold out.',
+      real: 'Delays run in **months, not years**. And the thing actually holding projects up in 2026 was **paperwork**.',
+      gap: 'Rather than quote waiting-list statistics, we tracked every power project that promised to switch on in the first half of 2026 and checked what actually happened. Of **590 projects and 49,221 megawatts**, **54.3% were running** by June, 44.0% were still on the schedule, and only **0.7% had been cancelled**. The typical delay was **four months**. Barely **1.9%** slipped more than a year. Meanwhile the Texas grid operator threw out **~294 GW of a 498 GW pile of requests on eligibility alone** — 274 GW had not filed a required study, 20 GW missed a modelling deadline. That is a filing-cabinet problem, not a physics problem. The equipment shortage is genuine, but it is **a queue, not a wall**: GE Vernova took orders for 12.1 GW of gas turbines in one quarter and shipped 3.3 GW — roughly four ordered for every one delivered, with deliveries actually *down* on the year.',
     },
     {
       headline:
-        '**“The Fed found AI raises productivity by 1.1%”** — the number that ends most arguments about whether any of this works.',
-      real: 'It is a **modelled figure derived from a survey question**, not a measurement, and its own authors say so.',
-      gap: 'Bick, Blandin and Deming asked workers to imagine a counterfactual — *“imagine that LAST WEEK you did not have access to Generative AI. How many additional hours of work would you have needed?”* — then fed the self-reported answer through **“a standard model of aggregate production”**, wage-weighted, from 5.4% of hours saved among users and 1.4% across all workers. The authors head a section **“Potential Gains May Not Yet Be Fully Captured in Measured Productivity”** and flag on-the-job leisure themselves. The November 2025 update revised it to **up to 1.3%** — and, to their credit, added an independent check against BLS and BEA industry data, correlation 0.32, which they explicitly say **“cannot be interpreted as causal.”** Meanwhile the measured series disagrees: **utilization-adjusted total factor productivity fell 0.42%** over the four quarters to Q2 2026 while labour productivity rose 2.2% — which is the signature of capital deepening bought by the capex itself, not of a technology making workers better.',
+        '**"The Fed found AI makes workers 1.1% more productive"** — the number that ends most arguments about whether any of this works.',
+      real: 'It is **a calculation built on a survey question**, not a measurement — and the researchers say so themselves.',
+      gap: 'The study asked workers to imagine something: *"imagine that LAST WEEK you did not have access to Generative AI. How many additional hours of work would you have needed?"* The self-reported answers — 5.4% of hours saved among people using it, 1.4% across all workers — were then run through **"a standard model of aggregate production"** and weighted by wages. The researchers themselves head a section **"Potential Gains May Not Yet Be Fully Captured in Measured Productivity"** and raise the possibility that some saved time becomes on-the-job leisure. A November 2025 update revised the figure to **up to 1.3%** and, to their credit, added a check against real government industry data — a correlation of 0.32, which they explicitly say **"cannot be interpreted as causal."** Meanwhile the actual economy-wide efficiency measure disagrees: it **fell 0.42%** over the year to June 2026 while output per hour worked rose 2.2%. That combination has a specific meaning — workers are producing more because they have been handed more equipment, not because the technology made them better at their jobs.',
     },
   ],
   kpis: [
     {
-      label: 'IT investment, share of GDP',
+      label: 'Computer and software spend, share of the economy',
       value: '4.97%',
       delta: 'highest since 1947',
-      note: 'Above the 4.46% dot-com peak. Top four readings in 79 years are the last four quarters.',
+      note: 'Above the 4.46% dot-com peak. The four highest readings in 79 years are the last four quarters.',
       tone: 'warn',
     },
     {
-      label: 'Debt-funded capex share',
+      label: 'Share paid for by borrowing',
       value: '65%',
       delta: 'from 25% a year ago',
-      note: 'Meta, Alphabet and Amazon, first half. Amazon went 1.3% → 68%.',
+      note: 'Meta, Alphabet and Amazon, first half of 2026. Amazon went 1.3% → 68%.',
       tone: 'bear',
     },
     {
-      label: 'Big-four capex, TTM',
+      label: 'Big-four spending, twelve months',
       value: '$510.7B',
-      delta: '1.57% of GDP',
-      note: 'About 32% of all US information-processing equipment and software investment.',
+      delta: '1.57% of the economy',
+      note: 'About a third of everything America spent on computers, chips and software.',
       tone: 'neutral',
     },
     {
-      label: 'Leases not yet commenced',
+      label: 'Leases signed but not started',
       value: '$830B',
-      delta: 'four filers',
-      note: 'Microsoft $329.1B · Meta $279.0B · Amazon $137.2B · Alphabet $85.2B. On no balance sheet.',
+      delta: 'four companies',
+      note: 'Microsoft $329.1B · Meta $279.0B · Amazon $137.2B · Alphabet $85.2B. On nobody’s balance sheet.',
       tone: 'bear',
     },
     {
-      label: 'Meta’s exposure on one venture',
+      label: 'What Meta says it could lose on one deal',
       value: '$46.0B',
-      delta: 'vs $2.9B carried',
-      note: 'A 15.8× gap. The auditor made the consolidation judgment a critical audit matter.',
+      delta: 'vs $2.9B on its books',
+      note: 'A 15.8× gap. The auditor singled out the judgment behind it.',
       tone: 'warn',
     },
     {
-      label: 'Utilization-adjusted TFP',
+      label: 'Economy-wide efficiency measure',
       value: '−0.42%',
-      delta: 'four quarters to Q2',
-      note: 'Labour productivity rose 2.2% — the gain is capital deepening, not efficiency.',
+      delta: 'year to June 2026',
+      note: 'Output per hour rose 2.2% — that gap means more equipment, not more efficiency.',
       tone: 'bear',
     },
     {
-      label: 'Microsoft debt raised for capex',
+      label: 'Microsoft borrowing for the buildout',
       value: '$0',
       delta: '2nd straight year',
-      note: '$115.9B of capex, funded from $182.9B of operating cash — and still bought back stock.',
+      note: '$115.9B spent, all from $182.9B of operating cash — and it still bought back stock.',
       tone: 'bull',
     },
     {
-      label: 'Claims refuted by verification',
+      label: 'Claims proved wrong',
       value: '0 of 33',
-      delta: '100% primary-sourced',
+      delta: 'all checked against filings',
       note: '30 needed a correction. None collapsed.',
       tone: 'bull',
     },
@@ -6258,114 +6258,116 @@ What this report went looking for was the mechanism that breaks. It did not find
     ],
   },
   bull: [
-    'The demand is contracted, not hoped for. Microsoft carries $678B of commercial remaining performance obligations at a ~2.3-year weighted duration with ~30% landing inside twelve months; Amazon discloses ~$496B of customer commitments not yet recognised; CoreWeave reports 98% of revenue under committed take-or-pay contracts.',
-    'The platform layer is profitable and getting more so. Google Cloud went from a 20.7% operating margin to 35.6% in a year — and Q1 was 32.9%, so it is a trend rather than a one-quarter artifact.',
-    'Nobody is hiding the ball on depreciation. Amazon shortened server lives and took a $1.0B net income hit to do it. Microsoft has not moved. The single most-cited earnings-quality bear argument is simply not present in the current filings.',
-    'The physical constraint is rationing, not a wall. Half of the capacity promising to arrive in H1 2026 arrived; the median slip was four months; 0.7% was cancelled.',
-    'Microsoft proves the buildout can be funded from operations at full scale: $115.9B of capex, zero debt issued for a second consecutive year, and $22.3B of stock still repurchased.',
+    'The demand is signed, not hoped for. Microsoft holds $678B of contracts customers have committed to but not yet been billed for, about 30% of it landing within a year; Amazon discloses ~$496B of the same thing; CoreWeave says 98% of its revenue is under contracts customers must pay whether they use the capacity or not.',
+    'The cloud business itself is profitable and getting more so. Google Cloud went from keeping 20.7 cents of every dollar as operating profit to 35.6 cents in a year — and the quarter before was 32.9%, so it is a trend rather than a fluke.',
+    'Nobody is fiddling the depreciation. Amazon shortened the life it assigns to servers and took a $1.0B hit to profit to do it. Microsoft has not moved. The single most-repeated accusation against these companies is simply not in the current filings.',
+    'The electricity problem is a queue, not a wall. Half the power capacity promised for the first half of 2026 arrived on time, the typical delay was four months, and 0.7% was cancelled.',
+    'Microsoft proves the whole thing can be paid for out of profits at full scale: $115.9B spent, zero borrowed for a second year running, and $22.3B of its own stock bought back anyway.',
   ],
   bear: [
-    'The obligation has moved somewhere the balance sheet does not show it. Roughly $830B of leases have been signed and not yet commenced across four filers, against a data-centre securitization market a fraction of that size.',
-    'Meta discloses a maximum exposure to loss of $46.03B on a venture it carries at $2.92B, and stays unconsolidated by conceding it does not control the campus remarketing. Ernst & Young made that judgment a critical audit matter — an auditor publicly signalling the answer is contestable.',
-    'Alphabet’s credit-derivative backstops to data-centre entities went from $16.94B to $43.79B in six months, with only $815M recognised as a liability.',
-    'The funding mix inverted in a single year: 25% to 65% debt-funded. Amazon’s trailing free cash flow is now negative $7.6B against +$18.2B a year earlier, and Oracle funded ~98% of a 162% capex increase with borrowed money.',
-    'The productivity is not in the aggregate data. Utilization-adjusted TFP fell 0.42% over the year to Q2 2026 while the investment share of GDP hit a 79-year high — the measured gain is capital deepening bought by the spending itself.',
-    'Backlog quality varies enormously and the weakest is the largest: only ~12% of Oracle’s $638B RPO converts within twelve months.',
+    'The obligation moved somewhere the accounts do not show it. Roughly $830B of leases have been signed and not yet started across four companies — far more than the entire market that exists for packaging and selling this kind of debt.',
+    'Meta says it could lose as much as $46.03B on a venture it carries on its books at $2.92B, and keeps it off the balance sheet by arguing it does not control what happens to the campus. Its auditor, Ernst & Young, singled that judgment out as one of the hardest in the audit — an auditor publicly saying the answer is arguable.',
+    'Alphabet’s promises to cover other companies’ data-centre debts went from $16.94B to $43.79B in six months, with only $815M recorded as an actual liability.',
+    'The funding flipped in a single year: from a quarter borrowed to two-thirds. Amazon now spends more cash than it takes in — negative $7.6B over twelve months against positive $18.2B a year earlier — and Oracle borrowed roughly 98% of a 162% increase in spending.',
+    'The productivity is not showing up in the national numbers. The economy-wide efficiency measure fell 0.42% over the year to June 2026 while investment hit a 79-year high. What growth there is looks like the result of buying more equipment, not of the equipment making anyone better.',
+    'The quality of those signed contracts varies enormously, and the weakest is the biggest: only about 12% of Oracle’s $638B of committed contracts turns into revenue within a year.',
   ],
   theQuestion: `Every argument about an AI bubble is really an argument about where the risk sits.
 
-The bears point at valuations and depreciation schedules. This report checked both against the filings and neither is where the fragility is: three of the four biggest spenders shortened or held their asset lives, and the platform margins are expanding.
+The critics point at share prices and at accounting for equipment. This report checked both against the filings, and the fragility is in neither: three of the four biggest spenders write their equipment down faster than before or the same, and the cloud businesses are getting more profitable, not less.
 
-But in the same twelve months, the share of the buildout funded by borrowed money went from a quarter to two-thirds, roughly $830 billion of leases were signed that have not commenced, and the single largest disclosed exposure is a $46 billion number sitting against a $2.9 billion carrying value on a judgment the auditor flagged.
+But in the same twelve months, the share of the buildout paid for with borrowed money went from a quarter to two-thirds. Roughly $830 billion of leases were signed that have not started. And the single biggest number anyone discloses is Meta saying it could lose $46 billion on something it values at $2.9 billion — on a judgment its own auditor flagged.
 
-So: is this a boom being financed prudently against contracted demand — or has the industry moved its risk to the one place quarterly earnings do not report it?`,
-  analysis: `## What this run did differently, and why it matters
+So: is this a boom being financed sensibly against real, signed demand — or has the industry quietly moved its risk to the one place that quarterly profits do not report?`,
+  analysis: `## Why this version exists
 
-This question was researched once before, on 2026-08-21, and that pass is the reason this one exists. Web fetching was blocked in that environment, so **no agent opened a single primary filing** — every figure was search-surfaced text *about* a document. Of 45 load-bearing claims, only 3 survived unchanged: 21 needed correcting, 12 could not be verified at all, and **9 were refuted outright**. The failure modes were consistent: stale figures quoted in the present tense, numbers misattributed between banks, and a dozen outlets restating one analyst note being mistaken for a dozen sources.
+This question was researched once before, the day earlier, and that attempt is the reason this one exists. The tools in that session could not open web pages, so **no agent read a single actual filing** — every figure was a search result *describing* a document rather than the document itself. Of 45 claims the argument rested on, only 3 survived unchanged: 21 needed correcting, 12 could not be checked at all, and **9 were flat wrong**. The failure patterns were consistent: old figures quoted as if current, numbers attributed to the wrong company, and a dozen news outlets repeating one analyst's note being mistaken for a dozen independent sources.
 
-This run opened **83 primary documents**. Of 33 load-bearing claims, **every one was checked against a primary source**, and the tally is: **3 confirmed clean, 30 confirmed with a correction, 0 refuted, 0 unverifiable.**
+This run opened **83 actual documents**. Of 33 claims, **every one was checked against the source**, and the score was **3 clean, 30 clean-with-a-correction, 0 wrong, 0 unverifiable**.
 
-That difference — 9 refuted and 12 unverifiable, versus none of either — is the single best argument for the method this section is built on. The corrections that remain are refinements of magnitude and basis, not demolitions. Where the earlier pass concluded that a power-and-transformer *stall* was the likeliest outcome, the physical data does not support it, and that conclusion has been dropped.
+That difference — nine wrong and twelve uncheckable, against none of either — is the best argument I have for how this section is built. The corrections that remain adjust size and basis; none of them demolished anything. And where the earlier attempt concluded that a power shortage was the most likely thing to stop the buildout, the physical data does not support that, and the conclusion was dropped.
 
 ## The finding: the risk moved, it did not disappear
 
-Start with the thing that is genuinely unprecedented. Private fixed investment in information-processing equipment and software reached **4.97% of GDP in 2026Q2** — the highest of the **318 quarters** BEA has published since 1947, above the **4.46%** of the dot-com peak in 2000Q4 and far above 1995Q1's 3.24%. The **top four readings in seventy-nine years are the last four quarters.**
+Start with what is genuinely unprecedented. Money spent across the US economy on computers, chips and software reached **4.97% of everything the country produces** in the second quarter of 2026 — the highest of the **318 quarters** on record since 1947, above the **4.46%** at the dot-com peak in late 2000, and far above the 3.24% of early 1995. **The four highest readings in seventy-nine years are the last four quarters.**
 
-Worth being precise about the deflator, because it cuts the opposite way from the usual objection: IT prices fall while the GDP deflator rises, so a real-terms comparison *flatters today* rather than 2000. In real terms the gap is roughly **3.6×**, against 1.11× in nominal terms. Recomputing in real terms reinforces the headline rather than reversing it.
+One technical point, because it cuts the opposite way from the usual objection. Computers get cheaper over time while most things get more expensive, so adjusting both eras for price changes makes **today look bigger, not smaller** — roughly a 3.6× gap in like-for-like terms against 1.11× in raw dollars. Doing the comparison properly strengthens the headline rather than undermining it.
 
-Against that, the four biggest spenders put **$510.70 billion** into capital equipment in the twelve months to June 2026 — **1.57% of GDP at an annual rate**, and **31.7%** of the entire national information-processing equipment-and-software line. Two caveats travel with that 31.7%, one of which the original claim had backwards: data-centre shells and land are counted as *structures*, not IT equipment, so they cannot appear in the denominator at all — and excluding finance leases makes the capex figure **too small**, not too large. Microsoft alone added **$24.6B of finance-lease right-of-use assets** in FY2026 on top of the $115.9B, with a further **$329.1B of datacenter leases not yet commenced**.
+Against that national figure, the big four spent **$510.70 billion** in the twelve months to June 2026 — **1.57% of the economy**, and **31.7%** of that entire national computer-and-software line. Two caveats travel with the 31.7%, and the first one is the reverse of what you would guess: data-centre buildings and land are counted as *construction*, not computer equipment, so they are not in the national figure at all — and leaving out leased equipment makes the companies' own number **too small**, not too big. Microsoft alone added **$24.6B of leased equipment** in 2026 on top of the $115.9B, with a further **$329.1B of data-centre leases signed and not yet started**.
 
-## Where the money now comes from
+## Where the money comes from now
 
-This is the change that happened inside twelve months, and it is the spine of the thesis.
+This is the change that happened inside twelve months, and it is the spine of the whole thesis.
 
-| | H1 2025 | H1 2026 |
+| | First half 2025 | First half 2026 |
 | --- | --- | --- |
 | Meta | 0% | **51%** |
 | Amazon | 1.3% | **68%** |
 | Alphabet | 79% | **70%** |
 | **Combined** | **25.4%** | **64.9%** |
 
-That is the share of cash capital spending covered by long-term debt proceeds — **$148.1B against $228.1B** in the first half of 2026. Alphabet is the one that fell, which matters: the shift is not uniform, and stating it as a clean industry-wide inversion overstates it.
+That is the share of their spending covered by borrowing — **$148.1B out of $228.1B** in the first half of 2026. Alphabet is the one that went *down*, and that matters: this is not a clean industry-wide flip, and describing it as one overstates it.
 
-Two other filings sharpen the picture from opposite ends. **Oracle** funded roughly **98%** of a **162% increase** in capex with borrowed money — $46.09B of notes and term loans plus $3.35B of short-term capex financing plus $4.95B of mandatory convertible preferred, against **zero debt issuance in FY2024**. Its borrowings went **$92.6B to $129.5B in one year** and free cash flow was **−$23.69B**.
+Two other companies mark the extremes. **Oracle** borrowed roughly **98%** of a **162% increase** in spending — $46.09B of bonds and loans, $3.35B of short-term financing, $4.95B of a share-like instrument that converts later — against **zero borrowing two years earlier**. Its total debt went from **$92.6B to $129.5B in one year**, and it spent **$23.69B more cash than it took in**.
 
-And **Microsoft is the counterexample, at the largest scale of all**: FY2026 capex of **$115,948M** with **"Proceeds from issuance of debt: 0"** — its *second consecutive* year at zero — while still repurchasing $22.3B of stock and paying $26.4B of dividends out of $182.9B of operating cash flow. Any thesis that says "the industry can no longer fund this from earnings" has to explain the biggest spender doing exactly that.
+And **Microsoft is the counterexample, at the largest scale of anyone**: it spent **$115,948M** in its 2026 financial year with **"Proceeds from issuance of debt: 0"** — its *second* consecutive year at zero — while still buying back $22.3B of stock and paying $26.4B of dividends out of $182.9B of cash from operations. Any argument that says "the industry can no longer pay for this out of earnings" has to explain the biggest spender doing exactly that.
 
-Alphabet sits in between, and its behaviour is the most interesting: it took repurchases to **zero** in H1 2026 (from $28.31B) while leaving its $70.0B authorisation untouched, and raised **$30.50B of common stock** — including a $10.0B private placement to Berkshire Hathaway — plus **$19.06B of 6.25% mandatory convertible preferred**, on top of $56.23B of debt. **$105.8B of external capital in six months against $80.6B of capex.**
+Alphabet sits between them, and its behaviour is the most revealing of the three: it cut share buybacks to **zero** in the first half of 2026 (from $28.31B) while leaving its $70.0B buyback authorisation untouched, and instead raised **$30.50B by selling shares** — including a $10.0B private placement to Warren Buffett's Berkshire Hathaway — plus **$19.06B of a convertible instrument** paying 6.25%, on top of $56.23B of borrowing. That is **$105.8B of outside money in six months against $80.6B of spending.**
 
 ## The part that is not on the balance sheet
 
-Here is the actual fragility, and it is not a valuation.
+Here is the actual fragility, and it is not a share price.
 
-**Leases signed and not yet commenced**, at 30 June 2026: Microsoft **$329.1B**, Meta **$279.0B**, Amazon **$137.2B**, Alphabet **$85.2B**. Roughly **$830 billion** of contracted obligation that appears on no balance sheet because the leases have not started. For scale, that is many multiples of every data-centre securitization outstanding combined — the structure everyone watches is not where the exposure is.
+**Leases signed and not yet started**, as of 30 June 2026: Microsoft **$329.1B**, Meta **$279.0B**, Amazon **$137.2B**, Alphabet **$85.2B**. Roughly **$830 billion** of committed obligation that appears on no balance sheet — because a lease you have signed but not begun is not yet counted as a debt. For scale, that is many times the size of the entire market where this kind of data-centre debt gets packaged and sold. The thing everybody watches is not where the exposure is.
 
-Then the structures themselves. Meta's Louisiana venture — never named in the filing, just **"the Venture"** — is a 20% membership interest in roughly **$27B of estimated development cost**, with an aggregate initial lease commitment of **~$12.31B** commencing **2029**, and **residual value guarantees with an aggregate threshold of ~$28 billion**. Meta carries it at **$2.92B** and discloses a **maximum exposure to loss of $46.03B**. A **15.8× gap** between the carrying value and the company's own statement of what it could lose.
+Then the deals themselves. Meta has a Louisiana project it never names in the filing — it is just called **"the Venture"**. Meta owns 20% of it, the development is estimated at around **$27B**, the initial lease commitment is about **$12.31B** starting in **2029**, and Meta has given **promises to cover shortfalls totalling roughly $28 billion** if the buildings end up worth less than expected. Meta carries the whole thing on its books at **$2.92B** and separately discloses that the most it could lose is **$46.03B**.
 
-The reason it stays off the balance sheet is a single narrow judgment, quoted from the filing: decisions about **"remarketing the data center campus"** were determined to have the most significant impact on the Venture's economic performance, and *"we do not have the power to direct"* them. Meta simultaneously provides the venture's construction management and property management services.
+That is a **15.8× gap** between what is on the books and what the company itself says is at stake.
 
-**Ernst & Young made that a critical audit matter** — the third of three in the FY2025 audit — citing the *"significant judgment required in determining the activities that most significantly affect the VIE's economic performance."* That is an auditor stating publicly that the answer is contestable. A second structure on the same template, in El Paso, was disclosed as a subsequent event with a further **~$13B** of residual value guarantees.
+The reason it stays off the balance sheet is one narrow judgment, quoted from the filing: decisions about **"remarketing the data center campus"** were judged to be the ones that matter most to how the venture performs — and *"we do not have the power to direct"* them. Meta meanwhile provides the venture's construction management and property management.
 
-Alphabet's version is different in form and the same in kind: **credit-derivative backstops to data-centre entities went from $16.94B to $43.79B in six months** — 2.6× — with a recognised fair-value liability of just **$815M**. On default, Alphabet *"retain[s] the right to assume the underlying leases for internal use or to sublease to third parties."*
+**Ernst & Young made that judgment one of three "critical audit matters"** in the 2025 audit, citing the *"significant judgment required in determining the activities that most significantly affect the VIE's economic performance."* In plain terms: the auditor told the public this call was a hard one and could reasonably go the other way. A second deal on the same template, in El Paso, was disclosed later with a further **~$13B** of shortfall guarantees.
 
-## What is *not* wrong, and this is most of the bear case
+Alphabet's version is different in shape and identical in kind: promises to cover data-centre companies' debts went from **$16.94B to $43.79B in six months** — 2.6× — with just **$815M** recorded as a liability. If a borrower fails, Alphabet *"retain[s] the right to assume the underlying leases for internal use or to sublease to third parties."*
+
+## What is *not* wrong — and this is most of the case against them
 
 Three widely-repeated arguments did not survive contact with the filings.
 
-**Depreciation games are not live.** Amazon **shortened** a subset of servers from six years to five effective 1 January 2025, taking $1.4B of extra depreciation and $1.0B of net income to do it, citing AI-driven technology pace. Microsoft is unchanged at "two to six years." Meta is the only lengthener — most servers to 5.5 years, worth $2.92B and $1.00 a share — and that was eighteen months ago and is already in the base.
+**The depreciation accusation is not live.** Amazon **shortened** some server lives from six years to five from January 2025, taking $1.4B of extra cost and $1.0B of profit to do it, because AI is making hardware obsolete faster. Microsoft is unchanged at "two to six years". Meta is the only one that stretched — most servers to 5.5 years, worth $2.92B and $1.00 a share — and that was eighteen months ago and is already in the numbers everyone is looking at.
 
-**The power wall is a rationing system, not a wall.** The cohort test is in the "headline vs the filing" section above; the summary is that half the promised capacity arrived, the median slip was four months, and 0.7% was cancelled. The equipment market is genuinely tight — GE Vernova is booking gas turbine orders roughly **4:1 against shipments**, and shipments actually **fell** year over year — and Siemens Energy's Grid Technologies book-to-bill of 1.48 on a €51bn backlog says transformers are queued and priced years out. But queued is not cancelled.
+**The power wall is a rationing system, not a wall.** The project-by-project test is in the section above; the summary is that half the promised capacity arrived, the typical delay was four months, and 0.7% was cancelled. The equipment market genuinely is tight — GE Vernova is taking gas turbine orders at roughly **four for every one it ships**, and shipments actually **fell** year over year, while Siemens Energy's grid business has orders running 1.48× shipments on a €51bn backlog. But queued is not cancelled.
 
-**Credit stress is real and confined.** The CCC & lower high-yield spread was **10.35%** on 20 August 2026, the widest print of 2026 — but broad high yield was **2.75%**, near its 2026 tight, and investment grade was **0.82%**. And the CCC level is still below the **11.37%** reached in April 2025, so this is a 2026 high rather than a multi-year extreme. The dispersion is the signal: the marginal borrower is being repriced while the index is not.
+**Credit stress is real and contained.** What the riskiest corporate borrowers pay above government rates hit **10.35%** on 20 August 2026, the widest of the year — but ordinary high-risk borrowers were at **2.75%**, near the year's low, and the safest were at **0.82%**. And that 10.35% is still below the **11.37%** of April 2025, so it is a 2026 high rather than a multi-year alarm. The spread between the tiers is the signal: the weakest borrowers are being repriced while everyone else is not.
 
-**CoreWeave is the marginal borrower made concrete**: **$72.0B of total liabilities on $5.0B of equity**, debt **90% recourse**, and net interest expense of **$640M — 24.9% of revenue** — against an operating loss of just $(49)M. Revenue grew 112%; the net loss more than doubled to $(626)M, and interest is the largest single contributor. The neocloud problem is the balance sheet, not the gross margin. Its disclosed **$5.1B of OEM and software license financing at 9–11%** is vendor financing named as such.
+**CoreWeave is that weakest borrower made concrete**: **$72.0B of total obligations against $5.0B of shareholder equity**, with **90%** of its debt the kind the company itself is on the hook for. Interest alone costs it **$640M — 24.9% of everything it earns** — against an operating loss of just $(49)M. Revenue grew 112% and the loss still more than doubled to $(626)M, with interest the biggest single reason. The problem at these AI-only cloud companies is the borrowing, not the business. It also discloses **$5.1B of equipment and software financing at 9–11%** — its suppliers lending it the money to buy their own products, named as such.
 
-## Risk — each isolated, do not blur
+## Risk — each one on its own, do not blur them
 
-1. **Off-balance-sheet obligation (dominant).** ~$830B of uncommenced leases, ~$41B of announced residual value guarantees at Meta alone, $43.8B of Alphabet backstops carried at $815M.
-2. **The consolidation judgment.** One auditor has already flagged it. If a structure of this type consolidates, the change lands on the balance sheet of the largest companies in the index at once.
-3. **Funding-mix reversal.** 25% to 65% in a year, with Amazon's trailing free cash flow now negative.
-4. **Backlog conversion.** Oracle's $638B at ~12% inside twelve months is the weakest near-term conversion of any filer opened.
-5. **Marginal-borrower credit.** Confined to CCC today; the transmission risk is that it stops being confined.
-6. **The productivity gap.** Utilization-adjusted TFP negative while investment hits a 79-year high. If the efficiency never shows up, the depreciation does anyway.
+1. **The obligations that are not on the books (the big one).** ~$830B of leases signed and not started, ~$41B of announced shortfall guarantees at Meta alone, $43.8B of Alphabet's promises carried at $815M.
+2. **The judgment call.** One auditor has already flagged it. If a deal of this type has to come onto the balance sheet, it lands on the accounts of several of the largest companies in the index at once.
+3. **The funding flip.** A quarter to two-thirds in a year, with Amazon now spending more cash than it generates.
+4. **Turning contracts into cash.** Oracle's $638B at roughly 12% inside a year is the slowest conversion of anyone whose filing was opened.
+5. **The weakest borrowers.** Contained today; the risk is that it stops being contained.
+6. **The missing productivity.** The efficiency measure is negative while investment sits at a 79-year high. If the efficiency never arrives, the cost of the equipment arrives anyway.
 
 ## Horizon and sizing (kept separate)
 
-**Horizon.** The near term is mechanical: whether the uncommenced-lease balances keep compounding, and whether any filer consolidates a venture of this type. The thesis resolves over **two to three years** on one question — do the contracted backlogs convert into cash at a margin that services the debt raised to build them?
+**Horizon.** The near term is mechanical: whether the signed-but-not-started lease balances keep piling up, and whether any company has to bring one of these ventures onto its balance sheet. The thesis resolves over **two to three years** on a single question — do the signed contracts turn into cash at a margin that covers the debt raised to build them?
 
-**Sizing considerations (not a recommendation).** The single most useful discriminator in this report is not a growth rate; it is **who is funding the build from operations and who is funding it from capital markets.** Microsoft at zero debt and Oracle at 98% are running the same strategy with opposite balance sheets, and only one of them needs the credit window to stay open.`,
+**Sizing considerations (not a recommendation).** The most useful thing to sort these companies by is not a growth rate. It is **who is paying for this out of their own profits and who is paying for it out of the credit markets.** Microsoft at zero borrowing and Oracle at 98% are running the same strategy with opposite balance sheets — and only one of them needs lenders to stay friendly.`,
   invalidation: {
     bull: [
-      'Any filer consolidates a data-centre venture of the Meta type, or an auditor escalates the critical audit matter — the off-balance-sheet obligation becomes an on-balance-sheet one across several megacaps at once.',
-      'Uncommenced lease balances keep compounding at the H1 2026 rate while backlog conversion does not, widening the gap between contracted cost and contracted revenue.',
-      'CCC spreads stop being confined — broad high yield follows the lowest tier wider, which is the transmission mechanism from marginal borrower to buildout.',
-      'Amazon or Alphabet posts a second consecutive negative free-cash-flow year while capex guidance rises again.',
+      'Any company has to bring a data-centre venture of the Meta type onto its balance sheet, or an auditor escalates the concern it already flagged — the off-the-books obligation becomes an on-the-books one across several giants at once.',
+      'The signed-but-not-started lease balances keep growing at the 2026 rate while the contracts fail to turn into cash, widening the gap between what is owed and what is earned.',
+      'The weakest borrowers stop being contained — ordinary high-yield borrowing costs follow the riskiest tier wider, which is how trouble travels from the edge to the buildout.',
+      'Amazon or Alphabet posts a second straight year of spending more cash than it makes while guiding spending higher again.',
     ],
     bear: [
-      'Utilization-adjusted TFP turns positive and stays there for consecutive quarters — the efficiency gain shows up in the aggregate data rather than only in task-level studies.',
-      'The debt-funded share falls back toward the 2025 level as operating cash flow catches up with capex, with Microsoft the template rather than the exception.',
-      'Oracle-style backlogs start converting at the rate the filings imply, particularly the ~12%-inside-12-months tranche.',
-      'Uncommenced leases begin commencing on schedule and appear as ordinary lease liabilities without incident — the obligation was always real and always disclosed.',
+      'The economy-wide efficiency measure turns positive and stays there for several quarters — the gains show up in the national data instead of only in studies of individual tasks.',
+      'The borrowed share falls back toward 2025 levels as profits catch up with spending, with Microsoft the template rather than the exception.',
+      'Oracle-style contract backlogs start converting at the rate the filings imply, particularly the roughly 12% due within a year.',
+      'The signed leases start on schedule and simply appear as ordinary lease obligations without incident — the commitment was always real and always disclosed.',
     ],
   },
   verification: {
@@ -6373,66 +6375,66 @@ Three widely-repeated arguments did not survive contact with the filings.
     partlyTrue: 30,
     corrected: 0,
     confirmedNote:
-      'Confirmed against primary documents: 33 load-bearing claims were surfaced and all 33 went to an adversarial pass instructed to refute rather than check, opening 83 primary documents between them — SEC filings and XBRL facts, BEA and BLS series, San Francisco and St. Louis Fed research, EIA-860M workbooks, ERCOT and PJM auction filings. Not one claim was refuted and not one was unverifiable. Thirty needed a correction to a magnitude, a basis or a caveat, and the substantive ones are below.',
+      'All 33 claims the argument rests on went to a second set of agents whose instructions were to prove them wrong, not to check them — and between them those agents opened 83 actual documents: company filings and the raw data behind them, government economic series, Federal Reserve research, power-plant databases, and grid auction records. Not one claim was proved wrong, and not one turned out to be uncheckable. Thirty needed a correction to a size, a basis or a caveat. The ones that changed something are below.',
     items: [
       {
         kind: 'partly',
         title:
-          'The uncommenced-lease total was understated by a third — it omitted Meta',
-        text: 'The claim put leases not yet commenced at ~$551B across three filers. Verification found **Meta discloses a further $278.99B** through 2036, on terms up to 30 years, taking the real figure to roughly **$830B**. An error in the conservative direction, but the largest single component was missing.',
+          'The signed-but-not-started lease total was a third too low — it left out Meta',
+        text: 'The claim put leases signed and not started at ~$551B across three companies. Checking found **Meta discloses a further $278.99B** running to 2036, on terms up to 30 years — taking the real total to roughly **$830B**. An error in the cautious direction, but the single largest piece was missing.',
       },
       {
         kind: 'partly',
         title:
           'The funding shift is not uniform, and Alphabet moved the other way',
-        text: 'The 25% → 65% inversion holds in aggregate ($148.1B of $228.1B, versus $32.1B of $126.3B). But **Alphabet’s gross debt-funded ratio FELL, from 79.2% to 69.8%** — the headline reads as an industry-wide inversion and two of the three companies drove it. Microsoft is a full counterexample, and it was at zero for a *second* consecutive year, not newly so.',
+        text: 'The 25% → 65% flip holds overall ($148.1B of $228.1B, against $32.1B of $126.3B a year earlier). But **Alphabet’s borrowed share FELL, from 79.2% to 69.8%** — the headline reads as an industry-wide inversion when two of the three companies drove it. Microsoft is a complete counterexample, and it was at zero for a *second* year running, not for the first time.',
       },
       {
         kind: 'partly',
-        title: 'The GDP-share caveat was backwards',
-        text: 'The claim cautioned that a real-terms comparison would flatter 2000 over today. It is the reverse: because IT deflators fall while the GDP deflator rises, **a chained-real comparison flatters today** — roughly a 3.6× gap in real terms against 1.11× nominal. Recomputing in real terms reinforces the finding rather than reversing it. Separately, the 31.7% overlap figure is an upper bound because data-centre structures and land are not in the denominator at all, and excluding finance leases makes the numerator too small.',
+        title: 'The inflation caveat was backwards',
+        text: 'The original claim warned that adjusting for price changes would make 2000 look bigger than today. It is the reverse: computers get cheaper while most things get more expensive, so **a proper like-for-like comparison flatters today** — roughly a 3.6× gap adjusted, against 1.11× in raw dollars. Doing it correctly strengthens the finding instead of reversing it. Separately, the "roughly a third of national spending" figure is an upper bound, because data-centre buildings and land are not in the national computer-spending figure at all, and leaving out leased equipment makes the companies’ own number too small.',
       },
       {
         kind: 'partly',
         title: 'CoreWeave’s customer concentration did not actually improve',
-        text: 'The largest single customer fell from 71% to 36% of revenue, which reads as diversification. It is not: **Customer B rose from under 10% to 26%** over the same period. Aggregate concentration is roughly unchanged; the composition rotated. Reading the top-customer line alone gives the opposite conclusion to the table it sits in.',
+        text: 'Its biggest single customer fell from 71% to 36% of revenue, which reads like the risk spreading out. It is not: **the second customer went from under 10% to 26%** over the same period. Overall concentration is roughly unchanged — the names rotated. Reading the top-customer line by itself gives you the opposite conclusion to the table it sits in.',
       },
       {
         kind: 'partly',
         title:
-          'The "Fed productivity" study now has an external check its critics do not mention',
-        text: 'The claim that the 1.1% figure is modelled from a self-reported counterfactual rather than measured is exactly right, and the authors say so themselves. But the **November 2025 update added a triangulation against BLS and BEA industry data** — detrended industry productivity growth correlated 0.32 with survey-measured time savings — while stating it *"cannot be interpreted as causal."* Anyone using this study to argue the gains are absent from the data should know the same authors now offer corroborating external evidence. Also: the 1.3% is a **cumulative level effect** since ChatGPT’s release, not an annual rate.',
+          'The "Fed productivity" study now has an outside check its critics do not mention',
+        text: 'The claim that the 1.1% figure is calculated from an imagined survey answer rather than measured is exactly right, and the authors say so themselves. But the **November 2025 update added a comparison against real government industry data** — a 0.32 correlation between industry productivity growth and the survey’s reported time savings — while stating plainly that it *"cannot be interpreted as causal."* Anyone using this study to argue the gains are absent should know the same authors now offer some outside corroboration. Also worth knowing: the 1.3% is a **total effect since ChatGPT launched**, not a yearly rate.',
       },
       {
         kind: 'partly',
-        title: 'Fermi’s tenant lease did not exist at the balance-sheet date',
-        text: 'The claim described an 11 GW project against one executed lease for 222 MW — roughly 50:1. Verification found it worse: **at 2026-06-30 there was no tenant lease at all.** The TensorWave lease came after. The ratio the claim used to illustrate the announced-versus-contracted gap was, at the reporting date, undefined.',
+        title: 'Fermi’s tenant lease did not exist on the date being discussed',
+        text: 'The claim described an 11 GW project with just one signed lease covering 222 MW — roughly 50 to 1. Checking found it was worse: **on 30 June 2026 there was no tenant lease at all.** The one that gets cited was signed afterwards. The ratio used to illustrate the gap between announced and contracted was, on the date in question, undefined.',
       },
     ],
   },
   openQuestions: [
-    'What happens to reported leverage across the megacaps if one data-centre venture of the Meta type consolidates? Ernst & Young has already called the judgment a critical audit matter, and no filer discloses what consolidation would do to its balance sheet.',
-    'What are Anthropic’s and OpenAI’s actual economics? Neither has a public registration statement — EDGAR returns only SPVs and feeder funds — so every circulating revenue and profitability figure for the two largest model labs is unaudited and unfilable, including the ones this report’s bull case would otherwise lean on.',
-    'How much of the ~$830B of uncommenced leases is cancellable, and on what terms? Microsoft notes some are "subject to contractual conditions"; none of the four filers quantifies the break cost.',
-    'Does the ERCOT eligibility screen represent demand that evaporates or demand that refiles? ~294 GW of a 498 GW universe failed on paperwork, and whether that is speculative interconnection spam or real projects missing a deadline changes the load forecast by hundreds of gigawatts.',
+    'What happens to how much debt these companies appear to carry if one data-centre venture of the Meta type has to come onto a balance sheet? Ernst & Young has already flagged the judgment, and none of the companies discloses what that change would do to their numbers.',
+    'What are Anthropic’s and OpenAI’s real economics? Neither is a public company, so there is nothing filed to read — every revenue and profit figure circulating for the two biggest model labs is unaudited and unverifiable, including the ones that would support the optimistic case here.',
+    'How much of the ~$830B of signed-but-not-started leases can actually be cancelled, and at what cost? Microsoft notes some are "subject to contractual conditions"; none of the four companies says what walking away would cost.',
+    'Does the Texas grid operator’s eligibility cull represent demand that disappears or demand that refiles? ~294 GW of a 498 GW pile failed on paperwork, and whether that is speculative junk or real projects missing a deadline changes the forecast by hundreds of gigawatts.',
   ],
-  soWhat: `If you take one habit from this, take this one: **when someone tells you a company is spending beyond its means, ask where the money came from — and then ask what it promised that has not started yet.**
+  soWhat: `If you take one habit from this, take this one: **when someone tells you a company is spending beyond its means, ask where the money came from — and then ask what it has promised that has not started yet.**
 
-The headline argument about AI is about valuations. That turns out to be the least interesting part. What actually changed in the last twelve months is duller and more consequential: the biggest companies in the world went from paying for their buildout out of profits to borrowing about two-thirds of it, and they signed roughly **$830 billion** of leases that have not started, which appear on no balance sheet because a lease you have signed but not begun is not yet a liability.
+The loud argument about AI is about share prices. That turns out to be the least interesting part. What actually changed in twelve months is duller and matters more: the biggest companies in the world went from paying for this out of profits to borrowing about two-thirds of it, and they signed roughly **$830 billion** of leases that have not begun — which show up on nobody's balance sheet, because a lease you have signed but not started is not yet counted as a debt.
 
-None of that is hidden. It is all in the filings, in plain language, with the numbers attached. Meta says outright that it could lose **$46 billion** on something it carries at **$2.9 billion**. Its auditor added a note saying that judgment was hard.
+None of this is hidden. It is all in the filings, in plain English, with the numbers attached. Meta states outright that it could lose **$46 billion** on something it carries at **$2.9 billion**. Its auditor added a note saying that call was a hard one.
 
-The transferable version, for anything — not just AI: **an obligation you have committed to but not yet started is invisible in this quarter's numbers and completely real.** It applies to a company signing data-centre leases and it applies to a household signing a mortgage that begins next year. The place to look is never the headline; it is the section of the filing labelled "commitments" — the part that describes the future the company has already agreed to.
+And here is the version that applies to anything, not just AI: **something you have committed to but not yet started is invisible in this quarter's numbers and completely real.** It is true of a company signing data-centre leases and it is true of a household signing a mortgage that begins next year. The place to look is never the headline — it is the part of the filing labelled "commitments", the section describing the future the company has already agreed to.
 
-And one about research itself. This exact question was researched a day earlier without access to primary documents, and **9 of its 45 claims turned out to be wrong** with another 12 unverifiable. Same question, same method, same effort — the only variable was whether the agents could open the actual filing. That gap is the whole argument for reading the source.`,
+One last thing, about research itself. This exact question was researched a day earlier by agents that could not open the actual documents, and **9 of its 45 claims turned out to be wrong**, with another 12 impossible to check. Same question, same method, same effort. The only difference was whether anyone could read the source. That gap is the whole argument for going and looking.`,
   throughLine: {
-    text: `This is the report the other eight are evidence for.
+    text: `This is the report the other eight are the evidence for.
 
-Every company report in this section found a version of the same thing: **the number in the headline is not the number the filing supports.** Microsoft's EPS growth was powered by a mark on a private stake. Nebius has never earned an operating profit and every dollar of bottom-line profit it has shown is a revaluation of a stake in another company. Alphabet's record quarter was 69% a non-cash mark on shares it had agreed not to sell. Those are three instances of one pattern, and this report is the pattern stated directly.
+Every company write-up in this section found a version of the same thing: **the number in the headline is not the number the filing supports.** Microsoft's earnings growth was powered by a paper gain on a stake in a private company. Nebius has never made an operating profit, and every dollar of bottom-line profit it has reported is a revaluation of its holding in something else. Alphabet's record quarter was 69% a paper gain on shares it had agreed not to sell. Three instances of one pattern — and this report is that pattern stated directly.
 
-Ranked by capital spending against revenue, the ladder still holds: Palantir at 0.75%, Microsoft around 32%, Alphabet at 37.5%, Amazon at roughly 105% of operating cash flow, SpaceX at 235%, CoreWeave at about 290%, and Nebius's first half at 828%. AMD sits outside it — it sells the chips the rest are buying.
+Ranked by how much each company spends on buildings and equipment relative to what it earns, the ladder still holds: Palantir at 0.75%, Microsoft around 32%, Alphabet at 37.5%, Amazon at roughly 105% of its operating cash, SpaceX at 235%, CoreWeave at about 290%, and Nebius's first half at 828%. AMD sits outside it entirely — it sells the chips everyone else is buying.
 
-What this report adds is the funding side of that ladder. **Microsoft is at the low end and pays cash; Oracle is at the high end and borrows 98%.** Same buildout, opposite balance sheets — and only one of them needs the credit window to stay open.`,
+What this report adds is the other half of that ladder: **where the money comes from. Microsoft is at the low end and pays cash. Oracle is at the high end and borrows 98%.** Same buildout, opposite balance sheets — and only one of them needs lenders to keep saying yes.`,
     links: [
       {
         label: 'GOOGL — the mark, and the negative cash quarter',
