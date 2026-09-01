@@ -79,7 +79,12 @@ export default async function MarketStormDetail({
           __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
         }}
       />
-      <div className="mx-auto max-w-4xl">
+      {/* Wider than the 4xl the reports used to sit in, because the jump nav
+          now runs alongside the body on large screens instead of stacking on
+          top of it. The prose inside is still clamped to its own measure — the
+          extra width goes to the nav and to the charts and tables, which were
+          the elements the old container was actually squeezing. */}
+      <div className="mx-auto max-w-[68rem]">
         <Link
           href="/market-storm"
           className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"

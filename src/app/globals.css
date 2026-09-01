@@ -270,3 +270,77 @@ body {
 :root[data-theme='dark'] .hero-themed-light {
   display: none;
 }
+
+/* ── Market Storm chart motion ──────────────────────────────────────────────
+   Bars grow and lines draw as the reader scrolls them into view, using
+   `animation-timeline: view()` so there is no observer, no client component
+   and no hydration cost. Browsers without scroll-driven animations skip the
+   whole block and render the finished chart, which is the right fallback: the
+   chart is information, and information must not wait on a feature detect.
+   Everything here is off under prefers-reduced-motion.                        */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sd-bar {
+      width: var(--w);
+      animation: sd-bar-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 32%;
+    }
+    .sd-draw {
+      stroke-dasharray: 2200;
+      animation: sd-draw-line linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+    .sd-fade {
+      animation: sd-fade-in linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 45%;
+    }
+    @keyframes sd-bar-grow {
+      from { width: 0; }
+      to { width: var(--w, 100%); }
+    }
+    @keyframes sd-draw-line {
+      from { stroke-dashoffset: 2200; }
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes sd-fade-in {
+      from { opacity: 0; }
+      to { opacity: 0.1; }
+    }
+  }
+}
+
+/* Without scroll-driven animation support the bar still needs its width. */
+.sd-bar { width: var(--w); }
+
+/* ── Report layout: body beside its table of contents ──────────────────────
+   Written as a named class rather than utilities because the column track is
+   an arbitrary value and this project's scanner did not pick it up reliably in
+   a worktree — and because a two-column reading layout is a layout primitive,
+   not a bag of classes. One place to change the sidebar width.
+
+   The nav is second in source order so a screen reader and a keyboard user
+   reach the report before its contents list; `order` puts it first visually.
+   Reading order and visual order want opposite things here, and both get what
+   they want.                                                                */
+@media (min-width: 64rem) {
+  .sd-report-grid {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    align-items: start;
+    gap: 2.5rem;
+  }
+  .sd-report-body {
+    order: 2;
+    min-width: 0;
+  }
+  .sd-report-nav {
+    order: 1;
+    position: sticky;
+    top: 1.5rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+  }
+}

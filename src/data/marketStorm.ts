@@ -145,6 +145,36 @@ export interface ResearchMethod {
   limitations?: string[];
 }
 
+/** One plotted value. `highlight` is the point the surrounding prose is about. */
+export interface ChartPoint {
+  label: string;
+  value: number;
+  note?: string;
+  highlight?: boolean;
+}
+
+/**
+ * A chart inside a report.
+ *
+ * Placed with a `[[chart:id]]` marker inside `analysis`, so the figure lands at
+ * the point in the argument that needs it rather than in a gallery at the end.
+ * A chart separated from its sentence is a chart the reader scrolls past.
+ *
+ * `whyItMatters` is required on purpose. If a chart cannot be justified in one
+ * plain sentence it is decoration, and decoration is what makes a page look
+ * researched without being readable.
+ */
+export interface ReportChart {
+  id: string;
+  title: string;
+  unit: string;
+  kind: 'line' | 'bar' | 'stacked' | 'comparison';
+  points: ChartPoint[];
+  whyItMatters: string;
+  source?: string;
+  valueFormat?: 'percent' | 'currency-bn' | 'x' | 'plain';
+}
+
 export interface MarketStormReport {
   slug: string;
   ticker: string;
@@ -183,6 +213,17 @@ export interface MarketStormReport {
    * How this one was researched. Optional so a report written before the field
    * existed still renders; the UI falls back to the section-wide description.
    */
+  /**
+   * The whole report in a handful of sentences, for a reader who will not read
+   * the rest — which is most of them.
+   *
+   * Every line must carry a NUMBER and stand alone. It is not a summary of the
+   * argument; it is the findings, stripped of the reasoning that produced them.
+   * The summary paragraph explains; this states.
+   */
+  keyTakeaways?: string[];
+  /** Figures referenced from `analysis` by `[[chart:id]]`. */
+  charts?: ReportChart[];
   method?: ResearchMethod;
   /**
    * The pinned thesis piece at the top of the index. At most one report should
@@ -5994,105 +6035,108 @@ const aiCapexThesis2026: MarketStormReport = {
   ticker: 'AI CAPEX',
   company: 'The hyperscaler buildout',
   title:
-    'Computer and software spending just passed its dot-com record — and three of the four biggest spenders switched to borrowing to pay for it',
+    'NVIDIA made $59.7 billion last quarter. $24 billion actually arrived.',
   excerpt:
-    'American businesses now spend 4.97% of the whole economy on computers, chips and software — the highest in the 79 years the government has kept the record, above the 4.46% at the peak of the dot-com boom. In the same twelve months, the share of that spending the biggest tech companies paid for with borrowed money went from 25% to 65%. This report tested 33 claims against 83 actual filings. Not one was wrong. And the answer to "boom or bubble" is neither: the risk moved from what these companies own to what they owe — and the biggest single number is a promise that appears on nobody’s balance sheet.',
-  catalyst: 'Standing thesis — verified against filings through August 2026',
-  publishDate: '2026-08-22',
+    'The gap is not an accounting quirk. NVIDIA now waits 60 days to be paid instead of 45, and for the first time it told investors in writing that some big buyers can take up to a year. It has also promised to cover $108.5 billion of somebody else\u2019s rent, and set aside nothing against it. Forty-five claims went to agents told to disprove them, checked against 94 filings. Two came back wrong. The rest say the same thing: the company at the centre of the AI build has started financing its own customers.',
+  catalyst:
+    'Rebuilt after NVIDIA\u2019s Q2 FY2027 filing \u2014 verified against filings through 31 August 2026',
+  publishDate: '2026-08-31',
   featured: true,
   tags: ['AI-infrastructure', 'capex', 'earnings-quality', 'macro', 'thesis'],
   verdict:
-    'Not a boom that pays for itself, and not a bubble about to pop. Thirty-three claims went to the filings and not one came back wrong — and what survived is that the risk changed address. It is not in the share prices, and it is not in the accounting tricks everyone expects: three of the four biggest spenders write down their equipment faster than before, or the same. It is in leases that have been signed but not started, promises that do not count as debt yet, and one judgment call the auditor publicly said was hard.',
+    'For a year the risk in this build sat on the liability side \u2014 rent signed but not started, promises that do not count as debt yet. That is still true, and it got bigger: seven companies have now signed $1.24 trillion of rent on buildings that do not exist. But something on the asset side broke this quarter, and it broke at the top of the chain. NVIDIA sold $96 billion of chips and collected 40 cents of cash for every dollar of profit it reported. It is lending its customers the money, holding $47.9 billion of shares in them, and guaranteeing $108.5 billion of their obligations.',
   priceStrip: [
-    { k: 'Computer spend, share of economy', v: '4.97%', tone: 'warn' },
-    { k: 'Dot-com peak, 2000Q4', v: '4.46%' },
-    { k: 'Big-four spending, 12 months', v: '$510.7B' },
-    { k: 'Paid for by borrowing, 2026', v: '65%', tone: 'bear' },
-    { k: 'A year earlier', v: '25%' },
-    { k: 'Claims proved wrong', v: '0 of 33', tone: 'bull' },
+    { k: 'NVIDIA profit, last quarter', v: '$59.7B' },
+    { k: 'Cash that arrived', v: '$24.1B', tone: 'bear' },
+    { k: 'Days waiting to be paid', v: '60', tone: 'bear' },
+    { k: 'Rent signed, not started', v: '$1.24T', tone: 'bear' },
+    { k: 'Promised for others', v: '$198B', tone: 'warn' },
+    { k: 'Set aside against it', v: '$0.8B', tone: 'bear' },
   ],
-  summary: `Two things are true at once, and almost every argument about an AI bubble picks one and ignores the other.
+  summary: `Two things are true at once.
 
-**The money is real, and it is enormous.** Microsoft, Amazon, Alphabet and Meta spent **$510.7 billion** on buildings and equipment in the twelve months to June 2026 — about **1.57% of the entire US economy**, and roughly **a third** of everything America spent on computers, chips and software. That national figure is now **4.97% of the economy, the highest since records began in 1947**, above the dot-com peak.
+**The build is real and it is enormous.** Seven companies have signed **$1.24 trillion** of rent on data centres that have not been handed over yet. Spending on computers and software hit **4.96% of the whole US economy**, a record in eighty years of records.
 
-**And they have mostly stopped paying for it out of profits.** A year ago, Meta, Alphabet and Amazon borrowed about a quarter of what they spent. In the first half of 2026 they borrowed **almost two-thirds** of it. Amazon went from 1.3% to 68%. Alphabet stopped buying back its own shares entirely and raised $105.8 billion from outside investors in six months instead.
+**And the company at the centre of it has stopped collecting most of what it earns.** NVIDIA reported **$59.7 billion of profit** for the quarter to 26 July. **$24.1 billion** of money actually arrived. That is 40 cents on the dollar, down from 86 cents three months before.
 
-This report went looking for the thing that breaks. It did not find the one everybody names. It found a different one — and it is not in the profit figures. It is in the promises sitting just off the edge of the accounts.`,
+The reason is in the same filing. NVIDIA now waits **60 days** to be paid instead of 45, and for the first time it told investors some large customers get **up to a year**. It calls these "financing arrangements" — last year's annual report said it had none.
+
+So the chip company is lending its customers the money to buy the chips. It also owns **$47.9 billion** of shares in privately held companies it sells to, and has guaranteed **$108.5 billion** of somebody else's obligations, with nothing set aside against it.`,
   headlineVsReal: [
     {
       headline:
-        'The big tech companies are **pretending their computers last longer than they do**, which makes profits look bigger. The oldest trick in the book.',
-      real: 'Not in the current filings. **Amazon went the other way.** Microsoft has not moved. Meta stretched once, eighteen months ago.',
-      gap: 'Here is the idea behind the accusation. When a company buys a server, it spreads the cost over the years it expects to use it. Say it lasts longer, and each year absorbs less of the cost — so profits look better without anything real changing. **But that is not what is happening.** From January 2025 Amazon moved some servers and networking gear from a six-year life to **five** — the *opposite* of the trick, and it cost the company **$1.4B of extra cost, $1.0B of profit and $0.10 a share**, mostly at AWS, because AI is making hardware obsolete faster. Microsoft still says **"two to six years"**, unchanged. Meta is the one that stretched: most servers to **5.5 years**, worth **$2.92B and $1.00 a share** — real, disclosed, and already baked into the numbers everyone is looking at. This is the most-repeated argument against these companies, and the filings do not support it today. Anyone still making it is describing 2023.',
+        'NVIDIA reported **$59.7 billion of profit** for the quarter \u2014 a record, on revenue up 106% year over year.',
+      real: '**$24.1 billion** of cash actually came in. Forty cents on the dollar.',
+      gap: 'Profit is what the accounts say you earned; operating cash flow is what reached the bank. Both are in the same filing. NVIDIA publishes cash flow only for the half-year, so the quarter is $74,421m for six months minus $50,344m for the first \u2014 a subtraction, not a judgement. Conversion was **86.3% the previous quarter** and is the lowest of all fourteen quarters that can be computed. The money did not vanish; it turned into an IOU. Receivables absorbed **$24.6 billion** over the half.',
     },
     {
       headline:
-        'The buildout will **hit a wall on electricity** — the waiting lists to plug into the grid run years long and the equipment is sold out.',
-      real: 'Delays run in **months, not years**. And the thing actually holding projects up in 2026 was **paperwork**.',
-      gap: 'Rather than quote waiting-list statistics, we tracked every power project that promised to switch on in the first half of 2026 and checked what actually happened. Of **590 projects and 49,221 megawatts**, **54.3% were running** by June, 44.0% were still on the schedule, and only **0.7% had been cancelled**. The typical delay was **four months**. Barely **1.9%** slipped more than a year. Meanwhile the Texas grid operator threw out **~294 GW of a 498 GW pile of requests on eligibility alone** — 274 GW had not filed a required study, 20 GW missed a modelling deadline. That is a filing-cabinet problem, not a physics problem. The equipment shortage is genuine, but it is **a queue, not a wall**: GE Vernova took orders for 12.1 GW of gas turbines in one quarter and shipped 3.3 GW — roughly four ordered for every one delivered, with deliveries actually *down* on the year.',
+        'The receivable build is **Blackwell ramp timing** \u2014 chips shipped late in the quarter get paid for early in the next one.',
+      real: 'The filing says otherwise, in its own words. NVIDIA now offers **\u201clonger payment terms ranging from 90 days up to one year\u201d**.',
+      gap: 'That sentence is new this quarter. What makes it decisive is the label: the filing files those terms under **\u201cfinancing arrangements\u201d** \u2014 the exact category last year\u2019s annual report said the company had *not* entered into. Days-to-collect went **45 to 60**. Ramp timing does not require a change of accounting language, and it does not usually come with a $105 billion guarantee signed nine days earlier.',
     },
     {
       headline:
-        '**"The Fed found AI makes workers 1.1% more productive"** — the number that ends most arguments about whether any of this works.',
-      real: 'It is **a calculation built on a survey question**, not a measurement — and the researchers say so themselves.',
-      gap: 'The study asked workers to imagine something: *"imagine that LAST WEEK you did not have access to Generative AI. How many additional hours of work would you have needed?"* The self-reported answers — 5.4% of hours saved among people using it, 1.4% across all workers — were then run through **"a standard model of aggregate production"** and weighted by wages. The researchers themselves head a section **"Potential Gains May Not Yet Be Fully Captured in Measured Productivity"** and raise the possibility that some saved time becomes on-the-job leisure. A November 2025 update revised the figure to **up to 1.3%** and, to their credit, added a check against real government industry data — a correlation of 0.32, which they explicitly say **"cannot be interpreted as causal."** Meanwhile the actual economy-wide efficiency measure disagrees: it **fell 0.42%** over the year to June 2026 while output per hour worked rose 2.2%. That combination has a specific meaning — workers are producing more because they have been handed more equipment, not because the technology made them better at their jobs.',
+        '**America is spending a record amount on computers** \u2014 about $400 billion a year, the biggest buildout since records began.',
+      real: 'True on the bill. **Not true on what it bought.** Adjusted for price, the quantity *fell* last quarter.',
+      gap: 'Computers got cheaper almost every year for eighty years \u2014 roughly 17% a year through the 1990s. In the year to June 2026 their prices rose **10.9%**, the largest increase on record. A record bill buying less is a different story from a record buildout. Two more corrections in the same direction: strip software out and computer-and-equipment spending is **2.45% of the economy against 2.91% in late 2000** \u2014 still below the dot-com peak; and the telecoms comparison people reach for is measuring the wrong thing, since communication equipment and structures peaked at 1.39% of the economy in 2000 and is **0.69%** today.',
     },
   ],
   kpis: [
     {
-      label: 'Computer and software spend, share of the economy',
-      value: '4.97%',
-      delta: 'highest since 1947',
-      note: 'Above the 4.46% dot-com peak. The four highest readings in 79 years are the last four quarters.',
+      label: 'Cash per dollar of NVIDIA profit',
+      value: '40c',
+      delta: 'from 86c',
+      note: '$24.1bn of cash against $59.7bn of profit. Lowest of fourteen quarters.',
+      tone: 'bear',
+    },
+    {
+      label: 'Days NVIDIA waits to be paid',
+      value: '60',
+      delta: 'from 45',
+      note: 'Terms of up to one year now disclosed for large customers.',
+      tone: 'bear',
+    },
+    {
+      label: 'Rent signed, buildings not handed over',
+      value: '$1.24T',
+      delta: 'seven companies',
+      note: 'Meta $347bn \u00b7 Microsoft $329bn \u00b7 Oracle $260bn \u00b7 and four more.',
+      tone: 'bear',
+    },
+    {
+      label: 'Promised to cover for others',
+      value: '$198B',
+      delta: '$0.8bn set aside',
+      note: 'NVIDIA $108.5bn, Meta $46.0bn, Alphabet $43.8bn. A dollar per $240.',
       tone: 'warn',
     },
     {
-      label: 'Share paid for by borrowing',
-      value: '65%',
-      delta: 'from 25% a year ago',
-      note: 'Meta, Alphabet and Amazon, first half of 2026. Amazon went 1.3% → 68%.',
-      tone: 'bear',
-    },
-    {
-      label: 'Big-four spending, twelve months',
-      value: '$510.7B',
-      delta: '1.57% of the economy',
-      note: 'About a third of everything America spent on computers, chips and software.',
-      tone: 'neutral',
-    },
-    {
-      label: 'Leases signed but not started',
-      value: '$830B',
-      delta: 'four companies',
-      note: 'Microsoft $329.1B · Meta $279.0B · Amazon $137.2B · Alphabet $85.2B. On nobody’s balance sheet.',
-      tone: 'bear',
-    },
-    {
-      label: 'What Meta says it could lose on one deal',
-      value: '$46.0B',
-      delta: 'vs $2.9B on its books',
-      note: 'A 15.8× gap. The auditor singled out the judgment behind it.',
+      label: 'NVIDIA shares in private customers',
+      value: '$47.9B',
+      delta: 'from ~$2bn in 2024',
+      note: 'Marking them up supplies about a fifth of reported profit.',
       tone: 'warn',
     },
     {
-      label: 'Economy-wide efficiency measure',
-      value: '−0.42%',
-      delta: 'year to June 2026',
-      note: 'Output per hour rose 2.2% — that gap means more equipment, not more efficiency.',
+      label: 'Computer prices',
+      value: '+10.9%',
+      delta: 'largest rise on record',
+      note: 'They fell about 17% a year through the 1990s.',
       tone: 'bear',
     },
     {
-      label: 'Microsoft borrowing for the buildout',
-      value: '$0',
-      delta: '2nd straight year',
-      note: '$115.9B spent, all from $182.9B of operating cash — and it still bought back stock.',
-      tone: 'bull',
+      label: 'Output per hour',
+      value: '+0.64%',
+      delta: 'first half, annualised',
+      note: 'Capital growing 3.0% a year against 5.6% in the dot-com boom.',
+      tone: 'bear',
     },
     {
-      label: 'Claims proved wrong',
-      value: '0 of 33',
-      delta: 'all checked against filings',
-      note: '30 needed a correction. None collapsed.',
+      label: 'Claims that survived',
+      value: '43 of 45',
+      delta: '94 filings opened',
+      note: 'Two refuted. None unverifiable. 32 needed a correction.',
       tone: 'bull',
     },
   ],
@@ -6279,83 +6323,111 @@ The critics point at share prices and at accounting for equipment. This report c
 But in the same twelve months, the share of the buildout paid for with borrowed money went from a quarter to two-thirds. Roughly $830 billion of leases were signed that have not started. And the single biggest number anyone discloses is Meta saying it could lose $46 billion on something it values at $2.9 billion — on a judgment its own auditor flagged.
 
 So: is this a boom being financed sensibly against real, signed demand — or has the industry quietly moved its risk to the one place that quarterly profits do not report?`,
-  analysis: `## Why this version exists
+  analysis: `## What changed
 
-This question was researched once before, the day earlier, and that attempt is the reason this one exists. The tools in that session could not open web pages, so **no agent read a single actual filing** — every figure was a search result *describing* a document rather than the document itself. Of 45 claims the argument rested on, only 3 survived unchanged: 21 needed correcting, 12 could not be checked at all, and **9 were flat wrong**. The failure patterns were consistent: old figures quoted as if current, numbers attributed to the wrong company, and a dozen news outlets repeating one analyst's note being mistaken for a dozen independent sources.
+Nine days ago this report said the danger in the AI build was not in company profits or share prices. It was in promises sitting just off the edge of the accounts — rent signed on buildings that do not exist, guarantees that do not count as debt yet.
 
-This run opened **83 actual documents**. Of 33 claims, **every one was checked against the source**, and the score was **3 clean, 30 clean-with-a-correction, 0 wrong, 0 unverifiable**.
+That is still true. It is also bigger than it looked: the figure is not $830 billion across four companies. It is **$1.24 trillion across seven**.
 
-That difference — nine wrong and twelve uncheckable, against none of either — is the best argument I have for how this section is built. The corrections that remain adjust size and basis; none of them demolished anything. And where the earlier attempt concluded that a power shortage was the most likely thing to stop the buildout, the physical data does not support that, and the conclusion was dropped.
+But something else happened on 26 August, and it is the reason this report has been rewritten. NVIDIA filed its quarterly accounts. For the first time, the company at the centre of this whole build **stopped collecting most of the money it says it earned**.
 
-## The finding: the risk moved, it did not disappear
+## The number
 
-Start with what is genuinely unprecedented. Money spent across the US economy on computers, chips and software reached **4.97% of everything the country produces** in the second quarter of 2026 — the highest of the **318 quarters** on record since 1947, above the **4.46%** at the dot-com peak in late 2000, and far above the 3.24% of early 1995. **The four highest readings in seventy-nine years are the last four quarters.**
+NVIDIA reported **$59.7 billion of profit** for the three months to 26 July. The cash that actually came in was **$24.1 billion**.
 
-One technical point, because it cuts the opposite way from the usual objection. Computers get cheaper over time while most things get more expensive, so adjusting both eras for price changes makes **today look bigger, not smaller** — roughly a 3.6× gap in like-for-like terms against 1.11× in raw dollars. Doing the comparison properly strengthens the headline rather than undermining it.
+That is **40 cents of money for every dollar of profit**. Three months earlier it was 86 cents.
 
-Against that national figure, the big four spent **$510.70 billion** in the twelve months to June 2026 — **1.57% of the economy**, and **31.7%** of that entire national computer-and-software line. Two caveats travel with the 31.7%, and the first one is the reverse of what you would guess: data-centre buildings and land are counted as *construction*, not computer equipment, so they are not in the national figure at all — and leaving out leased equipment makes the companies' own number **too small**, not too big. Microsoft alone added **$24.6B of leased equipment** in 2026 on top of the $115.9B, with a further **$329.1B of data-centre leases signed and not yet started**.
+[[chart:cash-conversion]]
 
-## Where the money comes from now
+This is not an accounting opinion. Profit is what the accounts say you earned. Operating cash flow is what turned up in the bank. Both come from the same filing. The gap between them is money the company has counted but not received.
 
-This is the change that happened inside twelve months, and it is the spine of the whole thesis.
+One honest caveat: NVIDIA publishes cash flow only for the half-year, so the quarterly figure is the six-month number ($74,421m) minus the first quarter ($50,344m). That subtraction is the only step, and it is arithmetic, not judgement.
 
-| | First half 2025 | First half 2026 |
-| --- | --- | --- |
-| Meta | 0% | **51%** |
-| Amazon | 1.3% | **68%** |
-| Alphabet | 79% | **70%** |
-| **Combined** | **25.4%** | **64.9%** |
+## Why the money did not arrive
 
-That is the share of their spending covered by borrowing — **$148.1B out of $228.1B** in the first half of 2026. Alphabet is the one that went *down*, and that matters: this is not a clean industry-wide flip, and describing it as one overstates it.
+Because NVIDIA is waiting longer to be paid, and it just said so.
 
-Two other companies mark the extremes. **Oracle** borrowed roughly **98%** of a **162% increase** in spending — $46.09B of bonds and loans, $3.35B of short-term financing, $4.95B of a share-like instrument that converts later — against **zero borrowing two years earlier**. Its total debt went from **$92.6B to $129.5B in one year**, and it spent **$23.69B more cash than it took in**.
+[[chart:dso]]
 
-And **Microsoft is the counterexample, at the largest scale of anyone**: it spent **$115,948M** in its 2026 financial year with **"Proceeds from issuance of debt: 0"** — its *second* consecutive year at zero — while still buying back $22.3B of stock and paying $26.4B of dividends out of $182.9B of cash from operations. Any argument that says "the industry can no longer pay for this out of earnings" has to explain the biggest spender doing exactly that.
+The company now waits **60 days** to collect, up from 45 three months ago. And in this filing, for the first time, it told investors it offers **"longer payment terms ranging from 90 days up to one year"** to large customers.
 
-Alphabet sits between them, and its behaviour is the most revealing of the three: it cut share buybacks to **zero** in the first half of 2026 (from $28.31B) while leaving its $70.0B buyback authorisation untouched, and instead raised **$30.50B by selling shares** — including a $10.0B private placement to Warren Buffett's Berkshire Hathaway — plus **$19.06B of a convertible instrument** paying 6.25%, on top of $56.23B of borrowing. That is **$105.8B of outside money in six months against $80.6B of spending.**
+The wording matters more than the number. Last year's annual report said the company had *not* entered into financing arrangements of this kind. This quarter's filing uses that exact phrase — **"financing arrangements"** — to describe what it now does.
 
-## The part that is not on the balance sheet
+Had it collected at the previous quarter's pace, roughly **$15 billion more** would have been cash instead of an IOU.
 
-Here is the actual fragility, and it is not a share price.
+That is the plain version of what happened: **the company selling the chips has started lending customers the money to buy them.**
 
-**Leases signed and not yet started**, as of 30 June 2026: Microsoft **$329.1B**, Meta **$279.0B**, Amazon **$137.2B**, Alphabet **$85.2B**. Roughly **$830 billion** of committed obligation that appears on no balance sheet — because a lease you have signed but not begun is not yet counted as a debt. For scale, that is many times the size of the entire market where this kind of data-centre debt gets packaged and sold. The thing everybody watches is not where the exposure is.
+## The $108.5 billion promise
 
-Then the deals themselves. Meta has a Louisiana project it never names in the filing — it is just called **"the Venture"**. Meta owns 20% of it, the development is estimated at around **$27B**, the initial lease commitment is about **$12.31B** starting in **2029**, and Meta has given **promises to cover shortfalls totalling roughly $28 billion** if the buildings end up worth less than expected. Meta carries the whole thing on its books at **$2.92B** and separately discloses that the most it could lose is **$46.03B**.
+On 17 August NVIDIA signed guarantees worth **$105 billion**, covering payments owed by a company connected to OpenAI. Add its other guarantees and the maximum it could be called on for is **$108.5 billion**.
 
-That is a **15.8× gap** between what is on the books and what the company itself says is at stake.
+The amount it has set aside against that: **nothing**.
 
-The reason it stays off the balance sheet is one narrow judgment, quoted from the filing: decisions about **"remarketing the data center campus"** were judged to be the ones that matter most to how the venture performs — and *"we do not have the power to direct"* them. Meta meanwhile provides the venture's construction management and property management.
+[[chart:promises]]
 
-**Ernst & Young made that judgment one of three "critical audit matters"** in the 2025 audit, citing the *"significant judgment required in determining the activities that most significantly affect the VIE's economic performance."* In plain terms: the auditor told the public this call was a hard one and could reasonably go the other way. A second deal on the same template, in El Paso, was disclosed later with a further **~$13B** of shortfall guarantees.
+It is not alone. Meta has promised up to $46 billion on one data-centre venture it carries on its books at $2.9 billion. Alphabet has backstopped $43.8 billion of other companies' rent and recorded $815 million against it.
 
-Alphabet's version is different in shape and identical in kind: promises to cover data-centre companies' debts went from **$16.94B to $43.79B in six months** — 2.6× — with just **$815M** recorded as a liability. If a borrower fails, Alphabet *"retain[s] the right to assume the underlying leases for internal use or to sublease to third parties."*
+Between the three of them: about **$198 billion promised, $815 million set aside**. A dollar for every $240.
 
-## What is *not* wrong — and this is most of the case against them
+None of this is hidden. All of it is in the filings, in plain words, with the numbers attached. It is simply not counted as debt, because under the accounting rules it is not debt until somebody fails to pay.
 
-Three widely-repeated arguments did not survive contact with the filings.
+## Money going in a circle
 
-**The depreciation accusation is not live.** Amazon **shortened** some server lives from six years to five from January 2025, taking $1.4B of extra cost and $1.0B of profit to do it, because AI is making hardware obsolete faster. Microsoft is unchanged at "two to six years". Meta is the only one that stretched — most servers to 5.5 years, worth $2.92B and $1.00 a share — and that was eighteen months ago and is already in the numbers everyone is looking at.
+NVIDIA now owns **$47.9 billion of shares in privately held companies** — many of them its own customers. Two years ago that number was about $2 billion.
 
-**The power wall is a rationing system, not a wall.** The project-by-project test is in the section above; the summary is that half the promised capacity arrived, the typical delay was four months, and 0.7% was cancelled. The equipment market genuinely is tight — GE Vernova is taking gas turbine orders at roughly **four for every one it ships**, and shipments actually **fell** year over year, while Siemens Energy's grid business has orders running 1.48× shipments on a €51bn backlog. But queued is not cancelled.
+[[chart:nvidia-stakes]]
 
-**Credit stress is real and contained.** What the riskiest corporate borrowers pay above government rates hit **10.35%** on 20 August 2026, the widest of the year — but ordinary high-risk borrowers were at **2.75%**, near the year's low, and the safest were at **0.82%**. And that 10.35% is still below the **11.37%** of April 2025, so it is a 2026 high rather than a multi-year alarm. The spread between the tiers is the signal: the weakest borrowers are being repriced while everyone else is not.
+Marking those holdings up in value now supplies roughly a fifth of NVIDIA's reported profit.
 
-**CoreWeave is that weakest borrower made concrete**: **$72.0B of total obligations against $5.0B of shareholder equity**, with **90%** of its debt the kind the company itself is on the hook for. Interest alone costs it **$640M — 24.9% of everything it earns** — against an operating loss of just $(49)M. Revenue grew 112% and the loss still more than doubled to $(626)M, with interest the biggest single reason. The problem at these AI-only cloud companies is the borrowing, not the business. It also discloses **$5.1B of equipment and software financing at 9–11%** — its suppliers lending it the money to buy their own products, named as such.
+Put the three things side by side and the shape is hard to miss. NVIDIA sells chips to companies it owns a stake in, lets them pay later, and guarantees their rent. Every one of those is legal, disclosed and individually defensible. Together they mean a growing share of NVIDIA's revenue is money NVIDIA also supplied.
 
-## Risk — each one on its own, do not blur them
+## $1.24 trillion of rent on buildings that do not exist
 
-1. **The obligations that are not on the books (the big one).** ~$830B of leases signed and not started, ~$41B of announced shortfall guarantees at Meta alone, $43.8B of Alphabet's promises carried at $815M.
-2. **The judgment call.** One auditor has already flagged it. If a deal of this type has to come onto the balance sheet, it lands on the accounts of several of the largest companies in the index at once.
-3. **The funding flip.** A quarter to two-thirds in a year, with Amazon now spending more cash than it generates.
-4. **Turning contracts into cash.** Oracle's $638B at roughly 12% inside a year is the slowest conversion of anyone whose filing was opened.
-5. **The weakest borrowers.** Contained today; the risk is that it stops being contained.
-6. **The missing productivity.** The efficiency measure is negative while investment sits at a 79-year high. If the efficiency never arrives, the cost of the equipment arrives anyway.
+[[chart:uncommenced]]
 
-## Horizon and sizing (kept separate)
+Seven companies have signed leases on data centres that have not been handed over. Until a building is handed over, the rent does not appear in what the company owes.
 
-**Horizon.** The near term is mechanical: whether the signed-but-not-started lease balances keep piling up, and whether any company has to bring one of these ventures onto its balance sheet. The thesis resolves over **two to three years** on a single question — do the signed contracts turn into cash at a margin that covers the debt raised to build them?
+The earlier version of this report put the figure at $830 billion across four companies. That was too narrow. Oracle alone adds **$260 billion**. Meta signed a further **$68 billion in July**. NVIDIA carries $45 billion — $25 billion for itself and $20 billion it has said it intends to hand to somebody else.
 
-**Sizing considerations (not a recommendation).** The most useful thing to sort these companies by is not a growth rate. It is **who is paying for this out of their own profits and who is paying for it out of the credit markets.** Microsoft at zero borrowing and Oracle at 98% are running the same strategy with opposite balance sheets — and only one of them needs lenders to stay friendly.`,
+## What the money actually bought
+
+Here is the finding that surprised this report most, and it needs no finance vocabulary at all.
+
+**Computers got more expensive.**
+
+[[chart:computer-prices]]
+
+For eighty years, computers got cheaper almost every single year — about 17% a year through the 1990s. In the year to June 2026 their prices rose **10.9%**, the largest jump on record.
+
+So when you read that America is spending a record amount on computers, that is true. It spent about **$400 billion a year**. But it did not get a record amount of computing. Adjusted for those prices, the quantity **fell** from the previous quarter.
+
+A record bill and less to show for it is a different story from a record buildout.
+
+## What is not wrong
+
+Three popular arguments did not survive the filings, and two of them died in this run.
+
+**This is not the telecoms bubble again.** Spending on communication equipment and structures peaked at 1.39% of the economy in 2000. Today it is 0.69% — half. The comparison people reach for is measuring the wrong thing.
+
+**The record is narrower than it sounds.** Total spending on computers and software is 4.96% of the economy, a record. But strip out software and the equipment figure is 2.45%, still **below** the 2.91% of late 2000. Three quarters of the recent rise is one line: computers.
+
+**And the productivity story is not "more machines, more output".** Output per hour grew just **0.64%** annualised in the first half of 2026. Capital is growing at 3.0% a year against 5.6% during the dot-com boom. Whatever is happening, it is a *smaller* machine-buying wave than 1998's, not a larger one.
+
+## Risk, one at a time
+
+1. **NVIDIA's collections.** The single number to watch next quarter. If cash conversion stays near 40%, the receivable is not a timing wobble.
+2. **The guarantees.** $198 billion promised across three companies with $815 million behind it. None of it moves until somebody misses a payment, and then all of it moves at once.
+3. **The circle.** Chip vendor owns customers, lends to customers, guarantees customers. Each link is defensible; the loop is the risk.
+4. **The rent.** $1.24 trillion arrives on balance sheets as buildings are handed over, on a schedule nobody publishes in full.
+5. **The prices.** If computer prices keep rising, every dollar of capex buys less, and the payback on all of it gets longer.
+
+## What would settle it
+
+Next quarter's NVIDIA cash flow statement, and nothing else, is the fastest read available. If the money starts arriving again, this quarter was a ramp-timing artefact and the bear case loses its only asset-side crack. If it does not, the company at the top of the chain is financing the demand it reports.
+
+**Horizon.** Two to three years, on one question: do the contracted backlogs convert into cash at a margin that services what has been borrowed and promised to build them?
+
+**Sizing (not a recommendation).** The most useful split in this whole report is not growth. It is **who pays cash and who does not** — Microsoft funded $115.9 billion of building with no new debt at all, while Oracle borrowed about 98% of a 162% increase. Same buildout, opposite balance sheets, and only one of them needs the credit window to stay open.`,
   invalidation: {
     bull: [
       'Any company has to bring a data-centre venture of the Meta type onto its balance sheet, or an auditor escalates the concern it already flagged — the off-the-books obligation becomes an on-the-books one across several giants at once.',
@@ -6371,44 +6443,44 @@ Three widely-repeated arguments did not survive contact with the filings.
     ],
   },
   verification: {
-    confirmed: 3,
-    partlyTrue: 30,
-    corrected: 0,
+    confirmed: 11,
+    partlyTrue: 32,
+    corrected: 2,
     confirmedNote:
-      'All 33 claims the argument rests on went to a second set of agents whose instructions were to prove them wrong, not to check them — and between them those agents opened 83 actual documents: company filings and the raw data behind them, government economic series, Federal Reserve research, power-plant databases, and grid auction records. Not one claim was proved wrong, and not one turned out to be uncheckable. Thirty needed a correction to a size, a basis or a caveat. The ones that changed something are below.',
+      'Checked against the filings themselves. Forty-five load-bearing claims were surfaced and all forty-five went to agents told to disprove them, opening 94 primary documents between them \u2014 NVIDIA\u2019s Q2 FY2027 10-Q and its 17 August 8-K, the Microsoft, Amazon, Alphabet, Meta, Oracle and CoreWeave filings, BEA\u2019s national accounts, the San Francisco Fed\u2019s productivity file and the BLS series. Eleven survived untouched, thirty-two needed a correction to a number, a basis or a caveat, two were refuted, and none was left unverifiable. The corrections that change what a figure means are below.',
     items: [
       {
+        kind: 'corrected',
+        title:
+          'The previous version of this report drew the perimeter too small',
+        text: 'It put rent signed but not started at **$830 billion across four companies**. Checked again with the net cast wider, it is **$1.24 trillion across seven**. Oracle alone adds $260 billion, disclosed in its own annual report as \u201cnot reflected on our consolidated balance sheet\u201d. Meta signed a further ~$68 billion in July. NVIDIA carries $45 billion of its own. The direction was right and the size was understated by half a trillion dollars.',
+      },
+      {
+        kind: 'corrected',
+        title: 'A credit-market claim compressed its own dates',
+        text: 'The claim said the gap between the riskiest borrowers and the rest widened \u201cin nine sessions\u201d and had risen steadily. It was **six sessions**, and the widening was a trend rather than a straight line \u2014 the gap actually narrowed in four of the twelve months. The direction holds; the tidiness did not.',
+      },
+      {
+        kind: 'corrected',
+        title: 'A filing sweep missed two documents and misdated a third',
+        text: 'A claim that NVIDIA\u2019s 10-Q was the only substantive filing in the window was wrong twice: NVIDIA also filed an **8-K on 26 August** carrying the earnings release and CFO commentary, and Alphabet filed an N-PX. Amazon\u2019s prospectus was dated two days **outside** the window it was placed in. Worth naming because three checks with three different start dates were mistaken for three confirmations of one fact.',
+      },
+      {
+        kind: 'partly',
+        title: 'The guarantee is $108.5bn, and the scaling was slightly off',
+        text: 'The $105 billion of guarantees NVIDIA signed on 17 August equals **45.9%** of its shareholders\u2019 equity, not 47.4%, and **1.86 times** its cash and marketable debt securities. It is the **$108.5 billion** total \u2014 including the AI-cloud guarantees \u2014 that reaches 47%. The 8-K also does not say whether the obligation is direct or off-balance-sheet: it is tagged under an item covering both, and the body is a one-line cross-reference.',
+      },
+      {
         kind: 'partly',
         title:
-          'The signed-but-not-started lease total was a third too low — it left out Meta',
-        text: 'The claim put leases signed and not started at ~$551B across three companies. Checking found **Meta discloses a further $278.99B** running to 2036, on terms up to 30 years — taking the real total to roughly **$830B**. An error in the cautious direction, but the single largest piece was missing.',
+          'The $15 billion of \u201cfinanced\u201d sales depends which quarter you measure from',
+        text: 'Had NVIDIA collected at the previous quarter\u2019s pace, roughly **$15.1\u201315.5 billion** more would have been cash. That is real, and it is baseline-dependent: the quarter it is measured against had the **lowest** days-to-collect in ten quarters, so it flatters the comparison. Measured against the ten-quarter average the figure is smaller. The 60-day reading is also not an all-time high \u2014 NVIDIA ran 72\u201375 days in mid-2022, when revenue was falling rather than doubling.',
       },
       {
         kind: 'partly',
         title:
-          'The funding shift is not uniform, and Alphabet moved the other way',
-        text: 'The 25% → 65% flip holds overall ($148.1B of $228.1B, against $32.1B of $126.3B a year earlier). But **Alphabet’s borrowed share FELL, from 79.2% to 69.8%** — the headline reads as an industry-wide inversion when two of the three companies drove it. Microsoft is a complete counterexample, and it was at zero for a *second* year running, not for the first time.',
-      },
-      {
-        kind: 'partly',
-        title: 'The inflation caveat was backwards',
-        text: 'The original claim warned that adjusting for price changes would make 2000 look bigger than today. It is the reverse: computers get cheaper while most things get more expensive, so **a proper like-for-like comparison flatters today** — roughly a 3.6× gap adjusted, against 1.11× in raw dollars. Doing it correctly strengthens the finding instead of reversing it. Separately, the "roughly a third of national spending" figure is an upper bound, because data-centre buildings and land are not in the national computer-spending figure at all, and leaving out leased equipment makes the companies’ own number too small.',
-      },
-      {
-        kind: 'partly',
-        title: 'CoreWeave’s customer concentration did not actually improve',
-        text: 'Its biggest single customer fell from 71% to 36% of revenue, which reads like the risk spreading out. It is not: **the second customer went from under 10% to 26%** over the same period. Overall concentration is roughly unchanged — the names rotated. Reading the top-customer line by itself gives you the opposite conclusion to the table it sits in.',
-      },
-      {
-        kind: 'partly',
-        title:
-          'The "Fed productivity" study now has an outside check its critics do not mention',
-        text: 'The claim that the 1.1% figure is calculated from an imagined survey answer rather than measured is exactly right, and the authors say so themselves. But the **November 2025 update added a comparison against real government industry data** — a 0.32 correlation between industry productivity growth and the survey’s reported time savings — while stating plainly that it *"cannot be interpreted as causal."* Anyone using this study to argue the gains are absent should know the same authors now offer some outside corroboration. Also worth knowing: the 1.3% is a **total effect since ChatGPT launched**, not a yearly rate.',
-      },
-      {
-        kind: 'partly',
-        title: 'Fermi’s tenant lease did not exist on the date being discussed',
-        text: 'The claim described an 11 GW project with just one signed lease covering 222 MW — roughly 50 to 1. Checking found it was worse: **on 30 June 2026 there was no tenant lease at all.** The one that gets cited was signed afterwards. The ratio used to illustrate the gap between announced and contracted was, on the date in question, undefined.',
+          'The productivity gap is opening for the opposite reason to the one usually given',
+        text: 'The gap between output per hour and underlying efficiency did widen, to 2.80 points. But it widened because efficiency **collapsed**, not because output surged: output per hour grew just **0.64%** annualised in the first half. And the \u201cmore machines, not more efficiency\u201d story does not survive its own data \u2014 capital input is growing **3.0% a year against 5.6%** during the dot-com boom. This is a smaller machine-buying wave than 1998\u2019s, not a larger one.',
       },
     ],
   },
@@ -6418,15 +6490,15 @@ Three widely-repeated arguments did not survive contact with the filings.
     'How much of the ~$830B of signed-but-not-started leases can actually be cancelled, and at what cost? Microsoft notes some are "subject to contractual conditions"; none of the four companies says what walking away would cost.',
     'Does the Texas grid operator’s eligibility cull represent demand that disappears or demand that refiles? ~294 GW of a 498 GW pile failed on paperwork, and whether that is speculative junk or real projects missing a deadline changes the forecast by hundreds of gigawatts.',
   ],
-  soWhat: `If you take one habit from this, take this one: **when someone tells you a company is spending beyond its means, ask where the money came from — and then ask what it has promised that has not started yet.**
+  soWhat: `Here is the whole thing in one habit, and it takes ten seconds on any company.
 
-The loud argument about AI is about share prices. That turns out to be the least interesting part. What actually changed in twelve months is duller and matters more: the biggest companies in the world went from paying for this out of profits to borrowing about two-thirds of it, and they signed roughly **$830 billion** of leases that have not begun — which show up on nobody's balance sheet, because a lease you have signed but not started is not yet counted as a debt.
+**Find the profit. Then find the cash. If they disagree, the disagreement is the story.**
 
-None of this is hidden. It is all in the filings, in plain English, with the numbers attached. Meta states outright that it could lose **$46 billion** on something it carries at **$2.9 billion**. Its auditor added a note saying that call was a hard one.
+NVIDIA said it earned $59.7 billion last quarter. $24.1 billion arrived. Both numbers are in the same document, a page apart. Neither is wrong and neither is hidden. But only one of them is money, and the gap between them is customers who have the chips and have not paid yet.
 
-And here is the version that applies to anything, not just AI: **something you have committed to but not yet started is invisible in this quarter's numbers and completely real.** It is true of a company signing data-centre leases and it is true of a household signing a mortgage that begins next year. The place to look is never the headline — it is the part of the filing labelled "commitments", the section describing the future the company has already agreed to.
+That is not fraud and it is not a warning. Companies extend credit all the time. What makes it worth knowing is that NVIDIA had not done it at this scale before, said so in writing, and changed what it calls the practice in the same filing.
 
-One last thing, about research itself. This exact question was researched a day earlier by agents that could not open the actual documents, and **9 of its 45 claims turned out to be wrong**, with another 12 impossible to check. Same question, same method, same effort. The only difference was whether anyone could read the source. That gap is the whole argument for going and looking.`,
+The second habit is about big numbers generally. **When you hear a record amount was spent on something, ask whether they got a record amount of it.** America spent more on computers this year than ever. Computer prices also rose 10.9% — the first real increase in eighty years. So the bill set a record and the pile of computers did not. Those are different sentences, and almost every headline uses the first to imply the second.`,
   throughLine: {
     text: `This is the report the other eight are the evidence for.
 
@@ -6450,42 +6522,196 @@ What this report adds is the other half of that ladder: **where the money comes 
       },
     ],
   },
+  keyTakeaways: [
+    'NVIDIA reported $59.7 billion of profit last quarter but only $24.1 billion of money actually came in the door — 40 cents on the dollar, down from 86 cents three months earlier.',
+    "NVIDIA now waits 60 days to be paid instead of 45, and said in writing for the first time that some big buyers can take up to a year, which left about $15.5 billion of last quarter's sales unpaid.",
+    'Seven companies have signed roughly $1.24 trillion of rent on data centres that have not been built yet, so none of it shows up in what they owe today.',
+    "NVIDIA, Meta and Alphabet have promised to cover about $198 billion of other companies' rent and have set aside $815 million against it — one dollar for every $240 promised.",
+    'Computers got cheaper nearly every year for eighty years, but their prices rose 10.9% this year, so America spent a record $400 billion a year on them and ended up with fewer of them than the quarter before.',
+  ],
+  charts: [
+    {
+      id: 'cash-conversion',
+      title: "Cash collected per dollar of NVIDIA's reported profit",
+      unit: 'cents of cash per dollar of profit',
+      kind: 'line',
+      valueFormat: 'plain',
+      whyItMatters:
+        'It shows how much of the profit NVIDIA reports actually arrives as money, and it just fell by half in three months.',
+      source: 'NVIDIA cash flow statements, filed XBRL facts',
+      points: [
+        { label: 'Q1 FY26', value: 146 },
+        { label: 'Q2 FY26', value: 58.2 },
+        { label: 'Q3 FY26', value: 74.4 },
+        { label: 'Q4 FY26', value: 84.2 },
+        { label: 'Q1 FY27', value: 86.3 },
+        {
+          label: 'Q2 FY27',
+          value: 40.3,
+          note: 'Quarter ended 2026-07-26: $24.1bn of cash against $59.7bn of profit',
+          highlight: true,
+        },
+      ],
+    },
+    {
+      id: 'dso',
+      title: 'How long NVIDIA waits to get paid',
+      unit: 'days',
+      kind: 'line',
+      valueFormat: 'plain',
+      whyItMatters:
+        'Two extra weeks of waiting is the plainest sign that the company selling the chips has started lending its customers the money.',
+      source: 'NVIDIA balance sheets and revenue, filed XBRL facts',
+      points: [
+        { label: 'Apr 2024', value: 43.2 },
+        { label: 'Jul 2024', value: 42.8 },
+        { label: 'Oct 2024', value: 45.9 },
+        { label: 'Jan 2025', value: 53.4 },
+        { label: 'Apr 2025', value: 45.7 },
+        { label: 'Jul 2025', value: 54.1 },
+        { label: 'Oct 2025', value: 53.3 },
+        { label: 'Jan 2026', value: 51.4 },
+        { label: 'Apr 2026', value: 45.4 },
+        {
+          label: 'Jul 2026',
+          value: 59.6,
+          note: 'Same quarter NVIDIA first disclosed terms of up to one year',
+          highlight: true,
+        },
+      ],
+    },
+    {
+      id: 'uncommenced',
+      title: 'Rent signed for data centres that do not exist yet',
+      unit: '$ billions',
+      kind: 'bar',
+      valueFormat: 'currency-bn',
+      whyItMatters:
+        "These seven promises add up to about $1.24 trillion and appear on nobody's books today, because the buildings have not been handed over.",
+      source:
+        'Company 10-K and 10-Q contractual obligation tables, 2026-05-31 to 2026-07-26',
+      points: [
+        {
+          label: 'Meta',
+          value: 347,
+          note: 'Includes ~$68bn signed in July 2026',
+        },
+        { label: 'Microsoft', value: 329.1 },
+        { label: 'Oracle', value: 260 },
+        { label: 'Amazon', value: 137.2 },
+        { label: 'Alphabet', value: 85.2 },
+        { label: 'NVIDIA', value: 45 },
+        { label: 'CoreWeave', value: 35.5 },
+      ],
+    },
+    {
+      id: 'promises',
+      title: 'Promised to cover, versus money set aside',
+      unit: '$ billions',
+      kind: 'bar',
+      valueFormat: 'currency-bn',
+      whyItMatters:
+        "Three companies have promised to cover about $198 billion of other people's rent. Between them they have set aside $815 million — a dollar for every $240 promised.",
+      source:
+        'NVIDIA 10-Q Notes 8 and 10; Meta and Alphabet 10-Qs at 30 June 2026',
+      points: [
+        {
+          label: 'NVIDIA',
+          value: 108.5,
+          note: 'nothing set aside',
+          highlight: true,
+        },
+        { label: 'Meta, Louisiana', value: 46.03, note: 'nothing set aside' },
+        { label: 'Alphabet backstops', value: 43.79, note: '$0.8bn set aside' },
+      ],
+    },
+    {
+      id: 'computer-prices',
+      title: 'The price of computers, against a year earlier',
+      unit: '% change versus a year earlier',
+      kind: 'line',
+      valueFormat: 'percent',
+      whyItMatters:
+        'Computers got cheaper almost every year for eighty years, and this year they got sharply more expensive instead.',
+      source: 'BEA national accounts, computer price index (series B935RG)',
+      points: [
+        { label: '2023Q2', value: 0.19 },
+        { label: '2023Q3', value: -0.08 },
+        { label: '2023Q4', value: -0.51 },
+        { label: '2024Q1', value: -0.66 },
+        { label: '2024Q2', value: 0.39 },
+        { label: '2024Q3', value: 0.61 },
+        { label: '2024Q4', value: 0.85 },
+        { label: '2025Q1', value: 0.65 },
+        { label: '2025Q2', value: 1.58 },
+        { label: '2025Q3', value: 2.27 },
+        { label: '2025Q4', value: 1.8 },
+        { label: '2026Q1', value: 5.1 },
+        {
+          label: '2026Q2',
+          value: 10.91,
+          note: 'Largest quarterly rise on record; 1990s averaged -17.3% a year',
+          highlight: true,
+        },
+      ],
+    },
+    {
+      id: 'nvidia-stakes',
+      title: "NVIDIA's stake in privately held companies it sells to",
+      unit: '$ billions',
+      kind: 'line',
+      valueFormat: 'currency-bn',
+      whyItMatters:
+        'In under two years NVIDIA went from owning almost nothing in its own customers to holding $47.9 billion of them, and marking those holdings up now supplies a fifth of its profit.',
+      source: 'NVIDIA Form 10-Q, quarter ended 26 July 2026',
+      points: [
+        { label: 'Oct 2024', value: 2.2 },
+        { label: 'Jan 2025', value: 3.4 },
+        { label: 'Apr 2025', value: 3.2 },
+        { label: 'Jul 2025', value: 3.8 },
+        { label: 'Oct 2025', value: 8.2 },
+        { label: 'Jan 2026', value: 22.3 },
+        { label: 'Apr 2026', value: 42.3 },
+        { label: 'Jul 2026', value: 47.9, highlight: true },
+      ],
+    },
+  ],
   method: {
     kind: 'thesis',
     perspectives: [
       {
         role: 'Capital-markets analyst',
         probe:
-          'How the build is financed, and where the obligation actually sits.',
+          'How the build is financed and where the obligation actually sits.',
       },
       {
         role: 'Macro economist',
         probe:
-          'Whether the productivity actually shows up in aggregate data, or only in task-level studies.',
+          'Whether the spending shows up as output, and how this compares to past buildouts.',
       },
       {
-        role: 'Grid and infrastructure engineer',
+        role: 'Semiconductor cycle analyst',
         probe:
-          'The physical ceiling — power, transformers, interconnect queues, and build time.',
+          'NVIDIA as the single best real-time read on whether demand is real.',
       },
       {
         role: 'Short seller',
         probe:
-          'The specific mechanism by which this breaks, and what breaks first.',
+          'The specific mechanism that breaks first, tested rather than asserted.',
       },
       {
-        role: 'Demand-side analyst',
+        role: 'Plain-English translator',
         probe:
-          'Whether the revenue on the other side of the capex is real and durable.',
+          'What a non-specialist needs to understand and the single clearest number for each point.',
       },
     ],
     turnsEach: 3,
-    claimsSurfaced: 33,
-    claimsVerified: 33,
+    claimsSurfaced: 45,
+    claimsVerified: 45,
     verificationScope: 'all',
-    agentCount: 15,
-    runDate: '2026-08-22',
-    primaryDocsOpened: 83,
+    agentCount: 14,
+    runDate: '2026-08-31',
+    primaryDocsOpened: 94,
   },
   cardImage: '/images/content/ai-capex-thesis-card-hero.webp',
   cardImageLight: '/images/content/ai-capex-thesis-card-hero-light.webp',
@@ -6493,407 +6719,337 @@ What this report adds is the other half of that ladder: **where the money comes 
   sources: [
     {
       n: 1,
-      label: 'SEC EDGAR — Amazon filing index and XBRL facts',
-      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001018724/us-gaap/PaymentsToAcquireProductiveAssets.json',
+      label: 'NVIDIA Form 8-K filed 2026-08-17',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000069/nvda-20260817.htm',
       primary: true,
       kind: 'filing',
     },
     {
       n: 2,
-      label: 'SEC EDGAR — Microsoft filing index and XBRL facts',
-      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0000789019/us-gaap/PaymentsToAcquirePropertyPlantAndEquipment.json',
+      label: 'NVIDIA Form 10-Q, period ended 2026-07-26',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm',
       primary: true,
       kind: 'filing',
     },
     {
       n: 3,
-      label: 'SEC EDGAR — Alphabet filing index and XBRL facts',
-      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001652044/us-gaap/PaymentsToAcquirePropertyPlantAndEquipment.json',
+      label: 'SEC EDGAR — NVIDIA filing index',
+      url: 'https://data.sec.gov/submissions/CIK0001045810.json',
       primary: true,
       kind: 'filing',
     },
     {
       n: 4,
-      label: 'SEC EDGAR — Meta filing index and XBRL facts',
-      url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK0001326801/us-gaap/PaymentsToAcquirePropertyPlantAndEquipment.json',
+      label: 'NVIDIA Form 10-Q Exhibit 10 (agreement), period ended 2026-07-26',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda2027q2ex101.htm',
       primary: true,
       kind: 'filing',
     },
     {
       n: 5,
-      label: 'Amazon Form 10-K, period ended 2025-12-31',
-      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
+      label: 'NVIDIA Form 8-K filed 2026-08-17 — 0001045810-26-000069-index',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000069/0001045810-26-000069-index-headers.html',
       primary: true,
       kind: 'filing',
     },
     {
       n: 6,
-      label: 'Microsoft Form 10-K, period ended 2026-06-30',
-      url: 'https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm',
+      label: 'NVIDIA Form 8-K filed 2026-08-17 — sbeoainvidia-portsrelease.',
+      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000069/sbeoainvidia-portsrelease.htm',
       primary: true,
       kind: 'filing',
     },
     {
       n: 7,
-      label: 'Alphabet Form 10-K, period ended 2025-12-31',
-      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm',
+      label: 'Alphabet — SEC filing d140593d424b5.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000119312526336853/d140593d424b5.htm',
       primary: true,
       kind: 'filing',
     },
     {
       n: 8,
-      label: 'Meta — SEC filing, accession 0001628280-26-003942',
-      url: 'https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm',
+      label: 'Alphabet — SEC filing d32286d424b2.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000119312526340264/d32286d424b2.htm',
       primary: true,
       kind: 'filing',
     },
     {
       n: 9,
-      label: 'Meta — SEC filing, accession 0001628280-26-050705',
-      url: 'https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 10,
-      label: 'Oracle — SEC filing, accession 0001193125-26-277521',
-      url: 'https://www.sec.gov/Archives/edgar/data/1341439/000119312526277521/orcl-20260531.htm',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 11,
-      label: 'CoreWeave Form 10-Q, period ended 2026-06-30',
+      label: 'CoreWeave — SEC filing crwv-20260630.htm',
       url: 'https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm',
       primary: true,
       kind: 'filing',
     },
     {
-      n: 12,
-      label: 'NVIDIA — SEC filing, accession 0001045810-26-000052',
-      url: 'https://www.sec.gov/Archives/edgar/data/1045810/000104581026000052/nvda-20260426.htm',
+      n: 10,
+      label: 'SEC EDGAR — Alphabet filing index',
+      url: 'https://data.sec.gov/submissions/CIK0001652044.json',
       primary: true,
       kind: 'filing',
     },
     {
-      n: 13,
-      label: 'Alphabet Form 10-Q, period ended 2026-06-30',
+      n: 11,
+      label: 'Alphabet — SEC filing goog-20260630.htm',
       url: 'https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm',
       primary: true,
       kind: 'filing',
     },
     {
+      n: 12,
+      label: 'Alphabet — SEC filing d171253d8k.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000119312526342390/d171253d8k.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 13,
+      label: 'Alphabet — SEC filing d159970dfwp.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/1652044/000119312526338750/d159970dfwp.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
       n: 14,
-      label: 'Amazon Form 10-Q, period ended 2026-06-30',
-      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/amzn-20260630.htm',
+      label: 'SEC EDGAR — Amazon filing index',
+      url: 'https://data.sec.gov/submissions/CIK0001018724.json',
       primary: true,
       kind: 'filing',
     },
     {
       n: 15,
-      label: 'SEC EDGAR — full-text search',
-      url: 'https://efts.sec.gov/LATEST/search-index?q=%22data+center%22&forms=ABS-15G',
+      label: 'Amazon — SEC filing tm2619352d3_fwp.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000110465926081334/tm2619352d3_fwp.htm',
       primary: true,
       kind: 'filing',
     },
     {
       n: 16,
-      label: 'SEC EDGAR — Meta filing index and XBRL facts',
-      url: 'https://data.sec.gov/submissions/CIK0001326801.json',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 17,
-      label:
-        'SEC EDGAR — registrant search for "Anthropic": returns only SPVs and feeder funds, no registration statement',
-      url: 'https://www.sec.gov/cgi-bin/browse-edgar?company=Anthropic&action=getcompany',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 18,
-      label: 'SpaceX Form S-1/A filed 2026-06-03',
-      url: 'https://www.sec.gov/Archives/edgar/data/1181412/000162828026040364/spaceexplorationtechnologib.htm',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 19,
-      label: 'SEC EDGAR — Microsoft filing index and XBRL facts',
-      url: 'https://data.sec.gov/submissions/CIK0000789019.json',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 20,
-      label: 'Company — SEC filing, accession 0001996810-26-000148',
-      url: 'https://www.sec.gov/Archives/edgar/data/1996810/000199681026000148/gev-20260630.htm',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 21,
-      label: 'Company — SEC filing, accession 0001050915-26-000025',
-      url: 'https://www.sec.gov/Archives/edgar/data/1050915/000105091526000025/pwr-20260630.htm',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 22,
-      label: 'Company — SEC filing, accession 0002071778-26-000051',
-      url: 'https://www.sec.gov/Archives/edgar/data/2071778/000207177826000051/frmi-20260630.htm',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 23,
-      label: 'SEC EDGAR — company filing index and XBRL facts',
-      url: 'https://data.sec.gov/submissions/CIK0001996810.json',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 24,
-      label: 'SEC EDGAR — company filing index and XBRL facts',
-      url: 'https://data.sec.gov/submissions/CIK0001050915.json',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 25,
-      label: 'SEC EDGAR — company filing index and XBRL facts',
-      url: 'https://data.sec.gov/submissions/CIK0002071778.json',
-      primary: true,
-      kind: 'filing',
-    },
-    {
-      n: 26,
-      label: 'SEC EDGAR — CoreWeave filing index and XBRL facts',
+      label: 'SEC EDGAR — CoreWeave filing index',
       url: 'https://data.sec.gov/submissions/CIK0001769628.json',
       primary: true,
       kind: 'filing',
     },
     {
-      n: 27,
-      label: 'St. Louis Fed — Impact generative ai work productivity',
-      url: 'https://www.stlouisfed.org/on-the-economy/2025/feb/impact-generative-ai-work-productivity',
+      n: 17,
+      label: 'Amazon — SEC filing tm2619352-2_424b5.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000110465926081786/tm2619352-2_424b5.htm',
       primary: true,
-      kind: 'data',
+      kind: 'filing',
     },
     {
-      n: 28,
-      label: 'St. Louis Fed — State generative ai adoption 2025',
-      url: 'https://www.stlouisfed.org/on-the-economy/2025/nov/state-generative-ai-adoption-2025',
+      n: 18,
+      label: 'Microsoft — SEC filing msft-20260630.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm',
       primary: true,
-      kind: 'data',
+      kind: 'filing',
     },
     {
-      n: 29,
-      label: 'St. Louis Fed — Ai productivity what firms say earnings calls',
-      url: 'https://www.stlouisfed.org/on-the-economy/2026/jul/ai-productivity-what-firms-say-earnings-calls',
+      n: 19,
+      label: 'Amazon — SEC filing amzn-20260630.htm',
+      url: 'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/amzn-20260630.htm',
       primary: true,
-      kind: 'data',
+      kind: 'filing',
     },
     {
-      n: 30,
+      n: 20,
+      label: 'Oracle Form 10-K, period ended 2026-05-31',
+      url: 'https://www.sec.gov/Archives/edgar/data/1341439/000119312526277521/orcl-20260531.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 21,
+      label: 'Meta Form 10-Q, period ended 2026-06-30',
+      url: 'https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 22,
+      label: 'NVIDIA IR — Investor',
+      url: 'https://investor.nvidia.com',
+      kind: 'company',
+    },
+    {
+      n: 23,
       label:
-        'Federal Reserve — The Fed - Monitoring AI Adoption in the US Economy',
-      url: 'https://www.federalreserve.gov/econres/notes/feds-notes/monitoring-ai-adoption-in-the-u-s-economy-20260403.html',
-      primary: true,
-      kind: 'data',
+        'NVIDIA Newsroom — NVIDIA Guarantees SB Energy’s PORTS-Pike Technology Campus in Ohio to Exclusively Host NVIDIA AI Compute',
+      url: 'https://nvidianews.nvidia.com/news/nvidia-guarantees-sb-energy-s-ports-pike-technology-campus-in-ohio-to-exclusively-host-nvidia-ai-compute',
+      kind: 'company',
     },
     {
-      n: 31,
-      label: 'Bureau of Labor Statistics — Prod2.nr0',
-      url: 'https://www.bls.gov/news.release/prod2.nr0.htm',
-      primary: true,
-      kind: 'data',
+      n: 24,
+      label: 'NVIDIA IR — Default',
+      url: 'https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/default.aspx',
+      kind: 'company',
     },
     {
-      n: 32,
-      label: 'San Francisco Fed — Total Factor Productivity',
-      url: 'https://www.frbsf.org/research-and-insights/data-and-indicators/total-factor-productivity-tfp/',
-      primary: true,
-      kind: 'data',
+      n: 25,
+      label:
+        'NVIDIA Newsroom — NVIDIA Sets Conference Call for Second-Quarter Financial Results',
+      url: 'https://nvidianews.nvidia.com/news/nvidia-sets-conference-call-for-second-quarter-financial-results-6927195',
+      kind: 'company',
     },
     {
-      n: 33,
-      label: 'San Francisco Fed — El2026 14.pdf',
-      url: 'https://www.frbsf.org/wp-content/uploads/el2026-14.pdf',
-      primary: true,
-      kind: 'data',
+      n: 26,
+      label: 'NVIDIA IR — Default — default.aspx',
+      url: 'https://investor.nvidia.com/financial-info/financial-reports/default.aspx',
+      kind: 'company',
     },
     {
-      n: 34,
-      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=a679rc1q027sbea',
-      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=A679RC1Q027SBEA',
-      primary: true,
-      kind: 'data',
-    },
-    {
-      n: 35,
-      label: 'US Census Bureau — Release.pdf',
-      url: 'https://www.census.gov/construction/c30/pdf/release.pdf',
-      primary: true,
-      kind: 'data',
-    },
-    {
-      n: 36,
-      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=gdp',
-      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=GDP',
-      primary: true,
-      kind: 'data',
-    },
-    {
-      n: 37,
-      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=bamlh0a3hyc',
+      n: 27,
+      label: 'FRED (St. Louis Fed) — Fredgraph',
       url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A3HYC',
       primary: true,
       kind: 'data',
     },
     {
-      n: 38,
-      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=bamlh0a0hym2',
+      n: 28,
+      label: 'FRED (St. Louis Fed) — Fredgraph — fredgraph.csv?id=DGS30&cos',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS30&cosd=2026-07-01&coed=2026-08-31',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 29,
+      label: 'FRED (St. Louis Fed) — Fredgraph — fredgraph.csv?id=A679RC1Q0',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=A679RC1Q027SBEA',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 30,
+      label: 'FRED (St. Louis Fed) — Fredgraph — fredgraph.csv?id=BAMLH0A0H',
       url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2',
       primary: true,
       kind: 'data',
     },
     {
+      n: 31,
+      label: 'FRED (St. Louis Fed) — Fredgraph — fredgraph.csv?id=DGS30',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS30',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 32,
+      label: 'BEA — quarterly national accounts data file',
+      url: 'https://apps.bea.gov/national/Release/TXT/NipaDataQ.txt',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 33,
+      label: 'BEA — Seriesregister',
+      url: 'https://apps.bea.gov/national/Release/TXT/SeriesRegister.txt',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 34,
+      label: 'San Francisco Fed — Quarterly tfp',
+      url: 'https://www.frbsf.org/wp-content/uploads/quarterly_tfp.xlsx',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 35,
+      label: 'FRED (St. Louis Fed) — Fredgraph — fredgraph.csv?id=OPHNFB',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=OPHNFB',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 36,
+      label: 'FRED (St. Louis Fed) — Fredgraph — fredgraph.csv?id=PCU334413',
+      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=PCU3344133441',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 37,
+      label:
+        'FRED (St. Louis Fed) — Private fixed investment: Nonresidential: Information processing equipment and software: Computers and peripheral equipment (B935RC1Q027SBEA) | FRED',
+      url: 'https://fred.stlouisfed.org/series/B935RC1Q027SBEA',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 38,
+      label: 'FRED (St. Louis Fed) — Gross Domestic Product (GDP) | FRED',
+      url: 'https://fred.stlouisfed.org/series/GDP',
+      primary: true,
+      kind: 'data',
+    },
+    {
       n: 39,
-      label: 'FRED (St. Louis Fed) — Fredgraph.csv?id=bamlc0a0cm',
-      url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLC0A0CM',
+      label:
+        'FRED (St. Louis Fed) — ICE BofA CCC & Lower US High Yield Index Option-Adjusted Spread (BAMLH0A3HYC) | FRED',
+      url: 'https://fred.stlouisfed.org/series/BAMLH0A3HYC',
       primary: true,
       kind: 'data',
     },
     {
       n: 40,
-      label: 'emp.lbl.gov — Queued%20up%202026%20edition.pdf',
-      url: 'https://emp.lbl.gov/sites/default/files/2026-06/Queued%20Up%202026%20Edition.pdf',
+      label:
+        'FRED (St. Louis Fed) — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2) | FRED',
+      url: 'https://fred.stlouisfed.org/series/BAMLH0A0HYM2',
       primary: true,
       kind: 'data',
     },
     {
       n: 41,
-      label: 'ERCOT — Ercot senate july 29 panel 1 assessing the grid.pdf',
-      url: 'https://www.ercot.com/files/docs/2026/07/29/ERCOT-Senate-July-29-Panel-1-Assessing-The-Grid.pdf',
-      primary: true,
-      kind: 'data',
+      label:
+        'idc.com — IDC - Global Memory Shortage Crisis: Market Analysis and the Potential Impact on the Smartphone and PC Markets in 2026',
+      url: 'https://www.idc.com/resource-center/blog/global-memory-shortage-crisis-market-analysis-and-the-potential-impact-on-the-smartphone-and-pc-markets-in-2026/',
+      kind: 'analysis',
     },
     {
       n: 42,
-      label: 'ERCOT — Ercot largeload update april2026 b c  hearing.pdf',
-      url: 'https://www.ercot.com/files/docs/2026/04/01/ERCOT_LargeLoad_Update_April2026_B-C_-Hearing.pdf',
-      primary: true,
-      kind: 'data',
+      label:
+        'Yahoo Finance — OpenAI Got $5.5B in SB Energy Warrants to Lease Nvidia',
+      url: 'https://finance.yahoo.com/technology/ai/articles/openai-got-5-5b-sb-190151986.html',
+      kind: 'analysis',
     },
     {
       n: 43,
-      label: 'ERCOT — 8 interconnection and grid analysis update.pdf',
-      url: 'https://www.ercot.com/files/docs/2026/05/24/8-Interconnection-and-Grid-Analysis-Update.pdf',
-      primary: true,
-      kind: 'data',
+      label:
+        'CNBC — Nvidia backing $105 billion in financing for OpenAI data center in Ohio',
+      url: 'https://www.cnbc.com/2026/08/17/nvidia-financing-open-ai-data-center-ohio.html',
+      kind: 'analysis',
     },
     {
       n: 44,
-      label: 'ERCOT — March tac report.pdf',
-      url: 'https://www.ercot.com/files/docs/2026/03/12/March-TAC-Report.pdf',
-      primary: true,
-      kind: 'data',
+      label:
+        'datacenterknowledge.com — Nvidia Backs OpenAI’s Ohio Data Center Buildout With $105B',
+      url: 'https://www.datacenterknowledge.com/data-center-construction/nvidia-backs-openai-s-ohio-data-center-buildout-with-105b-guarantee',
+      kind: 'analysis',
     },
     {
       n: 45,
-      label: 'EIA — December generator2025',
-      url: 'https://www.eia.gov/electricity/data/eia860m/archive/xls/december_generator2025.xlsx',
-      primary: true,
-      kind: 'data',
+      label:
+        "betanews.com — OpenAI and Nvidia's 20-year 8GW AI data center deal in Ohio",
+      url: 'https://betanews.com/article/openai-nvidia-8gw-ohio-data-center-deal/',
+      kind: 'analysis',
     },
     {
       n: 46,
-      label: 'EIA — June generator2026',
-      url: 'https://www.eia.gov/electricity/data/eia860m/xls/june_generator2026.xlsx',
-      primary: true,
-      kind: 'data',
+      label:
+        'wkzo.com — Nvidia to provide up to $105 billion guarantee for OpenAI’s Ohio data center | WKZO | Everything Kalamazoo',
+      url: 'https://wkzo.com/2026/08/17/nvidia-to-invest-1-5-billion-in-sb-energy-under-openai-data-center-deal/',
+      kind: 'analysis',
     },
     {
       n: 47,
-      label: 'PJM — 2028 2029 bra results report.pdf',
-      url: 'https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2028-2029/2028-2029-bra-results-report.pdf',
-      primary: true,
-      kind: 'data',
+      label:
+        'techjacksolutions.com — Nvidia sb energy 1 5b investment openai ports pike',
+      url: 'https://techjacksolutions.com/ai-brief/nvidia-sb-energy-1-5b-investment-openai-ports-pike/',
+      kind: 'analysis',
     },
     {
       n: 48,
-      label:
-        'gov.texas.gov — Thomas gleeson pablo vegas data centers directive letter to puct ercot august 2026 .pdf',
-      url: 'https://gov.texas.gov/uploads/files/press/Thomas_Gleeson_Pablo_Vegas_Data_Centers_Directive_Letter_to_PUCT_ERCOT_August_2026_.pdf',
-      primary: true,
-      kind: 'data',
-    },
-    {
-      n: 49,
-      label: 'ERCOT — Market Notice Details',
-      url: 'https://www.ercot.com/services/comm/mkt_notices/M-A080326-01',
-      primary: true,
-      kind: 'data',
-    },
-    {
-      n: 50,
-      label:
-        'Structured Finance Association — Sfa research corner how data center abs and cmbs fit in a broader financing ecosystem.pdf',
-      url: 'https://structuredfinance.org/wp-content/uploads/2026/07/SFA-Research-Corner_How-Data-Center-ABS-and-CMBS-Fit-in-a-Broader-Financing-Ecosystem.pdf',
-      kind: 'analysis',
-    },
-    {
-      n: 51,
-      label: "TechCrunch — Anthropic's annualized revenue surges to $65B",
-      url: 'https://techcrunch.com/2026/08/17/anthropics-annualized-revenue-surges-to-65b/',
-      kind: 'analysis',
-    },
-    {
-      n: 52,
-      label: 'Where’s Your Ed At — Anthropic\'s "Profitability" Swindle',
-      url: 'https://www.wheresyoured.at/anthropics-profitability-swindle/',
-      kind: 'analysis',
-    },
-    {
-      n: 53,
-      label: 'platform.claude.com — Pricing - Claude Platform Docs',
-      url: 'https://platform.claude.com/docs/en/about-claude/pricing',
-      kind: 'analysis',
-    },
-    {
-      n: 54,
-      label:
-        'assets.siemens-energy.com — Earnings release q3 fy2026 en pdf original%20file.pdf',
-      url: 'https://assets.siemens-energy.com/dam/d0147174-31a9-4a78-b062-b49d00428fc4/earnings-release-q3-fy2026-en-pdf_Original%20file.pdf',
-      kind: 'analysis',
-    },
-    {
-      n: 55,
-      label:
-        'Mitsubishi Heavy Industries — investor presentation — gas turbine order book (PDF)',
-      url: 'https://www.mhi.com/finance/library/result/pdf/fy20261q/presentation.pdf',
-      kind: 'analysis',
-    },
-    {
-      n: 56,
-      label:
-        'Utility Dive — Facing an estimated 474 GW of interconnection requests, Texas hits pause on data centers',
-      url: 'https://www.utilitydive.com/news/texas-hits-pause-data-center-interconnections/827046/',
-      kind: 'analysis',
-    },
-    {
-      n: 57,
-      label:
-        'Gibson Dunn — What Governor Abbott’s Data Center Audit Directive Means for ERCOT and the Batch Zero Study Process - Gibson Dunn',
-      url: 'https://www.gibsondunn.com/what-governor-abbotts-data-center-audit-directive-means-for-ercot-and-the-batch-zero-study-process/',
-      kind: 'analysis',
-    },
-    {
-      n: 58,
-      label: 'NERC — 2025 Long-Term Reliability Assessment (PDF)',
-      url: 'https://www.nerc.com/globalassets/our-work/assessments/nerc_ltra_2025.pdf',
+      label: 'fraser.stlouisfed.org — FRASER | Discover Economic History',
+      url: 'https://fraser.stlouisfed.org/',
       kind: 'analysis',
     },
   ],

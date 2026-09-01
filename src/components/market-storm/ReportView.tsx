@@ -17,6 +17,9 @@ import {
    Moved to ./tone when the index started showing figures too: a second copy
    is how a bull turns green on one surface and neutral on another. ---- */
 import { toneText, toneDot } from './tone';
+import JumpNav from './JumpNav';
+import BodyWithCharts from './BodyWithCharts';
+import Takeaways from './Takeaways';
 import MethodBlock from './Method';
 
 /* ---- inline markdown (bold/italic/code/links) with no block wrapper ---- */
@@ -611,19 +614,52 @@ export function Disclaimer() {
 /* A numbered stop on the walkthrough. The reports are long and technical, and
    a reader who does not do this for a living needs to know where they are and
    that there is an end. The number is the cheapest possible progress bar. */
+/**
+ * The stops in this report, in order, with the ids the jump nav anchors to.
+ *
+ * Derived rather than hand-numbered. Every stop used to carry its own
+ * `n={report.headlineVsReal?.length ? 6 : 5}` expression, which meant the
+ * numbering was restated eight times and adding a section meant editing all of
+ * them. Worse, the jump nav would have had to repeat the same conditionals a
+ * ninth time and could drift out of agreement with the page it indexes.
+ * One list, one source of truth, and the numbers fall out of the order.
+ */
+function stopsFor(report: MarketStormReport) {
+  return [
+    { id: 'what-happened', label: 'What happened' },
+    { id: 'the-numbers', label: 'The numbers that matter' },
+    ...(report.headlineVsReal?.length
+      ? [{ id: 'headline-vs-filing', label: 'The headline vs. the filing' }]
+      : []),
+    { id: 'the-print', label: report.printTableTitle },
+    { id: 'central-tension', label: 'The central tension' },
+    { id: 'invalidation', label: 'What would prove this wrong' },
+    ...(report.soWhat
+      ? [{ id: 'so-what', label: 'What this means if you don\u2019t trade stocks' }]
+      : []),
+    { id: 'longer-read', label: 'The longer read' },
+    { id: 'method', label: 'How this was researched' },
+    { id: 'sources', label: 'Sources' },
+  ];
+}
+
 function Stop({
   n,
+  id,
   title,
   lede,
   children,
 }: {
   n: number;
+  id?: string;
   title: string;
   lede?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    // scroll-mt keeps an anchored heading clear of the sticky site header
+    // instead of landing underneath it, which is the classic jump-link bug.
+    <section id={id} className="scroll-mt-24">
       {/* The number sits ABOVE the title, not beside it. Inline, it pushed
           every h2 29px to the right of the content it heads — so the page had
           one left edge for its headings and a different one for everything
@@ -666,17 +702,31 @@ function Stop({
  * does not do this for a living should be able to see where they are.
  */
 export default function ReportView({ report }: { report: MarketStormReport }) {
+  const stops = stopsFor(report);
+  const nOf = (id: string) => stops.findIndex((s) => s.id === id) + 1;
+
   return (
     <div className="mt-8 space-y-14">
       <ReportHero report={report} />
+      <Takeaways items={report.keyTakeaways} />
       <PriceStrip report={report} />
 
-      <Stop n={1} title="What happened" lede={undefined}>
+
+      {/* Body and nav, side by side on large screens.
+          The nav comes AFTER the body in source order so a screen reader and a
+          keyboard user meet the report before its table of contents, and
+          `lg:order-first` puts it on the left visually. Reading order and
+          visual order are allowed to differ; which one serves the reader is
+          the question, and here they want opposite things. */}
+      <div className="sd-report-grid">
+        <div className="sd-report-body min-w-0 space-y-14">
+      <Stop n={nOf('what-happened')} id="what-happened" title="What happened" lede={undefined}>
         <ArticleBody className="max-w-[62ch]">{report.summary}</ArticleBody>
       </Stop>
 
       <Stop
-        n={2}
+        n={nOf('the-numbers')}
+        id="the-numbers"
         title="The numbers that matter"
         lede="The figures the rest of this rests on, and which way each one cuts."
       >
@@ -685,7 +735,8 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
 
       {report.headlineVsReal && report.headlineVsReal.length > 0 && (
         <Stop
-          n={3}
+          n={nOf('headline-vs-filing')}
+          id="headline-vs-filing"
           title="The headline vs. the filing"
           lede="Every report in this section has found the same shape: the number that leads the coverage is not the number the filing supports."
         >
@@ -704,7 +755,8 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
           walkthrough reader never opens it; the one who wants to verify gets
           the complete print. */}
       <Stop
-        n={report.headlineVsReal?.length ? 4 : 3}
+        n={nOf('the-print')}
+        id="the-print"
         title={report.printTableTitle}
       >
         <details className="group rounded-xl border border-border bg-surface">
@@ -725,7 +777,8 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
       </Stop>
 
       <Stop
-        n={report.headlineVsReal?.length ? 5 : 4}
+        n={nOf('central-tension')}
+        id="central-tension"
         title="The central tension"
         lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
       >
@@ -733,7 +786,8 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
       </Stop>
 
       <Stop
-        n={report.headlineVsReal?.length ? 6 : 5}
+        n={nOf('invalidation')}
+        id="invalidation"
         title="What would prove this wrong"
         lede="The discipline: name in advance what would break each side of the case."
       >
@@ -742,7 +796,8 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
 
       {report.soWhat && (
         <Stop
-          n={report.headlineVsReal?.length ? 7 : 6}
+          n={nOf('so-what')}
+          id="so-what"
           title="What this means if you don’t trade stocks"
         >
           <SoWhat report={report} />
@@ -752,17 +807,25 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
       {/* What is left of the long-form: the reasoning the blocks above cannot
           carry — valuation arithmetic, the risks ranked, the horizon. */}
       <Stop
-        n={report.headlineVsReal?.length ? 8 : 7}
+        n={nOf('longer-read')}
+        id="longer-read"
         title="The longer read"
         lede="Valuation, the risks in order, and the horizon this resolves on."
       >
-        <ArticleBody className="max-w-[62ch]">{report.analysis}</ArticleBody>
+        <BodyWithCharts
+          markdown={report.analysis}
+          charts={report.charts}
+          className="max-w-[62ch]"
+        />
       </Stop>
 
       {report.throughLine && <ThroughLineBlock line={report.throughLine} />}
 
       {/* ---- How the research was made. Everything meta, together, at the end. ---- */}
-      <div className="space-y-10 rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8">
+      <div
+        id="method"
+        className="scroll-mt-24 space-y-10 rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8"
+      >
         <div>
           <p className="font-mono-accent mb-2 text-accent">
             How this was researched
@@ -781,7 +844,16 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
         <Disclaimer />
       </div>
 
-      <Sources sources={report.sources} />
+        </div>
+
+        <div className="sd-report-nav">
+          <JumpNav items={stops} />
+        </div>
+      </div>
+
+      <div id="sources" className="scroll-mt-24">
+        <Sources sources={report.sources} />
+      </div>
     </div>
   );
 }
