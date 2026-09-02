@@ -1,4 +1,3 @@
-import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import ArticleBody from '@/components/ArticleBody';
 import {
@@ -21,40 +20,7 @@ import JumpNav from './JumpNav';
 import BodyWithCharts from './BodyWithCharts';
 import Takeaways from './Takeaways';
 import MethodBlock from './Method';
-
-/* ---- inline markdown (bold/italic/code/links) with no block wrapper ---- */
-function Inline({ children }: { children: string }) {
-  return (
-    <ReactMarkdown
-      components={{
-        p: ({ children }) => <>{children}</>,
-        strong: ({ children }) => (
-          <strong className="font-semibold text-text-primary">
-            {children}
-          </strong>
-        ),
-        em: ({ children }) => <em className="italic">{children}</em>,
-        code: ({ children }) => (
-          <code className="rounded bg-fill px-1 py-0.5 font-mono text-[0.85em] text-accent-hover">
-            {children}
-          </code>
-        ),
-        a: ({ href, children }) => (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent underline underline-offset-2 hover:opacity-80"
-          >
-            {children}
-          </a>
-        ),
-      }}
-    >
-      {children}
-    </ReactMarkdown>
-  );
-}
+import Inline from './Inline';
 
 /* ---- report hero: identity, and the verdict when nothing states it better ---- */
 function ReportHero({ report }: { report: MarketStormReport }) {
@@ -747,7 +713,7 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
   return (
     <div className="mt-8 space-y-14">
       <ReportHero report={report} />
-      <Takeaways items={report.keyTakeaways} />
+      <Takeaways lead={report.takeawaysLead} items={report.keyTakeaways} />
       <PriceStrip report={report} />
 
 

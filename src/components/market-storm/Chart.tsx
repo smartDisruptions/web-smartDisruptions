@@ -38,26 +38,37 @@ function fmt(
   return `${v}${unit && unit.length <= 2 ? unit : ''}`;
 }
 
-/** The same hidden table under every chart — the numbers, for anyone not seeing them. */
+/**
+ * The same hidden table under every chart — the numbers, for anyone not seeing
+ * them.
+ *
+ * `sr-only` goes on a wrapping div, never on the <table> itself. A table is
+ * shrink-to-fit: it ignores the 1px width sr-only gives it and lays out to its
+ * content instead, so the class hid the table visually while leaving it 393px
+ * wide in the layout. Six of them did that, and the page scrolled sideways on
+ * a phone for something no sighted reader could see.
+ */
 function DataTable({ chart }: { chart: ReportChart }) {
   return (
-    <table className="sr-only">
-      <caption>{chart.title}</caption>
-      <thead>
-        <tr>
-          <th scope="col">Label</th>
-          <th scope="col">{chart.unit}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {chart.points.map((p) => (
-          <tr key={p.label}>
-            <th scope="row">{p.label}</th>
-            <td>{fmt(p.value, chart.unit, chart.valueFormat)}</td>
+    <div className="sr-only">
+      <table>
+        <caption>{chart.title}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Label</th>
+            <th scope="col">{chart.unit}</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {chart.points.map((p) => (
+            <tr key={p.label}>
+              <th scope="row">{p.label}</th>
+              <td>{fmt(p.value, chart.unit, chart.valueFormat)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

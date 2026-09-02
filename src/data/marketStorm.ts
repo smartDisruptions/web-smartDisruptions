@@ -252,6 +252,10 @@ export interface MarketStormReport {
    * argument; it is the findings, stripped of the reasoning that produced them.
    * The summary paragraph explains; this states.
    */
+  /* the one claim the takeaways are evidence for. Carries no figures on
+     purpose -- the numbers live in the list, and repeating them above is how
+     the old verdict paragraph ended up saying everything twice. */
+  takeawaysLead?: string;
   keyTakeaways?: string[];
 
   /** Numbered sections. When set, these replace `analysis` as the body. */
@@ -6276,12 +6280,14 @@ What this report adds is the other half of that ladder: **where the money comes 
       },
     ],
   },
+  takeawaysLead:
+    '**The build is real. The cash paying for it is not keeping up.** The chip maker has started financing its own buyers, the largest obligations do not count as debt yet, and a record bill is buying fewer machines than last quarter.',
   keyTakeaways: [
-    'NVIDIA reported $59.7 billion of profit last quarter but only $24.1 billion of money actually came in the door — 40 cents on the dollar, down from 86 cents three months earlier.',
-    "NVIDIA now waits 60 days to be paid instead of 45, and said in writing for the first time that some big buyers can take up to a year, which left about $15.5 billion of last quarter's sales unpaid.",
-    'Seven companies have signed roughly $1.24 trillion of rent on data centres that have not been built yet, so none of it shows up in what they owe today.',
-    "NVIDIA, Meta and Alphabet have promised to cover about $198 billion of other companies' rent and have set aside $815 million against it — one dollar for every $240 promised.",
-    'Computers got cheaper nearly every year for eighty years, but their prices rose 10.9% this year, so America spent a record $400 billion a year on them and ended up with fewer of them than the quarter before.',
+    'NVIDIA reported **$59.7 billion of profit**. Only **$24.1 billion** of cash arrived \u2014 40 cents on the dollar, down from 86.',
+    "It now waits **60 days** to be paid instead of 45, with some big buyers given **up to a year**. **$15.5 billion** of last quarter's sales sit unpaid.",
+    'Seven companies have signed **$1.24 trillion** of rent on data centres nobody has built. None of it counts as debt today.',
+    "NVIDIA, Meta and Alphabet guarantee **$198 billion** of other companies' rent. They have set aside **$815 million** \u2014 a dollar for every $240.",
+    'Computers got cheaper for eighty years. This year prices rose **10.9%**, and a record **$400 billion** bought fewer machines than the quarter before.',
   ],
   sections: [
     {
