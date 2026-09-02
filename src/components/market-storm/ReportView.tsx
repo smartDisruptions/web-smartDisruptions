@@ -625,7 +625,7 @@ function stopsFor(report: MarketStormReport) {
     { id: 'what-happened', label: 'What happened' },
     { id: 'the-numbers', label: 'The numbers that matter' },
     ...(report.headlineVsReal?.length
-      ? [{ id: 'headline-vs-filing', label: 'The headline vs. the filing' }]
+      ? [{ id: 'headline-vs-filing', label: 'The headline vs. the fine print' }]
       : []),
     ...(report.printTable
       ? [{ id: 'the-print', label: report.printTableTitle ?? 'The print' }]
@@ -742,7 +742,7 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
         <Stop
           n={nOf('headline-vs-filing')}
           id="headline-vs-filing"
-          title="The headline vs. the filing"
+          title="The headline vs. the fine print"
           lede="Every report in this section has found the same shape: the number that leads the coverage is not the number the filing supports."
         >
           <HeadlineVsRealBlock items={report.headlineVsReal} />

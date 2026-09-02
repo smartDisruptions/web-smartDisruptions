@@ -6077,7 +6077,7 @@ const aiCapexThesis2026: MarketStormReport = {
   excerpt:
     'The gap is not an accounting quirk. NVIDIA now waits 60 days to be paid instead of 45, and for the first time it told investors in writing that some big buyers can take up to a year. It has also promised to cover $108.5 billion of somebody else\u2019s rent, and set aside nothing against it. Forty-five claims went to agents told to disprove them, checked against 94 filings. Two came back wrong. The rest say the same thing: the company at the centre of the AI build has started financing its own customers.',
   catalyst:
-    'Rebuilt after NVIDIA\u2019s Q2 FY2027 filing \u2014 verified against filings through 31 August 2026',
+    'Rebuilt after NVIDIA\u2019s latest quarterly report \u2014 checked against company filings through 31 August 2026',
   publishDate: '2026-08-31',
   featured: true,
   tags: ['AI-infrastructure', 'capex', 'earnings-quality', 'macro', 'thesis'],
@@ -6087,9 +6087,9 @@ const aiCapexThesis2026: MarketStormReport = {
     { k: 'NVIDIA profit, last quarter', v: '$59.7B' },
     { k: 'Cash that arrived', v: '$24.1B', tone: 'bear' },
     { k: 'Days waiting to be paid', v: '60', tone: 'bear' },
-    { k: 'Rent signed, not started', v: '$1.24T', tone: 'bear' },
-    { k: 'Promised for others', v: '$198B', tone: 'warn' },
-    { k: 'Set aside against it', v: '$0.8B', tone: 'bear' },
+    { k: 'Rent signed, nothing built', v: '$1.24T', tone: 'bear' },
+    { k: "Other companies' rent promised", v: '$198B', tone: 'warn' },
+    { k: 'Money set aside for it', v: '$0.8B', tone: 'bear' },
   ],
   summary: `Two things are true at once.
 
@@ -6122,7 +6122,7 @@ So the chip company is lending its customers the money to buy the chips. It also
   ],
   kpis: [
     {
-      label: 'Cash per dollar of NVIDIA profit',
+      label: 'Cash NVIDIA collected per $1 of profit',
       value: '40c',
       delta: 'from 86c',
       note: '$24.1bn of cash against $59.7bn of profit. Lowest of fourteen quarters.',
@@ -6143,7 +6143,7 @@ So the chip company is lending its customers the money to buy the chips. It also
       tone: 'bear',
     },
     {
-      label: 'Promised to cover for others',
+      label: "Other companies' rent promised",
       value: '$198B',
       delta: '$0.8bn set aside',
       note: 'NVIDIA $108.5bn, Meta $46.0bn, Alphabet $43.8bn. A dollar per $240.',
@@ -6164,14 +6164,14 @@ So the chip company is lending its customers the money to buy the chips. It also
       tone: 'bear',
     },
     {
-      label: 'Output per hour',
+      label: 'What a US worker produces per hour',
       value: '+0.64%',
       delta: 'first half, annualised',
       note: 'Capital growing 3.0% a year against 5.6% in the dot-com boom.',
       tone: 'bear',
     },
     {
-      label: 'Claims that survived',
+      label: 'Claims that survived being challenged',
       value: '43 of 45',
       delta: '94 filings opened',
       note: 'Two refuted. None unverifiable. 32 needed a correction.',
@@ -6281,13 +6281,13 @@ What this report adds is the other half of that ladder: **where the money comes 
     ],
   },
   takeawaysLead:
-    '**The build is real. The cash paying for it is not keeping up.** The chip maker has started financing its own buyers, the largest obligations do not count as debt yet, and a record bill is buying fewer machines than last quarter.',
+    '**The AI spending is real. More and more of it is being paid for with promises instead of cash.** NVIDIA now lends customers the money to buy its own chips, huge future bills are missing from what these companies say they owe, and record spending bought fewer computers than three months ago.',
   keyTakeaways: [
-    'NVIDIA reported **$59.7 billion of profit**. Only **$24.1 billion** of cash arrived \u2014 40 cents on the dollar, down from 86.',
-    "It now waits **60 days** to be paid instead of 45, with some big buyers given **up to a year**. **$15.5 billion** of last quarter's sales sit unpaid.",
-    'Seven companies have signed **$1.24 trillion** of rent on data centres nobody has built. None of it counts as debt today.',
-    "NVIDIA, Meta and Alphabet guarantee **$198 billion** of other companies' rent. They have set aside **$815 million** \u2014 a dollar for every $240.",
-    'Computers got cheaper for eighty years. This year prices rose **10.9%**, and a record **$400 billion** bought fewer machines than the quarter before.',
+    'NVIDIA reported **$59.7 billion** in profit last quarter. Only **$24.1 billion** actually reached its bank account \u2014 40 cents of every dollar, down from 86 cents.',
+    "NVIDIA used to get paid in 45 days. Now it is **60**, and for the first time it says some big customers can take **a full year**. **$15.5 billion** of last quarter's sales is still unpaid.",
+    'Seven companies have signed leases worth **$1.24 trillion** on data centres that have not been built. Until the buildings open, none of it counts as money they owe.',
+    "NVIDIA, Meta and Alphabet promised to pay **$198 billion** of other companies' rent if those companies cannot. They set aside **$815 million** \u2014 a dollar for every $240.",
+    'Computers got cheaper almost every year for eighty years. This year they got **10.9% more expensive**, so a record **$400 billion** bought fewer of them than last quarter.',
   ],
   sections: [
     {
@@ -6363,7 +6363,7 @@ A record bill buying less is a different story from a record buildout.`,
     },
     {
       id: 'not-wrong',
-      label: 'Three things that are not wrong',
+      label: 'Three bubble arguments that do not hold up',
       body: `Three popular arguments did not survive the filings.
 
 **It is not the telecoms bubble again.** Spending on communication equipment and structures peaked at **1.39%** of the economy in 2000. Today it is **0.69%** — half. The comparison people reach for measures the wrong thing.
@@ -6374,7 +6374,7 @@ A record bill buying less is a different story from a record buildout.`,
     },
     {
       id: 'settle-it',
-      label: 'What would settle it',
+      label: 'What would settle the argument',
       body: `**Next quarter's NVIDIA cash flow statement, and nothing else.**
 
 If the money starts arriving again, this quarter was ramp timing and the case against loses its only asset-side crack. If it does not, the company at the top of the chain is financing the demand it reports.
