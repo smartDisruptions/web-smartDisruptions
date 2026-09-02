@@ -1,4 +1,3 @@
-import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import ArticleBody from '@/components/ArticleBody';
 import {
@@ -17,47 +16,32 @@ import {
    Moved to ./tone when the index started showing figures too: a second copy
    is how a bull turns green on one surface and neutral on another. ---- */
 import { toneText, toneDot } from './tone';
+import JumpNav from './JumpNav';
+import BodyWithCharts from './BodyWithCharts';
+import Takeaways from './Takeaways';
 import MethodBlock from './Method';
+import Inline from './Inline';
 
-/* ---- inline markdown (bold/italic/code/links) with no block wrapper ---- */
-function Inline({ children }: { children: string }) {
-  return (
-    <ReactMarkdown
-      components={{
-        p: ({ children }) => <>{children}</>,
-        strong: ({ children }) => (
-          <strong className="font-semibold text-text-primary">
-            {children}
-          </strong>
-        ),
-        em: ({ children }) => <em className="italic">{children}</em>,
-        code: ({ children }) => (
-          <code className="rounded bg-fill px-1 py-0.5 font-mono text-[0.85em] text-accent-hover">
-            {children}
-          </code>
-        ),
-        a: ({ href, children }) => (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent underline underline-offset-2 hover:opacity-80"
-          >
-            {children}
-          </a>
-        ),
-      }}
-    >
-      {children}
-    </ReactMarkdown>
-  );
-}
-
-/* ---- report hero: ticker + verdict + method mark ---- */
+/* ---- report hero: identity, and the verdict when nothing states it better ---- */
 function ReportHero({ report }: { report: MarketStormReport }) {
+  /**
+   * Takeaways supersede the verdict.
+   *
+   * They do the same job — say what the report found before the reader commits
+   * — and they do it better: numbered, one idea each, every line carrying a
+   * figure. Printing both put a 108-word paragraph between the headline and
+   * the findings, four of whose six claims then reappeared immediately below
+   * it. So a report with takeaways shows identity here and gets straight to
+   * them; a report without one keeps the verdict, which is most of them.
+   *
+   * The identity strip always stays. The ticker, the company and the "verified
+   * against filings through…" line are provenance, they appear nowhere else on
+   * the page, and every report in the section carries them.
+   */
+  const showVerdict = !report.keyTakeaways?.length;
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-      <div className="border-b border-border px-6 py-4 sm:px-8">
+      <div className={`px-6 py-4 sm:px-8 ${showVerdict ? 'border-b border-border' : ''}`}>
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <span className="font-mono text-xl font-bold tracking-wider text-accent">
             {report.ticker}
@@ -68,11 +52,13 @@ function ReportHero({ report }: { report: MarketStormReport }) {
           </span>
         </div>
       </div>
-      <div className="px-6 py-7 sm:px-8">
-        <p className="max-w-[58ch] font-display text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
-          {report.verdict}
-        </p>
-      </div>
+      {showVerdict && (
+        <div className="px-6 py-7 sm:px-8">
+          <p className="max-w-[58ch] font-display text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
+            {report.verdict}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -247,20 +233,33 @@ function DataTableBlock({ table }: { table: DataTableType }) {
   );
 }
 
-/* ---- bull / bear split + the central question ---- */
+/* ---- bull / bear split ---- */
 function BullBear({ report }: { report: MarketStormReport }) {
+  if (!report.bull?.length || !report.bear?.length) return null;
   return (
-    <div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Pole tone="bull" heading="The Bull holds" items={report.bull} />
-        <Pole tone="bear" heading="The Bear presses" items={report.bear} />
-      </div>
-      <div className="mt-6 rounded-xl border border-border bg-accent/[0.06] px-6 py-5">
-        <p className="font-mono-accent mb-2 text-accent">The one question</p>
-        <p className="max-w-[62ch] text-lg leading-relaxed text-text-primary/90">
-          <Inline>{report.theQuestion}</Inline>
-        </p>
-      </div>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <Pole tone="bull" heading="The Bull holds" items={report.bull} />
+      <Pole tone="bear" heading="The Bear presses" items={report.bear} />
+    </div>
+  );
+}
+
+/**
+ * The central question, on its own.
+ *
+ * It used to live inside BullBear. When the bull and bear lists became optional
+ * — a thesis piece lays its evidence out as contrasts and does not need them —
+ * the question silently disappeared with them, which is the wrong thing to lose:
+ * it does not depend on the poles, and it is the framing the rest answers.
+ */
+function TheQuestion({ report }: { report: MarketStormReport }) {
+  if (!report.theQuestion) return null;
+  return (
+    <div className="rounded-2xl border border-accent/25 bg-accent/[0.06] px-6 py-6 sm:px-8">
+      <p className="font-mono-accent mb-2 text-accent">The one question</p>
+      <p className="max-w-[62ch] text-lg leading-relaxed text-text-primary/90">
+        <Inline>{report.theQuestion}</Inline>
+      </p>
     </div>
   );
 }
@@ -611,19 +610,61 @@ export function Disclaimer() {
 /* A numbered stop on the walkthrough. The reports are long and technical, and
    a reader who does not do this for a living needs to know where they are and
    that there is an end. The number is the cheapest possible progress bar. */
+/**
+ * The stops in this report, in order, with the ids the jump nav anchors to.
+ *
+ * Derived rather than hand-numbered. Every stop used to carry its own
+ * `n={report.headlineVsReal?.length ? 6 : 5}` expression, which meant the
+ * numbering was restated eight times and adding a section meant editing all of
+ * them. Worse, the jump nav would have had to repeat the same conditionals a
+ * ninth time and could drift out of agreement with the page it indexes.
+ * One list, one source of truth, and the numbers fall out of the order.
+ */
+function stopsFor(report: MarketStormReport) {
+  return [
+    { id: 'what-happened', label: 'What happened' },
+    { id: 'the-numbers', label: 'The numbers that matter' },
+    ...(report.headlineVsReal?.length
+      ? [{ id: 'headline-vs-filing', label: 'The headline vs. the fine print' }]
+      : []),
+    ...(report.printTable
+      ? [{ id: 'the-print', label: report.printTableTitle ?? 'The print' }]
+      : []),
+    ...(report.bull?.length && report.bear?.length
+      ? [{ id: 'central-tension', label: 'The central tension' }]
+      : []),
+    // Evidence, then the tests of it. Sections replace the single long read:
+    // each becomes its own numbered stop, which is what lets the nav list them
+    // and a reader land in one.
+    ...(report.sections?.length
+      ? report.sections.map((x) => ({ id: x.id, label: x.label }))
+      : [{ id: 'longer-read', label: 'The longer read' }]),
+    { id: 'invalidation', label: 'What would prove this wrong' },
+    ...(report.soWhat
+      ? [{ id: 'so-what', label: 'What this means if you\u2019re not investing' }]
+      : []),
+    { id: 'method', label: 'How this was researched' },
+    { id: 'sources', label: 'Sources' },
+  ];
+}
+
 function Stop({
   n,
+  id,
   title,
   lede,
   children,
 }: {
   n: number;
+  id?: string;
   title: string;
   lede?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    // scroll-mt keeps an anchored heading clear of the sticky site header
+    // instead of landing underneath it, which is the classic jump-link bug.
+    <section id={id} className="scroll-mt-24">
       {/* The number sits ABOVE the title, not beside it. Inline, it pushed
           every h2 29px to the right of the content it heads — so the page had
           one left edge for its headings and a different one for everything
@@ -666,17 +707,31 @@ function Stop({
  * does not do this for a living should be able to see where they are.
  */
 export default function ReportView({ report }: { report: MarketStormReport }) {
+  const stops = stopsFor(report);
+  const nOf = (id: string) => stops.findIndex((s) => s.id === id) + 1;
+
   return (
     <div className="mt-8 space-y-14">
       <ReportHero report={report} />
+      <Takeaways lead={report.takeawaysLead} items={report.keyTakeaways} />
       <PriceStrip report={report} />
 
-      <Stop n={1} title="What happened" lede={undefined}>
+
+      {/* Body and nav, side by side on large screens.
+          The nav comes AFTER the body in source order so a screen reader and a
+          keyboard user meet the report before its table of contents, and
+          `lg:order-first` puts it on the left visually. Reading order and
+          visual order are allowed to differ; which one serves the reader is
+          the question, and here they want opposite things. */}
+      <div className="sd-report-grid">
+        <div className="sd-report-body min-w-0 space-y-14">
+      <Stop n={nOf('what-happened')} id="what-happened" title="What happened" lede={undefined}>
         <ArticleBody className="max-w-[62ch]">{report.summary}</ArticleBody>
       </Stop>
 
       <Stop
-        n={2}
+        n={nOf('the-numbers')}
+        id="the-numbers"
         title="The numbers that matter"
         lede="The figures the rest of this rests on, and which way each one cuts."
       >
@@ -685,8 +740,9 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
 
       {report.headlineVsReal && report.headlineVsReal.length > 0 && (
         <Stop
-          n={3}
-          title="The headline vs. the filing"
+          n={nOf('headline-vs-filing')}
+          id="headline-vs-filing"
+          title="The headline vs. the fine print"
           lede="Every report in this section has found the same shape: the number that leads the coverage is not the number the filing supports."
         >
           <HeadlineVsRealBlock items={report.headlineVsReal} />
@@ -703,37 +759,86 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
           So it keeps every row and stops competing for attention instead. The
           walkthrough reader never opens it; the one who wants to verify gets
           the complete print. */}
-      <Stop
-        n={report.headlineVsReal?.length ? 4 : 3}
-        title={report.printTableTitle}
-      >
-        <details className="group rounded-xl border border-border bg-surface">
-          <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
-            <span
-              className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
-              aria-hidden
-            >
-              &#9654;
-            </span>
-            Show the full print — {report.printTable.rows.length} rows, every
-            figure this report rests on
-          </summary>
-          <div className="border-t border-border p-5">
-            <DataTableBlock table={report.printTable} />
-          </div>
-        </details>
-      </Stop>
+      {report.printTable && (
+        <Stop
+          n={nOf('the-print')}
+          id="the-print"
+          title={report.printTableTitle ?? 'The print'}
+        >
+          <details className="group rounded-xl border border-border bg-surface">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
+              <span
+                className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
+                aria-hidden
+              >
+                &#9654;
+              </span>
+              Show the full print — {report.printTable.rows.length} rows, every
+              figure this report rests on
+            </summary>
+            <div className="border-t border-border p-5">
+              <DataTableBlock table={report.printTable} />
+            </div>
+          </details>
+        </Stop>
+      )}
+
+      {report.bull?.length && report.bear?.length ? (
+        <Stop
+          n={nOf('central-tension')}
+          id="central-tension"
+          title="The central tension"
+          lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
+        >
+          <BullBear report={report} />
+        </Stop>
+      ) : null}
+
+
+
+      {/* With no bull/bear stop to host it, the question stands alone here,
+          just before the evidence sections that answer it. */}
+      {!(report.bull?.length && report.bear?.length) && (
+        <TheQuestion report={report} />
+      )}
+
+      {/* Sections, or the single long read if the report has none.
+          A thesis piece carries its whole argument here, and 1,290 words under
+          one heading is a wall however the prose reads — so each idea gets its
+          own numbered stop and its own figure, and the nav can list them. */}
+      {report.sections?.length ? (
+        report.sections.map((sec) => (
+          <Stop
+            key={sec.id}
+            n={nOf(sec.id)}
+            id={sec.id}
+            title={sec.label}
+          >
+            <BodyWithCharts
+              markdown={sec.body}
+              charts={report.charts}
+              className="max-w-[62ch]"
+            />
+          </Stop>
+        ))
+      ) : (
+        <Stop
+          n={nOf('longer-read')}
+          id="longer-read"
+          title="The longer read"
+          lede="Valuation, the risks in order, and the horizon this resolves on."
+        >
+          <BodyWithCharts
+            markdown={report.analysis}
+            charts={report.charts}
+            className="max-w-[62ch]"
+          />
+        </Stop>
+      )}
 
       <Stop
-        n={report.headlineVsReal?.length ? 5 : 4}
-        title="The central tension"
-        lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
-      >
-        <BullBear report={report} />
-      </Stop>
-
-      <Stop
-        n={report.headlineVsReal?.length ? 6 : 5}
+        n={nOf('invalidation')}
+        id="invalidation"
         title="What would prove this wrong"
         lede="The discipline: name in advance what would break each side of the case."
       >
@@ -742,27 +847,21 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
 
       {report.soWhat && (
         <Stop
-          n={report.headlineVsReal?.length ? 7 : 6}
+          n={nOf('so-what')}
+          id="so-what"
           title="What this means if you don’t trade stocks"
         >
           <SoWhat report={report} />
         </Stop>
       )}
 
-      {/* What is left of the long-form: the reasoning the blocks above cannot
-          carry — valuation arithmetic, the risks ranked, the horizon. */}
-      <Stop
-        n={report.headlineVsReal?.length ? 8 : 7}
-        title="The longer read"
-        lede="Valuation, the risks in order, and the horizon this resolves on."
-      >
-        <ArticleBody className="max-w-[62ch]">{report.analysis}</ArticleBody>
-      </Stop>
-
       {report.throughLine && <ThroughLineBlock line={report.throughLine} />}
 
       {/* ---- How the research was made. Everything meta, together, at the end. ---- */}
-      <div className="space-y-10 rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8">
+      <div
+        id="method"
+        className="scroll-mt-24 space-y-10 rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8"
+      >
         <div>
           <p className="font-mono-accent mb-2 text-accent">
             How this was researched
@@ -781,7 +880,16 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
         <Disclaimer />
       </div>
 
-      <Sources sources={report.sources} />
+        </div>
+
+        <div className="sd-report-nav">
+          <JumpNav items={stops} />
+        </div>
+      </div>
+
+      <div id="sources" className="scroll-mt-24">
+        <Sources sources={report.sources} />
+      </div>
     </div>
   );
 }
