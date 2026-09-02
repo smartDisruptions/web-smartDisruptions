@@ -250,20 +250,33 @@ function DataTableBlock({ table }: { table: DataTableType }) {
   );
 }
 
-/* ---- bull / bear split + the central question ---- */
+/* ---- bull / bear split ---- */
 function BullBear({ report }: { report: MarketStormReport }) {
+  if (!report.bull?.length || !report.bear?.length) return null;
   return (
-    <div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Pole tone="bull" heading="The Bull holds" items={report.bull} />
-        <Pole tone="bear" heading="The Bear presses" items={report.bear} />
-      </div>
-      <div className="mt-6 rounded-xl border border-border bg-accent/[0.06] px-6 py-5">
-        <p className="font-mono-accent mb-2 text-accent">The one question</p>
-        <p className="max-w-[62ch] text-lg leading-relaxed text-text-primary/90">
-          <Inline>{report.theQuestion}</Inline>
-        </p>
-      </div>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <Pole tone="bull" heading="The Bull holds" items={report.bull} />
+      <Pole tone="bear" heading="The Bear presses" items={report.bear} />
+    </div>
+  );
+}
+
+/**
+ * The central question, on its own.
+ *
+ * It used to live inside BullBear. When the bull and bear lists became optional
+ * — a thesis piece lays its evidence out as contrasts and does not need them —
+ * the question silently disappeared with them, which is the wrong thing to lose:
+ * it does not depend on the poles, and it is the framing the rest answers.
+ */
+function TheQuestion({ report }: { report: MarketStormReport }) {
+  if (!report.theQuestion) return null;
+  return (
+    <div className="rounded-2xl border border-accent/25 bg-accent/[0.06] px-6 py-6 sm:px-8">
+      <p className="font-mono-accent mb-2 text-accent">The one question</p>
+      <p className="max-w-[62ch] text-lg leading-relaxed text-text-primary/90">
+        <Inline>{report.theQuestion}</Inline>
+      </p>
     </div>
   );
 }
@@ -631,13 +644,22 @@ function stopsFor(report: MarketStormReport) {
     ...(report.headlineVsReal?.length
       ? [{ id: 'headline-vs-filing', label: 'The headline vs. the filing' }]
       : []),
-    { id: 'the-print', label: report.printTableTitle },
-    { id: 'central-tension', label: 'The central tension' },
+    ...(report.printTable
+      ? [{ id: 'the-print', label: report.printTableTitle ?? 'The print' }]
+      : []),
+    ...(report.bull?.length && report.bear?.length
+      ? [{ id: 'central-tension', label: 'The central tension' }]
+      : []),
+    // Evidence, then the tests of it. Sections replace the single long read:
+    // each becomes its own numbered stop, which is what lets the nav list them
+    // and a reader land in one.
+    ...(report.sections?.length
+      ? report.sections.map((x) => ({ id: x.id, label: x.label }))
+      : [{ id: 'longer-read', label: 'The longer read' }]),
     { id: 'invalidation', label: 'What would prove this wrong' },
     ...(report.soWhat
-      ? [{ id: 'so-what', label: 'What this means if you don\u2019t trade stocks' }]
+      ? [{ id: 'so-what', label: 'What this means if you\u2019re not investing' }]
       : []),
-    { id: 'longer-read', label: 'The longer read' },
     { id: 'method', label: 'How this was researched' },
     { id: 'sources', label: 'Sources' },
   ];
@@ -754,36 +776,82 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
           So it keeps every row and stops competing for attention instead. The
           walkthrough reader never opens it; the one who wants to verify gets
           the complete print. */}
-      <Stop
-        n={nOf('the-print')}
-        id="the-print"
-        title={report.printTableTitle}
-      >
-        <details className="group rounded-xl border border-border bg-surface">
-          <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
-            <span
-              className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
-              aria-hidden
-            >
-              &#9654;
-            </span>
-            Show the full print — {report.printTable.rows.length} rows, every
-            figure this report rests on
-          </summary>
-          <div className="border-t border-border p-5">
-            <DataTableBlock table={report.printTable} />
-          </div>
-        </details>
-      </Stop>
+      {report.printTable && (
+        <Stop
+          n={nOf('the-print')}
+          id="the-print"
+          title={report.printTableTitle ?? 'The print'}
+        >
+          <details className="group rounded-xl border border-border bg-surface">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
+              <span
+                className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
+                aria-hidden
+              >
+                &#9654;
+              </span>
+              Show the full print — {report.printTable.rows.length} rows, every
+              figure this report rests on
+            </summary>
+            <div className="border-t border-border p-5">
+              <DataTableBlock table={report.printTable} />
+            </div>
+          </details>
+        </Stop>
+      )}
 
-      <Stop
-        n={nOf('central-tension')}
-        id="central-tension"
-        title="The central tension"
-        lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
-      >
-        <BullBear report={report} />
-      </Stop>
+      {report.bull?.length && report.bear?.length ? (
+        <Stop
+          n={nOf('central-tension')}
+          id="central-tension"
+          title="The central tension"
+          lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
+        >
+          <BullBear report={report} />
+        </Stop>
+      ) : null}
+
+
+
+      {/* With no bull/bear stop to host it, the question stands alone here,
+          just before the evidence sections that answer it. */}
+      {!(report.bull?.length && report.bear?.length) && (
+        <TheQuestion report={report} />
+      )}
+
+      {/* Sections, or the single long read if the report has none.
+          A thesis piece carries its whole argument here, and 1,290 words under
+          one heading is a wall however the prose reads — so each idea gets its
+          own numbered stop and its own figure, and the nav can list them. */}
+      {report.sections?.length ? (
+        report.sections.map((sec) => (
+          <Stop
+            key={sec.id}
+            n={nOf(sec.id)}
+            id={sec.id}
+            title={sec.label}
+          >
+            <BodyWithCharts
+              markdown={sec.body}
+              charts={report.charts}
+              className="max-w-[62ch]"
+            />
+          </Stop>
+        ))
+      ) : (
+        <Stop
+          n={nOf('longer-read')}
+          id="longer-read"
+          title="The longer read"
+          lede="Valuation, the risks in order, and the horizon this resolves on."
+        >
+          <BodyWithCharts
+            markdown={report.analysis}
+            charts={report.charts}
+            className="max-w-[62ch]"
+          />
+        </Stop>
+      )}
 
       <Stop
         n={nOf('invalidation')}
@@ -803,21 +871,6 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
           <SoWhat report={report} />
         </Stop>
       )}
-
-      {/* What is left of the long-form: the reasoning the blocks above cannot
-          carry — valuation arithmetic, the risks ranked, the horizon. */}
-      <Stop
-        n={nOf('longer-read')}
-        id="longer-read"
-        title="The longer read"
-        lede="Valuation, the risks in order, and the horizon this resolves on."
-      >
-        <BodyWithCharts
-          markdown={report.analysis}
-          charts={report.charts}
-          className="max-w-[62ch]"
-        />
-      </Stop>
 
       {report.throughLine && <ThroughLineBlock line={report.throughLine} />}
 

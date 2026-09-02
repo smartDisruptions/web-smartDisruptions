@@ -175,6 +175,27 @@ export interface ReportChart {
   valueFormat?: 'percent' | 'currency-bn' | 'x' | 'plain';
 }
 
+/**
+ * One numbered section of a long report.
+ *
+ * WHY THIS EXISTS
+ * ---------------
+ * `analysis` is a single markdown blob rendered under one heading. That works
+ * for an earnings read, where it is the last stop after the structured blocks
+ * have done the work. On a thesis piece it is the whole report — 1,290 words
+ * under one title, which is a wall whatever the prose is like.
+ *
+ * Sections break the same argument into numbered stops the jump nav can list
+ * and a reader can land in. Each one should hold a single idea and a figure.
+ * When `sections` is present it replaces `analysis`.
+ */
+export interface ReportSection {
+  id: string;
+  label: string;
+  /** Markdown. May carry `[[chart:id]]` and `[[stat:value|caption]]` markers. */
+  body: string;
+}
+
 export interface MarketStormReport {
   slug: string;
   ticker: string;
@@ -189,10 +210,20 @@ export interface MarketStormReport {
   summary: string; // markdown — the one-paragraph read
   headlineVsReal?: HeadlineVsReal[]; // the gap between the release and the filing
   kpis: Kpi[];
-  printTable: DataTable; // the catalyst's key figures
-  printTableTitle: string;
-  bull: string[];
-  bear: string[];
+  /**
+   * The catalyst's key figures. Optional: a thesis piece has no single print to
+   * table, and forcing one produced a nineteen-row block that repeated the
+   * charts above it.
+   */
+  printTable?: DataTable;
+  printTableTitle?: string;
+  /**
+   * Optional for the same reason. On a report whose evidence is already laid out
+   * as headline-versus-filing contrasts, a bull and bear list restates it as
+   * bullets — eleven of them, in the case that prompted this.
+   */
+  bull?: string[];
+  bear?: string[];
   theQuestion: string; // the central-tension callout
   analysis: string; // markdown long-form (valuation, competitive, risk, horizon)
   invalidation: { bull: string[]; bear: string[] };
@@ -222,6 +253,9 @@ export interface MarketStormReport {
    * The summary paragraph explains; this states.
    */
   keyTakeaways?: string[];
+
+  /** Numbered sections. When set, these replace `analysis` as the body. */
+  sections?: ReportSection[];
   /** Figures referenced from `analysis` by `[[chart:id]]`. */
   charts?: ReportChart[];
   method?: ResearchMethod;
@@ -6140,294 +6174,14 @@ So the chip company is lending its customers the money to buy the chips. It also
       tone: 'bull',
     },
   ],
-  printTableTitle: 'The figures this thesis rests on',
-  printTable: {
-    columns: [
-      { label: 'Figure' },
-      { label: 'Value', align: 'right' },
-      { label: 'Comparison', align: 'right' },
-      { label: 'Source' },
-    ],
-    rows: [
-      {
-        cells: [
-          'IT equipment + software investment, share of GDP',
-          '4.97%',
-          'vs 4.46% in 2000Q4',
-          'BEA — highest of 318 quarters since 1947',
-        ],
-        star: true,
-      },
-      {
-        cells: [
-          'Big-four capex, twelve months to 2026-06-30',
-          '$510.70B',
-          '1.57% of GDP',
-          'XBRL: MSFT $115.95B · AMZN $173.03B · GOOGL $132.40B · META $89.33B',
-        ],
-        star: true,
-      },
-      {
-        cells: [
-          'Capex funded by long-term debt, H1 2026',
-          '64.9%',
-          'from 25.4%',
-          '$148.1B of $228.1B — Meta, Alphabet, Amazon cash flow statements',
-        ],
-        star: true,
-      },
-      {
-        cells: ['— Meta', '51%', 'from 0%', '$24.91B of $49.11B'],
-      },
-      {
-        cells: ['— Amazon', '68%', 'from 1.3%', '$67.00B of $98.41B'],
-      },
-      {
-        cells: [
-          '— Alphabet',
-          '70%',
-          'from 79%',
-          '$56.23B of $80.60B — the one that fell',
-        ],
-      },
-      {
-        cells: [
-          '— Oracle, FY2026',
-          '~98%',
-          'from 0% in FY2024',
-          'Capex $55.66B (+162%), 83% of revenue; free cash flow −$23.69B',
-        ],
-      },
-      {
-        cells: [
-          '— Microsoft, FY2026',
-          '0%',
-          '2nd straight year',
-          '$115.95B capex, $0 debt issued, $22.3B repurchased',
-        ],
-        star: true,
-      },
-      {
-        cells: [
-          'Leases not yet commenced',
-          '~$830B',
-          'four filers',
-          'MSFT $329.1B · META $279.0B · AMZN $137.2B · GOOGL $85.2B',
-        ],
-        star: true,
-      },
-      {
-        cells: [
-          'Meta “Venture” maximum exposure to loss',
-          '$46.03B',
-          'vs $2.92B carrying value',
-          '20% interest; ~$28B residual value guarantee; EY critical audit matter',
-        ],
-        star: true,
-      },
-      {
-        cells: [
-          'Alphabet credit-derivative backstops to data-centre entities',
-          '$43.79B',
-          'from $16.94B in 6 months',
-          'Recognised fair-value liability just $815M',
-        ],
-      },
-      {
-        cells: [
-          'Oracle remaining performance obligations',
-          '$638B',
-          'from $138B (+362%)',
-          'Revenue +17%. Only ~12% converts within 12 months',
-        ],
-      },
-      {
-        cells: [
-          'Microsoft commercial RPO',
-          '$678B',
-          '+84%',
-          'Weighted-average duration ~2.3 years; ~30% inside 12 months',
-        ],
-      },
-      {
-        cells: [
-          'Amazon customer commitments not yet recognised',
-          '~$496B',
-          'from $244B in six months',
-          'Weighted-average remaining life 6.4 years',
-        ],
-      },
-      {
-        cells: [
-          'CoreWeave total liabilities / equity',
-          '$72.0B / $5.0B',
-          '90% of debt recourse',
-          'Net interest expense $640M = 24.9% of revenue',
-        ],
-      },
-      {
-        cells: [
-          'CCC & lower high-yield spread',
-          '10.35%',
-          'broad HY 2.75%, IG 0.82%',
-          'Widest CCC print of 2026 — but stress is confined to that tier',
-        ],
-      },
-      {
-        cells: [
-          'Utilization-adjusted total factor productivity',
-          '−0.42%',
-          'four quarters to 2026Q2',
-          'SF Fed. Labour productivity +2.2% over the same window',
-        ],
-        star: true,
-      },
-      {
-        cells: [
-          'Gas capacity entering service, H1 2026',
-          '2.89 GW',
-          'pipeline claims 11.3 GW in 2027',
-          'EIA-860M. A ~3.2× step-up demanded of the supply chain',
-        ],
-      },
-      {
-        cells: [
-          'Median slip, units promising H1 2026 operation',
-          '4 months',
-          '0.7% cancelled',
-          'EIA-860M cohort test, 590 units / 49,221 MW',
-        ],
-        star: true,
-      },
-    ],
-  },
-  bull: [
-    'The demand is signed, not hoped for. Microsoft holds $678B of contracts customers have committed to but not yet been billed for, about 30% of it landing within a year; Amazon discloses ~$496B of the same thing; CoreWeave says 98% of its revenue is under contracts customers must pay whether they use the capacity or not.',
-    'The cloud business itself is profitable and getting more so. Google Cloud went from keeping 20.7 cents of every dollar as operating profit to 35.6 cents in a year — and the quarter before was 32.9%, so it is a trend rather than a fluke.',
-    'Nobody is fiddling the depreciation. Amazon shortened the life it assigns to servers and took a $1.0B hit to profit to do it. Microsoft has not moved. The single most-repeated accusation against these companies is simply not in the current filings.',
-    'The electricity problem is a queue, not a wall. Half the power capacity promised for the first half of 2026 arrived on time, the typical delay was four months, and 0.7% was cancelled.',
-    'Microsoft proves the whole thing can be paid for out of profits at full scale: $115.9B spent, zero borrowed for a second year running, and $22.3B of its own stock bought back anyway.',
-  ],
-  bear: [
-    'The obligation moved somewhere the accounts do not show it. Roughly $830B of leases have been signed and not yet started across four companies — far more than the entire market that exists for packaging and selling this kind of debt.',
-    'Meta says it could lose as much as $46.03B on a venture it carries on its books at $2.92B, and keeps it off the balance sheet by arguing it does not control what happens to the campus. Its auditor, Ernst & Young, singled that judgment out as one of the hardest in the audit — an auditor publicly saying the answer is arguable.',
-    'Alphabet’s promises to cover other companies’ data-centre debts went from $16.94B to $43.79B in six months, with only $815M recorded as an actual liability.',
-    'The funding flipped in a single year: from a quarter borrowed to two-thirds. Amazon now spends more cash than it takes in — negative $7.6B over twelve months against positive $18.2B a year earlier — and Oracle borrowed roughly 98% of a 162% increase in spending.',
-    'The productivity is not showing up in the national numbers. The economy-wide efficiency measure fell 0.42% over the year to June 2026 while investment hit a 79-year high. What growth there is looks like the result of buying more equipment, not of the equipment making anyone better.',
-    'The quality of those signed contracts varies enormously, and the weakest is the biggest: only about 12% of Oracle’s $638B of committed contracts turns into revenue within a year.',
-  ],
-  theQuestion: `Every argument about an AI bubble is really an argument about where the risk sits.
+  theQuestion: `Every argument about an AI bubble is an argument about **where the risk sits**.
 
-The critics point at share prices and at accounting for equipment. This report checked both against the filings, and the fragility is in neither: three of the four biggest spenders write their equipment down faster than before or the same, and the cloud businesses are getting more profitable, not less.
+The critics point at share prices and at how equipment is written down. Both were checked against the filings. Neither is where the fragility is.
 
-But in the same twelve months, the share of the buildout paid for with borrowed money went from a quarter to two-thirds. Roughly $830 billion of leases were signed that have not started. And the single biggest number anyone discloses is Meta saying it could lose $46 billion on something it values at $2.9 billion — on a judgment its own auditor flagged.
+It is here: **the company selling the chips has started financing the people buying them** — lending them the money, owning shares in them, and guaranteeing their rent. Meanwhile $1.24 trillion of rent sits signed and uncounted.
 
-So: is this a boom being financed sensibly against real, signed demand — or has the industry quietly moved its risk to the one place that quarterly profits do not report?`,
-  analysis: `## What changed
-
-Nine days ago this report said the danger in the AI build was not in company profits or share prices. It was in promises sitting just off the edge of the accounts — rent signed on buildings that do not exist, guarantees that do not count as debt yet.
-
-That is still true. It is also bigger than it looked: the figure is not $830 billion across four companies. It is **$1.24 trillion across seven**.
-
-But something else happened on 26 August, and it is the reason this report has been rewritten. NVIDIA filed its quarterly accounts. For the first time, the company at the centre of this whole build **stopped collecting most of the money it says it earned**.
-
-## The number
-
-NVIDIA reported **$59.7 billion of profit** for the three months to 26 July. The cash that actually came in was **$24.1 billion**.
-
-That is **40 cents of money for every dollar of profit**. Three months earlier it was 86 cents.
-
-[[chart:cash-conversion]]
-
-This is not an accounting opinion. Profit is what the accounts say you earned. Operating cash flow is what turned up in the bank. Both come from the same filing. The gap between them is money the company has counted but not received.
-
-One honest caveat: NVIDIA publishes cash flow only for the half-year, so the quarterly figure is the six-month number ($74,421m) minus the first quarter ($50,344m). That subtraction is the only step, and it is arithmetic, not judgement.
-
-## Why the money did not arrive
-
-Because NVIDIA is waiting longer to be paid, and it just said so.
-
-[[chart:dso]]
-
-The company now waits **60 days** to collect, up from 45 three months ago. And in this filing, for the first time, it told investors it offers **"longer payment terms ranging from 90 days up to one year"** to large customers.
-
-The wording matters more than the number. Last year's annual report said the company had *not* entered into financing arrangements of this kind. This quarter's filing uses that exact phrase — **"financing arrangements"** — to describe what it now does.
-
-Had it collected at the previous quarter's pace, roughly **$15 billion more** would have been cash instead of an IOU.
-
-That is the plain version of what happened: **the company selling the chips has started lending customers the money to buy them.**
-
-## The $108.5 billion promise
-
-On 17 August NVIDIA signed guarantees worth **$105 billion**, covering payments owed by a company connected to OpenAI. Add its other guarantees and the maximum it could be called on for is **$108.5 billion**.
-
-The amount it has set aside against that: **nothing**.
-
-[[chart:promises]]
-
-It is not alone. Meta has promised up to $46 billion on one data-centre venture it carries on its books at $2.9 billion. Alphabet has backstopped $43.8 billion of other companies' rent and recorded $815 million against it.
-
-Between the three of them: about **$198 billion promised, $815 million set aside**. A dollar for every $240.
-
-None of this is hidden. All of it is in the filings, in plain words, with the numbers attached. It is simply not counted as debt, because under the accounting rules it is not debt until somebody fails to pay.
-
-## Money going in a circle
-
-NVIDIA now owns **$47.9 billion of shares in privately held companies** — many of them its own customers. Two years ago that number was about $2 billion.
-
-[[chart:nvidia-stakes]]
-
-Marking those holdings up in value now supplies roughly a fifth of NVIDIA's reported profit.
-
-Put the three things side by side and the shape is hard to miss. NVIDIA sells chips to companies it owns a stake in, lets them pay later, and guarantees their rent. Every one of those is legal, disclosed and individually defensible. Together they mean a growing share of NVIDIA's revenue is money NVIDIA also supplied.
-
-## $1.24 trillion of rent on buildings that do not exist
-
-[[chart:uncommenced]]
-
-Seven companies have signed leases on data centres that have not been handed over. Until a building is handed over, the rent does not appear in what the company owes.
-
-The earlier version of this report put the figure at $830 billion across four companies. That was too narrow. Oracle alone adds **$260 billion**. Meta signed a further **$68 billion in July**. NVIDIA carries $45 billion — $25 billion for itself and $20 billion it has said it intends to hand to somebody else.
-
-## What the money actually bought
-
-Here is the finding that surprised this report most, and it needs no finance vocabulary at all.
-
-**Computers got more expensive.**
-
-[[chart:computer-prices]]
-
-For eighty years, computers got cheaper almost every single year — about 17% a year through the 1990s. In the year to June 2026 their prices rose **10.9%**, the largest jump on record.
-
-So when you read that America is spending a record amount on computers, that is true. It spent about **$400 billion a year**. But it did not get a record amount of computing. Adjusted for those prices, the quantity **fell** from the previous quarter.
-
-A record bill and less to show for it is a different story from a record buildout.
-
-## What is not wrong
-
-Three popular arguments did not survive the filings, and two of them died in this run.
-
-**This is not the telecoms bubble again.** Spending on communication equipment and structures peaked at 1.39% of the economy in 2000. Today it is 0.69% — half. The comparison people reach for is measuring the wrong thing.
-
-**The record is narrower than it sounds.** Total spending on computers and software is 4.96% of the economy, a record. But strip out software and the equipment figure is 2.45%, still **below** the 2.91% of late 2000. Three quarters of the recent rise is one line: computers.
-
-**And the productivity story is not "more machines, more output".** Output per hour grew just **0.64%** annualised in the first half of 2026. Capital is growing at 3.0% a year against 5.6% during the dot-com boom. Whatever is happening, it is a *smaller* machine-buying wave than 1998's, not a larger one.
-
-## Risk, one at a time
-
-1. **NVIDIA's collections.** The single number to watch next quarter. If cash conversion stays near 40%, the receivable is not a timing wobble.
-2. **The guarantees.** $198 billion promised across three companies with $815 million behind it. None of it moves until somebody misses a payment, and then all of it moves at once.
-3. **The circle.** Chip vendor owns customers, lends to customers, guarantees customers. Each link is defensible; the loop is the risk.
-4. **The rent.** $1.24 trillion arrives on balance sheets as buildings are handed over, on a schedule nobody publishes in full.
-5. **The prices.** If computer prices keep rising, every dollar of capex buys less, and the payback on all of it gets longer.
-
-## What would settle it
-
-Next quarter's NVIDIA cash flow statement, and nothing else, is the fastest read available. If the money starts arriving again, this quarter was a ramp-timing artefact and the bear case loses its only asset-side crack. If it does not, the company at the top of the chain is financing the demand it reports.
-
-**Horizon.** Two to three years, on one question: do the contracted backlogs convert into cash at a margin that services what has been borrowed and promised to build them?
-
-**Sizing (not a recommendation).** The most useful split in this whole report is not growth. It is **who pays cash and who does not** — Microsoft funded $115.9 billion of building with no new debt at all, while Oracle borrowed about 98% of a 162% increase. Same buildout, opposite balance sheets, and only one of them needs the credit window to stay open.`,
+So: is this a boom being financed sensibly against real, signed demand — or has the risk quietly moved to the one place quarterly profits do not report?`,
+  analysis: '',
   invalidation: {
     bull: [
       'Any company has to bring a data-centre venture of the Meta type onto its balance sheet, or an auditor escalates the concern it already flagged — the off-the-books obligation becomes an on-the-books one across several giants at once.',
@@ -6528,6 +6282,106 @@ What this report adds is the other half of that ladder: **where the money comes 
     'Seven companies have signed roughly $1.24 trillion of rent on data centres that have not been built yet, so none of it shows up in what they owe today.',
     "NVIDIA, Meta and Alphabet have promised to cover about $198 billion of other companies' rent and have set aside $815 million against it — one dollar for every $240 promised.",
     'Computers got cheaper nearly every year for eighty years, but their prices rose 10.9% this year, so America spent a record $400 billion a year on them and ended up with fewer of them than the quarter before.',
+  ],
+  sections: [
+    {
+      id: 'collections',
+      label: 'NVIDIA stopped collecting',
+      body: `NVIDIA said it earned **$59.7 billion** in the three months to 26 July. The money that arrived was **$24.1 billion**.
+
+[[stat:40c|Cash collected for every dollar of profit reported. Three months earlier it was 86 cents — and this is the lowest of the fourteen quarters that can be measured.]]
+
+Profit is what the accounts say you earned. Cash flow is what reached the bank. Both are in the same filing.
+
+[[chart:cash-conversion]]
+
+**The reason is in the same document.** NVIDIA now waits **60 days** to be paid, up from 45. And for the first time it told investors it offers **"longer payment terms ranging from 90 days up to one year"** to large customers.
+
+The label matters more than the number. It files those terms under **"financing arrangements"** — the exact phrase last year's annual report used to say it had *none*.
+
+[[chart:dso]]
+
+Plainly: **the chip company is lending customers the money to buy the chips.** At the previous quarter's pace, about **$15 billion** more would have been cash instead of an IOU.`,
+    },
+    {
+      id: 'promises',
+      label: '$198 billion promised, $815 million set aside',
+      body: `On 17 August NVIDIA guaranteed **$105 billion** of payments owed by a company tied to OpenAI. Counting its others, the maximum it could be called on for is **$108.5 billion**.
+
+Set aside against it: **nothing.**
+
+[[chart:promises]]
+
+Meta has promised up to **$46 billion** on a venture it carries at $2.9 billion. Alphabet has backstopped **$43.8 billion** and recorded $815 million.
+
+[[stat:$1 per $240|Money set aside against money promised, across the three companies.]]
+
+None of it is hidden — it is all in the filings, in plain words. It simply is not counted as debt, because under the rules it is not debt until somebody fails to pay.`,
+    },
+    {
+      id: 'the-circle',
+      label: 'Money going in a circle',
+      body: `NVIDIA owns **$47.9 billion** of shares in privately held companies. Many are its own customers. Two years ago that was about $2 billion.
+
+[[chart:nvidia-stakes]]
+
+Marking those stakes up now supplies roughly **a fifth of NVIDIA's reported profit**.
+
+Put the three together. NVIDIA **sells** to companies it owns a stake in, **lends** them the money, and **guarantees** their rent.
+
+Each is legal, disclosed, and defensible on its own. Together they mean a growing share of NVIDIA's revenue is money NVIDIA also supplied.`,
+    },
+    {
+      id: 'the-rent',
+      label: '$1.24 trillion of rent on buildings that do not exist',
+      body: `[[chart:uncommenced]]
+
+Seven companies have signed leases on data centres nobody has handed over yet. Until handover, the rent does not appear in what they owe.
+
+The previous version of this report said **$830 billion across four companies**. That was too narrow. Oracle alone adds **$260 billion** — disclosed in its own annual report as *"not reflected on our consolidated balance sheet"*. Meta signed another **$68 billion in July**.`,
+    },
+    {
+      id: 'what-it-bought',
+      label: 'A record bill, fewer computers',
+      body: `This is the finding that surprised this report most, and it needs no finance vocabulary at all.
+
+**Computers got more expensive.**
+
+[[chart:computer-prices]]
+
+For eighty years they got cheaper almost every year — about **17% a year** through the 1990s. In the year to June 2026 prices rose **10.9%**, the largest jump on record.
+
+[[stat:$400bn|What America spent on computers over the year — a record. Adjusted for those prices, the quantity it received actually fell.]]
+
+A record bill buying less is a different story from a record buildout.`,
+    },
+    {
+      id: 'not-wrong',
+      label: 'Three things that are not wrong',
+      body: `Three popular arguments did not survive the filings.
+
+**It is not the telecoms bubble again.** Spending on communication equipment and structures peaked at **1.39%** of the economy in 2000. Today it is **0.69%** — half. The comparison people reach for measures the wrong thing.
+
+**The record is narrower than it sounds.** Computers and software together are 4.96% of the economy, a record. Strip out software and equipment is **2.45%** — still below the **2.91%** of late 2000.
+
+**It is not "more machines, more output".** Output per hour grew just **0.64%** annualised in the first half. Capital is growing **3.0% a year against 5.6%** in the dot-com boom. This is a *smaller* machine-buying wave than 1998's.`,
+    },
+    {
+      id: 'settle-it',
+      label: 'What would settle it',
+      body: `**Next quarter's NVIDIA cash flow statement, and nothing else.**
+
+If the money starts arriving again, this quarter was ramp timing and the case against loses its only asset-side crack. If it does not, the company at the top of the chain is financing the demand it reports.
+
+The rest, in order of how much it matters:
+
+1. **The guarantees.** $198 billion promised with $815 million behind it. Nothing moves until somebody misses a payment — then all of it moves at once.
+2. **The circle.** Each link defensible, the loop is the risk.
+3. **The rent.** $1.24 trillion lands as buildings are handed over, on a schedule nobody publishes in full.
+4. **The prices.** If computers keep getting dearer, every dollar buys less and the payback gets longer.
+
+The most useful split in this whole report is not growth. It is **who pays cash and who does not** — Microsoft built $115.9 billion of capacity with no new debt at all, while Oracle borrowed about 98% of a 162% increase. Same buildout, opposite balance sheets. Only one needs the credit window to stay open.`,
+    },
   ],
   charts: [
     {
