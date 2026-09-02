@@ -72,8 +72,14 @@ function ReportHero({ report }: { report: MarketStormReport }) {
 
    The dividers are a 1px grid gap over a border-coloured ground rather than
    per-cell borders, because a wrapped row makes `last:border-r-0` wrong on
-   every cell that happens to end a line. */
+   every cell that happens to end a line.
+
+   Renders nothing when the report carries no strip. The strip is market data
+   — a price, a cap, the print's headline number — and the thesis has none of
+   that; it had been filled with the figures the takeaways and the KPI grid
+   already show, so the same six numbers appeared three times in two screens. */
 function PriceStrip({ report }: { report: MarketStormReport }) {
+  if (!report.priceStrip?.length) return null;
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-border">
       <div

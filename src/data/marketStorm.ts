@@ -211,7 +211,12 @@ export interface MarketStormReport {
   publishDate: string; // ISO 'YYYY-MM-DD'
   tags: string[];
   verdict: string; // the one-line hero thesis
-  priceStrip: PriceCell[];
+  /* Market data — price, cap, enterprise value, the print's headline figure.
+     Optional because a thesis has no ticker and no price: the standing report
+     had filled it with a second row of the same numbers the takeaways above
+     and the KPI grid below already carry. A report with nothing to put here
+     sets nothing, and the strip does not render. */
+  priceStrip?: PriceCell[];
   summary: string; // markdown — the one-paragraph read
   headlineVsReal?: HeadlineVsReal[]; // the gap between the release and the filing
   kpis: Kpi[];
@@ -6093,14 +6098,6 @@ const aiCapexThesis2026: MarketStormReport = {
   tags: ['AI-infrastructure', 'capex', 'earnings-quality', 'macro', 'thesis'],
   verdict:
     'For a year the risk in this build sat on the liability side \u2014 rent signed but not started, promises that do not count as debt yet. That is still true, and it got bigger: seven companies have now signed $1.24 trillion of rent on buildings that do not exist. But something on the asset side broke this quarter, and it broke at the top of the chain. NVIDIA sold $96 billion of chips and collected 40 cents of cash for every dollar of profit it reported. It is lending its customers the money, holding $47.9 billion of shares in them, and guaranteeing $108.5 billion of their obligations.',
-  priceStrip: [
-    { k: 'NVIDIA profit, last quarter', v: '$59.7B' },
-    { k: 'Cash that arrived', v: '$24.1B', tone: 'bear' },
-    { k: 'Days waiting to be paid', v: '60', tone: 'bear' },
-    { k: 'Rent signed, nothing built', v: '$1.24T', tone: 'bear' },
-    { k: "Other companies' rent promised", v: '$198B', tone: 'warn' },
-    { k: 'Money set aside for it', v: '$0.8B', tone: 'bear' },
-  ],
   summary: `Two things are true at once.
 
 **The build is real and it is enormous.** Seven companies have signed **$1.24 trillion** of rent on data centres nobody has handed over yet. Spending on computers and software hit **4.96% of the US economy** — a record in eighty years of records.
