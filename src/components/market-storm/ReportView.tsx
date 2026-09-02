@@ -56,11 +56,26 @@ function Inline({ children }: { children: string }) {
   );
 }
 
-/* ---- report hero: ticker + verdict + method mark ---- */
+/* ---- report hero: identity, and the verdict when nothing states it better ---- */
 function ReportHero({ report }: { report: MarketStormReport }) {
+  /**
+   * Takeaways supersede the verdict.
+   *
+   * They do the same job — say what the report found before the reader commits
+   * — and they do it better: numbered, one idea each, every line carrying a
+   * figure. Printing both put a 108-word paragraph between the headline and
+   * the findings, four of whose six claims then reappeared immediately below
+   * it. So a report with takeaways shows identity here and gets straight to
+   * them; a report without one keeps the verdict, which is most of them.
+   *
+   * The identity strip always stays. The ticker, the company and the "verified
+   * against filings through…" line are provenance, they appear nowhere else on
+   * the page, and every report in the section carries them.
+   */
+  const showVerdict = !report.keyTakeaways?.length;
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-      <div className="border-b border-border px-6 py-4 sm:px-8">
+      <div className={`px-6 py-4 sm:px-8 ${showVerdict ? 'border-b border-border' : ''}`}>
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <span className="font-mono text-xl font-bold tracking-wider text-accent">
             {report.ticker}
@@ -71,11 +86,13 @@ function ReportHero({ report }: { report: MarketStormReport }) {
           </span>
         </div>
       </div>
-      <div className="px-6 py-7 sm:px-8">
-        <p className="max-w-[58ch] font-display text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
-          {report.verdict}
-        </p>
-      </div>
+      {showVerdict && (
+        <div className="px-6 py-7 sm:px-8">
+          <p className="max-w-[58ch] font-display text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
+            {report.verdict}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
