@@ -6106,7 +6106,7 @@ const aiCapexThesis2026: MarketStormReport = {
 
 For a year the risk in this build sat with the buyers — rent signed but not started, promises that do not count as debt yet. That is still true and it got bigger. What changed this quarter is on the other side of the deal, at the top of the chain, at the one company everyone else buys from.
 
-The next three sections are the three ways that shows up. After them: the case against, and the one number that would settle it.`,
+The next section is the three ways that shows up: it lends, it guarantees, it owns. After it: the rent, the prices, the case against, and the one number that would settle it.`,
   kpis: [
     {
       label: 'Cash NVIDIA collected per $1 of profit',
@@ -6304,6 +6304,8 @@ The label matters more than the number. It files those terms under **“financin
 [[chart:dso]]
 
 At the previous quarter’s pace, about **$15 billion** more would have been cash instead of an IOU.
+
+The usual explanation is shipment timing — chips sent late in the quarter, paid for early in the next. Timing does not require a new accounting label, and it does not usually arrive with a **$105 billion** guarantee signed nine days earlier.
 
 **Two: it guarantees.** On 17 August NVIDIA promised to cover **$105 billion** of payments owed by a company tied to OpenAI. Counting the rest, the most it could be called on for is **$108.5 billion**. Money set aside against that: **nothing.**
 

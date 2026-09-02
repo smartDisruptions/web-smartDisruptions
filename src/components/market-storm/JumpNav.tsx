@@ -77,7 +77,7 @@ export default function JumpNav({ items }: { items: Stop[] }) {
       <p className="font-mono-accent mb-4 text-text-secondary">On this page</p>
       <div className="space-y-5">
         {groups.map((g) => (
-          <div key={g.part}>
+          <div key={`${g.part}-${g.stops[0].id}`}>
             <p className="mb-1.5 px-2 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-accent-hover">
               {g.part}
             </p>
