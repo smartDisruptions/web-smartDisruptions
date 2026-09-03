@@ -194,6 +194,11 @@ export interface ReportSection {
   label: string;
   /** Markdown. May carry `[[chart:id]]` and `[[stat:value|caption]]` markers. */
   body: string;
+  /* Which group of the table of contents this section belongs to. Defaults to
+     the evidence group; set it when a section is doing another job — a
+     rebuttal of the other side belongs with the verdict, not with the
+     findings it is arguing about. */
+  part?: string;
 }
 
 export interface MarketStormReport {
@@ -206,7 +211,12 @@ export interface MarketStormReport {
   publishDate: string; // ISO 'YYYY-MM-DD'
   tags: string[];
   verdict: string; // the one-line hero thesis
-  priceStrip: PriceCell[];
+  /* Market data — price, cap, enterprise value, the print's headline figure.
+     Optional because a thesis has no ticker and no price: the standing report
+     had filled it with a second row of the same numbers the takeaways above
+     and the KPI grid below already carry. A report with nothing to put here
+     sets nothing, and the strip does not render. */
+  priceStrip?: PriceCell[];
   summary: string; // markdown — the one-paragraph read
   headlineVsReal?: HeadlineVsReal[]; // the gap between the release and the filing
   kpis: Kpi[];
@@ -226,6 +236,11 @@ export interface MarketStormReport {
   bear?: string[];
   theQuestion: string; // the central-tension callout
   analysis: string; // markdown long-form (valuation, competitive, risk, horizon)
+  /* prose that answers "what would settle this?" before the two lists. Added
+     when a thesis report grew a section asking the same question the
+     invalidation lists already answer -- two stops in the table of contents
+     for one idea. */
+  invalidationIntro?: string;
   invalidation: { bull: string[]; bear: string[] };
   verification: Verification;
   openQuestions: string[];
@@ -6083,43 +6098,15 @@ const aiCapexThesis2026: MarketStormReport = {
   tags: ['AI-infrastructure', 'capex', 'earnings-quality', 'macro', 'thesis'],
   verdict:
     'For a year the risk in this build sat on the liability side \u2014 rent signed but not started, promises that do not count as debt yet. That is still true, and it got bigger: seven companies have now signed $1.24 trillion of rent on buildings that do not exist. But something on the asset side broke this quarter, and it broke at the top of the chain. NVIDIA sold $96 billion of chips and collected 40 cents of cash for every dollar of profit it reported. It is lending its customers the money, holding $47.9 billion of shares in them, and guaranteeing $108.5 billion of their obligations.',
-  priceStrip: [
-    { k: 'NVIDIA profit, last quarter', v: '$59.7B' },
-    { k: 'Cash that arrived', v: '$24.1B', tone: 'bear' },
-    { k: 'Days waiting to be paid', v: '60', tone: 'bear' },
-    { k: 'Rent signed, nothing built', v: '$1.24T', tone: 'bear' },
-    { k: "Other companies' rent promised", v: '$198B', tone: 'warn' },
-    { k: 'Money set aside for it', v: '$0.8B', tone: 'bear' },
-  ],
   summary: `Two things are true at once.
 
-**The build is real and it is enormous.** Seven companies have signed **$1.24 trillion** of rent on data centres that have not been handed over yet. Spending on computers and software hit **4.96% of the whole US economy**, a record in eighty years of records.
+**The build is real and it is enormous.** Seven companies have signed **$1.24 trillion** of rent on data centres nobody has handed over yet. Spending on computers and software hit **4.96% of the US economy** — a record in eighty years of records.
 
-**And the company at the centre of it has stopped collecting most of what it earns.** NVIDIA reported **$59.7 billion of profit** for the quarter to 26 July. **$24.1 billion** of money actually arrived. That is 40 cents on the dollar, down from 86 cents three months before.
+**And the company at the centre of it has stopped collecting most of what it earns.**
 
-The reason is in the same filing. NVIDIA now waits **60 days** to be paid instead of 45, and for the first time it told investors some large customers get **up to a year**. It calls these "financing arrangements" — last year's annual report said it had none.
+For a year the risk in this build sat with the buyers — rent signed but not started, promises that do not count as debt yet. That is still true and it got bigger. What changed this quarter is on the other side of the deal, at the top of the chain, at the one company everyone else buys from.
 
-So the chip company is lending its customers the money to buy the chips. It also owns **$47.9 billion** of shares in privately held companies it sells to, and has guaranteed **$108.5 billion** of somebody else's obligations, with nothing set aside against it.`,
-  headlineVsReal: [
-    {
-      headline:
-        'NVIDIA reported **$59.7 billion of profit** for the quarter \u2014 a record, on revenue up 106% year over year.',
-      real: '**$24.1 billion** of cash actually came in. Forty cents on the dollar.',
-      gap: 'Profit is what the accounts say you earned; operating cash flow is what reached the bank. Both are in the same filing. NVIDIA publishes cash flow only for the half-year, so the quarter is $74,421m for six months minus $50,344m for the first \u2014 a subtraction, not a judgement. Conversion was **86.3% the previous quarter** and is the lowest of all fourteen quarters that can be computed. The money did not vanish; it turned into an IOU. Receivables absorbed **$24.6 billion** over the half.',
-    },
-    {
-      headline:
-        'The receivable build is **Blackwell ramp timing** \u2014 chips shipped late in the quarter get paid for early in the next one.',
-      real: 'The filing says otherwise, in its own words. NVIDIA now offers **\u201clonger payment terms ranging from 90 days up to one year\u201d**.',
-      gap: 'That sentence is new this quarter. What makes it decisive is the label: the filing files those terms under **\u201cfinancing arrangements\u201d** \u2014 the exact category last year\u2019s annual report said the company had *not* entered into. Days-to-collect went **45 to 60**. Ramp timing does not require a change of accounting language, and it does not usually come with a $105 billion guarantee signed nine days earlier.',
-    },
-    {
-      headline:
-        '**America is spending a record amount on computers** \u2014 about $400 billion a year, the biggest buildout since records began.',
-      real: 'True on the bill. **Not true on what it bought.** Adjusted for price, the quantity *fell* last quarter.',
-      gap: 'Computers got cheaper almost every year for eighty years \u2014 roughly 17% a year through the 1990s. In the year to June 2026 their prices rose **10.9%**, the largest increase on record. A record bill buying less is a different story from a record buildout. Two more corrections in the same direction: strip software out and computer-and-equipment spending is **2.45% of the economy against 2.91% in late 2000** \u2014 still below the dot-com peak; and the telecoms comparison people reach for is measuring the wrong thing, since communication equipment and structures peaked at 1.39% of the economy in 2000 and is **0.69%** today.',
-    },
-  ],
+The next section is the three ways that shows up: it lends, it guarantees, it owns. After it: the rent, the prices, the case against, and the one number that would settle it.`,
   kpis: [
     {
       label: 'Cash NVIDIA collected per $1 of profit',
@@ -6178,14 +6165,21 @@ So the chip company is lending its customers the money to buy the chips. It also
       tone: 'bull',
     },
   ],
-  theQuestion: `Every argument about an AI bubble is an argument about **where the risk sits**.
+  theQuestion: `Every argument about an AI bubble is really an argument about **who gets hurt if it stops**.
 
-The critics point at share prices and at how equipment is written down. Both were checked against the filings. Neither is where the fragility is.
+The doubters point at share prices, and at how fast the equipment wears out. Both were checked against the filings. Neither is where the weak spot is.
 
-It is here: **the company selling the chips has started financing the people buying them** — lending them the money, owning shares in them, and guaranteeing their rent. Meanwhile $1.24 trillion of rent sits signed and uncounted.
+It is here: **the company selling the chips is now paying its customers' bills** — lending them the money, owning a piece of them, and promising to cover their rent. Meanwhile $1.24 trillion of rent sits signed and uncounted.
 
-So: is this a boom being financed sensibly against real, signed demand — or has the risk quietly moved to the one place quarterly profits do not report?`,
+So: is this a boom paid for sensibly, against real orders already signed — or has the danger quietly moved to the one place a quarterly profit number never shows?`,
   analysis: '',
+  invalidationIntro: `**Next quarter’s NVIDIA cash flow statement, and nothing else.**
+
+If the money starts arriving again, this quarter was timing and the case loses its only crack. If it does not, the company at the top of the chain is paying for the demand it reports.
+
+After that, in the order they matter: **the guarantees** — $198 billion promised with $815 million behind it, where nothing moves until somebody misses a payment and then all of it moves at once. **The circle**, where each link is defensible and the loop is the risk. **The rent**, $1.24 trillion landing as buildings are handed over, on a schedule nobody publishes in full. And **the prices** — if computers keep getting dearer, every dollar buys less and the payback gets longer.
+
+The most useful split in this whole report is not growth. It is **who pays cash and who does not.** Microsoft built $115.9 billion of capacity with no new debt at all. Oracle borrowed about 98% of a 162% increase. Same buildout, opposite balance sheets — and only one of them needs the credit window to stay open.`,
   invalidation: {
     bull: [
       'Any company has to bring a data-centre venture of the Meta type onto its balance sheet, or an auditor escalates the concern it already flagged — the off-the-books obligation becomes an on-the-books one across several giants at once.',
@@ -6291,64 +6285,58 @@ What this report adds is the other half of that ladder: **where the money comes 
   ],
   sections: [
     {
-      id: 'collections',
-      label: 'NVIDIA stopped collecting',
+      id: 'financing',
+      label: 'NVIDIA is paying its own customers’ bills',
       body: `NVIDIA said it earned **$59.7 billion** in the three months to 26 July. The money that arrived was **$24.1 billion**.
 
 [[stat:40c|Cash collected for every dollar of profit reported. Three months earlier it was 86 cents — and this is the lowest of the fourteen quarters that can be measured.]]
 
-Profit is what the accounts say you earned. Cash flow is what reached the bank. Both are in the same filing.
+Profit is what the accounts say you earned. Cash is what reached the bank. Both are in the same filing. NVIDIA publishes cash flow only every six months, so the quarter is a subtraction — $74,421m for the half, minus $50,344m for the first quarter. Arithmetic, not opinion.
 
 [[chart:cash-conversion]]
 
-**The reason is in the same document.** NVIDIA now waits **60 days** to be paid, up from 45. And for the first time it told investors it offers **"longer payment terms ranging from 90 days up to one year"** to large customers.
+There are three reasons the cash is not arriving, and they stack.
 
-The label matters more than the number. It files those terms under **"financing arrangements"** — the exact phrase last year's annual report used to say it had *none*.
+**One: it lends.** NVIDIA now waits **60 days** to be paid, up from 45. For the first time it told investors it offers **“longer payment terms ranging from 90 days up to one year”** to large customers.
+
+The label matters more than the number. It files those terms under **“financing arrangements”** — the exact phrase last year’s annual report used to say it had *none*.
 
 [[chart:dso]]
 
-Plainly: **the chip company is lending customers the money to buy the chips.** At the previous quarter's pace, about **$15 billion** more would have been cash instead of an IOU.`,
-    },
-    {
-      id: 'promises',
-      label: '$198 billion promised, $815 million set aside',
-      body: `On 17 August NVIDIA guaranteed **$105 billion** of payments owed by a company tied to OpenAI. Counting its others, the maximum it could be called on for is **$108.5 billion**.
+At the previous quarter’s pace, about **$15 billion** more would have been cash instead of an IOU.
 
-Set aside against it: **nothing.**
+The usual explanation is shipment timing — chips sent late in the quarter, paid for early in the next. Timing does not require a new accounting label, and it does not usually arrive with a **$105 billion** guarantee signed nine days earlier.
+
+**Two: it guarantees.** On 17 August NVIDIA promised to cover **$105 billion** of payments owed by a company tied to OpenAI. Counting the rest, the most it could be called on for is **$108.5 billion**. Money set aside against that: **nothing.**
+
+Meta has promised up to **$46 billion** on a venture it values at $2.9 billion. Alphabet has backstopped **$43.8 billion** and put away $815 million.
 
 [[chart:promises]]
 
-Meta has promised up to **$46 billion** on a venture it carries at $2.9 billion. Alphabet has backstopped **$43.8 billion** and recorded $815 million.
-
 [[stat:$1 per $240|Money set aside against money promised, across the three companies.]]
 
-None of it is hidden — it is all in the filings, in plain words. It simply is not counted as debt, because under the rules it is not debt until somebody fails to pay.`,
-    },
-    {
-      id: 'the-circle',
-      label: 'Money going in a circle',
-      body: `NVIDIA owns **$47.9 billion** of shares in privately held companies. Many are its own customers. Two years ago that was about $2 billion.
+None of this is hidden. It is in the filings, in plain words. It simply is not counted as debt, because under the rules it is not debt until somebody fails to pay.
+
+**Three: it owns.** NVIDIA holds **$47.9 billion** of shares in privately held companies. Many are its own customers. Two years ago that was about $2 billion.
 
 [[chart:nvidia-stakes]]
 
-Marking those stakes up now supplies roughly **a fifth of NVIDIA's reported profit**.
+Marking those stakes up now supplies roughly **a fifth of NVIDIA’s reported profit**.
 
-Put the three together. NVIDIA **sells** to companies it owns a stake in, **lends** them the money, and **guarantees** their rent.
-
-Each is legal, disclosed, and defensible on its own. Together they mean a growing share of NVIDIA's revenue is money NVIDIA also supplied.`,
+**Put the three together.** NVIDIA sells to companies it owns a piece of, lends them the money to buy, and guarantees their rent. Each one is legal, disclosed, and defensible on its own. Together they mean a growing share of NVIDIA’s sales is money NVIDIA also supplied.`,
     },
     {
       id: 'the-rent',
-      label: '$1.24 trillion of rent on buildings that do not exist',
+      label: 'A trillion dollars of rent, off the books',
       body: `[[chart:uncommenced]]
 
 Seven companies have signed leases on data centres nobody has handed over yet. Until handover, the rent does not appear in what they owe.
 
-The previous version of this report said **$830 billion across four companies**. That was too narrow. Oracle alone adds **$260 billion** — disclosed in its own annual report as *"not reflected on our consolidated balance sheet"*. Meta signed another **$68 billion in July**.`,
+The previous version of this report said **$830 billion across four companies**. That was too narrow. Oracle alone adds **$260 billion** — disclosed in its own annual report as *“not reflected on our consolidated balance sheet”*. Meta signed another **$68 billion in July**.`,
     },
     {
       id: 'what-it-bought',
-      label: 'A record bill, fewer computers',
+      label: 'Record spending, fewer computers',
       body: `This is the finding that surprised this report most, and it needs no finance vocabulary at all.
 
 **Computers got more expensive.**
@@ -6363,30 +6351,15 @@ A record bill buying less is a different story from a record buildout.`,
     },
     {
       id: 'not-wrong',
-      label: 'Three bubble arguments that do not hold up',
+      label: 'What the doubters get wrong',
+      part: 'The verdict',
       body: `Three popular arguments did not survive the filings.
 
 **It is not the telecoms bubble again.** Spending on communication equipment and structures peaked at **1.39%** of the economy in 2000. Today it is **0.69%** — half. The comparison people reach for measures the wrong thing.
 
 **The record is narrower than it sounds.** Computers and software together are 4.96% of the economy, a record. Strip out software and equipment is **2.45%** — still below the **2.91%** of late 2000.
 
-**It is not "more machines, more output".** Output per hour grew just **0.64%** annualised in the first half. Capital is growing **3.0% a year against 5.6%** in the dot-com boom. This is a *smaller* machine-buying wave than 1998's.`,
-    },
-    {
-      id: 'settle-it',
-      label: 'What would settle the argument',
-      body: `**Next quarter's NVIDIA cash flow statement, and nothing else.**
-
-If the money starts arriving again, this quarter was ramp timing and the case against loses its only asset-side crack. If it does not, the company at the top of the chain is financing the demand it reports.
-
-The rest, in order of how much it matters:
-
-1. **The guarantees.** $198 billion promised with $815 million behind it. Nothing moves until somebody misses a payment — then all of it moves at once.
-2. **The circle.** Each link defensible, the loop is the risk.
-3. **The rent.** $1.24 trillion lands as buildings are handed over, on a schedule nobody publishes in full.
-4. **The prices.** If computers keep getting dearer, every dollar buys less and the payback gets longer.
-
-The most useful split in this whole report is not growth. It is **who pays cash and who does not** — Microsoft built $115.9 billion of capacity with no new debt at all, while Oracle borrowed about 98% of a 162% increase. Same buildout, opposite balance sheets. Only one needs the credit window to stay open.`,
+**It is not “more machines, more output”.** Output per hour grew just **0.64%** annualised in the first half. Capital is growing **3.0% a year against 5.6%** in the dot-com boom. This is a *smaller* machine-buying wave than 1998’s.`,
     },
   ],
   charts: [

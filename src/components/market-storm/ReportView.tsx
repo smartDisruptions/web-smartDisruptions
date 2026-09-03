@@ -72,8 +72,14 @@ function ReportHero({ report }: { report: MarketStormReport }) {
 
    The dividers are a 1px grid gap over a border-coloured ground rather than
    per-cell borders, because a wrapped row makes `last:border-r-0` wrong on
-   every cell that happens to end a line. */
+   every cell that happens to end a line.
+
+   Renders nothing when the report carries no strip. The strip is market data
+   — a price, a cap, the print's headline number — and the thesis has none of
+   that; it had been filled with the figures the takeaways and the KPI grid
+   already show, so the same six numbers appeared three times in two screens. */
 function PriceStrip({ report }: { report: MarketStormReport }) {
+  if (!report.priceStrip?.length) return null;
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-border">
       <div
@@ -299,6 +305,11 @@ function Pole({
 function Invalidation({ report }: { report: MarketStormReport }) {
   return (
     <div>
+      {report.invalidationIntro && (
+        <div className="mb-7 max-w-[62ch]">
+          <ArticleBody>{report.invalidationIntro}</ArticleBody>
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="overflow-hidden rounded-xl border border-border bg-surface">
           <div className="border-b border-border px-6 py-3">
@@ -622,29 +633,72 @@ export function Disclaimer() {
  */
 function stopsFor(report: MarketStormReport) {
   return [
-    { id: 'what-happened', label: 'What happened' },
-    { id: 'the-numbers', label: 'The numbers that matter' },
+    { part: 'Start here', id: 'what-happened', label: 'What happened' },
+    { part: 'Start here', id: 'the-numbers', label: 'The numbers that matter' },
     ...(report.headlineVsReal?.length
-      ? [{ id: 'headline-vs-filing', label: 'The headline vs. the fine print' }]
+      ? [
+          {
+            part: 'Start here',
+            id: 'headline-vs-filing',
+            label: 'The headline vs. the fine print',
+          },
+        ]
       : []),
     ...(report.printTable
-      ? [{ id: 'the-print', label: report.printTableTitle ?? 'The print' }]
+      ? [
+          {
+            part: 'Start here',
+            id: 'the-print',
+            label: report.printTableTitle ?? 'The print',
+          },
+        ]
       : []),
     ...(report.bull?.length && report.bear?.length
-      ? [{ id: 'central-tension', label: 'The central tension' }]
+      ? [
+          {
+            part: 'Start here',
+            id: 'central-tension',
+            label: 'The central tension',
+          },
+        ]
       : []),
     // Evidence, then the tests of it. Sections replace the single long read:
     // each becomes its own numbered stop, which is what lets the nav list them
     // and a reader land in one.
     ...(report.sections?.length
-      ? report.sections.map((x) => ({ id: x.id, label: x.label }))
-      : [{ id: 'longer-read', label: 'The longer read' }]),
-    { id: 'invalidation', label: 'What would prove this wrong' },
+      ? report.sections.map((x) => ({
+          part: x.part ?? 'The evidence',
+          id: x.id,
+          label: x.label,
+        }))
+      : [
+          {
+            part: 'The evidence',
+            id: 'longer-read',
+            label: 'The longer read',
+          },
+        ]),
+    {
+      part: 'The verdict',
+      id: 'invalidation',
+      // A report carrying the intro has already asked "what would settle
+      // this?" in prose, so the stop takes that name rather than listing the
+      // same idea twice under two headings.
+      label: report.invalidationIntro
+        ? 'What would settle it'
+        : 'What would prove this wrong',
+    },
     ...(report.soWhat
-      ? [{ id: 'so-what', label: 'What this means if you\u2019re not investing' }]
+      ? [
+          {
+            part: 'The verdict',
+            id: 'so-what',
+            label: 'What this means for you',
+          },
+        ]
       : []),
-    { id: 'method', label: 'How this was researched' },
-    { id: 'sources', label: 'Sources' },
+    { part: 'Receipts', id: 'method', label: 'How this was researched' },
+    { part: 'Receipts', id: 'sources', label: 'Sources' },
   ];
 }
 
@@ -839,7 +893,11 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
       <Stop
         n={nOf('invalidation')}
         id="invalidation"
-        title="What would prove this wrong"
+        title={
+          report.invalidationIntro
+            ? 'What would settle it'
+            : 'What would prove this wrong'
+        }
         lede="The discipline: name in advance what would break each side of the case."
       >
         <Invalidation report={report} />
@@ -849,7 +907,8 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
         <Stop
           n={nOf('so-what')}
           id="so-what"
-          title="What this means if you don’t trade stocks"
+          title="What this means for you"
+          lede="If you do not trade stocks, this is the part that still reaches you."
         >
           <SoWhat report={report} />
         </Stop>
