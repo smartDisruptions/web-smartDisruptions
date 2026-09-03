@@ -339,6 +339,68 @@ person, plain, short paragraphs, receipts over claims, peer-to-peer with no
 labels for the reader, honest about what went wrong. If a draft reads like
 generic AI prose, it is wrong.
 
+# Market Storm format
+
+**Every report from here on is built the way the standing thesis is built, and
+every report carries charts.** Josh's call, 2026-09-02, after reading the
+rebuilt thesis (`ai-capex-abundance-or-bubble`, web PRs #99–#101). That report
+is the reference: open it before writing a new one, and copy its shape, not its
+words. The component headers in `src/components/market-storm/` explain each
+piece; this section says what a finished report has.
+
+1. **Takeaways first.** `takeawaysLead` is the one sentence the numbers add up
+   to, with no figures in it. `keyTakeaways` is three to six findings, one fact
+   each, a figure in each, none depending on having read anything else. A
+   report with takeaways shows no verdict paragraph — the takeaways are the
+   verdict.
+
+2. **The body is `sections`, not one `analysis` blob.** Numbered stops, one
+   idea and at least one figure each, grouped by `part` — *Start here · The
+   evidence · The verdict · Receipts*. Around ten stops. A section that does a
+   different job from its neighbours names its own part (a rebuttal belongs
+   with the verdict, not with the findings it argues about). Evidence comes
+   before "what would prove this wrong", in the nav and in the DOM.
+
+3. **Charts are required, not optional.** `charts` placed inline with
+   `[[chart:id]]` on its own line, beside the sentence each one proves — never
+   in a gallery at the end. **Every evidence section carries at least one
+   chart**, and the report's central finding is a chart, not just a number.
+   `whyItMatters` is mandatory on each: if the chart cannot be justified in one
+   plain sentence it is decoration. Kinds: `line`, `bar`, `stacked`,
+   `comparison`. They are hand-drawn SVG — no charting library, ever (the page
+   is server-rendered, the palette is the site's tokens, both themes without
+   JS). Caption and hidden data table come free from `Chart.tsx`.
+
+4. **`[[stat:value|caption]]`** for the one number that carries a point, set
+   large against a rule, so a skimmer collects the figures without the prose.
+   Use it for the number a section turns on; not for every number.
+
+5. **Plain terms.** No finance vocabulary a reader has to decode. Translate,
+   don't simplify: *remaining performance obligations* → contracts customers
+   have committed to but not been billed for; *residual value guarantees* →
+   promises to cover the shortfall if the buildings are worth less than
+   expected; *days sales outstanding* → days waiting to be paid. Short
+   sentences, finding before reasoning, the labels too — a two-word label is
+   where jargon hides best.
+
+6. **Say each figure once per job.** A figure lives in the takeaways, in the
+   KPI grid with its movement (`delta`), and once in the body where it is
+   argued. `headlineVsReal` pairs earn their place only when the fine print
+   adds a fact the body does not; a pair that restates a section is a second
+   telling. `priceStrip` is market data — price, cap, EV, the print's headline
+   number — and is left unset on a report that has none; it is never a second
+   KPI row.
+
+7. **Name what would settle it, in advance.** `invalidationIntro` says which
+   single document or number decides the argument, then the `invalidation`
+   lists say what would break each side. `soWhat` says what it means for
+   someone who does not trade stocks.
+
+Earnings reports keep the blocks that earn their place there — the print
+table, bull/bear, the headline-versus-fine-print pairs — but rules 1–5 apply
+to them too from now on: takeaways, sections, charts, stats, plain words. A
+report without charts is not finished.
+
 # Market Storm sources
 
 **Every external claim in a report needs a source in the list, and the list is
