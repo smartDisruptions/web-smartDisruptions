@@ -221,9 +221,15 @@ export const skillGroups: SkillGroup[] = [
         name: 'Payments and third-party APIs',
         plain:
           'Wiring a real commercial system — a payment provider, a live product catalogue — into a product that handles money.',
-        used: "I built ordering for a friend's catering business against his real Square catalogue rather than a copy in the codebase, because his kiosk already runs on it and any second copy is one that goes stale. That meant full support for his customisations — twenty-two modifier lists, with the prices resolved on the server so the browser cannot name its own.",
+        used: "I built ordering for a friend's food truck against his real Square catalogue rather than a copy in the codebase, because his kiosk already runs on it and any second copy is one that goes stale. That meant full support for his customisations — twenty-two modifier lists, with the prices resolved on the server so the browser cannot name its own. It went live with real money at the end of August 2026. The menu, the prices, the opening hours and what has sold out all come from his till now, refreshed every minute, so when he marks a dish sold out on the truck it greys out on the site before the next customer can order it. Two things I had been telling him were true turned out not to be until I tested them on the live site — the sold-out flag was never being read, and the menu was cached for hours — and both are fixed because I checked rather than assumed.",
         apps: ['samurai-kitchen'],
         links: [
+          {
+            kind: 'site',
+            label: 'The live ordering page',
+            href: 'https://samuraikitchencatering.com/order',
+            detail: 'menu, prices and sold-outs straight from the till',
+          },
           article(
             'food-truck-site-with-ai',
             "I built my friend's food truck site with AI",
@@ -232,11 +238,44 @@ export const skillGroups: SkillGroup[] = [
         ],
       },
       {
+        id: 'oauth-connect',
+        name: 'OAuth and encrypted credential storage',
+        plain:
+          'Letting a business connect its own account with one tap on the provider’s own page, so nobody ever copies or texts an access key — and keeping what comes back encrypted.',
+        used: "Until launch the site ran on an access key carried by hand from Rob's Square dashboard to mine, and replacing it needed both of us on a call. So I built the connect flow: he tapped one link, approved on Square's own page, and the site switched over to his connection while I watched. No key was typed, copied or texted by anyone. The tokens sit encrypted at rest in a small Postgres database, a daily job renews them before they expire, and if the connection ever fails the code falls back to the old key, so no single dependency can take ordering down. Two of my own mistakes got caught before they mattered: a different encryption key per environment against one shared database, which would have made anything saved from a preview unreadable in production, and a job endpoint that only checked for a secret if one had been set — it had not, so it failed open. A second business can now connect without a line of code changing, which is the part I built it for.",
+        apps: ['samurai-kitchen'],
+        links: [
+          {
+            kind: 'site',
+            label: 'samuraikitchencatering.com',
+            href: 'https://samuraikitchencatering.com',
+            detail: 'every item on it arrives through that connection',
+          },
+        ],
+      },
+      {
+        id: 'hours-and-scheduling',
+        name: 'Business hours, time zones and scheduling',
+        plain:
+          'Making a site keep the same hours as the business — closing checkout when the truck closes, and holding an order placed for later until it is due.',
+        used: "A customer could have paid at three in the morning on a Sunday and the order would have sat unseen, so checkout reads Rob's opening hours from his own Square account and locks outside them. He edits his hours in his dashboard; a week off is just a week set to closed, which fails safe. Hours are harder than they look — overnight spans, the week wrapping, midnight in the wrong time zone — and twenty-two tests cover them. The rest came out of real use. Last orders stop thirty minutes before close, because a katsu takes time to fry. The footer once said Monday: Closed while checkout was happily taking Monday orders, because two parts of the site had two ideas of the hours; now there is one. And an order scheduled for six o'clock was landing on his terminal at noon, because Square treats a scheduled order with no prep time exactly like an immediate one — nothing in the documentation's labels said so, only its behaviour. I placed one order for later and watched it arrive under Upcoming instead of Active, which is the receipt.",
+        apps: ['samurai-kitchen'],
+        links: [
+          {
+            kind: 'site',
+            label: 'The ordering page, outside opening hours',
+            href: 'https://samuraikitchencatering.com/order',
+            detail: 'says when it closes today, and when it reopens',
+          },
+        ],
+      },
+      {
         id: 'security',
         name: 'Security auditing and hardening',
         plain:
           "Going looking for the hole before someone else finds it, and reading a platform's defaults literally instead of trusting what they are called.",
-        used: 'Before publishing an article about my own tools I stopped and asked whether they could be attacked, and found my live task list — forty-three items — being served to anyone with the URL. I closed it in about sixty seconds with a reversible fix, then built the proper gate, and only restored the data after watching production actually deny the request. On the restaurant checkout, an audit nobody asked for found the server taking the charge amount from the browser.',
+        used: "Before publishing an article about my own tools I stopped and asked whether they could be attacked, and found my live task list — forty-three items — being served to anyone with the URL. I closed it in about sixty seconds with a reversible fix, then built the proper gate, and only restored the data after watching production actually deny the request. On the restaurant checkout, an audit nobody asked for found the server taking the charge amount from the browser. After that site went live I went looking again, on the live site rather than in the code: a scheduled endpoint was answering anyone with the owner's merchant details, because its check only ran if a secret existed and none did — it read as correct on the page and failed open in production. The same pass found no browser security headers at all, no rate limit on the two routes that move money, and a status page that told strangers whether the business was connected. All closed, then verified live: a ten-shot burst at checkout drew a 429.",
+        apps: ['samurai-kitchen'],
         links: [
           article(
             'my-private-task-list-was-public',
@@ -254,7 +293,7 @@ export const skillGroups: SkillGroup[] = [
         name: 'Debugging what only breaks in production',
         plain:
           'Finding a fault that cannot be reproduced on your own machine, by reasoning about where the code actually runs.',
-        used: 'An order total read $0.00 on the deployed build and was correct locally every time. My machine runs one long-lived process; the deployed one does not share memory between requests, and the mock state was sitting in it. Same category as a ten-minute build hang that turned out to be pages calling a live API while they were being built.',
+        used: "An order total read $0.00 on the deployed build and was correct locally every time. My machine runs one long-lived process; the deployed one does not share memory between requests, and the mock state was sitting in it. Same category as a ten-minute build hang that turned out to be pages calling a live API while they were being built. The one that mattered most came after launch: the live card form was loading Square's test-mode script, so every test card had passed and no real card could — a hard-coded address that nothing in the build could catch. It took a real card at a real truck to find it, which is why the launch test was a real order and not a checklist.",
         apps: ['samurai-kitchen'],
         links: [
           article(
@@ -269,7 +308,7 @@ export const skillGroups: SkillGroup[] = [
         name: 'Automation that survives its own failure',
         plain:
           'Any job that can half-finish has to look for its own wreckage before it looks for new work.',
-        used: 'Teaching a scheduler to publish without me took six failures, and five of them reported success. The worst flipped an article halfway, failed, and then went invisible to every later run because it was no longer due — reporting "nothing to do" over a permanently stuck state. The fix was a reconcile pass. It now opens and merges its own pull request with nobody watching.',
+        used: 'Teaching a scheduler to publish without me took six failures, and five of them reported success. The worst flipped an article halfway, failed, and then went invisible to every later run because it was no longer due — reporting "nothing to do" over a permanently stuck state. The fix was a reconcile pass. It now opens and merges its own pull request with nobody watching. The newest one answers a question the food-truck owner actually asked — how long does a katsu take? — by syncing every order from his till into a database: watermarked, progress saved per page, time-boxed so a ninety-day backfill finishes across runs, and safe to re-run, so a later Ready tap just updates the row.',
         links: [
           article(
             'five-of-six-failures-said-success',
@@ -283,7 +322,7 @@ export const skillGroups: SkillGroup[] = [
         name: 'Regression tripwires',
         plain:
           'A cheap test that always runs, fenced around the part that must not change, so everything else can move fast.',
-        used: 'At work this guards financial aid arithmetic — twenty-three assertions on every single change, because that is the part which is not allowed to be wrong. The same pattern runs on this site: a test refuses an article dated in the future, and another one refuses to ship a post with missing images, which immediately found two already-published posts with no social card.',
+        used: 'At work this guards financial aid arithmetic — twenty-three assertions on every single change, because that is the part which is not allowed to be wrong. The same pattern runs on this site: a test refuses an article dated in the future, and another one refuses to ship a post with missing images, which immediately found two already-published posts with no social card. The food-truck site got the same fence after launch — checks on hours, encryption and pickup times, kept in the repository after the scratch copies quietly vanished — and one of them had been reading the wall clock and failing by time of day for weeks.',
         links: [
           {
             kind: 'code',
@@ -406,7 +445,7 @@ export const skillGroups: SkillGroup[] = [
         name: 'Building for a real client',
         plain:
           'Their constraints, their data, their sign-off — and the parts you decide not to ship.',
-        used: 'Robert has been a friend since high school and runs a Japanese catering business. Two calls on that job were mine rather than technical: I deleted a loyalty panel that promised points nothing awarded, and removed a review funnel that routed happy customers to Google and unhappy ones to a private form. Both were working features. Neither was honest.',
+        used: 'Robert has been a friend since high school and runs a Japanese catering business. Two calls on that job were mine rather than technical: I deleted a loyalty panel that promised points nothing awarded, and removed a review funnel that routed happy customers to Google and unhappy ones to a private form. Both were working features. Neither was honest. It went live with real payments at the end of August 2026. Then his first tap on Ready sent no text, because Square only texts orders its own products create — so rather than promise one, the success page now says to give your name at the window, and the text pipeline I built sits switched off until it is wired to a number. The calls since have been his, not mine: no menu photos, a classic list instead; last orders half an hour before close; take orders now, texts later.',
         apps: ['samurai-kitchen'],
         links: [
           {
