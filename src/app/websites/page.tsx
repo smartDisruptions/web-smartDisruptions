@@ -5,14 +5,14 @@ import { SectionContainer, RevealOnScroll } from '@/components/ui';
 export const metadata: Metadata = {
   title: 'Websites',
   description:
-    'Three live sites, explained in plain language — a mystery game that runs in a browser tab, a launch page for an invented energy drink, and a restaurant ordering demo that takes card payments.',
+    'Four live sites, explained in plain language — a chore game told as a wizard’s tale, a mystery game that runs in a browser tab, a launch page for an invented energy drink, and a restaurant ordering demo that takes card payments.',
 };
 
 /**
  * WEBSITES — deliberately not another grid.
  *
  * /apps is a catalogue: eleven things, scannable, categorised. This page is the
- * opposite shape on purpose — three projects at length, each showing what it is
+ * opposite shape on purpose — four projects at length, each showing what it is
  * actually capable of.
  *
  * TONE (Josh's call, 2026-08-23): lead with capability, not with defects. An
@@ -50,6 +50,34 @@ type Study = {
 };
 
 const studies: Study[] = [
+  {
+    eyebrow: 'Own work · live',
+    name: 'Broom & Blade',
+    what: 'A chore chart that plays like a game, and the page that sells it to a kid.',
+    image: '/images/websites/broom-blade.webp',
+    imageAlt:
+      'The Broom & Blade site — a candlelit guild hall under a starry sky, the title in gold blackletter, a wizard’s opening line beneath it.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    href: 'https://web-broom-blade.vercel.app',
+    hrefLabel: 'web-broom-blade.vercel.app',
+    problem:
+      'The page for a family chore game, written for the kid who will play it. A wizard tells the story — the dust came, so the chores became quests — and the page plays like the game does: a quest board you can actually seal, gear cards that flip to show their tale, a shelf of relics, a stranger’s box that stays shut. The game behind it turns chores into quests that pay gold and experience, and one household code puts the whole family on the same board.',
+    decisionLabel: 'What is built into it',
+    decision: [
+      'The hall is drawn by code, not photographed: a sky of stars, a moon, two ranges of hills, timber beams, candles and drifting embers, each on its own layer, so the whole scene shifts as you scroll or move the mouse.',
+      'Sealing a quest takes a real press-and-hold — a ring fills around the stamp — the same rule as the game, so a stray tap never counts.',
+      'The page keeps the game’s secrets. Six of nine titles stay sealed, bought gear flips to a locked back, most relics are dark, and the stranger’s box never opens — a visitor learns what is there without being told what is inside.',
+      'It hides things to find: a moon that grants wishes, candles you can snuff, dust bunnies to sweep, a sleeping dragon, a rat in the footer, and a purse that counts the gold you pick up along the way.',
+      'Every sound — the chime, the seal, the harp when the board is clear — is made by the page as you play, so there is nothing to download. It works with a keyboard, and quiets its motion for anyone who has asked their phone for less of it.',
+      'The whole page is one small file with no pictures in it. It loads in a blink, and the game it points to is the same shape: one file, free, no account, installs on a phone like an app.',
+    ],
+    receipts: [
+      { value: '81 KB', label: 'The entire page — less than one phone photo' },
+      { value: '0', label: 'Pictures on the page — every scene is drawn by code' },
+      { value: '6', label: 'Layers of the hall that drift as you scroll' },
+    ],
+  },
   {
     eyebrow: 'Own work · live',
     name: 'The Pembroke File',
@@ -141,13 +169,14 @@ export default function WebsitesPage() {
         <RevealOnScroll>
           <p className="font-mono-accent text-accent">Websites</p>
           <h1 className="font-display mt-3 max-w-[20ch] text-4xl leading-[1.1] font-semibold tracking-tight text-text-primary sm:text-5xl">
-Three sites, up close
+Four sites, up close
           </h1>
           <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
-            Three sites, all live. One is a mystery game that runs in a browser
-            tab. One is a launch page for a drink that does not exist. One is a
-            sushi counter that takes orders online. Each is written up below in
-            plain language — what it does, and how it works.
+            Four sites, all live. One is a chore game told as a wizard’s tale.
+            One is a mystery game that runs in a browser tab. One is a launch
+            page for a drink that does not exist. One is a sushi counter that
+            takes orders online. Each is written up below in plain language —
+            what it does, and how it works.
           </p>
         </RevealOnScroll>
       </SectionContainer>
@@ -239,7 +268,7 @@ Three sites, up close
 Want one of these?
             </h2>
             <p className="mt-4 max-w-[62ch] leading-[1.75] text-text-secondary">
-              All three were built the same way: get something working early,
+              All four were built the same way: get something working early,
               then do the slower work of making it fast, easy for everyone to
               use, and safe enough to hand to real customers. If you need a site
               that takes orders, that is the work I do.
