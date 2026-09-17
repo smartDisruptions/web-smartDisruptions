@@ -1,0 +1,18 @@
+{
+  "tone": "warn",
+  "before": {
+    "label": "The headline",
+    "text": "I checked it was safe"
+  },
+  "after": {
+    "label": "The actual story",
+    "text": "My task list was public",
+    "detail": "6 of 14 hid their own subject"
+  },
+  "headline": [
+    { "t": "Six headlines hid " },
+    { "t": "their own subject", "tone": "warn" },
+    { "t": "." }
+  ],
+  "alt": "Split card: a headline that said only that I checked whether something was safe, against the story it was hiding — my private task list was public — with six of fourteen headlines hiding their own subject."
+}
