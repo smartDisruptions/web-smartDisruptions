@@ -62,7 +62,9 @@
   --sd-border: rgba(37, 37, 45, 0.16);
   --sd-scrollbar: rgba(37, 37, 45, 0.24);
   /* Notebook materials */
-  --sd-grid: #d5e0ee; /* graph-paper lines */
+  /* Graph-paper lines. Lightened from #d5e0ee: at full strength the grid
+     competed with text sitting directly on it (headlines, captions, cards). */
+  --sd-grid: #e7edf3;
   --sd-pen: #d93030; /* red pen — underlines, scribbles, margin rule. Marks, not text. */
   --sd-pen-ink: #b3261e; /* red pen when it IS text — AA on paper */
   --sd-hl: rgba(255, 226, 90, 0.62); /* highlighter */

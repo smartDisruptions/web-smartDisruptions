@@ -8,7 +8,7 @@ description: Notebook. A builder's graph-paper notebook — handwriting for head
 colors:
   # Light — white graph paper
   paper-bg: '#fbfaf4' # page ground, under a 24px graph grid
-  paper-grid: '#d5e0ee' # the graph lines
+  paper-grid: '#e7edf3' # the graph lines — kept faint so text on the grid stays easy to read
   paper-surface: '#ffffff' # sheets and cards, one step whiter than the page
   paper-surface-elevated: '#f2f0e6'
   accent: '#2a57c5' # the BLUE pen — links, eyebrows, active nav
