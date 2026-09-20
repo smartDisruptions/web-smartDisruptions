@@ -106,7 +106,10 @@ export default function BuiltPage() {
         // rather than a spreadsheet.
         const flip = i % 2 === 1;
         return (
-          <SectionContainer key={project.slug} className="py-7 sm:py-9">
+          <section
+            key={project.slug}
+            className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14"
+          >
             <RevealOnScroll>
               <article className="mx-auto max-w-5xl">
                 <div
@@ -164,7 +167,7 @@ export default function BuiltPage() {
                 </div>
               </article>
             </RevealOnScroll>
-          </SectionContainer>
+          </section>
         );
       })}
 
