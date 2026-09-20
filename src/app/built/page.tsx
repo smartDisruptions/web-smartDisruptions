@@ -74,7 +74,7 @@ const highlights: Highlight[] = [
     imageHeight: 750,
     body: 'A parent puts the chores on a board. Every chore a child finishes pays out gold and points, and children level up as they go. One code signs the whole family in, so everyone shares the same board. The screenshot shows the website that explains the app.',
     bullets: [
-      'Nothing on the website is a photograph. The sky, the hills, the candles and the smoke are all drawn by the page itself, in layers that move as you scroll.',
+      'The website contains no picture files at all. The sky, the hills, the candles and the smoke are built by the page while it loads, in layers that move separately as you scroll.',
       'To mark a chore finished you press and hold while a ring fills up. That way a chore is never marked done by a stray tap.',
       'The app is free, needs no account, and installs on a phone like any other app.',
     ],
@@ -83,7 +83,10 @@ const highlights: Highlight[] = [
         value: '81 KB',
         label: 'The size of the whole website, so it opens fast',
       },
-      { value: '0', label: 'Photographs used. Every part of it is drawn' },
+      {
+        value: '0',
+        label: 'Pictures to load. The artwork is part of the page',
+      },
       { value: '6', label: 'Layers that move separately as you scroll' },
     ],
     primary: { href: 'https://broom-blade.vercel.app', label: 'Try the app' },
@@ -166,7 +169,7 @@ const highlights: Highlight[] = [
     bullets: [
       'Scroll down and the can turns all the way round. You can also grab it and spin it yourself.',
       'The label and the nutrition panel on the back are real typed text, not part of a picture. Images made by AI usually get small print wrong. Typed text does not have that problem.',
-      'The water droplets on the can are drawn by the page as well, not photographed.',
+      'The water droplets on the can are not photographed either. The page builds those too.',
     ],
     receipts: [
       {
