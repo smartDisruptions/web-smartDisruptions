@@ -1,4 +1,5 @@
 import { apps } from './apps';
+import { builtHref } from './projects';
 
 /**
  * The skills on the About page, and the work that proves each one.
@@ -175,7 +176,7 @@ export const skillGroups: SkillGroup[] = [
           {
             kind: 'site',
             label: 'The write-up',
-            href: '/websites',
+            href: '/built/voltic',
             detail: 'what is built into it, in plain language',
           },
         ],
@@ -526,7 +527,7 @@ export function evidenceFor(skill: Skill): ResolvedEvidence[] {
       {
         kind: ARCADE.has(slug) ? ('game' as const) : ('app' as const),
         label: app.name,
-        href: `/apps/${app.slug}`,
+        href: builtHref(app.slug),
         detail: app.techStack.slice(0, 3).join(' · '),
         internal: true,
       },

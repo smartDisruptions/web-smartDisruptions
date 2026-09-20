@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { apps } from '@/data/apps';
+import { builtHref } from '@/data/projects';
 import { SectionContainer, Button, RevealOnScroll } from '@/components/ui';
 
 export default function FeaturedAppsSection() {
@@ -19,7 +20,7 @@ export default function FeaturedAppsSection() {
         {apps.slice(0, 6).map((app) => (
           <RevealOnScroll key={app.slug}>
             <Link
-              href={`/apps/${app.slug}`}
+              href={builtHref(app.slug)}
               className="nb-polaroid nb-tape block p-2 pb-3 sm:p-2.5 sm:pb-4"
             >
               <img
