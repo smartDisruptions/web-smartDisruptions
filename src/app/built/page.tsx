@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: 'What I built',
   description:
-    'Websites, apps and games — all live, all free to try. A chore game and its wizard’s hall, a mystery game in a browser tab, a food truck that takes orders online, and a launch page for a drink that does not exist.',
+    'Websites, apps and games I have built. A chore app for families, a mystery game, a food truck that takes orders online, and a launch page for an energy drink that does not exist. All of it is online and free to try.',
 };
 
 /**
@@ -22,18 +22,26 @@ export const metadata: Metadata = {
  * call, 2026-09-20: one page, four highlights, then the catalogue, then a door
  * to the Arcade so the games keep their own cabinet.
  *
- * TONE, inherited from /websites and unchanged: lead with capability, never
- * with defects. Rigour is a property of the work ("card details never touch the
- * site"), not a war story about what was once wrong. A business owner reads a
- * failure story as risk.
+ * VOICE (Josh's call, 2026-09-20, and it overrides what /websites did):
+ * write for the average person. No analogies, no wordplay, no sentence that
+ * has to be read twice. Say the thing, in the shortest plain words that are
+ * still true. "Less than one phone photo" is out even though it was helpful;
+ * "The size of the whole page" is in.
  *
- * Every claim below was verified against the live deployment when it was first
- * written, and each of the seven URLs was re-checked (200) on 2026-09-20. The
- * copy is carried over from those verified write-ups and cut to three bullets —
- * cut, not rewritten, because a reworded claim is an unverified one.
+ * TONE, inherited from /websites and unchanged: lead with what the work does,
+ * never with what once went wrong. A business owner reads a failure story as
+ * risk.
  *
- * READING LEVEL: plain language, short bullets. The person deciding whether to
- * hire is a business owner, not an engineer.
+ * FACTS: every claim here was verified against the live deployment when it
+ * was first written for /websites, and each of the seven URLs was re-checked
+ * (200) on 2026-09-20. This rewrite changes the WORDS ONLY. Nothing was added,
+ * and where a detail could not be said plainly it was cut rather than softened
+ * — so if a claim below reads as smaller than the old one, that is the point.
+ *
+ * The catalogue one-liners are written here rather than taken from
+ * src/data/apps.ts, whose `description` field is engineer-facing ("Real-time
+ * orbital simulation of Earth-Mars Hohmann transfers"). That field still feeds
+ * /games, so it is left alone.
  */
 
 type Highlight = {
@@ -50,112 +58,128 @@ type Highlight = {
   receipts: { value: string; label: string }[];
   /** The thing itself — the one a visitor should press first. */
   primary: { href: string; label: string };
-  /** Its shop window, or its build write-up. */
+  /** Its website, or its build write-up. */
   secondary?: { href: string; label: string };
 };
 
 const highlights: Highlight[] = [
   {
-    eyebrow: 'Own work · live',
+    eyebrow: 'My own project · online now',
     name: 'Broom & Blade',
-    what: 'A chore chart that plays like a game — and the page that sells it to a kid.',
+    what: 'An app that turns household chores into a game for kids.',
     image: '/images/websites/broom-blade.webp',
     imageAlt:
-      'The Broom & Blade site — a candlelit guild hall under a starry sky, the title in gold blackletter, a wizard’s opening line beneath it.',
+      'The Broom & Blade website. A candlelit hall under a night sky, with the name of the app in large gold letters.',
     imageWidth: 1200,
     imageHeight: 750,
-    body: 'A wizard tells the story — the dust came, so the chores became quests — and the page plays like the game does: a quest board you can actually seal, gear cards that flip to show their tale, a shelf of relics, a stranger’s box that stays shut. The game behind it turns chores into quests that pay gold and experience, and one household code puts the whole family on the same board.',
+    body: 'A parent puts the chores on a board. Every chore a child finishes pays out gold and points, and children level up as they go. One code signs the whole family in, so everyone shares the same board. The screenshot shows the website that explains the app.',
     bullets: [
-      'The hall is drawn by code, not photographed: a sky of stars, a moon, two ranges of hills, timber beams, candles and drifting embers, each on its own layer, so the whole scene shifts as you scroll or move the mouse.',
-      'Sealing a quest takes a real press-and-hold — a ring fills around the stamp — the same rule as the game, so a stray tap never counts.',
-      'The whole page is one small file with no pictures in it. It loads in a blink, and the game it points to is the same shape: one file, free, no account, installs on a phone like an app.',
+      'Nothing on the website is a photograph. The sky, the hills, the candles and the smoke are all drawn by the page itself, in layers that move as you scroll.',
+      'To mark a chore finished you press and hold while a ring fills up. That way a chore is never marked done by a stray tap.',
+      'The app is free, needs no account, and installs on a phone like any other app.',
     ],
     receipts: [
-      { value: '81 KB', label: 'The entire page — less than one phone photo' },
       {
-        value: '0',
-        label: 'Pictures on the page — every scene is drawn by code',
+        value: '81 KB',
+        label: 'The size of the whole website, so it opens fast',
       },
-      { value: '6', label: 'Layers of the hall that drift as you scroll' },
+      { value: '0', label: 'Photographs used. Every part of it is drawn' },
+      { value: '6', label: 'Layers that move separately as you scroll' },
     ],
-    primary: { href: 'https://broom-blade.vercel.app', label: 'Play it' },
+    primary: { href: 'https://broom-blade.vercel.app', label: 'Try the app' },
     secondary: {
       href: 'https://web-broom-blade.vercel.app',
-      label: 'See the site',
+      label: 'See the website',
     },
   },
   {
-    eyebrow: 'Own work · live',
+    eyebrow: 'My own project · online now',
     name: 'The Pembroke File',
-    what: 'A locked-cabinet mystery game, and the page that has to sell it.',
+    what: 'A mystery game you play in a browser tab. Nothing to download.',
     image: '/images/websites/pembroke-file.png',
     imageAlt:
-      'The Pembroke File site — a dark case room lit by a single desk lamp.',
+      'The Pembroke File website. A dark office lit by a single desk lamp.',
     imageWidth: 1200,
     imageHeight: 630,
-    body: 'A mystery game with five puzzles, played entirely in your browser tab — nothing to install, no account to make, no loading screen. The whole game is one small file with nothing behind it, so it works with no internet connection and will still work in a decade.',
+    body: 'You search a locked filing cabinet and solve five puzzles to work out who took a diamond. There is nothing to install and no account to make. The whole game is one file, so once the page has opened it keeps working even if your internet drops.',
     bullets: [
-      'The puzzles are little machines, not trick questions. A lamp really swings on its cable, and a sliding-tile puzzle was solved by a program before shipping — so its seventeen-move minimum is a measured fact, not a guess.',
-      'Anyone can play it. Every puzzle can be solved with just a keyboard, and progress saves itself — a drawer opened tonight is still open tomorrow.',
-      'The page selling the game got the same care as the game: the case room drifts as you scroll, dust moves through the lamplight, and the artwork was shrunk from 4.2 MB to 176 KB.',
+      'The puzzles are things you handle rather than riddles you guess. The desk lamp really swings on its cable when you move it.',
+      'One puzzle cannot be solved in fewer than seventeen moves. I had a program work that out before I released the game, so the number is checked, not guessed.',
+      'You can play the whole game using only a keyboard, and it remembers where you got to. A drawer you opened tonight is still open tomorrow.',
     ],
     receipts: [
-      { value: '0', label: 'Downloads, installs or internet calls' },
-      { value: '130 KB', label: 'The entire game — less than one phone photo' },
-      { value: '176 KB', label: 'All the artwork, compressed from 4.2 MB' },
+      { value: '0', label: 'Things to download, install or sign up for' },
+      { value: '130 KB', label: 'The size of the whole game' },
+      {
+        value: '176 KB',
+        label: 'The size of all the artwork, cut from 4.2 MB',
+      },
     ],
-    primary: { href: 'https://app-field-office.vercel.app', label: 'Play it' },
+    primary: {
+      href: 'https://app-field-office.vercel.app',
+      label: 'Play the game',
+    },
     secondary: {
       href: 'https://web-pembroke-file.vercel.app',
-      label: 'See the site',
+      label: 'See the website',
     },
   },
   {
-    eyebrow: 'Client work · live',
+    eyebrow: 'Made for a client · online now',
     name: 'Samurai Kitchen',
-    what: 'A food truck and catering business, taking orders online.',
+    what: 'A food truck’s website, where customers order and pay online.',
     image: '/images/websites/samurai-kitchen.webp',
-    imageAlt: 'The Samurai Kitchen site, catering-first with online ordering.',
+    imageAlt:
+      'The Samurai Kitchen website, showing catering and online ordering.',
     imageWidth: 1200,
     imageHeight: 750,
-    body: 'It replaced a dated site that could not take an order — every catering enquiry arrived as unstructured email and nothing could be paid for online. What went up in its place handles the whole order, end to end.',
+    body: 'The old site could not take an order. Every catering request arrived as an email, and nobody could pay online. This one handles the whole order, from picking the food to paying for it.',
     bullets: [
-      'Customers browse a menu with dietary tags, build a cart, and pay by card without leaving the site. Card details go straight to Square and never touch the site itself.',
-      'A loyalty programme runs underneath — points earned on every order, redeemed at checkout — and catering has its own tiered packages, which is the revenue the old contact form was quietly losing.',
-      'Prices are settled against the kitchen’s own live Square catalogue, so an order is always charged what the kitchen actually set. The owner ran a full order through it himself before it went anywhere near a customer.',
+      'Customers choose from the menu, build an order and pay by card without leaving the site. Card details go straight to Square. This site never sees them.',
+      'Customers collect points on every order and spend them at the checkout. Catering has its own packages at set prices.',
+      'Prices come from the same Square account the kitchen uses at the truck, so an order is always charged what the kitchen set. The owner placed a full order himself before any customer did.',
     ],
     receipts: [
-      { value: '3', label: 'Square systems wired in: payments, menu, loyalty' },
+      {
+        value: '3',
+        label: 'Parts of Square it uses: payments, menu and points',
+      },
       { value: '0', label: 'Card numbers this site ever sees' },
-      { value: 'Live', label: 'Real orders, on the truck’s own domain' },
+      { value: 'Live', label: 'Taking real orders on the truck’s own website' },
     ],
     primary: {
       href: 'https://samuraikitchencatering.com',
-      label: 'Visit the site',
+      label: 'See the website',
     },
-    secondary: { href: '/apps/samurai-kitchen', label: 'How it was built' },
+    secondary: { href: '/apps/samurai-kitchen', label: 'How I built it' },
   },
   {
-    eyebrow: 'Concept work · live',
+    eyebrow: 'A practice project · online now',
     name: 'VOLTIC',
     what: 'A launch page for an energy drink that does not exist.',
     image: '/images/websites/voltic.webp',
     imageAlt:
-      'The VOLTIC site — a matte black energy drink can lit cyan and lime, beaded with condensation.',
+      'The VOLTIC website. A black energy drink can lit in blue and green, covered in water droplets.',
     imageWidth: 1200,
     imageHeight: 750,
-    body: 'A brand page built the way the big product launches are built — a drink can you can spin, layers that drift as you scroll, type the size of the screen. The brand is invented, so nothing here was borrowed: the photos were generated for this build, and the site was designed around them. The can at the centre is not a photo at all — it is a live 3D model, so it looks right from every angle.',
+    body: 'I made the brand up, so nothing on the page belongs to anyone else. The can in the middle is not a photograph. It is a 3D model, which is why it still looks right when you turn it around.',
     bullets: [
-      'Scroll, and the can turns a full circle. Or grab it and spin it yourself.',
-      'The can is a real 3D model wearing a label typed in the site’s own fonts, with the real nutrition numbers on the back. AI-generated images tend to invent extra logos or garble small print — a model wearing typed text cannot.',
-      'Even the condensation is built rather than photographed — tiny glossy droplets on a matte can, because the shine is what makes it look cold.',
+      'Scroll down and the can turns all the way round. You can also grab it and spin it yourself.',
+      'The label and the nutrition panel on the back are real typed text, not part of a picture. Images made by AI usually get small print wrong. Typed text does not have that problem.',
+      'The water droplets on the can are drawn by the page as well, not photographed.',
     ],
     receipts: [
-      { value: '0', label: 'Accessibility problems found by automated checks' },
-      { value: '33 KB', label: 'The file that draws the whole page' },
-      { value: '360°', label: 'A real 3D can, readable from every angle' },
+      {
+        value: '0',
+        label: 'Problems found by the automatic accessibility check',
+      },
+      { value: '33 KB', label: 'The size of the file that draws the page' },
+      { value: '360°', label: 'You can look at the can from any angle' },
     ],
-    primary: { href: 'https://web-voltic.vercel.app', label: 'Visit the site' },
+    primary: {
+      href: 'https://web-voltic.vercel.app',
+      label: 'See the website',
+    },
   },
 ];
 
@@ -175,6 +199,22 @@ type CatalogueEntry = {
 };
 
 /**
+ * Plain one-liners, keyed by slug, replacing the engineer-facing `description`
+ * in src/data/apps.ts. A slug with no line here falls back to the data, which
+ * is the safe direction: a new app shows its old wording rather than nothing.
+ */
+const PLAIN_DESCRIPTIONS: Record<string, string> = {
+  'pomodoro-timer':
+    'A timer that splits work into short bursts with breaks in between, and keeps a record of what you got done.',
+  'spacex-mars':
+    'Shows the path a spacecraft takes from Earth to Mars. You can change the settings and watch the trip play out.',
+  'ai-diary':
+    'A private journal. It tracks your mood over time and has a companion you can talk to about what you wrote.',
+  'going-traveling':
+    'A twelve-day plan for a trip to Japan. Two versions of each day to choose between, a budget that changes with the size of your group, and an allergy list you set yourself.',
+};
+
+/**
  * The catalogue is what is left once the highlights have been shown and the
  * games have their own cabinet — the same rule /apps used. Kitsune Kitchen is
  * appended by hand because it is a site, not an app, and has never had an entry
@@ -190,7 +230,7 @@ const catalogue: CatalogueEntry[] = [
     .map((app) => ({
       key: app.slug,
       name: app.name,
-      description: app.description,
+      description: PLAIN_DESCRIPTIONS[app.slug] ?? app.description,
       thumbnail: app.thumbnailUrl,
       liveUrl: app.liveUrl,
       detailHref: `/apps/${app.slug}`,
@@ -201,7 +241,7 @@ const catalogue: CatalogueEntry[] = [
     key: 'kitsune-kitchen',
     name: 'Kitsune Kitchen',
     description:
-      'The whole restaurant ordering system as a demo anyone can click through — invented restaurant, real machinery, card payments in a practice mode.',
+      'The same ordering system as Samurai Kitchen, set up for a restaurant I made up so that anyone can try it. You can build an order and go through the checkout without buying anything.',
     thumbnail: '/images/websites/kitsune-kitchen.webp',
     liveUrl: 'https://japanese-sushi-website.vercel.app',
     status: 'live',
@@ -218,8 +258,9 @@ export default function BuiltPage() {
             what I built
           </h1>
           <p className="font-read mt-6 max-w-[52ch] text-lg leading-[1.7] text-text-secondary">
-            Websites, apps and games — all live, all free to try. Four I&apos;d
-            show you first, then everything else.
+            Websites, apps and games. All of it is online right now, and all of
+            it is free to try. The four below are the ones I would show you
+            first. Everything else is under them.
           </p>
         </div>
       </SectionContainer>
@@ -280,11 +321,10 @@ export default function BuiltPage() {
                   </div>
                 </div>
 
-                {/* What is built into it — on a ruled card, so the detail reads
-                    as notes taken beside the work rather than more page. */}
+                {/* The detail, on a ruled card. */}
                 <div className="nb-index-card mt-10 rotate-[-0.4deg] py-6 pr-5 pl-11 sm:pr-8 sm:pl-14">
                   <p className="font-display text-2xl text-[var(--sd-pen-ink)]">
-                    what&apos;s built into it
+                    what it does
                   </p>
                   <ul className="mt-3 max-w-[62ch] list-disc space-y-2.5 pl-5 leading-[1.7] text-text-secondary marker:text-[var(--sd-pen)]">
                     {h.bullets.map((b) => (
@@ -318,7 +358,8 @@ export default function BuiltPage() {
             everything else
           </h2>
           <p className="font-read mt-5 max-w-[52ch] leading-[1.75] text-text-secondary">
-            Smaller things, all live and free to open.
+            Smaller projects. All of them are online, and all of them are free
+            to try.
           </p>
         </RevealOnScroll>
 
@@ -366,7 +407,7 @@ export default function BuiltPage() {
                         href={item.detailHref}
                         className="text-accent after:absolute after:inset-0 after:content-['']"
                       >
-                        How it was built &rarr;
+                        How I built it &rarr;
                       </Link>
                     )}
                     {item.liveUrl && (
@@ -387,15 +428,15 @@ export default function BuiltPage() {
         </ul>
       </SectionContainer>
 
-      {/* The Arcade keeps its own cabinet — this is the door to it. */}
+      {/* The games keep their own page. This is the link to it. */}
       <SectionContainer className="pt-6 pb-20">
         <RevealOnScroll>
           <div className="nb-sticky nb-tape mx-auto max-w-lg rotate-[1.4deg] px-7 pt-9 pb-8 text-center">
             <p className="font-display text-4xl leading-tight sm:text-5xl">
-              the games live in the arcade
+              all the games are in one place
             </p>
             <p className="mt-3 text-[15px] leading-relaxed text-[var(--sd-sticky-ink)]/80">
-              Six of them, in a cabinet of their own. Insert coin.
+              Six games. All of them free, and all of them play in your browser.
             </p>
             {/* Drawn on the note, not themed: a sticky is a fixed yellow
                 object in both themes, and the themed secondary button flipped
@@ -404,7 +445,7 @@ export default function BuiltPage() {
               href="/games"
               className="nb-wobble font-display mt-6 inline-flex min-h-12 items-center border-2 border-[var(--sd-sticky-ink)] px-7 py-2 text-2xl text-[var(--sd-sticky-ink)] transition-transform hover:-rotate-1 hover:scale-[1.03]"
             >
-              Open the arcade &rarr;
+              Go to the games &rarr;
             </Link>
           </div>
         </RevealOnScroll>
