@@ -151,26 +151,38 @@ const MAX_STEPS = 7;
  */
 const THEMES = {
   dark: {
-    bg: '#14100c',
-    surface: '#241d15',
-    lift: '#302619',
-    text: '#f4efe5',
-    dim: '#b7ad9d',
-    accent: '#f4834b',
-    rule: 'rgba(245, 239, 227, 0.14)',
-    hair: 'rgba(245, 239, 227, 0.30)',
+    bg: '#13151a',
+    grid: '#222733',
+    surface: '#1b1e26',
+    lift: '#252934',
+    text: '#ebe7de',
+    dim: '#a3a6b2',
+    accent: '#93b4ff',
+    rule: 'rgba(235, 231, 222, 0.14)',
+    hair: 'rgba(235, 231, 222, 0.30)',
   },
   light: {
-    bg: '#f4efe4',
-    surface: '#fdfbf6',
-    lift: '#ece5d7',
-    text: '#1a1714',
-    dim: '#6b6560',
-    accent: '#c2410c',
-    rule: 'rgba(26, 23, 20, 0.10)',
-    hair: 'rgba(26, 23, 20, 0.26)',
+    bg: '#fbfaf4',
+    grid: '#e7edf3',
+    surface: '#ffffff',
+    lift: '#f2f0e6',
+    text: '#25252d',
+    dim: '#5f616e',
+    accent: '#2a57c5',
+    rule: 'rgba(37, 37, 45, 0.10)',
+    hair: 'rgba(37, 37, 45, 0.26)',
   },
 };
+
+/**
+ * The graph-paper ground, as a background shorthand so a template can keep
+ * setting `background:` in one place. 24px to match `body` in globals.css —
+ * the card and the site have to be the same paper.
+ */
+const ground = (t) =>
+  `linear-gradient(${t.grid} 1px, transparent 1px) 0 0/24px 24px repeat,` +
+  `linear-gradient(90deg, ${t.grid} 1px, transparent 1px) 0 0/24px 24px repeat,` +
+  `${t.bg}`;
 
 /**
  * Tone drives every coloured thing in an image. The `field` values are the ink
@@ -187,7 +199,9 @@ const TONES = {
   good: { field: '#166534', bright: '#4ade80' },
   warn: { field: '#92400e', bright: '#f2b483' },
   info: { field: '#1d4ed8', bright: '#60a5fa' },
-  accent: { field: '#c2410c', bright: '#f4834b' },
+  // The blue pen. Close to `info` by design — the pen IS the site's accent,
+  // and only two specs use this tone.
+  accent: { field: '#2a57c5', bright: '#93b4ff' },
 };
 
 const argv = process.argv.slice(2);
@@ -272,14 +286,22 @@ function fontFace(family, file) {
 }
 
 const FONTS =
-  fontFace('DisplaySD', 'instrument-sans.woff2') +
-  fontFace('InterCard', 'inter.woff2');
+  fontFace('DisplaySD', 'caveat.woff2') + fontFace('InterCard', 'nunito.woff2');
 // Must match `--font-display` in globals.css. When the site's display face
 // changes, this and the vendored woff2 change with it — otherwise the cards go
 // out in a face the site does not use, which is exactly how they spent weeks
 // rendering in Georgia.
-const DISPLAY = `DisplaySD, system-ui, -apple-system, sans-serif`;
+const DISPLAY = `DisplaySD, 'Bradley Hand', 'Segoe Print', cursive`;
 const SANS = `InterCard, system-ui, -apple-system, sans-serif`;
+/**
+ * Caveat draws small for its point size, so every size the fit functions
+ * return would land about a third short. font-size-adjust scales the face back
+ * to where the old display sans sat, exactly as `.font-display` does in
+ * globals.css, which means the fit budgets keep working untouched. Tracking
+ * goes to 0 in the same breath: negative tracking fixes a tight sans and makes
+ * handwriting collide.
+ */
+const DISPLAY_CSS = `font-family:${DISPLAY};font-weight:700;font-size-adjust:0.47;letter-spacing:0`;
 const MONO = `ui-monospace, SFMono-Regular, Menlo, monospace`;
 
 /**
@@ -642,14 +664,14 @@ function logoCard(k) {
       )
       .replace(/<svg\b/, `<svg style="width:${w}px;height:${h}px"`);
     return doc(
-      `body{background:${t.bg};display:flex;align-items:center;justify-content:center}
+      `body{background:${ground(t)};display:flex;align-items:center;justify-content:center}
        svg{width:${w}px;height:${h}px}`,
       svg
     );
   }
 
   return doc(
-    `body{background:${t.bg};display:flex;align-items:center;justify-content:center}
+    `body{background:${ground(t)};display:flex;align-items:center;justify-content:center}
      .m{width:${w}px;height:${h}px;background:${t.text};
        -webkit-mask:url('file://${file}') center/contain no-repeat;
        mask:url('file://${file}') center/contain no-repeat}`,
@@ -678,12 +700,12 @@ function quoteCard(k) {
     )
     .join('');
   return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:40px;padding:0 74px}
      .top{display:flex;align-items:baseline;gap:26px}
      .tk{font-family:${MONO};font-weight:700;font-size:76px;letter-spacing:.06em;
        color:${t.accent};line-height:1}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
+     .h{${DISPLAY_CSS};line-height:1.06;
        color:${t.text};font-size:${ledeSize(q.verdict)}px;max-width:1000px}
      .row{display:flex;gap:0;border-top:1px solid ${t.rule}}
      .c{flex:1;padding:22px 26px 4px 0;display:flex;flex-direction:column;gap:10px;
@@ -724,9 +746,9 @@ function scorecardCard(k) {
     )
     .join('');
   return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:34px;padding:0 74px}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
+     .h{${DISPLAY_CSS};line-height:1.06;
        color:${t.text};font-size:${ledeSize(s.verdict)}px;max-width:1000px}
      .g{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:${t.rule};
        border:1px solid ${t.rule}}
@@ -771,7 +793,7 @@ function ledgerCard(k) {
       </div>`;
   };
   return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:34px;padding:0 74px}
      .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase;color:${t.dim}}
@@ -782,7 +804,7 @@ function ledgerCard(k) {
        font-variant-numeric:tabular-nums;line-height:1}
      .w{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.1em;
        text-transform:uppercase}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.025em;
+     .h{${DISPLAY_CSS};line-height:1.08;
        color:${t.text};font-size:${ledeSize(l.finding)}px;max-width:1010px}
      .n2{font-family:${MONO};font-size:${TYPE.label}px;color:${t.dim};letter-spacing:.02em}`,
     `<div class="chips">
@@ -801,14 +823,14 @@ function ledgerCard(k) {
 function split(k) {
   const t = THEMES[k];
   return doc(
-    `body{display:flex;flex-direction:column;background:${t.bg};font-family:${SANS}}
+    `body{display:flex;flex-direction:column;background:${ground(t)};font-family:${SANS}}
      .p{display:flex;flex-direction:column;justify-content:center;gap:20px;padding:0 68px}
-     .a{flex:0 0 282px;background:${t.surface};border-bottom:1px solid ${t.rule}}
+     .a{flex:0 0 282px;background:transparent;border-bottom:1px solid ${t.rule}}
      .b{flex:1 1 auto;background:${T.field}}
      .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase}
      .a .l{color:${t.dim}} .b .l{color:rgba(249,245,236,.82)}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.025em}
+     .h{${DISPLAY_CSS};line-height:1.08}
      .a .h{color:${t.text};font-size:${ledeSize(before.text)}px}
      .b .h{color:${FIELD_FG};font-size:${ledeSize(after.text)}px}
      .d{font-family:${MONO};font-size:${TYPE.label}px;color:rgba(249,245,236,.78);letter-spacing:.02em}`,
@@ -838,12 +860,12 @@ function countCard(k) {
       : `<span style="border:2px solid ${t.hair};flex:1;border-radius:4px"></span>`
   ).join('');
   return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:38px;padding:0 74px}
      .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase;color:${t.dim}}
      .blocks{display:flex;gap:14px;height:130px}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
+     .h{${DISPLAY_CSS};line-height:1.06;
        color:${t.text};font-size:${ledeSize(`${c.hit} of ${c.of} ${c.verdict ?? ''}`)}px}
      .h em{font-style:normal;color:${k === 'dark' ? T.bright : T.field}}
      .d{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
@@ -887,7 +909,7 @@ function sequenceCard(k) {
     )
     .join('');
   return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:44px;padding:0 74px}
      .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase;color:${t.dim}}
@@ -903,7 +925,7 @@ function sequenceCard(k) {
      .node.on{background:${ink};border-color:${ink};color:${FIELD_FG}}
      .cap{font-family:${MONO};font-size:${TYPE.micro}px;line-height:1.35;color:${t.text};
        text-align:center;letter-spacing:-.005em}
-     .h{font-family:${DISPLAY};font-weight:600;line-height:1.06;letter-spacing:-.025em;
+     .h{${DISPLAY_CSS};line-height:1.06;
        color:${t.text};font-size:${ledeSize(s.verdict)}px}
      .h em{font-style:normal;color:${ink}}`,
     `     <div class="rail">${steps}</div>
@@ -928,16 +950,16 @@ function annotatedCard(k) {
     )
     .join('');
   return doc(
-    `body{background:${t.bg};font-family:${SANS};display:flex;flex-direction:column;
+    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:30px;padding:0 76px}
      .top{display:flex;flex-direction:column;gap:8px}
      /* The intro is the lede — it is the finding. The flagged claims are the
         evidence and sit one step down the ramp. */
-     .h{font-family:${DISPLAY};font-weight:600;letter-spacing:-.025em;color:${t.text};
+     .h{${DISPLAY_CSS};color:${t.text};
        line-height:1.06;font-size:${ledeSize(a.intro)}px}
      .sub{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.04em;color:${t.dim}}
      .sp{padding:11px 0}
-     .claim{font-family:${DISPLAY};font-weight:600;font-size:${TYPE.major}px;
+     .claim{${DISPLAY_CSS};font-size:${TYPE.major}px;
        letter-spacing:-.01em;color:${t.text};display:inline-block;
        border-bottom:3px solid ${ink};padding-bottom:5px;line-height:1.2}
      .flag{font-family:${MONO};font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.14em;
@@ -955,18 +977,18 @@ function ogHtml() {
   const t = THEMES.dark;
   const chars = headline.map((h) => h.t).join('').length;
   return doc(
-    `body{display:flex;flex-direction:column;background:${t.bg};font-family:${SANS}}
+    `body{display:flex;flex-direction:column;background:${ground(t)};font-family:${SANS}}
      .head{flex:1 1 auto;display:flex;align-items:center;padding:0 68px}
-     h1{font-family:${DISPLAY};font-weight:600;line-height:1.08;letter-spacing:-.025em;
+     h1{${DISPLAY_CSS};line-height:1.08;
        color:${t.text};font-size:${fitSize('x'.repeat(chars), 58, 38, 62)}px}
      .evidence{flex:0 0 194px;display:flex}
      .cell{flex:1 1 0;display:flex;flex-direction:column;justify-content:center;gap:13px;
        padding:0 44px;min-width:0}
-     .one{background:${t.surface}} .two{background:${T.field}}
+     .one{background:transparent} .two{background:${T.field}}
      .l{font-family:${MONO};font-size:16px;font-weight:500;letter-spacing:.15em;
        text-transform:uppercase}
      .one .l{color:${t.dim}} .two .l{color:rgba(249,245,236,.82)}
-     .v{font-family:${DISPLAY};font-weight:600;font-size:31px;line-height:1.15;
+     .v{${DISPLAY_CSS};font-size:31px;line-height:1.15;
        letter-spacing:-.01em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;
        -webkit-box-orient:vertical}
      .one .v{color:${t.text}} .two .v{color:${FIELD_FG}}

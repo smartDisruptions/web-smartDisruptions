@@ -232,6 +232,24 @@ rule that comes with the reuse: these inks may only carry a **verdict about the
 data**, never a decorative highlight. A green heading that is not asserting
 "this holds" is a bug, in either section.
 
+## The share cards are the same paper
+
+Every image a link renders with — a post's hero, its social card, the site-wide
+card, a Market Storm card — is drawn from these tokens, on the same graph-paper
+ground, in Caveat and Nunito. Two generators do it and both have to be changed
+together: `scripts/make-hero.mjs` (headless Chrome, writes the .webp files) and
+the `opengraph-image.tsx` routes (Satori, at build time).
+
+Two traps live in there, both already sprung once. Caveat needs
+`font-size-adjust: 0.47` or every card renders a third too small, exactly as on
+the site. And Satori cannot read woff2 and silently falls back: it needs the
+.ttf copies in `src/fonts/`, and if only one face is registered it sets the
+whole card in that one face.
+
+When the site's faces or palette change, these change in the same commit, and
+every card is re-rendered. Cards spent weeks in Georgia once because that did
+not happen.
+
 ## Accessibility is a floor, not a goal
 
 All text meets WCAG AA (4.5:1 body, 3:1 large) in **both** themes. This is
