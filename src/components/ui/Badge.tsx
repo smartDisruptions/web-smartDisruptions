@@ -20,7 +20,7 @@ export default function Badge({
 }: BadgeProps) {
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${variantStyles[variant]} ${className}`.trim()}
+      className={`inline-block rounded-[5px] px-2.5 py-1 text-xs font-bold tracking-wide ${variantStyles[variant]} ${className}`.trim()}
     >
       {children}
     </span>

@@ -15,7 +15,7 @@ export default function SubscribeForm({
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState(''); // honeypot — hidden from humans
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>(
-    'idle',
+    'idle'
   );
   const [error, setError] = useState('');
 
@@ -80,12 +80,12 @@ export default function SubscribeForm({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="you@example.com"
-        className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-accent focus:outline-none"
+        className="min-h-11 min-w-0 flex-1 rounded-none border-0 border-b-[3px] border-text-primary bg-transparent px-1 py-2 text-base text-text-primary placeholder:text-text-secondary/70 focus:border-accent focus:outline-none"
       />
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-background transition-all hover:bg-accent-hover disabled:pointer-events-none disabled:opacity-50"
+        className="nb-wobble font-display inline-flex min-h-11 items-center justify-center border-2 border-[var(--sd-sticky-ink)] bg-[var(--sd-sticky)] px-5 py-1 text-xl text-[var(--sd-sticky-ink)] transition-all hover:-rotate-1 hover:scale-[1.03] disabled:pointer-events-none disabled:opacity-50"
       >
         {status === 'sending' ? 'Adding…' : 'Get the next build'}
       </button>

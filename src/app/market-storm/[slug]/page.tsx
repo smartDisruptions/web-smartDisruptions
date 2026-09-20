@@ -84,7 +84,9 @@ export default async function MarketStormDetail({
           top of it. The prose inside is still clamped to its own measure — the
           extra width goes to the nav and to the charts and tables, which were
           the elements the old container was actually squeezing. */}
-      <div className="mx-auto max-w-[68rem]">
+      {/* The report is a printed sheet on the graph paper, like an article:
+          the grid never runs behind a sentence or a chart. */}
+      <div className="nb-sheet nb-tape mx-auto max-w-[72rem] px-4 pt-9 pb-12 sm:px-10 sm:pt-12 sm:pb-16">
         <Link
           href="/market-storm"
           className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
@@ -127,8 +129,8 @@ export default async function MarketStormDetail({
         <ReportView report={report} />
 
         {/* Subscribe */}
-        <div className="mt-16 rounded-xl border border-border bg-accent/[0.05] p-8">
-          <h2 className="font-display text-xl font-semibold tracking-tight text-text-primary">
+        <div className="nb-index-card mt-16 py-7 pr-6 pl-11 sm:pl-14">
+          <h2 className="font-display text-3xl text-text-primary">
             Get the next Market Storm in your inbox
           </h2>
           <p className="mt-2 max-w-lg text-sm text-text-secondary">

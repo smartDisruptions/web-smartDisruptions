@@ -41,7 +41,9 @@ function ReportHero({ report }: { report: MarketStormReport }) {
   const showVerdict = !report.keyTakeaways?.length;
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-      <div className={`px-6 py-4 sm:px-8 ${showVerdict ? 'border-b border-border' : ''}`}>
+      <div
+        className={`px-6 py-4 sm:px-8 ${showVerdict ? 'border-b border-border' : ''}`}
+      >
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <span className="font-mono text-xl font-bold tracking-wider text-accent">
             {report.ticker}
@@ -54,7 +56,7 @@ function ReportHero({ report }: { report: MarketStormReport }) {
       </div>
       {showVerdict && (
         <div className="px-6 py-7 sm:px-8">
-          <p className="max-w-[58ch] font-display text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
+          <p className="font-read max-w-[58ch] text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
             {report.verdict}
           </p>
         </div>
@@ -770,7 +772,6 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
       <Takeaways lead={report.takeawaysLead} items={report.keyTakeaways} />
       <PriceStrip report={report} />
 
-
       {/* Body and nav, side by side on large screens.
           The nav comes AFTER the body in source order so a screen reader and a
           keyboard user meet the report before its table of contents, and
@@ -779,31 +780,36 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
           the question, and here they want opposite things. */}
       <div className="sd-report-grid">
         <div className="sd-report-body min-w-0 space-y-14">
-      <Stop n={nOf('what-happened')} id="what-happened" title="What happened" lede={undefined}>
-        <ArticleBody className="max-w-[62ch]">{report.summary}</ArticleBody>
-      </Stop>
+          <Stop
+            n={nOf('what-happened')}
+            id="what-happened"
+            title="What happened"
+            lede={undefined}
+          >
+            <ArticleBody className="max-w-[62ch]">{report.summary}</ArticleBody>
+          </Stop>
 
-      <Stop
-        n={nOf('the-numbers')}
-        id="the-numbers"
-        title="The numbers that matter"
-        lede="The figures the rest of this rests on, and which way each one cuts."
-      >
-        <KpiGrid report={report} />
-      </Stop>
+          <Stop
+            n={nOf('the-numbers')}
+            id="the-numbers"
+            title="The numbers that matter"
+            lede="The figures the rest of this rests on, and which way each one cuts."
+          >
+            <KpiGrid report={report} />
+          </Stop>
 
-      {report.headlineVsReal && report.headlineVsReal.length > 0 && (
-        <Stop
-          n={nOf('headline-vs-filing')}
-          id="headline-vs-filing"
-          title="The headline vs. the fine print"
-          lede="Every report in this section has found the same shape: the number that leads the coverage is not the number the filing supports."
-        >
-          <HeadlineVsRealBlock items={report.headlineVsReal} />
-        </Stop>
-      )}
+          {report.headlineVsReal && report.headlineVsReal.length > 0 && (
+            <Stop
+              n={nOf('headline-vs-filing')}
+              id="headline-vs-filing"
+              title="The headline vs. the fine print"
+              lede="Every report in this section has found the same shape: the number that leads the coverage is not the number the filing supports."
+            >
+              <HeadlineVsRealBlock items={report.headlineVsReal} />
+            </Stop>
+          )}
 
-      {/* The full print, collapsed.
+          {/* The full print, collapsed.
 
           Every KPI card above is also a row in here — 8 of 8 on Amazon, 6 of 9
           on Palantir. Deleting the duplicate rows was the obvious fix and the
@@ -813,132 +819,124 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
           So it keeps every row and stops competing for attention instead. The
           walkthrough reader never opens it; the one who wants to verify gets
           the complete print. */}
-      {report.printTable && (
-        <Stop
-          n={nOf('the-print')}
-          id="the-print"
-          title={report.printTableTitle ?? 'The print'}
-        >
-          <details className="group rounded-xl border border-border bg-surface">
-            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
-              <span
-                className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
-                aria-hidden
-              >
-                &#9654;
-              </span>
-              Show the full print — {report.printTable.rows.length} rows, every
-              figure this report rests on
-            </summary>
-            <div className="border-t border-border p-5">
-              <DataTableBlock table={report.printTable} />
-            </div>
-          </details>
-        </Stop>
-      )}
+          {report.printTable && (
+            <Stop
+              n={nOf('the-print')}
+              id="the-print"
+              title={report.printTableTitle ?? 'The print'}
+            >
+              <details className="group rounded-xl border border-border bg-surface">
+                <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-sm font-medium text-text-primary transition-colors hover:text-accent">
+                  <span
+                    className="font-mono text-xs text-accent transition-transform group-open:rotate-90"
+                    aria-hidden
+                  >
+                    &#9654;
+                  </span>
+                  Show the full print — {report.printTable.rows.length} rows,
+                  every figure this report rests on
+                </summary>
+                <div className="border-t border-border p-5">
+                  <DataTableBlock table={report.printTable} />
+                </div>
+              </details>
+            </Stop>
+          )}
 
-      {report.bull?.length && report.bear?.length ? (
-        <Stop
-          n={nOf('central-tension')}
-          id="central-tension"
-          title="The central tension"
-          lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
-        >
-          <BullBear report={report} />
-        </Stop>
-      ) : null}
+          {report.bull?.length && report.bear?.length ? (
+            <Stop
+              n={nOf('central-tension')}
+              id="central-tension"
+              title="The central tension"
+              lede="The bull and the bear do not disagree on the facts. They disagree on one thing — and it is the whole investment."
+            >
+              <BullBear report={report} />
+            </Stop>
+          ) : null}
 
-
-
-      {/* With no bull/bear stop to host it, the question stands alone here,
+          {/* With no bull/bear stop to host it, the question stands alone here,
           just before the evidence sections that answer it. */}
-      {!(report.bull?.length && report.bear?.length) && (
-        <TheQuestion report={report} />
-      )}
+          {!(report.bull?.length && report.bear?.length) && (
+            <TheQuestion report={report} />
+          )}
 
-      {/* Sections, or the single long read if the report has none.
+          {/* Sections, or the single long read if the report has none.
           A thesis piece carries its whole argument here, and 1,290 words under
           one heading is a wall however the prose reads — so each idea gets its
           own numbered stop and its own figure, and the nav can list them. */}
-      {report.sections?.length ? (
-        report.sections.map((sec) => (
+          {report.sections?.length ? (
+            report.sections.map((sec) => (
+              <Stop key={sec.id} n={nOf(sec.id)} id={sec.id} title={sec.label}>
+                <BodyWithCharts
+                  markdown={sec.body}
+                  charts={report.charts}
+                  className="max-w-[62ch]"
+                />
+              </Stop>
+            ))
+          ) : (
+            <Stop
+              n={nOf('longer-read')}
+              id="longer-read"
+              title="The longer read"
+              lede="Valuation, the risks in order, and the horizon this resolves on."
+            >
+              <BodyWithCharts
+                markdown={report.analysis}
+                charts={report.charts}
+                className="max-w-[62ch]"
+              />
+            </Stop>
+          )}
+
           <Stop
-            key={sec.id}
-            n={nOf(sec.id)}
-            id={sec.id}
-            title={sec.label}
+            n={nOf('invalidation')}
+            id="invalidation"
+            title={
+              report.invalidationIntro
+                ? 'What would settle it'
+                : 'What would prove this wrong'
+            }
+            lede="The discipline: name in advance what would break each side of the case."
           >
-            <BodyWithCharts
-              markdown={sec.body}
-              charts={report.charts}
-              className="max-w-[62ch]"
-            />
+            <Invalidation report={report} />
           </Stop>
-        ))
-      ) : (
-        <Stop
-          n={nOf('longer-read')}
-          id="longer-read"
-          title="The longer read"
-          lede="Valuation, the risks in order, and the horizon this resolves on."
-        >
-          <BodyWithCharts
-            markdown={report.analysis}
-            charts={report.charts}
-            className="max-w-[62ch]"
-          />
-        </Stop>
-      )}
 
-      <Stop
-        n={nOf('invalidation')}
-        id="invalidation"
-        title={
-          report.invalidationIntro
-            ? 'What would settle it'
-            : 'What would prove this wrong'
-        }
-        lede="The discipline: name in advance what would break each side of the case."
-      >
-        <Invalidation report={report} />
-      </Stop>
+          {report.soWhat && (
+            <Stop
+              n={nOf('so-what')}
+              id="so-what"
+              title="What this means for you"
+              lede="If you do not trade stocks, this is the part that still reaches you."
+            >
+              <SoWhat report={report} />
+            </Stop>
+          )}
 
-      {report.soWhat && (
-        <Stop
-          n={nOf('so-what')}
-          id="so-what"
-          title="What this means for you"
-          lede="If you do not trade stocks, this is the part that still reaches you."
-        >
-          <SoWhat report={report} />
-        </Stop>
-      )}
+          {report.throughLine && <ThroughLineBlock line={report.throughLine} />}
 
-      {report.throughLine && <ThroughLineBlock line={report.throughLine} />}
-
-      {/* ---- How the research was made. Everything meta, together, at the end. ---- */}
-      <div
-        id="method"
-        className="scroll-mt-24 space-y-10 rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8"
-      >
-        <div>
-          <p className="font-mono-accent mb-2 text-accent">
-            How this was researched
-          </p>
-          <p className="max-w-[62ch] leading-relaxed text-text-primary/85">
-            <Inline>{MARKET_STORM_METHOD}</Inline>
-          </p>
-        </div>
-        {/* The section-wide description above says what STORM is; this says what
+          {/* ---- How the research was made. Everything meta, together, at the end. ---- */}
+          <div
+            id="method"
+            className="scroll-mt-24 space-y-10 rounded-2xl border border-border bg-surface-elevated p-6 sm:p-8"
+          >
+            <div>
+              <p className="font-mono-accent mb-2 text-accent">
+                How this was researched
+              </p>
+              <p className="max-w-[62ch] leading-relaxed text-text-primary/85">
+                <Inline>{MARKET_STORM_METHOD}</Inline>
+              </p>
+            </div>
+            {/* The section-wide description above says what STORM is; this says what
             happened on THIS run — who was in the room, how deep the refutation
             pass went, and what capped it. Reports written before the run record
             was captured render the description alone. */}
-        <MethodBlock method={report.method} />
-        <VerificationLedger report={report} />
-        <OpenQuestions report={report} />
-        <Disclaimer />
-      </div>
-
+            <MethodBlock method={report.method} />
+            <VerificationLedger report={report} />
+            <OpenQuestions report={report} />
+            <Disclaimer />
+          </div>
         </div>
 
         <div className="sd-report-nav">

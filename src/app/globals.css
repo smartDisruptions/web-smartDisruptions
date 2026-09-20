@@ -1,9 +1,10 @@
 @import 'tailwindcss';
 
 /*
-  PAPER — light, editorial, typography-first.
-  One warm accent on warm paper. No grids, glows, or scanlines —
-  whitespace and type do the work, and the page stays lightning fast.
+  NOTEBOOK — a builder's graph-paper notebook.
+  Handwriting for headlines and asides, a reading face for anything long,
+  blue pen for anything you can press, red pen for marks. Everything that
+  looks taped, stuck or ruled is CSS — no images, so the page stays fast.
 */
 @theme inline {
   /* Colors are driven by the semantic --sd-* variables below, so a single
@@ -28,67 +29,95 @@
   --color-foreground: var(--sd-text-primary);
   --color-border: var(--sd-border);
   --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
-  /* Sans fallbacks: the display face is Instrument Sans now, and falling back
-     to Georgia would swap the whole page to a serif if the font ever failed. */
-  --font-display: var(--font-display), system-ui, -apple-system, sans-serif;
+  /* The display face is handwriting (Caveat). Its fallbacks are other
+     handwriting faces, so a failed font load keeps the notebook voice. */
+  --font-display: var(--font-display), 'Bradley Hand', 'Segoe Print', cursive;
+  /* Long-form reading face. Handwriting never sets a paragraph. */
+  --font-read: var(--font-read), 'Iowan Old Style', Georgia, serif;
   --font-mono:
     ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  /* Paper has square corners. The big radii are redefined here, once, rather
+     than edited at ~60 call sites: anything that was a soft rounded card is now
+     a cut sheet. Pills (rounded-full) and small chips are untouched. */
+  --radius-lg: 3px;
+  --radius-xl: 3px;
+  --radius-2xl: 4px;
 }
 
-/* LIGHT (default) — a warmer, less-glary paper than the old near-white,
-   with cards lifted just above it instead of pure white. */
+/* LIGHT (default) — white graph paper. Sheets and cards are one step whiter
+   than the page so they read as paper laid on paper. */
 :root {
   color-scheme: light;
-  --sd-bg: #f4efe4;
-  --sd-surface: #fdfbf6;
-  --sd-surface-elevated: #ece5d7;
-  --sd-fill: rgba(26, 23, 20, 0.05);
-  --sd-accent: #c2410c;
-  --sd-accent-hover: #9a3412;
-  --sd-accent-secondary: #b45309;
-  --sd-text-primary: #1a1714;
-  --sd-text-secondary: #6b6560;
-  --sd-border: rgba(26, 23, 20, 0.12);
-  --sd-scrollbar: rgba(26, 23, 20, 0.22);
+  --sd-bg: #fbfaf4;
+  --sd-surface: #ffffff;
+  --sd-surface-elevated: #f2f0e6;
+  --sd-fill: rgba(37, 37, 45, 0.06);
+  /* The accent is the BLUE pen: links, eyebrows, active nav, buttons. Red is
+     for marks only (--sd-pen), which keeps it clear of Market Storm's bear red. */
+  --sd-accent: #2a57c5;
+  --sd-accent-hover: #1f4396;
+  --sd-accent-secondary: #b3261e; /* error / alert text */
+  --sd-text-primary: #25252d;
+  --sd-text-secondary: #5f616e;
+  --sd-border: rgba(37, 37, 45, 0.16);
+  --sd-scrollbar: rgba(37, 37, 45, 0.24);
+  /* Notebook materials */
+  --sd-grid: #d5e0ee; /* graph-paper lines */
+  --sd-pen: #d93030; /* red pen — underlines, scribbles, margin rule. Marks, not text. */
+  --sd-pen-ink: #b3261e; /* red pen when it IS text — AA on paper */
+  --sd-hl: rgba(255, 226, 90, 0.62); /* highlighter */
+  --sd-sticky: #ffe26a;
+  --sd-sticky-ink: #2b2b33; /* text on a sticky note, both themes */
+  --sd-tape: rgba(255, 221, 120, 0.75);
+  --sd-rule: #cfe0f2; /* ruled-card lines */
+  --sd-margin-line: #f0a0a0;
   /* Arcade text inks — dark on light paper (bright arcade colors fail AA here) */
   --arcade-red-ink: #b91c1c;
   --arcade-yellow-ink: #854d0e; /* was #a16207 — 4.3:1 on paper, under AA */
   --arcade-blue-ink: #1d4ed8;
-  --sd-card-shadow: rgba(26, 23, 20, 0.18);
-  --sd-badge-secondary: #92400e; /* dark amber — AA on the light amber tint */
+  --sd-card-shadow: rgba(20, 22, 30, 0.35);
+  --sd-badge-secondary: #8a1c16; /* dark red — AA on the light red tint */
   /* Market Storm data semantics — text-safe inks on paper. Follows the ink
      flip: dark on paper here, bright on the dark cabinet below. */
   --sd-bull: #166534; /* green-800 — AA on paper */
   --sd-bull-soft: rgba(22, 101, 52, 0.1);
   --sd-bear: #b91c1c; /* reuses the arcade red ink — AA on paper */
   --sd-bear-soft: rgba(185, 28, 28, 0.08);
-  --sd-warn: #92400e; /* dark amber — matches badge-secondary, AA on paper */
+  --sd-warn: #92400e; /* dark amber — AA on paper */
   --sd-warn-soft: rgba(146, 64, 14, 0.1);
 }
 
-/* DARK — warm charcoal, not cold black; keeps the "paper" identity after dark.
-   Text scores AAA, so the contrast work here is structural: a deeper canvas
-   with surfaces and borders lifted into visible steps so cards, panels, and
-   dividers read as layered instead of dissolving into the page. */
+/* DARK — the same notebook after dark: slate graph paper, chalk-bright pens.
+   Sticky notes stay yellow with dark ink, because a sticky note is an object,
+   not a themed surface. */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --sd-bg: #14100c;
-  --sd-surface: #241d15;
-  --sd-surface-elevated: #302619;
-  --sd-fill: rgba(245, 241, 232, 0.07);
-  --sd-accent: #f4834b;
-  --sd-accent-hover: #f7a273;
-  --sd-accent-secondary: #e0913f;
-  --sd-text-primary: #f4efe5;
-  --sd-text-secondary: #b7ad9d;
-  --sd-border: rgba(245, 239, 227, 0.22);
-  --sd-scrollbar: rgba(245, 239, 227, 0.26);
+  --sd-bg: #13151a;
+  --sd-surface: #1b1e26;
+  --sd-surface-elevated: #252934;
+  --sd-fill: rgba(235, 231, 222, 0.08);
+  --sd-accent: #93b4ff;
+  --sd-accent-hover: #b9ceff;
+  --sd-accent-secondary: #ff8585;
+  --sd-text-primary: #ebe7de;
+  --sd-text-secondary: #a3a6b2;
+  --sd-border: rgba(235, 231, 222, 0.2);
+  --sd-scrollbar: rgba(235, 231, 222, 0.26);
+  --sd-grid: #222733;
+  --sd-pen: #ff8585;
+  --sd-pen-ink: #ff8585;
+  --sd-hl: rgba(255, 226, 90, 0.24);
+  --sd-sticky: #ecd05a;
+  --sd-sticky-ink: #23232a;
+  --sd-tape: rgba(255, 221, 120, 0.38);
+  --sd-rule: #2c3442;
+  --sd-margin-line: #6b3a3f;
   /* Arcade text inks — flip to bright neon, which pops on the dark cabinet */
   --arcade-red-ink: #f87171;
   --arcade-yellow-ink: #fde047;
   --arcade-blue-ink: #60a5fa;
   --sd-card-shadow: rgba(0, 0, 0, 0.7); /* real depth on the dark surface */
-  --sd-badge-secondary: #f2b483; /* soft light amber — AA on the dark tint */
+  --sd-badge-secondary: #ffb3b3;
   /* Market Storm data semantics — inks flip to bright on the dark cabinet
      (both clear AA in their own theme). */
   --sd-bull: #4ade80;
@@ -104,7 +133,12 @@ html {
 }
 
 body {
-  background: var(--sd-bg);
+  /* Graph paper: two 1px line gradients on a 24px grid. */
+  background-color: var(--sd-bg);
+  background-image:
+    linear-gradient(var(--sd-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sd-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--sd-text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -119,18 +153,32 @@ body {
   }
 }
 
-/* Headlines use the display serif */
+/* Headlines are handwriting. Caveat draws small for its point size — its
+   x-height is about two thirds of a text sans — so font-size-adjust scales it
+   up to sit where the old display face sat, without touching the size
+   utilities on 58 headings. Tracking is reset: negative tracking is a fix for
+   tight sans headlines and makes handwriting collide. */
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  font-size-adjust: 0.47;
+  letter-spacing: 0;
+  line-height: 1.12;
 }
 
-/* Small eyebrow/label accent (replaces the old mono "// …" look) */
+/* Long-form body copy. */
+.font-read {
+  font-family: var(--font-read);
+}
+
+/* Small eyebrow/label — the printed label on a notebook tab. The class name
+   is historical (it was mono once); 45 call sites use it, so it stays. */
 .font-mono-accent {
-  font-family: var(--font-mono);
-  letter-spacing: 0.08em;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 /* Selection */
@@ -298,22 +346,36 @@ body {
       animation-range: entry 20% cover 45%;
     }
     @keyframes sd-bar-grow {
-      from { width: 0; }
-      to { width: var(--w, 100%); }
+      from {
+        width: 0;
+      }
+      to {
+        width: var(--w, 100%);
+      }
     }
     @keyframes sd-draw-line {
-      from { stroke-dashoffset: 2200; }
-      to { stroke-dashoffset: 0; }
+      from {
+        stroke-dashoffset: 2200;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
     }
     @keyframes sd-fade-in {
-      from { opacity: 0; }
-      to { opacity: 0.1; }
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 0.1;
+      }
     }
   }
 }
 
 /* Without scroll-driven animation support the bar still needs its width. */
-.sd-bar { width: var(--w); }
+.sd-bar {
+  width: var(--w);
+}
 
 /* ── Report layout: body beside its table of contents ──────────────────────
    Written as a named class rather than utilities because the column track is
@@ -343,4 +405,127 @@ body {
     max-height: calc(100vh - 3rem);
     overflow-y: auto;
   }
+}
+
+/* ── Notebook materials ─────────────────────────────────────────────────────
+   The physical objects of the theme, as named classes rather than utility
+   strings, because each one is a small recipe (pseudo-element tape, a ruled
+   background, an uneven border) that would be unreadable inline and has to
+   stay identical everywhere it appears.                                      */
+
+/* A sheet of paper laid on the graph paper — the reading surface. */
+.nb-sheet {
+  position: relative;
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  box-shadow: 0 18px 40px -24px var(--sd-card-shadow);
+}
+
+/* A strip of tape across the top edge. Add to any positioned element. */
+.nb-tape::before {
+  content: '';
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  width: 110px;
+  height: 26px;
+  margin-left: -55px;
+  background: var(--sd-tape);
+  transform: rotate(-2deg);
+  pointer-events: none;
+}
+
+/* A photo print: white border, soft drop shadow. Used for cards with images. */
+.nb-polaroid {
+  position: relative;
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  box-shadow:
+    0 2px 3px rgba(20, 22, 30, 0.12),
+    0 14px 26px -14px var(--sd-card-shadow);
+}
+
+/* A wall of prints hangs a little crooked, and straightens when touched.
+   Uses the individual `rotate` / `scale` properties, not `transform`, so it
+   composes with the scroll-reveal translate on the same element instead of
+   fighting it for the one transform slot. */
+@media (prefers-reduced-motion: no-preference) {
+  .nb-wall > * {
+    transition:
+      rotate 0.2s ease,
+      scale 0.2s ease,
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
+  }
+}
+.nb-wall > *:nth-child(3n + 1) {
+  rotate: -1.4deg;
+}
+.nb-wall > *:nth-child(3n + 2) {
+  rotate: 1.1deg;
+}
+.nb-wall > *:nth-child(3n) {
+  rotate: -0.5deg;
+}
+.nb-wall > *:hover,
+.nb-wall > *:focus-within {
+  rotate: 0deg;
+  scale: 1.02;
+  z-index: 1;
+}
+
+/* A sticky note. Always yellow with dark ink, in both themes. */
+.nb-sticky {
+  position: relative;
+  background: var(--sd-sticky);
+  color: var(--sd-sticky-ink);
+  box-shadow: 0 12px 20px -12px var(--sd-card-shadow);
+}
+
+/* A ruled index card with a red margin line. */
+.nb-index-card {
+  position: relative;
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  box-shadow: 0 14px 24px -18px var(--sd-card-shadow);
+}
+.nb-index-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 1.6rem;
+  width: 2px;
+  background: var(--sd-margin-line);
+  pointer-events: none;
+}
+
+/* Highlighter swipe behind text. */
+.nb-hl {
+  background: linear-gradient(
+    transparent 14%,
+    var(--sd-hl) 14% 88%,
+    transparent 88%
+  );
+  padding: 0 0.12em;
+  border-radius: 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* A short red pen stroke under a heading. */
+.nb-underline::after {
+  content: '';
+  display: block;
+  width: 72px;
+  height: 5px;
+  margin-top: 0.35em;
+  border-radius: 5px;
+  background: var(--sd-pen);
+  transform: rotate(-1.4deg);
+}
+
+/* The uneven outline of something drawn by hand — buttons, inputs. */
+.nb-wobble {
+  border-radius: 255px 18px 225px 18px / 18px 225px 18px 255px;
 }

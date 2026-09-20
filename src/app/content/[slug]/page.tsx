@@ -97,7 +97,7 @@ export default async function ContentDetail({
   };
 
   return (
-    <SectionContainer className="py-20">
+    <SectionContainer className="py-10 sm:py-16">
       {/* Static local data, JSON-encoded; < escaped so content can never
           close the script tag. */}
       <script
@@ -106,13 +106,15 @@ export default async function ContentDetail({
           __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
         }}
       />
-      <div className="mx-auto max-w-2xl">
+      {/* The printed sheet: a plain page laid on the graph paper, so the grid
+          never sits behind a sentence. */}
+      <div className="nb-sheet nb-tape mx-auto max-w-3xl px-5 pt-9 pb-12 sm:px-14 sm:pt-14 sm:pb-16">
         {/* Back Navigation */}
         <Link
           href="/content"
-          className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
+          className="font-display inline-flex min-h-11 items-center gap-2 text-2xl text-accent transition-colors hover:text-accent-hover"
         >
-          &larr; Back to Writing
+          &larr; all notes
         </Link>
 
         {/* Header */}
@@ -123,7 +125,7 @@ export default async function ContentDetail({
               {formatDate(entry.publishDate)} · by Josh Escusa
             </span>
           </div>
-          <h1 className="font-display mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-[2.75rem]">
+          <h1 className="font-display mt-5 text-[2.6rem] text-text-primary sm:text-[3.4rem]">
             {entry.title}
           </h1>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -137,7 +139,7 @@ export default async function ContentDetail({
 
         {/* Hero Image */}
         {entry.heroImage && (
-          <figure className="mt-10 overflow-hidden rounded-xl border border-border">
+          <figure className="nb-polaroid nb-tape mt-12 -rotate-[0.8deg] p-2">
             <HeroImage
               post={entry}
               priority
@@ -171,9 +173,9 @@ export default async function ContentDetail({
         })()}
 
         {/* Subscribe — the reader just finished a build story; offer the next one */}
-        <div className="mt-16 rounded-xl border border-border bg-accent/[0.05] p-8">
-          <h2 className="font-display text-xl font-semibold tracking-tight text-text-primary">
-            Get the next build in your inbox
+        <div className="nb-index-card mt-16 rotate-[0.5deg] py-7 pr-6 pl-11 sm:pl-14">
+          <h2 className="font-display text-4xl text-text-primary">
+            want the next build?
           </h2>
           <p className="mt-2 max-w-lg text-sm text-text-secondary">
             One email when I publish a new breakdown — what I built, how, and

@@ -26,29 +26,26 @@ export default function Navbar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur-sm"
+      className="sticky top-0 z-50 border-b border-border bg-background/92 backdrop-blur-sm"
       aria-label="Main navigation"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link
-          href="/"
-          className="font-display text-2xl font-semibold tracking-tight text-accent"
-        >
-          SmartDisruptions
+        <Link href="/" className="font-display text-[1.7rem] text-text-primary">
+          <span className="nb-hl">Smart Disruptions</span>
         </Link>
 
         {/* Right side: links (desktop) + theme toggle + hamburger (mobile) */}
         <div className="flex items-center gap-3 sm:gap-5">
           {/* Desktop links */}
-          <ul className="hidden items-center gap-8 md:flex" role="list">
+          <ul className="hidden items-center gap-6 lg:flex" role="list">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`text-sm font-medium transition-colors ${
+                  className={`font-display text-xl transition-colors ${
                     isActive(link.href)
-                      ? 'text-accent'
-                      : 'text-text-secondary hover:text-text-primary'
+                      ? 'text-[var(--sd-pen-ink)] underline decoration-[var(--sd-pen)] decoration-2 underline-offset-4'
+                      : 'text-accent hover:text-accent-hover'
                   }`}
                   aria-current={isActive(link.href) ? 'page' : undefined}
                 >
@@ -62,7 +59,7 @@ export default function Navbar() {
 
           {/* Mobile hamburger */}
           <button
-            className="flex flex-col gap-1.5 md:hidden"
+            className="flex min-h-11 min-w-11 flex-col items-center justify-center gap-1.5 lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
@@ -88,17 +85,17 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-border md:hidden">
+        <div className="border-t border-border lg:hidden">
           <ul className="flex flex-col gap-2 px-4 py-4" role="list">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`font-display block rounded-md px-3 py-2 text-2xl transition-colors ${
                     isActive(link.href)
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-text-secondary hover:bg-fill hover:text-text-primary'
+                      ? 'text-[var(--sd-pen-ink)]'
+                      : 'text-accent hover:bg-fill'
                   }`}
                   aria-current={isActive(link.href) ? 'page' : undefined}
                 >
