@@ -28,10 +28,10 @@ export default async function AppDetail({
         <Suspense
           fallback={
             <Link
-              href="/apps"
+              href="/built"
               className="inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent"
             >
-              &larr; Back to Apps
+              &larr; Back to what I built
             </Link>
           }
         >
@@ -54,11 +54,7 @@ export default async function AppDetail({
         </p>
         {app.liveUrl && (
           <div className="mt-6 text-left">
-            <a
-              href={app.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={app.liveUrl} target="_blank" rel="noopener noreferrer">
               <Button>Try Live Demo &rarr;</Button>
             </a>
           </div>
@@ -91,11 +87,7 @@ export default async function AppDetail({
       {/* Try Live Demo (below screenshots) */}
       {app.liveUrl && (
         <div className="mt-8 text-left">
-          <a
-            href={app.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={app.liveUrl} target="_blank" rel="noopener noreferrer">
             <Button>Try Live Demo &rarr;</Button>
           </a>
         </div>
@@ -149,8 +141,8 @@ export default async function AppDetail({
       <div className="mt-16 text-center">
         <Suspense
           fallback={
-            <Button variant="secondary" href="/apps">
-              &larr; Back to All Apps
+            <Button variant="secondary" href="/built">
+              &larr; Back to what I built
             </Button>
           }
         >

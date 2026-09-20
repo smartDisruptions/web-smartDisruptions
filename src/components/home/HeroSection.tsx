@@ -31,7 +31,7 @@ export default function HeroSection() {
             <Button variant="primary" size="lg" href="/content">
               Read the notes
             </Button>
-            <Button variant="secondary" size="lg" href="/apps">
+            <Button variant="secondary" size="lg" href="/built">
               See what I&apos;ve built
             </Button>
           </div>

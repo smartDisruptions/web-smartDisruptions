@@ -42,7 +42,7 @@ export default function FeaturedAppsSection() {
 
       <RevealOnScroll>
         <div className="mt-14 text-center">
-          <Button variant="secondary" href="/apps">
+          <Button variant="secondary" href="/built">
             See all of it
           </Button>
         </div>
