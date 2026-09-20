@@ -31,7 +31,9 @@ export const metadata: Metadata = {
  * src/data/projects.ts alongside the rest of each project's detail.
  *
  * VOICE: written for the average person. No analogies, no wordplay, no
- * sentence that has to be read twice.
+ * sentence that has to be read twice. That now includes src/data/apps.ts —
+ * every description there was rewritten out of engineer-speak on 2026-09-20,
+ * so this page can read the data directly instead of carrying its own copy.
  */
 
 /** Slugs already shown as project cards, under either name. */
@@ -39,22 +41,6 @@ const COVERED = new Set([
   ...projects.map((p) => p.slug),
   ...Object.keys(PROJECT_APP_SLUGS),
 ]);
-
-/**
- * Plain one-liners, keyed by slug, replacing the engineer-facing `description`
- * in src/data/apps.ts. A slug with no line here falls back to the data, which
- * is the safe direction: a new app shows its old wording rather than nothing.
- */
-const PLAIN_DESCRIPTIONS: Record<string, string> = {
-  'pomodoro-timer':
-    'A timer that splits work into short bursts with breaks in between, and keeps a record of what you got done.',
-  'spacex-mars':
-    'Shows the path a spacecraft takes from Earth to Mars. You can change the settings and watch the trip play out.',
-  'ai-diary':
-    'A private journal. It tracks your mood over time and has a companion you can talk to about what you wrote.',
-  'going-traveling':
-    'A twelve-day plan for a trip to Japan. Two versions of each day to choose between, a budget that changes with the size of your group, and an allergy list you set yourself.',
-};
 
 type CatalogueEntry = {
   key: string;
@@ -80,7 +66,7 @@ const catalogue: CatalogueEntry[] = [
     .map((app) => ({
       key: app.slug,
       name: app.name,
-      description: PLAIN_DESCRIPTIONS[app.slug] ?? app.description,
+      description: app.description,
       thumbnail: app.thumbnailUrl,
       liveUrl: app.liveUrl,
       detailHref: `/built/${app.slug}`,
