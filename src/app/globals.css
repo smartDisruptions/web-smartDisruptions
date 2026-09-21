@@ -437,6 +437,28 @@ body {
   pointer-events: none;
 }
 
+/* A notebook page's red margin rule, down the left edge of a sheet. Opt-in on
+   top of .nb-sheet, because a sheet is also used for pages that are not read
+   start to finish (About, Privacy) where a reading margin means nothing.
+
+   Wide screens only, as in the original design: a phone sheet has 20px of side
+   padding, so a rule inset far enough to look like a margin lands on top of the
+   text instead of beside it. The sheet that opts in also carries extra left
+   padding at this breakpoint to clear the line — see the article page. */
+@media (min-width: 40rem) {
+  .nb-ruled::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 32px;
+    width: 2px;
+    background: var(--sd-margin-line);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+}
+
 /* A photo print: white border, soft drop shadow. Used for cards with images. */
 .nb-polaroid {
   position: relative;

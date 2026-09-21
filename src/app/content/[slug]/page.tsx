@@ -6,6 +6,7 @@ import { SectionContainer, Badge, Button } from '@/components/ui';
 import ArticleBody from '@/components/ArticleBody';
 import HeroImage from '@/components/HeroImage';
 import SubscribeForm from '@/components/SubscribeForm';
+import ReadingProgress from '@/components/ReadingProgress';
 import DirectingDrill from '@/components/DirectingDrill';
 import { formatDate } from '@/lib/format';
 
@@ -72,6 +73,17 @@ export default async function ContentDetail({
     notFound();
   }
 
+  // The two published after this one in the list, wrapping round, so the
+  // newest article still offers somewhere to go.
+  const all = getPublishedPosts();
+  const here = all.findIndex((p) => p.slug === entry.slug);
+  const nextUp =
+    here === -1
+      ? all.filter((p) => p.slug !== entry.slug).slice(0, 2)
+      : [all[(here + 1) % all.length], all[(here + 2) % all.length]].filter(
+          (p): p is (typeof all)[number] => Boolean(p) && p.slug !== entry.slug
+        );
+
   // Article structured data — the named author + publish date + large image
   // signals Google Discover and search use to treat this as original,
   // experience-led content.
@@ -106,9 +118,16 @@ export default async function ContentDetail({
           __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
         }}
       />
+      <ReadingProgress targetId="article-sheet" />
+
       {/* The printed sheet: a plain page laid on the graph paper, so the grid
-          never sits behind a sentence. */}
-      <div className="nb-sheet nb-tape mx-auto max-w-3xl px-5 pt-9 pb-12 sm:px-14 sm:pt-14 sm:pb-16">
+          never sits behind a sentence. nb-ruled adds the red margin down the
+          left edge, and the left padding is wider than the right to clear it —
+          the asymmetry is what a ruled page actually looks like. */}
+      <div
+        id="article-sheet"
+        className="nb-sheet nb-ruled nb-tape mx-auto max-w-3xl px-5 pt-9 pb-12 sm:pt-14 sm:pr-14 sm:pb-16 sm:pl-[4.5rem]"
+      >
         {/* Back Navigation */}
         <Link
           href="/content"
@@ -128,6 +147,11 @@ export default async function ContentDetail({
           <h1 className="font-display mt-5 text-[2.6rem] text-text-primary sm:text-[3.4rem]">
             {entry.title}
           </h1>
+          {entry.excerpt && (
+            <p className="font-read mt-4 max-w-[58ch] text-lg leading-[1.6] text-text-secondary italic">
+              {entry.excerpt}
+            </p>
+          )}
           <div className="mt-4 flex flex-wrap gap-2">
             {entry.tags.map((tag) => (
               <Badge key={tag} variant="default">
@@ -191,6 +215,39 @@ export default async function ContentDetail({
           </Button>
         </div>
       </div>
+
+      {/* Keep reading — two prints pinned under the page. Outside the sheet,
+          because this is not part of the article. */}
+      {nextUp.length > 0 && (
+        <div className="mx-auto mt-14 max-w-3xl">
+          <h2 className="font-display nb-underline text-4xl text-text-primary">
+            keep reading
+          </h2>
+          <ul
+            className="nb-wall mt-8 grid grid-cols-1 gap-x-6 gap-y-9 sm:grid-cols-2"
+            role="list"
+          >
+            {nextUp.map((post) => (
+              <li key={post.slug} className="h-full">
+                <Link
+                  href={`/content/${post.slug}`}
+                  className="nb-polaroid nb-tape block h-full p-2.5 pb-4"
+                >
+                  {post.heroImage && (
+                    <HeroImage
+                      post={post}
+                      className="aspect-[40/21] w-full object-cover"
+                    />
+                  )}
+                  <h3 className="font-display mt-3 text-2xl leading-tight text-text-primary">
+                    {post.title}
+                  </h3>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </SectionContainer>
   );
 }
