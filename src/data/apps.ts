@@ -20,7 +20,7 @@ export const apps: App[] = [
     slug: 'samurai-kitchen',
     name: 'Samurai Kitchen',
     description:
-      'Online ordering for a working food truck — live Square catalogue, real payments, hours-aware checkout and pickup times.',
+      "A food truck's website, where customers order and pay online.",
     longDescription:
       "The ordering site for Samurai Kitchen, a Japanese food truck and catering business, live on its own domain since August 2026. The menu, prices, opening hours and sold-out items all come straight from the owner's Square account — the same system his kiosk runs on — so nothing on the site can go stale. Customers build a cart with the truck's own customisations, pick a pickup time drawn from the live hours, and pay through Square; checkout locks when the truck is closed and stops taking orders half an hour before it shuts. The owner connected his own Square account through OAuth, so no access key ever changed hands, and the catering section takes inquiries for events.",
     thumbnailUrl: '/images/apps/samurai-kitchen-thumbnail.png',
@@ -29,7 +29,14 @@ export const apps: App[] = [
       '/images/apps/samurai-kitchen-2.png',
       '/images/apps/samurai-kitchen-3.png',
     ],
-    techStack: ['Next.js', 'React', 'TypeScript', 'Square API', 'Neon Postgres', 'Tailwind CSS'],
+    techStack: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Square API',
+      'Neon Postgres',
+      'Tailwind CSS',
+    ],
     category: 'Commerce',
     status: 'live',
     outcomes: [
@@ -47,23 +54,30 @@ export const apps: App[] = [
     slug: 'pomodoro-timer',
     name: 'Pomodoro Timer',
     description:
-      'A focus timer with analytics, achievements, and task tracking.',
+      'A timer that splits work into short bursts with breaks in between, and keeps a record of what you got done.',
     longDescription:
-      'A Pomodoro timer with session-linked task management, a 12-week activity heatmap, streak tracking, and an XP-based achievement system with 10 unlockable badges. Customizable focus, short break, and long break durations adapt to your workflow, while ambient sound and fullscreen focus mode eliminate distractions. Post-session reflections let you rate focus quality over time. All data persists locally with JSON export for full data ownership.',
+      'You set a timer, work until it rings, then take a break. This app keeps track of that for you. Attach a task to each session so you can see where the time actually went, and a chart of the last twelve weeks shows which days you worked and which you missed. There are ten badges to unlock and a streak to keep up. You can change how long the work and break periods run, play a background sound, and put the timer full screen so nothing else is on show. After each session you can rate how well it went. Everything stays on your own device, and you can download the lot as a file whenever you want.',
     thumbnailUrl: '/images/apps/pomodoro-thumbnail.png',
     screenshotUrls: [
       '/images/apps/pomodoro-1.png',
       '/images/apps/pomodoro-2.png',
       '/images/apps/pomodoro-3.png',
     ],
-    techStack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'shadcn/ui'],
+    techStack: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'Zustand',
+      'shadcn/ui',
+    ],
     category: 'Productivity',
     status: 'live',
     outcomes: [
-      '12-week activity heatmap reveals focus patterns and consistency gaps',
-      'Achievement system with 10 badges drives daily engagement and streak-building',
-      'Session reflections and analytics enable measurable focus quality improvement',
-      'Ambient sound and fullscreen mode reduce context-switching by design',
+      'A chart of the last twelve weeks shows the days you worked and the days you missed, so a pattern is easy to spot.',
+      'Ten badges and a running streak give you a reason to come back tomorrow.',
+      'You rate each session afterwards, so you can see whether your focus is actually getting better.',
+      'A background sound and a full screen mode keep everything else off the screen while the timer runs.',
     ],
     buildDate: '2025-03',
     hasFullBreakdown: false,
@@ -74,23 +88,28 @@ export const apps: App[] = [
     slug: 'spacex-mars',
     name: 'SpaceX Mars Transfer Simulation',
     description:
-      'Real-time orbital simulation of Earth-Mars Hohmann transfers with interactive controls and mission tracking.',
+      'Shows the path a spacecraft takes from Earth to Mars. You can change the settings and watch the trip play out.',
     longDescription:
-      'A physics-accurate visualization of Starship missions between Earth and Mars using Hohmann transfer orbits computed from real Kepler equations. The simulation renders procedurally generated planet textures, calculates launch windows based on true phase angles, and tracks both outbound and return missions in real time. Interactive controls let you adjust simulation speed, toggle orbital trails, pan and zoom the solar system, and click planets for live orbital statistics. A mission log tracks every launch, transit, and arrival across the full simulation timeline.',
+      'Earth and Mars are only close enough for a trip every couple of years, and the route between them is a long curve rather than a straight line. This shows both. The planets move at their real speeds and distances, worked out from real orbital calculations rather than drawn by hand, so a launch only becomes possible when the two planets line up properly. You can speed the clock up or slow it down, zoom in and out, turn the orbit lines on and off, and click a planet to see where it is and how fast it is going. A log lists every launch, journey and arrival as they happen.',
     thumbnailUrl: '/images/apps/spacex-mars-thumbnail.png',
     screenshotUrls: [
       '/images/apps/spacex-mars-1.png',
       '/images/apps/spacex-mars-2.png',
       '/images/apps/spacex-mars-3.png',
     ],
-    techStack: ['HTML5 Canvas', 'Vanilla JavaScript', 'CSS3', 'Orbital Mechanics'],
+    techStack: [
+      'HTML5 Canvas',
+      'Vanilla JavaScript',
+      'CSS3',
+      'Orbital Mechanics',
+    ],
     category: 'Simulation',
     status: 'live',
     outcomes: [
-      'Physically accurate orbital mechanics computed in real astronomical units',
-      'Dynamic Hohmann transfer windows calculated from true planetary phase angles',
-      'Procedurally generated planet textures with particle-based launch effects',
-      'Responsive touch/mouse controls for cross-device interactive exploration',
+      'The planets move at their true speeds and distances, so a launch only becomes possible when they line up, the same as in real life.',
+      'You can speed the clock up, slow it down, zoom in and out, and click a planet to see where it is and how fast it is going.',
+      'A log lists every launch, every journey and every arrival as they happen.',
+      'The planet surfaces are drawn by the page rather than photographed, and it works with a mouse or a finger.',
     ],
     buildDate: '2025-03',
     hasFullBreakdown: false,
@@ -101,9 +120,9 @@ export const apps: App[] = [
     slug: 'cloth-simulator',
     name: 'Cloth Simulator',
     description:
-      'Interactive particle-based cloth physics with real-time tearing, wind, burning, and material switching.',
+      'A sheet of cloth you can pull, tear, burn and blow around with wind.',
     longDescription:
-      'A GPU-friendly 2D cloth simulation built entirely in vanilla JavaScript and HTML5 Canvas. A grid of particles connected by distance constraints forms realistic fabric that responds to gravity, wind, and user interaction. Drag to pull, right-click to tear, press W for gusting wind, or switch to burn mode and watch fire propagate across threads. Multiple preset scenes — flag, curtain, hammock, web, and cape — demonstrate different constraint layouts. Material presets (cotton, silk, denim, chain) adjust stiffness, weight, and tear threshold. All physics run at 60fps with configurable gravity direction and wind strength.',
+      'A piece of cloth hanging on the screen that behaves like real fabric. It is built from a grid of points joined to their neighbours, and everything it does follows from that. It sags under its own weight, swings when you pull it, and rips when you pull too hard. Drag it with the mouse, tear a hole in it, turn the wind on, or set it alight and watch the flames travel along the threads. There are ready made setups to try, including a flag, a curtain, a hammock, a spider web and a cape, and you can switch the material between cotton, silk, denim and chain, which changes how heavy and how stretchy it is.',
     thumbnailUrl: '/images/apps/cloth-simulator-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/cloth-simulator-1.png',
@@ -114,10 +133,10 @@ export const apps: App[] = [
     category: 'Simulation',
     status: 'live',
     outcomes: [
-      'Particle-constraint physics engine running at 60fps with no external libraries',
-      'Five interactive modes — grab, tear, burn, pin, and wind — for hands-on fabric manipulation',
-      'Six preset scenes showcase different constraint topologies and anchor configurations',
-      'Material system with adjustable stiffness, weight, and tear thresholds for realistic behavior',
+      'The cloth is not an animation. Every point is worked out as you watch, sixty times a second, with no outside code doing the job.',
+      'Five things to do to it: grab it, tear it, burn it, pin it, and blow wind at it.',
+      'Ready made setups to try: a flag, a curtain, a hammock, a spider web and a cape, each hanging from different points.',
+      'Four materials to switch between. Cotton, silk, denim and chain each have their own weight, stiffness and tearing point.',
     ],
     buildDate: '2025-03',
     hasFullBreakdown: false,
@@ -128,23 +147,30 @@ export const apps: App[] = [
     slug: 'ai-diary',
     name: 'AI Diary',
     description:
-      'A personal journal with mood tracking, personality analysis, and a companion chat.',
+      'A private journal. It tracks your mood over time and has a companion you can talk to about what you wrote.',
     longDescription:
-      'A journaling app that combines daily writing with AI-driven insights. Write freely about your day, and the app analyzes your entries to reveal mood patterns, Big Five personality traits, and writing style metrics over time. A companion chat powered by Claude provides reflective conversation and can extract actionable todos from your entries. The mood timeline tracks emotional valence across 90 data points, while the profile page surfaces emotion patterns, vocabulary level, and topic trends. All data persists locally in the browser for complete privacy — no server-side storage of personal content.',
+      'Write about your day the way you would in any notebook. The app reads it back and shows you things you would not spot yourself: how your mood moves over the weeks, which subjects keep coming up, and how your writing changes. There is also a companion you can talk to about an entry, and it can pull out the things you said you would do and turn them into a list. Everything you write is kept on your own device rather than on a server.',
     thumbnailUrl: '/images/apps/ai-diary-thumbnail.png',
     screenshotUrls: [
       '/images/apps/ai-diary-1.png',
       '/images/apps/ai-diary-2.png',
       '/images/apps/ai-diary-3.png',
     ],
-    techStack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'OpenRouter API', 'Zod'],
+    techStack: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'OpenRouter API',
+      'Zod',
+    ],
     category: 'Productivity',
     status: 'live',
     outcomes: [
-      'AI companion chat extracts todos and provides reflective conversation from journal entries',
-      'Big Five personality profiling and mood timeline built from cumulative writing analysis',
-      'Privacy-first architecture with all personal data stored locally in the browser',
-      'Writing style analytics track formality, verbosity, vocabulary, and recurring topics',
+      'A companion you can talk to about an entry. It can also pull out the things you said you would do and turn them into a list.',
+      'A mood line across your entries shows how you have been over weeks, not just today.',
+      'It builds a picture of your personality from your writing, using the five traits psychologists commonly measure.',
+      'Everything you write is kept on your own device rather than on a server.',
     ],
     buildDate: '2025-03',
     hasFullBreakdown: false,
@@ -155,9 +181,9 @@ export const apps: App[] = [
     slug: 'aureum-snake',
     name: 'AUREUM Snake',
     description:
-      'Art Deco snake game with rank progression, chain scoring, and Web Audio sound effects — all in a single HTML file.',
+      'The snake game you already know, in gold and black. Eat, grow, and do not hit anything.',
     longDescription:
-      'A take on the classic snake game, in an Art Deco palette of gold and obsidian. Players guide a serpent across an 18x18 grid, eating food to grow while avoiding collisions. A chain-scoring system rewards consecutive catches, and a rank progression ladder (I through X) tracks mastery across sessions. The entire game — visuals, logic, and synthesized sound effects — ships as a single HTML file with zero dependencies. D-pad touch controls, pause and game-over overlays, persistent high scores via localStorage, and Web Audio API–driven sound design. Built mobile-first.',
+      'The snake game you already know, dressed in gold and black. You steer a snake around a board eighteen squares across, eating to grow, and it ends when you run into a wall or into yourself. Catching food without pausing builds a chain that is worth more points, and there are ten ranks to climb across however many games you play. It remembers your best score. There is a pad of arrows on screen for phones, and every sound is made by the game as you play, so nothing extra has to load. The whole thing is one file.',
     thumbnailUrl: '/images/apps/aureum-snake-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/aureum-snake-1.png',
@@ -168,10 +194,10 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'Zero-dependency single-file architecture delivers the entire game in one HTML document',
-      'Chain-scoring and rank progression (I–X) add strategic depth beyond classic snake',
-      'Web Audio API synthesizes eat, level-up, and game-over sounds without any audio assets',
-      'Mobile-first D-pad controls with haptic feedback enable smooth touch gameplay',
+      'Eating without a break builds a chain worth more points, so there is a reason to keep moving.',
+      'Ten ranks to climb, counted across every game you play rather than just this one.',
+      'A pad of arrows on screen means it plays properly on a phone.',
+      'Every sound is made by the game as you play, so nothing extra has to load.',
     ],
     buildDate: '2026-03',
     hasFullBreakdown: false,
@@ -182,9 +208,9 @@ export const apps: App[] = [
     slug: 'pebble-kart',
     name: 'Pebble Kart',
     description:
-      'A browser-based kart racer my son Gabe built himself with Claude — pebble-powered drifting, lap times, and a course made for joy.',
+      'A kart racing game my son Gabe built himself, using the same AI tools I use.',
     longDescription:
-      'The one game on this site I did not build — my son Gabe did. I taught him how to use Claude: how to get a first playable prototype from a single prompt, then edit and upgrade it with follow-up prompts. From there he ran the loop himself and made his own kart racer — a pebble-themed kart drifting around a hand-crafted course, with lap timing and responsive arcade controls. Prompt to prototype, then prompt to improve, in the hands of a kid.',
+      'This is the one thing on the site I did not build. My son Gabe did. I showed him how to ask an AI for a first working version of a game, and then how to keep asking for changes until it was the game he wanted. He did the rest himself. What he made is a kart race: you drive a kart around a track he designed, and it times your laps.',
     thumbnailUrl: '/images/apps/pebble-kart-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/pebble-kart-1.png',
@@ -195,10 +221,10 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'Built by my son Gabe himself — his own game, from prototype to polish',
-      'A first playable version from a single prompt, then upgraded through follow-up prompts',
-      'A kid running the full AI-native build loop: prototype, then iterate with prompts',
-      'Pebble-themed drifting, lap timing, and arcade controls tuned for pick-up-and-play',
+      'Gabe built it himself, from the first rough version to the finished one.',
+      'The first version that could be played came out of a single request to an AI. Everything after that came from asking for changes.',
+      'A kid ran the whole loop on his own: ask, try it, ask again.',
+      'You drive a kart around a track he designed, and it times your laps.',
     ],
     buildDate: '2026-05',
     hasFullBreakdown: false,
@@ -209,7 +235,7 @@ export const apps: App[] = [
     slug: 'field-office',
     name: 'The Pembroke File',
     description:
-      'A stolen-diamond mystery played through a locked filing cabinet — five drawers, five puzzles, and a name that was never filed.',
+      'A mystery game. You search a locked filing cabinet, solve five puzzles, and work out who took a diamond.',
     longDescription:
       'A noir mystery you solve by reading the case. The Pembroke Diamond — thirty-four carats — left the Ashford Museum in three minutes of dark, and the insurance investigator who worked the claim vanished, leaving his file locked in a cabinet: five drawers behind a brass dial, a letter lock, an alarm panel, a wire board, and a lever. Every answer is written somewhere in the documents you have already opened, and each drawer turns the case — an inside job, a rehearsed route, a canvass that came back empty, an appraisal that proves the stone was glass. Physical puzzles gate the locks: the museum’s shuffled night-reel plates, the investigator’s reconstruction torn to twelve pieces, a jammed card tray, a sabotaged lamp circuit — and a pencil rubbing that raises the one name he never dared file out of a blank desk pad. Verlet chain physics, synthesized Web Audio, keyboard paths for every puzzle, progress that survives reloads — all in a single HTML file with zero dependencies.',
     thumbnailUrl: '/images/apps/field-office-thumbnail.webp',
@@ -218,7 +244,13 @@ export const apps: App[] = [
       '/images/apps/field-office-2.png',
       '/images/apps/field-office-3.png',
     ],
-    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API', 'CSS3'],
+    techStack: [
+      'HTML5',
+      'Canvas',
+      'Vanilla JavaScript',
+      'Web Audio API',
+      'CSS3',
+    ],
     category: 'Game',
     status: 'live',
     outcomes: [
@@ -236,9 +268,9 @@ export const apps: App[] = [
     slug: 'grove',
     name: 'Grove',
     description:
-      'A hex-based merging puzzle game with 12 evolving tiers — from seed to eternity — in a single HTML file.',
+      'A quiet puzzle game. Put matching tiles together on a honeycomb board and watch them grow into something bigger.',
     longDescription:
-      'A meditative tile-merging puzzle played on a hexagonal board. Place matching tiles next to each other and watch them merge through 12 themed tiers — Seed, Sprout, Sapling, Oak, Grove, Forest, Woodland, Wilderness, Kingdom, Realm, Eternity — each with its own palette that progresses from dark earth through golden hour to ethereal moonsilver. Axial hex coordinates, pointy-top SVG rendering, and a forest-dawn aesthetic built with Cormorant Garamond and JetBrains Mono typography. Scores and best tiers persist via localStorage, with combo-based scoring that rewards chain merges. Ships as a single HTML file with zero dependencies — mobile-first, touch-optimized, and playable offline.',
+      'A slow puzzle game on a honeycomb board. Put two matching tiles next to each other and they join into the next thing up. You start with a seed and work up through twelve stages to a forest and beyond, and the colours of the board change as you climb, from dark soil to late afternoon light to silver. Joining several in a row is worth more. It remembers your best score and the furthest you have reached. It plays on a phone, works with no internet, and is one file.',
     thumbnailUrl: '/images/apps/grove-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/grove-1.png',
@@ -249,10 +281,10 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'Zero-dependency single-file architecture delivers the entire game in one HTML document',
-      '12-tier progression system with themed palettes creates visual reward across long sessions',
-      'Axial hex-coordinate math with SVG rendering enables crisp scaling on any viewport',
-      'Mobile-first touch controls with persistent best scores via localStorage',
+      'Twelve stages to climb, each with its own colours, so the board looks different the further you get.',
+      'Joining several tiles in a row is worth more than joining them one at a time.',
+      'It remembers your best score and the furthest stage you have reached.',
+      'It plays on a phone, works with no internet connection, and is a single file.',
     ],
     buildDate: '2026-04',
     hasFullBreakdown: false,
@@ -263,9 +295,9 @@ export const apps: App[] = [
     slug: 'going-traveling',
     name: 'Going Traveling',
     description:
-      'A 12-day Japan trip planner with two full day plans to switch between, a budget that scales with your party, and an allergy system you point at your own allergens.',
+      'A twelve day plan for a trip to Japan. Two versions of each day to choose between, a budget that changes with the size of your group, and an allergy list you set yourself.',
     longDescription:
-      'A planning tool for a twelve-day trip through Tokyo, Hakone and Kyoto, built around the problem every itinerary has: the good options are the ones near where you already are. Every day carries two complete plans whose stops were chosen for proximity, and each swappable option is priced in travel minutes from the plan it is sitting in — so an option that pulls you across the city says so before you pick it, not after. Non-travel days can borrow any plan from any other day in the same city. Underneath sit 106 destinations, each with a map link and a review link verified against an independent geocode rather than guessed. The allergy section is configurable rather than baked in: choose from eleven allergens and the page rewrites itself — where each one sits in Japan\u2019s labelling law, where it hides, every meal format ranked for it, what to order by name, and a bilingual card to hand across a counter. The budget holds anything bought in Japan in yen and converts at a rate you set, scaling by party size, so a solo trip correctly costs more than half a trip for two. It ships as one self-contained HTML file with 91 photographs inlined, and works offline.',
+      'A plan for twelve days across Tokyo, Hakone and Kyoto, built around a problem every travel plan has: the best thing to do next is usually the thing nearest to where you already are. So every day comes with two complete plans, and the stops in each were picked for being close together. If you want to swap something out, each alternative tells you how many extra minutes of travel it will cost from where that day already has you, before you pick it rather than after. There are 106 places in it, each with a map link and a review link that were checked rather than assumed. The allergy section is yours to set: pick from eleven things you cannot eat and the page rewrites itself around them, down to a card written in Japanese you can hand across a counter. The budget is kept in yen, converts at whatever rate you set, and changes with how many people are going, so travelling alone correctly costs more per person than travelling as a pair. It is one file with 91 photographs inside it, and it works with no internet.',
     thumbnailUrl: '/images/apps/going-traveling-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/going-traveling-1.webp',
@@ -276,10 +308,10 @@ export const apps: App[] = [
     category: 'Travel',
     status: 'live',
     outcomes: [
-      'Configurable allergy system covers 11 allergens against Japan\u2019s 8-mandatory / 20-recommended labelling law, generating a bilingual card from your selection',
-      'Every swappable itinerary option is priced in travel minutes from the plan it sits in, so a bad geographic choice is visible before you make it',
-      '106 destinations carry map and review links verified against an independent geocode, not assumed',
-      'Ships as one self-contained HTML file with 91 photographs inlined \u2014 no network, no dependencies, works offline',
+      'Pick from eleven things you cannot eat and the whole page rewrites itself around them, down to a card written in Japanese you can hand across a counter.',
+      'Every alternative shows how many extra minutes of travel it costs before you choose it, so a bad choice is visible in advance.',
+      'All 106 places carry a map link and a review link that were checked, not assumed.',
+      'It is one file with 91 photographs inside it, and it needs no internet once it has opened.',
     ],
     buildDate: '2026-08',
     hasFullBreakdown: false,
@@ -290,7 +322,7 @@ export const apps: App[] = [
     slug: 'broom-blade',
     name: 'Broom & Blade',
     description:
-      'A chore tracker that plays like an RPG — chores are guild-board quests paying XP and gold, heroes level up and gear up, and a nightly mystery box rewards a clean sweep.',
+      'Household chores turned into a game. Chores become quests that pay points and gold, and everyone in the family has their own character.',
     longDescription:
       'Built for my household: a candlelit guild hall where the chores hang as parchment quest slips on a board. Completing one pays XP and gold — XP climbs the hero through titles from Dust Squire to Legend of the Loom, gold buys avatar gear in the Armory, and every piece of gear carries a hidden flavor line and origin tale you can only read once you own it. Each family member runs their own hero on the same board; a Tourney Board compares the party on a radar crest and ranked duel bars, and a Skill Grove grows a glowing rune for every chore you master. Sealing a quest takes a held press, not a tap, so a scroll can never claim one by accident. Clear every daily quest and a hooded merchant offers three mystery boxes — a fortune, a gift, or a curse — and every fifth clean-sweep day he bows with a choice: a purse of gold, or a box holding one of thirty relics that cannot be bought, from a booger to Mjölnir. It ships as one HTML file with zero dependencies, installs to the home screen as a PWA, and synthesizes every sound with the Web Audio API.',
     thumbnailUrl: '/images/apps/broom-blade-thumbnail.webp',

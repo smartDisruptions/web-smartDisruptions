@@ -160,7 +160,7 @@ export default function Skills() {
         out of a build that needed it, and each one opens to what I made with it
         and something you can click. Most of those links go to the{' '}
         <Link
-          href="/apps"
+          href="/built"
           className="text-accent underline underline-offset-2 hover:text-accent-hover"
         >
           apps

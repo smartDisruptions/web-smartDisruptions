@@ -1,38 +1,19 @@
-import { Button, RevealOnScroll } from '@/components/ui';
+import { RevealOnScroll } from '@/components/ui';
 import SubscribeForm from '@/components/SubscribeForm';
 
 export default function CTASection() {
   return (
-    <section className="border-y border-border bg-accent/[0.05] px-6 py-24">
+    <section className="px-5 pt-6 pb-24 sm:px-6">
       <RevealOnScroll>
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="font-display text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
-            Start with one real build
+        {/* A taped paper card rather than a sticky note: the form's helper text
+            uses the theme's own text colours, which a fixed-yellow sticky
+            cannot carry in dark mode. */}
+        <div className="nb-sheet nb-tape mx-auto max-w-lg rotate-[0.8deg] px-6 pt-9 pb-7 sm:px-9">
+          <h2 className="font-display text-4xl text-text-primary sm:text-[2.6rem]">
+            want the next build?
           </h2>
-
-          <p className="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
-            Every post here is one project, broken down honestly — the timeline,
-            the method, and the parts worth copying. Pick one and build
-            alongside it.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <Button variant="primary" size="lg" href="/content">
-              Read the writing
-            </Button>
-            <Button variant="secondary" size="lg" href="/apps">
-              Browse the apps
-            </Button>
-          </div>
-
-          <div className="mx-auto mt-14 max-w-md border-t border-border pt-10">
-            <p className="text-sm text-text-secondary">
-              Or get each new build in your inbox — what I built, how, and what
-              I learned. No spam, ever.
-            </p>
-            <div className="mt-4 flex justify-center">
-              <SubscribeForm source="home" />
-            </div>
+          <div className="mt-5">
+            <SubscribeForm source="home" />
           </div>
         </div>
       </RevealOnScroll>

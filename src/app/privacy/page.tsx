@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <SectionContainer className="py-20">
-      <div className="mx-auto max-w-2xl">
+      <div className="nb-sheet nb-tape mx-auto max-w-3xl px-5 py-12 sm:px-14 sm:py-16">
         <h1 className="font-display text-4xl font-semibold tracking-tight text-text-primary">
           Privacy
         </h1>
@@ -67,11 +67,10 @@ export default function PrivacyPage() {
               Just visiting
             </h2>
             <p className="mt-2 text-text-secondary">
-              The site uses Vercel Analytics — aggregate, cookieless page
-              counts so I can see which posts people read. It doesn&rsquo;t
-              identify you, and there are no ad trackers here. The games and
-              apps save progress in your own browser; nothing leaves your
-              device.
+              The site uses Vercel Analytics — aggregate, cookieless page counts
+              so I can see which posts people read. It doesn&rsquo;t identify
+              you, and there are no ad trackers here. The games and apps save
+              progress in your own browser; nothing leaves your device.
             </p>
           </div>
 
@@ -81,8 +80,8 @@ export default function PrivacyPage() {
             </h2>
             <p className="mt-2 text-text-secondary">
               The site runs on Vercel; the subscriber list lives in a locked
-              Supabase database that the public site can write to but never
-              read from. I wrote up how that works —{' '}
+              Supabase database that the public site can write to but never read
+              from. I wrote up how that works —{' '}
               <a
                 href="/content/i-tried-to-break-my-friends-ai-site"
                 className="underline underline-offset-2 hover:text-accent"

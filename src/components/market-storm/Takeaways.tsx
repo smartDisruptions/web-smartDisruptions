@@ -41,7 +41,7 @@ export default function Takeaways({
       </h2>
 
       {lead && (
-        <p className="mt-4 max-w-[56ch] text-pretty font-display text-xl leading-snug text-text-primary sm:text-2xl">
+        <p className="font-read mt-4 max-w-[56ch] text-pretty text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
           <Inline>{lead}</Inline>
         </p>
       )}

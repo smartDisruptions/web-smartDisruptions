@@ -9,7 +9,7 @@ import type { Components } from 'react-markdown';
 // the design auditor stay happy. Used by /content and /market-storm.
 const components: Components = {
   h2: ({ children }) => (
-    <h2 className="font-display mb-4 mt-12 text-2xl font-semibold tracking-tight text-text-primary sm:text-[1.75rem]">
+    <h2 className="font-display nb-underline mb-5 mt-14 text-[2rem] text-text-primary sm:text-[2.35rem]">
       {children}
     </h2>
   ),
@@ -24,27 +24,31 @@ const components: Components = {
     </h4>
   ),
   p: ({ children }) => (
-    <p className="mb-5 text-lg leading-8 text-text-primary/85">{children}</p>
+    <p className="font-read mb-5 text-[1.0625rem] leading-[1.8] text-text-primary/90 sm:text-lg sm:leading-8">
+      {children}
+    </p>
   ),
   ul: ({ children }) => (
-    <ul className="mb-5 ml-5 list-disc space-y-2 text-lg text-text-primary/85">
+    <ul className="font-read mb-5 ml-5 list-disc space-y-2 text-[1.0625rem] text-text-primary/90 marker:text-[var(--sd-pen)] sm:text-lg">
       {children}
     </ul>
   ),
   ol: ({ children }) => (
-    <ol className="mb-5 ml-5 list-decimal space-y-3 text-lg text-text-primary/85">
+    <ol className="font-read mb-5 ml-5 list-decimal space-y-3 text-[1.0625rem] text-text-primary/90 marker:font-bold marker:text-[var(--sd-pen-ink)] sm:text-lg">
       {children}
     </ol>
   ),
   li: ({ children }) => <li className="leading-8">{children}</li>,
   strong: ({ children }) => (
-    <strong className="font-semibold text-text-primary">{children}</strong>
+    // Bold is the highlighter. Posts bold the one line worth keeping, which
+    // is exactly what a highlighter is for.
+    <strong className="nb-hl font-bold text-text-primary">{children}</strong>
   ),
   em: ({ children }) => (
     <em className="italic text-text-primary/90">{children}</em>
   ),
   code: ({ children }) => (
-    <code className="rounded bg-fill px-1.5 py-0.5 font-mono text-[0.85em] text-accent-hover">
+    <code className="rounded bg-surface-elevated px-1.5 py-0.5 font-mono text-[0.85em] text-text-primary">
       {children}
     </code>
   ),
@@ -60,8 +64,11 @@ const components: Components = {
       </a>
     );
   },
+  // A quote is an index card clipped into the page — ruled margin, reading
+  // face. Not a sticky note: quotes here run to sixty words (Josh's own
+  // prompts, a report's caveats), and that much handwriting is unreadable.
   blockquote: ({ children }) => (
-    <blockquote className="my-7 rounded-lg bg-fill px-5 py-4 text-lg text-text-primary/90 [&>p]:mb-0">
+    <blockquote className="nb-index-card my-8 py-4 pr-5 pl-11 [&>p]:mb-0 [&>p+p]:mt-3">
       {children}
     </blockquote>
   ),

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { apps, ARCADE_SLUGS, type App } from '@/data/apps';
+import { builtHref } from '@/data/projects';
 import { SectionContainer, Card } from '@/components/ui';
 
 // The Arcade is an explicit, curated line-up — The Pembroke File leads (Josh's
@@ -19,17 +20,23 @@ const ARCADE_GAME_SLUGS = [
 ];
 
 const games: App[] = ARCADE_SLUGS.map((slug) =>
-  apps.find((app) => app.slug === slug),
+  apps.find((app) => app.slug === slug)
 ).filter((app): app is App => app !== undefined);
 
 const platforms = Array.from(
   new Set(
     games.flatMap((g) =>
       g.techStack.filter((t) =>
-        ['HTML5', 'PixiJS', 'Vanilla JavaScript', 'SVG', 'Web Audio API'].includes(t),
-      ),
-    ),
-  ),
+        [
+          'HTML5',
+          'PixiJS',
+          'Vanilla JavaScript',
+          'SVG',
+          'Web Audio API',
+        ].includes(t)
+      )
+    )
+  )
 );
 
 // Bold primary palette — red as star, yellow + blue as supporting cast.
@@ -117,7 +124,9 @@ export default function Arcade() {
             />
             <Stat
               label="Live"
-              value={String(games.filter((g) => g.status === 'live').length).padStart(2, '0')}
+              value={String(
+                games.filter((g) => g.status === 'live').length
+              ).padStart(2, '0')}
               color={YELLOW}
               ink={YELLOW_INK}
             />
@@ -188,7 +197,7 @@ export default function Arcade() {
 
                   {/* CRT cabinet frame */}
                   <CRTScreen
-                    href={`/apps/${game.slug}?from=arcade`}
+                    href={`${builtHref(game.slug)}?from=arcade`}
                     src={game.thumbnailUrl}
                     alt={`${game.name} screenshot`}
                     accent={ribbon}
@@ -198,9 +207,11 @@ export default function Arcade() {
                   {/* Name + Status */}
                   <div className="mt-4 flex items-center gap-2">
                     <Link
-                      href={`/apps/${game.slug}?from=arcade`}
+                      href={`${builtHref(game.slug)}?from=arcade`}
                       className="font-mono-accent text-lg font-black uppercase tracking-wide text-text-primary transition-colors"
-                      onMouseEnter={(e) => (e.currentTarget.style.color = ribbonInk)}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = ribbonInk)
+                      }
                       onMouseLeave={(e) => (e.currentTarget.style.color = '')}
                     >
                       {game.name}
@@ -237,7 +248,7 @@ export default function Arcade() {
                   {/* Link hints */}
                   <div className="mt-4 flex items-center gap-4">
                     <Link
-                      href={`/apps/${game.slug}?from=arcade`}
+                      href={`${builtHref(game.slug)}?from=arcade`}
                       className="font-mono-accent text-sm font-black uppercase tracking-wider transition-colors"
                       style={{ color: RED_INK }}
                     >
@@ -414,7 +425,7 @@ function Marquee() {
       if (width > 0) {
         track.style.setProperty(
           '--games-marquee-duration',
-          `${width / MARQUEE_SPEED_PX_PER_SEC}s`,
+          `${width / MARQUEE_SPEED_PX_PER_SEC}s`
         );
       }
     };

@@ -1,26 +1,33 @@
 import type { Metadata } from 'next';
-import { Inter, Instrument_Sans } from 'next/font/google';
+import { Caveat, Literata, Nunito } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-// Body: Inter — clean, highly legible at long-form reading sizes.
-const inter = Inter({
+// UI: Nunito — labels, nav, cards, captions. Rounded enough to sit beside
+// handwriting without looking like a different site.
+const ui = Nunito({
   variable: '--font-sans',
   subsets: ['latin'],
   display: 'swap',
 });
 
-// Display: Instrument Sans — clean, slightly condensed, modern.
-//
-// This replaced Fraunces, whose descending `f` dropped below the baseline and
-// read as a quirk rather than a signature. Headlines and body are now both
-// sans, so the contrast between them has to come from weight, size and the
-// tighter set width of this face rather than from serif-against-sans.
-const display = Instrument_Sans({
+// Display: Caveat — handwriting, for headlines and asides ONLY. It never sets
+// a paragraph: a page of handwriting is a page nobody finishes.
+const display = Caveat({
   variable: '--font-display',
+  subsets: ['latin'],
+  weight: ['600', '700'],
+  display: 'swap',
+});
+
+// Reading: Literata — built for long-form screen reading. Article and report
+// bodies use it (see ArticleBody), so the thing people came to read is set in
+// a face made for reading, on a plain sheet, with the notebook around it.
+const read = Literata({
+  variable: '--font-read',
   subsets: ['latin'],
   display: 'swap',
 });
@@ -72,7 +79,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${display.variable} h-full antialiased`}
+      className={`${ui.variable} ${display.variable} ${read.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Set the theme before first paint so there's no flash of the wrong
