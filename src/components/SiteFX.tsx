@@ -14,9 +14,25 @@ import { useEffect } from 'react';
  *  3. Tilt — `.sd-tilt` cards lean toward a fine pointer, via --rx/--ry.
  *
  * Reduced motion turns 1 and 3 off and leaves the eyes looking ahead.
+ *
+ * It also backs up the inline theme script: when Next has to render a page
+ * in the browser (its error shell), that script never runs, so the theme is
+ * applied here instead of leaving a night reader on a day page.
  */
 export default function SiteFX() {
   useEffect(() => {
+    const root = document.documentElement;
+    if (!root.dataset.theme) {
+      let t: string | null = null;
+      try {
+        t = localStorage.getItem('theme');
+      } catch {}
+      if (t !== 'light' && t !== 'dark') t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.dataset.theme = t;
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'dark' ? '#090b16' : '#f4efe4');
+      window.dispatchEvent(new Event('themechange'));
+    }
+
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const visible = new Set<SVGSVGElement>();

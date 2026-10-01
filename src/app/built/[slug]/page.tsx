@@ -47,6 +47,11 @@ import '../built.css';
  * hanko seals; its bullets are led by vermilion marks.
  */
 
+// Every real page is known at build time (publishing is a rebuild), so an
+// unknown one is a plain static 404 rather than an on-demand render that
+// Next can only finish in the browser.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   const projectSlugs = projects.map((p) => p.slug);
   const appSlugs = apps

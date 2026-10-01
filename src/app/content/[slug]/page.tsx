@@ -23,6 +23,11 @@ const EMBEDS: Record<string, () => React.ReactElement> = {
 };
 const EMBED_RE = /^\[\[embed:([a-z-]+)\]\]$/m;
 
+// Every real page is known at build time (publishing is a rebuild), so an
+// unknown one is a plain static 404 rather than an on-demand render that
+// Next can only finish in the browser.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return getPublishedPosts().map((entry) => ({ slug: entry.slug }));
 }

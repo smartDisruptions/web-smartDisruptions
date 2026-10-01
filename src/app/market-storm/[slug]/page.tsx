@@ -10,6 +10,11 @@ import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import { formatDate } from '@/lib/format';
 
+// Every real page is known at build time (publishing is a rebuild), so an
+// unknown one is a plain static 404 rather than an on-demand render that
+// Next can only finish in the browser.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return marketStormReports.map((r) => ({ slug: r.slug }));
 }
