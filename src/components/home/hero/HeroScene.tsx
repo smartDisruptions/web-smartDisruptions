@@ -95,6 +95,44 @@ const GLOW_BOX: CSSProperties = {
 export default function HeroScene() {
   return (
     <section className="hx" data-pose="wave" aria-labelledby="hx-title">
+      {/* The copy comes first in the markup, ahead of ~30 KB of scenery, so
+          the headline (the page's LCP) is parsed and painted in the first
+          frame. Every layer below is absolutely positioned with its own
+          z-index, so source order changes nothing on screen. */}
+      <div className="hx-content">
+        <p className="sd-kicker hx-rise" style={{ animationDelay: '0.05s' }}>
+          Building with AI, in public
+        </p>
+        <h1 id="hx-title" className="font-display hx-title">
+          <Slash text="I build real things" delay={0.1} />{' '}
+          <Slash text="with AI." delay={0.22} />{' '}
+          <Slash text="Then I" delay={0.34} />{' '}
+          <span className="hx-title-mark">
+            <Slash text="show my work." delay={0.46} />
+            <StaticSvg className="hx-title-brush" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden>
+              <path d="M3 13 C 50 3, 90 18, 140 9 S 230 4, 297 11" />
+            </StaticSvg>
+          </span>
+        </h1>
+        <p className="hx-sub hx-rise" style={{ animationDelay: '0.55s' }}>
+          Honest breakdowns of what I build with AI — the timeline, the method,
+          and the parts worth copying.
+        </p>
+        <div className="hx-actions hx-rise" style={{ animationDelay: '0.7s' }}>
+          <Button variant="primary" size="lg" href="/content">
+            Read the notes
+          </Button>
+          <Button variant="secondary" size="lg" href="/built">
+            See what I&apos;ve built
+          </Button>
+        </div>
+        <p className="hx-hint hx-rise" style={{ animationDelay: '1.4s' }} aria-hidden>
+          <Kanji char="斬" className="h-4 w-4 text-pen" />
+          <span className="hx-hint-fine">Click the sky. Kiru never misses.</span>
+          <span className="hx-hint-touch">Tap the sky. Kiru never misses.</span>
+        </p>
+      </div>
+
       <div className="hx-sky" aria-hidden />
       <div className="hx-scene" aria-hidden>
         {[0, 1, 2].map((g) => (
@@ -222,40 +260,6 @@ export default function HeroScene() {
 
       <canvas className="hx-petals" aria-hidden />
       <div className="hx-fade" aria-hidden />
-
-      <div className="hx-content">
-        <p className="sd-kicker hx-rise" style={{ animationDelay: '0.05s' }}>
-          Building with AI, in public
-        </p>
-        <h1 id="hx-title" className="font-display hx-title">
-          <Slash text="I build real things" delay={0.1} />{' '}
-          <Slash text="with AI." delay={0.22} />{' '}
-          <Slash text="Then I" delay={0.34} />{' '}
-          <span className="hx-title-mark">
-            <Slash text="show my work." delay={0.46} />
-            <StaticSvg className="hx-title-brush" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden>
-              <path d="M3 13 C 50 3, 90 18, 140 9 S 230 4, 297 11" />
-            </StaticSvg>
-          </span>
-        </h1>
-        <p className="hx-sub hx-rise" style={{ animationDelay: '0.55s' }}>
-          Honest breakdowns of what I build with AI — the timeline, the method,
-          and the parts worth copying.
-        </p>
-        <div className="hx-actions hx-rise" style={{ animationDelay: '0.7s' }}>
-          <Button variant="primary" size="lg" href="/content">
-            Read the notes
-          </Button>
-          <Button variant="secondary" size="lg" href="/built">
-            See what I&apos;ve built
-          </Button>
-        </div>
-        <p className="hx-hint hx-rise" style={{ animationDelay: '1.4s' }} aria-hidden>
-          <Kanji char="斬" className="h-4 w-4 text-pen" />
-          <span className="hx-hint-fine">Click the sky. Kiru never misses.</span>
-          <span className="hx-hint-touch">Tap the sky. Kiru never misses.</span>
-        </p>
-      </div>
 
       <HeroFX />
     </section>
