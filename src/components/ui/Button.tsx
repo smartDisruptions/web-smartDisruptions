@@ -45,6 +45,16 @@ export default function Button({
       disabled ? 'pointer-events-none opacity-50' : ''
     } ${className}`.trim();
 
+  // Past designs under /archive are plain files with their own scripts, not
+  // pages of this app: open them with a full page load, never the router.
+  if (href && !disabled && href.startsWith('/archive/')) {
+    return (
+      <a href={href} className={base}>
+        {children}
+      </a>
+    );
+  }
+
   if (href && !disabled) {
     return (
       <Link href={href} className={base}>

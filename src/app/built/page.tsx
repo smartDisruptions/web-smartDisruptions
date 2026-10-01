@@ -3,14 +3,24 @@ import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 import { apps, ARCADE_SLUGS } from '@/data/apps';
 import { projects, PROJECT_APP_SLUGS, type Project } from '@/data/projects';
-import { SectionContainer, Badge, Button, RevealOnScroll } from '@/components/ui';
+import {
+  SectionContainer,
+  Badge,
+  Button,
+  RevealOnScroll,
+} from '@/components/ui';
 import Kanji from '@/components/brand/Kanji';
 import Kiru from '@/components/kiru/Kiru';
 import { IconArrowRight, IconExternal } from '@/components/icons';
 import Device from '@/components/built/Device';
 import ForgeScene from '@/components/built/ForgeScene';
 import ArmoryWall, { type WallItem } from '@/components/built/ArmoryWall';
-import { frameFor, hostOf, markFor, shotTransition } from '@/components/built/media';
+import {
+  frameFor,
+  hostOf,
+  markFor,
+  shotTransition,
+} from '@/components/built/media';
 import './built.css';
 
 export const metadata: Metadata = {
@@ -135,6 +145,20 @@ const wall: WallItem[] = [
 ];
 
 const pad = (n: number) => String(n).padStart(2, '0');
+const WORDS = [
+  'no',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+];
+/** Small counts read as words in a sentence ("the five below"). */
+const inWords = (n: number) => WORDS[n] ?? String(n);
 
 function Hero() {
   return (
@@ -148,14 +172,17 @@ function Hero() {
           <p className="sd-kicker">The workshop</p>
           <h1 className="font-display mt-3 text-[3.3rem] leading-[0.98] text-text-primary sm:text-7xl lg:text-[5.4rem]">
             <span className="bt-cut">What I</span>{' '}
-            <span className="bt-cut" style={{ '--d': '0.14s' } as CSSProperties}>
+            <span
+              className="bt-cut"
+              style={{ '--d': '0.14s' } as CSSProperties}
+            >
               built
             </span>
           </h1>
           <p className="font-read mt-6 max-w-[48ch] text-lg leading-[1.7] text-text-secondary sm:text-xl sm:leading-[1.65]">
             Websites, apps and games. All of it is online right now, and all of
-            it is free to try. The four below are the ones I would show you
-            first. Everything else is under them.
+            it is free to try. The {inWords(projects.length)} below are the ones
+            I would show you first. Everything else is under them.
           </p>
           <nav aria-label="On this page" className="bt-jumps mt-8">
             <a href="#projects" className="bt-jump">
@@ -328,7 +355,7 @@ export default function BuiltPage() {
 
       <section
         id="projects"
-        aria-label="The four I would show you first"
+        aria-label={`The ${inWords(projects.length)} I would show you first`}
         className="mx-auto max-w-6xl scroll-mt-20 px-5 pt-10 sm:px-6 sm:pt-16"
       >
         <div className="flex flex-col gap-20 sm:gap-28">
@@ -338,7 +365,10 @@ export default function BuiltPage() {
         </div>
       </section>
 
-      <SectionContainer id="everything-else" className="scroll-mt-16 pt-24 sm:pt-32">
+      <SectionContainer
+        id="everything-else"
+        className="scroll-mt-16 pt-24 sm:pt-32"
+      >
         <RevealOnScroll>
           <h2 className="font-display sd-brush-under text-4xl text-text-primary sm:text-5xl">
             Everything else
@@ -375,9 +405,8 @@ export default function BuiltPage() {
             </h2>
             <p className="font-read mx-auto mt-5 max-w-[46ch] text-lg leading-[1.7] text-text-secondary">
               <span className="bt-motion-only">
-                Every project, app and game on this site, hung on one ring.
-                Drag it round or use the arrows, and press any of them to open
-                it.
+                Every project, app and game on this site, hung on one ring. Drag
+                it round or use the arrows, and press any of them to open it.
               </span>
               <span className="bt-still-only">
                 Every project, app and game on this site, in one place. Press

@@ -1,5 +1,5 @@
 /**
- * The four projects that get their own page under /built.
+ * The projects that get their own page under /built.
  *
  * WHY THIS EXISTS: Josh's call, 2026-09-20. Broom & Blade is two separate
  * things — a game a family uses, and a website that explains it — and the
@@ -273,6 +273,52 @@ export const projects: Project[] = [
           },
           { value: '33 KB', label: 'The size of the file that draws the page' },
           { value: '360°', label: 'You can look at the can from any angle' },
+        ],
+      },
+    ],
+  },
+  {
+    // The look this site had before Kiru, kept online as a working copy built
+    // from its own code (scripts/archive-site.mjs → public/archive/notebook).
+    // Facts from the Notebook pull request (#105) and its DESIGN.md.
+    slug: 'notebook',
+    name: 'The Notebook design',
+    eyebrow: 'This site, before Kiru · online now',
+    summary:
+      'How this website looked before its redesign, kept online exactly as it was.',
+    image: '/images/websites/notebook.webp',
+    imageAlt:
+      'The Notebook design of this site. Handwritten headlines on white graph paper, a photo of Josh taped to the page and a yellow sticky note.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    parts: [
+      {
+        kind: 'Website',
+        heading: 'The website',
+        href: '/archive/notebook',
+        linkLabel: 'See the old site',
+        image: '/images/websites/notebook.webp',
+        imageAlt:
+          'The Notebook design of this site. Handwritten headlines on white graph paper, a photo of Josh taped to the page and a yellow sticky note.',
+        imageWidth: 1200,
+        imageHeight: 750,
+        what: 'This website as it looked from September 28 to October 1, 2026. I kept a working copy online so I can go back and look at it.',
+        body: 'The design was called Notebook. Every page sat on graph paper and every headline was handwritten. The copy is the old site itself, not pictures of it, so the menu, night mode and the links between its pages all still work.',
+        bullets: [
+          'Headlines were set in a handwriting typeface. Anything long, like a post, was set in a typeface made for reading on a screen.',
+          'Anything you could press was blue. Underlines and marks were red.',
+          'The graph paper, the tape, the sticky notes and the lined cards were all drawn by the page’s styles. None of them is a picture file.',
+          'In night mode the paper turned dark slate and the sticky notes stayed yellow.',
+          'The copy keeps the main pages, four posts and four Market Storm reports. A link to anything else opens the current site.',
+          'Every page in the copy tells search engines not to list it, so searches still lead to the current pages.',
+        ],
+        receipts: [
+          { value: '27', label: 'Pages kept in the working copy' },
+          {
+            value: '0',
+            label: 'Picture files used for the paper, tape and sticky notes',
+          },
+          { value: '3', label: 'Typefaces: handwriting, reading and labels' },
         ],
       },
     ],
