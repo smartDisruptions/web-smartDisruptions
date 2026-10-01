@@ -400,8 +400,15 @@ const STATIONS = [
   'Verdict',
 ];
 
-const eyebrow =
-  'font-mono text-xs font-medium uppercase tracking-[0.08em] text-text-secondary';
+// Shadow Dojo styling — classes only; the drill's logic is untouched.
+const eyebrow = 'sd-kicker';
+const btnPrimary =
+  'sd-btn-primary relative inline-flex min-h-12 items-center justify-center overflow-hidden rounded-full bg-[#d63a22] px-6 text-[0.95rem] font-bold text-white shadow-[0_10px_24px_-10px_rgba(214,58,34,.7)] transition-[background-color,box-shadow,scale] duration-300 hover:bg-[#c2311b] hover:shadow-[0_16px_34px_-12px_rgba(214,58,34,.8)] focus-visible:!rounded-full active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40';
+const btnSecondary =
+  'inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--sd-border-strong)] bg-surface/60 px-6 text-[0.95rem] font-bold text-text-primary transition-[border-color,background-color,scale] duration-300 hover:border-text-primary hover:bg-surface focus-visible:!rounded-full active:scale-[0.97]';
+const counter =
+  'text-xs font-semibold text-text-secondary [font-variant-numeric:tabular-nums]';
+const tagCls = 'text-[0.68rem] font-bold uppercase tracking-[0.12em]';
 
 export default function DirectingDrill() {
   const [step, setStep] = useState(0);
@@ -443,18 +450,18 @@ export default function DirectingDrill() {
   return (
     <section
       aria-label="Interactive drill"
-      className="not-prose my-14 overflow-hidden rounded-xl border border-border bg-surface"
+      className="not-prose my-4 overflow-hidden rounded-[22px] border border-[var(--sd-border-strong)] bg-background font-sans shadow-[0_30px_60px_-40px_var(--sd-card-shadow)]"
     >
       {/* Station rail */}
-      <div className="flex gap-1.5 border-b border-border bg-surface-elevated px-6 py-4">
+      <div className="flex gap-1.5 border-b border-border bg-surface px-5 py-4 sm:px-8">
         {STATIONS.map((label, i) => (
           <div key={label} className="flex flex-1 flex-col gap-1.5">
             <div
-              className={`h-[3px] rounded-full ${i <= step ? 'bg-accent' : 'bg-border'}`}
+              className={`h-1 rounded-full transition-colors duration-500 ${i < step ? 'bg-pen' : i === step ? 'bg-pen shadow-[0_0_10px_var(--sd-pen)]' : 'bg-fill'}`}
             />
             <span
-              className={`hidden truncate font-mono text-[10px] uppercase tracking-[0.08em] sm:block ${
-                i === step ? 'text-text-primary' : 'text-text-secondary'
+              className={`hidden truncate text-[0.66rem] font-bold uppercase tracking-[0.12em] sm:block ${
+                i === step ? 'text-pen-ink' : 'text-text-secondary'
               }`}
             >
               {label}
@@ -463,15 +470,15 @@ export default function DirectingDrill() {
         ))}
       </div>
 
-      <div className="p-6 sm:p-8">
+      <div className="p-5 sm:p-8">
         {/* ---------- 0. BRIEF ---------- */}
         {step === 0 && (
           <div className="flex flex-col gap-5">
             <span className={eyebrow}>The brief · about 10 minutes</span>
-            <h3 className="font-display text-2xl font-semibold tracking-tight text-text-primary">
+            <h3 className="font-display text-2xl text-text-primary sm:text-[1.75rem]">
               Three drills, not a quiz
             </h3>
-            <p className="text-text-primary/85">
+            <p className="font-read text-[1.02rem] leading-relaxed text-text-primary/90">
               Six questions about what you actually did last week, then three
               drills that make you do the thing rather than read about it: pick
               real context out of decoys, mark the planted errors in a report
@@ -484,7 +491,7 @@ export default function DirectingDrill() {
             <div>
               <button
                 onClick={() => setStep(1)}
-                className="rounded-lg bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-background transition-opacity hover:opacity-90"
+                className={btnPrimary}
               >
                 Begin
               </button>
@@ -498,7 +505,7 @@ export default function DirectingDrill() {
             <span className={eyebrow}>
               Question {qi + 1} of {QUESTIONS.length}
             </span>
-            <h3 className="font-display text-xl font-semibold leading-snug tracking-tight text-text-primary">
+            <h3 className="font-display text-xl leading-snug text-text-primary sm:text-[1.4rem]">
               {QUESTIONS[qi].q}
             </h3>
             <div className="flex flex-col gap-2">
@@ -510,9 +517,9 @@ export default function DirectingDrill() {
                     if (qi + 1 < QUESTIONS.length) setQi(qi + 1);
                     else setStep(2);
                   }}
-                  className="flex items-baseline gap-3 rounded-lg border border-border bg-surface-elevated px-4 py-3.5 text-left text-text-primary transition-colors hover:border-accent hover:bg-fill"
+                  className="group flex min-h-12 items-center gap-3.5 rounded-2xl border border-border bg-surface px-4 py-3.5 text-left text-text-primary transition-[border-color,background-color,scale] hover:border-accent hover:bg-fill focus-visible:!rounded-2xl active:scale-[0.99]"
                 >
-                  <span className="font-mono text-[11px] text-text-secondary">
+                  <span className="grid h-7 w-7 flex-none place-items-center rounded-full border border-[var(--sd-border-strong)] text-xs font-bold text-text-secondary transition-colors group-hover:border-accent group-hover:bg-accent group-hover:text-background">
                     {String.fromCharCode(65 + i)}
                   </span>
                   <span>{text}</span>
@@ -530,20 +537,20 @@ export default function DirectingDrill() {
         {step === 2 && (
           <div className="flex flex-col gap-5">
             <span className={eyebrow}>Drill 1 · Context</span>
-            <h3 className="font-display text-xl font-semibold tracking-tight text-text-primary">
+            <h3 className="font-display text-xl text-text-primary sm:text-[1.4rem]">
               You sent this. It came back generic.
             </h3>
-            <p className="rounded-lg border-l-2 border-text-secondary bg-fill px-4 py-3 font-mono text-sm text-text-secondary">
+            <p className="rounded-2xl border-l-4 border-pen bg-fill px-4 py-3 font-mono text-sm text-text-primary/85">
               Write a project update email for my team.
             </p>
-            <p className="text-text-primary/85">
+            <p className="font-read text-[1.02rem] leading-relaxed text-text-primary/90">
               Eight things you could add. Pick the <strong>three</strong> that
               would most improve what comes back.
             </p>
             <div className="flex flex-col gap-2">
               {CHIPS.map((c, i) => {
                 const on = picks.includes(i);
-                let tone = 'border-border bg-surface-elevated';
+                let tone = 'border-border bg-surface';
                 let tag = '';
                 if (chipsGraded) {
                   if (on && c.good) {
@@ -572,12 +579,12 @@ export default function DirectingDrill() {
                             : p
                       )
                     }
-                    className={`flex items-center gap-3 rounded-lg border px-4 py-3 text-left text-text-primary transition-colors ${tone} ${
-                      chipsGraded ? '' : 'hover:border-accent'
+                    className={`flex min-h-12 items-center gap-3 rounded-2xl border px-4 py-3 text-left text-text-primary transition-[border-color,background-color,scale] focus-visible:!rounded-2xl ${tone} ${
+                      chipsGraded ? '' : 'hover:border-accent active:scale-[0.99]'
                     }`}
                   >
                     <span
-                      className={`grid h-4 w-4 flex-none place-items-center rounded-sm border text-[10px] leading-none ${
+                      className={`grid h-5 w-5 flex-none place-items-center rounded-md border text-[11px] leading-none ${
                         on
                           ? 'border-accent bg-accent text-background'
                           : 'border-text-secondary text-transparent'
@@ -588,7 +595,7 @@ export default function DirectingDrill() {
                     <span>{c.t}</span>
                     {tag && (
                       <span
-                        className={`ml-auto flex-none font-mono text-[10px] uppercase tracking-[0.08em] ${
+                        className={`ml-auto flex-none ${tagCls} ${
                           tag === 'noise' ? 'text-bear' : 'text-bull'
                         }`}
                       >
@@ -607,11 +614,11 @@ export default function DirectingDrill() {
                     setChipsGraded(true);
                     award('context', chipHits, 3);
                   }}
-                  className="rounded-lg bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-background transition-opacity hover:opacity-90 disabled:opacity-40"
+                  className={btnPrimary}
                 >
                   Check my picks
                 </button>
-                <span className="font-mono text-xs text-text-secondary">
+                <span className={counter}>
                   {picks.length} of 3 selected
                 </span>
               </div>
@@ -622,12 +629,12 @@ export default function DirectingDrill() {
                     picks.includes(i) || c.good ? (
                       <div
                         key={i}
-                        className={`border-l-2 pl-4 text-[0.95rem] leading-relaxed text-text-secondary ${
+                        className={`rounded-r-xl border-l-4 bg-surface py-2.5 pr-3 pl-4 text-[0.95rem] leading-relaxed text-text-secondary ${
                           c.good ? 'border-bull' : 'border-bear'
                         }`}
                       >
                         <span
-                          className={`mr-2 font-mono text-[10px] uppercase tracking-[0.08em] ${
+                          className={`mr-2 ${tagCls} ${
                             c.good ? 'text-bull' : 'text-bear'
                           }`}
                         >
@@ -642,7 +649,7 @@ export default function DirectingDrill() {
                 <div>
                   <button
                     onClick={() => setStep(3)}
-                    className="rounded-lg bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-background transition-opacity hover:opacity-90"
+                    className={btnPrimary}
                   >
                     Next drill — {chipHits} of 3 found
                   </button>
@@ -656,16 +663,16 @@ export default function DirectingDrill() {
         {step === 3 && (
           <div className="flex flex-col gap-5">
             <span className={eyebrow}>Drill 2 · Proofing</span>
-            <h3 className="font-display text-xl font-semibold leading-snug tracking-tight text-text-primary">
+            <h3 className="font-display text-xl leading-snug text-text-primary sm:text-[1.4rem]">
               Your AI wrote this quarterly summary. Three things in it are
               wrong.
             </h3>
-            <p className="text-text-primary/85">
+            <p className="font-read text-[1.02rem] leading-relaxed text-text-primary/90">
               It reads clean, which is the problem. Click the phrases you would
               not sign your name to. Over-flagging counts against you — marking
               everything is not judgment.
             </p>
-            <p className="rounded-lg border border-border bg-surface-elevated px-5 py-4 leading-loose text-text-primary">
+            <p className="rounded-2xl border border-border bg-surface px-5 py-4 font-read text-[1.02rem] leading-loose text-text-primary">
               {PROOF.map((part, i) => {
                 const on = marks.includes(i);
                 let cls = 'border-b border-dotted border-text-secondary';
@@ -709,11 +716,11 @@ export default function DirectingDrill() {
                       3
                     );
                   }}
-                  className="rounded-lg bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-background transition-opacity hover:opacity-90"
+                  className={btnPrimary}
                 >
                   Check my marks
                 </button>
-                <span className="font-mono text-xs text-text-secondary">
+                <span className={counter}>
                   {marks.length} marked
                 </span>
               </div>
@@ -725,12 +732,12 @@ export default function DirectingDrill() {
                     return (
                       <div
                         key={i}
-                        className={`border-l-2 pl-4 text-[0.95rem] leading-relaxed text-text-secondary ${
+                        className={`rounded-r-xl border-l-4 bg-surface py-2.5 pr-3 pl-4 text-[0.95rem] leading-relaxed text-text-secondary ${
                           caught ? 'border-bull' : 'border-bear'
                         }`}
                       >
                         <span
-                          className={`mr-2 font-mono text-[10px] uppercase tracking-[0.08em] ${
+                          className={`mr-2 ${tagCls} ${
                             caught ? 'text-bull' : 'text-bear'
                           }`}
                         >
@@ -744,8 +751,8 @@ export default function DirectingDrill() {
                     );
                   })}
                   {proofFalse > 0 && (
-                    <div className="border-l-2 border-bear pl-4 text-[0.95rem] leading-relaxed text-text-secondary">
-                      <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.08em] text-bear">
+                    <div className="rounded-r-xl border-l-4 border-bear bg-surface py-2.5 pr-3 pl-4 text-[0.95rem] leading-relaxed text-text-secondary">
+                      <span className={`mr-2 ${tagCls} text-bear`}>
                         over-flag
                       </span>
                       <strong className="text-text-primary">
@@ -761,7 +768,7 @@ export default function DirectingDrill() {
                 <div>
                   <button
                     onClick={() => setStep(4)}
-                    className="rounded-lg bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-background transition-opacity hover:opacity-90"
+                    className={btnPrimary}
                   >
                     Next drill — {proofHits} of 3 found
                   </button>
@@ -775,10 +782,10 @@ export default function DirectingDrill() {
         {step === 4 && (
           <div className="flex flex-col gap-5">
             <span className={eyebrow}>Drill 3 · Splitting</span>
-            <h3 className="font-display text-xl font-semibold leading-snug tracking-tight text-text-primary">
+            <h3 className="font-display text-xl leading-snug text-text-primary sm:text-[1.4rem]">
               Task on your desk: prepare the quarterly business review
             </h3>
-            <p className="text-text-primary/85">
+            <p className="font-read text-[1.02rem] leading-relaxed text-text-primary/90">
               Send each piece where it belongs. <strong>Runs it</strong> means
               you take the output as-is. <strong>Drafts it</strong> means you
               edit and approve. <strong>You do it</strong> means handing it over
@@ -791,12 +798,12 @@ export default function DirectingDrill() {
                 return (
                   <div
                     key={i}
-                    className={`flex flex-col gap-3 rounded-lg border px-4 py-3.5 ${
+                    className={`flex flex-col gap-3 rounded-2xl border px-4 py-3.5 ${
                       right
                         ? 'border-bull bg-bull-soft'
                         : wrong
                           ? 'border-bear bg-bear-soft'
-                          : 'border-border bg-surface-elevated'
+                          : 'border-border bg-surface'
                     }`}
                   >
                     <span className="text-text-primary">{t.t}</span>
@@ -811,7 +818,7 @@ export default function DirectingDrill() {
                             onClick={() =>
                               setLanes((s) => ({ ...s, [i]: l.key }))
                             }
-                            className={`rounded-md border px-3 py-2 font-mono text-[11px] uppercase tracking-[0.06em] transition-colors ${
+                            className={`min-h-11 rounded-full border px-4 text-[0.8rem] font-bold transition-[border-color,background-color,color,scale] focus-visible:!rounded-full active:scale-[0.97] ${
                               on
                                 ? 'border-accent bg-accent text-background'
                                 : isAnswer
@@ -846,11 +853,11 @@ export default function DirectingDrill() {
                     setTasksGraded(true);
                     award('delegation', taskHits, TASKS.length);
                   }}
-                  className="rounded-lg bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-background transition-opacity hover:opacity-90 disabled:opacity-40"
+                  className={btnPrimary}
                 >
                   Check my split
                 </button>
-                <span className="font-mono text-xs text-text-secondary">
+                <span className={counter}>
                   {Object.keys(lanes).length} of {TASKS.length} sorted
                 </span>
               </div>
@@ -858,7 +865,7 @@ export default function DirectingDrill() {
               <div>
                 <button
                   onClick={() => setStep(5)}
-                  className="rounded-lg bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-background transition-opacity hover:opacity-90"
+                  className={btnPrimary}
                 >
                   See the verdict — {taskHits} of {TASKS.length} placed
                 </button>
@@ -899,7 +906,7 @@ function Verdict({ scores, onReset }: { scores: Scores; onReset: () => void }) {
   return (
     <div className="flex flex-col gap-6">
       <span className={eyebrow}>The verdict</span>
-      <h3 className="font-display text-2xl font-semibold tracking-tight text-text-primary">
+      <h3 className="font-display text-2xl text-text-primary sm:text-[1.75rem]">
         {headline}
       </h3>
 
@@ -916,7 +923,7 @@ function Verdict({ scores, onReset }: { scores: Scores; onReset: () => void }) {
                 <span className="font-semibold text-text-primary">
                   {SKILL_META[k].label}
                 </span>
-                <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.08em] text-text-secondary">
+                <span className="mt-0.5 block text-[0.66rem] font-bold uppercase tracking-[0.12em] text-text-secondary">
                   {SKILL_META[k].sub}
                 </span>
               </div>
@@ -927,7 +934,7 @@ function Verdict({ scores, onReset }: { scores: Scores; onReset: () => void }) {
                 />
               </div>
               <span
-                className={`text-right font-mono text-sm [font-variant-numeric:tabular-nums] ${
+                className={`text-right text-sm font-bold [font-variant-numeric:tabular-nums] ${
                   weak ? 'text-bear' : 'text-text-primary'
                 }`}
               >
@@ -938,11 +945,11 @@ function Verdict({ scores, onReset }: { scores: Scores; onReset: () => void }) {
         })}
       </div>
 
-      <div className="flex flex-col gap-3 rounded-lg border-l-2 border-accent bg-fill px-5 py-4">
-        <h4 className="font-display text-lg font-semibold tracking-tight text-text-primary">
+      <div className="flex flex-col gap-3 rounded-2xl border-l-4 border-pen bg-surface px-5 py-4">
+        <h4 className="font-display text-lg text-text-primary">
           {p.head}
         </h4>
-        <p className="text-text-primary/85">{p.body}</p>
+        <p className="font-read leading-relaxed text-text-primary/90">{p.body}</p>
       </div>
 
       <div>
@@ -951,9 +958,9 @@ function Verdict({ scores, onReset }: { scores: Scores; onReset: () => void }) {
           {p.plan.map(([when, what]) => (
             <div
               key={when}
-              className="flex gap-4 border-b border-border py-3 text-text-primary/85"
+              className="flex gap-4 border-b border-border py-3 text-text-primary/90"
             >
-              <span className="w-16 flex-none font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
+              <span className="w-16 flex-none pt-0.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-pen-ink">
                 {when}
               </span>
               <p className="leading-relaxed">{what}</p>
@@ -964,7 +971,7 @@ function Verdict({ scores, onReset }: { scores: Scores; onReset: () => void }) {
 
       <button
         onClick={onReset}
-        className="self-start rounded-lg border border-border px-6 py-3 font-mono text-xs uppercase tracking-[0.08em] text-text-secondary transition-colors hover:border-accent hover:text-text-primary"
+        className={`self-start ${btnSecondary}`}
       >
         Run it again
       </button>

@@ -1,0 +1,298 @@
+/*
+  ArticleBody — the long-form reading surface shared by Writing posts and
+  Market Storm reports. Prefix wr-.
+
+  Everything sits in the `components` layer so a caller's Tailwind utility
+  (e.g. ReportView's `[&>p:last-child]:mb-0`) still wins over these defaults.
+  The layer order is restated first so this file is safe whichever stylesheet
+  the browser happens to see first.
+*/
+@layer theme, base, components, utilities;
+
+@layer components {
+  .wr-prose {
+    font-family: var(--font-read);
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: color-mix(in srgb, var(--sd-text-primary) 92%, transparent);
+    overflow-wrap: break-word;
+  }
+  @media (min-width: 40rem) {
+    .wr-prose {
+      font-size: 1.125rem;
+      line-height: 1.85;
+    }
+  }
+  .wr-prose > :first-child {
+    margin-top: 0;
+  }
+
+  .wr-p {
+    margin: 0 0 1.3em;
+  }
+
+  /* ── Headings: poster gothic for h2, the UI face for h3; both carry a
+        vermilion brush stroke beneath. ── */
+  .wr-h2 {
+    margin: 2.6em 0 1em;
+    font-size: clamp(1.5rem, 1.15rem + 1.3vw, 2.05rem);
+    color: var(--sd-text-primary);
+    scroll-margin-top: 6rem;
+  }
+  .wr-h3 {
+    margin: 2.1em 0 0.7em;
+    font-family: var(--font-sans);
+    font-size: 1.16rem;
+    font-weight: 750;
+    line-height: 1.35;
+    letter-spacing: -0.005em;
+    color: var(--sd-text-primary);
+    scroll-margin-top: 6rem;
+  }
+  .wr-h3::after {
+    content: '';
+    display: block;
+    width: 44px;
+    height: 7px;
+    margin-top: 0.42em;
+    background: var(--sd-pen);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat;
+  }
+  .wr-h4 {
+    margin: 1.8em 0 0.5em;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 750;
+    color: var(--sd-text-primary);
+  }
+  .wr-h2 + .wr-p,
+  .wr-h3 + .wr-p {
+    margin-top: 0;
+  }
+
+  /* ── Lists: vermilion diamonds and vermilion numerals. ── */
+  .wr-ul,
+  .wr-ol {
+    margin: 0 0 1.4em;
+    padding-left: 1.55em;
+  }
+  .wr-ul {
+    list-style: none;
+  }
+  .wr-ol {
+    list-style: decimal;
+  }
+  .wr-li {
+    position: relative;
+    margin: 0.5em 0;
+    padding-left: 0.15em;
+  }
+  .wr-ul > .wr-li::before {
+    content: '';
+    position: absolute;
+    left: -1.05em;
+    top: calc(0.9em - 0.2em);
+    width: 0.4em;
+    height: 0.4em;
+    border-radius: 1px;
+    background: var(--sd-pen);
+    rotate: 45deg;
+  }
+  .wr-ol > .wr-li::marker {
+    color: var(--sd-pen-ink);
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .wr-li > .wr-p {
+    margin: 0 0 0.6em;
+  }
+  .wr-li > .wr-p:last-child {
+    margin-bottom: 0;
+  }
+  .wr-li > .wr-ul,
+  .wr-li > .wr-ol {
+    margin: 0.4em 0 0.2em;
+  }
+
+  /* ── Inline ── */
+  .wr-strong {
+    font-weight: 700;
+    color: var(--sd-text-primary);
+  }
+  /* The highlighter's padding lets the gold bleed past the words; pull the
+     box back by the same amount so the words keep their normal spacing
+     (otherwise a comma after a highlight looks like it has a space in front). */
+  .wr-strong.sd-hl {
+    margin-inline: -0.12em;
+  }
+  .wr-em {
+    font-style: italic;
+  }
+  .wr-a {
+    color: var(--sd-accent);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in srgb, var(--sd-accent) 45%, transparent);
+    transition:
+      text-decoration-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .wr-a:hover {
+    color: var(--sd-accent-hover);
+    text-decoration-color: currentColor;
+  }
+  .wr-code {
+    font-family: var(--font-mono);
+    font-size: 0.84em;
+    padding: 0.12em 0.4em;
+    border-radius: 6px;
+    background: var(--sd-fill);
+    border: 1px solid var(--sd-border);
+    color: var(--sd-text-primary);
+    overflow-wrap: anywhere;
+  }
+
+  /* ── A quote is a card of ink set in the reading face, held between
+        vermilion corner brackets — 「 」, the way Japanese marks speech.
+        Quotes here are mostly prompts Josh typed, so they get room. ── */
+  .wr-quote {
+    position: relative;
+    margin: 2em 0;
+    padding: 1.35em 1.55em 1.4em 1.7em;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--sd-text-primary) 4.5%, var(--sd-surface));
+    border: 1px solid var(--sd-border);
+    color: var(--sd-text-primary);
+    font-size: 0.98em;
+    line-height: 1.75;
+  }
+  .wr-quote::before,
+  .wr-quote::after {
+    content: '';
+    position: absolute;
+    width: 0.95em;
+    height: 0.95em;
+    border: 0 solid var(--sd-pen);
+    pointer-events: none;
+  }
+  .wr-quote::before {
+    left: 0.6em;
+    top: 0.6em;
+    border-left-width: 3px;
+    border-top-width: 3px;
+    border-top-left-radius: 3px;
+  }
+  .wr-quote::after {
+    right: 0.6em;
+    bottom: 0.6em;
+    border-right-width: 3px;
+    border-bottom-width: 3px;
+    border-bottom-right-radius: 3px;
+  }
+  .wr-quote > .wr-p {
+    margin: 0;
+  }
+  .wr-quote > .wr-p + .wr-p {
+    margin-top: 0.8em;
+  }
+
+  /* ── Code: a slab of sumi ink — an object, the same in both lights. ── */
+  .wr-pre {
+    margin: 1.8em 0;
+    padding: 1.1em 1.25em;
+    overflow-x: auto;
+    border-radius: 16px;
+    background: #15172b;
+    color: #e6e8f6;
+    border: 1px solid rgba(236, 238, 250, 0.1);
+    border-top: 3px solid var(--sd-pen);
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.7;
+    tab-size: 2;
+    box-shadow: 0 18px 36px -28px var(--sd-card-shadow);
+  }
+  .wr-pre .wr-code {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    overflow-wrap: normal;
+  }
+
+  /* ── Tables: the UI face, tabular figures, a tinted head and row rules.
+        No frame border — a boxed table sitting flush reads as cramped. A
+        wide one scrolls inside its own box; the page never scrolls sideways. ── */
+  .wr-table-wrap {
+    margin: 2em 0;
+    overflow-x: auto;
+    border-radius: 14px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+  }
+  .wr-thead {
+    background: var(--sd-fill);
+  }
+  .wr-th {
+    padding: 0.8rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sd-text-secondary);
+    border-bottom: 1px solid var(--sd-border-strong);
+    white-space: nowrap;
+  }
+  .wr-td {
+    padding: 0.8rem 1rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--sd-border);
+    color: color-mix(in srgb, var(--sd-text-primary) 88%, transparent);
+  }
+  .wr-table tr:last-child .wr-td {
+    border-bottom: 0;
+  }
+  .wr-table tbody tr:hover .wr-td {
+    background: color-mix(in srgb, var(--sd-fill) 60%, transparent);
+  }
+
+  /* ── Images in a body: a print, rounded like everything else. ── */
+  .wr-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0.4em 0;
+    border-radius: 16px;
+    border: 1px solid var(--sd-border);
+    box-shadow: 0 24px 48px -32px var(--sd-card-shadow);
+  }
+
+  /* ── A section break: one brush stroke, centred. ── */
+  .wr-hr {
+    width: 72px;
+    height: 10px;
+    margin: 2.8em auto;
+    border: 0;
+    background: var(--sd-pen);
+    opacity: 0.6;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat;
+  }
+}

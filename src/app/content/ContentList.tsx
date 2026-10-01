@@ -1,118 +1,154 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import Link from 'next/link';
 import type { PostSummary } from '@/lib/posts';
-import { SectionContainer, Card, Badge } from '@/components/ui';
 import HeroImage from '@/components/HeroImage';
 import { formatDate } from '@/lib/format';
 
+/** What the server worked out for each card: reading time, hero pixel size. */
+export type CardExtras = { minutes: number; width: number; height: number };
+
+const FALLBACK: CardExtras = { minutes: 0, width: 1200, height: 630 };
+
 /**
- * Post thumbnail. Uses the post's heroImage when present, and falls back to
- * a designed paper block with the category initial — so a missing image
- * never blocks publishing and the layout never shows a broken frame.
+ * The frame a card's image sits in. Its view-transition name is the one the
+ * post page gives its hero, so opening a card morphs this image into the
+ * article's hero (and pressing back morphs it home). One name per slug on the
+ * page — the featured card and the grid never show the same post.
  */
-function Thumb({
+function Frame({
   post,
+  extras,
+  priority = false,
   className = '',
 }: {
   post: PostSummary;
+  extras: CardExtras;
+  priority?: boolean;
   className?: string;
 }) {
-  if (post.heroImage) {
-    return (
-      <HeroImage post={post} className={`h-full w-full object-cover ${className}`.trim()} />
-    );
-  }
   return (
-    <div className="flex h-full w-full items-center justify-center bg-surface-elevated">
-      <span className="font-display text-6xl font-semibold text-accent/25">
-        {post.category.charAt(0)}
-      </span>
+    <div
+      className={`wr-frame ${className}`.trim()}
+      style={{ viewTransitionName: `post-hero-${post.slug}` } as CSSProperties}
+    >
+      {post.heroImage ? (
+        <HeroImage
+          post={post}
+          priority={priority}
+          width={extras.width}
+          height={extras.height}
+          className="wr-frame-img"
+        />
+      ) : (
+        // A missing image never blocks publishing and never shows a broken
+        // frame: a designed block with the category's initial instead.
+        <div className="wr-frame-empty" aria-hidden>
+          <span className="font-display">{post.category.charAt(0)}</span>
+        </div>
+      )}
     </div>
   );
 }
 
-/** Full-width lead card: image beside the copy on desktop, stacked on mobile. */
-function FeaturedCard({ post }: { post: PostSummary }) {
+function Meta({ post, extras }: { post: PostSummary; extras: CardExtras }) {
   return (
-    <Link href={`/content/${post.slug}`} className="group block">
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_10px_30px_-12px_var(--sd-card-shadow)] sm:flex sm:items-center">
-        {/* Holds the hero's own 40:21 at every width. This used to stretch to
-            the card's height, which made the frame far narrower than the source
-            and let object-cover crop the sides — on a hero whose words start
-            68px from the edge, that clipped the first letter of every line. */}
-        <div className="aspect-[40/21] overflow-hidden sm:w-2/5 sm:shrink-0">
-          <Thumb
-            post={post}
-            className="transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
-        <div className="flex flex-1 flex-col p-6 sm:p-8">
-          <div className="flex items-center justify-between gap-3">
-            <Badge variant="accent">{post.category}</Badge>
-            <span className="text-xs text-text-secondary">
-              {formatDate(post.publishDate)}
-            </span>
-          </div>
-          <h2 className="font-display mt-4 text-2xl font-semibold leading-tight tracking-tight text-text-primary transition-colors group-hover:text-accent sm:text-3xl">
-            {post.title}
-          </h2>
-          <p className="mt-3 line-clamp-3 flex-1 text-text-secondary">
-            {post.excerpt}
+    <p className="wr-meta">
+      <span className="wr-meta-cat">{post.category}</span>
+      <time dateTime={post.publishDate}>{formatDate(post.publishDate)}</time>
+      {extras.minutes > 0 && <span>{extras.minutes} min read</span>}
+    </p>
+  );
+}
+
+function Tags({ tags }: { tags: string[] }) {
+  if (tags.length === 0) return null;
+  return (
+    <ul className="wr-tags" aria-label="Tags">
+      {tags.map((tag) => (
+        <li key={tag}>{tag}</li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * The cover story: the newest note in the current filter, image beside the
+ * words on a wide screen and above them on a phone. `lead` marks the real
+ * lead — it carries the 新 ("new") seal by its label and the LCP-priority
+ * image.
+ */
+function FeaturedCard({
+  post,
+  extras,
+  lead,
+  label,
+  seal,
+}: {
+  post: PostSummary;
+  extras: CardExtras;
+  lead: boolean;
+  label: string;
+  seal?: ReactNode;
+}) {
+  return (
+    <Link
+      href={`/content/${post.slug}`}
+      transitionTypes={['nav-forward']}
+      className="wr-feature sd-card group"
+    >
+      <div className="wr-feature-media">
+        <Frame post={post} extras={extras} priority={lead} />
+      </div>
+      <div className="wr-feature-body">
+        {lead ? (
+          // 新, "new" — stamped beside the label, off the image (the hero
+          // art carries its own seal).
+          <p className="wr-feature-kicker">
+            {seal}
+            <span>{label}</span>
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <Badge key={tag} variant="default">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-          <span className="mt-5 inline-block text-sm font-medium text-accent">
-            Read More &rarr;
-          </span>
-        </div>
+        ) : (
+          <p className="sd-kicker">{label}</p>
+        )}
+        <h2 className="font-display wr-feature-title">{post.title}</h2>
+        <p className="font-read wr-feature-excerpt">{post.excerpt}</p>
+        <Meta post={post} extras={extras} />
+        <Tags tags={post.tags} />
+        <span className="wr-cta">
+          Read the note <span aria-hidden className="wr-cta-arrow">→</span>
+        </span>
       </div>
     </Link>
   );
 }
 
-/** Compact card used once there are enough posts to fill a grid. */
-function GridCard({ post }: { post: PostSummary }) {
+/** A card in the grid: image on top, then the words. */
+function GridCard({ post, extras }: { post: PostSummary; extras: CardExtras }) {
   return (
-    <Link href={`/content/${post.slug}`} className="group block h-full">
-      <Card hover className="flex h-full flex-col overflow-hidden !p-0">
-        <div className="aspect-[16/9] overflow-hidden">
-          <Thumb
-            post={post}
-            className="transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
-        <div className="flex flex-1 flex-col p-6">
-          <div className="flex items-center justify-between gap-3">
-            <Badge variant="accent">{post.category}</Badge>
-            <span className="text-xs text-text-secondary">
-              {formatDate(post.publishDate)}
-            </span>
-          </div>
-          <h2 className="font-display mt-3 text-lg font-semibold text-text-primary transition-colors group-hover:text-accent">
-            {post.title}
-          </h2>
-          <p className="mt-2 line-clamp-3 flex-1 text-sm text-text-secondary">
-            {post.excerpt}
+    <Link
+      href={`/content/${post.slug}`}
+      transitionTypes={['nav-forward']}
+      className="wr-card sd-card sd-tilt group"
+    >
+      <Frame post={post} extras={extras} />
+      <div className="wr-card-body">
+        <p className="wr-card-cat">{post.category}</p>
+        <h2 className="wr-card-title">{post.title}</h2>
+        <p className="wr-card-excerpt">{post.excerpt}</p>
+        <Tags tags={post.tags} />
+        <div className="wr-card-foot">
+          <p className="wr-meta">
+            <time dateTime={post.publishDate}>{formatDate(post.publishDate)}</time>
+            {extras.minutes > 0 && <span>{extras.minutes} min read</span>}
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <Badge key={tag} variant="default">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-          <span className="mt-4 inline-block text-sm font-medium text-accent">
-            Read More &rarr;
+          <span aria-hidden className="wr-card-arrow">
+            →
           </span>
         </div>
-      </Card>
+      </div>
     </Link>
   );
 }
@@ -120,83 +156,147 @@ function GridCard({ post }: { post: PostSummary }) {
 export default function ContentList({
   posts,
   categories,
+  extras,
+  end,
+  seal,
 }: {
   posts: PostSummary[];
   categories: string[];
+  extras: Record<string, CardExtras>;
+  /** Server-rendered tile that closes the list (the newsletter). */
+  end?: ReactNode;
+  /** Server-rendered 新 seal for the cover story. Passed in rather than
+   *  imported so the glyph table (~74 KB) never enters the client bundle. */
+  seal?: ReactNode;
 }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const filterRun = useRef(0);
 
   const filtered = activeCategory
     ? posts.filter((entry) => entry.category === activeCategory)
     : posts;
 
   const [featured, ...rest] = filtered;
+  const ex = (p: PostSummary) => extras[p.slug] ?? FALLBACK;
+
+  /**
+   * Switching a filter is a View Transition where the browser has one: the
+   * tab's pill slides to its new tab and every card image that survives the
+   * filter glides to its new place (they already carry names for the post
+   * morph). The update is flushed synchronously inside the transition so the
+   * browser captures the finished list. Without the API, or with reduced
+   * motion, it just switches.
+   */
+  function choose(cat: string | null) {
+    if (cat === activeCategory) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('startViewTransition' in document)) {
+      setActiveCategory(cat);
+      return;
+    }
+    const root = document.documentElement;
+    const run = ++filterRun.current;
+    root.classList.add('wr-filtering');
+    const vt = document.startViewTransition(() => {
+      flushSync(() => setActiveCategory(cat));
+    });
+    // A quick second tap skips this transition; that's fine, not an error.
+    vt.ready.catch(() => {});
+    vt.finished.finally(() => {
+      // Only the latest run clears the flag — a skipped one finishes early.
+      if (run === filterRun.current) root.classList.remove('wr-filtering');
+    });
+  }
+
+  const tabs: { key: string | null; label: string; count: number }[] = [
+    { key: null, label: 'All', count: posts.length },
+    ...categories.map((cat) => ({
+      key: cat,
+      label: cat,
+      count: posts.filter((p) => p.category === cat).length,
+    })),
+  ];
 
   return (
-    <SectionContainer className="py-20">
-      {/* Page Header */}
-      <div className="text-center">
-        <p className="font-mono-accent text-accent">Writing</p>
-        <h1 className="font-display mt-3 text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">
-          Field notes
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-          Plain-language guides from things I&apos;ve actually built with AI —
-          what mattered, and why.
-        </p>
-      </div>
-
-      {/* Category Filter */}
+    <section className="wr-list" aria-label="Notes">
+      {/* Category filter — a native segmented control. It scrolls sideways
+          (and snaps) when the categories outgrow a phone. */}
       {categories.length > 1 && (
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <button
-            onClick={() => setActiveCategory(null)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              activeCategory === null
-                ? 'bg-accent text-background'
-                : 'border border-border text-text-secondary hover:text-text-primary'
-            }`}
-          >
-            All
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                activeCategory === cat
-                  ? 'bg-accent text-background'
-                  : 'border border-border text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="wr-tabs-wrap">
+          <div className="wr-tabs" role="group" aria-label="Filter notes by category">
+            {tabs.map((tab) => {
+              const on = activeCategory === tab.key;
+              return (
+                <button
+                  key={tab.label}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => choose(tab.key)}
+                  className="wr-tab"
+                  data-on={on || undefined}
+                >
+                  {on && (
+                    <span
+                      aria-hidden
+                      className="wr-tab-thumb"
+                      style={{ viewTransitionName: 'wr-tab-thumb' }}
+                    />
+                  )}
+                  <span className="wr-tab-label">{tab.label}</span>
+                  <span className="wr-tab-count">{tab.count}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
+
+      <p className="sr-only" aria-live="polite">
+        {activeCategory
+          ? `Showing ${filtered.length} ${filtered.length === 1 ? 'note' : 'notes'} in ${activeCategory}`
+          : `Showing all ${filtered.length} notes`}
+      </p>
 
       {/* Content */}
       {filtered.length > 0 ? (
-        <div className="mx-auto mt-12 max-w-5xl space-y-8">
-          <FeaturedCard post={featured} />
+        <div className="wr-stack">
+          <FeaturedCard
+            post={featured}
+            extras={ex(featured)}
+            lead
+            seal={seal}
+            label={activeCategory ? `Newest in ${activeCategory}` : 'Newest note'}
+          />
           {/* A grid needs ≥2 items to look intentional; otherwise stay full-width. */}
           {rest.length >= 2 ? (
-            <div className="grid gap-8 sm:grid-cols-2">
+            <ul className="wr-grid" role="list">
               {rest.map((post) => (
-                <GridCard key={post.slug} post={post} />
+                <li key={post.slug} className="sd-reveal">
+                  <GridCard post={post} extras={ex(post)} />
+                </li>
               ))}
-            </div>
+              {end && <li className="wr-grid-end sd-reveal">{end}</li>}
+            </ul>
           ) : (
-            rest.map((post) => <FeaturedCard key={post.slug} post={post} />)
+            <>
+              {rest.map((post) => (
+                <FeaturedCard
+                  key={post.slug}
+                  post={post}
+                  extras={ex(post)}
+                  lead={false}
+                  label={post.category}
+                />
+              ))}
+              {end && <div className="sd-reveal">{end}</div>}
+            </>
           )}
         </div>
       ) : (
-        <div className="mt-20 text-center">
-          <p className="text-lg text-text-secondary">
-            No entries in this category yet. Check back soon.
-          </p>
+        <div className="wr-empty">
+          <p>No entries in this category yet. Check back soon.</p>
         </div>
       )}
-    </SectionContainer>
+    </section>
   );
 }

@@ -93,6 +93,9 @@
   --sd-grid: transparent;
   --sd-rule: rgba(21, 23, 43, 0.1);
   --sd-margin-line: rgba(226, 65, 42, 0.45);
+  /* The top bar's height (64px bar + 1px rule). Anything that docks under
+     it reads this rather than repeating the number. */
+  --sd-header-h: 65px;
   /* Kiru reads the same in both lights; only his outline and rim change. */
   --kiru-line: #10132a;
   --kiru-rim: 0;
@@ -577,6 +580,9 @@ p {
     )
     0 70% / 100% 0.58em no-repeat;
   padding: 0 0.12em;
+  /* Give the padding back, so a comma after highlighted text doesn't look
+     like it has a space in front of it. */
+  margin-inline: -0.12em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
