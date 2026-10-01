@@ -60,7 +60,9 @@ export default function SiteHeader() {
           transitionTypes={direction(pathname, '/')}
         >
           <KiruMark className="h-9 w-9 shrink-0 transition-transform duration-500 ease-out group-hover:-rotate-12 group-hover:scale-110" />
-          <span className="font-display truncate text-[1.05rem] leading-none text-text-primary max-[369px]:hidden sm:text-[1.15rem]">
+          {/* The wordmark scales with the phone's width so it fits whole
+              beside the three buttons from 340px up, instead of truncating. */}
+          <span className="font-display truncate text-[length:clamp(11.5px,calc(10vw_-_22.5px),1.05rem)] leading-none text-text-primary max-[339px]:hidden sm:text-[1.15rem]">
             Smart Disruptions
           </span>
         </Link>
@@ -75,7 +77,7 @@ export default function SiteHeader() {
                   prefetch={pathname === item.href ? false : undefined}
                   transitionTypes={direction(pathname, item.href)}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative block rounded-full px-3.5 py-2 text-[0.92rem] font-semibold transition-colors ${
+                  className={`relative block rounded-full px-2.5 py-2 text-[0.92rem] font-semibold whitespace-nowrap transition-colors xl:px-3.5 ${
                     active
                       ? 'text-text-primary'
                       : 'text-text-secondary hover:bg-fill hover:text-text-primary'
@@ -85,7 +87,7 @@ export default function SiteHeader() {
                   {active && (
                     <span
                       aria-hidden
-                      className="absolute inset-x-3 -bottom-0.5 h-[5px] rounded-full bg-pen"
+                      className="absolute inset-x-2.5 -bottom-0.5 h-[5px] rounded-full bg-pen xl:inset-x-3"
                       style={{
                         viewTransitionName: 'sd-nav-ink',
                         WebkitMask:

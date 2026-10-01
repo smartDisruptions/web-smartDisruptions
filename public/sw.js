@@ -23,6 +23,8 @@ const ASSETS = `${VERSION}-assets`;
 const PAGES = `${VERSION}-pages`;
 const OFFLINE = '/offline';
 const MAX_PAGES = 60;
+// Hashed build files pile up across deploys; keep the newest few hundred.
+const MAX_ASSETS = 400;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -38,19 +40,22 @@ self.addEventListener('activate', (event) => {
     caches
       .keys()
       .then((keys) => Promise.all(keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k))))
+      // Start the page request while this worker is still waking up, so a
+      // network-first page costs no more than no worker at all.
+      .then(() => self.registration.navigationPreload?.enable())
       .then(() => self.clients.claim()),
   );
 });
 
 const cacheable = (res) => res && res.ok && res.type === 'basic' && !res.redirected;
 
-async function cacheFirst(req) {
+async function cacheFirst(req, event) {
   const hit = await caches.match(req);
   if (hit) return hit;
   const res = await fetch(req);
   if (cacheable(res)) {
     const c = await caches.open(ASSETS);
-    c.put(req, res.clone());
+    event.waitUntil(c.put(req, res.clone()).then(() => trim(ASSETS, MAX_ASSETS)));
   }
   return res;
 }
@@ -79,7 +84,7 @@ async function trim(cacheName, max) {
 
 async function networkFirstPage(req, event) {
   try {
-    const res = await fetch(req);
+    const res = (await event.preloadResponse) || (await fetch(req));
     if (cacheable(res)) {
       const c = await caches.open(PAGES);
       event.waitUntil(c.put(req, res.clone()).then(() => trim(PAGES, MAX_PAGES)));
@@ -98,7 +103,7 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.startsWith('/_vercel') || url.pathname.startsWith('/api/')) return;
 
   if (url.pathname.startsWith('/_next/static/')) {
-    event.respondWith(cacheFirst(req));
+    event.respondWith(cacheFirst(req, event));
     return;
   }
   if (/^\/(images|icons)\//.test(url.pathname) || /\.(?:webp|png|jpe?g|svg|woff2|ico)$/.test(url.pathname)) {
