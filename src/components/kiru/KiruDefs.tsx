@@ -1,4 +1,5 @@
 import { KiruParts } from './Kiru';
+import { svgString } from '@/components/brand/svgString';
 
 /**
  * Gradients, the head clip, and the shared body parts (hood, face, torso,
@@ -15,7 +16,10 @@ export default function KiruDefs() {
       focusable="false"
       style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}
     >
-      <defs>
+      <defs
+        dangerouslySetInnerHTML={{
+          __html: svgString(
+            <>
         <linearGradient id="kiru-hood" x1="0.15" y1="0" x2="0.85" y2="1">
           <stop offset="0" stopColor="#34417c" />
           <stop offset="0.5" stopColor="#252d56" />
@@ -35,7 +39,11 @@ export default function KiruDefs() {
           <ellipse cx="100" cy="90" rx="74" ry="66" />
         </clipPath>
         <KiruParts />
-      </defs>
+            </>,
+          ),
+        }}
+        suppressHydrationWarning
+      />
     </svg>
   );
 }

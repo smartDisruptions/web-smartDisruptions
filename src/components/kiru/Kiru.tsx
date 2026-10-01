@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { svgString } from '@/components/brand/svgString';
 
 /**
  * Kiru (切る, "to cut") — the Smart Disruptions ninja. He cuts through hype.
@@ -684,21 +685,10 @@ export default function Kiru({
 }: KiruProps) {
   const p = POSES[pose];
   const m = mood ?? p.mood;
-  return (
-    <svg
-      viewBox={p.viewBox}
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      className={`kiru ${className ?? ''}`}
-      style={flip ? { ...style, scale: '-1 1' } : style}
-      data-kiru={still ? 'still' : pose}
-      role={title ? 'img' : undefined}
-      aria-label={title}
-      aria-hidden={title ? undefined : true}
-      focusable="false"
-    >
+  // The art is static, so it ships as one string: React neither serialises
+  // dozens of elements per ninja into the page payload nor hydrates them.
+  const inner = svgString(
+    <>
       {p.back}
       <g className={`k-body ${p.bodyClass ?? ''}`} transform={p.bodyTransform}>
         {p.katana !== false && <use href="#k-katana" />}
@@ -714,6 +704,24 @@ export default function Kiru({
         />
         {p.front}
       </g>
-    </svg>
+    </>,
+  );
+  return (
+    <svg
+      viewBox={p.viewBox}
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      className={`kiru ${className ?? ''}`}
+      style={flip ? { ...style, scale: '-1 1' } : style}
+      data-kiru={still ? 'still' : pose}
+      role={title ? 'img' : undefined}
+      aria-label={title}
+      aria-hidden={title ? undefined : true}
+      focusable="false"
+      dangerouslySetInnerHTML={{ __html: inner }}
+      suppressHydrationWarning
+    />
   );
 }

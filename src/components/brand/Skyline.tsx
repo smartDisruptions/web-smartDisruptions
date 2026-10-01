@@ -9,6 +9,7 @@
  */
 
 import { pagoda, torii, town } from './scenery';
+import StaticSvg from '@/components/brand/StaticSvg';
 
 const W = 1440;
 const H = 220;
@@ -21,7 +22,7 @@ const NEAR = town(W, H, 7);
 export default function Skyline({ className, children }: { className?: string; children?: React.ReactNode }) {
   return (
     <div className={`relative ${className ?? ''}`} aria-hidden>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" className="block h-full w-full">
+      <StaticSvg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" className="block h-full w-full">
         <circle cx="1240" cy="44" r="26" fill="var(--sky-moon)" />
         <circle cx="1240" cy="44" r="60" fill="var(--sky-moon)" opacity="0.12" />
         <path d={FAR} fill="var(--sky-far)" />
@@ -32,7 +33,7 @@ export default function Skyline({ className, children }: { className?: string; c
             <rect key={i} x={x - 5} y={y} width="10" height="12" rx="1.5" />
           ))}
         </g>
-      </svg>
+      </StaticSvg>
       {children}
     </div>
   );

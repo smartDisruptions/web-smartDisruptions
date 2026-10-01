@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { GLYPHS, type GlyphFace } from './glyphs';
+import StaticSvg from './StaticSvg';
 
 /**
  * One Japanese character as an inline SVG path (see scripts/build-glyphs.mjs
@@ -31,7 +32,7 @@ export default function Kanji({
     );
   }
   return (
-    <svg
+    <StaticSvg
       viewBox="0 0 1000 1000"
       className={`${draw ? 'kanji-draw ' : ''}${className ?? ''}`}
       style={style}
@@ -42,7 +43,7 @@ export default function Kanji({
       focusable="false"
     >
       <path d={glyph.d} pathLength={draw ? 1 : undefined} />
-    </svg>
+    </StaticSvg>
   );
 }
 
@@ -81,7 +82,7 @@ export function Vertical({
   const chars = [...text];
   const step = 1000 * (1 + gap);
   return (
-    <svg
+    <StaticSvg
       viewBox={`0 0 1000 ${Math.round(step * chars.length)}`}
       className={className}
       fill="currentColor"
@@ -101,7 +102,7 @@ export function Vertical({
           />
         );
       })}
-    </svg>
+    </StaticSvg>
   );
 }
 

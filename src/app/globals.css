@@ -749,16 +749,18 @@ p {
     pointer-events: none;
   }
 }
+/* No opacity in the slash: the words are visible from the first frame, the
+   two halves just arrive misaligned and seal. An element that starts at
+   opacity 0 cannot be the page's LCP until it fades in, and the headline
+   should be the LCP the moment it paints. */
 @keyframes sd-slash-a {
   from {
-    translate: -0.4em 0.06em;
-    opacity: 0;
+    translate: -0.5em 0.04em;
   }
 }
 @keyframes sd-slash-b {
   from {
-    translate: 0.4em -0.06em;
-    opacity: 0;
+    translate: 0.5em -0.04em;
   }
 }
 @keyframes sd-slash-line {
