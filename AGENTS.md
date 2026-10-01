@@ -137,7 +137,7 @@ redesigned every spec had to be reconstructed from the alt text.
 The picture is the post's **central contrast** — what I believed above what was
 true — because the headline already carries the words. `tone` colours it and is
 the whole mood of the image: `bad` (red), `good` (green), `warn` (amber), `info`
-(blue), `accent` (burnt orange). Every one is an on-token value from DESIGN.md;
+(blue), `accent` (ai-iro indigo, `#2b3a96` / `#9bb0ff` at night). Every one is an on-token value from DESIGN.md;
 don't introduce a colour that isn't in that list.
 
 Write for the smallest place it appears. The grid renders the hero at about

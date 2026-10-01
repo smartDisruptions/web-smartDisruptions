@@ -286,6 +286,13 @@ Chrome, writes the .webp files) and the `opengraph-image.tsx` routes (Satori,
 at build time). Satori cannot read woff2: it needs the .ttf copies in
 `src/fonts/`.
 
+Two traps, both sprung once already. Satori ignores `font-size-adjust`, so the
+routes apply the same 0.5 by hand; and Satori misreads both faces' kerning
+(it opened random double spaces), so the Satori TTFs ship with kerning
+stripped while Chrome's woff2 copies keep it. `make-hero.mjs` drives Chrome
+over its DevTools pipe with an exact 1200×630 viewport — `--screenshot` sized
+the window, not the page, and cut the bottom 87px off every image.
+
 ## Performance is a feature
 
 The budget the design is held to: every route static, LCP under 1.5s on a
