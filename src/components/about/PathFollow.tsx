@@ -142,14 +142,24 @@ export default function PathFollow() {
       schedule();
     }
 
+    // A new size can mean another rail, or the same one redrawn: place him
+    // afresh even if the year being read hasn't changed.
+    const refit = () => {
+      active = -1;
+      schedule();
+    };
+
     pick();
+    const fit = new ResizeObserver(refit);
+    fit.observe(root);
     window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
+    window.addEventListener('resize', refit);
     reduce.addEventListener('change', pick);
     return () => {
       cancelAnimationFrame(raf);
+      fit.disconnect();
       window.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
+      window.removeEventListener('resize', refit);
       reduce.removeEventListener('change', pick);
     };
   }, []);
