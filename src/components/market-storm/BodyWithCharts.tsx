@@ -11,13 +11,15 @@ import type { ReportChart } from '@/data/marketStorm';
  * prose. Written as `[[stat:$24.1bn|caption]]` on its own line.
  */
 function Stat({ value, caption }: { value: string; caption?: string }) {
+  // The vermilion brush stroke under the figure, not a coloured rail beside
+  // it: a rail is a card tell; the brush is the house mark for "this one".
   return (
-    <div className="my-9 border-l-2 border-accent pl-6">
-      <div className="font-display text-4xl font-semibold leading-none tracking-tight text-accent [font-variant-numeric:tabular-nums] sm:text-5xl">
+    <div className="sd-reveal my-10">
+      <div className="ms-stat sd-brush-under font-display text-[2.6rem] leading-none text-accent [font-variant-numeric:tabular-nums] sm:text-[3.3rem]">
         {value}
       </div>
       {caption && (
-        <p className="mt-3 max-w-[46ch] text-base leading-relaxed text-text-secondary">
+        <p className="font-read mt-4 max-w-[46ch] text-base leading-relaxed text-text-secondary">
           {caption}
         </p>
       )}

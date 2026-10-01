@@ -101,13 +101,22 @@
  *
  * NO NEW DEPENDENCIES
  * -------------------
- * Headless Chrome renders AND encodes it — given a `.webp` output path it writes
- * real WebP, so nothing has to convert anything.
+ * Headless Chrome renders AND encodes it — driven over its own DevTools pipe
+ * (see `openChrome()`), it hands back real WebP, so nothing has to convert
+ * anything and nothing has to be installed.
+ *
+ * THE LOOK
+ * --------
+ * Shadow Dojo, from the same tokens and faces as the site (DESIGN.md, "The
+ * share cards are the same dojo"): night ground for the dark copy, washi for
+ * the light one, Dela Gothic One for the lede, Inter standing in for the UI
+ * face, and vermilion only for marks — the kicker diamond, the seal, the cut.
+ * Market Storm's templates stand on the storm ground instead.
  *
  * USAGE
  *   node scripts/make-hero.mjs <slug> scripts/heroes/<slug>.json [--force]
  */
-import { execFileSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import {
   mkdtempSync,
   readFileSync,
@@ -145,63 +154,89 @@ const MAX_BLOCKS = 12;
 const MAX_STEPS = 7;
 
 /**
- * Both themes, mirroring the `--sd-*` tokens in globals.css. Dark is not a
- * darkened light: the ground is a warm charcoal and the surface lifts one
- * visible step above it, the same relationship paper has to its cards.
+ * Both themes, mirroring the `--sd-*` tokens in globals.css — Shadow Dojo.
+ * Night is the dojo under a moon: an ai-iro ground with moonlight falling from
+ * the top right, exactly where the site's body paints it. Day is washi paper
+ * under a paper lamp. The surface lifts one visible step above the ground in
+ * both, the same relationship a sheet has to the page.
+ *
+ * `pen` is vermilion, and on a card it is what it is on the site: marks only —
+ * the kicker diamond, the seal, the cut. Never the colour of a word.
  */
 const THEMES = {
   dark: {
-    bg: '#13151a',
-    grid: '#222733',
-    surface: '#1b1e26',
-    lift: '#252934',
-    text: '#ebe7de',
-    dim: '#a3a6b2',
-    accent: '#93b4ff',
-    rule: 'rgba(235, 231, 222, 0.14)',
-    hair: 'rgba(235, 231, 222, 0.30)',
+    bg: '#090b16',
+    glow: 'rgba(155, 176, 255, 0.2)',
+    surface: '#11152a',
+    lift: '#1a1f3a',
+    text: '#eceefa',
+    dim: '#a6abc8',
+    accent: '#9bb0ff',
+    pen: '#ff5b3d',
+    rule: 'rgba(236, 238, 250, 0.12)',
+    hair: 'rgba(236, 238, 250, 0.28)',
   },
   light: {
-    bg: '#fbfaf4',
-    grid: '#e7edf3',
-    surface: '#ffffff',
-    lift: '#f2f0e6',
-    text: '#25252d',
-    dim: '#5f616e',
-    accent: '#2a57c5',
-    rule: 'rgba(37, 37, 45, 0.10)',
-    hair: 'rgba(37, 37, 45, 0.26)',
+    bg: '#f4efe4',
+    glow: 'rgba(43, 58, 150, 0.09)',
+    surface: '#fffcf5',
+    lift: '#e9e1cf',
+    text: '#15172b',
+    dim: '#4f5468',
+    accent: '#2b3a96',
+    pen: '#e2412a',
+    rule: 'rgba(21, 23, 43, 0.1)',
+    hair: 'rgba(21, 23, 43, 0.26)',
   },
 };
 
 /**
- * The graph-paper ground, as a background shorthand so a template can keep
- * setting `background:` in one place. 24px to match `body` in globals.css —
- * the card and the site have to be the same paper.
+ * Market Storm's ground: the same dojo with the storm in it. Night pushes the
+ * ground toward ai-iro and the moonlight harder; day keeps the washi and lets
+ * an indigo storm-light gather in the corner. Same tokens otherwise, so the
+ * two families still read as one site.
+ */
+const STORM = {
+  dark: {
+    ...THEMES.dark,
+    bg: '#0b1029',
+    glow: 'rgba(155, 176, 255, 0.26)',
+    surface: '#121a3d',
+  },
+  light: { ...THEMES.light, glow: 'rgba(43, 58, 150, 0.2)' },
+};
+
+/**
+ * The ground, as a background shorthand so a template can keep setting
+ * `background:` in one place: the theme's colour with the light falling on it
+ * from the top right, as `body` paints it in globals.css — the card and the
+ * site have to be the same place. The light stays off the centre of the
+ * frame, where a knockout logo fills its letters with the flat `bg`.
  */
 const ground = (t) =>
-  `linear-gradient(${t.grid} 1px, transparent 1px) 0 0/24px 24px repeat,` +
-  `linear-gradient(90deg, ${t.grid} 1px, transparent 1px) 0 0/24px 24px repeat,` +
-  `${t.bg}`;
+  `radial-gradient(760px 470px at 92% -150px, ${t.glow}, transparent 72%), ${t.bg}`;
 
 /**
  * Tone drives every coloured thing in an image. The `field` values are the ink
- * colours from DESIGN.md — text-safe, so paper-toned type clears AA on top of
- * them. The `bright` values are the dark-theme flips, used where the colour is
- * carrying meaning as ink (a chip, a figure) on the charcoal ground.
+ * colours from DESIGN.md — text-safe, so washi-toned type clears AA on top of
+ * them. The `bright` values are the night flips, used where the colour is
+ * carrying meaning as ink (a chip, a figure) on the night ground.
  *
  * The field colour does not change with the theme; only the ground around it
  * does. That is what keeps a post's image recognisably the same picture in both.
+ *
+ * bad/good/warn are the bear/bull/caution data inks; info is the arcade's blue
+ * ink; accent is ai-iro, the site's own indigo.
  */
-const FIELD_FG = '#f9f5ec';
+const FIELD_FG = '#fffcf5';
 const TONES = {
   bad: { field: '#b91c1c', bright: '#f87171' },
   good: { field: '#166534', bright: '#4ade80' },
   warn: { field: '#92400e', bright: '#f2b483' },
   info: { field: '#1d4ed8', bright: '#60a5fa' },
-  // The blue pen. Close to `info` by design — the pen IS the site's accent,
-  // and only two specs use this tone.
-  accent: { field: '#2a57c5', bright: '#93b4ff' },
+  // Indigo — the site's accent, the colour of things you press. Close to
+  // `info` by design, and only two specs use this tone.
+  accent: { field: '#2b3a96', bright: '#9bb0ff' },
 };
 
 const argv = process.argv.slice(2);
@@ -269,40 +304,123 @@ const esc = (s) =>
 
 /**
  * The site's own faces, embedded from disk. next/font fetches these at build
- * time into .next, which this script cannot see, so they are vendored beside it
- * — otherwise Chrome silently falls back to Georgia and the cards go out in a
- * serif the site never uses.
+ * time into .next, which this script cannot see, so they are vendored beside it:
+ * the same Latin subsets the Satori routes read as TTFs from src/fonts/ (see
+ * src/fonts/card-fonts.ts for how they were cut). Satori cannot read woff2 and
+ * Chrome is happiest with it, hence two copies of one set.
+ *
+ * Inlined as data: URLs rather than linked, so there is no file-access flag or
+ * load race between Chrome and the face. A missing file is fatal, not a warning:
+ * these cards once spent weeks going out in Georgia because a fallback was
+ * allowed to be silent. `render()` below also asks every page whether each
+ * face actually loaded before its picture is taken.
  */
-function fontFace(family, file) {
+const FACES = [
+  { family: 'Dela Gothic One SD', weight: 400, file: 'dela-gothic-one-400.woff2' },
+  { family: 'Inter SD', weight: 500, file: 'inter-500.woff2' },
+  { family: 'Inter SD', weight: 700, file: 'inter-700.woff2' },
+  { family: 'Inter SD', weight: 800, file: 'inter-800.woff2' },
+];
+function fontFace({ family, weight, file }) {
   const p = path.join(FONT_DIR, file);
   if (!existsSync(p)) {
-    console.warn(
-      `  ! scripts/fonts/${file} missing — falling back to a system face`
+    console.error(
+      `scripts/fonts/${file} is missing — refusing to render a card in a fallback face.`
     );
-    return '';
+    process.exit(1);
   }
-  return `@font-face{font-family:'${family}';font-weight:100 900;font-style:normal;
-    font-display:block;src:url('file://${p}') format('woff2')}`;
+  const data = readFileSync(p).toString('base64');
+  return `@font-face{font-family:'${family}';font-weight:${weight};font-style:normal;font-display:block;src:url(data:font/woff2;base64,${data}) format('woff2')}`;
 }
+const FONTS = FACES.map(fontFace).join('');
 
-const FONTS =
-  fontFace('DisplaySD', 'caveat.woff2') + fontFace('InterCard', 'nunito.woff2');
 // Must match `--font-display` in globals.css. When the site's display face
-// changes, this and the vendored woff2 change with it — otherwise the cards go
+// changes, this and the vendored copies change with it — otherwise the cards go
 // out in a face the site does not use, which is exactly how they spent weeks
 // rendering in Georgia.
-const DISPLAY = `DisplaySD, 'Bradley Hand', 'Segoe Print', cursive`;
-const SANS = `InterCard, system-ui, -apple-system, sans-serif`;
+const DISPLAY = `'Dela Gothic One SD', 'Arial Black', system-ui, sans-serif`;
+// The site's UI face is the platform's own (system-ui). A card has no platform
+// — it is a picture of one — so Inter stands in for it, in both generators.
+const SANS = `'Inter SD', system-ui, -apple-system, sans-serif`;
 /**
- * Caveat draws small for its point size, so every size the fit functions
- * return would land about a third short. font-size-adjust scales the face back
- * to where the old display sans sat, exactly as `.font-display` does in
- * globals.css, which means the fit budgets keep working untouched. Tracking
- * goes to 0 in the same breath: negative tracking fixes a tight sans and makes
- * handwriting collide.
+ * Dela Gothic One has one weight, very heavy, with a tall x-height.
+ * font-size-adjust: 0.5 holds it to the size the scale below was tuned for,
+ * exactly as `.font-display` does in globals.css (the weight shouts, so the
+ * size doesn't have to), which keeps the fit budgets working untouched. The
+ * Satori routes do the same sum by hand, because Satori ignores the property.
  */
-const DISPLAY_CSS = `font-family:${DISPLAY};font-weight:700;font-size-adjust:0.47;letter-spacing:0`;
-const MONO = `ui-monospace, SFMono-Regular, Menlo, monospace`;
+const DISPLAY_CSS = `font-family:${DISPLAY};font-weight:400;font-size-adjust:0.5;letter-spacing:-0.01em;font-kerning:normal;text-wrap:balance`;
+
+/**
+ * The kicker (`.sd-kicker` on the site): small tracked capitals in the sans,
+ * led by a vermilion diamond. Every label on every card is one, so a label
+ * reads as the site's own furniture at any size — the diamond survives the
+ * shrink to a phone even where the words don't.
+ */
+const kicker = (sel, size, color, mark) =>
+  `${sel}{font-family:${SANS};font-size:${size}px;font-weight:700;letter-spacing:.14em;
+     text-transform:uppercase;color:${color};display:flex;align-items:center;gap:.6em}
+   ${sel}::before{content:'';width:.46em;height:.46em;border-radius:1px;background:${mark};
+     transform:rotate(45deg);flex:none}`;
+
+/** `.sd-brush-under`'s stroke, as a mask, so the colour stays a token. */
+const BRUSH = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")`;
+
+/**
+ * The seal (`.sd-seal`): a vermilion hanko with 忍 pressed into it, signing a
+ * post hero in its corner the way a print is signed. It is a mark, not a word —
+ * the word budget never sees it — and at 341px it is still a red square, which
+ * is all a signature has to be.
+ *
+ * The character is the site's own baked brush path, read from the file the site
+ * renders it from, so there is one copy of it. If that file moves, the cards go
+ * out unsigned and say so: a flourish is not worth refusing a hero over.
+ */
+const GLYPHS_TS = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../src/components/brand/glyphs.ts'
+);
+const SEAL_D = (() => {
+  try {
+    const src = readFileSync(GLYPHS_TS, 'utf8');
+    const json = /export const GLYPHS[^=]*=\s*(\{[\s\S]*?\});\n/.exec(src)[1];
+    return JSON.parse(json).brush['忍'].d;
+  } catch {
+    console.warn(
+      '  ! could not read 忍 from src/components/brand/glyphs.ts — cards go out unsigned'
+    );
+    return null;
+  }
+})();
+const SEAL_CSS = (t) =>
+  `.seal{position:absolute;top:30px;right:34px;width:46px;height:46px;border-radius:10px;
+     display:flex;align-items:center;justify-content:center;background:${t.pen};
+     box-shadow:inset 0 0 0 2px rgba(255,255,255,.22)}
+   .seal svg{width:34px;height:34px;fill:#fff}`;
+const seal = () =>
+  SEAL_D
+    ? `<div class="seal"><svg viewBox="0 0 1000 1000"><path d="${SEAL_D}"/></svg></div>`
+    : '';
+
+/**
+ * Kiru's head — components/brand/KiruMark.tsx, the logo — for the social
+ * card's footer, where a feed needs to know whose card this is. It sits on the
+ * night ground, so the hood takes his moonlit outline from the full rig.
+ */
+const KIRU_MARK = `<svg class="kiru" viewBox="0 0 64 64">
+  <path d="M47 23c7-4 11-2 15-6-1 6-6 9-12 9 5 1 8 4 12 3-4 4-10 4-15 1z" fill="#bd3019"/>
+  <ellipse cx="31" cy="34" rx="26" ry="24" fill="#3d4c95"/>
+  <ellipse cx="31" cy="34" rx="24.6" ry="22.6" fill="#252d56"/>
+  <path d="M6.4 30 Q31 14.6 55.6 30" stroke="#e8432a" stroke-width="7" fill="none"/>
+  <rect x="25" y="17.5" width="12" height="7" rx="1.6" fill="#cfd5e2"/>
+  <path d="M32.4 18.6 29 21.7h2.3l-1.4 1.9 3.8-3.2h-2.3z" fill="#e8432a"/>
+  <path d="M12 33c9-4.6 29-4.6 38 0 3.2 1.6 3.2 7.6 0 9.2-9 4.6-29 4.6-38 0-3.2-1.6-3.2-7.6 0-9.2Z" fill="#f6d0a8"/>
+  <ellipse cx="23.5" cy="37.6" rx="4" ry="4.6" fill="#fff"/>
+  <ellipse cx="38.5" cy="37.6" rx="4" ry="4.6" fill="#fff"/>
+  <circle cx="24.3" cy="38.3" r="2.6" fill="#13152a"/>
+  <circle cx="39.3" cy="38.3" r="2.6" fill="#13152a"/>
+  <path d="M18.5 31.6l8 2M43.5 31.6l-8 2" stroke="#13152a" stroke-width="2" stroke-linecap="round"/>
+</svg>`;
 
 /**
  * The type scale. Every template draws from this and none invents a size.
@@ -373,7 +491,8 @@ const WORD_BUDGET = 20;
 
 const RESET = `*{box-sizing:border-box;margin:0;padding:0}
   html,body{width:${W}px;height:${H}px;-webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility}`;
+    text-rendering:optimizeLegibility}
+  body{position:relative;overflow:hidden}`;
 const doc = (css, body) =>
   `<!doctype html><meta charset="utf-8"><style>${FONTS}${RESET}${css}</style>${body}`;
 
@@ -413,6 +532,13 @@ function ledeSize(text) {
   }
   return fitSize(text, TYPE.lede, LEDE_FLOOR, LEDE_BUDGET);
 }
+
+/**
+ * Which dojo the post templates stand in. A Market Storm card that carries a
+ * field-notes key (the AI-capex thesis is a split) still belongs to the storm,
+ * so it takes the storm ground; everything else takes the site's own.
+ */
+const GROUND = fm.category === 'Market Storm' ? STORM : THEMES;
 
 const before = spec.before ?? {
   label: (fm.category ?? 'Article').toUpperCase(),
@@ -562,15 +688,16 @@ const REGISTRY = [
  * The data inks, for the Market Storm family only.
  *
  * `bull`/`bear`/`warn` are the semantic axis from DESIGN.md; they flip
- * dark-on-paper to bright-on-charcoal exactly like the arcade inks, and both
- * halves are already AA-verified there. `neutral` is deliberately the body
- * colour rather than a fourth hue — a figure that carries no polarity should
- * not look like it carries one.
+ * dark-on-washi to bright-at-night exactly like the arcade inks, and both
+ * halves are already AA-verified there (on the storm ground too — it is darker
+ * than the night it replaces). `neutral` is deliberately the body colour rather
+ * than a fourth hue — a figure that carries no polarity should not look like it
+ * carries one.
  */
 const DATA_TONE = { bull: 'good', bear: 'bad', warn: 'warn' };
 const ink = (k, tone) => {
   const mapped = DATA_TONE[tone];
-  if (!mapped) return THEMES[k].text;
+  if (!mapped) return STORM[k].text;
   return k === 'dark' ? TONES[mapped].bright : TONES[mapped].field;
 };
 
@@ -649,7 +776,7 @@ function chooseTemplate() {
  * tokens, no brand palette — while preserving the shape that makes it legible.
  */
 function logoCard(k) {
-  const t = THEMES[k];
+  const t = STORM[k];
   const l = spec.logo;
   const file = path.join(LOGO_DIR, l.file);
   const w = Math.round(W * (l.scale ?? 0.46));
@@ -679,7 +806,7 @@ function logoCard(k) {
   );
 }
 
-/* QUOTE — the ticker board. A monospace symbol at display size over a rule of
+/* QUOTE — the ticker board. The symbol at display size over a rule of
    figures, each inked by its own polarity. This is the most literal of the
    three: it is the report's price strip, cropped. Tabular numerals throughout,
    because a row of figures that shifts on the digit is a row nobody trusts.
@@ -689,7 +816,7 @@ function logoCard(k) {
    hero that repeats the chrome around it is spending its scarcest resource —
    room — on nothing. */
 function quoteCard(k) {
-  const t = THEMES[k];
+  const t = STORM[k];
   const q = spec.quote;
   const cells = q.cells
     .map(
@@ -703,17 +830,17 @@ function quoteCard(k) {
     `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:40px;padding:0 74px}
      .top{display:flex;align-items:baseline;gap:26px}
-     .tk{font-family:${MONO};font-weight:700;font-size:76px;letter-spacing:.06em;
-       color:${t.accent};line-height:1}
-     .h{${DISPLAY_CSS};line-height:1.06;
+     .tk{${DISPLAY_CSS};font-size:76px;letter-spacing:.02em;color:${t.accent};line-height:1}
+     .h{${DISPLAY_CSS};line-height:1.08;
        color:${t.text};font-size:${ledeSize(q.verdict)}px;max-width:1000px}
      .row{display:flex;gap:0;border-top:1px solid ${t.rule}}
      .c{flex:1;padding:22px 26px 4px 0;display:flex;flex-direction:column;gap:10px;
        border-right:1px solid ${t.rule}}
+     .c + .c{padding-left:26px}
      .c:last-child{border-right:0}
-     .ck{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.14em;
+     .ck{font-family:${SANS};font-size:${TYPE.micro}px;font-weight:700;letter-spacing:.14em;
        text-transform:uppercase;color:${t.dim}}
-     .cv{font-family:${MONO};font-weight:700;font-size:${TYPE.major}px;
+     .cv{font-family:${SANS};font-weight:800;font-size:${TYPE.major}px;
        font-variant-numeric:tabular-nums;letter-spacing:-.01em}`,
     `<div class="top"><span class="tk">${esc(q.ticker)}</span></div>
      <div class="h">${esc(q.verdict)}</div>
@@ -734,7 +861,7 @@ function quoteCard(k) {
    cards that was purely noise: unreadable, and there to be unreadable. A
    figure that needs context has a lede above it for exactly that. */
 function scorecardCard(k) {
-  const t = THEMES[k];
+  const t = STORM[k];
   const s = spec.scorecard;
   const tiles = s.kpis
     .map(
@@ -748,15 +875,15 @@ function scorecardCard(k) {
   return doc(
     `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:34px;padding:0 74px}
-     .h{${DISPLAY_CSS};line-height:1.06;
+     .h{${DISPLAY_CSS};line-height:1.08;
        color:${t.text};font-size:${ledeSize(s.verdict)}px;max-width:1000px}
-     .g{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:${t.rule};
-       border:1px solid ${t.rule}}
-     .t{background:${t.surface};padding:26px;display:flex;flex-direction:column;gap:12px}
-     .tl{display:flex;align-items:center;gap:10px;font-family:${MONO};
-       font-size:${TYPE.label}px;letter-spacing:.13em;text-transform:uppercase;color:${t.dim}}
+     .g{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+     .t{background:${t.surface};border:1px solid ${t.rule};border-radius:16px;
+       padding:24px 26px;display:flex;flex-direction:column;gap:12px}
+     .tl{display:flex;align-items:center;gap:10px;font-family:${SANS};font-weight:700;
+       font-size:${TYPE.label}px;letter-spacing:.12em;text-transform:uppercase;color:${t.dim}}
      .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
-     .tv{font-family:${MONO};font-weight:700;font-size:${TYPE.major}px;
+     .tv{font-family:${SANS};font-weight:800;font-size:${TYPE.major}px;
        font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}`,
     `<div class="h">${esc(s.verdict)}</div>
      <div class="g">${tiles}</div>`
@@ -774,7 +901,7 @@ function scorecardCard(k) {
    341px, and three chips reading 6 / 3 / 4 already say a ledger is what this
    is. */
 function ledgerCard(k) {
-  const t = THEMES[k];
+  const t = STORM[k];
   const l = spec.ledger;
   /* `corrected` is neutral, not red, and that is a judgement rather than a
      styling detail. Red says the finding is bad. A correction is the ledger
@@ -795,18 +922,16 @@ function ledgerCard(k) {
   return doc(
     `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:34px;padding:0 74px}
-     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
-       text-transform:uppercase;color:${t.dim}}
      .chips{display:flex;gap:18px}
-     .chip{display:flex;align-items:baseline;gap:12px;padding:16px 26px;
-       border:2px solid;border-radius:12px}
-     .n{font-family:${MONO};font-weight:700;font-size:44px;
+     .chip{display:flex;align-items:baseline;gap:12px;padding:15px 28px 16px;
+       border:2px solid;border-radius:999px}
+     .n{font-family:${SANS};font-weight:800;font-size:44px;
        font-variant-numeric:tabular-nums;line-height:1}
-     .w{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.1em;
+     .w{font-family:${SANS};font-weight:700;font-size:${TYPE.label}px;letter-spacing:.12em;
        text-transform:uppercase}
      .h{${DISPLAY_CSS};line-height:1.08;
        color:${t.text};font-size:${ledeSize(l.finding)}px;max-width:1010px}
-     .n2{font-family:${MONO};font-size:${TYPE.label}px;color:${t.dim};letter-spacing:.02em}`,
+     .n2{font-family:${SANS};font-weight:500;font-size:${TYPE.label}px;color:${t.dim};letter-spacing:.01em}`,
     `<div class="chips">
        ${chip(l.confirmed, 'confirmed', 'bull')}
        ${chip(l.partlyTrue, 'partly-true', 'warn')}
@@ -819,21 +944,31 @@ function ledgerCard(k) {
 
 /* SPLIT — two full-bleed panels, the second a saturated field. No inner card:
    the article already frames the hero in a bordered figure, and a card inside a
-   card is one border too many. */
+   card is one border too many.
+
+   The field is cut on a slant rather than ruled, and the cut catches the blade
+   light: it is the katana stroke the site draws through its headlines
+   (`.sd-slash`), here between what I believed and what turned out to be true.
+   That stroke is the whole picture, so it is the one flourish this gets. */
+const CUT = 44;
 function split(k) {
-  const t = THEMES[k];
+  const t = GROUND[k];
+  const deg = ((Math.atan2(CUT, W) * 180) / Math.PI).toFixed(3);
   return doc(
     `body{display:flex;flex-direction:column;background:${ground(t)};font-family:${SANS}}
-     .p{display:flex;flex-direction:column;justify-content:center;gap:20px;padding:0 68px}
-     .a{flex:0 0 282px;background:transparent;border-bottom:1px solid ${t.rule}}
-     .b{flex:1 1 auto;background:${T.field}}
-     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
-       text-transform:uppercase}
-     .a .l{color:${t.dim}} .b .l{color:rgba(249,245,236,.82)}
+     .p{position:relative;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:0 68px}
+     .a{flex:0 0 282px}
+     .b{flex:1 1 auto;background:${T.field};margin-top:-${CUT}px;padding-top:${CUT}px;
+       clip-path:polygon(0 ${CUT}px,100% 0,100% 100%,0 100%)}
+     .cut{position:absolute;left:0;top:${282 - 1.5}px;width:${W + 2}px;height:3px;
+       transform-origin:0 50%;transform:rotate(-${deg}deg);
+       background:linear-gradient(90deg,transparent,${t.pen} 30%,#fff 62%,transparent)}
+     ${kicker('.a .l', TYPE.label, t.dim, t.pen)}
+     ${kicker('.b .l', TYPE.label, 'rgba(255,252,245,.84)', 'rgba(255,252,245,.84)')}
      .h{${DISPLAY_CSS};line-height:1.08}
      .a .h{color:${t.text};font-size:${ledeSize(before.text)}px}
      .b .h{color:${FIELD_FG};font-size:${ledeSize(after.text)}px}
-     .d{font-family:${MONO};font-size:${TYPE.label}px;color:rgba(249,245,236,.78);letter-spacing:.02em}`,
+     ${SEAL_CSS(t)}`,
     `<div class="p a">
        ${before.label ? `<div class="l">${esc(before.label)}</div>` : ''}
        <div class="h">${esc(before.text)}</div>
@@ -841,8 +976,9 @@ function split(k) {
      <div class="p b">
        ${after.label ? `<div class="l">${esc(after.label)}</div>` : ''}
        <div class="h">${esc(after.text)}</div>
-
-     </div>`
+     </div>
+     <div class="cut"></div>
+     ${seal()}`
   );
 }
 
@@ -851,28 +987,28 @@ function split(k) {
    them on the dark ground; they are also the only element in any of the three
    templates that does not depend on type rendering to be read. */
 function countCard(k) {
-  const t = THEMES[k];
+  const t = GROUND[k];
   const c = spec.count;
   const fill = k === 'dark' ? T.bright : T.field;
   const blocks = Array.from({ length: c.of }, (_, i) =>
-    i < c.hit
-      ? `<span style="background:${fill};flex:1;border-radius:4px"></span>`
-      : `<span style="border:2px solid ${t.hair};flex:1;border-radius:4px"></span>`
+    i < c.hit ? `<span class="on"></span>` : `<span class="off"></span>`
   ).join('');
   return doc(
     `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:38px;padding:0 74px}
-     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
-       text-transform:uppercase;color:${t.dim}}
+     ${kicker('.l', TYPE.label, t.dim, t.pen)}
      .blocks{display:flex;gap:14px;height:130px}
+     .blocks span{flex:1;border-radius:14px}
+     .blocks .on{background:${fill};box-shadow:inset 0 3px 0 rgba(255,255,255,.18)}
+     .blocks .off{border:2px solid ${t.hair}}
      .h{${DISPLAY_CSS};line-height:1.06;
        color:${t.text};font-size:${ledeSize(`${c.hit} of ${c.of} ${c.verdict ?? ''}`)}px}
-     .h em{font-style:normal;color:${k === 'dark' ? T.bright : T.field}}
-     .d{font-family:${MONO};font-size:${TYPE.label}px;letter-spacing:.04em;color:${t.dim}}`,
+     .h em{font-style:normal;color:${fill}}
+     ${SEAL_CSS(t)}`,
     `<div class="l">${esc(c.of)} ${esc(c.unit)}</div>
      <div class="blocks">${blocks}</div>
      <div class="h"><em>${esc(c.hit)} of ${esc(c.of)}</em>${c.verdict ? ` ${esc(c.verdict)}` : ''}</div>
-`
+     ${seal()}`
   );
 }
 
@@ -896,7 +1032,7 @@ function countCard(k) {
    happened in an order: six prompts, four deploys, a migration. The numbers are
    the part that survives the shrink, so they are drawn, not set in type. */
 function sequenceCard(k) {
-  const t = THEMES[k];
+  const t = GROUND[k];
   const s = spec.sequence;
   const ink = k === 'dark' ? T.bright : T.field;
   const steps = s.steps
@@ -911,33 +1047,36 @@ function sequenceCard(k) {
   return doc(
     `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
        justify-content:center;gap:44px;padding:0 74px}
-     .l{font-family:${MONO};font-size:${TYPE.label}px;font-weight:500;letter-spacing:.15em;
-       text-transform:uppercase;color:${t.dim}}
      .rail{position:relative;display:flex;justify-content:space-between;gap:18px}
-     .rail:before{content:'';position:absolute;left:26px;right:26px;top:26px;height:2px;
-       background:${t.rule}}
+     .rail:before{content:'';position:absolute;left:26px;right:26px;top:25px;height:2px;
+       background:${t.hair}}
      .step{position:relative;flex:1 1 0;display:flex;flex-direction:column;
        align-items:center;gap:16px;min-width:0}
      .node{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;
-       justify-content:center;font-family:${MONO};font-size:${TYPE.label}px;font-weight:700;
-       background:${t.surface};border:2px solid ${t.hair};color:${t.dim};
-       position:relative;z-index:1}
-     .node.on{background:${ink};border-color:${ink};color:${FIELD_FG}}
-     .cap{font-family:${MONO};font-size:${TYPE.micro}px;line-height:1.35;color:${t.text};
-       text-align:center;letter-spacing:-.005em}
+       justify-content:center;font-family:${SANS};font-size:${TYPE.label}px;font-weight:800;
+       font-variant-numeric:tabular-nums;background:${t.surface};border:2px solid ${t.hair};
+       color:${t.dim};position:relative;z-index:1}
+     /* A bright fill at night takes the ground's ink for its numeral; washi-
+        toned type on a pale green is unreadable. */
+     .node.on{background:${ink};border-color:${ink};color:${k === 'dark' ? t.bg : FIELD_FG}}
+     .cap{font-family:${SANS};font-size:${TYPE.micro}px;font-weight:700;line-height:1.35;
+       color:${t.text};text-align:center}
      .h{${DISPLAY_CSS};line-height:1.06;
        color:${t.text};font-size:${ledeSize(s.verdict)}px}
-     .h em{font-style:normal;color:${ink}}`,
+     .h em{font-style:normal;color:${ink}}
+     ${SEAL_CSS(t)}`,
     `     <div class="rail">${steps}</div>
-     ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}`
+     ${s.verdict ? `<div class="h">${s.verdict.replace(/\*(.+?)\*/g, (_, m) => `<em>${esc(m)}</em>`)}</div>` : ''}
+     ${seal()}`
   );
 }
 
 /* ANNOTATED — a passage with its problems marked. For a post whose evidence is
    that something *reads fine and isn't*: the claim stays legible, the flag names
-   what is wrong with it. The underline does the work a red pen would. */
+   what is wrong with it. The underline does the work a red pen would — a brush
+   stroke in the tone's ink, the same stroke the site puts under a heading. */
 function annotatedCard(k) {
-  const t = THEMES[k];
+  const t = GROUND[k];
   const a = spec.annotated;
   const ink = k === 'dark' ? T.bright : T.field;
   const spans = a.spans
@@ -957,45 +1096,64 @@ function annotatedCard(k) {
         evidence and sit one step down the ramp. */
      .h{${DISPLAY_CSS};color:${t.text};
        line-height:1.06;font-size:${ledeSize(a.intro)}px}
-     .sub{font-family:${MONO};font-size:${TYPE.micro}px;letter-spacing:.04em;color:${t.dim}}
-     .sp{padding:11px 0}
-     .claim{${DISPLAY_CSS};font-size:${TYPE.major}px;
-       letter-spacing:-.01em;color:${t.text};display:inline-block;
-       border-bottom:3px solid ${ink};padding-bottom:5px;line-height:1.2}
-     .flag{font-family:${MONO};font-size:${TYPE.micro}px;font-weight:600;letter-spacing:.14em;
-       text-transform:uppercase;color:${ink};margin-top:9px}`,
+     .sp{padding:9px 0}
+     /* The claims are the text being read, so they are set in the reading
+        weight of the sans rather than the poster face: the lede shouts, the
+        evidence speaks. */
+     .claim{font-family:${SANS};font-weight:700;font-size:${TYPE.major}px;
+       letter-spacing:-.015em;color:${t.text};display:inline-block;position:relative;
+       padding-bottom:13px;line-height:1.2}
+     .claim::after{content:'';position:absolute;left:-4px;right:-8px;bottom:0;height:12px;
+       background:${ink};-webkit-mask:${BRUSH} center/100% 100% no-repeat;
+       mask:${BRUSH} center/100% 100% no-repeat}
+     ${kicker('.flag', TYPE.micro, ink, ink)}
+     .flag{font-weight:800;margin-top:8px}
+     ${SEAL_CSS(t)}`,
     `<div class="top">
        <div class="h">${esc(a.intro)}</div>
-
      </div>
-     <div>${spans}</div>`
+     <div>${spans}</div>
+     ${seal()}`
   );
 }
 
-/** The social card. One design for every template — see the header. */
+/**
+ * The social card. One design for every template — see the header.
+ *
+ * Always the night copy: a feed is somebody else's page, and the moonlit dojo
+ * is the version of the site that is recognisable at a glance. The evidence row
+ * is cut like a split — the katana stroke again, standing up this time — and
+ * the footer carries Kiru's head, because in a feed the card has to say whose
+ * it is before anything else.
+ */
+const OG_CUT = 40;
 function ogHtml() {
   const t = THEMES.dark;
   const chars = headline.map((h) => h.t).join('').length;
   return doc(
     `body{display:flex;flex-direction:column;background:${ground(t)};font-family:${SANS}}
      .head{flex:1 1 auto;display:flex;align-items:center;padding:0 68px}
-     h1{${DISPLAY_CSS};line-height:1.08;
+     h1{${DISPLAY_CSS};line-height:1.1;
        color:${t.text};font-size:${fitSize('x'.repeat(chars), 58, 38, 62)}px}
-     .evidence{flex:0 0 194px;display:flex}
+     .evidence{flex:0 0 194px;display:flex;position:relative}
      .cell{flex:1 1 0;display:flex;flex-direction:column;justify-content:center;gap:13px;
        padding:0 44px;min-width:0}
-     .one{background:transparent} .two{background:${T.field}}
-     .l{font-family:${MONO};font-size:16px;font-weight:500;letter-spacing:.15em;
-       text-transform:uppercase}
-     .one .l{color:${t.dim}} .two .l{color:rgba(249,245,236,.82)}
-     .v{${DISPLAY_CSS};font-size:31px;line-height:1.15;
-       letter-spacing:-.01em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;
-       -webkit-box-orient:vertical}
+     .one{background:${t.surface};box-shadow:inset 0 1px 0 ${t.rule}}
+     .two{background:${T.field};margin-left:-${OG_CUT}px;padding-left:${44 + OG_CUT}px;
+       clip-path:polygon(${OG_CUT}px 0,100% 0,100% 100%,0 100%)}
+     .glint{position:absolute;top:0;bottom:0;left:${(W - OG_CUT) / 2}px;width:${OG_CUT}px;
+       background:linear-gradient(to bottom right,transparent calc(50% - 1.5px),
+         rgba(255,255,255,.6) 50%,transparent calc(50% + 1.5px))}
+     ${kicker('.one .l', 16, t.dim, t.pen)}
+     ${kicker('.two .l', 16, 'rgba(255,252,245,.84)', 'rgba(255,252,245,.84)')}
+     .v{${DISPLAY_CSS};font-size:31px;line-height:1.15;overflow:hidden;display:-webkit-box;
+       -webkit-line-clamp:2;-webkit-box-orient:vertical}
      .one .v{color:${t.text}} .two .v{color:${FIELD_FG}}
      footer{flex:0 0 82px;display:flex;align-items:center;justify-content:space-between;
-       padding:0 68px;font-size:19px;font-weight:600;color:${t.text}}
-     .cat{font-family:${MONO};font-size:15px;font-weight:500;letter-spacing:.15em;
-       text-transform:uppercase;color:${t.accent}}`,
+       padding:0 68px;color:${t.text}}
+     .site{display:flex;align-items:center;gap:14px;font-size:20px;font-weight:700}
+     .kiru{width:42px;height:42px}
+     ${kicker('.cat', 15, t.accent, t.pen)}`,
     `<div class="head"><h1>${headline
       .map((h) =>
         h.tone && TONES[h.tone]
@@ -1012,42 +1170,162 @@ function ogHtml() {
          ${after.label ? `<div class="l">${esc(after.label)}</div>` : ''}
          <div class="v">${esc(after.text)}</div>
        </div>
+       <div class="glint"></div>
      </div>
      <footer>
-       <span>smartdisruptions.com</span>
+       <span class="site">${KIRU_MARK}<span>smartdisruptions.com</span></span>
        <span class="cat">${esc(fm.category ?? '')}</span>
      </footer>`
   );
 }
 
 const tmp = mkdtempSync(path.join(tmpdir(), 'hero-'));
-function render(html, outWebp) {
-  const htmlPath = path.join(tmp, 'card.html');
-  writeFileSync(htmlPath, html);
-  // Chrome picks the encoder from the output extension, so this writes WebP
-  // directly. The virtual-time budget lets the embedded faces load before the
-  // shot; without it the screenshot can beat the @font-face.
-  execFileSync(
+
+/**
+ * WebP quality for every card: 80, which is what `--screenshot` used to encode
+ * at, so a re-render does not quietly grow the files the grid loads (two ~15KB
+ * heroes per post card). Measured on the Shadow Dojo set: 84 came out the same
+ * total size as the Notebook files it replaced, 80 about a tenth smaller, and
+ * at 2x zoom the type and the moonlight gradient looked the same in both.
+ */
+const WEBP_QUALITY = 80;
+
+/**
+ * Chrome, driven over its DevTools pipe rather than with `--screenshot`.
+ *
+ * `--screenshot` sizes the WINDOW, not the page. New headless (Chromium 141 in
+ * a cloud session) kept 87 of the 630 pixels for a toolbar nobody can see, and
+ * every card came out with its bottom seventh blank — the field of a split
+ * stopped short, the social card lost its footer. Setting the viewport through
+ * the protocol is exact on every build, and the same pipe lets the run ask the
+ * page whether its faces loaded and pick the WebP quality: two things the flag
+ * never could. Chrome still does all the rendering and the encoding.
+ */
+function openChrome() {
+  const proc = spawn(
     CHROME,
     [
       '--headless',
       '--disable-gpu',
       '--hide-scrollbars',
-      '--virtual-time-budget=3000',
+      '--no-first-run',
+      '--no-default-browser-check',
       '--allow-file-access-from-files',
-      // Chrome refuses to run as root without this. That is only ever true in a
-      // container, so it is added by detection rather than always: on a Mac the
-      // sandbox stays on, which is the point of having one.
+      '--remote-debugging-pipe',
+      // A throwaway profile inside this run's temp folder. Chrome ignores the
+      // debugging pipe on the default profile, and a card run has no business
+      // near the browser profile someone actually uses.
+      `--user-data-dir=${path.join(tmp, 'profile')}`,
+      // Chrome refuses to run as root without this. That is only ever true in
+      // a container, so it is added by detection rather than always: on a Mac
+      // the sandbox stays on, which is the point of having one.
       ...(typeof process.getuid === 'function' && process.getuid() === 0
         ? ['--no-sandbox']
         : []),
-      `--screenshot=${outWebp}`,
-      `--window-size=${W},${H}`,
-      `file://${htmlPath}`,
+      'about:blank',
     ],
-    { stdio: 'ignore' }
+    { stdio: ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'] }
   );
-  if (!existsSync(outWebp)) throw new Error(`Chrome did not write ${outWebp}`);
+  const pending = new Map();
+  const waiting = [];
+  let seq = 0;
+  let buf = Buffer.alloc(0);
+  proc.stdio[4].on('data', (chunk) => {
+    buf = Buffer.concat([buf, chunk]);
+    let end;
+    while ((end = buf.indexOf(0)) !== -1) {
+      const msg = JSON.parse(buf.subarray(0, end).toString('utf8'));
+      buf = buf.subarray(end + 1);
+      if (msg.id && pending.has(msg.id)) {
+        const { resolve, reject } = pending.get(msg.id);
+        pending.delete(msg.id);
+        if (msg.error) reject(new Error(msg.error.message));
+        else resolve(msg.result);
+      } else if (msg.method) {
+        const i = waiting.findIndex((w) => w.method === msg.method);
+        if (i !== -1) waiting.splice(i, 1)[0].resolve(msg.params);
+      }
+    }
+  });
+  const send = (method, params = {}, sessionId) =>
+    new Promise((resolve, reject) => {
+      const id = ++seq;
+      pending.set(id, { resolve, reject });
+      proc.stdio[3].write(
+        JSON.stringify({ id, method, params, ...(sessionId ? { sessionId } : {}) }) + '\0'
+      );
+    });
+  const next = (method) =>
+    new Promise((resolve) => waiting.push({ method, resolve }));
+  return { proc, send, next };
+}
+
+/**
+ * A fallback face is not an error Chrome reports — it just renders, which is
+ * how these cards once spent weeks going out in Georgia with nobody noticing.
+ * So every page is asked, before its picture is taken, whether each face it
+ * was given is actually loaded and in use, and the run stops if one is not.
+ */
+const FACE_CHECK = `Promise.all(${JSON.stringify(
+  FACES.map((f) => `${f.weight} 40px '${f.family}'`)
+)}.map((f) => document.fonts.load(f))).then((sets) => sets.every((s) =>
+  s.length > 0 && s.every((face) => face.status === 'loaded')), () => false)`;
+
+function fail(message) {
+  console.error(message);
+  chrome?.proc.kill('SIGKILL');
+  rmSync(tmp, { recursive: true, force: true });
+  process.exit(1);
+}
+
+// One browser for all three images. A hung Chrome should fail the run, not
+// hang it.
+const chrome = openChrome();
+chrome.proc.on('error', (e) => fail(`Could not start Chrome: ${e.message}`));
+setTimeout(
+  () => fail('Chrome stopped answering — no images were finished.'),
+  90_000
+).unref();
+const { targetId } = await chrome.send('Target.createTarget', { url: 'about:blank' });
+const { sessionId } = await chrome.send('Target.attachToTarget', {
+  targetId,
+  flatten: true,
+});
+await chrome.send('Page.enable', {}, sessionId);
+await chrome.send(
+  'Emulation.setDeviceMetricsOverride',
+  { width: W, height: H, deviceScaleFactor: 1, mobile: false },
+  sessionId
+);
+
+let shots = 0;
+async function render(html, outWebp) {
+  const htmlPath = path.join(tmp, `card-${++shots}.html`);
+  writeFileSync(htmlPath, html);
+  const loaded = chrome.next('Page.loadEventFired');
+  await chrome.send('Page.navigate', { url: `file://${htmlPath}` }, sessionId);
+  await loaded;
+  const faces = await chrome.send(
+    'Runtime.evaluate',
+    { expression: FACE_CHECK, awaitPromise: true, returnByValue: true },
+    sessionId
+  );
+  if (faces.result?.value !== true) {
+    fail(
+      `The card faces did not load in Chrome — refusing to render ${path.basename(outWebp)} in a fallback face.\n` +
+        `Check scripts/fonts/: ${FACES.map((f) => f.file).join(', ')}.`
+    );
+  }
+  const { data } = await chrome.send(
+    'Page.captureScreenshot',
+    {
+      format: 'webp',
+      quality: WEBP_QUALITY,
+      clip: { x: 0, y: 0, width: W, height: H, scale: 1 },
+    },
+    sessionId
+  );
+  writeFileSync(outWebp, Buffer.from(data, 'base64'));
 }
 
 // A post may already have a hero that is not generated — an app screenshot, a
@@ -1090,15 +1368,27 @@ if (hasHero && !force) {
     console.log(`  words: ${words}/${budget}`);
   }
 
-  render(markup, heroOut);
-  render(template.render('light'), heroLightOut);
+  await render(markup, heroOut);
+  await render(template.render('light'), heroLightOut);
   wroteHero = true;
   console.log(`  template: ${template.name}`);
   console.log(`  ${heroOut}`);
   console.log(`  ${heroLightOut}`);
 }
-render(ogHtml(), ogOut);
+await render(ogHtml(), ogOut);
 console.log(`  ${ogOut}`);
+// Let Chrome close its profile before the temp folder goes, then make sure.
+if (chrome.proc.exitCode === null) {
+  const exited = new Promise((resolve) => chrome.proc.once('exit', resolve));
+  chrome.send('Browser.close').catch(() => {});
+  let timer;
+  await Promise.race([
+    exited,
+    new Promise((resolve) => (timer = setTimeout(resolve, 5000))),
+  ]);
+  clearTimeout(timer);
+  chrome.proc.kill('SIGKILL');
+}
 rmSync(tmp, { recursive: true, force: true });
 
 // Wire them into the article. Writing the frontmatter is the point: an image

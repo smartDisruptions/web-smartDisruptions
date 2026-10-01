@@ -5,19 +5,11 @@ interface CardProps {
   style?: React.CSSProperties;
 }
 
-export default function Card({
-  children,
-  className = '',
-  hover = false,
-  style,
-}: CardProps) {
+/** A surface. With `hover` it is a pressable card (lift, sheen, press-in). */
+export default function Card({ children, className = '', hover = false, style }: CardProps) {
   return (
     <div
-      className={`nb-polaroid rounded-[3px] p-6 ${
-        hover
-          ? 'transition-all hover:-translate-y-1 hover:shadow-[0_22px_34px_-16px_var(--sd-card-shadow)]'
-          : ''
-      } ${className}`.trim()}
+      className={`${hover ? 'sd-card' : 'sd-print'} p-6 ${className}`.trim()}
       style={style}
     >
       {children}

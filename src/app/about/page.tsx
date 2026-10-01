@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import Kiru from '@/components/kiru/Kiru';
+import Kanji, { Seal, Slash } from '@/components/brand/Kanji';
+import { IconArrowRight } from '@/components/icons';
 import Skills from '@/components/about/Skills';
+import ThePath, { type Milestone } from '@/components/about/ThePath';
+import './about.css';
 
 export const metadata: Metadata = {
   title: 'About — SmartDisruptions',
@@ -8,7 +14,8 @@ export const metadata: Metadata = {
 };
 
 /**
- * The About page, built as a timeline weighted toward the AI arc.
+ * The About page — "The Path" (道), built as a timeline weighted toward the AI
+ * arc.
  *
  * The career years are the setup; the three years with LLMs are the substance,
  * because that is the differentiator and the reason most people land here. The
@@ -28,8 +35,12 @@ export const metadata: Metadata = {
  * words, short bodies, jargon glossed the first time it appears ("a pull
  * request — a packaged-up change I can review"). The timeline stays — it is
  * already the navigable shape — and a three-stop jump nav covers the rest.
+ *
+ * SHADOW DOJO (October 2026): the timeline is drawn as a brush path that inks
+ * itself as you scroll, with Kiru running it (components/about/ThePath.tsx —
+ * CSS scroll timelines and offset-path, no JavaScript). Styles: ./about.css.
  */
-const milestones = [
+const milestones: Milestone[] = [
   {
     year: '2008',
     title: 'Taught myself to build, in Seattle',
@@ -74,107 +85,141 @@ const milestones = [
   },
 ];
 
+// Three stops, so nobody has to scroll blind to find the part they came for.
+// Plain anchor links — no JavaScript.
+const STOPS = [
+  ['#story', 'My story'],
+  ['#skills', 'What I can do'],
+  ['#the-writing', 'About the writing'],
+] as const;
+
 export default function AboutPage() {
   return (
-    <div className="px-3 py-10 sm:px-6 sm:py-16">
-      <div className="nb-sheet nb-tape mx-auto max-w-3xl px-5 py-12 sm:px-14 sm:py-16">
-        <header className="flex flex-col gap-6 sm:flex-row sm:items-center">
-          <img
-            src="/images/josh.webp"
-            alt="Josh"
-            width={88}
-            height={88}
-            className="h-22 w-22 shrink-0 rounded-full border border-border object-cover"
-          />
-          <div>
-            <p className="font-mono-accent text-accent">About</p>
-            <h1 className="font-display mt-3 text-4xl leading-[1.1] font-semibold tracking-tight text-text-primary sm:text-5xl">
-              I&rsquo;m Josh. Here&rsquo;s how I got here.
-            </h1>
+    <div className="ab-page pb-4">
+      <div className="ab-top">
+        <header className="ab-hero">
+          <Kanji char="道" draw className="sd-watermark ab-hero-mark" />
+
+          <div className="ab-hero-grid">
+            <div>
+              <p className="sd-kicker">About &middot; The path</p>
+              <h1 className="ab-h1 font-display">
+                <span className="ab-h1-line">
+                  <Slash text="I’m Josh." />
+                </span>{' '}
+                <span className="ab-h1-line">
+                  <Slash text="Here’s how" delay={0.12} />
+                </span>{' '}
+                <span className="ab-h1-line">
+                  <Slash text="I got here." delay={0.24} />
+                </span>
+              </h1>
+            </div>
+
+            {/* A shikishi board: the portrait, 道 brushed beside it, and the
+                seal under the brushwork, the way a piece is signed. */}
+            <figure className="ab-board">
+              <span className="ab-board-disc" aria-hidden />
+              <div className="ab-shikishi sd-tilt">
+                {/* eslint-disable-next-line @next/next/no-img-element -- a 12 KB pre-sized webp; it is the LCP image, so it loads eagerly at high priority */}
+                <img
+                  src="/images/josh.webp"
+                  alt="Josh Escusa"
+                  width={320}
+                  height={320}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="ab-photo"
+                />
+                <div className="ab-brush" aria-hidden>
+                  <Kanji char="道" draw className="ab-brush-kanji" />
+                  <Seal char="学" className="ab-brush-seal" />
+                </div>
+                <figcaption className="ab-board-cap">
+                  <span>Josh Escusa</span>
+                  <span>Self-taught since 2008</span>
+                </figcaption>
+              </div>
+            </figure>
+          </div>
+
+          <div className="ab-lead sd-sheet">
+            <p className="ab-lead-text font-read">
+              I build real things with AI and write about how they actually get
+              made. I&rsquo;ve worked with these tools daily for three years,
+              and the interesting part isn&rsquo;t that I use them &mdash;
+              everyone uses them. In 2023 I was copying answers out of a chat
+              window. Now agents I built write code, ship it to a test build,
+              and have a pull request and a preview waiting for me when I wake
+              up &mdash; and I am the one who decides whether it goes live.
+            </p>
+            <nav aria-label="On this page" className="ab-toc">
+              <p className="sd-kicker">On this page</p>
+              <ul role="list">
+                {STOPS.map(([href, label], i) => (
+                  <li key={href}>
+                    <a href={href}>
+                      <span className="ab-toc-n" aria-hidden>
+                        0{i + 1}
+                      </span>
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
         </header>
+      </div>
 
-        <p className="mt-8 max-w-[62ch] text-lg leading-[1.75] text-text-secondary">
-          I build real things with AI and write about how they actually get
-          made. I&rsquo;ve worked with these tools daily for three years, and
-          the interesting part isn&rsquo;t that I use them &mdash; everyone uses
-          them. In 2023 I was copying answers out of a chat window. Now agents I
-          built write code, ship it to a test build, and have a pull request and
-          a preview waiting for me when I wake up &mdash; and I am the one who
-          decides whether it goes live.
-        </p>
-
-        {/* Three stops, so nobody has to scroll blind to find the part they
-          came for. Plain anchor links — no JavaScript. */}
-        <nav aria-label="On this page" className="mt-8 flex flex-wrap gap-2">
-          {[
-            ['#story', 'My story'],
-            ['#skills', 'What I can do'],
-            ['#the-writing', 'About the writing'],
-          ].map(([href, label]) => (
-            <a
-              key={href}
-              href={href}
-              className="rounded-full border border-border bg-surface px-4 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        {/* The spine. The border on the list draws it; each node's dot sits on
-          top of the line via a negative offset. */}
-        <ol
-          id="story"
-          className="mt-14 scroll-mt-24 border-l border-border pl-8 sm:pl-10"
-        >
-          {milestones.map((m) => (
-            <li key={m.year} className="relative pb-12 last:pb-0">
-              {/* An era label marks where the story changes gear, without
-                breaking the single chronological spine. */}
-              {m.era && (
-                <p className="font-mono-accent mb-6 text-accent">{m.era}</p>
-              )}
-              <span
-                aria-hidden
-                className={`absolute -left-[calc(2rem+5px)] block h-2.5 w-2.5 rounded-full sm:-left-[calc(2.5rem+5px)] ${
-                  m.era ? 'top-12' : 'top-1.5'
-                } ${
-                  m.current
-                    ? 'bg-accent ring-4 ring-accent/20'
-                    : 'bg-border ring-4 ring-background'
-                }`}
-              />
-              <p className="font-mono-accent text-text-secondary">{m.year}</p>
-              <h2 className="font-display mt-2 text-xl font-semibold text-text-primary sm:text-2xl">
-                {m.title}
-              </h2>
-              <p className="mt-3 leading-[1.75] text-text-secondary">
-                {m.body}
-              </p>
-            </li>
-          ))}
-        </ol>
-
-        <Skills />
-
-        {/* The disclosure gets its own frame so it reads as a standing policy
-          rather than a life event. */}
-        {/* id is "the-writing", not "writing" — the Skills list already owns
-          #writing (the "Writing in public" row), and a duplicate id would
-          send this jump link to the wrong element. */}
-        <div
-          id="the-writing"
-          className="mt-14 scroll-mt-24 rounded-2xl border border-border bg-surface p-6 sm:p-8"
-        >
-          <h2 className="font-display text-xl font-semibold text-text-primary">
-            One thing about the writing
+      <section id="story" className="ab-sec" aria-labelledby="story-title">
+        <div className="ab-sec-head">
+          <p className="sd-kicker">The path &middot; 2008 to now</p>
+          <h2 id="story-title" className="ab-sec-title font-display">
+            My story
           </h2>
-          <div className="mt-4 space-y-4 leading-[1.75] text-text-secondary">
+          <p className="ab-hint">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              aria-hidden
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 4v16M6 14l6 6 6-6" />
+            </svg>
+            Scroll, and Kiru runs it with you.
+          </p>
+        </div>
+        <ThePath milestones={milestones} />
+      </section>
+
+      <Skills />
+
+      <div className="ab-sec">
+        {/* The disclosure is a paper slip pinned to the page, so it reads as a
+            standing policy rather than a life event. */}
+        {/* id is "the-writing", not "writing" — the Skills list already owns
+            #writing (the "Writing in public" row), and a duplicate id would
+            send this jump link to the wrong element. */}
+        <section
+          id="the-writing"
+          className="ab-ofuda sd-note sd-reveal"
+          aria-labelledby="writing-title"
+        >
+          <div className="ab-ofuda-head">
+            <Seal char="書" className="ab-ofuda-seal" />
+            <h2 id="writing-title" className="font-display">
+              One thing about the writing
+            </h2>
+          </div>
+          <div className="ab-ofuda-body font-read">
             <p>
-              <strong className="font-semibold text-text-primary">
-                I use an AI model to help me write these posts.
-              </strong>{' '}
+              <strong>I use an AI model to help me write these posts.</strong>{' '}
               Given everything above, it would be strange if I didn&rsquo;t
               &mdash; and stranger not to say so. The experiences are mine: the
               builds, the decisions, the dead ends, the things I got wrong and
@@ -187,19 +232,32 @@ export default function AboutPage() {
               I&rsquo;d rather tell you than have you wonder.
             </p>
           </div>
-        </div>
+        </section>
 
-        <p className="mt-10 leading-[1.75] text-text-secondary">
-          If you&rsquo;re building with AI too and want to compare notes,
-          I&rsquo;m easy to find on{' '}
-          <a
-            href="https://www.linkedin.com/in/joshescusa"
-            className="text-accent underline underline-offset-2 hover:text-accent-hover"
-          >
-            LinkedIn
-          </a>
-          .
-        </p>
+        <div className="ab-end sd-reveal">
+          <p className="ab-end-note font-read">
+            If you&rsquo;re building with AI too and want to compare notes,
+            I&rsquo;m easy to find on{' '}
+            <a
+              href="https://www.linkedin.com/in/joshescusa"
+              className="ab-link"
+            >
+              LinkedIn
+            </a>
+            .
+          </p>
+          <Link href="/kiru" className="ab-meet sd-card">
+            <Kiru pose="wave" />
+            <span>
+              <span className="ab-meet-k block">The house ninja</span>
+              <span className="ab-meet-t block">Meet Kiru</span>
+              <span className="ab-meet-s block">
+                The ninja who lives on this site
+              </span>
+            </span>
+            <IconArrowRight className="ab-meet-go" size={20} />
+          </Link>
+        </div>
       </div>
     </div>
   );

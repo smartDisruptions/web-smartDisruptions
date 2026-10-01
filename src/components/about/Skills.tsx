@@ -1,14 +1,18 @@
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
+import { IconArrowRight, IconExternal } from '@/components/icons';
 import {
   evidenceFor,
   skillGroups,
+  skillTotals,
   type EvidenceKind,
   type ResolvedEvidence,
   type Skill,
 } from '@/data/skills';
 
 /**
- * The skills section on /about, with its evidence folded in.
+ * The skills section on /about, with its evidence folded in. Styles live in
+ * src/app/about/about.css (ab-sk-*, ab-rc-*).
  *
  * WHY NATIVE <details> AND NOT A REACT ACCORDION
  * Every row here is server-rendered HTML. There is no state, no hydration and
@@ -16,7 +20,11 @@ import {
  * which is why it is instant on a phone on a bad connection. An accordion is
  * the one interaction pattern the platform gives away for free, and taking it
  * would have meant shipping JavaScript to reproduce something that already
- * works, including the keyboard and screen-reader behaviour.
+ * works, including the keyboard and screen-reader behaviour — and find-in-page,
+ * which opens a closed row to show a match.
+ *
+ * The smooth open is CSS too: `::details-content` animating to `height: auto`
+ * through `interpolate-size`. Where that isn't supported the row just opens.
  *
  * WHY IT IS COLLAPSED AT ALL
  * Eighteen skills with their receipts is a wall if it is all on screen. The
@@ -38,40 +46,47 @@ function Chevron() {
     <svg
       aria-hidden
       viewBox="0 0 24 24"
+      width="14"
+      height="14"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-4 w-4 shrink-0 text-text-secondary transition-transform duration-200 group-open:rotate-90 motion-reduce:transition-none"
     >
       <path d="m9 18 6-6-6-6" />
     </svg>
   );
 }
 
-function EvidenceLink({ item }: { item: ResolvedEvidence }) {
+/** One receipt: something a stranger can open. */
+function Receipt({ item }: { item: ResolvedEvidence }) {
   const body = (
     <>
-      <span className="font-mono text-[0.7rem] uppercase tracking-[0.06em] text-accent">
-        {kindLabel[item.kind]}
+      <span className="ab-rc-kind">{kindLabel[item.kind]}</span>
+      <span className="ab-rc-text">
+        <span className="ab-rc-label">{item.label}</span>
+        {item.detail && (
+          <span className="ab-rc-detail">
+            <span className="sr-only">&mdash; </span>
+            {item.detail}
+          </span>
+        )}
       </span>
-      <span className="font-medium text-text-primary group-hover/ev:text-accent">
-        {item.label}
+      <span className="ab-rc-go" aria-hidden>
+        {item.internal ? (
+          <IconArrowRight size={16} />
+        ) : (
+          <IconExternal size={16} />
+        )}
       </span>
-      {item.detail && (
-        <span className="text-text-secondary">&mdash; {item.detail}</span>
-      )}
     </>
   );
-
-  const className =
-    'group/ev flex flex-wrap items-baseline gap-x-2 gap-y-0.5 rounded-lg border border-border bg-surface px-3 py-2 text-sm leading-snug transition-colors hover:border-accent/40';
 
   // Internal paths route through next/link for the client-side transition;
   // anything off-site opens in a new tab so the page is not lost.
   return item.internal ? (
-    <Link href={item.href} className={className}>
+    <Link href={item.href} className="ab-rc" data-kind={item.kind}>
       {body}
     </Link>
   ) : (
@@ -79,9 +94,11 @@ function EvidenceLink({ item }: { item: ResolvedEvidence }) {
       href={item.href}
       target="_blank"
       rel="noopener noreferrer"
-      className={className}
+      className="ab-rc"
+      data-kind={item.kind}
     >
       {body}
+      <span className="sr-only"> (opens in a new tab)</span>
     </a>
   );
 }
@@ -96,48 +113,43 @@ function SkillRow({ skill, open = false }: { skill: Skill; open?: boolean }) {
   //
   // The id makes a single skill linkable.
   return (
-    <details
-      id={skill.id}
-      open={open}
-      className="group scroll-mt-24 border-t border-border"
-    >
-      <summary className="flex cursor-pointer list-none items-start gap-4 py-5 transition-colors hover:bg-fill/40 [&::-webkit-details-marker]:hidden">
-        <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-text-primary group-hover:text-accent">
-            {skill.name}
-          </h3>
-          <p className="mt-1 max-w-[62ch] text-sm leading-relaxed text-text-secondary">
-            {skill.plain}
-          </p>
+    <details id={skill.id} open={open} className="ab-sk">
+      <summary>
+        <div className="ab-sk-term">
+          <h4>{skill.name}</h4>
+          <p>{skill.plain}</p>
         </div>
-        <div className="mt-0.5 flex shrink-0 items-center gap-2">
+        <div className="ab-sk-meta">
           {/* Labelled, because a bare numeral beside a chevron reads as a
               footnote marker rather than a count of things to click. The word
               drops below sm, where the row needs the width more than the
               reader needs the noun. */}
-          <span className="font-mono text-[0.7rem] tracking-[0.04em] text-text-secondary [font-variant-numeric:tabular-nums]">
+          <span className="ab-sk-count">
             {evidence.length}
             <span className="hidden sm:inline">
               {' '}
               {evidence.length === 1 ? 'receipt' : 'receipts'}
             </span>
           </span>
-          <Chevron />
+          <span className="ab-sk-chev">
+            <Chevron />
+          </span>
         </div>
       </summary>
 
-      <div className="pb-6 pl-0 sm:pl-1">
-        <p className="max-w-[64ch] leading-[1.75] text-text-secondary">
-          {skill.used}
-        </p>
+      <div className="ab-sk-body">
+        <p className="ab-sk-used font-read">{skill.used}</p>
         <ul
-          className="mt-4 flex flex-wrap gap-2"
+          className="ab-sk-receipts"
           role="list"
           aria-label={`Evidence for ${skill.name}`}
         >
-          {evidence.map((item) => (
-            <li key={`${item.kind}-${item.href}-${item.label}`}>
-              <EvidenceLink item={item} />
+          {evidence.map((item, i) => (
+            <li
+              key={`${item.kind}-${item.href}-${item.label}`}
+              style={{ '--i': i } as CSSProperties}
+            >
+              <Receipt item={item} />
             </li>
           ))}
         </ul>
@@ -147,55 +159,67 @@ function SkillRow({ skill, open = false }: { skill: Skill; open?: boolean }) {
 }
 
 export default function Skills() {
-  return (
-    <section
-      id="skills"
-      className="mt-16 scroll-mt-24 border-t border-border pt-12"
-    >
-      <h2 className="font-display text-2xl font-semibold text-text-primary sm:text-3xl">
-        What I can do, and what proves it
-      </h2>
-      <p className="mt-3 max-w-[62ch] leading-[1.75] text-text-secondary">
-        Nothing on this list is here because I have read about it. Each one came
-        out of a build that needed it, and each one opens to what I made with it
-        and something you can click. Most of those links go to the{' '}
-        <Link
-          href="/built"
-          className="text-accent underline underline-offset-2 hover:text-accent-hover"
-        >
-          apps
-        </Link>{' '}
-        and the{' '}
-        <Link
-          href="/games"
-          className="text-accent underline underline-offset-2 hover:text-accent-hover"
-        >
-          arcade
-        </Link>{' '}
-        &mdash; those are not a separate showcase, they are the same evidence
-        from a different angle. Every one of them took some of these skills to
-        make.
-      </p>
+  const totals = skillTotals();
+  const pad = (n: number) => String(n).padStart(2, '0');
 
-      {skillGroups.map((group, groupIndex) => (
-        <div key={group.id} className="mt-12 first:mt-10">
-          <h3 className="font-display text-xl font-semibold tracking-tight text-text-primary">
-            {group.name}
-          </h3>
-          <p className="mt-1.5 max-w-[62ch] text-sm leading-relaxed text-text-secondary">
-            {group.blurb}
-          </p>
-          <div className="mt-5 border-b border-border">
-            {group.skills.map((skill, i) => (
-              <SkillRow
-                key={skill.id}
-                skill={skill}
-                open={groupIndex === 0 && i === 0}
-              />
-            ))}
+  return (
+    <section id="skills" className="ab-sec" aria-labelledby="skills-title">
+      <div className="ab-sec-head">
+        <p className="sd-kicker">Skills, with receipts</p>
+        <h2 id="skills-title" className="ab-sec-title font-display">
+          What I can do, and what proves it
+        </h2>
+      </div>
+
+      <div className="ab-sk-intro sd-sheet sd-reveal">
+        <p className="font-read">
+          Nothing on this list is here because I have read about it. Each one
+          came out of a build that needed it, and each one opens to what I made
+          with it and something you can click. Most of those links go to the{' '}
+          <Link href="/built">apps</Link> and the{' '}
+          <Link href="/games">arcade</Link> — those are not a separate showcase,
+          they are the same evidence from a different angle. Every one of them
+          took some of these skills to make.
+        </p>
+        {/* Counted from the data (skillTotals), so it cannot drift. */}
+        <dl className="ab-sk-tally">
+          <div>
+            <dt>Skills</dt>
+            <dd>{totals.skills}</dd>
           </div>
-        </div>
-      ))}
+          <div>
+            <dt>Receipts to open</dt>
+            <dd>{totals.receipts}</dd>
+          </div>
+          <div>
+            <dt>Apps &amp; games</dt>
+            <dd>{totals.apps}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div className="ab-sk-groups">
+        {skillGroups.map((group, groupIndex) => (
+          <div key={group.id} className="ab-sk-group sd-sheet">
+            <div className="ab-sk-head">
+              <p className="ab-sk-num" aria-hidden>
+                {pad(groupIndex + 1)} / {pad(skillGroups.length)}
+              </p>
+              <h3 className="ab-sk-name font-display">{group.name}</h3>
+              <p className="ab-sk-blurb">{group.blurb}</p>
+            </div>
+            <div className="ab-sk-rows">
+              {group.skills.map((skill, i) => (
+                <SkillRow
+                  key={skill.id}
+                  skill={skill}
+                  open={groupIndex === 0 && i === 0}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

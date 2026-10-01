@@ -11,6 +11,11 @@ import MarketStormIndexView, {
  * cards at two URLs, so `/market-storm/page/1` is deliberately a 404 rather
  * than a second front door.
  */
+// Every real page is known at build time (publishing is a rebuild), so an
+// unknown one is a plain static 404 rather than an on-demand render that
+// Next can only finish in the browser.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return Array.from({ length: Math.max(0, totalReportPages - 1) }, (_, i) => ({
     page: String(i + 2),

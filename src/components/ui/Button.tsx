@@ -14,21 +14,21 @@ interface ButtonProps {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  // Primary is a sticky-note yellow with dark ink in BOTH themes — a sticky
-  // note is an object, not a themed surface. Secondary is plain paper.
+  // Primary is vermilion with white text in BOTH themes (4.7:1) — the button is
+  // an object, like Kiru's headband. A blade-light crosses it on hover.
   primary:
-    'border-2 border-[var(--sd-sticky-ink)] bg-[var(--sd-sticky)] text-[var(--sd-sticky-ink)] hover:-rotate-1 hover:scale-[1.03]',
+    'sd-btn-primary bg-[#d63a22] text-white shadow-[0_10px_24px_-10px_rgba(214,58,34,.7)] hover:bg-[#c2311b] hover:shadow-[0_16px_34px_-12px_rgba(214,58,34,.8)]',
+  // Secondary is an outlined pill on whatever is behind it.
   secondary:
-    'border-2 border-text-primary bg-surface text-text-primary hover:bg-[var(--sd-hl)]',
-  ghost: 'border-2 border-transparent bg-transparent text-accent hover:bg-fill',
+    'border border-[var(--sd-border-strong)] bg-surface/60 text-text-primary hover:border-text-primary hover:bg-surface',
+  ghost: 'bg-transparent text-accent hover:bg-fill',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  // Handwriting needs more size than a sans to read at a glance, and every
-  // size clears a 44px touch target.
-  sm: 'min-h-11 px-4 py-1 text-lg',
-  md: 'min-h-11 px-5 py-1.5 text-xl',
-  lg: 'min-h-12 px-7 py-2 text-2xl',
+  // Every size clears a 44px touch target.
+  sm: 'min-h-11 px-4 text-sm',
+  md: 'min-h-11 px-5 text-[0.95rem]',
+  lg: 'min-h-13 px-7 text-base',
 };
 
 export default function Button({
@@ -41,7 +41,7 @@ export default function Button({
   disabled = false,
 }: ButtonProps) {
   const base =
-    `nb-wobble font-display inline-flex items-center justify-center transition-all ${variantStyles[variant]} ${sizeStyles[size]} ${
+    `relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full font-bold tracking-[0.01em] transition-[background-color,box-shadow,border-color,translate,scale] duration-300 ease-out active:scale-[0.97] ${variantStyles[variant]} ${sizeStyles[size]} ${
       disabled ? 'pointer-events-none opacity-50' : ''
     } ${className}`.trim();
 

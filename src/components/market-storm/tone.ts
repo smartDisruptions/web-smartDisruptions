@@ -8,7 +8,7 @@ import type { Tone } from '@/data/marketStorm';
  * another — the maps live here so both read the same table.
  *
  * The colours themselves are the `--sd-bull/bear/warn` tokens and follow the
- * ink flip: dark on paper, bright on the charcoal ground, AA in both.
+ * ink flip: dark on washi, bright under the moon, AA in both.
  */
 export const toneText: Record<Tone, string> = {
   bull: 'text-bull',
@@ -22,4 +22,16 @@ export const toneDot: Record<Tone, string> = {
   bear: 'bg-bear',
   warn: 'bg-warn',
   neutral: 'bg-text-secondary',
+};
+
+/**
+ * The verdict's shape beside its colour — up, down, caution — so a reader who
+ * cannot tell the green from the red still reads the direction. Decorative
+ * (aria-hidden wherever it is used); neutral figures carry none.
+ */
+export const toneGlyph: Record<Tone, string> = {
+  bull: '▲',
+  bear: '▼',
+  warn: '◆',
+  neutral: '',
 };

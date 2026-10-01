@@ -1,0 +1,1447 @@
+/*
+  Writing — /content and /content/[slug]. Prefix wr-.
+
+  The index is a cover story over a grid of prints; a post is a headline on
+  the ground, a hero, and the article on a sheet. Kiru reads in the header,
+  runs along the top while you read, bows at the end and sits on the
+  subscribe card. Everything here is CSS: the only scripts on these pages are
+  the filter (a View Transition) and the subscribe form.
+*/
+
+/* ── Shared bits ─────────────────────────────────────────────────────────── */
+
+/* A row of facts with a dot between each. The dot belongs to the item after
+   it and sits in the gap, so when the row wraps, the dot that would start
+   the new line falls outside the box and is clipped — no dangling dots. */
+.wr-meta,
+.wr-post-meta,
+.wr-head-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 1.05em;
+  row-gap: 0.2rem;
+  overflow: hidden;
+}
+.wr-meta > *,
+.wr-post-meta > *,
+.wr-head-count > * {
+  position: relative;
+}
+.wr-meta > * + *::before,
+.wr-post-meta > * + *::before,
+.wr-head-count > * + *::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -0.525em;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: var(--sd-text-secondary);
+  opacity: 0.6;
+}
+
+.wr-meta {
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--sd-text-secondary);
+}
+.wr-meta-cat {
+  color: var(--sd-pen-ink);
+  font-weight: 750;
+}
+
+.wr-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wr-tags > li {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--sd-fill);
+  color: var(--sd-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+/* The frame a hero image sits in, on cards and on the post. Its
+   view-transition name is set inline (post-hero-<slug>); the class lets the
+   morph be styled as a family. */
+.wr-frame {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  aspect-ratio: 40 / 21;
+  background: var(--sd-surface-elevated);
+  view-transition-class: wr-hero;
+}
+.wr-frame-img {
+  /* no `display` here: HeroImage's light/dark copies are shown and hidden
+     with display (globals.css), and this file loads later */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* App screenshots are taller than 40:21; keep their top (the part with
+     the app's header in it), which is also where the post hero's morph
+     anchors. Generated heroes are exactly 40:21, so nothing is cropped. */
+  object-position: top center;
+}
+.wr-frame-empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 3.5rem;
+  color: color-mix(in srgb, var(--sd-accent) 28%, transparent);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .wr-frame-img {
+    transition: scale 0.8s var(--ease-out-expo);
+  }
+  .group:hover .wr-frame-img {
+    scale: 1.045;
+  }
+}
+
+/* ── Index: header ───────────────────────────────────────────────────────── */
+
+.wr-index {
+  overflow-x: clip;
+  padding-bottom: 4.5rem;
+}
+
+.wr-head {
+  position: relative;
+  isolation: isolate;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 2.5rem 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'titles kiru'
+    'sub sub';
+  align-items: end;
+  column-gap: 0.5rem;
+}
+@media (min-width: 40rem) {
+  .wr-head {
+    padding: 3.75rem 1.5rem 2rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wr-head {
+    padding-top: 4.5rem;
+    grid-template-columns: minmax(0, 1fr) 19rem;
+    grid-template-areas:
+      'titles kiru'
+      'sub kiru';
+    column-gap: 2rem;
+  }
+}
+
+.wr-head-mark {
+  z-index: -1;
+  width: 15rem;
+  height: 15rem;
+  top: 0.75rem;
+  right: -2.25rem;
+}
+@media (min-width: 40rem) {
+  .wr-head-mark {
+    width: 22rem;
+    height: 22rem;
+    top: 0;
+    right: -1rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wr-head-mark {
+    width: 29rem;
+    height: 29rem;
+    top: -0.5rem;
+    right: 0.5rem;
+  }
+}
+
+.wr-head-titles {
+  grid-area: titles;
+  min-width: 0;
+}
+.wr-head-title {
+  margin-top: 0.85rem;
+  font-size: clamp(3rem, 1.5rem + 6.2vw, 6.6rem);
+  line-height: 1;
+  color: var(--sd-text-primary);
+}
+/* The katana slash leaves a hairline where its two clipped halves meet.
+   Once the cut has sealed, drop the clip and the copy so the headline rests
+   as plain type. */
+@media (prefers-reduced-motion: no-preference) {
+  .wr-head-title .sd-slash-a {
+    animation:
+      sd-slash-a 1s var(--ease-out-expo) var(--d, 0s) both,
+      wr-sealed 0.01s linear calc(var(--d, 0s) + 1.05s) forwards;
+  }
+  .wr-head-title .sd-slash::before {
+    animation:
+      sd-slash-b 1s var(--ease-out-expo) var(--d, 0s) both,
+      wr-sealed-copy 0.01s linear calc(var(--d, 0s) + 1.05s) forwards;
+  }
+}
+@keyframes wr-sealed {
+  to {
+    clip-path: none;
+  }
+}
+@keyframes wr-sealed-copy {
+  to {
+    visibility: hidden;
+  }
+}
+.wr-head-sub {
+  grid-area: sub;
+  min-width: 0;
+}
+.wr-head-lead {
+  margin-top: 1.1rem;
+  max-width: 36ch;
+  font-size: clamp(1.08rem, 1rem + 0.45vw, 1.32rem);
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+.wr-head-count {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--sd-text-secondary);
+}
+
+.wr-head-kiru {
+  grid-area: kiru;
+  position: relative;
+  align-self: end;
+  justify-self: end;
+  width: 6.75rem;
+  margin-bottom: -0.35rem;
+}
+.wr-head-kiru::after {
+  /* the floor he stands on: a soft ink shadow */
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 1%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--sd-text-primary) 22%, transparent),
+    transparent
+  );
+  z-index: -1;
+}
+.wr-head-ninja {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@media (min-width: 40rem) {
+  .wr-head-kiru {
+    width: 9.5rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wr-head-kiru {
+    width: 16.5rem;
+    margin-bottom: -0.5rem;
+  }
+}
+
+/* ── Index: the filter, a native segmented control ──────────────────────── */
+
+.wr-list {
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.wr-tabs-wrap {
+  padding: 0.5rem 1.25rem 0.75rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 1.25rem;
+  scrollbar-width: none;
+}
+.wr-tabs-wrap::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 40rem) {
+  .wr-tabs-wrap {
+    padding-inline: 1.5rem;
+    scroll-padding-inline: 1.5rem;
+  }
+}
+
+.wr-tabs {
+  display: inline-flex;
+  gap: 0.2rem;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: var(--sd-fill);
+  border: 1px solid var(--sd-border);
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--sd-text-primary) 6%, transparent);
+}
+
+.wr-tab {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 0.75rem 0 1.05rem;
+  border-radius: 999px;
+  scroll-snap-align: start;
+  font-size: 0.9rem;
+  font-weight: 650;
+  white-space: nowrap;
+  color: var(--sd-text-secondary);
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    scale 0.15s ease;
+}
+.wr-tab:hover {
+  color: var(--sd-text-primary);
+}
+.wr-tab:active {
+  scale: 0.96;
+}
+.wr-tab[data-on] {
+  color: var(--sd-bg);
+}
+/* The pill behind the current tab. It carries a view-transition name, so
+   when the filter changes the browser slides it to its new tab. */
+.wr-tab-thumb {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--sd-accent);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--sd-accent) 35%, transparent),
+    0 8px 18px -10px color-mix(in srgb, var(--sd-accent) 80%, transparent);
+}
+.wr-tab-label,
+.wr-tab-count {
+  position: relative;
+  z-index: 1;
+}
+.wr-tab-count {
+  min-width: 1.6rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sd-text-primary) 8%, transparent);
+  font-size: 0.72rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.wr-tab[data-on] .wr-tab-count {
+  background: color-mix(in srgb, var(--sd-bg) 22%, transparent);
+}
+
+/* A phone fits the three tabs with a little scroll; tighten them so it's
+   only a little. */
+@media (max-width: 30rem) {
+  .wr-tab {
+    gap: 0.4rem;
+    padding: 0 0.6rem 0 0.9rem;
+    font-size: 0.86rem;
+  }
+  .wr-tab-count {
+    min-width: 1.4rem;
+    font-size: 0.68rem;
+  }
+}
+
+/* When the row does scroll, its edges fade where there is more to see — and
+   only there, driven by the row's own scroll position. A row that fits has
+   no scroll timeline, so no fade. */
+@property --wr-fade-l {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --wr-fade-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@supports (animation-timeline: scroll()) {
+  .wr-tabs-wrap {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--wr-fade-l),
+      #000 calc(100% - var(--wr-fade-r)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--wr-fade-l),
+      #000 calc(100% - var(--wr-fade-r)),
+      transparent
+    );
+    animation: wr-tabs-edge linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+@keyframes wr-tabs-edge {
+  0% {
+    --wr-fade-l: 0px;
+    --wr-fade-r: 32px;
+  }
+  12%,
+  88% {
+    --wr-fade-l: 32px;
+    --wr-fade-r: 32px;
+  }
+  100% {
+    --wr-fade-l: 32px;
+    --wr-fade-r: 0px;
+  }
+}
+
+/* The global focus ring squares every corner to 6px; keep pills and cards
+   their own shape while the ring is on. */
+.wr-tab:focus-visible,
+.wr-back:focus-visible,
+.wr-out-btn:focus-visible {
+  border-radius: 999px;
+}
+.wr-card:focus-visible,
+.wr-more-card:focus-visible {
+  border-radius: var(--radius-xl);
+}
+.wr-feature:focus-visible {
+  border-radius: var(--radius-2xl);
+}
+
+/* ── Index: cover story + grid ───────────────────────────────────────────── */
+
+.wr-stack {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 40rem) {
+  .wr-stack {
+    gap: 1.75rem;
+    padding-inline: 1.5rem;
+  }
+}
+
+.wr-feature {
+  display: grid;
+  border-radius: var(--radius-2xl);
+  color: inherit;
+  text-decoration: none;
+}
+@media (min-width: 52rem) {
+  .wr-feature {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    align-items: center;
+  }
+}
+.wr-feature-media {
+  position: relative;
+  padding: 0.6rem 0.6rem 0;
+}
+@media (min-width: 52rem) {
+  .wr-feature-media {
+    padding: 0.75rem;
+  }
+}
+.wr-feature-media .wr-frame {
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px var(--sd-border);
+}
+/* 新, "new", stamped beside the cover story's label — off the image, which
+   carries its own seal. */
+.wr-feature-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.wr-feature-seal {
+  width: 1.9rem;
+  rotate: -6deg;
+  flex: none;
+}
+.wr-feature-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1.15rem 1.25rem 1.35rem;
+}
+@media (min-width: 52rem) {
+  .wr-feature-body {
+    padding: 1.5rem 2.25rem 1.5rem 1.25rem;
+  }
+}
+.wr-feature-title {
+  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.05rem);
+  line-height: 1.12;
+  color: var(--sd-text-primary);
+}
+.wr-feature-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--sd-text-secondary);
+}
+.wr-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  margin-top: -0.25rem;
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--sd-accent);
+}
+.wr-cta-arrow {
+  display: inline-block;
+  transition: translate 0.45s var(--ease-out-expo);
+}
+@media (hover: hover) {
+  .group:hover .wr-cta-arrow {
+    translate: 0.3rem 0;
+  }
+}
+
+.wr-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 40rem) {
+  .wr-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wr-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.75rem 1.5rem;
+  }
+}
+.wr-grid > li {
+  display: flex;
+  min-width: 0;
+}
+/* Three across, a row rises left to right rather than all at once. */
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wr-grid > li.sd-reveal:nth-child(3n + 2) {
+      animation-range: entry 6% cover 28%;
+    }
+    .wr-grid > li.sd-reveal:nth-child(3n) {
+      animation-range: entry 12% cover 34%;
+    }
+  }
+}
+
+.wr-card,
+.wr-more-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+.wr-card > .wr-frame,
+.wr-more-card > .wr-frame {
+  /* the card's own corners, so the morph snapshot is rounded too */
+  border-radius: 15px 15px 0 0;
+  border-bottom: 1px solid var(--sd-border);
+}
+.wr-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1.15rem 1.1rem;
+}
+.wr-card-cat {
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-pen-ink);
+}
+.wr-card-title {
+  font-size: 1.07rem;
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.008em;
+  color: var(--sd-text-primary);
+  text-wrap: balance;
+}
+.wr-card-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+.wr-card-body > .wr-tags {
+  margin-top: 0.15rem;
+}
+.wr-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--sd-border);
+}
+.wr-card-arrow {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  border: 1px solid var(--sd-border-strong);
+  color: var(--sd-accent);
+  font-weight: 700;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    translate 0.45s var(--ease-out-expo);
+}
+@media (hover: hover) {
+  .group:hover .wr-card-arrow {
+    background: var(--sd-accent);
+    border-color: var(--sd-accent);
+    color: var(--sd-bg);
+    translate: 0.15rem 0;
+  }
+}
+
+/* Tilt is for a fine pointer only. Elsewhere drop its (resting) transform,
+   so a phone doesn't keep a 3D layer per card for nothing. */
+@media not ((hover: hover) and (pointer: fine)) {
+  .wr-card.sd-tilt,
+  .wr-more-card.sd-tilt {
+    transform: none;
+  }
+}
+/* sd-card and sd-tilt each declare a whole `transition`; on one element the
+   later one wins and the hover lift stops easing. Restate both. */
+.wr-card.sd-tilt,
+.wr-more-card.sd-tilt {
+  transition:
+    transform 0.6s var(--ease-out-expo),
+    translate 0.45s var(--ease-out-expo),
+    scale 0.2s ease,
+    box-shadow 0.45s var(--ease-out-expo),
+    border-color 0.3s ease;
+}
+
+/* The newsletter tile closes the grid and fills whatever the last row
+   leaves: the rest of the row, or a full row of its own. */
+.wr-grid > .wr-grid-end {
+  grid-column: 1 / -1;
+}
+@media (min-width: 40rem) {
+  .wr-grid > .wr-grid-end:nth-child(2n) {
+    grid-column: auto;
+  }
+}
+@media (min-width: 64rem) {
+  .wr-grid > .wr-grid-end:nth-child(2n) {
+    grid-column: 1 / -1;
+  }
+  .wr-grid > .wr-grid-end:nth-child(3n + 2) {
+    grid-column: span 2;
+  }
+  .wr-grid > .wr-grid-end:nth-child(3n) {
+    grid-column: auto;
+  }
+}
+.wr-end {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 1.6rem 1.35rem 1.4rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--sd-border);
+  border-top: 4px solid var(--sd-pen);
+  background: var(--sd-surface);
+  box-shadow: 0 18px 40px -30px var(--sd-card-shadow);
+}
+@media (min-width: 40rem) {
+  .wr-end {
+    padding: 2rem 2rem 1.75rem;
+  }
+}
+.wr-end-clip {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.wr-end-mark {
+  position: absolute;
+  right: -1.75rem;
+  bottom: -2.75rem;
+  width: 11rem;
+  height: 11rem;
+  color: var(--sd-pen);
+  opacity: 0.06;
+  rotate: -8deg;
+}
+:root[data-theme='dark'] .wr-end-mark {
+  opacity: 0.08;
+}
+.wr-end-kiru {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.6rem;
+  width: 5.25rem;
+  height: auto;
+  pointer-events: none;
+}
+.wr-end-title {
+  margin-top: 0.7rem;
+  padding-right: 4.5rem;
+  font-size: clamp(1.45rem, 1.2rem + 0.9vw, 1.9rem);
+  color: var(--sd-text-primary);
+}
+.wr-end-copy {
+  margin-top: 0.55rem;
+  max-width: 34rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+}
+.wr-end-form {
+  margin-top: 1.1rem;
+}
+
+.wr-empty {
+  padding: 4rem 1.25rem;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--sd-text-secondary);
+}
+
+/* ── Post: header ────────────────────────────────────────────────────────── */
+
+.wr-post {
+  /* The article sheet's view timeline, shared with the progress runner,
+     which lives outside it. */
+  timeline-scope: --wr-read;
+  overflow-x: clip;
+  padding-bottom: 3.5rem;
+}
+
+.wr-post-head {
+  position: relative;
+  isolation: isolate;
+  max-width: 54rem;
+  margin-inline: auto;
+  padding: 1rem 1.25rem 0;
+}
+@media (min-width: 40rem) {
+  .wr-post-head {
+    padding: 2rem 1.5rem 0;
+  }
+}
+.wr-post-mark {
+  z-index: -1;
+  width: 12rem;
+  height: 12rem;
+  top: 0.25rem;
+  right: -2.5rem;
+}
+@media (min-width: 40rem) {
+  .wr-post-mark {
+    width: 17rem;
+    height: 17rem;
+    top: -0.25rem;
+    right: -5.5rem;
+  }
+}
+/* Behind a long headline the mark stays a whisper, more so at night. */
+.wr-post-mark.sd-watermark {
+  opacity: 0.07;
+}
+:root[data-theme='dark'] .wr-post-mark.sd-watermark,
+:root[data-theme='dark'] .wr-head-mark.sd-watermark {
+  opacity: 0.1;
+}
+
+.wr-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  margin-left: -0.35rem;
+  padding: 0 1rem 0 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border);
+  background: color-mix(in srgb, var(--sd-surface) 72%, transparent);
+  color: var(--sd-text-primary);
+  font-size: 0.88rem;
+  font-weight: 650;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    scale 0.15s ease;
+}
+.wr-back:hover {
+  border-color: var(--sd-border-strong);
+  background: var(--sd-surface);
+}
+.wr-back:active {
+  scale: 0.96;
+}
+.wr-back-chev {
+  font-size: 1.35rem;
+  line-height: 1;
+  margin-top: -0.12rem;
+  color: var(--sd-pen-ink);
+}
+
+.wr-post-meta {
+  margin-top: 1.4rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--sd-text-secondary);
+}
+.wr-post-cat {
+  color: var(--sd-pen-ink);
+  font-weight: 750;
+}
+.wr-post-title {
+  margin-top: 0.8rem;
+  max-width: 24ch;
+  font-size: clamp(1.85rem, 1.05rem + 3.3vw, 3.5rem);
+  line-height: 1.1;
+  color: var(--sd-text-primary);
+}
+.wr-post-dek {
+  margin-top: 1.1rem;
+  max-width: 58ch;
+  font-size: clamp(1.04rem, 0.98rem + 0.3vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+}
+.wr-post-tags {
+  margin-top: 1.1rem;
+}
+
+/* ── Post: hero ──────────────────────────────────────────────────────────── */
+
+.wr-hero-wrap {
+  max-width: 64rem;
+  margin: 1.75rem auto 0;
+}
+@media (min-width: 40rem) {
+  .wr-hero-wrap {
+    margin-top: 2.25rem;
+    padding-inline: 1.5rem;
+  }
+}
+/* Edge to edge on a phone, like a native reader; a mounted print above it. */
+.wr-hero {
+  position: relative;
+  display: flex;
+  margin: 0;
+  overflow: hidden;
+  view-transition-class: wr-hero;
+  background: var(--sd-surface-elevated);
+}
+@media (min-width: 40rem) {
+  .wr-hero {
+    border-radius: var(--radius-2xl);
+    box-shadow:
+      0 0 0 1px var(--sd-border),
+      0 40px 70px -46px var(--sd-card-shadow);
+  }
+}
+.wr-hero-img {
+  width: 100%;
+  height: auto;
+}
+/* As the hero scrolls away it drifts and swells a touch inside its frame —
+   depth on the compositor, driven by the scroll itself. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* The frame clips (so it is the image's scroll container); measure the
+       frame against the page and drive the image from that. */
+    .wr-hero {
+      view-timeline: --wr-hero block;
+    }
+    .wr-hero-img {
+      transform-origin: 50% 100%;
+      animation: wr-drift linear both;
+      animation-timeline: --wr-hero;
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+@keyframes wr-drift {
+  to {
+    scale: 1.08;
+    translate: 0 7%;
+  }
+}
+
+/* ── Post: the sheet ─────────────────────────────────────────────────────── */
+
+.wr-sheet {
+  max-width: 47rem;
+  margin: 1.75rem 0.625rem 0;
+  padding: 2rem 1.25rem 2.25rem;
+  view-timeline: --wr-read block;
+}
+@media (min-width: 40rem) {
+  .wr-sheet {
+    margin: 2.5rem auto 0;
+    padding: 3rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wr-sheet {
+    padding: 3.75rem 4.25rem 3.5rem;
+  }
+}
+.wr-body {
+  max-width: 62ch;
+  margin-inline: auto;
+}
+/* An interactive embed runs the sheet's full width, not the measure. */
+.wr-embed {
+  margin: 2.5rem 0;
+}
+@media (min-width: 64rem) {
+  .wr-embed {
+    margin-inline: -1.5rem;
+  }
+}
+
+/* The end of the read. */
+.wr-fin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+  text-align: center;
+}
+.wr-fin-rule {
+  width: 5.5rem;
+  height: 10px;
+  margin-bottom: 1.5rem;
+  background: var(--sd-pen);
+  opacity: 0.65;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+/* A post that already ends on a rule doesn't need a second one. */
+.wr-body:has(> .wr-hr:last-child) + .wr-fin .wr-fin-rule {
+  display: none;
+}
+.wr-fin-kiru {
+  display: block;
+  width: 6.25rem;
+  height: auto;
+}
+.wr-fin-thanks {
+  margin-top: 0.6rem;
+  font-size: 1.3rem;
+  color: var(--sd-text-primary);
+}
+
+/* ── Post: subscribe card, Kiru perched on its top edge ──────────────────── */
+
+.wr-sub {
+  position: relative;
+  isolation: isolate;
+  max-width: 47rem;
+  margin: 6.75rem 0.625rem 0;
+  padding: 1.9rem 1.35rem 1.6rem;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--sd-border);
+  border-top: 4px solid var(--sd-pen);
+  background: var(--sd-surface);
+  box-shadow: 0 30px 60px -38px var(--sd-card-shadow);
+}
+@media (min-width: 40rem) {
+  .wr-sub {
+    margin: 7.5rem auto 0;
+    padding: 2.4rem 3rem 2.1rem;
+  }
+}
+.wr-sub-kiru {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 100%;
+  width: 6.5rem;
+  height: auto;
+  /* his seat is ~82% down his box: sit him on the edge, legs over it */
+  translate: 0 19%;
+  pointer-events: none;
+  filter: drop-shadow(0 7px 5px rgba(0, 0, 0, 0.18));
+}
+@media (min-width: 40rem) {
+  .wr-sub-kiru {
+    right: 2.5rem;
+    width: 7.5rem;
+  }
+}
+.wr-sub-clip {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.wr-sub-mark {
+  position: absolute;
+  right: -2rem;
+  bottom: -3.25rem;
+  width: 13rem;
+  height: 13rem;
+  color: var(--sd-pen);
+  opacity: 0.06;
+  rotate: -8deg;
+}
+:root[data-theme='dark'] .wr-sub-mark {
+  opacity: 0.08;
+}
+.wr-sub-title {
+  margin-top: 0.75rem;
+  font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.25rem);
+  color: var(--sd-text-primary);
+}
+.wr-sub-copy {
+  margin-top: 0.6rem;
+  max-width: 34rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+}
+
+/* ── Post: keep reading ──────────────────────────────────────────────────── */
+
+.wr-more {
+  max-width: 64rem;
+  margin: 4.5rem auto 0;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 40rem) {
+  .wr-more {
+    padding-inline: 1.5rem;
+  }
+}
+.wr-more-title {
+  font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.4rem);
+  color: var(--sd-text-primary);
+}
+.wr-more-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 40rem) {
+  .wr-more-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+.wr-more-grid > li {
+  display: flex;
+  min-width: 0;
+}
+.wr-more-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.15rem 1.15rem;
+}
+.wr-more-dir {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-pen-ink);
+}
+.wr-more-name {
+  font-size: 1.1rem;
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.008em;
+  color: var(--sd-text-primary);
+  text-wrap: balance;
+}
+.wr-more-body .wr-meta {
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.wr-out {
+  margin-top: 3rem;
+  text-align: center;
+}
+.wr-out-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border-strong);
+  background: color-mix(in srgb, var(--sd-surface) 60%, transparent);
+  color: var(--sd-text-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    scale 0.15s ease;
+}
+.wr-out-btn:hover {
+  border-color: var(--sd-text-primary);
+  background: var(--sd-surface);
+}
+.wr-out-btn:active {
+  scale: 0.97;
+}
+
+/* ── Reading progress: Kiru runs along the top as you read ───────────────── */
+
+.wr-progress {
+  --wr-kw: 3.2rem; /* Kiru's width at ~44px tall */
+  position: fixed;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  /* just under the header — never over the nav */
+  top: calc(var(--sd-header-h) + env(safe-area-inset-top));
+  height: 46px;
+  pointer-events: none;
+  display: none;
+  opacity: 0;
+}
+@supports (animation-timeline: view()) and (timeline-scope: --wr-read) {
+  .wr-progress {
+    display: block;
+    /* in once the article reaches the top, out once it has gone */
+    animation:
+      wr-in linear both,
+      wr-out linear forwards;
+    animation-timeline: --wr-read, --wr-read;
+    animation-range:
+      entry 72% entry 100%,
+      exit 0% exit 18%;
+  }
+}
+/* The phone header tucks away on scroll down; follow it up. */
+@media (max-width: 63.99rem) {
+  .wr-progress {
+    transition: translate 0.3s ease-out;
+  }
+  body:has(header[data-hidden='true']) .wr-progress {
+    translate: 0 calc(-1 * var(--sd-header-h));
+  }
+}
+
+/* A soft fade of the page under the runner, so his trail never reads as a
+   line struck through the text scrolling beneath it. */
+.wr-progress::before {
+  content: '';
+  position: absolute;
+  /* only over the sheet's column: the ground either side stays as it is */
+  top: 0;
+  bottom: -14px;
+  left: 50%;
+  width: min(47rem, 100% - 1.25rem);
+  translate: -50% 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--sd-surface) 94%, transparent),
+    color-mix(in srgb, var(--sd-surface) 70%, transparent) 55%,
+    transparent
+  );
+}
+.wr-runner {
+  position: absolute;
+  inset: 0;
+  translate: calc(-100% + var(--wr-kw)) 0;
+  animation: wr-run linear both;
+  animation-timeline: --wr-read;
+  animation-range: contain 0% contain 100%;
+}
+.wr-trail {
+  position: absolute;
+  left: 0;
+  right: calc(var(--wr-kw) - 0.7rem);
+  bottom: 3px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent, var(--sd-pen) 7rem);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--sd-pen) 45%, transparent);
+}
+.wr-runner-kiru {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: var(--wr-kw);
+  height: auto;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.22));
+}
+
+/* His stride, driven by the same timeline: dozens of short iterations across
+   the read, so the legs swing only while the page moves. Individual
+   transform properties compose with the SVG's own lean. */
+@media (prefers-reduced-motion: no-preference) {
+  .wr-runner .k-run-a,
+  .wr-runner .k-run-b {
+    transform-origin: 100px 196px;
+    animation: wr-stride linear both;
+    animation-timeline: --wr-read;
+    animation-range: contain 0% contain 100%;
+    animation-iteration-count: 60;
+    animation-direction: alternate;
+  }
+  .wr-runner .k-run-b {
+    animation-name: wr-stride-b;
+  }
+  .wr-runner .k-bob {
+    animation: wr-bob linear both;
+    animation-timeline: --wr-read;
+    animation-range: contain 0% contain 100%;
+    animation-iteration-count: 120;
+    animation-direction: alternate;
+  }
+}
+/* Reduced motion: no ninja — just the thin trail, which only moves when the
+   reader does. */
+@media (prefers-reduced-motion: reduce) {
+  .wr-progress {
+    --wr-kw: 0px;
+  }
+  .wr-runner-kiru {
+    display: none;
+  }
+  .wr-trail {
+    top: 0;
+    bottom: auto;
+    right: 0;
+    border-radius: 0 3px 3px 0;
+    background: var(--sd-pen);
+    box-shadow: none;
+  }
+  .wr-progress::before {
+    display: none;
+  }
+  .wr-progress,
+  .wr-runner {
+    animation-duration: auto !important;
+  }
+}
+
+/* A browser with scroll timelines but no timeline-scope can't share the
+   sheet's timeline with the runner; it follows the whole page instead. */
+@supports (animation-timeline: scroll()) and (not (timeline-scope: --wr-read)) {
+  .wr-progress {
+    display: block;
+    animation: wr-in linear both;
+    animation-timeline: scroll(root);
+    animation-range: 2% 6%;
+  }
+  .wr-runner,
+  .wr-runner .k-run-a,
+  .wr-runner .k-run-b,
+  .wr-runner .k-bob {
+    animation-timeline: scroll(root);
+    animation-range: normal;
+  }
+}
+
+@keyframes wr-run {
+  to {
+    translate: 0 0;
+  }
+}
+@keyframes wr-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes wr-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes wr-stride {
+  from {
+    rotate: -24deg;
+  }
+  to {
+    rotate: 24deg;
+  }
+}
+@keyframes wr-stride-b {
+  from {
+    rotate: 24deg;
+  }
+  to {
+    rotate: -24deg;
+  }
+}
+@keyframes wr-bob {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -5px;
+  }
+}
+
+/* ── View transitions ────────────────────────────────────────────────────── */
+
+/* A hero frame that has scrolled fully out of view drops its name, so going
+   back from the foot of a long post doesn't fling the hero across the
+   screen, and the index doesn't snapshot cards nobody can see.
+   A card is `overflow: hidden` — a scroll container — so a frame inside one
+   can't use its own view(): it would measure itself against the card. The
+   card (or its grid cell) declares the timeline against the page instead. */
+@supports (animation-timeline: view()) {
+  .wr-feature,
+  .wr-grid > li {
+    view-timeline: --wr-card block;
+  }
+  .wr-list .wr-frame,
+  .wr-hero {
+    animation:
+      wr-unname linear backwards,
+      wr-unname linear forwards;
+    animation-timeline: --wr-card, --wr-card;
+    animation-range:
+      entry 0% entry 0.5%,
+      exit 99.5% exit 100%;
+  }
+  .wr-hero {
+    animation-timeline: view(), view();
+  }
+  /* While a filter change runs, every card keeps its name: a card arriving
+     from below the fold should visibly fly up into its new place. */
+  html.wr-filtering .wr-list .wr-frame {
+    animation: none;
+  }
+}
+@keyframes wr-unname {
+  from,
+  to {
+    view-transition-name: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The card image becomes the post's hero (and back). */
+  ::view-transition-group(*.wr-hero) {
+    animation-duration: 0.6s;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.25, 1);
+  }
+  ::view-transition-old(*.wr-hero),
+  ::view-transition-new(*.wr-hero) {
+    animation-duration: 0.32s;
+  }
+  /* A card with no partner on the other page leaves with its page. */
+  ::view-transition-old(*.wr-hero):only-child {
+    animation: wr-vt-out 0.2s ease-in both;
+  }
+  ::view-transition-new(*.wr-hero):only-child {
+    animation: wr-vt-in 0.45s var(--ease-out-expo) both;
+  }
+
+  /* Filtering: the list cross-fades (the browser's own plus-lighter fade,
+     so what doesn't change doesn't dim) while the pill and the card images
+     glide to their new places. */
+  html.wr-filtering::view-transition-group(wr-tab-thumb) {
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.3, 1.3, 0.5, 1);
+  }
+  html.wr-filtering::view-transition-group(*.wr-hero) {
+    animation-duration: 0.55s;
+    animation-timing-function: var(--ease-out-expo);
+  }
+}
+@keyframes wr-vt-out {
+  to {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+@keyframes wr-vt-in {
+  from {
+    opacity: 0;
+    scale: 0.97;
+  }
+}

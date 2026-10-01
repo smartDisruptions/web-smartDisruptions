@@ -16,15 +16,24 @@ import type { PostSummary } from '@/lib/posts';
  * A post whose hero is a photograph or an app screenshot has no light variant
  * and needs none: it is a picture of a thing, not a themed surface, and it sits
  * on either ground the way a photo sits on a page.
+ *
+ * `width`/`height` are the image's real pixel size when the caller knows it
+ * (the Writing pages read it from the file at build time), else the house hero
+ * size, 1200×630. They reserve the box before the bytes arrive, so nothing
+ * below the image jumps when it lands.
  */
 export default function HeroImage({
   post,
   className = '',
   priority = false,
+  width = 1200,
+  height = 630,
 }: {
   post: Pick<PostSummary, 'heroImage' | 'heroImageLight' | 'heroImageAlt' | 'title'>;
   className?: string;
   priority?: boolean;
+  width?: number;
+  height?: number;
 }) {
   if (!post.heroImage) return null;
 
@@ -37,6 +46,8 @@ export default function HeroImage({
       <img
         src={post.heroImage}
         alt={alt}
+        width={width}
+        height={height}
         loading={loading}
         fetchPriority={fetchPriority}
         decoding="async"
@@ -50,6 +61,8 @@ export default function HeroImage({
       <img
         src={post.heroImage}
         alt={alt}
+        width={width}
+        height={height}
         loading={loading}
         fetchPriority={fetchPriority}
         decoding="async"
@@ -58,6 +71,8 @@ export default function HeroImage({
       <img
         src={post.heroImageLight}
         alt={alt}
+        width={width}
+        height={height}
         loading={loading}
         fetchPriority={fetchPriority}
         decoding="async"

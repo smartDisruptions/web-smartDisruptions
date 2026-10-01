@@ -1,22 +1,31 @@
 @import 'tailwindcss';
 
 /*
-  NOTEBOOK — a builder's graph-paper notebook.
-  Handwriting for headlines and asides, a reading face for anything long,
-  blue pen for anything you can press, red pen for marks. Everything that
-  looks taped, stuck or ruled is CSS — no images, so the page stays fast.
+  SHADOW DOJO — the Smart Disruptions design system (October 2026).
+
+  Two lights over one dojo. DAY is washi paper and sumi ink; NIGHT is the same
+  dojo under a moon — ai-iro indigo, moonlight, lanterns. The accent that
+  presses is indigo (藍, "ai" — the colour is a pun the brand gets for free);
+  the accent that MARKS is vermilion (朱, the headband, the seal, the slash).
+  Kiru, the house ninja, lives in both.
+
+  Everything decorative is CSS or inline SVG — no image requests, no motion
+  library. Motion runs on the compositor: transforms, opacity, and
+  scroll-driven timelines. See DESIGN.md for the rules behind the values.
 */
 @theme inline {
-  /* Colors are driven by the semantic --sd-* variables below, so a single
-     [data-theme] switch re-themes the whole site — utilities and direct
-     var() references alike. */
   --color-background: var(--sd-bg);
+  --color-background-2: var(--sd-bg-2);
   --color-surface: var(--sd-surface);
   --color-surface-elevated: var(--sd-surface-elevated);
-  --color-fill: var(--sd-fill); /* subtle tint: inline code bg, hovers */
+  --color-fill: var(--sd-fill);
   --color-accent: var(--sd-accent);
   --color-accent-hover: var(--sd-accent-hover);
   --color-accent-secondary: var(--sd-accent-secondary);
+  --color-pen: var(--sd-pen);
+  --color-pen-ink: var(--sd-pen-ink);
+  --color-gold: var(--sd-gold);
+  --color-gold-ink: var(--sd-gold-ink);
   /* Market Storm — bull / bear / caution data semantics */
   --color-bull: var(--sd-bull);
   --color-bull-soft: var(--sd-bull-soft);
@@ -28,168 +37,249 @@
   --color-text-secondary: var(--sd-text-secondary);
   --color-foreground: var(--sd-text-primary);
   --color-border: var(--sd-border);
-  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
-  /* The display face is handwriting (Caveat). Its fallbacks are other
-     handwriting faces, so a failed font load keeps the notebook voice. */
-  --font-display: var(--font-display), 'Bradley Hand', 'Segoe Print', cursive;
-  /* Long-form reading face. Handwriting never sets a paragraph. */
+  /* UI text is the platform's own face — SF on Apple, Roboto on Android,
+     Segoe on Windows. It costs nothing to load and it is what makes the site
+     read as native on a phone. */
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  /* Display: Dela Gothic One — a Japanese poster gothic. Headlines only. */
+  --font-display: var(--font-dela), 'Arial Black', system-ui, sans-serif;
+  /* Long-form reading face. Display type never sets a paragraph. */
   --font-read: var(--font-read), 'Iowan Old Style', Georgia, serif;
   --font-mono:
     ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
-  /* Paper has square corners. The big radii are redefined here, once, rather
-     than edited at ~60 call sites: anything that was a soft rounded card is now
-     a cut sheet. Pills (rounded-full) and small chips are untouched. */
-  --radius-lg: 3px;
-  --radius-xl: 3px;
-  --radius-2xl: 4px;
+  /* Native-app corners. ~60 call sites use rounded-lg/xl/2xl, so the radii
+     are set once here. */
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 22px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-float: sd-float 6s ease-in-out infinite;
 }
 
-/* LIGHT (default) — white graph paper. Sheets and cards are one step whiter
-   than the page so they read as paper laid on paper. */
+/* ── DAY — washi paper, sumi ink ────────────────────────────────────────── */
 :root {
   color-scheme: light;
-  --sd-bg: #fbfaf4;
-  --sd-surface: #ffffff;
-  --sd-surface-elevated: #f2f0e6;
-  --sd-fill: rgba(37, 37, 45, 0.06);
-  /* The accent is the BLUE pen: links, eyebrows, active nav, buttons. Red is
-     for marks only (--sd-pen), which keeps it clear of Market Storm's bear red. */
-  --sd-accent: #2a57c5;
-  --sd-accent-hover: #1f4396;
-  --sd-accent-secondary: #b3261e; /* error / alert text */
-  --sd-text-primary: #25252d;
-  --sd-text-secondary: #5f616e;
-  --sd-border: rgba(37, 37, 45, 0.16);
-  --sd-scrollbar: rgba(37, 37, 45, 0.24);
-  /* Notebook materials */
-  /* Graph-paper lines. Lightened from #d5e0ee: at full strength the grid
-     competed with text sitting directly on it (headlines, captions, cards). */
-  --sd-grid: #e7edf3;
-  --sd-pen: #d93030; /* red pen — underlines, scribbles, margin rule. Marks, not text. */
-  --sd-pen-ink: #b3261e; /* red pen when it IS text — AA on paper */
-  --sd-hl: rgba(255, 226, 90, 0.62); /* highlighter */
-  --sd-sticky: #ffe26a;
-  --sd-sticky-ink: #2b2b33; /* text on a sticky note, both themes */
-  --sd-tape: rgba(255, 221, 120, 0.75);
-  --sd-rule: #cfe0f2; /* ruled-card lines */
-  --sd-margin-line: #f0a0a0;
-  /* Arcade text inks — dark on light paper (bright arcade colors fail AA here) */
+  --sd-bg: #f4efe4;
+  --sd-bg-2: #ece5d6;
+  --sd-surface: #fffcf5;
+  --sd-surface-elevated: #e9e1cf;
+  --sd-fill: rgba(21, 23, 43, 0.06);
+  /* Indigo presses: links, active states, focus. */
+  --sd-accent: #2b3a96;
+  --sd-accent-hover: #1e2a75;
+  --sd-accent-secondary: #b42a17; /* error / alert text */
+  --sd-text-primary: #15172b;
+  --sd-text-secondary: #4f5468;
+  --sd-border: rgba(21, 23, 43, 0.13);
+  --sd-border-strong: rgba(21, 23, 43, 0.24);
+  --sd-scrollbar: rgba(21, 23, 43, 0.24);
+  /* Vermilion marks: slashes, seals, the headband, active pills. When red
+     has to be TEXT it uses --sd-pen-ink, which clears AA. */
+  --sd-pen: #e2412a;
+  --sd-pen-ink: #b42a17;
+  --sd-gold: #c8962e;
+  --sd-gold-ink: #8a5a00;
+  --sd-moon: #f1e3c0;
+  --sd-glow: rgba(43, 58, 150, 0.16);
+  --sd-hl: rgba(255, 196, 64, 0.42); /* the highlighter, behind bold */
+  --sd-card-shadow: rgba(30, 26, 18, 0.22);
+  --sd-badge-secondary: #8a1c16;
+  /* Paper slip (ofuda): one material in both themes, like a real object. */
+  --sd-sticky: #f6ecd2;
+  --sd-sticky-ink: #1f1a14;
+  --sd-tape: transparent;
+  --sd-grid: transparent;
+  --sd-rule: rgba(21, 23, 43, 0.1);
+  --sd-margin-line: rgba(226, 65, 42, 0.45);
+  /* The top bar's height (64px bar + 1px rule). Anything that docks under
+     it reads this rather than repeating the number. */
+  --sd-header-h: 65px;
+  /* Kiru reads the same in both lights; only his outline and rim change. */
+  --kiru-line: #10132a;
+  --kiru-rim: 0;
+  /* Skyline layers: an ink-wash landscape by day, ending in sumi ink. */
+  --sky-far: #e0d8c6;
+  --sky-mid: #c8bea9;
+  --sky-near: #1b1d2f;
+  --sky-moon: #e2412a;
+  --sky-window: transparent;
+  /* Arcade text inks — dark on light paper (the brights fail AA here) */
   --arcade-red-ink: #b91c1c;
-  --arcade-yellow-ink: #854d0e; /* was #a16207 — 4.3:1 on paper, under AA */
+  --arcade-yellow-ink: #854d0e;
   --arcade-blue-ink: #1d4ed8;
-  --sd-card-shadow: rgba(20, 22, 30, 0.35);
-  --sd-badge-secondary: #8a1c16; /* dark red — AA on the light red tint */
-  /* Market Storm data semantics — text-safe inks on paper. Follows the ink
-     flip: dark on paper here, bright on the dark cabinet below. */
-  --sd-bull: #166534; /* green-800 — AA on paper */
+  /* Market Storm data semantics — text-safe inks, AA on washi. */
+  --sd-bull: #166534;
   --sd-bull-soft: rgba(22, 101, 52, 0.1);
-  --sd-bear: #b91c1c; /* reuses the arcade red ink — AA on paper */
+  --sd-bear: #b91c1c;
   --sd-bear-soft: rgba(185, 28, 28, 0.08);
-  --sd-warn: #92400e; /* dark amber — AA on paper */
+  --sd-warn: #92400e;
   --sd-warn-soft: rgba(146, 64, 14, 0.1);
+  /* Washi fibre — a 180px SVG noise tile, a few hundred bytes, drawn once. */
+  --sd-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.09 0 0 0 0 0.17 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E");
 }
 
-/* DARK — the same notebook after dark: slate graph paper, chalk-bright pens.
-   Sticky notes stay yellow with dark ink, because a sticky note is an object,
-   not a themed surface. */
+/* ── NIGHT — the same dojo under a moon ─────────────────────────────────── */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --sd-bg: #13151a;
-  --sd-surface: #1b1e26;
-  --sd-surface-elevated: #252934;
-  --sd-fill: rgba(235, 231, 222, 0.08);
-  --sd-accent: #93b4ff;
-  --sd-accent-hover: #b9ceff;
-  --sd-accent-secondary: #ff8585;
-  --sd-text-primary: #ebe7de;
-  --sd-text-secondary: #a3a6b2;
-  --sd-border: rgba(235, 231, 222, 0.2);
-  --sd-scrollbar: rgba(235, 231, 222, 0.26);
-  --sd-grid: #222733;
-  --sd-pen: #ff8585;
-  --sd-pen-ink: #ff8585;
-  --sd-hl: rgba(255, 226, 90, 0.24);
-  --sd-sticky: #ecd05a;
-  --sd-sticky-ink: #23232a;
-  --sd-tape: rgba(255, 221, 120, 0.38);
-  --sd-rule: #2c3442;
-  --sd-margin-line: #6b3a3f;
-  /* Arcade text inks — flip to bright neon, which pops on the dark cabinet */
+  --sd-bg: #090b16;
+  --sd-bg-2: #0e1122;
+  --sd-surface: #11152a;
+  --sd-surface-elevated: #1a1f3a;
+  --sd-fill: rgba(236, 238, 250, 0.07);
+  --sd-accent: #9bb0ff;
+  --sd-accent-hover: #c3d0ff;
+  --sd-accent-secondary: #ff8166;
+  --sd-text-primary: #eceefa;
+  --sd-text-secondary: #a6abc8;
+  --sd-border: rgba(236, 238, 250, 0.12);
+  --sd-border-strong: rgba(236, 238, 250, 0.24);
+  --sd-scrollbar: rgba(236, 238, 250, 0.22);
+  --sd-pen: #ff5b3d;
+  --sd-pen-ink: #ff8166;
+  --sd-gold: #ffcf70;
+  --sd-gold-ink: #ffcf70;
+  --sd-moon: #fff3d6;
+  --sd-glow: rgba(155, 176, 255, 0.2);
+  --sd-hl: rgba(255, 196, 64, 0.2);
+  --sd-card-shadow: rgba(0, 0, 0, 0.75);
+  --sd-badge-secondary: #ffb3b3;
+  --sd-sticky: #f3e7c9;
+  --sd-sticky-ink: #1f1a14;
+  --sd-rule: rgba(236, 238, 250, 0.1);
+  --sd-margin-line: rgba(255, 91, 61, 0.4);
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+  --sky-far: #161b3a;
+  --sky-mid: #10142c;
+  --sky-near: #05070e;
+  --sky-moon: #fff3d6;
+  --sky-window: #ffcf70;
   --arcade-red-ink: #f87171;
   --arcade-yellow-ink: #fde047;
   --arcade-blue-ink: #60a5fa;
-  --sd-card-shadow: rgba(0, 0, 0, 0.7); /* real depth on the dark surface */
-  --sd-badge-secondary: #ffb3b3;
-  /* Market Storm data semantics — inks flip to bright on the dark cabinet
-     (both clear AA in their own theme). */
   --sd-bull: #4ade80;
   --sd-bull-soft: rgba(74, 222, 128, 0.14);
   --sd-bear: #f87171;
   --sd-bear-soft: rgba(248, 113, 113, 0.14);
   --sd-warn: #f2b483;
   --sd-warn-soft: rgba(242, 180, 131, 0.14);
+  --sd-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.92 0 0 0 0 1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
 }
 
+html,
+body {
+  /* Decorative overhangs (a tilted band, an off-canvas branch) must never
+     widen the page: on a phone that zooms the whole layout out. clip, not
+     hidden, so sticky positioning keeps working. */
+  overflow-x: clip;
+}
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  /* Graph paper: two 1px line gradients on a 24px grid. */
   background-color: var(--sd-bg);
+  /* Light falls from the top of the page: a moon at night, a paper lamp by
+     day. One gradient, painted once — no fixed attachment, which repaints on
+     every scroll on phones. */
   background-image:
-    linear-gradient(var(--sd-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--sd-grid) 1px, transparent 1px);
-  background-size: 24px 24px;
+    radial-gradient(1200px 620px at 78% -180px, var(--sd-glow), transparent 70%),
+    var(--sd-noise);
+  background-repeat: no-repeat, repeat;
+  background-size:
+    100% 1200px,
+    180px 180px;
   color: var(--sd-text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Room for the phone tab bar, including the home-indicator inset. */
+  padding-bottom: calc(68px + env(safe-area-inset-bottom));
+}
+@media (min-width: 64rem) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   body {
     transition:
-      background-color 0.25s ease,
-      color 0.25s ease;
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 }
 
-/* Headlines are handwriting. Caveat draws small for its point size — its
-   x-height is about two thirds of a text sans — so font-size-adjust scales it
-   up to sit where the old display face sat, without touching the size
-   utilities on 58 headings. Tracking is reset: negative tracking is a fix for
-   tight sans headlines and makes handwriting collide. */
-.font-display {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size-adjust: 0.47;
-  letter-spacing: 0;
-  line-height: 1.12;
+:focus-visible {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
-/* Long-form body copy. */
+/* Skip link — first focusable thing on every page. */
+.sd-skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--sd-text-primary);
+  color: var(--sd-bg);
+  font-weight: 700;
+  transition: top 0.2s var(--ease-out-expo);
+}
+.sd-skip:focus {
+  top: 12px;
+}
+
+/* ── Type ────────────────────────────────────────────────────────────────── */
+
+/* Dela Gothic One has a single, very heavy weight. Its x-height is tall, so
+   font-size-adjust holds it to the size the heading utilities were tuned for;
+   the weight does the shouting, not the size. */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size-adjust: 0.5;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+  font-kerning: normal;
+  text-wrap: balance;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
 .font-read {
   font-family: var(--font-read);
 }
 
-/* Small eyebrow/label — the printed label on a notebook tab. The class name
-   is historical (it was mono once); 45 call sites use it, so it stays. */
+/* Eyebrow / kicker. Historical class name — 41 call sites use it. */
 .font-mono-accent {
   font-family: var(--font-sans);
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-weight: 750;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   font-size: 0.7rem;
 }
 
-/* Selection */
 ::selection {
-  background: color-mix(in srgb, var(--sd-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--sd-pen) 26%, transparent);
   color: var(--sd-text-primary);
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -205,112 +295,82 @@ body {
   background: var(--sd-text-secondary);
 }
 
-/* Scroll-reveal animation (kept — it's cheap and adds polish) */
-.reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 0.5s ease-out,
-    transform 0.5s ease-out;
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-stagger > .reveal {
-  transition-delay: calc(var(--stagger-index, 0) * 90ms);
-}
+/* ── Motion primitives ──────────────────────────────────────────────────── */
 
-/* Arcade — marquee + LED (scoped to that page) */
-@keyframes games-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-.games-marquee-track {
-  display: flex;
-  width: max-content;
-  /* Duration is measured, not hardcoded — Marquee in games/page.tsx sets
-     --games-marquee-duration from the segment's real width so the speed stays
-     constant as games are added. It used to be a flat 38s, tuned when the arcade
-     had one game; by five games that same 38s covered ~1.8x the distance. The
-     fallback below is today's width at the target speed, for the first paint. */
-  animation: games-marquee var(--games-marquee-duration, 49s) linear infinite;
-}
-.games-marquee:hover .games-marquee-track {
-  animation-play-state: paused;
-}
-@keyframes led-pulse {
+@keyframes sd-float {
   0%,
   100% {
-    opacity: 1;
+    translate: 0 0;
   }
   50% {
-    opacity: 0.45;
+    translate: 0 -8px;
   }
 }
-.led-pulse {
-  animation: led-pulse 1.6s ease-in-out infinite;
-}
-
-/* Fade-in on load */
-@keyframes fadeIn {
+@keyframes sd-rise {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    translate: 0 28px;
+    scale: 0.98;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    translate: 0 0;
+    scale: 1;
   }
 }
+@keyframes sd-fade-up {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Scroll reveal with no JavaScript: the browser drives the animation from the
+   element's own position in the viewport, on the compositor. Browsers without
+   scroll timelines skip the block and show the content — content must never
+   wait on a feature detect. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sd-reveal,
+    .reveal {
+      animation: sd-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+  }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out both;
+  animation: sd-fade-up 0.6s var(--ease-out-expo) both;
 }
 
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  .reveal.visible {
-    transform: none;
-  }
-  .animate-fade-in {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-  /* The blanket rule above is right for one-shot animations (it makes them
-     effectively instant) and wrong for an infinite one — a 0.01ms loop doesn't
-     stop the marquee, it strobes it, at the users who asked for less motion.
-     Stop it outright instead. */
-  .games-marquee-track {
-    animation: none !important;
-  }
+/* Footer skyline moon: a soft disc rising behind the hills (the skyline SVG
+   paints over it). The band grows with the viewport (Footer), so its sky is
+   never cropped; the moon is sized by the band and placed by width, which
+   keeps it clear of the pagoda at every size and visible on phones, where
+   the skyline itself is cropped at the sides. */
+.sd-skyline-moon {
+  position: absolute;
+  top: 5%;
+  right: 9%;
+  height: 54%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle closest-side,
+    var(--sky-moon) 0 44%,
+    color-mix(in oklab, var(--sky-moon) 18%, transparent) 48%,
+    transparent
+  );
+  pointer-events: none;
 }
 
-/* Post heroes ship in both themes — the generated cards are drawn twice, once
-   grounded on charcoal and once on paper. Light is the default because :root
-   is the paper theme; the dark copy takes over under [data-theme='dark'].
-
-   Both copies are in the DOM and CSS picks one. `<picture>` with
-   prefers-color-scheme was the obvious alternative and is wrong here: it
-   follows the OS and would ignore the site's own theme toggle. */
+/* Post heroes ship in both themes; CSS picks the copy that matches the site's
+   own theme toggle (a <picture> would follow the OS instead). */
 .hero-themed-dark {
   display: none;
 }
@@ -323,11 +383,8 @@ body {
 
 /* ── Market Storm chart motion ──────────────────────────────────────────────
    Bars grow and lines draw as the reader scrolls them into view, using
-   `animation-timeline: view()` so there is no observer, no client component
-   and no hydration cost. Browsers without scroll-driven animations skip the
-   whole block and render the finished chart, which is the right fallback: the
-   chart is information, and information must not wait on a feature detect.
-   Everything here is off under prefers-reduced-motion.                        */
+   `animation-timeline: view()` — no observer, no client component. Without
+   support the finished chart renders: the chart is information.            */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .sd-bar {
@@ -373,22 +430,12 @@ body {
     }
   }
 }
-
-/* Without scroll-driven animation support the bar still needs its width. */
 .sd-bar {
   width: var(--w);
 }
 
-/* ── Report layout: body beside its table of contents ──────────────────────
-   Written as a named class rather than utilities because the column track is
-   an arbitrary value and this project's scanner did not pick it up reliably in
-   a worktree — and because a two-column reading layout is a layout primitive,
-   not a bag of classes. One place to change the sidebar width.
-
-   The nav is second in source order so a screen reader and a keyboard user
-   reach the report before its contents list; `order` puts it first visually.
-   Reading order and visual order want opposite things here, and both get what
-   they want.                                                                */
+/* Report layout: body beside its table of contents. Reading order puts the
+   report first; `order` puts the nav first visually. */
 @media (min-width: 64rem) {
   .sd-report-grid {
     display: grid;
@@ -403,153 +450,719 @@ body {
   .sd-report-nav {
     order: 1;
     position: sticky;
-    top: 1.5rem;
-    max-height: calc(100vh - 3rem);
+    top: 5.5rem;
+    max-height: calc(100vh - 7rem);
     overflow-y: auto;
   }
 }
 
-/* ── Notebook materials ─────────────────────────────────────────────────────
-   The physical objects of the theme, as named classes rather than utility
-   strings, because each one is a small recipe (pseudo-element tape, a ruled
-   background, an uneven border) that would be unreadable inline and has to
-   stay identical everywhere it appears.                                      */
+/* ── Materials ──────────────────────────────────────────────────────────────
+   The physical objects of the dojo, as named classes: each is a small recipe
+   that has to stay identical everywhere it appears. The nb-* names are the
+   Notebook theme's; they alias the new materials until every call site has
+   moved over.                                                              */
 
-/* A sheet of paper laid on the graph paper — the reading surface. */
+/* A sheet — the reading surface. Washi by day, lacquer by night. */
+.sd-sheet,
 .nb-sheet {
   position: relative;
-  background: var(--sd-surface);
+  background-color: var(--sd-surface);
   border: 1px solid var(--sd-border);
-  box-shadow: 0 18px 40px -24px var(--sd-card-shadow);
+  border-radius: var(--radius-2xl);
+  box-shadow:
+    0 30px 60px -38px var(--sd-card-shadow),
+    0 2px 6px -2px color-mix(in srgb, var(--sd-card-shadow) 40%, transparent);
 }
 
-/* A strip of tape across the top edge. Add to any positioned element. */
-.nb-tape::before {
+/* A card — anything you can press that leads somewhere. Lifts on hover,
+   presses in on touch, and a sheen crosses it once. */
+.sd-card {
+  position: relative;
+  isolation: isolate;
+  /* clip, not hidden: hidden makes the card a scroll container, and a
+     scroll-driven animation inside it would bind to the card (which never
+     scrolls) instead of the page. */
+  overflow: clip;
+  background-color: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 18px 40px -30px var(--sd-card-shadow);
+  transition:
+    translate 0.45s var(--ease-out-expo),
+    scale 0.2s ease,
+    box-shadow 0.45s var(--ease-out-expo),
+    border-color 0.3s ease;
+}
+.sd-card::after {
   content: '';
   position: absolute;
-  top: -13px;
-  left: 50%;
-  width: 110px;
-  height: 26px;
-  margin-left: -55px;
-  background: var(--sd-tape);
-  transform: rotate(-2deg);
+  inset: 0;
+  z-index: 2;
   pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.2) 45%,
+    transparent 60%
+  );
+  translate: -120% 0;
 }
-
-/* A notebook page's red margin rule, down the left edge of a sheet. Opt-in on
-   top of .nb-sheet, because a sheet is also used for pages that are not read
-   start to finish (About, Privacy) where a reading margin means nothing.
-
-   Wide screens only, as in the original design: a phone sheet has 20px of side
-   padding, so a rule inset far enough to look like a margin lands on top of the
-   text instead of beside it. The sheet that opts in also carries extra left
-   padding at this breakpoint to clear the line — see the article page. */
-@media (min-width: 40rem) {
-  .nb-ruled::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 32px;
-    width: 2px;
-    background: var(--sd-margin-line);
-    opacity: 0.7;
-    pointer-events: none;
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sd-card:hover {
+    translate: 0 -5px;
+    border-color: var(--sd-border-strong);
+    box-shadow:
+      0 30px 60px -32px var(--sd-card-shadow),
+      0 0 0 1px color-mix(in srgb, var(--sd-pen) 30%, transparent);
+  }
+  .sd-card:hover::after {
+    translate: 120% 0;
+    transition: translate 0.9s var(--ease-out-expo);
   }
 }
+.sd-card:active {
+  scale: 0.985;
+}
 
-/* A photo print: white border, soft drop shadow. Used for cards with images. */
+/* A print — a card whose job is to show an image. */
+.sd-print,
 .nb-polaroid {
   position: relative;
-  background: var(--sd-surface);
+  overflow: clip;
+  background-color: var(--sd-surface);
   border: 1px solid var(--sd-border);
+  border-radius: var(--radius-xl);
   box-shadow:
-    0 2px 3px rgba(20, 22, 30, 0.12),
-    0 14px 26px -14px var(--sd-card-shadow);
+    0 2px 4px -2px color-mix(in srgb, var(--sd-card-shadow) 50%, transparent),
+    0 24px 48px -30px var(--sd-card-shadow);
 }
 
-/* A wall of prints hangs a little crooked, and straightens when touched.
-   Uses the individual `rotate` / `scale` properties, not `transform`, so it
-   composes with the scroll-reveal translate on the same element instead of
-   fighting it for the one transform slot. */
-@media (prefers-reduced-motion: no-preference) {
-  .nb-wall > * {
-    transition:
-      rotate 0.2s ease,
-      scale 0.2s ease,
-      opacity 0.5s ease-out,
-      transform 0.5s ease-out;
-  }
-}
-.nb-wall > *:nth-child(3n + 1) {
-  rotate: -1.4deg;
-}
-.nb-wall > *:nth-child(3n + 2) {
-  rotate: 1.1deg;
-}
-.nb-wall > *:nth-child(3n) {
-  rotate: -0.5deg;
-}
-.nb-wall > *:hover,
-.nb-wall > *:focus-within {
-  rotate: 0deg;
-  scale: 1.02;
-  z-index: 1;
+/* The notebook's tape strips were retired with the notebook. */
+.nb-tape::before {
+  content: none;
 }
 
-/* A sticky note. Always yellow with dark ink, in both themes. */
+/* A paper slip (ofuda): cream paper, sumi ink, a vermilion band. Same object
+   in both themes — never put theme-coloured text on it. */
+.sd-note,
 .nb-sticky {
   position: relative;
   background: var(--sd-sticky);
   color: var(--sd-sticky-ink);
-  box-shadow: 0 12px 20px -12px var(--sd-card-shadow);
+  border-radius: 6px;
+  border-top: 5px solid var(--sd-pen);
+  box-shadow: 0 16px 28px -16px var(--sd-card-shadow);
 }
 
-/* A ruled index card with a red margin line. */
 .nb-index-card {
   position: relative;
   background: var(--sd-surface);
   border: 1px solid var(--sd-border);
-  box-shadow: 0 14px 24px -18px var(--sd-card-shadow);
-}
-.nb-index-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 1.6rem;
-  width: 2px;
-  background: var(--sd-margin-line);
-  pointer-events: none;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 18px 36px -28px var(--sd-card-shadow);
 }
 
-/* Highlighter swipe behind text. */
+/* Highlighter swipe behind bold text — a brush of gold. */
+.sd-hl,
 .nb-hl {
   background: linear-gradient(
-    transparent 14%,
-    var(--sd-hl) 14% 88%,
-    transparent 88%
-  );
+      100deg,
+      transparent 0.2em,
+      var(--sd-hl) 0.3em,
+      var(--sd-hl) calc(100% - 0.3em),
+      transparent calc(100% - 0.15em)
+    )
+    0 70% / 100% 0.58em no-repeat;
   padding: 0 0.12em;
-  border-radius: 3px;
+  /* Give the padding back, so a comma after highlighted text doesn't look
+     like it has a space in front of it. */
+  margin-inline: -0.12em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
 
-/* A short red pen stroke under a heading. */
+/* The vermilion brush stroke under a section heading. The shape is a mask,
+   so the colour stays a token. */
+.sd-brush-under::after,
 .nb-underline::after {
   content: '';
   display: block;
-  width: 72px;
-  height: 5px;
-  margin-top: 0.35em;
-  border-radius: 5px;
+  width: 84px;
+  height: 10px;
+  margin-top: 0.4em;
   background: var(--sd-pen);
-  transform: rotate(-1.4deg);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'%3E%3Cpath d='M2 9.5C14 5 30 3.2 52 3.6 76 4 98 5.4 118 3c-6 4.8-24 7.8-48 8.4C44 12 20 12.5 2 9.5z'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+.text-center.sd-brush-under::after,
+.text-center .sd-brush-under::after,
+.text-center.nb-underline::after,
+.text-center .nb-underline::after {
+  margin-inline: auto;
 }
 
-/* The uneven outline of something drawn by hand — buttons, inputs. */
 .nb-wobble {
-  border-radius: 255px 18px 225px 18px / 18px 225px 18px 255px;
+  border-radius: var(--radius-lg);
+}
+
+/* The notebook's crooked wall, straightened. Cards lift instead. */
+.nb-wall > * {
+  rotate: 0deg;
+}
+
+/* A hanko seal — a vermilion stamp with a white kanji pressed into it. */
+.sd-seal {
+  display: inline-grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: var(--sd-pen);
+  color: #fff;
+  border-radius: 22%;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.22) inset,
+    0 8px 18px -8px color-mix(in srgb, var(--sd-pen) 70%, transparent);
+}
+.sd-seal svg {
+  width: 74%;
+  height: 74%;
+  fill: currentColor;
+}
+
+/* Frosted glass: the header and the tab bar. Falls back to a solid surface
+   where blur is unsupported or the reader asked for less transparency. */
+.sd-glass {
+  background: color-mix(in srgb, var(--sd-bg) 76%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+}
+/* The phone tab bar ends every page riding over the sumi-ink footer; a
+   denser glass keeps its small labels at AA contrast there in day theme. */
+.sd-glass-dense {
+  background: color-mix(in srgb, var(--sd-bg) 92%, transparent);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .sd-glass {
+    background: var(--sd-bg);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .sd-glass {
+    background: var(--sd-bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Kicker: a small uppercase label led by a vermilion diamond. */
+.sd-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-sans);
+  font-weight: 750;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.sd-kicker::before {
+  content: '';
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 1px;
+  background: var(--sd-pen);
+  rotate: 45deg;
+  flex: none;
+}
+
+/* A giant brush kanji behind a page header. Decorative; sized by its box. */
+.sd-watermark {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  color: var(--sd-pen);
+  opacity: 0.09;
+}
+:root[data-theme='dark'] .sd-watermark {
+  opacity: 0.14;
+}
+
+/* Brush-draw reveal for <Kanji draw>: the outline is inked, then filled. */
+@media (prefers-reduced-motion: no-preference) {
+  .kanji-draw path {
+    stroke: currentColor;
+    stroke-width: 7;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    fill-opacity: 0;
+    animation:
+      kanji-ink 1.8s cubic-bezier(0.6, 0.05, 0.3, 1) 0.15s forwards,
+      kanji-fill 0.9s ease 1.25s forwards;
+  }
+}
+@keyframes kanji-ink {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes kanji-fill {
+  to {
+    fill-opacity: 1;
+    stroke-width: 0;
+  }
+}
+
+/* Katana-slash reveal for a headline line (<Slash> in components/brand).
+   The upper half is the real text, clipped; the lower half is a ::before
+   copy whose alt text is empty, so the words exist once for crawlers and
+   screen readers. Without motion it is just the text. */
+.sd-slash {
+  position: relative;
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sd-slash-a {
+    display: inline-block;
+    clip-path: polygon(-5% -20%, 105% -20%, 105% 40%, -5% 66%);
+    animation: sd-slash-a 1s var(--ease-out-expo) var(--d, 0s) both;
+  }
+  .sd-slash::before {
+    content: attr(data-text) / '';
+    position: absolute;
+    inset: 0;
+    white-space: nowrap;
+    clip-path: polygon(-5% 66%, 105% 40%, 105% 120%, -5% 120%);
+    animation: sd-slash-b 1s var(--ease-out-expo) var(--d, 0s) both;
+  }
+  .sd-slash::after {
+    content: '';
+    position: absolute;
+    left: -6%;
+    right: -6%;
+    top: 52%;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, transparent, var(--sd-pen) 30%, #fff 60%, transparent);
+    rotate: -6deg;
+    transform-origin: left center;
+    scale: 0 1;
+    opacity: 0;
+    animation: sd-slash-line 0.75s ease-out var(--d, 0s) both;
+    pointer-events: none;
+  }
+}
+/* No opacity in the slash: the words are visible from the first frame, the
+   two halves just arrive misaligned and seal. An element that starts at
+   opacity 0 cannot be the page's LCP until it fades in, and the headline
+   should be the LCP the moment it paints. */
+@keyframes sd-slash-a {
+  from {
+    translate: -0.5em 0.04em;
+  }
+}
+@keyframes sd-slash-b {
+  from {
+    translate: 0.5em -0.04em;
+  }
+}
+@keyframes sd-slash-line {
+  0% {
+    scale: 0 1;
+    opacity: 1;
+  }
+  55% {
+    scale: 1 1;
+    opacity: 1;
+  }
+  100% {
+    scale: 1 1;
+    opacity: 0;
+  }
+}
+
+/* ── Kiru ───────────────────────────────────────────────────────────────────
+   The rig is in src/components/kiru/Kiru.tsx. These are his idle motions —
+   transforms only, all off under reduced motion. `data-live` is set by the
+   SiteFX island only while he is on screen, so off-screen ninjas cost zero. */
+.kiru {
+  overflow: visible;
+  --lx: 0;
+  --ly: 0;
+}
+/* Per-instance strokes as classes — this markup repeats in every ninja. */
+.kiru .ko {
+  stroke: var(--kiru-line);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+.kiru .kt {
+  stroke: var(--kiru-line);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+.kiru .ka-o,
+.kiru .ka-l,
+.kiru .ka-s {
+  fill: none;
+  stroke-linecap: round;
+}
+.kiru .ka-o {
+  stroke: var(--kiru-line);
+  stroke-width: 22px;
+}
+.kiru .ka-l {
+  stroke: #2e3970;
+  stroke-width: 15px;
+}
+.kiru .ka-s {
+  stroke: #1a2044;
+  stroke-width: 15px;
+}
+.kiru .kh {
+  fill: #e4e7f0;
+  stroke: var(--kiru-line);
+  stroke-width: 4px;
+  paint-order: stroke;
+}
+.kiru .kw {
+  fill: none;
+  stroke: #b6bccf;
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
+.kiru .k-pupils {
+  transform: translate(calc(var(--lx) * 4.5px), calc(var(--ly) * 3.5px));
+  transition: transform 0.18s ease-out;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .kiru[data-live] .k-body {
+    animation: kiru-breathe 3.2s ease-in-out infinite;
+    transform-origin: 100px 232px;
+  }
+  .kiru[data-live] .k-head {
+    animation: kiru-head 6.4s ease-in-out infinite;
+    transform-origin: 100px 150px;
+  }
+  .kiru[data-live] .k-eyes {
+    animation: kiru-blink 5.2s infinite;
+    transform-origin: 100px 95px;
+  }
+  .kiru[data-live] .k-wave {
+    animation: kiru-wave 0.9s ease-in-out infinite alternate;
+    transform-origin: 132px 154px;
+  }
+  .kiru[data-live] .k-swing {
+    animation: kiru-swing 1.5s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+    transform-origin: 132px 154px;
+  }
+  .kiru[data-live] .k-spin {
+    animation: kiru-spin 0.7s linear infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .kiru[data-live] .k-aura {
+    animation: kiru-aura 3.2s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .kiru[data-live] .k-dangle-l {
+    animation: kiru-dangle 1.3s ease-in-out infinite alternate;
+    transform-origin: 86px 196px;
+  }
+  .kiru[data-live] .k-dangle-r {
+    animation: kiru-dangle 1.3s ease-in-out -0.65s infinite alternate;
+    transform-origin: 114px 196px;
+  }
+  .kiru[data-live] .k-thumbs {
+    animation: kiru-thumbs 0.42s steps(2) infinite;
+  }
+  .kiru[data-live] .k-zap {
+    animation: kiru-zap 3.4s steps(1) infinite;
+  }
+  .kiru[data-live] .k-run-a {
+    animation: kiru-run 0.42s ease-in-out infinite alternate;
+    transform-origin: 100px 196px;
+  }
+  .kiru[data-live] .k-run-b {
+    animation: kiru-run 0.42s ease-in-out -0.42s infinite alternate;
+    transform-origin: 100px 196px;
+  }
+  .kiru[data-live] .k-bob {
+    animation: kiru-bob 0.21s ease-in-out infinite alternate;
+  }
+  .kiru[data-live] .k-float {
+    animation: kiru-float 4s ease-in-out infinite;
+  }
+}
+@keyframes kiru-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-1.5px) scaleY(1.012);
+  }
+}
+@keyframes kiru-head {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  30% {
+    transform: rotate(-2.2deg) translateY(-1px);
+  }
+  65% {
+    transform: rotate(1.6deg) translateY(0.5px);
+  }
+}
+@keyframes kiru-blink {
+  0%,
+  93%,
+  100% {
+    transform: scaleY(1);
+  }
+  95.5% {
+    transform: scaleY(0.08);
+  }
+}
+@keyframes kiru-wave {
+  from {
+    transform: rotate(-8deg);
+  }
+  to {
+    transform: rotate(16deg);
+  }
+}
+@keyframes kiru-swing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  45% {
+    transform: rotate(-26deg);
+  }
+  62% {
+    transform: rotate(16deg);
+  }
+}
+@keyframes kiru-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes kiru-aura {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+@keyframes kiru-dangle {
+  from {
+    transform: rotate(-10deg);
+  }
+  to {
+    transform: rotate(14deg);
+  }
+}
+@keyframes kiru-thumbs {
+  50% {
+    transform: translateY(1.5px);
+  }
+}
+@keyframes kiru-zap {
+  0%,
+  86%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  88%,
+  95% {
+    opacity: 1;
+  }
+}
+@keyframes kiru-run {
+  from {
+    transform: rotate(-22deg);
+  }
+  to {
+    transform: rotate(22deg);
+  }
+}
+@keyframes kiru-bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+@keyframes kiru-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* ── View transitions ───────────────────────────────────────────────────────
+   Page changes cross-fade with a short rise, like an app pushing a screen.
+   The header and the tab bar carry their own names so they hold still.     */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(.sd-page) {
+    animation: sd-vt-out 0.2s ease-in both;
+  }
+  ::view-transition-new(.sd-page) {
+    animation: sd-vt-in 0.5s var(--ease-out-expo) both;
+  }
+  ::view-transition-group(sd-tab-pill),
+  ::view-transition-group(sd-nav-ink) {
+    animation-duration: 0.5s;
+    animation-timing-function: var(--ease-out-expo);
+  }
+}
+@keyframes sd-vt-out {
+  to {
+    opacity: 0;
+    translate: 0 -10px;
+  }
+}
+@keyframes sd-vt-in {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+}
+/* The theme switch paints the new theme as a circle growing out of the
+   toggle; the script drives the clip-path, this only stops the cross-fade. */
+html.sd-theme-vt::view-transition-old(root),
+html.sd-theme-vt::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.sd-theme-vt::view-transition-new(root) {
+  z-index: 9999;
+}
+
+/* ── Reduced motion: stop, don't strobe ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* A card that leans toward a fine pointer (SiteFX writes --rx/--ry) and
+   carries a soft light where the pointer is (--mx/--my). */
+.sd-tilt {
+  transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.6s var(--ease-out-expo);
+}
+@media (hover: hover) and (pointer: fine) {
+  .sd-tilt:hover {
+    transition-duration: 0.15s;
+  }
+  .sd-tilt::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(
+      420px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.14),
+      transparent 45%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .sd-tilt:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Long below-the-fold blocks skip layout and paint until they're near. */
+.sd-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
+/* Primary button: a blade-light crosses it on hover. */
+.sd-btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.45) 50%, transparent 65%);
+  translate: -130% 0;
+  pointer-events: none;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sd-btn-primary:hover::after {
+    translate: 130% 0;
+    transition: translate 0.8s var(--ease-out-expo);
+  }
+}
+
+/* Tab-direction slides: forward pushes in from the right, back from the left. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(.sd-fwd) {
+    animation: sd-vt-out-l 0.22s ease-in both;
+  }
+  ::view-transition-new(.sd-fwd) {
+    animation: sd-vt-in-r 0.5s var(--ease-out-expo) both;
+  }
+  ::view-transition-old(.sd-back) {
+    animation: sd-vt-out-r 0.22s ease-in both;
+  }
+  ::view-transition-new(.sd-back) {
+    animation: sd-vt-in-l 0.5s var(--ease-out-expo) both;
+  }
+}
+@keyframes sd-vt-out-l {
+  to {
+    opacity: 0;
+    translate: -28px 0;
+  }
+}
+@keyframes sd-vt-in-r {
+  from {
+    opacity: 0;
+    translate: 36px 0;
+  }
+}
+@keyframes sd-vt-out-r {
+  to {
+    opacity: 0;
+    translate: 28px 0;
+  }
+}
+@keyframes sd-vt-in-l {
+  from {
+    opacity: 0;
+    translate: -36px 0;
+  }
 }
