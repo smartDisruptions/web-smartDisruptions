@@ -97,9 +97,9 @@ function Bars({ chart }: { chart: ReportChart }) {
               )}
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-7 flex-1 overflow-hidden rounded-[3px] bg-fill">
+              <div className="h-7 flex-1 overflow-hidden rounded-md bg-fill">
                 <div
-                  className={`sd-bar h-full rounded-[3px] ${
+                  className={`sd-bar h-full rounded-md ${
                     p.highlight ? 'bg-accent' : 'bg-text-secondary/45'
                   }`}
                   style={{
@@ -161,6 +161,7 @@ function Line({ chart }: { chart: ReportChart }) {
             y2={y(t)}
             stroke="var(--sd-border)"
             strokeWidth="1"
+            strokeDasharray={t === 0 ? undefined : '3 5'}
           />
           <text
             x={PAD.l - 8}
@@ -182,7 +183,7 @@ function Line({ chart }: { chart: ReportChart }) {
         d={d}
         fill="none"
         stroke="var(--sd-accent)"
-        strokeWidth="2.5"
+        strokeWidth="3"
         strokeLinejoin="round"
         strokeLinecap="round"
         className="sd-draw"
@@ -190,7 +191,16 @@ function Line({ chart }: { chart: ReportChart }) {
       {pts.map((p, i) =>
         p.highlight ? (
           <g key={p.label}>
-            <circle cx={x(i)} cy={y(p.value)} r="4.5" fill="var(--sd-accent)" />
+            {/* A ringed dot, like a seal pressed on the line. */}
+            <circle
+              cx={x(i)}
+              cy={y(p.value)}
+              r="5.5"
+              fill="var(--sd-accent)"
+              stroke="var(--sd-bg)"
+              strokeWidth="3"
+              paintOrder="stroke"
+            />
             <text
               x={x(i)}
               y={y(p.value) - 12}
@@ -229,14 +239,14 @@ function Comparison({ chart }: { chart: ReportChart }) {
   if (!a || !b) return null;
   const max = Math.max(a.value, b.value) || 1;
   return (
-    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
       {[a, b].map((p, i) => (
         <div key={p.label} className="bg-surface p-5">
           <div className="font-mono text-[0.62rem] uppercase leading-[1.05rem] tracking-[0.07em] text-text-secondary">
             {p.label}
           </div>
           <div
-            className={`font-display mt-1 text-3xl font-semibold [font-variant-numeric:tabular-nums] sm:text-4xl ${
+            className={`font-display mt-2 text-3xl [font-variant-numeric:tabular-nums] sm:text-4xl ${
               i === 1 ? 'text-accent' : 'text-text-primary'
             }`}
           >
@@ -325,22 +335,22 @@ const RENDER: Record<
 export default function Figure({ chart }: { chart: ReportChart }) {
   const Body = RENDER[chart.kind] ?? Bars;
   return (
-    <figure className="my-10 rounded-2xl border border-border bg-surface-elevated p-5 sm:p-7">
-      <figcaption className="mb-5">
-        <h3 className="font-display text-lg font-semibold tracking-tight text-text-primary">
+    <figure className="sd-reveal my-10 rounded-[22px] border border-border bg-background p-5 sm:p-7">
+      <figcaption className="mb-6">
+        <h3 className="font-display text-[1.2rem] leading-snug text-text-primary">
           {chart.title}
         </h3>
         {/* The plain sentence is not decoration — it is the reason the chart is
             here. A chart a reader has to interpret unaided is a chart that gets
             skipped. */}
-        <p className="mt-1.5 max-w-[62ch] text-sm leading-relaxed text-text-secondary">
+        <p className="font-read mt-2 max-w-[62ch] text-[0.95rem] leading-relaxed text-text-secondary">
           {chart.whyItMatters}
         </p>
       </figcaption>
       <Body chart={chart} />
       <DataTable chart={chart} />
       {chart.source && (
-        <p className="mt-4 border-t border-border pt-3 font-mono text-[0.62rem] uppercase tracking-[0.07em] text-text-secondary">
+        <p className="mt-5 border-t border-dashed border-border pt-3 font-mono text-[0.62rem] uppercase tracking-[0.07em] text-text-secondary">
           {chart.source}
         </p>
       )}

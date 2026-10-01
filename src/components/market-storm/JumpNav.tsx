@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Stop = { part: string; id: string; label: string };
 
@@ -23,20 +23,29 @@ type Stop = { part: string; id: string; label: string };
  * number still means "how far through the whole report", not "how far through
  * this group".
  *
- * WHY IT IS A CLIENT COMPONENT — the only one in the report
- * --------------------------------------------------------
- * Scroll-spy needs an observer. Everything else on the page, charts included,
- * is server-rendered; this is the single exception and it is deliberately
- * small. It degrades honestly: with JavaScript off the links are still anchor
- * links to real ids, they simply do not highlight.
+ * WHY IT IS A CLIENT COMPONENT
+ * ----------------------------
+ * Scroll-spy needs an observer. Everything else in the report, charts
+ * included, is server-rendered; this is deliberately small. It degrades
+ * honestly: with JavaScript off the links are still anchor links to real ids,
+ * they simply do not highlight.
  *
  * The rootMargin is asymmetric on purpose. A section counts as "current" once
  * its heading passes the top quarter of the viewport, which matches where a
  * reader's eye actually is — centring the band made the highlight lag a full
  * section behind the text being read.
+ *
+ * THE RAIL
+ * --------
+ * An ink line runs down the list; vermilion fills it to the section you are
+ * in, and a diamond slides to that stop. Both move by transform (the fill is a
+ * scaleY, the diamond a translate) from one measurement per section change —
+ * nothing runs per scroll frame. On a desktop the nav is sticky with its own
+ * scroll box, so the current stop is also kept inside that box.
  */
 export default function JumpNav({ items }: { items: Stop[] }) {
   const [active, setActive] = useState<string>(items[0]?.id ?? '');
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!items.length) return;
@@ -56,6 +65,37 @@ export default function JumpNav({ items }: { items: Stop[] }) {
     return () => obs.disconnect();
   }, [items]);
 
+  // Move the rail's marker to the current stop, and keep it there if the
+  // list reflows (a font arriving late, a resize that re-wraps a label).
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const links = Array.from(list.querySelectorAll<HTMLAnchorElement>('a[data-stop]'));
+    const link = links.find((a) => a.dataset.stop === active);
+    if (!link) return;
+
+    const place = () => {
+      const y = link.offsetTop + link.offsetHeight / 2;
+      const h = Math.max(1, list.offsetHeight - 8);
+      list.style.setProperty('--ms-y', `${Math.round(y - 4)}px`);
+      list.style.setProperty('--ms-p', Math.min(1, Math.max(0, (y - 4) / h)).toFixed(4));
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    links.forEach((a) => ro.observe(a));
+
+    // Keep the current stop in view inside the sticky nav's own scroll box,
+    // without ever scrolling the page itself.
+    const box = list.closest<HTMLElement>('.sd-report-nav');
+    if (box && box.scrollHeight > box.clientHeight + 1) {
+      const top = link.getBoundingClientRect().top - box.getBoundingClientRect().top;
+      if (top < 48 || top > box.clientHeight - 64) {
+        box.scrollTo({ top: box.scrollTop + top - box.clientHeight / 2, behavior: 'smooth' });
+      }
+    }
+    return () => ro.disconnect();
+  }, [active]);
+
   if (!items.length) return null;
 
   // Group in place. Stops arrive in reading order, so a part is a run of
@@ -72,13 +112,16 @@ export default function JumpNav({ items }: { items: Stop[] }) {
   return (
     <nav
       aria-label="Sections of this report"
-      className="mb-10 rounded-2xl border border-border bg-surface-elevated p-5 lg:mb-0"
+      className="mb-10 rounded-2xl border border-border bg-background/60 p-4 lg:mb-0 lg:border-0 lg:bg-transparent lg:p-0 lg:pr-1"
     >
-      <p className="font-mono-accent mb-4 text-text-secondary">On this page</p>
-      <div className="space-y-5">
+      <p className="sd-kicker mb-4">On this page</p>
+      <div ref={listRef} className="ms-jump-list space-y-5">
+        <span className="ms-jump-rail" aria-hidden="true" />
+        <span className="ms-jump-fill" aria-hidden="true" />
+        <span className="ms-jump-dot" aria-hidden="true" />
         {groups.map((g) => (
           <div key={`${g.part}-${g.stops[0].id}`}>
-            <p className="mb-1.5 px-2 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-accent-hover">
+            <p className="mb-1.5 px-2 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-accent-hover">
               {g.part}
             </p>
             <ol className="space-y-0.5" role="list">
@@ -88,8 +131,12 @@ export default function JumpNav({ items }: { items: Stop[] }) {
                   <li key={it.id}>
                     <a
                       href={`#${it.id}`}
+                      data-stop={it.id}
                       aria-current={on ? 'true' : undefined}
-                      className={`flex items-baseline gap-2.5 rounded-md px-2 py-1.5 text-sm leading-snug transition-colors ${
+                      className={`flex min-h-11 items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm leading-snug transition-colors lg:min-h-0 ${
+                        // Colour and ground only — never weight. A bolder
+                        // label is wider, re-wraps, and shoves every stop
+                        // below it as the reader scrolls.
                         on
                           ? 'bg-accent/10 text-accent'
                           : 'text-text-secondary hover:bg-fill hover:text-text-primary'

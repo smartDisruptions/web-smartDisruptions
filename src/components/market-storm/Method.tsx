@@ -59,36 +59,35 @@ export function MethodBadge({ method }: { method?: ResearchMethod }) {
 export default function MethodBlock({ method }: { method?: ResearchMethod }) {
   if (!method) return null;
 
-  // Deliberately frameless: this renders inside the report's meta box, which
-  // already supplies the border and the elevated ground. A card in a card reads
-  // as a mistake.
+  // Deliberately frameless: this renders inside the report's receipt, which
+  // already supplies the ground. A card in a card reads as a mistake.
   return (
     <section>
-      <p className="font-mono-accent text-accent">Who researched this</p>
-      <h3 className="font-display mt-2 text-xl font-semibold tracking-tight text-text-primary">
+      <p className="sd-kicker">Who researched this</p>
+      <h3 className="font-display mt-3 max-w-[40ch] text-[1.35rem] leading-[1.2] text-text-primary">
         {method.perspectives.length} agents took opposing stakes, then{' '}
         {method.verificationScope === 'all'
           ? 'every load-bearing claim'
           : 'the load-bearing claims'}{' '}
         went to a separate pass told to{' '}
-        <strong className="text-accent">refute</strong> them
+        <strong className="font-normal text-pen-ink">refute</strong> them
       </h3>
 
       <ol
-        className="mt-6 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2"
+        className="mt-6 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2"
         role="list"
       >
         {method.perspectives.map((p, i) => (
-          <li key={p.role} className="bg-surface px-4 py-3">
-            <div className="flex items-baseline gap-2">
-              <span className="font-mono text-[0.7rem] font-bold text-accent [font-variant-numeric:tabular-nums]">
+          <li key={p.role} className="bg-surface px-4 py-3.5">
+            <div className="flex items-center gap-2.5">
+              <span className="grid h-6 min-w-6 place-items-center rounded-full border border-border bg-background px-1 font-mono text-[0.62rem] font-bold text-accent [font-variant-numeric:tabular-nums]">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span className="font-mono text-sm font-semibold text-text-primary">
+              <span className="text-sm font-bold text-text-primary">
                 {p.role}
               </span>
             </div>
-            <p className="mt-1 text-sm leading-snug text-text-secondary">
+            <p className="mt-1.5 text-sm leading-snug text-text-secondary">
               {p.probe}
             </p>
           </li>
@@ -99,7 +98,7 @@ export default function MethodBlock({ method }: { method?: ResearchMethod }) {
           strip and the card figures use, so the method reads as part of the
           report rather than as a footer bolted onto it. */}
       <div
-        className="mt-4 grid gap-px overflow-hidden rounded-xl border border-border bg-border"
+        className="mt-4 grid gap-px overflow-hidden rounded-2xl border border-border bg-border"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}
       >
         {[
@@ -126,10 +125,10 @@ export default function MethodBlock({ method }: { method?: ResearchMethod }) {
             : []),
         ].map((cell) => (
           <div key={cell.k} className="bg-surface px-4 pb-3 pt-2.5">
-            <div className="font-mono text-[0.62rem] uppercase leading-[1.05rem] tracking-[0.07em] text-text-secondary">
+            <div className="text-[0.62rem] font-bold uppercase leading-[1.05rem] tracking-[0.1em] text-text-secondary">
               {cell.k}
             </div>
-            <div className="font-mono text-[0.95rem] font-semibold leading-none text-text-primary [font-variant-numeric:tabular-nums]">
+            <div className="mt-1 font-mono text-[1.05rem] font-bold leading-none text-text-primary [font-variant-numeric:tabular-nums]">
               {cell.v}
             </div>
           </div>
@@ -137,7 +136,7 @@ export default function MethodBlock({ method }: { method?: ResearchMethod }) {
       </div>
 
       {method.limitations?.length ? (
-        <div className="mt-4 rounded-xl border border-warn/30 bg-warn-soft px-4 py-3">
+        <div className="mt-4 rounded-2xl border border-warn/30 bg-warn-soft px-4 py-3.5">
           <p className="font-mono-accent text-warn">What capped this run</p>
           <ul className="mt-2 space-y-2 text-sm leading-relaxed text-text-secondary">
             {method.limitations.map((l) => (

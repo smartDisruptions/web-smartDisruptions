@@ -1,3 +1,4 @@
+import { Seal } from '@/components/brand/Kanji';
 import Inline from './Inline';
 
 /**
@@ -18,10 +19,11 @@ import Inline from './Inline';
  * a lead that restates them is how the old verdict paragraph came to say
  * everything twice.
  *
- * The heading and numerals use accent-HOVER, not accent. The card's own 4%
- * accent tint drops plain accent to 4.28:1 in the light theme -- it clears AA
- * on the page background and stops clearing it here, which is a contrast bug
- * the tint introduced rather than one the token has.
+ * It is an ofuda — the paper-slip material, cream with a vermilion band,
+ * stamped 心 ("the heart of it"). The slip is the same object in both lights,
+ * so it carries the day tokens (`ms-day`): every word on it, including bold
+ * figures and links rendered by Inline, is dark ink on cream and clears AA
+ * whatever theme the page around it is in.
  */
 export default function Takeaways({
   lead,
@@ -34,31 +36,32 @@ export default function Takeaways({
   return (
     <section
       aria-labelledby="takeaways-heading"
-      className="rounded-2xl border border-accent/25 bg-accent/[0.04] p-6 sm:p-8"
+      className="ms-day sd-note relative px-6 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-9"
     >
-      <h2 id="takeaways-heading" className="font-mono-accent text-accent-hover">
+      <Seal char="心" className="ms-ofuda-seal" />
+      <h2 id="takeaways-heading" className="font-mono-accent text-pen-ink">
         If you read nothing else
       </h2>
 
       {lead && (
-        <p className="font-read mt-4 max-w-[56ch] text-pretty text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
+        <p className="font-read mt-4 max-w-[56ch] text-pretty text-[1.3rem] font-semibold leading-snug text-text-primary sm:text-[1.55rem]">
           <Inline>{lead}</Inline>
         </p>
       )}
 
       <ol
-        className={`space-y-4 ${lead ? 'mt-7 border-t border-accent/15 pt-6' : 'mt-5'}`}
+        className={`space-y-4 ${lead ? 'mt-7 border-t border-dashed border-[rgba(31,26,20,0.22)] pt-6' : 'mt-5'}`}
         role="list"
       >
         {items.map((t, i) => (
           <li key={i} className="flex gap-4">
             <span
               aria-hidden="true"
-              className="mt-1.5 font-mono text-sm font-bold text-accent-hover [font-variant-numeric:tabular-nums]"
+              className="mt-1 font-mono text-sm font-bold text-pen-ink [font-variant-numeric:tabular-nums]"
             >
               {String(i + 1).padStart(2, '0')}
             </span>
-            <span className="max-w-[62ch] text-lg leading-8 text-text-secondary">
+            <span className="font-read max-w-[62ch] text-[1.08rem] leading-[1.75] text-text-secondary">
               <Inline>{t}</Inline>
             </span>
           </li>
