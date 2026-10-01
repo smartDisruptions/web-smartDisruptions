@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { HAND } from './geometry';
 
 /**
  * The hero's interactive layer. Renders nothing itself — it attaches to the
@@ -129,7 +128,7 @@ export default function HeroFX() {
     const canvas = hero.querySelector<HTMLCanvasElement>('.hx-petals')!;
     const ctx = canvas.getContext('2d', { alpha: true });
     let sprites: HTMLCanvasElement[] = [];
-    let petals: Petal[] = [];
+    const petals: Petal[] = [];
     let W = 0;
     let H = 0;
     let dpr = 1;
@@ -156,10 +155,10 @@ export default function HeroFX() {
       const r = hero.getBoundingClientRect();
       W = r.width;
       H = r.height;
-      dpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.25 : 1.5);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
-      const target = Math.max(28, Math.min(96, Math.round((W * H) / 15000)));
+      const target = Math.max(28, Math.min(80, Math.round((W * H) / 17000)));
       while (petals.length < target) petals.push(spawn({}, true));
       petals.length = target;
     };
@@ -168,16 +167,20 @@ export default function HeroFX() {
     };
 
     const startPetals = () => {
-      if (disposed || !ctx) return;
+      if (disposed || !ctx || petalsReady) return;
       themeSprites();
       resize();
       petalsReady = true;
+      hero.dataset.swirl = '';
       wake();
     };
-    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: object) => number })
-      .requestIdleCallback;
-    if (idle) idle(startPetals, { timeout: 1800 });
-    else window.setTimeout(startPetals, 900);
+    // Desktop only, and only once someone actually moves the mouse: until then
+    // the CSS petals carry the scene and no frame runs any script.
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const first = () => startPetals();
+      window.addEventListener('pointermove', first, { once: true, passive: true });
+      cleanups.push(() => window.removeEventListener('pointermove', first));
+    }
 
     let resizeQueued = 0;
     on(window, 'resize', () => {
@@ -261,7 +264,7 @@ export default function HeroFX() {
     }
 
     // ── Shuriken ──────────────────────────────────────────────────────────
-    const roofSvg = hero.querySelector<SVGSVGElement>('.hx-roof');
+    const kiruBox = hero.querySelector<HTMLElement>('.hx-leap');
     const orb = hero.querySelector<HTMLElement>('.hx-orb-disc');
     let flying = 0;
     let poseTimer = 0;
@@ -281,17 +284,14 @@ export default function HeroFX() {
     });
 
     function throwAt(clientX: number, clientY: number) {
-      if (!roofSvg || flying > 7) return;
-      const ctm = roofSvg.getScreenCTM();
-      if (!ctm) return;
-      const pt = roofSvg.createSVGPoint();
-      // Kiru's throwing hand, in roof coordinates (see geometry.ts).
-      pt.x = HAND.x;
-      pt.y = HAND.y;
-      const hand = pt.matrixTransform(ctm);
+      if (!kiruBox || flying > 7) return;
+      // Kiru's box is square and his poses are 240 units tall, left-aligned;
+      // the 'throw' pose's hand sits at (175, 136) in those units.
+      const kb = kiruBox.getBoundingClientRect();
+      const u = kb.height / 240;
       const hr = hero.getBoundingClientRect();
-      const x0 = hand.x - hr.left;
-      const y0 = hand.y - hr.top;
+      const x0 = kb.left + 175 * u - hr.left;
+      const y0 = kb.top + 136 * u - hr.top;
       const x1 = clientX - hr.left;
       const y1 = clientY - hr.top;
 
@@ -338,6 +338,8 @@ export default function HeroFX() {
                 petals.push(spawn({ x: x1, y: y1, vx: Math.cos(a) * v, vy: Math.sin(a) * v }));
               }
               window.setTimeout(() => (petals.length = Math.max(28, petals.length - 26)), 4000);
+            } else {
+              burst(x1, y1);
             }
           }
         }
@@ -349,6 +351,28 @@ export default function HeroFX() {
           })
           .catch(() => {});
       };
+    }
+
+    // A petal burst made of DOM nodes animated with WAAPI transforms — for
+    // touch devices, where the canvas never runs.
+    function burst(x: number, y: number) {
+      for (let i = 0; i < 16; i++) {
+        const p = document.createElement('i');
+        p.className = 'hx-burst';
+        hero.appendChild(p);
+        const a = Math.random() * Math.PI * 2;
+        const r = 50 + Math.random() * 110;
+        const dx = Math.cos(a) * r;
+        const dy = Math.sin(a) * r;
+        p.animate(
+          [
+            { transform: `translate(${x}px, ${y}px) rotate(0deg) scale(.4)`, opacity: 1 },
+            { transform: `translate(${x + dx}px, ${y + dy}px) rotate(${180 + Math.random() * 180}deg) scale(1)`, opacity: 1, offset: 0.45 },
+            { transform: `translate(${x + dx * 1.2}px, ${y + dy + 140}px) rotate(${400 + Math.random() * 200}deg) scale(.8)`, opacity: 0 },
+          ],
+          { duration: 1600 + Math.random() * 600, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' },
+        ).onfinish = () => p.remove();
+      }
     }
 
     function sparks(x: number, y: number) {

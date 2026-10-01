@@ -110,11 +110,12 @@
 .hx-bamboo {
   transform: translate3d(calc(var(--px) * -56px), calc(var(--py) * -12px), 0) scaleX(-1);
 }
-.hx-roof {
+.hx-roofbox {
   transform: translate3d(calc(var(--px) * -40px), calc(var(--py) * -10px), 0);
 }
 
-/* Stars, invisible by day */
+/* Stars, invisible by day. Three separate layers so each twinkles by its
+   own opacity — a composited animation, not a repaint of the sky. */
 .hx-stars {
   inset: 0 0 auto 0;
   width: 100%;
@@ -122,14 +123,14 @@
   fill: var(--hx-star);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .hx-tw {
+  :root[data-theme='dark'] .hx-stars {
     animation: hx-twinkle 4.2s ease-in-out infinite;
   }
-  .hx-tw-1 {
+  :root[data-theme='dark'] .hx-tw-1 {
     animation-duration: 6.4s;
     animation-delay: -2s;
   }
-  .hx-tw-2 {
+  :root[data-theme='dark'] .hx-tw-2 {
     animation-duration: 3.1s;
     animation-delay: -1s;
   }
@@ -228,6 +229,11 @@
 .hx-haze {
   left: -5%;
   width: 110%;
+}
+.hx-haze svg {
+  display: block;
+  width: 100%;
+  height: 100%;
   fill: var(--hx-haze);
 }
 .hx-haze-a {
@@ -239,10 +245,10 @@
   height: 66px;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .hx-haze path {
+  .hx-haze svg {
     animation: hx-drift 38s ease-in-out infinite alternate;
   }
-  .hx-haze-b path {
+  .hx-haze-b svg {
     animation-duration: 29s;
     animation-direction: alternate-reverse;
   }
@@ -259,7 +265,7 @@
   width: 100%;
   height: 33%;
 }
-.hx-town path:last-of-type {
+.hx-town-near {
   fill: var(--hx-town);
 }
 .hx-windows rect {
@@ -287,9 +293,8 @@
   fill: var(--hx-bamboo-leaf);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .hx-sway {
-    transform-box: view-box;
-    transform-origin: 150px 760px;
+  .hx-bamboo {
+    transform-origin: 50% 100%;
     animation: hx-sway 7s ease-in-out infinite alternate;
   }
 }
@@ -302,13 +307,20 @@
   }
 }
 
-/* The near roof and Kiru */
-.hx-roof {
+/* The near roof and Kiru. The roof is painted once; the lantern, its glow
+   and Kiru are their own small layers inside the same box, placed in % of it
+   (computed from the roof's coordinates in HeroScene). */
+.hx-roofbox {
   right: -1%;
   bottom: 0;
   width: min(64%, 1100px);
-  height: auto;
   aspect-ratio: 1000 / 236;
+}
+.hx-roof {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 .hx-roof-body {
@@ -328,14 +340,28 @@
   fill: var(--hx-ridge);
 }
 .hx-lantern {
-  transform-box: view-box;
-  transform-origin: 188px 76px;
+  position: absolute;
+  aspect-ratio: 76 / 134;
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 0;
+}
+.hx-glow {
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 210, 122, 0.7), rgba(255, 154, 74, 0.25) 45%, transparent);
+  opacity: 0;
+}
+:root[data-theme='dark'] .hx-glow {
+  opacity: 1;
 }
 @media (prefers-reduced-motion: no-preference) {
   .hx-lantern {
     animation: hx-swing 4.6s ease-in-out infinite alternate;
   }
-  :root[data-theme='dark'] .hx-lantern-glow {
+  :root[data-theme='dark'] .hx-glow {
     animation: hx-flicker 3.3s ease-in-out infinite;
   }
 }
@@ -349,18 +375,12 @@
 }
 @keyframes hx-flicker {
   50% {
-    opacity: 0.72;
+    opacity: 0.7;
   }
 }
 .hx-lantern-cord {
   stroke: var(--hx-ridge);
   stroke-width: 3;
-}
-.hx-lantern-glow {
-  fill: transparent;
-}
-:root[data-theme='dark'] .hx-lantern-glow {
-  fill: url(#hx-glow);
 }
 .hx-lantern-paper {
   fill: var(--hx-lantern);
@@ -375,14 +395,28 @@
   fill: #1a1416;
 }
 
+.hx-leap {
+  position: absolute;
+  aspect-ratio: 1;
+  height: auto;
+}
+.hx-kiru {
+  position: absolute;
+  inset: 0;
+}
 /* Kiru's three stacked poses: HeroFX picks one via data-pose. */
 .hx-k {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: auto;
   display: none;
 }
 .hx[data-pose='wave'] .hx-k-wave,
 .hx[data-pose='idle'] .hx-k-idle,
 .hx[data-pose='throw'] .hx-k-throw {
-  display: inline;
+  display: block;
 }
 @media (prefers-reduced-motion: no-preference) {
   .hx-kiru {
@@ -391,14 +425,87 @@
 }
 @keyframes hx-drop {
   0% {
-    translate: 0 -560px;
+    translate: 0 -160%;
   }
   70% {
-    translate: 0 6px;
+    translate: 0 3%;
   }
   100% {
     translate: 0 0;
   }
+}
+
+/* Ambient sakura — each petal its own element, falling on the compositor:
+   translate (the fall), rotate (the spin) and scale (the tumble) are three
+   separate animations on three separate properties. The container is a
+   size container so a petal can fall exactly its height (cqh). */
+.hx-sakura {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+}
+.hx-petal {
+  position: absolute;
+  top: -24px;
+  border-radius: 150% 0 150% 0;
+  background: linear-gradient(135deg, #ffd3dd, #f59bb2);
+  opacity: 0.9;
+}
+.hx-petal-b {
+  background: linear-gradient(135deg, #fff0f3, #f7b3c4);
+}
+:root[data-theme='dark'] .hx-petal {
+  background: linear-gradient(135deg, #f1c6dc, #c88fb0);
+  opacity: 0.75;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hx-petal {
+    animation:
+      hx-fall var(--dur) linear var(--delay) infinite,
+      hx-spin var(--spin) ease-in-out var(--delay) infinite alternate,
+      hx-tumble calc(var(--spin) * 0.8) ease-in-out infinite alternate;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hx-sakura {
+    display: none;
+  }
+}
+@keyframes hx-fall {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: var(--drift) calc(100cqh + 48px);
+  }
+}
+@keyframes hx-spin {
+  from {
+    rotate: -40deg;
+  }
+  to {
+    rotate: 120deg;
+  }
+}
+@keyframes hx-tumble {
+  from {
+    scale: 1 1;
+  }
+  to {
+    scale: 0.25 1;
+  }
+}
+@media (max-width: 47.99rem) {
+  .hx-petal-wide {
+    display: none;
+  }
+}
+/* When the desktop canvas takes over (after the first mouse move), the
+   ambient petals bow out so the two never double up. */
+.hx[data-swirl] .hx-sakura {
+  opacity: 0;
+  transition: opacity 0.8s ease;
 }
 
 /* Petals and the bottom fade into the page */
@@ -409,6 +516,11 @@
   height: 100%;
   pointer-events: none;
   z-index: 1;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hx[data-swirl] .hx-petals {
+  opacity: 1;
 }
 .hx-fade {
   position: absolute;
@@ -622,7 +734,7 @@
     height: 300px;
     right: -100px;
   }
-  .hx-roof {
+  .hx-roofbox {
     width: 128vw;
     right: -10vw;
   }
@@ -634,7 +746,8 @@
   .hx-roof-tiles {
     display: none;
   }
-  .hx-lantern {
+  .hx-lantern,
+  .hx-glow {
     display: none;
   }
   .hx-content {
@@ -703,8 +816,7 @@
     .hx-leap {
       animation-name: hx-leap;
       animation-range: exit 5% exit 80%;
-      transform-box: view-box;
-      transform-origin: 712px 66px;
+      transform-origin: 50% 100%;
     }
   }
 }
@@ -750,8 +862,20 @@
   }
 }
 
-/* In the hero the shuriken is real (HeroFX throws it), so the pose's
-   painted one stays in his hand's history, not on screen. */
+/* In the hero the shuriken is real (HeroFX throws it), so the pose's painted
+   one stays off screen. */
 .hx-k-throw .k-spin {
   display: none;
+}
+/* Moon-hit petal burst on touch devices (HeroFX, WAAPI). */
+.hx-burst {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 11px;
+  height: 11px;
+  border-radius: 150% 0 150% 0;
+  background: linear-gradient(135deg, #ffd3dd, #f59bb2);
+  pointer-events: none;
 }

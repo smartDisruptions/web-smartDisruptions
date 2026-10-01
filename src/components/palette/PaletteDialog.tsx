@@ -7,9 +7,11 @@ import { IconArrowRight, IconSearch } from '@/components/icons';
 import type { SearchItem } from '@/app/search-index.json/route';
 
 let cache: Promise<SearchItem[]> | null = null;
+let loaded: SearchItem[] | null = null;
 function loadIndex() {
   cache ??= fetch('/search-index.json')
     .then((r) => r.json() as Promise<SearchItem[]>)
+    .then((items) => (loaded = items))
     .catch(() => {
       cache = null;
       return [];
@@ -38,7 +40,7 @@ export default function PaletteDialog({ open, onClose }: { open: boolean; onClos
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
   const input = useRef<HTMLInputElement>(null);
-  const [items, setItems] = useState<SearchItem[]>([]);
+  const [items, setItems] = useState<SearchItem[]>(() => loaded ?? []);
   const [q, setQ] = useState('');
   const [sel, setSel] = useState(0);
 
@@ -51,8 +53,6 @@ export default function PaletteDialog({ open, onClose }: { open: boolean; onClos
     if (!d) return;
     if (open && !d.open) {
       d.showModal();
-      setQ('');
-      setSel(0);
       requestAnimationFrame(() => input.current?.focus());
     } else if (!open && d.open) {
       d.close();

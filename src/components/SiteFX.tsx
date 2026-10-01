@@ -20,6 +20,7 @@ export default function SiteFX() {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const visible = new Set<SVGSVGElement>();
+    const begun = new WeakSet<SVGSVGElement>();
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -27,6 +28,10 @@ export default function SiteFX() {
           const svg = e.target as SVGSVGElement;
           if (e.isIntersecting && !reduce.matches && svg.dataset.kiru !== 'still') {
             svg.setAttribute('data-live', '');
+            if (!begun.has(svg)) {
+              begun.add(svg);
+              svg.querySelectorAll<SVGAnimationElement>('animate').forEach((a) => a.beginElement?.());
+            }
             svg.unpauseAnimations?.();
             visible.add(svg);
           } else {

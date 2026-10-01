@@ -17,7 +17,10 @@ import { NAV, isActive, direction } from './nav';
  */
 export default function SiteHeader() {
   const pathname = usePathname();
-  const [hidden, setHidden] = useState(false);
+  // Hidden is remembered per page, so a new page always starts with the bar
+  // showing — without resetting state in an effect.
+  const [hiddenOn, setHiddenOn] = useState<string | null>(null);
+  const hidden = hiddenOn === pathname;
 
   useEffect(() => {
     let last = window.scrollY;
@@ -29,7 +32,7 @@ export default function SiteHeader() {
         const y = window.scrollY;
         const delta = y - last;
         if (Math.abs(delta) > 6) {
-          setHidden(delta > 0 && y > 120);
+          setHiddenOn(delta > 0 && y > 120 ? pathname : null);
           last = y;
         }
         ticking = false;
@@ -37,10 +40,7 @@ export default function SiteHeader() {
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  // A new page always starts with the bar showing.
-  useEffect(() => setHidden(false), [pathname]);
+  }, [pathname]);
 
   return (
     <header

@@ -135,8 +135,11 @@ const TAIL_LO_RUN = [
 function Tail({ frames, fill, dur }: { frames: string[]; fill: string; dur: string }) {
   return (
     <path d={frames[0]} fill={fill} className="kt">
+      {/* Dormant until SiteFX sees this ninja on screen and begins it, so a
+          page full of ninjas starts zero animations at load. */}
       <animate
         attributeName="d"
+        begin="indefinite"
         dur={dur}
         repeatCount="indefinite"
         calcMode="spline"
@@ -156,7 +159,7 @@ function Eyes({ mood, look }: { mood: KiruMood; look?: [number, number] }) {
       : `M${x - 12} 92 Q${x} 103 ${x + 12} 92`;
   const lookT = look ? `translate(${look[0]} ${look[1]})` : undefined;
 
-  const openEye = (x: number, rx = 12.5, ry = 14.5, pr = 8.2, cy = 95) => (
+  const openEye = (x: number, rx = 12.5, ry = 14.5, cy = 95) => (
     <>
       <ellipse cx={x} cy={cy} rx={rx} ry={ry} fill="#fff" />
     </>
@@ -192,8 +195,8 @@ function Eyes({ mood, look }: { mood: KiruMood; look?: [number, number] }) {
   const focus = mood === 'focus';
   return (
     <g className="k-eyes">
-      {openEye(76, big ? 13.5 : 12.5, big ? 16 : focus ? 11.5 : 14.5, 0, focus ? 98 : 95)}
-      {openEye(124, big ? 13.5 : 12.5, big ? 16 : focus ? 11.5 : 14.5, 0, focus ? 98 : 95)}
+      {openEye(76, big ? 13.5 : 12.5, big ? 16 : focus ? 11.5 : 14.5, focus ? 98 : 95)}
+      {openEye(124, big ? 13.5 : 12.5, big ? 16 : focus ? 11.5 : 14.5, focus ? 98 : 95)}
       <g className="k-pupils">
         <g transform={lookT}>
           {pupil(76, big ? 5.8 : 8.2, focus ? 99 : 97)}
