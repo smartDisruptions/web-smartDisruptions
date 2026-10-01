@@ -1,64 +1,59 @@
 ---
 name: Smart Disruptions
-description: Notebook. A builder's graph-paper notebook — handwriting for headlines and asides, a reading face for anything long, blue pen for anything you can press, red pen for marks. Taped prints, sticky notes and ruled cards are all CSS. Dark mode is the same notebook after dark — slate graph paper, chalk-bright pens, sticky notes still yellow.
+description: Shadow Dojo. Washi paper and sumi ink by day, the same dojo under a moon at night. Indigo (ai-iro) for anything you can press, vermilion for marks, a Japanese poster gothic for headlines, a reading serif for anything long, and the platform's own UI face for everything else. Kiru, the house ninja, lives on every page.
 
 # Values below mirror src/app/globals.css. That file is the source of truth;
 # this is the portable export the impeccable detector reads. If a token
 # changes there, change it here in the same commit.
 colors:
-  # Light — white graph paper
-  paper-bg: '#fbfaf4' # page ground, under a 24px graph grid
-  paper-grid: '#e7edf3' # the graph lines — kept faint so text on the grid stays easy to read
-  paper-surface: '#ffffff' # sheets and cards, one step whiter than the page
-  paper-surface-elevated: '#f2f0e6'
-  accent: '#2a57c5' # the BLUE pen — links, eyebrows, active nav
-  accent-hover: '#1f4396'
-  accent-secondary: '#b3261e' # error / alert text
-  pen: '#d93030' # the RED pen — underlines, scribbles, margin rule. Marks only.
-  pen-ink: '#b3261e' # red pen when it is text — AA on paper
-  text-primary: '#25252d'
-  text-secondary: '#5f616e'
-  highlighter: 'rgba(255, 226, 90, 0.62)'
-  sticky: '#ffe26a'
-  sticky-ink: '#2b2b33' # text on a sticky note, both themes
-  tape: 'rgba(255, 221, 120, 0.75)'
-  rule: '#cfe0f2' # ruled-card lines
-  margin-line: '#f0a0a0'
+  # Day — washi paper, sumi ink
+  paper-bg: '#f4efe4'
+  paper-bg-2: '#ece5d6'
+  paper-surface: '#fffcf5'
+  paper-surface-elevated: '#e9e1cf'
+  accent: '#2b3a96' # ai-iro INDIGO — links, active states. Things you press.
+  accent-hover: '#1e2a75'
+  accent-secondary: '#b42a17' # error / alert text
+  pen: '#e2412a' # VERMILION — marks only: slashes, seals, the headband, pills
+  pen-ink: '#b42a17' # vermilion when it is text — AA on washi (5.6:1)
+  gold: '#c8962e'
+  gold-ink: '#8a5a00'
+  text-primary: '#15172b' # sumi
+  text-secondary: '#4f5468'
+  highlighter: 'rgba(255, 196, 64, 0.42)'
+  sticky: '#f6ecd2' # ofuda paper slip — same in both themes
+  sticky-ink: '#1f1a14'
   badge-secondary: '#8a1c16'
+  button-primary: '#d63a22' # white text 4.7:1, same in both themes
 
-  # Market Storm — bull / bear / caution data semantics. TEXT-SAFE inks, AA on
-  # paper. Same ink-flip discipline as the arcade inks (dark here, bright below).
-  bull-ink: '#166534' # green-800
-  bear-ink: '#b91c1c' # same hue as arcade-red-ink
+  bull-ink: '#166534'
+  bear-ink: '#b91c1c'
   warn-ink: '#92400e'
   bull-soft: 'rgba(22, 101, 52, 0.1)'
   bear-soft: 'rgba(185, 28, 28, 0.08)'
   warn-soft: 'rgba(146, 64, 14, 0.1)'
 
-  # Arcade inks (light) — TEXT ONLY.
   arcade-red-ink: '#b91c1c'
   arcade-yellow-ink: '#854d0e'
   arcade-blue-ink: '#1d4ed8'
-
-  # Arcade brights — DECORATIVE FILLS ONLY. Never use as text.
   arcade-red: '#ef4444'
   arcade-yellow: '#facc15'
   arcade-blue: '#3b82f6'
 
-  # Dark — slate graph paper
-  dark-bg: '#13151a'
-  dark-grid: '#222733'
-  dark-surface: '#1b1e26'
-  dark-surface-elevated: '#252934'
-  dark-accent: '#93b4ff'
-  dark-accent-hover: '#b9ceff'
-  dark-accent-secondary: '#ff8585'
-  dark-pen: '#ff8585'
-  dark-text-primary: '#ebe7de'
-  dark-text-secondary: '#a3a6b2'
-  dark-highlighter: 'rgba(255, 226, 90, 0.24)'
-  dark-sticky: '#ecd05a'
-  dark-sticky-ink: '#23232a'
+  # Night — the dojo under a moon
+  dark-bg: '#090b16'
+  dark-bg-2: '#0e1122'
+  dark-surface: '#11152a'
+  dark-surface-elevated: '#1a1f3a'
+  dark-accent: '#9bb0ff'
+  dark-accent-hover: '#c3d0ff'
+  dark-accent-secondary: '#ff8166'
+  dark-pen: '#ff5b3d'
+  dark-pen-ink: '#ff8166'
+  dark-gold: '#ffcf70'
+  dark-text-primary: '#eceefa'
+  dark-text-secondary: '#a6abc8'
+  dark-highlighter: 'rgba(255, 196, 64, 0.2)'
   dark-badge-secondary: '#ffb3b3'
   dark-arcade-red-ink: '#f87171'
   dark-arcade-yellow-ink: '#fde047'
@@ -72,19 +67,19 @@ colors:
 
 typography:
   display:
-    fontFamily: 'Caveat, Bradley Hand, Segoe Print, cursive'
+    fontFamily: 'Dela Gothic One, Arial Black, system-ui, sans-serif'
     fontSize: '3rem'
-    fontWeight: 700
-    fontSizeAdjust: 0.47
-    letterSpacing: '0'
+    fontWeight: 400
+    fontSizeAdjust: 0.5
+    letterSpacing: '-0.01em'
     lineHeight: 1.12
   headline:
-    fontFamily: 'Caveat, Bradley Hand, Segoe Print, cursive'
-    fontSize: '2.35rem'
-    fontWeight: 700
+    fontFamily: 'Dela Gothic One, Arial Black, system-ui, sans-serif'
+    fontSize: '2.25rem'
+    fontWeight: 400
     lineHeight: 1.12
   title:
-    fontFamily: 'Nunito, system-ui, -apple-system, sans-serif'
+    fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif'
     fontSize: '1.125rem'
     fontWeight: 700
     lineHeight: 1.4
@@ -94,25 +89,24 @@ typography:
     fontWeight: 400
     lineHeight: 1.8
   small:
-    fontFamily: 'Nunito, system-ui, -apple-system, sans-serif'
+    fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif'
     fontSize: '0.875rem'
     fontWeight: 400
     lineHeight: 1.5
   eyebrow:
-    fontFamily: 'Nunito, system-ui, -apple-system, sans-serif'
+    fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif'
     fontSize: '0.7rem'
-    fontWeight: 800
-    letterSpacing: '0.12em'
+    fontWeight: 750
+    letterSpacing: '0.14em'
 
 rounded:
   none: '0'
   sm: '4px'
   md: '6px'
-  lg: '3px' # paper has square corners — see "Cut sheets" below
-  xl: '3px'
-  '2xl': '4px'
+  lg: '12px'
+  xl: '16px'
+  '2xl': '22px'
   pill: '999px'
-  wobble: '255px 18px 225px 18px / 18px 225px 18px 255px' # hand-drawn outline
 
 spacing:
   xs: '8px'
@@ -126,131 +120,180 @@ spacing:
 
 # Design notes
 
-Rules that are decisions, not defaults. Each one was made once, deliberately —
-if a detector or a reviewer argues with one of these, the answer is on this page.
+Rules that are decisions, not defaults. If a detector or a reviewer argues
+with one of these, the answer is on this page.
 
-The site was "Paper" (warm cream, burnt orange, Instrument Sans) until September
-2026. Notebook replaced it after eight homepage comps: the brief was mobile
-first, more design, far fewer words on the main pages, and the notebook was the
-one direction that read as a person rather than a template.
+The site was "Paper" (cream, burnt orange) until September 2026, then
+"Notebook" (graph paper, handwriting) for a month. **Shadow Dojo** replaced it
+in October 2026, when Josh asked for a site that is visually stunning on a
+phone, has a mascot, and stays best-in-class fast. Everything below exists to
+hold all three at once.
 
-## Handwriting never sets a paragraph
+## Two lights, one dojo
 
-Caveat is for headlines, labels on prints, buttons and short asides. Anything a
-reader is meant to *read* — article bodies, report bodies, lead paragraphs —
-is Literata (`font-read`). UI text is Nunito. A page of handwriting is a page
-nobody finishes; two Market Storm lead paragraphs were set in the display face
-under Paper and were moved to `font-read` in the same change for this reason.
+Day is washi paper and sumi ink. Night is the same place under a moon:
+ai-iro indigo, moonlight, lanterns. Every token flips; no layout does. The
+theme follows the reader's toggle, else their OS, and is set before first
+paint. Switching paints the new theme as a circle growing out of the toggle
+(a View Transition) — or just switches, under reduced motion.
 
-Caveat draws small for its point size, so `.font-display` carries
-`font-size-adjust: 0.47`. That scales it to sit where the old display face sat
-without touching the size utilities on ~58 headings. Tracking is reset to 0 —
-negative tracking is a fix for tight sans headlines and makes handwriting
-collide.
+## Indigo presses, vermilion marks
 
-## The grid never runs behind a sentence
+The accent (`--sd-accent`) is indigo — 藍, *ai*: the brand's colour is a pun
+it gets for free. Links, active states, focus rings, anything you press.
+Vermilion (`--sd-pen`) is for **marks**: the brush stroke under a heading,
+the slash through a headline, a seal, the active tab pill, Kiru's headband.
+When vermilion has to be text it uses `--sd-pen-ink`, which clears AA.
 
-The page ground is graph paper. Long-form text does not sit on it: articles,
-reports, About and Privacy are each a plain **sheet** (`nb-sheet`) laid on the
-grid. Short text — a headline, a caption, a card — may sit on the grid directly.
+Vermilion is not the link colour for the same reason red never was: Market
+Storm's `bear` ink is red, and a link in that hue reads as a verdict.
 
-## Blue pen presses, red pen marks
+The one exception is the **primary button**: solid `#d63a22` with white text
+in both themes (4.7:1). A button is an object, like the headband.
 
-The accent (`--sd-accent`) is the blue pen: links, eyebrows, active states.
-The red pen (`--sd-pen`) is for marks only — the stroke under a heading, the
-scribble under the hero line, the margin rule, list markers. When red has to be
-text it uses `--sd-pen-ink`, which clears AA.
+## Three faces, three jobs
 
-Red is deliberately NOT the accent: Market Storm's `bear` ink is red, and an
-accent in the same hue would make every link look like a verdict.
+- **Dela Gothic One** — headlines only (`font-display`). One weight, very
+  heavy. `font-size-adjust: 0.5` holds it to the size the heading utilities
+  were tuned for: the weight shouts, so the size doesn't have to.
+- **Literata** — anything a reader is meant to *read* (`font-read`): article
+  bodies, report bodies, lead paragraphs. Display type never sets a paragraph.
+- **The platform's UI face** (`system-ui`) — nav, labels, cards, buttons. SF
+  on Apple, Roboto on Android. It costs nothing to load, and it is most of
+  why the site feels native on a phone.
 
-## Sticky notes are objects, not surfaces
+Japanese characters are **never a font**. The ~40 the site draws (page
+kanji, the katakana tag, seals) are baked into SVG paths by
+`scripts/build-glyphs.mjs` (Potta One brush, Dela Gothic One gothic — both
+OFL) and rendered by `<Kanji>`, `<Seal>` and `<Vertical>`. A CJK webfont is
+megabytes; the paths are a few hundred bytes each. They are decoration: the
+English is always on the page, so they are `aria-hidden` unless a `title`
+says otherwise. Add a character by adding it to the script and re-running it.
 
-A sticky note is yellow with dark ink in **both** themes (`--sd-sticky`,
-`--sd-sticky-ink`). The primary button is the same material. Consequence: never
-put theme-coloured text (`text-text-secondary`) on a sticky — it goes light in
-dark mode and disappears. The subscribe form sits on a taped paper card, not a
-sticky, for exactly this reason.
+## Kiru
 
-## Quotes are index cards, not sticky notes
+The house ninja (切る, *kiru*, "to cut" — he cuts through hype). One rig in
+`src/components/kiru/Kiru.tsx`, thirteen poses: idle, wave, read, storm,
+build, game, meditate, shh, run, sit, peek, throw, bow. `/kiru` shows them
+all.
 
-Blockquotes in this site's content run to sixty words — Josh's own prompts, a
-report's caveats. They render as a ruled index card in the reading face. A
-handwritten sticky was tried first and was wrong the moment it met real content.
+- He is **pure SVG, rendered on the server**: no JavaScript, a few KB each.
+- He is an **object**: the same colours in both themes. Only his outline
+  (`--kiru-line`) and moonlight rim (`--kiru-rim`) follow the theme — ink by
+  day, moonlit at night.
+- He **idles only on screen**. `SiteFX` sets `data-live` while he is visible
+  and pauses his SMIL headband tails when he isn't. A page of ninjas costs
+  nothing per frame off screen.
+- His **eyes follow the pointer** (or the last touch) through `--lx/--ly`.
+- He is **decorative** (`aria-hidden`) unless given a `title`.
+- Every page has him, doing that page's job. He never covers text and never
+  blocks a tap.
+
+## Motion runs on the compositor
+
+Transforms, opacity, clip-paths and scroll timelines. No motion library, no
+animation of layout properties, nothing that animates while off screen.
+
+- **Scroll reveals** are `animation-timeline: view()` (`.sd-reveal`): zero
+  JavaScript. Browsers without scroll timelines show the content — content
+  never waits on a feature detect.
+- **Page transitions** are React's `<ViewTransition>` around `<main>`. Tab
+  changes slide in the direction of travel; the tab pill and the nav's brush
+  stroke glide to their new place because they carry view-transition names.
+- **Reduced motion stops things, it doesn't strobe them.** Infinite loops are
+  stopped outright, not shortened.
+- **Canvas and WebGL** effects are islands: they start after first paint,
+  render at a capped resolution, pause when off screen or the tab is hidden,
+  and draw a single still frame under reduced motion.
+
+## Native on a phone
+
+- A **tab bar** (Home, Writing, Storm, Built, Arcade) where a thumb reaches;
+  About is the avatar in the top bar. The top bar tucks away while you scroll
+  down and returns when you scroll up.
+- `viewport-fit=cover` with safe-area padding on the header and the tab bar.
+- Every tappable thing is ≥44px and **presses in** (`active:scale`).
+- The browser chrome takes the theme colour (`theme-color`), and the site
+  installs to a home screen as an app (manifest + icons) with Kiru as its icon.
+- ⌘K / `/` / the search button opens a **command palette** over a static
+  index (`/search-index.json`), fetched on first open — a phone gets it as a
+  bottom sheet.
+
+## Materials
+
+Named classes in `globals.css`, because each is a small recipe that must stay
+identical everywhere it appears:
+
+| Class | What it is |
+| --- | --- |
+| `sd-sheet` | The reading surface: washi by day, lacquer by night. Long text sits on one. |
+| `sd-card` | Anything pressable that leads somewhere: lifts, a sheen crosses it, presses in. |
+| `sd-print` | A card whose job is to show an image. |
+| `sd-tilt` | Opt-in: a card that leans toward a fine pointer, with a soft light under it. |
+| `sd-note` | An ofuda paper slip: cream, ink, a vermilion band. Same in both themes — never theme-coloured text on it. |
+| `sd-seal` | A hanko: vermilion stamp, white kanji. |
+| `sd-kicker` | The small uppercase label with a vermilion diamond. |
+| `sd-brush-under` | The vermilion brush stroke under a heading (a mask, so the colour stays a token). |
+| `sd-hl` | The gold highlighter swipe. In article bodies, `**bold**` renders with it. |
+| `sd-watermark` | A giant brush kanji behind a page header. |
+| `sd-glass` | Frosted glass for the header and the tab bar, with solid fallbacks. |
+| `sd-defer` | `content-visibility: auto` for long below-the-fold blocks. |
+
+The Notebook's `nb-*` classes are aliased to these until every call site has
+moved over; new code uses `sd-*`.
+
+## The grid is gone; the sheet stays
+
+Long-form text never sits directly on the page ground: articles, reports,
+About and Privacy are each a `sd-sheet`. Short text — a headline, a caption,
+a card — may sit on the ground.
 
 ## Bold is the highlighter
 
-In article bodies `**bold**` renders with the highlighter swipe (`nb-hl`). Posts
-bold the one line worth keeping, which is what a highlighter is for. If a post
-bolds half its sentences the page will say so, loudly — that is the point.
+In article bodies `**bold**` renders with the gold highlighter. Posts bold the
+one line worth keeping. If a post bolds half its sentences the page will say
+so — that is the point.
 
-## Cut sheets
+## Native corners
 
-Paper has square corners. `--radius-lg`, `--radius-xl` and `--radius-2xl` are
-redefined once in `@theme` (3–4px) rather than edited at ~60 call sites. Pills
-and small chips keep their radius.
-
-## A wall hangs a little crooked
-
-`nb-wall` tilts its children a degree or so and straightens them on hover or
-focus. It uses the individual `rotate` / `scale` properties, not `transform`, so
-it composes with the scroll-reveal translate on the same element. Tilt is for
-prints — image-led cards with a name. Text-heavy cards stay straight.
+Cards are 16px, sheets 22px, pills round. The radii are set once in `@theme`
+rather than at ~60 call sites.
 
 ## The ink flip
 
-The Arcade's bright red/yellow/blue fail AA on paper (true of graph paper as it was of cream), so every _text_ use points
-at an ink variant (`--arcade-*-ink`). In dark mode those inks flip to the bright
-neon, which pops on the dark cabinet. Same hue family, opposite job.
-
-**The rule that follows: bright arcade colors are for decorative fills only.**
-If a color is text or a chip, it uses the ink. A raw `#ef4444` on text is a bug —
-that exact mistake shipped once and was caught by an audit in July 2026.
-
-## Reading measure over container width
-
-Post bodies cap at `62ch` (~74 characters per line), not at the container width.
-Above ~80 characters the eye loses its place on the return sweep.
+The Arcade's bright red/yellow/blue fail AA on washi, so every _text_ use
+points at an ink variant (`--arcade-*-ink`). At night those inks flip to the
+bright neon. **Bright arcade colours are decorative fills only.** A raw
+`#ef4444` on text is a bug.
 
 ## Semantic data inks (bull / bear / caution)
 
-The Market Storm reports carry financial data with a real bull/bear polarity, so
-they get three semantic inks beyond the single warm accent — `bull` (green),
-`bear` (red), `warn` (amber). These encode _meaning in the data_ (a metric that
-helps vs. hurts the thesis), never decoration, and they follow the same rules as
-everything else: they are **on-token** (`--sd-bull/bear/warn` + soft tints), they
-**flip** dark-on-paper → bright-on-dark like the arcade inks, and every text use
-clears WCAG AA in both themes (`bear`/`warn` reuse the already-verified
-`arcade-red-ink` / `badge-secondary` values). The accent is the blue pen; these
-are a separate semantic axis, not a second accent.
+Market Storm encodes polarity with three semantic inks — `bull` (green),
+`bear` (red), `warn` (amber) — on-token, flipping dark-on-washi to
+bright-at-night, every text use AA in both themes. They carry a **verdict
+about the data**, never decoration. The Evidence Engine reuses the same three.
 
-**The Evidence Engine reuses the same three inks**, and deliberately did not
-introduce a fourth axis. A capability verdict has exactly the polarity these
-encode — `evidenced` holds, `attested only` partly holds, `refused` does not —
-so the values are already right and already AA-verified in both themes. The
-rule that comes with the reuse: these inks may only carry a **verdict about the
-data**, never a decorative highlight. A green heading that is not asserting
-"this holds" is a bug, in either section.
+## Reading measure over container width
 
-## The share cards are the same paper
+Post bodies cap at `62ch` (~74 characters per line).
 
-Every image a link renders with — a post's hero, its social card, the site-wide
-card, a Market Storm card — is drawn from these tokens, on the same graph-paper
-ground, in Caveat and Nunito. Two generators do it and both have to be changed
-together: `scripts/make-hero.mjs` (headless Chrome, writes the .webp files) and
-the `opengraph-image.tsx` routes (Satori, at build time).
+## The share cards are the same dojo
 
-Two traps live in there, both already sprung once. Caveat needs
-`font-size-adjust: 0.47` or every card renders a third too small, exactly as on
-the site. And Satori cannot read woff2 and silently falls back: it needs the
-.ttf copies in `src/fonts/`, and if only one face is registered it sets the
-whole card in that one face.
+Every image a link renders with — a post's hero, its social card, the site
+card, a Market Storm card — is drawn from these tokens in these faces. Two
+generators do it and both change together: `scripts/make-hero.mjs` (headless
+Chrome, writes the .webp files) and the `opengraph-image.tsx` routes (Satori,
+at build time). Satori cannot read woff2: it needs the .ttf copies in
+`src/fonts/`.
 
-When the site's faces or palette change, these change in the same commit, and
-every card is re-rendered. Cards spent weeks in Georgia once because that did
-not happen.
+## Performance is a feature
+
+The budget the design is held to: every route static, LCP under 1.5s on a
+mid-range phone, CLS 0, no long tasks on load, 60fps scrolling. Decorative
+JavaScript is lazy, off-screen work is paused, and nothing decorative is an
+image request.
 
 ## Accessibility is a floor, not a goal
 
-All text meets WCAG AA (4.5:1 body, 3:1 large) in **both** themes. This is
-non-negotiable and predates any tooling.
+All text meets WCAG AA (4.5:1 body, 3:1 large) in **both** themes. Focus is a
+2.5px vermilion ring. Skip link first. Decoration is `aria-hidden`.
