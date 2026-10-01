@@ -2,3 +2,5 @@
 node_modules
 dist
 build
+# Past designs of the site, frozen as built (scripts/archive-site.mjs)
+public/archive

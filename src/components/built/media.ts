@@ -55,6 +55,7 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/spacex-mars-thumbnail.png': [1200, 630],
   '/images/websites/broom-blade.webp': [1200, 750],
   '/images/websites/kitsune-kitchen.webp': [1200, 750],
+  '/images/websites/notebook.webp': [1200, 750],
   '/images/websites/pembroke-file.png': [1200, 630],
   '/images/websites/samurai-kitchen.webp': [1200, 750],
   '/images/websites/voltic.webp': [1200, 750],
@@ -67,7 +68,12 @@ export function sizeOf(src: string): readonly [number, number] {
   return SIZES[src] ?? FALLBACK;
 }
 
-export type FrameKind = 'laptop' | 'browser' | 'tablet' | 'tablet-tall' | 'phone';
+export type FrameKind =
+  | 'laptop'
+  | 'browser'
+  | 'tablet'
+  | 'tablet-tall'
+  | 'phone';
 
 /**
  * Which device a screenshot sits in. The picture decides first — a tall one
@@ -76,7 +82,7 @@ export type FrameKind = 'laptop' | 'browser' | 'tablet' | 'tablet-tall' | 'phone
  */
 export function frameFor(
   src: string,
-  kind: 'Website' | 'Game' | 'App' | 'web-app',
+  kind: 'Website' | 'Game' | 'App' | 'web-app'
 ): FrameKind {
   const [w, h] = sizeOf(src);
   const r = w / h;
@@ -86,9 +92,14 @@ export function frameFor(
   return 'tablet';
 }
 
-/** The address bar text for a live link: the bare host, no scheme. */
+/**
+ * The address bar text for a live link: the bare host, no scheme. A link on
+ * this site (a past design under /archive) shows the site's own host and the
+ * path, since that is what the reader's address bar will say.
+ */
 export function hostOf(url?: string): string | undefined {
   if (!url) return undefined;
+  if (url.startsWith('/')) return `smartdisruptions.com${url}`;
   try {
     return new URL(url).host;
   } catch {
@@ -106,6 +117,7 @@ const MARKS: Record<string, string> = {
   'pembroke-file': '秘', // secret: a locked file
   'samurai-kitchen': '侍', // samurai
   voltic: '雷', // thunder: "liquid lightning"
+  notebook: '書', // writing: the notebook this site used to be
   'pomodoro-timer': '技', // technique: the Pomodoro technique
   'spacex-mars': '探', // explore
   'cloth-simulator': '風', // wind
@@ -128,5 +140,8 @@ export function markFor(slug: string): string {
  * class lets built.css time all of them together.
  */
 export function shotTransition(slug: string) {
-  return { viewTransitionName: `bt-${slug}`, viewTransitionClass: 'bt-shot' } as const;
+  return {
+    viewTransitionName: `bt-${slug}`,
+    viewTransitionClass: 'bt-shot',
+  } as const;
 }

@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // Past designs of the site, frozen as built (scripts/archive-site.mjs).
+    'public/archive/**',
   ]),
 ]);
 

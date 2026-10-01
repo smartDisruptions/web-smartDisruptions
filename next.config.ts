@@ -19,11 +19,38 @@ const nextConfig: NextConfig = {
       {
         source: '/sw.js',
         headers: [
-          { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
-          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          {
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
         ],
       },
     ];
+  },
+  /**
+   * Past designs of this site live in public/archive/<name>, each a static
+   * export of its own commit (scripts/archive-site.mjs). The export names a
+   * page content.html; these give it the address it had. Real files — the old
+   * scripts, styles, images and the .txt data the old router fetches — are
+   * served before any rewrite runs.
+   */
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: [
+        { source: '/archive/:name', destination: '/archive/:name/index.html' },
+        { source: '/archive/:name/:a', destination: '/archive/:name/:a.html' },
+        {
+          source: '/archive/:name/:a/:b',
+          destination: '/archive/:name/:a/:b.html',
+        },
+      ],
+      fallback: [],
+    };
   },
   /**
    * /apps and /websites were folded into /built on 2026-09-20. These keep every

@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[22016,["/archive/notebook/_next/static/chunks/0v4v1kz.ubd2o.js","/archive/notebook/_next/static/chunks/0d3shmwh5_nmn.js","/archive/notebook/_next/static/chunks/0r25~weayp9l_.js"],""]
+3:I[97367,["/archive/notebook/_next/static/chunks/0v4v1kz.ubd2o.js","/archive/notebook/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center px-5","children":[["$","div",null,{"className":"nb-sticky nb-tape -rotate-2 px-10 pt-9 pb-8 text-center","children":[["$","h1",null,{"className":"font-display text-8xl","children":"404"}],["$","p",null,{"className":"font-display mt-1 text-3xl","children":"this page isn't in the notebook."}]]}],["$","$L2",null,{"href":"/","className":"nb-wobble font-display inline-flex items-center justify-center transition-all border-2 border-text-primary bg-surface text-text-primary hover:bg-[var(--sd-hl)] min-h-12 px-7 py-2 text-2xl  mt-10","children":"← back to the front"}]]}],[["$","script","script-0",{"src":"/archive/notebook/_next/static/chunks/0r25~weayp9l_.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"gQISDIdMwtjZ0DU7BUSHy"}
+5:null
