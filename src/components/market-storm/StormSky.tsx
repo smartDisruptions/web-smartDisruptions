@@ -25,7 +25,8 @@ import { useEffect, useRef } from 'react';
  * ---------------------------
  * - It starts after `load`, in an idle callback. First paint is the CSS
  *   gradient underneath, which is also the fallback when WebGL is missing,
- *   software-rendered (failIfMajorPerformanceCaveat) or its context is lost.
+ *   software-rendered (failIfMajorPerformanceCaveat, plus a renderer-name
+ *   check for SwiftShader and friends) or its context is lost.
  * - It renders to a pixel budget, not to the screen: at most 0.75 internal
  *   pixels per CSS pixel and usually ~0.5 on a laptop. They are soft clouds;
  *   the compositor's upscale is invisible. If frames run slow the budget
@@ -247,6 +248,17 @@ export default function StormSky({
         failIfMajorPerformanceCaveat: true,
       });
       if (!ctx || ctx.isContextLost()) return false;
+      // failIfMajorPerformanceCaveat lets some CPU rasterisers through:
+      // SwiftShader (Chrome with no GPU, which is how Lighthouse and
+      // PageSpeed Insights run), llvmpipe, Windows' Basic Render Driver.
+      // There every pixel of the shader is main-thread-adjacent CPU work, so
+      // treat them as no WebGL and keep the CSS sky.
+      const info = ctx.getExtension('WEBGL_debug_renderer_info');
+      const renderer = String(ctx.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : ctx.RENDERER) ?? '');
+      if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(renderer)) {
+        ctx.getExtension('WEBGL_lose_context')?.loseContext();
+        return false;
+      }
       const compile = (type: number, src: string) => {
         const sh = ctx.createShader(type)!;
         ctx.shaderSource(sh, src);
