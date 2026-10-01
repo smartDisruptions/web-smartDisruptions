@@ -1,0 +1,1627 @@
+/* ── The Arcade: a neon night market. Prefixes arc- (page) and rr- (Kiru's
+   Rooftop Run cabinet). ─────────────────────────────────────────────────────
+
+   The market is ALWAYS NIGHT, in both themes. Like the footer and like Kiru,
+   it is an object rather than a surface, so its colours are fixed: the region
+   redefines the site's night tokens on itself, which also puts anything
+   shared inside it (Kiru's moonlit outline, the focus ring, a seal) into its
+   night dress whatever the theme toggle says.
+
+   Contrast, all on #0a0b1a (the darkest ground here) and all >= 4.5:1:
+   ink 16.9 · ink-2 10.1 · ink-3 7.6 · pink-ink 8.1 · cyan-ink 13.3 ·
+   amber-ink 13.4 · vermilion-ink 8.0 · green 15.4. Neon tubes are drawn in a
+   near-white core with the colour as glow, so the glow never carries the text.
+
+   Motion: everything here is CSS on the compositor (opacity, transform). The
+   neon flicker is rare and subtle; reduced motion stops it, the marquee, the
+   lanterns and the blink outright. The only JavaScript on the page is Kiru's
+   Rooftop Run, and only after Start.                                        */
+
+.arc {
+  /* The site's night tokens, scoped. Values mirror :root[data-theme='dark']
+     in globals.css. */
+  color-scheme: dark;
+  --sd-bg: #090b16;
+  --sd-bg-2: #0e1122;
+  --sd-surface: #11152a;
+  --sd-surface-elevated: #1a1f3a;
+  --sd-fill: rgba(236, 238, 250, 0.07);
+  --sd-accent: #9bb0ff;
+  --sd-accent-hover: #c3d0ff;
+  --sd-text-primary: #eceefa;
+  --sd-text-secondary: #a6abc8;
+  --sd-border: rgba(236, 238, 250, 0.12);
+  --sd-border-strong: rgba(236, 238, 250, 0.24);
+  --sd-pen: #ff5b3d;
+  --sd-pen-ink: #ff8166;
+  --sd-gold: #ffcf70;
+  --sd-gold-ink: #ffcf70;
+  --sd-card-shadow: rgba(0, 0, 0, 0.75);
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+  --sky-far: #161b3a;
+  --sky-mid: #10142c;
+  --sky-near: #05070e;
+  --sky-moon: #fff3d6;
+  --sky-window: #ffcf70;
+
+  /* The market's own palette. */
+  --arc-bg: #0a0b1a;
+  --arc-bg-2: #0e1024;
+  --arc-panel: #141834;
+  --arc-panel-2: #1b2040;
+  --arc-ink: #eceefa;
+  --arc-ink-2: #b4b9d6;
+  --arc-ink-3: #9aa0c0;
+  --arc-pink: #ff4f9a; /* tube colours: glows and fills only */
+  --arc-cyan: #3de1ff;
+  --arc-amber: #ffb547;
+  --arc-red: #ff5b3d;
+  --arc-green: #6dffb0;
+  --arc-pink-ink: #ff7ab8; /* text-safe */
+  --arc-cyan-ink: #5ee7ff;
+  --arc-amber-ink: #ffcf70;
+  --arc-red-ink: #ff8166;
+
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  /* The market runs on under the footer's skyline (which paints over this
+     extension), so the town below stays night in the light theme too rather
+     than dropping to a strip of paper. Generous on purpose: anything past the
+     skyline sits under the footer's opaque ground. */
+  margin-bottom: calc(-4rem - 260px);
+  padding-bottom: calc(4rem + 260px);
+  color: var(--arc-ink);
+  background-color: var(--arc-bg);
+  box-shadow: inset 0 18px 22px -18px rgba(0, 0, 0, 0.75);
+  /* Neon spill from signs just out of frame, and lantern light from below.
+     Painted once; nothing here moves. */
+  background-image:
+    radial-gradient(56rem 26rem at 8% -4rem, rgba(255, 79, 154, 0.17), transparent 70%),
+    radial-gradient(48rem 24rem at 96% 6rem, rgba(61, 225, 255, 0.11), transparent 70%),
+    radial-gradient(60rem 30rem at 50% 38rem, rgba(255, 91, 61, 0.07), transparent 70%),
+    radial-gradient(70rem 36rem at 80% 120rem, rgba(255, 181, 71, 0.06), transparent 70%),
+    linear-gradient(180deg, #0c0d22 0%, #0a0b1a 32rem);
+  background-repeat: no-repeat;
+}
+
+.arc-wrap {
+  position: relative;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 40rem) {
+  .arc-wrap {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* While the arcade is on the page, the footer's skyline wears its night
+   colours in both themes — the same town, still under the moon. */
+:root:has(.arc) body > footer {
+  --sky-far: #161b3a;
+  --sky-mid: #10142c;
+  --sky-near: #05070e;
+  --sky-moon: #fff3d6;
+  --sky-window: #ffcf70;
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+}
+
+/* ── Lantern string ─────────────────────────────────────────────────────── */
+.arc-lanterns {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 96px;
+  pointer-events: none;
+  z-index: 0;
+}
+.arc-wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 72px;
+}
+.arc-lantern {
+  position: absolute;
+  width: 18px;
+  height: 25px;
+  margin-left: -9px;
+  border-radius: 46% / 40%;
+  background:
+    repeating-linear-gradient(180deg, rgba(60, 10, 0, 0.22) 0 1px, transparent 1px 4.5px),
+    radial-gradient(circle at 50% 42%, #ffe2a8 0%, #ff8a4a 42%, #d63a22 78%, #8f2213 100%);
+  box-shadow:
+    0 0 14px 3px rgba(255, 120, 60, 0.42),
+    0 0 44px 10px rgba(255, 90, 40, 0.14);
+  transform-origin: 50% -7px;
+}
+.arc-lantern::before,
+.arc-lantern::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  height: 3px;
+  border-radius: 1px;
+  background: #1b1310;
+}
+.arc-lantern::before {
+  top: -2px;
+  box-shadow: 0 -5px 0 -1px #2a2420; /* the cord */
+}
+.arc-lantern::after {
+  bottom: -2px;
+}
+.arc-lantern[data-gold] {
+  background:
+    repeating-linear-gradient(180deg, rgba(70, 40, 0, 0.2) 0 1px, transparent 1px 4.5px),
+    radial-gradient(circle at 50% 42%, #fff4cf 0%, #ffd27a 45%, #e3a23a 80%, #9a6417 100%);
+  box-shadow:
+    0 0 14px 3px rgba(255, 200, 100, 0.4),
+    0 0 44px 10px rgba(255, 190, 80, 0.12);
+}
+@media (max-width: 39.99rem) {
+  .arc-lantern[data-wide] {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .arc-lantern {
+    animation: arc-sway var(--sway, 6s) ease-in-out var(--delay, 0s) infinite alternate;
+  }
+}
+@keyframes arc-sway {
+  from {
+    rotate: -3deg;
+  }
+  to {
+    rotate: 3deg;
+  }
+}
+
+/* ── Neon ───────────────────────────────────────────────────────────────── */
+/* A tube: a near-white core that carries the contrast, the colour as glow. */
+.arc-neon {
+  --tube: var(--arc-pink);
+  color: var(--core, #ffe9f3);
+  text-shadow:
+    0 0 1px var(--core, #ffe9f3),
+    0 0 4px var(--tube),
+    0 0 11px var(--tube),
+    0 0 26px color-mix(in srgb, var(--tube) 70%, transparent),
+    0 0 58px color-mix(in srgb, var(--tube) 42%, transparent);
+}
+.arc-neon[data-tube='cyan'] {
+  --tube: var(--arc-cyan);
+  --core: #e6fcff;
+}
+.arc-neon[data-tube='amber'] {
+  --tube: var(--arc-amber);
+  --core: #fff3dc;
+}
+.arc-neon[data-tube='red'] {
+  --tube: var(--arc-red);
+  --core: #ffe6e0;
+}
+
+/* Rare, subtle flicker: a few blips in a long cycle, on opacity only. The
+   title also flickers on once as the page opens, like a sign being switched
+   on; it never drops below a quarter, so it is painted from the first frame. */
+@media (prefers-reduced-motion: no-preference) {
+  .arc-title .arc-neon {
+    animation:
+      arc-on 1s steps(1, end) 0.15s both,
+      arc-flicker 13s steps(1, end) 4s infinite;
+  }
+  .arc-flicker {
+    animation: arc-flicker var(--flicker, 13s) steps(1, end) var(--flicker-delay, 2s) infinite;
+  }
+  .arc-flicker-b {
+    animation: arc-flicker-b var(--flicker, 17s) steps(1, end) var(--flicker-delay, 5s) infinite;
+  }
+}
+@keyframes arc-on {
+  0% {
+    opacity: 0.25;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  18% {
+    opacity: 0.3;
+  }
+  30% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 0.5;
+  }
+  46%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes arc-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  61% {
+    opacity: 1;
+  }
+  61.5% {
+    opacity: 0.58;
+  }
+  62% {
+    opacity: 1;
+  }
+  62.6% {
+    opacity: 0.8;
+  }
+  63.1% {
+    opacity: 1;
+  }
+}
+@keyframes arc-flicker-b {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  33% {
+    opacity: 1;
+  }
+  33.4% {
+    opacity: 0.35;
+  }
+  34% {
+    opacity: 1;
+  }
+}
+
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+.arc-hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'kick sign'
+    'title sign'
+    'lead lead'
+    'stats stats';
+  column-gap: 0.75rem;
+  padding-top: 4.75rem;
+  padding-bottom: 2.5rem;
+}
+@media (min-width: 64rem) {
+  .arc-hero {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    grid-template-areas:
+      'kick sign'
+      'title sign'
+      'lead sign'
+      'stats sign';
+    column-gap: 3rem;
+    padding-top: 6.5rem;
+    padding-bottom: 3rem;
+  }
+}
+.arc-watermark {
+  position: absolute;
+  left: -2.5rem;
+  top: 2rem;
+  width: clamp(16rem, 42vw, 30rem);
+  aspect-ratio: 1;
+  color: var(--arc-pink);
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: -1;
+}
+.arc-watermark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+}
+.arc-kicker {
+  grid-area: kick;
+  align-self: end;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--arc-cyan-ink);
+  text-shadow: 0 0 10px rgba(61, 225, 255, 0.45);
+}
+.arc-title {
+  grid-area: title;
+  margin-top: 0.35rem;
+  font-size: clamp(3rem, 12.4vw, 7.25rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+.arc-title .arc-neon {
+  display: inline-block;
+  padding: 0.04em 0.02em 0.1em;
+}
+.arc-lead {
+  grid-area: lead;
+  margin-top: 1.1rem;
+  max-width: 34rem;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  color: var(--arc-ink-2);
+}
+@media (min-width: 40rem) {
+  .arc-lead {
+    font-size: 1.2rem;
+  }
+}
+
+/* The scoreboard: three LED panels. */
+.arc-stats {
+  grid-area: stats;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+  /* Room for Kiru, who stands on the cabinet just below, on the right. */
+  margin-right: 6.5rem;
+  max-width: 30rem;
+}
+@media (min-width: 40rem) {
+  .arc-stats {
+    gap: 0.9rem;
+    margin-right: 9rem;
+  }
+}
+@media (min-width: 64rem) {
+  .arc-stats {
+    margin-right: 0;
+  }
+}
+.arc-stat {
+  --tube: var(--arc-pink);
+  position: relative;
+  padding: 0.7rem 0.75rem 0.8rem;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 60%),
+    #0d0f22;
+  border: 1px solid color-mix(in srgb, var(--tube) 34%, transparent);
+  box-shadow:
+    inset 0 0 22px -12px var(--tube),
+    0 0 26px -14px var(--tube);
+}
+.arc-stat dt {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--arc-ink-3);
+}
+.arc-stat dd {
+  margin-top: 0.3rem;
+  font-size: clamp(1.45rem, 6vw, 2.1rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The 遊 sign — the page kanji, bent in neon tube. */
+.arc-sign {
+  grid-area: sign;
+  position: relative;
+  align-self: start;
+  width: 4.75rem;
+  margin-top: 0.2rem;
+}
+@media (min-width: 40rem) {
+  .arc-sign {
+    width: 7rem;
+  }
+}
+@media (min-width: 64rem) {
+  .arc-sign {
+    width: 14rem;
+    margin-top: -1.25rem;
+    justify-self: end;
+  }
+}
+.arc-sign-box {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding: 14% 12% 12%;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 79, 154, 0.16), transparent 70%),
+    linear-gradient(180deg, #121530, #0a0b1c);
+  /* The frame is a cyan tube. */
+  border: 2px solid #b8f4ff;
+  box-shadow:
+    0 0 0 1px rgba(61, 225, 255, 0.5),
+    0 0 10px rgba(61, 225, 255, 0.75),
+    0 0 30px rgba(61, 225, 255, 0.35),
+    inset 0 0 14px rgba(61, 225, 255, 0.35),
+    0 26px 40px -24px rgba(0, 0, 0, 0.9);
+}
+/* The hangers: two short chains up to the lantern wire. */
+.arc-sign::before,
+.arc-sign::after {
+  content: '';
+  position: absolute;
+  top: -1.6rem;
+  width: 2px;
+  height: 1.6rem;
+  background: repeating-linear-gradient(180deg, #59607f 0 3px, transparent 3px 5px);
+}
+.arc-sign::before {
+  left: 22%;
+}
+.arc-sign::after {
+  right: 22%;
+}
+@media (min-width: 64rem) {
+  .arc-sign::before,
+  .arc-sign::after {
+    top: -5rem;
+    height: 5rem;
+  }
+}
+.arc-sign-kanji {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  overflow: visible;
+  filter: drop-shadow(0 0 2px #ff9ccb) drop-shadow(0 0 9px rgba(255, 79, 154, 0.85));
+}
+/* Outline tubes rather than a filled glyph: neon is a line you bend. */
+.arc-sign-kanji path {
+  fill: #ff4f9a;
+  fill-opacity: 0.07;
+  stroke: #ffe3f0;
+  stroke-width: 15;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* <Kanji draw> inks the outline first; here that is the tube lighting up
+     along its length. It ends lit, not filled. */
+  .arc-sign .kanji-draw path {
+    stroke-width: 15;
+    fill-opacity: 0.07;
+    animation: arc-tube 2.4s cubic-bezier(0.6, 0.05, 0.3, 1) 0.35s both;
+  }
+}
+@keyframes arc-tube {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.arc-sign-word {
+  margin-top: 0.35rem;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  text-transform: uppercase;
+}
+@media (max-width: 39.99rem) {
+  .arc-sign-word {
+    display: none;
+  }
+}
+@media (min-width: 64rem) {
+  .arc-sign-word {
+    font-size: 0.8rem;
+  }
+}
+
+/* ── Kiru's Rooftop Run cabinet ─────────────────────────────────────────── */
+.rr {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.5rem;
+  scroll-margin-top: 5rem;
+}
+/* Kiru stands on the cabinet's roof, playing. Never over text, never in the
+   way of a tap. */
+.rr-kiru {
+  position: absolute;
+  right: 0.5rem;
+  bottom: calc(100% - 4px);
+  width: 6.25rem;
+  height: auto;
+  pointer-events: none;
+  z-index: 2;
+}
+@media (min-width: 40rem) {
+  .rr-kiru {
+    width: 8.5rem;
+    right: 1.5rem;
+  }
+}
+@media (min-width: 64rem) {
+  .rr-kiru {
+    width: 10rem;
+    right: 4rem;
+  }
+}
+.rr-cab {
+  position: relative;
+  border-radius: 24px 24px 18px 18px;
+  padding: 0.5rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 30%),
+    linear-gradient(180deg, #1b2048 0%, #131737 55%, #0e1129 100%);
+  border: 1px solid rgba(155, 176, 255, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 40px 90px -40px rgba(255, 91, 61, 0.45),
+    0 0 60px -20px rgba(255, 91, 61, 0.3);
+}
+@media (min-width: 40rem) {
+  .rr-cab {
+    padding: 0.75rem;
+  }
+}
+/* Vermilion side tubes. */
+.rr-cab::before,
+.rr-cab::after {
+  content: '';
+  position: absolute;
+  top: 18%;
+  bottom: 18%;
+  width: 3px;
+  border-radius: 3px;
+  background: #ffd9d0;
+  box-shadow:
+    0 0 6px #ff5b3d,
+    0 0 16px rgba(255, 91, 61, 0.8),
+    0 0 34px rgba(255, 91, 61, 0.45);
+  pointer-events: none;
+}
+.rr-cab::before {
+  left: -2px;
+}
+.rr-cab::after {
+  right: -2px;
+}
+.rr-marquee {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 16px 16px 8px 8px;
+  background:
+    radial-gradient(ellipse 70% 140% at 50% 130%, rgba(255, 91, 61, 0.32), transparent 70%),
+    linear-gradient(180deg, #17102a, #0f0b1d);
+  border: 1px solid rgba(255, 91, 61, 0.35);
+  box-shadow: inset 0 0 24px -10px rgba(255, 140, 90, 0.6);
+}
+.rr-seal {
+  width: 2.4rem;
+  flex: none;
+}
+.rr-kick {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--arc-amber-ink);
+}
+.rr-title {
+  margin-top: 0.1rem;
+  font-size: clamp(1.3rem, 5.4vw, 2.15rem);
+  line-height: 1.05;
+}
+.rr-bezel {
+  position: relative;
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #05060c, #0a0b16);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+@media (min-width: 40rem) {
+  .rr-bezel {
+    padding: 0.65rem;
+    margin-top: 0.65rem;
+  }
+}
+.rr-screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  aspect-ratio: 4 / 3;
+  background: #0b0d22;
+  /* A long press must never select, call out or magnify. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+@media (min-width: 40rem) {
+  .rr-screen {
+    aspect-ratio: 16 / 9;
+  }
+}
+@media (min-width: 64rem) {
+  .rr-screen {
+    aspect-ratio: 2 / 1;
+  }
+}
+/* CRT glass over whatever is on the screen: a soft reflection and a light
+   vignette. Never interactive, never dark enough to hide a hazard. */
+.rr-screen:fullscreen {
+  aspect-ratio: auto;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  background: #060716;
+}
+.rr-screen:fullscreen .rr-glass {
+  display: none;
+}
+.rr-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(128deg, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0) 32%),
+    radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.32) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* The attract screen: a still of the town with Kiru mid-leap. */
+.rr-poster {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.rr-poster-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.rr-poster-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+}
+.rr-poster-title {
+  position: absolute;
+  inset: 8% 0 auto;
+  text-align: center;
+  pointer-events: none;
+}
+.rr-logo-a {
+  font-size: clamp(0.62rem, 1.7vw, 0.85rem);
+  font-weight: 900;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  text-transform: uppercase;
+}
+.rr-logo-b {
+  margin-top: 0.15rem;
+  font-size: clamp(1.5rem, 6vw, 3rem);
+  line-height: 1;
+}
+.rr-poster-sub {
+  margin-top: 0.55rem;
+  font-size: clamp(0.6rem, 1.6vw, 0.78rem);
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--arc-ink);
+  text-shadow: 0 1px 2px #000, 0 0 12px rgba(0, 0, 0, 0.9);
+}
+@media (max-width: 39.99rem) {
+  .rr-poster-sub {
+    display: none;
+  }
+}
+/* The whole screen is a press target too (for a thumb); the real, labelled
+   button is the one in the middle, so this one stays out of the tab order. */
+.rr-poster-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.rr-start-wrap {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  z-index: 3;
+  translate: -50% -50%;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+}
+/* The big Start: a domed arcade button that presses in. White on #d63a22 is
+   4.7:1, like the site's primary button. */
+.rr-start {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.9rem;
+  padding: 0 1.25rem 0 1rem;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: #d63a22;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
+    0 6px 0 #8f2213,
+    0 14px 26px -8px rgba(214, 58, 34, 0.75),
+    0 0 0 6px rgba(10, 11, 26, 0.55);
+  transition:
+    translate 0.08s ease,
+    box-shadow 0.08s ease,
+    background-color 0.2s ease;
+}
+@media (min-width: 40rem) {
+  .rr-start {
+    min-height: 3.75rem;
+    font-size: 1.05rem;
+    padding: 0 1.9rem 0 1.4rem;
+  }
+}
+.rr-start:hover {
+  background: #c8321c;
+}
+.rr-start:active,
+.rr-start[data-pressed] {
+  translate: 0 5px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+    0 1px 0 #8f2213,
+    0 6px 14px -6px rgba(214, 58, 34, 0.7),
+    0 0 0 6px rgba(10, 11, 26, 0.55);
+}
+.rr-start svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+/* Narrow phones: a smaller button, a little lower, so the logo breathes. */
+@media (max-width: 26rem) {
+  .rr-poster-title {
+    inset: 6% 0 auto;
+  }
+  .rr-logo-b {
+    font-size: 1.4rem;
+  }
+  .rr-start-wrap {
+    top: 50%;
+  }
+  .rr-start-wrap .rr-start {
+    min-height: 2.6rem;
+    padding: 0 1rem 0 0.85rem;
+    font-size: 0.76rem;
+  }
+  .rr-start-wrap .rr-hint {
+    display: none;
+  }
+  .rr-kick-more {
+    display: none;
+  }
+}
+.rr-start:focus-visible {
+  outline: 3px solid #fff3dc;
+  outline-offset: 5px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rr-start::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    border: 2px solid rgba(255, 140, 110, 0.75);
+    animation: rr-ring 2.2s ease-out infinite;
+    pointer-events: none;
+  }
+}
+@keyframes rr-ring {
+  0% {
+    opacity: 0.9;
+    scale: 1;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    scale: 1.18 1.45;
+  }
+}
+.rr-hint {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--arc-ink);
+  text-shadow: 0 1px 2px #000, 0 0 10px #000;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rr-blink {
+    animation: rr-blink 1.1s steps(1, end) infinite;
+  }
+}
+@keyframes rr-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.rr-status {
+  position: absolute;
+  inset: auto 0 9%;
+  z-index: 3;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--arc-ink);
+  text-shadow: 0 1px 3px #000;
+}
+
+/* The deck under the screen: what the game is and how to play it. */
+.rr-deck {
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.95rem 0.6rem 0.55rem;
+}
+@media (min-width: 64rem) {
+  .rr-deck {
+    padding: 1.1rem 0.85rem 0.5rem;
+  }
+}
+.rr-blurb {
+  max-width: 40rem;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--arc-ink-2);
+}
+.rr-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  color: var(--arc-ink-2);
+}
+.rr-keys > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.rr-keys > span:not(:first-child)::before {
+  content: '·';
+  margin-right: 0.5rem;
+  color: var(--arc-ink-3);
+}
+@media (hover: none) and (pointer: coarse) {
+  .rr-keys > .rr-touch:not(:first-child)::before {
+    content: none;
+  }
+}
+.rr-keys kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.7rem;
+  height: 1.6rem;
+  padding: 0 0.4rem;
+  border-radius: 6px;
+  font: 700 0.72rem/1 var(--font-sans);
+  color: var(--arc-ink);
+  background: linear-gradient(180deg, #2a3062, #1b2044);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 0 #0a0c1d;
+}
+.rr-keys .rr-touch {
+  display: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .rr-keys .rr-touch {
+    display: inline-flex;
+  }
+  .rr-keys .rr-kbd {
+    display: none;
+  }
+}
+
+/* ── Marquee: an LED ticker over the cabinet row ───────────────────────── */
+.arc-ticker {
+  position: relative;
+  z-index: 1;
+  margin-top: 3.5rem;
+  overflow: hidden;
+  background: #06070f;
+  border-block: 1px solid rgba(255, 79, 154, 0.38);
+  box-shadow:
+    0 0 24px -6px rgba(255, 79, 154, 0.35),
+    inset 0 0 18px rgba(255, 79, 154, 0.12);
+  padding-block: 0.8rem;
+}
+.arc-ticker-track {
+  display: flex;
+  width: max-content;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .arc-ticker-track {
+    animation: arc-ticker var(--arc-ticker-s, 50s) linear infinite;
+  }
+  .arc-ticker:hover .arc-ticker-track {
+    animation-play-state: paused;
+  }
+}
+@keyframes arc-ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.arc-ticker-seg {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+.arc-ticker-item {
+  flex-shrink: 0;
+  padding-inline: 1.5rem;
+  font-size: clamp(0.72rem, 2.6vw, 0.875rem);
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── The cabinets ───────────────────────────────────────────────────────── */
+.arc-games {
+  position: relative;
+  z-index: 1;
+  padding-top: 3.5rem;
+}
+.arc-games-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+}
+.arc-h2 {
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  line-height: 1.05;
+}
+
+/* Platform filter: native radios, styled as pills, filtering with :has() —
+   no JavaScript. Browsers without :has() show every cabinet. */
+.arc-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+@media (max-width: 39.99rem) {
+  .arc-games-head {
+    gap: 1rem;
+  }
+  .arc-filter {
+    flex-wrap: nowrap;
+    width: calc(100% + 2rem);
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 1rem, #000 calc(100% - 2rem), transparent);
+    mask: linear-gradient(90deg, transparent, #000 1rem, #000 calc(100% - 2rem), transparent);
+  }
+  .arc-filter::-webkit-scrollbar {
+    display: none;
+  }
+  .arc-filter label {
+    flex: none;
+    padding: 0 0.9rem;
+    letter-spacing: 0.12em;
+  }
+}
+.arc-filter input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.arc-filter label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--arc-ink-2);
+  border: 1px solid rgba(255, 79, 154, 0.38);
+  background: rgba(255, 255, 255, 0.02);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease,
+    scale 0.12s ease;
+}
+.arc-filter label:hover {
+  color: var(--arc-ink);
+  border-color: rgba(255, 79, 154, 0.7);
+}
+.arc-filter label:active {
+  scale: 0.96;
+}
+.arc-filter input:checked + label {
+  color: #0a0b1a; /* 6.4:1 on the pink */
+  background: var(--arc-pink);
+  border-color: var(--arc-pink);
+  box-shadow:
+    0 0 14px rgba(255, 79, 154, 0.6),
+    0 0 36px -6px rgba(255, 79, 154, 0.5);
+}
+.arc-filter input:focus-visible + label {
+  outline: 2.5px solid #ffe3f0;
+  outline-offset: 3px;
+}
+
+.arc-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: slot;
+}
+@media (min-width: 40rem) {
+  .arc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 64rem) {
+  .arc-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+}
+/* Slot numbers count the cabinets that are showing, so a filter renumbers
+   them the way the old one did — display:none skips the counter. */
+.arc-grid > li {
+  counter-increment: slot;
+}
+
+.arc-cab {
+  --c: var(--arc-pink);
+  --c-ink: var(--arc-pink-ink);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.75rem 0.75rem 1rem;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 22%),
+    linear-gradient(180deg, #161a39 0%, #10132b 100%);
+  border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 26px 50px -32px rgba(0, 0, 0, 0.95),
+    0 0 34px -16px color-mix(in srgb, var(--c) 60%, transparent);
+  transition:
+    translate 0.45s var(--ease-out-expo),
+    transform 0.6s var(--ease-out-expo),
+    box-shadow 0.45s var(--ease-out-expo),
+    border-color 0.3s ease;
+}
+.arc-cab[data-tube='amber'] {
+  --c: var(--arc-amber);
+  --c-ink: var(--arc-amber-ink);
+}
+.arc-cab[data-tube='cyan'] {
+  --c: var(--arc-cyan);
+  --c-ink: var(--arc-cyan-ink);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .arc-cab:hover {
+    translate: 0 -5px;
+  }
+}
+.arc-cab:hover,
+.arc-cab:focus-within {
+  border-color: color-mix(in srgb, var(--c) 62%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 34px 60px -30px rgba(0, 0, 0, 0.95),
+    0 0 46px -12px color-mix(in srgb, var(--c) 80%, transparent);
+}
+
+/* The cabinet's marquee: the game's name, backlit in its tube colour. */
+.arc-cab-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.arc-slot::before {
+  content: '#' counter(slot, decimal-leading-zero);
+  content: '#' counter(slot, decimal-leading-zero) / '';
+}
+.arc-slot {
+  font: 800 0.68rem/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  color: var(--c-ink);
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  background: #07080f;
+  border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+}
+.arc-lamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: var(--lamp-ink, var(--arc-green));
+}
+.arc-lamp::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--lamp, var(--arc-green));
+  box-shadow: 0 0 8px var(--lamp, var(--arc-green));
+}
+.arc-lamp[data-status='beta'] {
+  --lamp: var(--arc-cyan);
+  --lamp-ink: var(--arc-cyan-ink);
+}
+.arc-lamp[data-status='development'] {
+  --lamp: var(--arc-amber);
+  --lamp-ink: var(--arc-amber-ink);
+}
+
+/* The screen: the screenshot under scanlines and a vignette, which clear
+   when you reach for the cabinet (hover or keyboard focus) — or, on a
+   phone, as it scrolls into view. */
+.arc-screen {
+  position: relative;
+  display: block;
+  padding: 6px;
+  border-radius: 14px;
+  background: #05060c;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+.arc-screen-in {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 9px;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.arc-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.86) saturate(0.92);
+  transition:
+    filter 0.45s ease,
+    scale 0.6s var(--ease-out-expo);
+}
+.arc-scan,
+.arc-vig {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.arc-scan {
+  background: repeating-linear-gradient(0deg, rgba(4, 5, 14, 0.22) 0 1px, transparent 1px 3px);
+}
+.arc-vig {
+  background:
+    linear-gradient(128deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0) 30%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.58) 100%);
+}
+.arc-cab:hover .arc-scan,
+.arc-cab:focus-within .arc-scan,
+.arc-cab:hover .arc-vig,
+.arc-cab:focus-within .arc-vig {
+  opacity: 0;
+}
+.arc-cab:hover .arc-screen img,
+.arc-cab:focus-within .arc-screen img {
+  filter: none;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .arc-cab:hover .arc-screen img {
+    scale: 1.04;
+  }
+}
+@media (hover: none) {
+  @media (prefers-reduced-motion: reduce) {
+    .arc-scan,
+    .arc-vig {
+      display: none;
+    }
+    .arc-screen img {
+      filter: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* The tube warms up as the cabinet scrolls into the middle of the
+         screen — no JavaScript, on the compositor. */
+      .arc-scan,
+      .arc-vig {
+        animation: arc-power-off linear both;
+        animation-timeline: view();
+        animation-range: entry 60% cover 50%;
+      }
+      .arc-screen img {
+        animation: arc-power-on linear both;
+        animation-timeline: view();
+        animation-range: entry 60% cover 50%;
+      }
+    }
+  }
+}
+@keyframes arc-power-off {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes arc-power-on {
+  to {
+    filter: none;
+  }
+}
+
+.arc-name {
+  margin-top: 0.95rem;
+  font-size: 1.12rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+.arc-name a {
+  color: var(--arc-ink);
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.25s ease;
+}
+.arc-name a:hover,
+.arc-cab:focus-within .arc-name a {
+  color: var(--c-ink);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--c) 60%, transparent);
+}
+.arc-desc {
+  margin-top: 0.5rem;
+  flex: 1;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--arc-ink-2);
+}
+.arc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+  padding: 0;
+  list-style: none;
+}
+.arc-tags li {
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--arc-ink-2);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+}
+.arc-deck {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+/* Press Start: a vermilion arcade button that physically presses in. */
+.arc-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1.1rem 0 0.95rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: #d63a22;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.26),
+    0 4px 0 #8f2213,
+    0 10px 18px -8px rgba(214, 58, 34, 0.7);
+  transition:
+    translate 0.08s ease,
+    box-shadow 0.08s ease,
+    background-color 0.2s ease;
+}
+.arc-play:hover {
+  background: #c8321c;
+}
+.arc-play:active {
+  translate: 0 3px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 1px 0 #8f2213,
+    0 5px 10px -6px rgba(214, 58, 34, 0.7);
+}
+.arc-play svg,
+.arc-more svg {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+}
+.arc-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--c-ink);
+  border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+  transition:
+    background-color 0.2s ease,
+    scale 0.12s ease;
+}
+.arc-more:hover {
+  background: color-mix(in srgb, var(--c) 12%, transparent);
+}
+.arc-more:active {
+  scale: 0.96;
+}
+
+/* ── The end of the row ─────────────────────────────────────────────────── */
+.arc-end {
+  position: relative;
+  z-index: 1;
+  margin-top: 4.5rem;
+  padding: 1.6rem 0 1.5rem;
+  border-top: 1px solid rgba(255, 79, 154, 0.22);
+  text-align: center;
+}
+.arc-end-line {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+@media (max-width: 39.99rem) {
+  .arc-end-line {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+  }
+}
+.arc-end-gabe {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--arc-ink-3);
+}
+/* ── Game screen (loaded on Start) ──────────────────────────────────────── */
+.rr-game {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.rr-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.rr-canvas[data-playing] {
+  touch-action: none;
+}
+.rr-game:has(.rr-canvas:focus-visible)::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px rgba(255, 227, 240, 0.5);
+  pointer-events: none;
+  z-index: 5;
+}
+.rr-hud {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 6;
+  display: flex;
+  gap: 0.4rem;
+}
+.rr-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(8, 9, 22, 0.62);
+  color: var(--arc-ink);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition:
+    background-color 0.2s ease,
+    scale 0.12s ease;
+}
+.rr-icon:hover {
+  background: rgba(30, 34, 72, 0.8);
+}
+.rr-icon:active {
+  scale: 0.92;
+}
+.rr-icon[aria-pressed='true'] {
+  color: #0a0b1a;
+  background: var(--arc-amber-ink);
+  border-color: var(--arc-amber-ink);
+}
+.rr-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.rr-panel-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  padding: 0.75rem;
+  background: rgba(6, 7, 16, 0.5);
+  pointer-events: none;
+}
+.rr-panel {
+  pointer-events: auto;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  min-width: min(19rem, 100%);
+  padding: 1rem 1.25rem 1.1rem;
+  border-radius: 18px;
+  text-align: center;
+  background: rgba(12, 13, 32, 0.9);
+  border: 1px solid rgba(255, 79, 154, 0.4);
+  box-shadow:
+    0 0 30px -8px rgba(255, 79, 154, 0.5),
+    0 24px 50px -20px rgba(0, 0, 0, 0.9);
+}
+.rr-panel-title {
+  font-size: clamp(1.5rem, 6vw, 2.4rem);
+  line-height: 1.1;
+}
+.rr-panel-scores {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem 1.25rem;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--arc-ink-3);
+}
+.rr-panel-scores b {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  color: var(--arc-ink);
+  font-variant-numeric: tabular-nums;
+}
+.rr-newbest {
+  align-self: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #0a0b1a; /* 13.4:1 on the amber */
+  background: var(--arc-amber-ink);
+}
+.rr-panel .rr-start {
+  margin-top: 0.6rem;
+  min-height: 2.9rem;
+  font-size: 0.85rem;
+}
+.rr-panel .rr-start::after {
+  content: none;
+}
+.rr-panel-note {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--arc-ink-3);
+}
+@media (max-width: 39.99rem) {
+  /* A phone's screen is short: clear the HUD buttons and keep it compact. */
+  .rr-panel-wrap {
+    padding-top: 3.4rem;
+    place-items: start center;
+  }
+  .rr-panel {
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0.55rem 0.9rem 0.7rem;
+  }
+  .rr-panel-title {
+    font-size: 1.3rem;
+  }
+  .rr-panel-scores b {
+    display: inline;
+    margin-left: 0.35rem;
+    font-size: 1.05rem;
+  }
+  .rr-panel .rr-start {
+    margin-top: 0.35rem;
+    min-height: 2.75rem;
+    font-size: 0.8rem;
+  }
+  .rr-panel-note {
+    display: none;
+  }
+}

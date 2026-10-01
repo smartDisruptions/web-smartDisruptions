@@ -22,9 +22,10 @@ const NEAR = town(W, H, 7);
 export default function Skyline({ className, children }: { className?: string; children?: React.ReactNode }) {
   return (
     <div className={`relative ${className ?? ''}`} aria-hidden>
-      <StaticSvg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" className="block h-full w-full">
-        <circle cx="1240" cy="44" r="26" fill="var(--sky-moon)" />
-        <circle cx="1240" cy="44" r="60" fill="var(--sky-moon)" opacity="0.12" />
+      {/* The moon lives outside the sliced viewBox, pinned to the band, so a
+          wide screen that crops the sky's top never cuts it flat. */}
+      <span className="sd-skyline-moon" />
+      <StaticSvg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" className="relative block h-full w-full">
         <path d={FAR} fill="var(--sky-far)" />
         <path d={MID} fill="var(--sky-mid)" />
         <path d={NEAR.roofs} fill="var(--sky-near)" />

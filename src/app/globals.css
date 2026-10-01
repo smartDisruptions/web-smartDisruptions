@@ -348,34 +348,25 @@ p {
   animation: sd-fade-up 0.6s var(--ease-out-expo) both;
 }
 
-/* Arcade — marquee + LED (scoped to that page) */
-@keyframes games-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-.games-marquee-track {
-  display: flex;
-  width: max-content;
-  animation: games-marquee var(--games-marquee-duration, 49s) linear infinite;
-}
-.games-marquee:hover .games-marquee-track {
-  animation-play-state: paused;
-}
-@keyframes led-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
-  }
-}
-.led-pulse {
-  animation: led-pulse 1.6s ease-in-out infinite;
+/* Footer skyline moon: a soft disc rising behind the hills (the skyline SVG
+   paints over it). The band grows with the viewport (Footer), so its sky is
+   never cropped; the moon is sized by the band and placed by width, which
+   keeps it clear of the pagoda at every size and visible on phones, where
+   the skyline itself is cropped at the sides. */
+.sd-skyline-moon {
+  position: absolute;
+  top: 5%;
+  right: 9%;
+  height: 54%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle closest-side,
+    var(--sky-moon) 0 44%,
+    color-mix(in oklab, var(--sky-moon) 18%, transparent) 48%,
+    transparent
+  );
+  pointer-events: none;
 }
 
 /* Post heroes ship in both themes; CSS picks the copy that matches the site's
@@ -1071,9 +1062,6 @@ html.sd-theme-vt::view-transition-new(root) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  .games-marquee-track {
-    animation: none !important;
   }
   ::view-transition-group(*),
   ::view-transition-old(*),

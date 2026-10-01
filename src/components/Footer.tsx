@@ -13,7 +13,7 @@ import { NAV } from '@/components/nav/nav';
 export default function Footer() {
   return (
     <footer className="sd-defer relative mt-16 text-[#eceefa]" style={{ containIntrinsicSize: 'auto 560px' }}>
-      <Skyline className="h-[120px] sm:h-[170px] lg:h-[220px]">
+      <Skyline className="h-[clamp(120px,15.28vw,340px)]">
         <svg
           viewBox="0 0 1440 220"
           preserveAspectRatio="xMidYMax slice"
