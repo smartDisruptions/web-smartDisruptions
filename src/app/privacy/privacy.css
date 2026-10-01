@@ -1,0 +1,271 @@
+/*
+  /privacy — 秘, "secret". Kiru keeps it with a finger to his lips; the policy
+  itself sits on a clean sheet in the reading face, stamped at the bottom like
+  a signed document. Prefix: pv-
+*/
+
+.pv-top {
+  position: relative;
+  overflow-x: clip;
+}
+.pv-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.5rem 1rem;
+  max-width: 50rem;
+  margin-inline: auto;
+  padding: 2.5rem 1rem 0;
+}
+@media (min-width: 40rem) {
+  .pv-hero {
+    padding: 4rem 1.5rem 0;
+    gap: 1rem 2rem;
+  }
+}
+.pv-mark {
+  position: absolute;
+  opacity: 0.075;
+  top: -1rem;
+  right: -6rem;
+  width: clamp(16rem, 70vw, 30rem);
+  height: auto;
+}
+:root[data-theme='dark'] .pv-mark {
+  opacity: 0.1;
+}
+@media (min-width: 40rem) {
+  .pv-mark {
+    right: -9rem;
+    top: -3rem;
+  }
+}
+
+.pv-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.pv-kanji {
+  flex: none;
+  width: 3.4rem;
+  height: 3.4rem;
+  color: var(--sd-pen);
+}
+@media (min-width: 40rem) {
+  .pv-kanji {
+    width: 4.6rem;
+    height: 4.6rem;
+  }
+}
+.pv-h1 {
+  font-size: clamp(2.3rem, 10.4vw, 4.75rem);
+  line-height: 1;
+  color: var(--sd-text-primary);
+}
+.pv-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sd-surface) 70%, transparent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sd-text-secondary);
+}
+.pv-updated::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--sd-pen);
+}
+
+/* Kiru: finger to his lips. Stands to the side of the title, never on it. */
+.pv-ninja {
+  position: relative;
+  align-self: end;
+  width: 5.75rem;
+  margin-bottom: -0.4rem;
+}
+@media (min-width: 40rem) {
+  .pv-ninja {
+    width: 11rem;
+    margin-bottom: -1.2rem;
+  }
+}
+.pv-ninja::before {
+  content: '';
+  position: absolute;
+  inset: 8% 2% 14% 2%;
+  border-radius: 50%;
+  background: var(--sky-moon);
+  opacity: 0.13;
+}
+.pv-ninja .kiru {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The sheet. */
+.pv-sheet {
+  max-width: 47rem;
+  margin: 1.5rem auto 0;
+  padding: 1.6rem 1.3rem 1.5rem;
+  margin-inline: 1rem;
+}
+@media (min-width: 40rem) {
+  .pv-sheet {
+    margin: 2rem auto 0;
+    padding: 3rem 3.25rem 2.5rem;
+  }
+}
+@media (min-width: 50rem) {
+  .pv-sheet {
+    margin-inline: auto;
+  }
+}
+.pv-intro {
+  font-size: 1.18rem;
+  line-height: 1.75;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 40rem) {
+  .pv-intro {
+    font-size: 1.28rem;
+  }
+}
+
+.pv-sec {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--sd-border);
+}
+.pv-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.pv-ico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sd-accent) 10%, transparent);
+  color: var(--sd-accent);
+}
+.pv-sec h2 {
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 40rem) {
+  .pv-sec h2 {
+    font-size: 1.45rem;
+  }
+}
+.pv-sec p {
+  margin-top: 0.9rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--sd-text-secondary);
+}
+@media (min-width: 40rem) {
+  .pv-sec-body {
+    padding-left: 3.45rem;
+  }
+}
+.pv-sheet a {
+  color: var(--sd-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.pv-sheet a:hover {
+  color: var(--sd-accent-hover);
+  text-decoration-thickness: 2px;
+}
+
+.pv-sign {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.25rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: var(--radius-xl);
+  background: var(--sd-fill);
+}
+.pv-sign p {
+  font-size: 1.02rem;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--sd-text-primary);
+}
+.pv-seal {
+  flex: none;
+  width: 3rem;
+  rotate: -8deg;
+}
+
+/* Motion: the sections rise in as they arrive; the stamp lands. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .pv-sec,
+    .pv-sign {
+      animation: pv-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 20%;
+    }
+    .pv-seal {
+      animation: pv-stamp linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 35%;
+    }
+  }
+  .pv-ninja .kiru {
+    animation: pv-peek 0.9s var(--ease-out-expo) 0.2s both;
+  }
+}
+@keyframes pv-rise {
+  from {
+    opacity: 0;
+    translate: 0 22px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes pv-stamp {
+  0% {
+    opacity: 0;
+    scale: 1.9;
+    rotate: -20deg;
+  }
+  70% {
+    opacity: 1;
+    scale: 0.92;
+    rotate: -6deg;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    rotate: -8deg;
+  }
+}
+@keyframes pv-peek {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+}

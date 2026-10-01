@@ -488,7 +488,10 @@ p {
 .sd-card {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  /* clip, not hidden: hidden makes the card a scroll container, and a
+     scroll-driven animation inside it would bind to the card (which never
+     scrolls) instead of the page. */
+  overflow: clip;
   background-color: var(--sd-surface);
   border: 1px solid var(--sd-border);
   border-radius: var(--radius-xl);
@@ -534,7 +537,7 @@ p {
 .sd-print,
 .nb-polaroid {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   background-color: var(--sd-surface);
   border: 1px solid var(--sd-border);
   border-radius: var(--radius-xl);

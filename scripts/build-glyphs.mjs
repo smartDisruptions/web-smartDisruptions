@@ -30,7 +30,7 @@ const FACES = {
   brush: {
     file: 'PottaOne-Regular.ttf',
     url: 'https://raw.githubusercontent.com/google/fonts/main/ofl/pottaone/PottaOne-Regular.ttf',
-    chars: '忍書嵐創遊道秘消斬学速光影月桜侍技心新夢力風雷作探',
+    chars: '忍書嵐創遊道秘消斬学速光影月桜侍技心新夢力風雷作探切る',
   },
   // Heavy gothic — the vertical katakana tag. Same family as the display face.
   gothic: {

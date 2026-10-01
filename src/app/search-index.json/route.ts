@@ -29,6 +29,7 @@ export function GET() {
     { t: 'Arcade', u: '/games', k: 'Page', d: 'Games you can play right now' },
     { t: 'About Josh', u: '/about', k: 'Page', d: 'Who builds this, and how AI helps' },
     { t: 'Privacy', u: '/privacy', k: 'Page', d: 'What this site collects (very little)' },
+    { t: 'Meet Kiru', u: '/kiru', k: 'Page', d: 'The ninja who lives on this site', x: 'mascot ninja' },
   ];
 
   for (const p of getPublishedPosts()) {
