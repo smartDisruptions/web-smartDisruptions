@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Dela_Gothic_One, Literata } from 'next/font/google';
+import { Literata } from 'next/font/google';
+import localFont from 'next/font/local';
 import { ViewTransition } from 'react';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -11,14 +12,18 @@ import KiruDefs from '@/components/kiru/KiruDefs';
 import SiteFX from '@/components/SiteFX';
 import PaletteTrigger from '@/components/palette/PaletteTrigger';
 
-// Display: Dela Gothic One — a Japanese poster gothic, headlines only. Latin
-// is preloaded; the Japanese slices exist but the site draws its few kanji as
-// SVG paths (components/brand/glyphs.ts), so browsers never fetch them.
-const display = Dela_Gothic_One({
+// Display: Dela Gothic One — a Japanese poster gothic, headlines only.
+// Self-hosted as a Latin-only subset (fonts/dela-gothic-one-latin.woff2, cut
+// with fontTools' pyftsubset from the OFL release). Loading it through
+// next/font/google emitted an @font-face for every Japanese slice — ~90 KB of
+// CSS on every page — for characters the site draws as SVG paths instead.
+const display = localFont({
+  src: './fonts/dela-gothic-one-latin.woff2',
   variable: '--font-dela',
   weight: '400',
-  subsets: ['latin'],
+  style: 'normal',
   display: 'swap',
+  adjustFontFallback: 'Arial',
 });
 
 // Reading: Literata — built for long-form screen reading. Article and report

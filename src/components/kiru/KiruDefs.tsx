@@ -1,6 +1,9 @@
+import { KiruParts } from './Kiru';
+
 /**
- * Gradients and the head clip that every <Kiru /> on the page references by
- * id. Rendered once, in the root layout. Zero-sized rather than display:none,
+ * Gradients, the head clip, and the shared body parts (hood, face, torso,
+ * legs, katana) that every <Kiru /> on the page references by id. Rendered
+ * once, in the root layout. Zero-sized rather than display:none,
  * because a gradient inside a display:none SVG doesn't paint in every browser.
  */
 export default function KiruDefs() {
@@ -31,6 +34,7 @@ export default function KiruDefs() {
         <clipPath id="kiru-head-clip" clipPathUnits="userSpaceOnUse">
           <ellipse cx="100" cy="90" rx="74" ry="66" />
         </clipPath>
+        <KiruParts />
       </defs>
     </svg>
   );

@@ -2,7 +2,6 @@ import { getPublishedPosts } from '@/lib/posts';
 import { marketStormReports } from '@/data/marketStorm';
 import { apps, ARCADE_SLUGS } from '@/data/apps';
 import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
-import Kanji from '@/components/brand/Kanji';
 
 /**
  * A vermilion band of receipts under the hero: counts read straight from the
@@ -25,7 +24,7 @@ export default function ReceiptsBand() {
       {items.map((t) => (
         <li key={t} className="flex items-center gap-6">
           <span>{t}</span>
-          <Kanji char="忍" className="h-4 w-4 opacity-60" />
+          <span aria-hidden className="hm-band-dot" />
         </li>
       ))}
     </ul>

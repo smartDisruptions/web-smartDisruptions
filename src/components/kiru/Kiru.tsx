@@ -62,7 +62,11 @@ const WOOD = '#9a6a37';
 
 const OUT = 6; // outline width; paint-order puts half of it outside the fill
 
-/** A filled shape with the sticker outline painted underneath it. */
+/**
+ * A filled shape with the sticker outline painted underneath it. The outline
+ * is a class (`ko`, in globals.css) rather than four attributes, because this
+ * markup repeats in every ninja on the page — and again in the RSC payload.
+ */
 function S({
   d,
   fill,
@@ -76,18 +80,8 @@ function S({
   className?: string;
   style?: CSSProperties;
 }) {
-  return (
-    <path
-      d={d}
-      fill={fill}
-      stroke={outline ? LINE : undefined}
-      strokeWidth={outline ? OUT : undefined}
-      strokeLinejoin="round"
-      paintOrder="stroke"
-      className={className}
-      style={style}
-    />
-  );
+  const cls = [outline ? 'ko' : '', className ?? ''].join(' ').trim();
+  return <path d={d} fill={fill} className={cls || undefined} style={style} />;
 }
 
 /** An arm: a two-stroke capsule (outline, then sleeve) ending in a wrapped hand. */
@@ -107,30 +101,10 @@ function Arm({
   const [hx, hy] = hand;
   return (
     <g className={className}>
-      <path d={d} stroke={LINE} strokeWidth={22} strokeLinecap="round" fill="none" />
-      <path
-        d={d}
-        stroke={lit ? GI_LIT : GI_SHADE}
-        strokeWidth={15}
-        strokeLinecap="round"
-        fill="none"
-      />
-      <circle
-        cx={hx}
-        cy={hy}
-        r={fist ? 9.5 : 10.5}
-        fill={WRAP}
-        stroke={LINE}
-        strokeWidth={4}
-        paintOrder="stroke"
-      />
-      <path
-        d={`M${hx - 7} ${hy - 2.5} q7 3 14 0`}
-        stroke={WRAP_SHADE}
-        strokeWidth={2}
-        fill="none"
-        strokeLinecap="round"
-      />
+      <path d={d} className="ka-o" />
+      <path d={d} className={lit ? 'ka-l' : 'ka-s'} />
+      <circle cx={hx} cy={hy} r={fist ? 9.5 : 10.5} className="kh" />
+      <path d={`M${hx - 7} ${hy - 2.5}q7 3 14 0`} className="kw" />
     </g>
   );
 }
@@ -160,7 +134,7 @@ const TAIL_LO_RUN = [
 
 function Tail({ frames, fill, dur }: { frames: string[]; fill: string; dur: string }) {
   return (
-    <path d={frames[0]} fill={fill} stroke={LINE} strokeWidth={4} paintOrder="stroke" strokeLinejoin="round">
+    <path d={frames[0]} fill={fill} className="kt">
       <animate
         attributeName="d"
         dur={dur}
@@ -271,101 +245,90 @@ function Head({
     <g className={className} transform={transform}>
       <Tail frames={running ? TAIL_LO_RUN : TAIL_LO} fill={RED_DARK} dur={running ? '0.55s' : '2.2s'} />
       <Tail frames={running ? TAIL_HI_RUN : TAIL_HI} fill={RED} dur={running ? '0.5s' : '1.9s'} />
-      {/* hood */}
-      <S d="M26 90a74 66 0 1 0 148 0a74 66 0 1 0 -148 0Z" fill="url(#kiru-hood)" />
-      <g clipPath="url(#kiru-head-clip)">
-        <ellipse cx="132" cy="128" rx="82" ry="62" fill={GI_SHADE} opacity="0.55" />
-        <ellipse cx="66" cy="40" rx="38" ry="15" transform="rotate(-24 66 40)" fill="#fff" opacity="0.08" />
-        {/* headband */}
-        <path d="M14 78 Q100 34 186 78" stroke={RED} strokeWidth="18" fill="none" />
-        <path d="M14 87 Q100 43 186 87" stroke={RED_DARK} strokeWidth="2.5" fill="none" opacity="0.9" />
-      </g>
-      {/* moonlight rim — night only */}
-      <path
-        d="M47 50 Q33 68 31 95"
-        stroke="#a9bcff"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        fill="none"
-        style={{ opacity: 'calc(var(--kiru-rim) * 0.75)' }}
-      />
-      {/* knot */}
-      <ellipse cx="171" cy="64" rx="7.5" ry="5" transform="rotate(-32 171 64)" fill={RED_DARK} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
-      <ellipse cx="172" cy="79" rx="6.5" ry="5" transform="rotate(30 172 79)" fill={RED_DARK} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
-      <circle cx="166" cy="71" r="6" fill={RED} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
-      {/* plate: the bolt is the brand mark — a disruption, struck in steel */}
-      <rect x="81" y="43" width="38" height="20" rx="4.5" fill={STEEL} stroke={LINE} strokeWidth="3.5" paintOrder="stroke" />
-      <rect x="83.5" y="45.5" width="33" height="15" rx="3" fill="none" stroke={STEEL_EDGE} strokeWidth="1.2" />
-      <path d="M103.5 46.5 L94 55.5 L100.5 55.5 L96.5 60.5 L107 51.5 L100.5 51.5 Z" fill={RED} />
-      <circle cx="86.5" cy="53" r="1.3" fill={STEEL_EDGE} />
-      <circle cx="113.5" cy="53" r="1.3" fill={STEEL_EDGE} />
-      {/* face opening */}
-      <path
-        d="M44 80 C70 68 130 68 156 80 C168 85 168 104 156 109 C130 121 70 121 44 109 C32 104 32 85 44 80 Z"
-        fill={SKIN}
-      />
-      <path
-        d="M44 80 C70 68 130 68 156 80 C160 82 162 85 163 88 C130 77 70 77 37 88 C38 85 40 82 44 80 Z"
-        fill={SKIN_SHADE}
-        opacity="0.75"
-      />
-      <ellipse cx="57" cy="107" rx="7" ry="3.4" fill="#f08a78" opacity="0.5" />
-      <ellipse cx="143" cy="107" rx="7" ry="3.4" fill="#f08a78" opacity="0.5" />
+      <use href="#k-hood" />
       <Eyes mood={mood} look={look} />
       <Brows mood={mood} />
     </g>
   );
 }
 
+/**
+ * The parts every ninja shares, drawn once per page inside <KiruDefs /> and
+ * referenced by each pose with <use>. Only what animates or varies per pose
+ * (tails, eyes, brows, arms, props) is drawn per instance — a ninja is ~3 KB
+ * of markup instead of ~8 KB, which matters on a page with a dozen of them.
+ */
+export function KiruParts() {
+  return (
+    <>
+      <g id="k-hood">
+        <path d="M26 90a74 66 0 1 0 148 0a74 66 0 1 0 -148 0Z" fill="url(#kiru-hood)" stroke={LINE} strokeWidth={OUT} paintOrder="stroke" />
+        <g clipPath="url(#kiru-head-clip)">
+          <ellipse cx="132" cy="128" rx="82" ry="62" fill={GI_SHADE} opacity="0.55" />
+          <ellipse cx="66" cy="40" rx="38" ry="15" transform="rotate(-24 66 40)" fill="#fff" opacity="0.08" />
+          <path d="M14 78 Q100 34 186 78" stroke={RED} strokeWidth="18" fill="none" />
+          <path d="M14 87 Q100 43 186 87" stroke={RED_DARK} strokeWidth="2.5" fill="none" opacity="0.9" />
+        </g>
+        {/* moonlight rim — night only */}
+        <path
+          d="M47 50 Q33 68 31 95"
+          stroke="#a9bcff"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+          fill="none"
+          style={{ opacity: 'calc(var(--kiru-rim) * 0.75)' }}
+        />
+        <ellipse cx="171" cy="64" rx="7.5" ry="5" transform="rotate(-32 171 64)" fill={RED_DARK} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
+        <ellipse cx="172" cy="79" rx="6.5" ry="5" transform="rotate(30 172 79)" fill={RED_DARK} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
+        <circle cx="166" cy="71" r="6" fill={RED} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
+        {/* plate: the bolt is the brand mark — a disruption, struck in steel */}
+        <rect x="81" y="43" width="38" height="20" rx="4.5" fill={STEEL} stroke={LINE} strokeWidth="3.5" paintOrder="stroke" />
+        <rect x="83.5" y="45.5" width="33" height="15" rx="3" fill="none" stroke={STEEL_EDGE} strokeWidth="1.2" />
+        <path d="M103.5 46.5 L94 55.5 L100.5 55.5 L96.5 60.5 L107 51.5 L100.5 51.5 Z" fill={RED} />
+        <circle cx="86.5" cy="53" r="1.3" fill={STEEL_EDGE} />
+        <circle cx="113.5" cy="53" r="1.3" fill={STEEL_EDGE} />
+        {/* face opening */}
+        <path d="M44 80 C70 68 130 68 156 80 C168 85 168 104 156 109 C130 121 70 121 44 109 C32 104 32 85 44 80 Z" fill={SKIN} />
+        <path
+          d="M44 80 C70 68 130 68 156 80 C160 82 162 85 163 88 C130 77 70 77 37 88 C38 85 40 82 44 80 Z"
+          fill={SKIN_SHADE}
+          opacity="0.75"
+        />
+        <ellipse cx="57" cy="107" rx="7" ry="3.4" fill="#f08a78" opacity="0.5" />
+        <ellipse cx="143" cy="107" rx="7" ry="3.4" fill="#f08a78" opacity="0.5" />
+      </g>
+      <g id="k-katana">
+        {/* scabbard tip, behind the right leg */}
+        <path d="M134 188 L157 224" stroke={LINE} strokeWidth="13" strokeLinecap="round" />
+        <path d="M134 188 L157 224" stroke="#3a1f2a" strokeWidth="8" strokeLinecap="round" />
+        <circle cx="157" cy="224" r="3.6" fill={GOLD} />
+        {/* handle over the left shoulder */}
+        <path d="M33 116 L57 150" stroke={LINE} strokeWidth="15" strokeLinecap="round" />
+        <path d="M33 116 L57 150" stroke={INK} strokeWidth="9.5" strokeLinecap="round" />
+        <path d="M31 120 l7 -3 M35 126 l7 -3 M39 132 l7 -3 M43 138 l7 -3" stroke={RED} strokeWidth="2.6" strokeLinecap="round" />
+        <ellipse cx="57" cy="150" rx="11" ry="4.2" transform="rotate(-55 57 150)" fill={GOLD} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
+      </g>
+      <g id="k-torso">
+        <path d="M64 158 Q66 146 82 143 L118 143 Q134 146 136 158 L133 199 Q100 205 67 199 Z" fill="url(#kiru-gi)" stroke={LINE} strokeWidth={OUT} strokeLinejoin="round" paintOrder="stroke" />
+        <path d="M112 144 L118 143 Q134 146 136 158 L133 199 Q123 202 112 203 Z" fill={GI_SHADE} opacity="0.55" />
+        <path d="M88 145 L100 166 L112 145 Z" fill="#c9cfe3" />
+        <path d="M84 145 L100 170 L116 145" stroke={GI_LIT} strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+        <path d="M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z" fill={RED} />
+        <path d="M67 193 Q100 200 133 193" stroke={RED_DARK} strokeWidth="2" fill="none" opacity="0.8" />
+        <path d="M81 193 l-6 15 l8 -3 z M86 193 l2 15 l5 -5 z" fill={RED_DARK} stroke={LINE} strokeWidth="2" paintOrder="stroke" strokeLinejoin="round" />
+        <circle cx="84" cy="192" r="5" fill={RED_DARK} stroke={LINE} strokeWidth="2.5" paintOrder="stroke" />
+      </g>
+      <g id="k-legs">
+        <path d="M76 194 h20 v28 q0 6 -6 6 h-8 q-6 0 -6 -6 z" fill={GI} stroke={LINE} strokeWidth={OUT} strokeLinejoin="round" paintOrder="stroke" />
+        <path d="M104 194 h20 v28 q0 6 -6 6 h-8 q-6 0 -6 -6 z" fill={GI_SHADE} stroke={LINE} strokeWidth={OUT} strokeLinejoin="round" paintOrder="stroke" />
+        <path d="M67 232 q0 -10 12 -10 h12 q8 0 8 7 v3 z" fill={INK} stroke={LINE} strokeWidth={OUT} strokeLinejoin="round" paintOrder="stroke" />
+        <path d="M133 232 q0 -10 -12 -10 h-12 q-8 0 -8 7 v3 z" fill={INK} stroke={LINE} strokeWidth={OUT} strokeLinejoin="round" paintOrder="stroke" />
+      </g>
+    </>
+  );
+}
+
 // ── Body parts ──────────────────────────────────────────────────────────────
-function Katana() {
-  return (
-    <g>
-      {/* scabbard tip, behind the right leg */}
-      <path d="M134 188 L157 224" stroke={LINE} strokeWidth="13" strokeLinecap="round" />
-      <path d="M134 188 L157 224" stroke="#3a1f2a" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="157" cy="224" r="3.6" fill={GOLD} />
-      {/* handle over the left shoulder */}
-      <path d="M33 116 L57 150" stroke={LINE} strokeWidth="15" strokeLinecap="round" />
-      <path d="M33 116 L57 150" stroke={INK} strokeWidth="9.5" strokeLinecap="round" />
-      <path
-        d="M31 120 l7 -3 M35 126 l7 -3 M39 132 l7 -3 M43 138 l7 -3"
-        stroke={RED}
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-      <ellipse cx="57" cy="150" rx="11" ry="4.2" transform="rotate(-55 57 150)" fill={GOLD} stroke={LINE} strokeWidth="3" paintOrder="stroke" />
-    </g>
-  );
-}
-
-function Torso() {
-  return (
-    <g>
-      <S d="M64 158 Q66 146 82 143 L118 143 Q134 146 136 158 L133 199 Q100 205 67 199 Z" fill="url(#kiru-gi)" />
-      <path d="M112 144 L118 143 Q134 146 136 158 L133 199 Q123 202 112 203 Z" fill={GI_SHADE} opacity="0.55" />
-      <path d="M88 145 L100 166 L112 145 Z" fill="#c9cfe3" />
-      <path d="M84 145 L100 170 L116 145" stroke={GI_LIT} strokeWidth="4.5" fill="none" strokeLinejoin="round" />
-      {/* obi */}
-      <path d="M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z" fill={RED} />
-      <path d="M67 193 Q100 200 133 193" stroke={RED_DARK} strokeWidth="2" fill="none" opacity="0.8" />
-      <path d="M81 193 l-6 15 l8 -3 z M86 193 l2 15 l5 -5 z" fill={RED_DARK} stroke={LINE} strokeWidth="2" paintOrder="stroke" strokeLinejoin="round" />
-      <circle cx="84" cy="192" r="5" fill={RED_DARK} stroke={LINE} strokeWidth="2.5" paintOrder="stroke" />
-    </g>
-  );
-}
-
-function Legs() {
-  return (
-    <g className="k-legs">
-      <S d="M76 194 h20 v28 q0 6 -6 6 h-8 q-6 0 -6 -6 z" fill={GI} />
-      <S d="M104 194 h20 v28 q0 6 -6 6 h-8 q-6 0 -6 -6 z" fill={GI_SHADE} />
-      <S d="M67 232 q0 -10 12 -10 h12 q8 0 8 7 v3 z" fill={INK} />
-      <S d="M133 232 q0 -10 -12 -10 h-12 q-8 0 -8 7 v3 z" fill={INK} />
-    </g>
-  );
-}
-
 function ArmsIdle() {
   return (
     <>
@@ -735,9 +698,9 @@ export default function Kiru({
     >
       {p.back}
       <g className={`k-body ${p.bodyClass ?? ''}`} transform={p.bodyTransform}>
-        {p.katana !== false && <Katana />}
-        {p.legs === undefined ? <Legs /> : p.legs}
-        {p.torso !== false && <Torso />}
+        {p.katana !== false && <use href="#k-katana" />}
+        {p.legs === undefined ? <use href="#k-legs" className="k-legs" /> : p.legs}
+        {p.torso !== false && <use href="#k-torso" />}
         {p.arms}
         <Head
           mood={m}

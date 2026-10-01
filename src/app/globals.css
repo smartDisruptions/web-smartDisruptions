@@ -785,6 +785,49 @@ p {
   --lx: 0;
   --ly: 0;
 }
+/* Per-instance strokes as classes — this markup repeats in every ninja. */
+.kiru .ko {
+  stroke: var(--kiru-line);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+.kiru .kt {
+  stroke: var(--kiru-line);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+.kiru .ka-o,
+.kiru .ka-l,
+.kiru .ka-s {
+  fill: none;
+  stroke-linecap: round;
+}
+.kiru .ka-o {
+  stroke: var(--kiru-line);
+  stroke-width: 22px;
+}
+.kiru .ka-l {
+  stroke: #2e3970;
+  stroke-width: 15px;
+}
+.kiru .ka-s {
+  stroke: #1a2044;
+  stroke-width: 15px;
+}
+.kiru .kh {
+  fill: #e4e7f0;
+  stroke: var(--kiru-line);
+  stroke-width: 4px;
+  paint-order: stroke;
+}
+.kiru .kw {
+  fill: none;
+  stroke: #b6bccf;
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
 .kiru .k-pupils {
   transform: translate(calc(var(--lx) * 4.5px), calc(var(--ly) * 3.5px));
   transition: transform 0.18s ease-out;

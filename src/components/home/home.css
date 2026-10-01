@@ -24,6 +24,13 @@
   gap: 1.5rem;
   padding: 0.85rem 0.75rem;
 }
+.hm-band-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  rotate: 45deg;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.55);
+}
 @media (prefers-reduced-motion: no-preference) {
   .hm-band-track {
     animation: hm-band 38s linear infinite;
