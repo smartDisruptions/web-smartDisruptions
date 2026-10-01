@@ -54,6 +54,7 @@ export default function SiteHeader() {
       >
         <Link
           href="/"
+          prefetch={pathname === '/' ? false : undefined}
           className="group flex min-w-0 items-center gap-2.5"
           aria-label="Smart Disruptions — home"
           transitionTypes={direction(pathname, '/')}
@@ -71,6 +72,7 @@ export default function SiteHeader() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  prefetch={pathname === item.href ? false : undefined}
                   transitionTypes={direction(pathname, item.href)}
                   aria-current={active ? 'page' : undefined}
                   className={`relative block rounded-full px-3.5 py-2 text-[0.92rem] font-semibold transition-colors ${
@@ -114,6 +116,7 @@ export default function SiteHeader() {
           <ThemeToggle />
           <Link
             href="/about"
+            prefetch={pathname === '/about' ? false : undefined}
             aria-label="About Josh"
             aria-current={isActive(pathname, '/about') ? 'page' : undefined}
             className={`ml-0.5 block h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 transition-[box-shadow,transform] duration-300 hover:scale-105 lg:hidden ${

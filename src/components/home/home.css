@@ -277,7 +277,9 @@
   background: var(--sd-fill);
 }
 .hm-note-thumb img {
-  display: block;
+  /* Not display:block — that would beat .hero-themed-* (globals.css), show
+     the wrong theme's art and download both copies. */
+  vertical-align: top;
 }
 @media (max-width: 64rem) {
   /* Phone/tablet: the rest become a snapping rail with the next card peeking. */

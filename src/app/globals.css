@@ -637,6 +637,11 @@ p {
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
 }
+/* The phone tab bar ends every page riding over the sumi-ink footer; a
+   denser glass keeps its small labels at AA contrast there in day theme. */
+.sd-glass-dense {
+  background: color-mix(in srgb, var(--sd-bg) 92%, transparent);
+}
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .sd-glass {
     background: var(--sd-bg);

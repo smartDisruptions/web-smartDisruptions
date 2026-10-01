@@ -24,7 +24,7 @@ export default function TabBar() {
   return (
     <nav
       aria-label="Sections"
-      className="sd-glass fixed inset-x-0 bottom-0 z-50 border-t border-border lg:hidden"
+      className="sd-glass sd-glass-dense fixed inset-x-0 bottom-0 z-50 border-t border-border lg:hidden"
       style={{ viewTransitionName: 'sd-tabbar', paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <ul className="mx-auto grid h-[64px] max-w-lg grid-cols-5 px-1.5" role="list">
@@ -35,6 +35,7 @@ export default function TabBar() {
             <li key={item.href} className="relative">
               <Link
                 href={item.href}
+                prefetch={pathname === item.href ? false : undefined}
                 transitionTypes={direction(pathname, item.href)}
                 aria-current={active ? 'page' : undefined}
                 onClick={() => {
