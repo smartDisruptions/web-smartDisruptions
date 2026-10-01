@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import KiruMark from '@/components/brand/KiruMark';
 import ThemeToggle from '@/components/ThemeToggle';
 import { IconSearch } from '@/components/icons';
-import { NAV, isActive, direction } from './nav';
+import { NAV, isActive, direction, sectionOf } from './nav';
 
 /**
  * The top bar. Desktop: the full section nav, with a vermilion brush stroke
@@ -17,6 +17,7 @@ import { NAV, isActive, direction } from './nav';
  */
 export default function SiteHeader() {
   const pathname = usePathname();
+  const section = sectionOf(useSelectedLayoutSegment());
   // Hidden is remembered per page, so a new page always starts with the bar
   // showing — without resetting state in an effect.
   const [hiddenOn, setHiddenOn] = useState<string | null>(null);
@@ -69,7 +70,7 @@ export default function SiteHeader() {
 
         <ul className="hidden items-center gap-1 lg:flex" role="list">
           {NAV.map((item) => {
-            const active = isActive(pathname, item.href);
+            const active = isActive(section, item.href);
             return (
               <li key={item.href}>
                 <Link
@@ -120,9 +121,9 @@ export default function SiteHeader() {
             href="/about"
             prefetch={pathname === '/about' ? false : undefined}
             aria-label="About Josh"
-            aria-current={isActive(pathname, '/about') ? 'page' : undefined}
+            aria-current={isActive(section, '/about') ? 'page' : undefined}
             className={`ml-0.5 block h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 transition-[box-shadow,transform] duration-300 hover:scale-105 lg:hidden ${
-              isActive(pathname, '/about') ? 'ring-pen' : 'ring-border'
+              isActive(section, '/about') ? 'ring-pen' : 'ring-border'
             }`}
           >
             <img src="/images/josh.webp" alt="" width={36} height={36} className="h-full w-full object-cover" />

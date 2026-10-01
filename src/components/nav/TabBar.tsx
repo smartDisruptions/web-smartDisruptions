@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { IconHome, IconWriting, IconStorm, IconBuilt, IconArcade } from '@/components/icons';
-import { NAV, isActive, direction } from './nav';
+import { NAV, isActive, direction, sectionOf } from './nav';
 
 const ICONS: Record<string, (p: { size?: number }) => React.ReactElement> = {
   '/': IconHome,
@@ -21,6 +21,7 @@ const ICONS: Record<string, (p: { size?: number }) => React.ReactElement> = {
  */
 export default function TabBar() {
   const pathname = usePathname();
+  const section = sectionOf(useSelectedLayoutSegment());
   return (
     <nav
       aria-label="Sections"
@@ -29,7 +30,7 @@ export default function TabBar() {
     >
       <ul className="mx-auto grid h-[64px] max-w-lg grid-cols-5 px-1.5" role="list">
         {NAV.filter((n) => n.tab).map((item) => {
-          const active = isActive(pathname, item.href);
+          const active = isActive(section, item.href);
           const Icon = ICONS[item.href];
           return (
             <li key={item.href} className="relative">

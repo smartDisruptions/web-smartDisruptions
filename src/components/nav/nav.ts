@@ -19,6 +19,17 @@ export const NAV: NavItem[] = [
   { href: '/about', label: 'About', short: 'About', tab: false },
 ];
 
+/**
+ * The section a page belongs to ('/' for home), from the root layout's
+ * selected segment (`useSelectedLayoutSegment()`). Active-tab styling reads
+ * this rather than the address bar: the static 404 served for /content/nope
+ * is the 404 page on the server and in the browser alike, so the tabs
+ * hydrate without a mismatch.
+ */
+export function sectionOf(segment: string | null): string {
+  return segment === null ? '/' : `/${segment}`;
+}
+
 export function isActive(pathname: string, href: string): boolean {
   if (href === '/') return pathname === '/';
   return pathname === href || pathname.startsWith(`${href}/`);

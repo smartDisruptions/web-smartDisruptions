@@ -71,8 +71,9 @@ const components: Components = {
   // page body never scrolls sideways. Numbers get tabular figures. No frame
   // border (a bordered wrapper reads as "cramped" when the table sits flush);
   // the header tint + row rules define the table instead.
+  // Focusable and named, so a keyboard reader can scroll a wide table too.
   table: ({ children }) => (
-    <div className="wr-table-wrap">
+    <div className="wr-table-wrap" tabIndex={0} role="region" aria-label="Table">
       <table className="wr-table">{children}</table>
     </div>
   ),

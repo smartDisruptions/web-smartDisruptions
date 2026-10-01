@@ -142,7 +142,7 @@ export default function JumpNav({ items }: { items: Stop[] }) {
                           : 'text-text-secondary hover:bg-fill hover:text-text-primary'
                       }`}
                     >
-                      <span className="font-mono text-[0.65rem] font-bold [font-variant-numeric:tabular-nums] opacity-70">
+                      <span className="font-mono text-[0.65rem] font-bold [font-variant-numeric:tabular-nums]">
                         {String(it.n).padStart(2, '0')}
                       </span>
                       <span className="min-w-0">{it.label}</span>
