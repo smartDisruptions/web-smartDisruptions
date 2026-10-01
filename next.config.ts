@@ -2,6 +2,15 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /**
+   * Page changes run through the View Transitions API (React's
+   * <ViewTransition> in the root layout): the page cross-fades and rises like
+   * an app pushing a screen, the tab pill and the nav ink glide to their new
+   * place. Browsers without the API navigate exactly as before.
+   */
+  experimental: {
+    viewTransition: true,
+  },
+  /**
    * /apps and /websites were folded into /built on 2026-09-20. These keep every
    * old address working — search results, anything Josh has shared, and the
    * links inside already-published articles.

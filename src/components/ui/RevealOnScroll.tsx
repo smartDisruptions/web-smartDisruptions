@@ -1,39 +1,15 @@
-'use client';
-
-import { useEffect, useRef } from 'react';
-
 interface RevealOnScrollProps {
   children: React.ReactNode;
   className?: string;
 }
 
-export default function RevealOnScroll({
-  children,
-  className = '',
-}: RevealOnScrollProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('visible');
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 0.15 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={ref} className={`reveal ${className}`}>
-      {children}
-    </div>
-  );
+/**
+ * Rises into place as it scrolls into view. No JavaScript: `.sd-reveal` is a
+ * scroll-driven CSS animation (animation-timeline: view()), so it runs on the
+ * compositor and costs nothing to hydrate. Browsers without scroll timelines
+ * simply show the content. This used to be a client component with an
+ * IntersectionObserver per instance.
+ */
+export default function RevealOnScroll({ children, className = '' }: RevealOnScrollProps) {
+  return <div className={`sd-reveal ${className}`.trim()}>{children}</div>;
 }

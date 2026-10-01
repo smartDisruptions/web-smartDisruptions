@@ -1,31 +1,29 @@
-import type { Metadata } from 'next';
-import { Caveat, Literata, Nunito } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Dela_Gothic_One, Literata } from 'next/font/google';
+import { ViewTransition } from 'react';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
-import Navbar from '@/components/Navbar';
+import SiteHeader from '@/components/nav/SiteHeader';
+import TabBar from '@/components/nav/TabBar';
 import Footer from '@/components/Footer';
+import KiruDefs from '@/components/kiru/KiruDefs';
+import SiteFX from '@/components/SiteFX';
+import PaletteTrigger from '@/components/palette/PaletteTrigger';
 
-// UI: Nunito — labels, nav, cards, captions. Rounded enough to sit beside
-// handwriting without looking like a different site.
-const ui = Nunito({
-  variable: '--font-sans',
+// Display: Dela Gothic One — a Japanese poster gothic, headlines only. Latin
+// is preloaded; the Japanese slices exist but the site draws its few kanji as
+// SVG paths (components/brand/glyphs.ts), so browsers never fetch them.
+const display = Dela_Gothic_One({
+  variable: '--font-dela',
+  weight: '400',
   subsets: ['latin'],
-  display: 'swap',
-});
-
-// Display: Caveat — handwriting, for headlines and asides ONLY. It never sets
-// a paragraph: a page of handwriting is a page nobody finishes.
-const display = Caveat({
-  variable: '--font-display',
-  subsets: ['latin'],
-  weight: ['600', '700'],
   display: 'swap',
 });
 
 // Reading: Literata — built for long-form screen reading. Article and report
-// bodies use it (see ArticleBody), so the thing people came to read is set in
-// a face made for reading, on a plain sheet, with the notebook around it.
+// bodies use it. UI text is the platform's own face (see globals.css), which
+// is free to load and is what makes the site feel native on a phone.
 const read = Literata({
   variable: '--font-read',
   subsets: ['latin'],
@@ -33,12 +31,17 @@ const read = Literata({
 });
 
 export const metadata: Metadata = {
-  // The canonical/OG base. Set to the branded domain so social + canonical
-  // URLs are correct once smartdisruptions.com is pointed at this project.
   metadataBase: new URL('https://smartdisruptions.com'),
   title: 'SmartDisruptions — building real things with AI, in public',
   description:
     'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. The goal: make advanced AI usable for people who feel behind, stuck, or underpowered.',
+  applicationName: 'Smart Disruptions',
+  appleWebApp: {
+    capable: true,
+    title: 'Smart Disruptions',
+    statusBarStyle: 'black-translucent',
+  },
+  formatDetection: { telephone: false },
   openGraph: {
     title: 'SmartDisruptions — building real things with AI, in public',
     description:
@@ -61,8 +64,6 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  // og:image / twitter:image are supplied by app/opengraph-image.tsx and
-  // app/twitter-image.tsx (the branded card).
   twitter: {
     card: 'summary_large_image',
     title: 'SmartDisruptions — building real things with AI, in public',
@@ -70,6 +71,18 @@ export const metadata: Metadata = {
       'Honest breakdowns of things I build with AI — the timeline, the method, and the parts worth copying. Real apps, shipped and live.',
   },
 };
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  // Draw under the notch and the home indicator; the header and tab bar pad
+  // themselves with the safe-area insets.
+  viewportFit: 'cover',
+};
+
+// Runs before first paint: the saved theme, else the OS preference, and the
+// browser chrome colour to match — no flash of the wrong theme.
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#090b16':'#f4efe4');}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -79,24 +92,33 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${ui.variable} ${display.variable} ${read.variable} h-full antialiased`}
+      className={`${display.variable} ${read.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
-        {/* Set the theme before first paint so there's no flash of the wrong
-            theme. Uses the saved choice, else the OS preference. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
-          }}
-        />
-        <Navbar />
-        <main className="flex-1">{children}</main>
+      <head>
+        <meta name="theme-color" content="#f4efe4" />
+      </head>
+      <body className="flex min-h-full flex-col">
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <a href="#main" className="sd-skip">
+          Skip to content
+        </a>
+        <KiruDefs />
+        <SiteHeader />
+        <ViewTransition
+          default={{ 'nav-forward': 'sd-page sd-fwd', 'nav-back': 'sd-page sd-back', default: 'sd-page' }}
+        >
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+        </ViewTransition>
         <Footer />
-        {/* Cookieless, aggregate page analytics (see /privacy). Requires
-            Web Analytics enabled in the Vercel project settings. */}
+        <TabBar />
+        <SiteFX />
+        <PaletteTrigger />
+        {/* Cookieless, aggregate page analytics (see /privacy). */}
         <Analytics />
-        {/* Core Web Vitals / real-user load-speed data. Requires Speed
-            Insights enabled in the Vercel project settings. */}
+        {/* Core Web Vitals / real-user load-speed data. */}
         <SpeedInsights />
       </body>
     </html>
