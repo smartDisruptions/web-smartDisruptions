@@ -11,14 +11,6 @@ const nextConfig: NextConfig = {
     viewTransition: true,
   },
   /**
-   * /apps and /websites were folded into /built on 2026-09-20. These keep every
-   * old address working — search results, anything Josh has shared, and the
-   * links inside already-published articles.
-   *
-   * Order matters: the two named rules have to come before the /apps/:slug
-   * catch-all, because Next takes the first match.
-   */
-  /**
    * The service worker must never be cached, or a fix to it could take days
    * to reach people. See public/sw.js.
    */
@@ -33,6 +25,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  /**
+   * /apps and /websites were folded into /built on 2026-09-20. These keep every
+   * old address working — search results, anything Josh has shared, and the
+   * links inside already-published articles.
+   *
+   * Order matters: the two named rules have to come before the /apps/:slug
+   * catch-all, because Next takes the first match.
+   */
   async redirects() {
     return [
       // The Pembroke File's app slug does not match its project slug.
