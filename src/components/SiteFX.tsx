@@ -106,6 +106,14 @@ export default function SiteFX() {
       }
     };
 
+    // Offline + instant repeat visits (public/sw.js). Production only, and
+    // after load, so it never competes with the first paint.
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+      const register = () => navigator.serviceWorker.register('/sw.js').catch(() => {});
+      if (document.readyState === 'complete') register();
+      else window.addEventListener('load', register, { once: true });
+    }
+
     window.addEventListener('pointermove', onPointer, { passive: true });
     window.addEventListener('pointerdown', onPointer, { passive: true });
     document.addEventListener('pointerout', onLeaveCard, { passive: true });

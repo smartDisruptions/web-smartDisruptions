@@ -92,8 +92,8 @@ export default function PaletteDialog({ open, onClose }: { open: boolean; onClos
       aria-label="Search the site"
       className="sd-palette m-0 mx-auto mt-[max(10vh,env(safe-area-inset-top))] w-[min(640px,calc(100vw-24px))] max-w-none overflow-visible bg-transparent p-0 text-text-primary backdrop:bg-black/45 backdrop:backdrop-blur-[3px] max-sm:mt-auto max-sm:mb-0 max-sm:w-full"
     >
+      <Kiru pose="peek" className="pointer-events-none absolute -top-[50px] right-10 z-10 h-[62px] w-auto max-sm:hidden" />
       <div className="relative overflow-hidden rounded-[22px] border border-border bg-surface shadow-[0_40px_90px_-30px_rgba(0,0,0,.55)] max-sm:rounded-b-none max-sm:pb-[env(safe-area-inset-bottom)]">
-        <Kiru pose="peek" className="pointer-events-none absolute -top-[54px] right-8 h-[64px] w-auto" />
         <div className="flex items-center gap-3 border-b border-border px-5">
           <IconSearch size={20} className="shrink-0 text-text-secondary" />
           <input
@@ -116,7 +116,7 @@ export default function PaletteDialog({ open, onClose }: { open: boolean; onClos
               }
             }}
             placeholder="Search notes, reports, builds, games…"
-            className="h-16 w-full bg-transparent text-[1.05rem] outline-none placeholder:text-text-secondary"
+            className="h-16 w-full bg-transparent text-[1.05rem] outline-none placeholder:text-text-secondary focus-visible:outline-none"
             role="combobox"
             aria-expanded="true"
             aria-controls="sd-palette-list"

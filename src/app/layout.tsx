@@ -93,6 +93,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${display.variable} ${read.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <head>

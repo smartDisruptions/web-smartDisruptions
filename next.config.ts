@@ -18,6 +18,21 @@ const nextConfig: NextConfig = {
    * Order matters: the two named rules have to come before the /apps/:slug
    * catch-all, because Next takes the first match.
    */
+  /**
+   * The service worker must never be cached, or a fix to it could take days
+   * to reach people. See public/sw.js.
+   */
+  async headers() {
+    return [
+      {
+        source: '/sw.js',
+        headers: [
+          { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       // The Pembroke File's app slug does not match its project slug.
