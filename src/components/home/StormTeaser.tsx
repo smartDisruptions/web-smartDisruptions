@@ -23,7 +23,7 @@ export default function StormTeaser() {
   const kpis = r.kpis.slice(0, 3);
 
   return (
-    <section aria-labelledby="hm-storm" className="mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32">
+    <section aria-labelledby="hm-storm" className="sd-defer mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32" style={{ containIntrinsicSize: 'auto 760px' }}>
       <Link href={`/market-storm/${r.slug}`} className="sd-card hm-storm sd-reveal group block">
         <span className="hm-storm-sky" aria-hidden />
         <svg className="hm-storm-bolt" viewBox="0 0 120 300" aria-hidden>

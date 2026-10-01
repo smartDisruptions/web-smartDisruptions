@@ -64,7 +64,7 @@ export default function DojoMap() {
   ];
 
   return (
-    <section aria-labelledby="hm-rooms" className="mx-auto max-w-6xl px-5 pt-16 pb-6 sm:px-6 sm:pt-24">
+    <section aria-labelledby="hm-rooms" className="sd-defer mx-auto max-w-6xl px-5 pt-16 pb-6 sm:px-6 sm:pt-24" style={{ containIntrinsicSize: 'auto 620px' }}>
       <div className="sd-reveal flex items-end justify-between gap-6">
         <div>
           <p className="sd-kicker">Four rooms</p>

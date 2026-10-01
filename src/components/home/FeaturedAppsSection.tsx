@@ -18,7 +18,7 @@ export default function FeaturedAppsSection() {
   const rows = [shown.slice(0, half), shown.slice(half)];
 
   return (
-    <section aria-labelledby="hm-built" className="hm-reel pt-24 sm:pt-32">
+    <section aria-labelledby="hm-built" className="hm-reel sd-defer pt-24 sm:pt-32" style={{ containIntrinsicSize: 'auto 820px' }}>
       <div className="mx-auto flex max-w-6xl items-end justify-between gap-4 px-5 sm:px-6">
         <div className="sd-reveal">
           <p className="sd-kicker">Live, with receipts</p>

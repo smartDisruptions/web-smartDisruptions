@@ -20,7 +20,7 @@ export default function LatestWritingSection() {
   const [lead, ...rest] = posts;
 
   return (
-    <section aria-labelledby="hm-notes" className="mx-auto max-w-6xl px-5 pt-20 sm:px-6 sm:pt-28">
+    <section aria-labelledby="hm-notes" className="sd-defer mx-auto max-w-6xl px-5 pt-20 sm:px-6 sm:pt-28" style={{ containIntrinsicSize: 'auto 900px' }}>
       <div className="sd-reveal flex items-end justify-between gap-4">
         <div>
           <p className="sd-kicker">Latest</p>

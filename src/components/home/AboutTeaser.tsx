@@ -6,7 +6,7 @@ import { Button } from '@/components/ui';
 /** Josh, briefly — and the promise the site has kept since the first post. */
 export default function AboutTeaser() {
   return (
-    <section aria-labelledby="hm-josh" className="mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32">
+    <section aria-labelledby="hm-josh" className="sd-defer mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32" style={{ containIntrinsicSize: 'auto 560px' }}>
       <div className="sd-sheet sd-reveal grid items-center gap-10 overflow-hidden p-6 sm:p-10 md:grid-cols-[auto_1fr_auto]">
         <div className="relative mx-auto w-44 sm:w-52">
           <img
