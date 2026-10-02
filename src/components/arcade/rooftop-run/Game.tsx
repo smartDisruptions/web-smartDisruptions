@@ -1,8 +1,47 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
-import { createRooftopRun, type Engine, type Mode, type RunStats } from './engine';
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+} from 'react';
 import { Sfx } from './sfx';
+import { createDashAudio } from './dash/audio';
+import { createDashEngine } from './dash/engine';
+import { getLevel, LEVEL_METAS } from './dash/levels';
+import {
+  levelProgress,
+  loadSave,
+  recordAttempt,
+  saveSkin,
+  totalScrolls,
+  totalStars,
+} from './dash/storage';
+import type {
+  DashAudio,
+  DashEngine,
+  DashPhase,
+  DashRunInfo,
+  DashSave,
+  KiruSkin,
+} from './dash/types';
+import Classic from './dash/ui/Classic';
+import CompletePanel, {
+  describeResult,
+  type CompleteResult,
+} from './dash/ui/CompletePanel';
+import { focusInGame, plainKey } from './dash/ui/focus';
+import { allowedSkin, newlyUnlocked } from './dash/ui/gear';
+import GearMenu from './dash/ui/GearMenu';
+import Hud from './dash/ui/Hud';
+import LevelSelect, { describeLevel } from './dash/ui/LevelSelect';
+import PausePanel from './dash/ui/PausePanel';
+import PracticeButtons from './dash/ui/PracticeButtons';
+import TitleMenu, { type TitleChoice } from './dash/ui/TitleMenu';
+import './dash/ui/dash.css';
 
 export interface GameProps {
   /** id of the visible how-to-play line, for aria-describedby. */
@@ -11,84 +50,208 @@ export interface GameProps {
   onReady?: () => void;
 }
 
+type Screen = 'title' | 'levels' | 'gear' | 'play' | 'classic';
+
+/** The canvas has its fireworks first; then the end card. */
+const COMPLETE_PANEL_MS = 1600;
+
+const skinFrom = (save: DashSave): KiruSkin =>
+  allowedSkin(save.skin, totalStars(save), totalScrolls(save));
+
 /**
- * The playable screen: the canvas, the HUD buttons (pause, sound, full
- * screen), the pause and game-over panels, and a polite live region. This module and everything it imports is
- * one lazy chunk — the page fetches it when Start is pressed, never before.
+ * The playable screen. The level game owns the canvas (its runtime draws the
+ * world, Kiru and the in-level HUD); this shell is everything around it: the
+ * title menu over Kiru's attract run, the level select, the gear, the pause
+ * and level-complete panels, practice's checkpoint buttons, the HUD buttons
+ * (pause, sound, full screen), progress saved in this browser, and a polite
+ * live region. Classic, the original endless run, is a mode with its own
+ * canvas and its own chunk.
+ *
+ * This module and everything it imports is one lazy chunk: the page fetches
+ * it when Start is pressed, never before.
  */
 export default function Game({ helpId, onReady }: GameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const engineRef = useRef<Engine | null>(null);
-  const sfxRef = useRef<Sfx | null>(null);
+  const engineRef = useRef<DashEngine | null>(null);
+  const audioRef = useRef<DashAudio | null>(null);
   const soundRef = useRef(false);
-  const runsRef = useRef(0);
-  const onReadyRef = useRef(onReady);
-  const [mode, setMode] = useState<Mode>('running');
-  const [stats, setStats] = useState<RunStats>({ score: 0, best: 0, newBest: false, coins: 0 });
+  const phaseRef = useRef<DashPhase>('attract');
+  const attemptRef = useRef(0);
+  const introRef = useRef('');
+  const timerRef = useRef(0);
+  const visitRef = useRef({ jumps: 0, time: 0 });
+  const doneRef = useRef<CompleteResult | null>(null);
+
+  // Classic's sound effects: nothing is created until sound is turned on.
+  const [sfx] = useState(() => new Sfx());
+  const [screen, setScreen] = useState<Screen>('title');
+  const [titleFocus, setTitleFocus] = useState<TitleChoice>('levels');
+  const [phase, setPhase] = useState<DashPhase>('attract');
+  const [runPercent, setRunPercent] = useState(0);
+  const [levelIdx, setLevelIdx] = useState(0);
+  const [practice, setPractice] = useState(false);
+  const [save, setSave] = useState<DashSave>(loadSave);
+  const [skin, setSkin] = useState<KiruSkin>(() => skinFrom(loadSave()));
+  const [result, setResult] = useState<CompleteResult | null>(null);
   const [sound, setSound] = useState(false);
-  const [say, setSay] = useState('');
+  const [live, setLive] = useState({ text: '', n: 0 });
   const [failed, setFailed] = useState(false);
   // Full screen where the browser allows it (not on iPhone): on a phone that
   // is a landscape playfield instead of a small box in a portrait page.
-  const [canFull] = useState(() => typeof document !== 'undefined' && !!document.fullscreenEnabled);
+  const [canFull] = useState(
+    () => typeof document !== 'undefined' && !!document.fullscreenEnabled
+  );
   const [full, setFull] = useState(false);
 
-  const toggleSound = useCallback(() => {
+  /** Polite announcements; the same words twice still get spoken. */
+  const say = (text: string) => setLive((l) => ({ text, n: l.n + 1 }));
+
+  const meta = LEVEL_METAS[levelIdx];
+
+  /**
+   * One button, two sound engines: the level game's and Classic's. The game
+   * on screen gets the choice and the other stays asleep, so only one
+   * AudioContext is ever awake; switching games carries the choice over.
+   * Always called from a click or a key press, so the browser lets audio
+   * start. (The level game's audio remembers what it was asked to play
+   * while silent: the menu music, or the song in step with the level.)
+   */
+  const toggleSound = () => {
     const next = !soundRef.current;
     soundRef.current = next;
-    sfxRef.current?.setOn(next);
+    if (screen === 'classic') sfx.setOn(next);
+    else audioRef.current?.setOn(next);
     setSound(next);
-  }, []);
-  const toggleSoundRef = useRef(toggleSound);
+  };
+
+  /** From a level (its pause or end card) back to the level select. */
+  const toLevels = () => {
+    window.clearTimeout(timerRef.current);
+    setResult(null);
+    setScreen('levels');
+    engineRef.current?.attract();
+    say(`Levels. ${describeLevel(meta, levelProgress(save, meta.id))}`);
+  };
+
+  // ── The runtime's callbacks ──────────────────────────────────────────────
+  const onPhase = useEffectEvent((p: DashPhase, info: DashRunInfo | null) => {
+    const prev = phaseRef.current;
+    phaseRef.current = p;
+    setPhase(p);
+    if (info) setRunPercent(info.percent);
+    if (p === 'playing' && info) {
+      window.clearTimeout(timerRef.current);
+      setResult(null);
+      setPractice(info.practice);
+      const fresh = info.attempt !== attemptRef.current;
+      attemptRef.current = info.attempt;
+      say(
+        fresh || prev !== 'paused'
+          ? `${introRef.current}Attempt ${info.attempt}.`
+          : 'Playing.'
+      );
+      introRef.current = '';
+      // A new attempt, a resume or a restart from a panel: back to the game.
+      focusInGame(canvasRef.current, false);
+    } else if (p === 'paused') {
+      say('Paused.');
+    } else if (p === 'complete') {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = window.setTimeout(() => {
+        const r = doneRef.current;
+        if (!r) return;
+        setResult(r);
+        say(describeResult(r));
+      }, COMPLETE_PANEL_MS);
+    }
+  });
+
+  const onAttempt = useEffectEvent((info: DashRunInfo) => {
+    const before = loadSave();
+    const wasDone = before.levels[info.levelId]?.completed === true;
+    const next = recordAttempt(info);
+    setSave(next);
+    visitRef.current.jumps += info.jumps;
+    visitRef.current.time += info.time;
+    if (info.completed) {
+      const m = LEVEL_METAS.find((l) => l.id === info.levelId) ?? meta;
+      doneRef.current = {
+        name: m.name,
+        practice: info.practice,
+        attempts: info.attempt,
+        jumps: visitRef.current.jumps,
+        time: visitRef.current.time,
+        found: info.scrolls,
+        stars: m.stars,
+        starsNew: !info.practice && !wasDone,
+        unlocked: info.practice
+          ? []
+          : newlyUnlocked(
+              { stars: totalStars(before), scrolls: totalScrolls(before) },
+              { stars: totalStars(next), scrolls: totalScrolls(next) }
+            ),
+        hasNext: m.n < LEVEL_METAS.length,
+      };
+    } else {
+      say(`${info.percent} percent.${info.newBest ? ' New best.' : ''}`);
+    }
+  });
+
+  const onKey = useEffectEvent((key: 'sound' | 'pause' | 'quit') => {
+    const en = engineRef.current;
+    if (key === 'sound') toggleSound();
+    else if (!en) return;
+    else if (key === 'pause') {
+      if (en.phase === 'paused') en.resume();
+      else if (en.phase === 'playing' || en.phase === 'dying') en.pause();
+    } else if (key === 'quit' && en.phase === 'paused') toLevels();
+  });
+
+  const ready = useEffectEvent(() => onReady?.());
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const sfx = new Sfx();
-    sfxRef.current = sfx;
+    const audio = createDashAudio();
+    audioRef.current = audio;
     const mq = (q: string) => window.matchMedia(q).matches;
-    const dela = getComputedStyle(document.documentElement).getPropertyValue('--font-dela').trim();
-    let engine: Engine | null = null;
+    const dela = getComputedStyle(document.documentElement)
+      .getPropertyValue('--font-dela')
+      .trim();
+    let engine: DashEngine | null = null;
     try {
-      engine = createRooftopRun(canvas, {
+      engine = createDashEngine({
+        canvas,
         reducedMotion: mq('(prefers-reduced-motion: reduce)'),
         touch: mq('(hover: none) and (pointer: coarse)'),
-        sfx,
         hudFont: `${dela ? `${dela}, ` : ''}'Arial Black', system-ui, sans-serif`,
-        onSoundKey: () => toggleSoundRef.current(),
-        onMode: (m, s) => {
-          setMode(m);
-          setStats(s);
-          if (m === 'running') {
-            runsRef.current += 1;
-            setSay(
-              runsRef.current === 1
-                ? 'Kiru is running. Space, the up arrow or a tap to jump; hold to jump higher.'
-                : 'Running again.',
-            );
-          } else if (m === 'paused') {
-            setSay('Paused. Press Space or tap to carry on.');
-          } else if (m === 'over') {
-            setSay(
-              `Game over. Score ${s.score}. Best ${s.best}.${s.newBest ? ' A new best.' : ''} Press Space or tap to run again.`,
-            );
-          }
-        },
+        audio,
+        skin: skinFrom(loadSave()),
+        onPhase: (p, info) => onPhase(p, info),
+        onAttempt: (info) => onAttempt(info),
+        onKey: (key) => onKey(key),
       });
+      engine.attract();
     } catch {
       // No 2D context (very old browser, or canvas disabled): say so.
       queueMicrotask(() => setFailed(true));
     }
     engineRef.current = engine;
-    canvas.focus({ preventScroll: true });
-    onReadyRef.current?.();
+    // The attract run paints on its first frame; then the poster can go.
+    let raf = requestAnimationFrame(() => {
+      raf = requestAnimationFrame(() => ready());
+    });
     return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timerRef.current);
       engine?.destroy();
-      sfx.destroy();
+      audio.destroy();
       engineRef.current = null;
-      sfxRef.current = null;
+      audioRef.current = null;
     };
   }, []);
+
+  useEffect(() => () => sfx.destroy(), [sfx]);
 
   useEffect(() => {
     const onChange = () => setFull(!!document.fullscreenElement);
@@ -96,15 +259,74 @@ export default function Game({ helpId, onReady }: GameProps) {
     return () => document.removeEventListener('fullscreenchange', onChange);
   }, []);
 
+  // ── Moving between screens ───────────────────────────────────────────────
+  const focusCanvas = () => canvasRef.current?.focus({ preventScroll: true });
+
+  const choose = (c: TitleChoice) => {
+    if (c === 'levels') {
+      setScreen('levels');
+      say(`Levels. ${describeLevel(meta, levelProgress(save, meta.id))}`);
+    } else if (c === 'gear') {
+      setScreen('gear');
+      say('Gear: headbands and trails.');
+    } else {
+      // Classic gets the screen to itself: the attract run is hidden (its
+      // loop stops off screen), the menu music stops, and the sound choice
+      // moves to Classic's effects.
+      audioRef.current?.stop();
+      audioRef.current?.setOn(false);
+      if (soundRef.current) sfx.setOn(true);
+      setScreen('classic');
+      say('Classic.');
+    }
+  };
+
+  const toTitle = (from: TitleChoice) => {
+    setTitleFocus(from);
+    setScreen('title');
+    say('Title menu.');
+  };
+
+  const exitClassic = () => {
+    sfx.setOn(false);
+    engineRef.current?.attract();
+    if (soundRef.current) audioRef.current?.setOn(true);
+    toTitle('classic');
+  };
+
+  const play = (prac: boolean, idx = levelIdx) => {
+    const en = engineRef.current;
+    const m = LEVEL_METAS[idx];
+    if (!en || !m) return;
+    window.clearTimeout(timerRef.current);
+    doneRef.current = null;
+    visitRef.current = { jumps: 0, time: 0 };
+    attemptRef.current = 0;
+    introRef.current = `${m.name}${prac ? ', practice' : ''}. `;
+    setLevelIdx(idx);
+    setPractice(prac);
+    setResult(null);
+    setScreen('play');
+    en.start(getLevel(m.id), levelProgress(save, m.id), prac);
+    focusCanvas();
+  };
+
+  const onSkin = (s: KiruSkin) => {
+    setSkin(s);
+    setSave(saveSkin(s));
+    engineRef.current?.setSkin(s);
+  };
+
+  // ── HUD ──────────────────────────────────────────────────────────────────
   // A mouse click hands focus back to the game so Space keeps jumping; a
   // keyboard press (detail 0) leaves focus where the player put it.
   const refocus = (e: MouseEvent) => {
-    if (e.detail > 0) canvasRef.current?.focus({ preventScroll: true });
+    if (e.detail > 0 && screen === 'play') focusCanvas();
   };
   const onPauseClick = (e: MouseEvent) => {
     const en = engineRef.current;
     if (!en) return;
-    if (en.mode === 'paused') en.resume();
+    if (en.phase === 'paused') en.resume();
     else en.pause();
     refocus(e);
   };
@@ -120,22 +342,26 @@ export default function Game({ helpId, onReady }: GameProps) {
       } else if (screenEl) {
         await screenEl.requestFullscreen({ navigationUI: 'hide' });
         if (window.matchMedia('(pointer: coarse)').matches) {
-          const o = screen.orientation as ScreenOrientation & { lock?: (to: string) => Promise<void> };
+          const o = window.screen.orientation as ScreenOrientation & {
+            lock?: (to: string) => Promise<void>;
+          };
           await o.lock?.('landscape').catch(() => {});
         }
       }
     } catch {
       /* refused (no gesture, or not allowed here): stay as we are */
     }
-    canvasRef.current?.focus({ preventScroll: true });
+    if (screen === 'play') focusCanvas();
   };
-  const again = () => {
-    engineRef.current?.restart();
-    canvasRef.current?.focus({ preventScroll: true });
-  };
-  const resume = () => {
-    engineRef.current?.resume();
-    canvasRef.current?.focus({ preventScroll: true });
+
+  // M toggles sound from anywhere in the game. A focused canvas handles its
+  // own keys (the runtime reports M through onKey), so those are skipped.
+  const onRootKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.target instanceof HTMLCanvasElement || !plainKey(e)) return;
+    if (e.code === 'KeyM') {
+      e.preventDefault();
+      toggleSound();
+    }
   };
 
   if (failed) {
@@ -148,134 +374,125 @@ export default function Game({ helpId, onReady }: GameProps) {
     );
   }
 
-  const busy = mode === 'over' || mode === 'dying';
+  const playing = screen === 'play';
+  const progress = levelProgress(save, meta.id);
+  const stars = totalStars(save);
+  const scrolls = totalScrolls(save);
+
   return (
-    <div className="rr-game">
+    <div className="rr-game" onKeyDown={onRootKeyDown}>
       <canvas
         ref={canvasRef}
         className="rr-canvas"
-        tabIndex={0}
+        tabIndex={playing ? 0 : -1}
+        data-off={screen === 'classic' ? '' : undefined}
         role="application"
         aria-roledescription="game"
         aria-label="Kiru's Rooftop Run"
         aria-describedby={helpId}
       />
-      <div className="rr-hud">
-        <button
-          type="button"
-          className="rr-icon"
-          onClick={onPauseClick}
-          disabled={busy}
-          aria-label={mode === 'paused' ? 'Resume' : 'Pause'}
-          title={mode === 'paused' ? 'Resume (P)' : 'Pause (P)'}
-        >
-          {mode === 'paused' ? (
-            <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
-              <path d="M6 4.2v11.6a.8.8 0 0 0 1.2.7l9.4-5.8a.8.8 0 0 0 0-1.4L7.2 3.5A.8.8 0 0 0 6 4.2Z" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
-              <rect x="4.5" y="3.5" width="4" height="13" rx="1.2" />
-              <rect x="11.5" y="3.5" width="4" height="13" rx="1.2" />
-            </svg>
-          )}
-        </button>
-        <button
-          type="button"
-          className="rr-icon"
-          onClick={onSoundClick}
-          aria-pressed={sound}
-          aria-label="Sound"
-          title={sound ? 'Sound on (M)' : 'Sound off (M)'}
-        >
-          <svg
-            viewBox="0 0 20 20"
-            aria-hidden="true"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3.5 7.5h3l4-3.5v12l-4-3.5h-3z" fill="currentColor" stroke="none" />
-            {sound ? (
-              <path d="M13.5 7.2a4 4 0 0 1 0 5.6M15.8 5a7 7 0 0 1 0 10" />
-            ) : (
-              <path d="M13.5 7.5l4 5M17.5 7.5l-4 5" />
+      {screen === 'classic' ? (
+        <Classic
+          helpId={helpId}
+          sfx={sfx}
+          sound={sound}
+          onToggleSound={toggleSound}
+          canFull={canFull}
+          full={full}
+          onFull={onFullClick}
+          say={say}
+          onExit={exitClassic}
+        />
+      ) : (
+        <>
+          <div className="rr-dash" data-screen={screen}>
+            {screen === 'title' && (
+              <TitleMenu
+                stars={stars}
+                scrolls={scrolls}
+                focus={titleFocus}
+                onChoose={choose}
+              />
             )}
-          </svg>
-        </button>
-        {canFull && (
-          <button
-            type="button"
-            className="rr-icon"
-            onClick={onFullClick}
-            aria-pressed={full}
-            aria-label="Full screen"
-            title={full ? 'Leave full screen' : 'Full screen'}
-          >
-            <svg
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.9"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {full ? (
-                <path d="M7.5 3.5v4h-4M12.5 3.5v4h4M7.5 16.5v-4h-4M12.5 16.5v-4h4" />
-              ) : (
-                <path d="M3.5 7.5v-4h4M16.5 7.5v-4h-4M3.5 12.5v4h4M16.5 12.5v4h-4" />
+            {screen === 'levels' && (
+              <LevelSelect
+                index={levelIdx}
+                save={save}
+                onIndex={setLevelIdx}
+                onPlay={(prac) => play(prac)}
+                onBack={() => toTitle('levels')}
+                say={say}
+              />
+            )}
+            {screen === 'gear' && (
+              <GearMenu
+                stars={stars}
+                scrolls={scrolls}
+                skin={skin}
+                onSkin={onSkin}
+                onBack={() => toTitle('gear')}
+                say={say}
+              />
+            )}
+            {playing &&
+              practice &&
+              (phase === 'playing' || phase === 'dying') && (
+                <PracticeButtons
+                  onPlace={() => engineRef.current?.placeCheckpoint()}
+                  onRemove={() => engineRef.current?.removeCheckpoint()}
+                  refocus={focusCanvas}
+                />
               )}
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {mode === 'paused' && (
-        <div className="rr-panel-wrap">
-          <div className="rr-panel" role="group" aria-label="Paused">
-            <p className="rr-panel-title font-display arc-neon" data-tube="cyan">
-              Paused
-            </p>
-            <button type="button" className="rr-start" onClick={resume}>
-              <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
-                <path d="M6 4.2v11.6a.8.8 0 0 0 1.2.7l9.4-5.8a.8.8 0 0 0 0-1.4L7.2 3.5A.8.8 0 0 0 6 4.2Z" />
-              </svg>
-              Resume
-            </button>
-            <p className="rr-panel-note">or press Space, or tap the screen</p>
+            {playing && phase === 'paused' && (
+              <PausePanel
+                name={meta.name}
+                practice={practice}
+                percent={runPercent}
+                best={practice ? progress.practiceBest : progress.best}
+                onResume={() => engineRef.current?.resume()}
+                onRestart={() => engineRef.current?.restart()}
+                onPractice={() => {
+                  // Switching restarts the attempt; say which mode it is in.
+                  introRef.current = practice
+                    ? 'Practice off. '
+                    : 'Practice on. ';
+                  engineRef.current?.setPractice(!practice);
+                }}
+                onLevels={toLevels}
+              />
+            )}
+            {playing && result && (
+              <CompletePanel
+                result={result}
+                onNext={() => play(false, levelIdx + 1)}
+                onClean={() => play(false)}
+                onReplay={() => play(result.practice)}
+                onLevels={toLevels}
+              />
+            )}
           </div>
-        </div>
+          <Hud
+            pause={
+              // Nothing to pause once the level is finished.
+              playing && phase !== 'complete'
+                ? {
+                    paused: phase === 'paused',
+                    disabled: phase === 'attract',
+                    onClick: onPauseClick,
+                  }
+                : undefined
+            }
+            sound={sound}
+            onSound={onSoundClick}
+            canFull={canFull}
+            full={full}
+            onFull={onFullClick}
+          />
+        </>
       )}
-
-      {mode === 'over' && (
-        <div className="rr-panel-wrap">
-          <div className="rr-panel" role="group" aria-label="Game over">
-            <p className="rr-panel-title font-display arc-neon">Game over</p>
-            <div className="rr-panel-scores">
-              <span>
-                Score<b>{stats.score.toLocaleString('en-US')}</b>
-              </span>
-              <span>
-                Best<b>{stats.best.toLocaleString('en-US')}</b>
-              </span>
-              {stats.newBest && <span className="rr-newbest">New best</span>}
-            </div>
-            <button type="button" className="rr-start" onClick={again}>
-              <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
-                <path d="M6 4.2v11.6a.8.8 0 0 0 1.2.7l9.4-5.8a.8.8 0 0 0 0-1.4L7.2 3.5A.8.8 0 0 0 6 4.2Z" />
-              </svg>
-              Run again
-            </button>
-            <p className="rr-panel-note">or press Space, or tap the screen</p>
-          </div>
-        </div>
-      )}
-
       <p className="sr-only" aria-live="polite">
-        {say}
+        {live.text}
+        {live.n % 2 ? ' ' : ''}
       </p>
     </div>
   );

@@ -13,7 +13,7 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games, including a kart racer my son Gabe built, plus Kiru's Rooftop Run, which plays right here on the page.",
+    "Hand-built browser games, including a kart racer my son Gabe built, plus Kiru's Rooftop Run: six levels set to music, playable right here on the page.",
 };
 
 /**
@@ -138,8 +138,10 @@ export default function Arcade() {
             </div>
             <div className="rr-deck">
               <p className="rr-blurb">
-                Kiru runs the rooftops of the town below. Jump the gaps, clear the chimneys, keep your head under
-                the lanterns, grab the coins. Nothing about the game loads until you press Start.
+                Kiru runs the rooftops of the town below. I built six levels for him, each one timed to its own
+                song, and six ways to move through them: run, kite, roll, parasol, dragon and shadow step. Practice
+                mode lets you drop checkpoints, every level hides three secret scrolls, and Classic, the endless run
+                this cabinet started with, is still on the menu. Nothing about the game loads until you press Start.
               </p>
               <p id="rr-help" className="rr-keys">
                 <span className="rr-kbd">
@@ -151,13 +153,15 @@ export default function Arcade() {
                   to jump
                 </span>
                 <span className="rr-touch">Tap to jump</span>
-                <span>hold to go higher</span>
-                <span>again in mid-air to double-jump</span>
+                <span>hold to keep jumping, or to climb</span>
                 <span className="rr-kbd">
                   <kbd>P</kbd> pause
                 </span>
                 <span className="rr-kbd">
                   <kbd>M</kbd> sound
+                </span>
+                <span className="rr-kbd">
+                  practice: <kbd>C</kbd> / <kbd>X</kbd> checkpoints
                 </span>
               </p>
             </div>

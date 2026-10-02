@@ -286,7 +286,7 @@ export default function RooftopPoster() {
         <p className="rr-logo-b font-display arc-neon arc-flicker" data-tube="red" style={{ ['--flicker' as string]: '11s' }}>
           Rooftop Run
         </p>
-        <p className="rr-poster-sub">Jump the gaps · mind the crows</p>
+        <p className="rr-poster-sub">Six levels · six ways to move</p>
       </div>
     </>
   );
