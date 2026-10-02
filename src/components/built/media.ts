@@ -37,6 +37,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/grove-2.png': [490, 644],
   '/images/apps/grove-3.png': [490, 644],
   '/images/apps/grove-thumbnail.webp': [800, 420],
+  '/images/apps/lantern-night-1.webp': [1600, 900],
+  '/images/apps/lantern-night-2.webp': [1600, 900],
+  '/images/apps/lantern-night-3.webp': [780, 1688],
+  '/images/apps/lantern-night-thumbnail.webp': [1200, 630],
   '/images/apps/pebble-kart-1.png': [1600, 813],
   '/images/apps/pebble-kart-2.png': [1600, 813],
   '/images/apps/pebble-kart-3.png': [1600, 813],
@@ -127,6 +131,7 @@ const MARKS: Record<string, string> = {
   grove: '桜', // a tree that grows
   'going-traveling': '道', // the road
   'kitsune-kitchen': '作', // made
+  'lantern-night': '光', // light: "Light the night"
 };
 
 export function markFor(slug: string): string {

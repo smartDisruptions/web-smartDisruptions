@@ -14,6 +14,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/about`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/built`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/games`, changeFrequency: 'monthly', priority: 0.4 },
+    {
+      url: `${BASE}/games/lantern-night`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
     { url: `${BASE}/kiru`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE}/privacy`, changeFrequency: 'yearly', priority: 0.1 },
   ];

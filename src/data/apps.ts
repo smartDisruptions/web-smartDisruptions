@@ -345,6 +345,33 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: 'https://broom-blade.vercel.app',
   },
+  {
+    slug: 'lantern-night',
+    name: "Kiru's Lantern Night",
+    description:
+      'Kiru throws spirit flames into festival lanterns on a moonlit rooftop. Every lantern you light bursts into fireworks on the beat of the music.',
+    longDescription:
+      'It is the night of a festival and the lanterns have gone dark. Kiru stands on a rooftop with 30 spirit flames to light them with. You drag up to throw: the longer the drag, the farther the flame flies, and it only catches if it drops into the top of a lantern. Every lantern you light bursts into fireworks on the beat, and lighting every lantern on a rope sends the whole rope up into the sky. Light several in a row and the band joins in, from a koto and a soft drum up to the full festival band. When the flames run out there is a finale of fireworks, and the night’s score is tallied on a paper slip. The game plays all of its own music while you play: koto, shamisen, taiko drums and a bamboo flute, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse, the keyboard or a game controller. It remembers your best score, and it is one file.',
+    thumbnailUrl: '/images/apps/lantern-night-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/lantern-night-1.webp',
+      '/images/apps/lantern-night-2.webp',
+      '/images/apps/lantern-night-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Every lantern you light sets off fireworks in time with the music, and lighting a whole rope sends it up into the sky.',
+      'The music builds as you play well, from a koto and a soft drum up to the full festival band, and all of it is made by the game as you play.',
+      'It plays properly on a phone held either way up and on a computer, with touch, a mouse, the keyboard or a game controller.',
+      'Eight AI agents built it side by side, each owning one part of the game. Two more went over their work and caught 13 bugs and 12 things that looked wrong before it went live.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/lantern-night',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -359,6 +386,7 @@ export function getAppBySlug(slug: string): App | undefined {
  * pages must not keep separate lists that can drift apart.
  */
 export const ARCADE_SLUGS = [
+  'lantern-night',
   'field-office',
   'cloth-simulator',
   'broom-blade',

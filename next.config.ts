@@ -48,6 +48,12 @@ const nextConfig: NextConfig = {
           source: '/archive/:name/:a/:b',
           destination: '/archive/:name/:a/:b.html',
         },
+        // Kiru's Lantern Night: a single-file game in public/games, played at
+        // the address its share card and canonical link give.
+        {
+          source: '/games/lantern-night',
+          destination: '/games/lantern-night/index.html',
+        },
       ],
       fallback: [],
     };
