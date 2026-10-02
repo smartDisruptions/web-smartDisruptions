@@ -48,7 +48,7 @@ export const LEVEL_METAS: LevelMeta[] = [
         energy: 3,
         mode: 'run',
         speed: 'normal',
-        note: 'Blocks to land on, the first yellow drum, the first triple spike.',
+        note: 'Blocks to land on, the first yellow drum, a double caltrop into a small one (a full triple at normal speed is Hard-level timing).',
       },
       {
         name: 'c',
