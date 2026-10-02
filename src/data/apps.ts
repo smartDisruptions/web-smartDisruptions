@@ -372,6 +372,33 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: '/games/lantern-night',
   },
+  {
+    slug: 'night-parade',
+    name: "Kiru's Night Parade",
+    description:
+      'Yokai rise out of nine spirit wells in a moonlit temple garden. Tap a well and Kiru leaps there and cuts whatever comes up in two.',
+    longDescription:
+      'It is the night of the Hyakki Yagy\u014d, the parade of a hundred demons, and the yokai are coming up through nine spirit wells in a moonlit temple garden. Tap a well and Kiru leaps there and cuts whatever is rising out of it in two. Most of them are small oni worth a point and the golden kitsune are worth three, but two are friends you must not cut: the Moon Rabbit, and a tanuki hiding behind an oni mask. A round lasts 75 seconds and speeds up as it goes. Along the way come three of four events (a golden night, a new moon where only their eyes show, a moon-viewing night full of rabbits, and a parade round the wells), powers that slow time, double your points or send shadow clones down the row, and a meter that fills into BLUE FIRE. In the last twelve seconds the Parade Lord rises from the centre well, and he blocks every third strike with his club: wait for him to bring it down, and the first strike in the opening is a counter. The game plays all of its own music and sound while you play, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse or the keyboard. It remembers your best score and the blades you unlock, and it is one file.',
+    thumbnailUrl: '/images/apps/night-parade-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/night-parade-1.webp',
+      '/images/apps/night-parade-2.webp',
+      '/images/apps/night-parade-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Every tap is a cut: Kiru leaps to the well and his blade lands within a quarter of a second, and a tap made in time always counts.',
+      'The Parade Lord blocks every third strike, so the last fight of each round is a duel: wait for his club to come down, then counter.',
+      'It plays properly on a phone held either way up and on a computer. Turned sideways, the garden spreads out and the wells get bigger.',
+      'Ten AI agents built it: eight each owned one part of the game, a ninth played it hunting for problems, and a tenth checked every fix before it went live.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/night-parade',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -387,6 +414,7 @@ export function getAppBySlug(slug: string): App | undefined {
  */
 export const ARCADE_SLUGS = [
   'lantern-night',
+  'night-parade',
   'field-office',
   'cloth-simulator',
   'broom-blade',

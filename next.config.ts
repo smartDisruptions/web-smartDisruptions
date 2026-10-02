@@ -54,6 +54,11 @@ const nextConfig: NextConfig = {
           source: '/games/lantern-night',
           destination: '/games/lantern-night/index.html',
         },
+        // Kiru's Night Parade: the same, one file in public/games.
+        {
+          source: '/games/night-parade',
+          destination: '/games/night-parade/index.html',
+        },
       ],
       fallback: [],
     };
