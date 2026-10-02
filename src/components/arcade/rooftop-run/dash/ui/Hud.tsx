@@ -8,6 +8,11 @@ export interface HudProps {
     disabled: boolean;
     onClick: (e: MouseEvent) => void;
   };
+  /**
+   * Kiru is running a level: the buttons step back so the signs and gates
+   * under them read, and in a phone's box only Pause stays (dash.css).
+   */
+  inPlay?: boolean;
   sound: boolean;
   onSound: (e: MouseEvent) => void;
   canFull: boolean;
@@ -21,6 +26,7 @@ export interface HudProps {
  */
 export default function Hud({
   pause,
+  inPlay,
   sound,
   onSound,
   canFull,
@@ -28,7 +34,7 @@ export default function Hud({
   onFull,
 }: HudProps) {
   return (
-    <div className="rr-hud">
+    <div className="rr-hud" data-play={inPlay ? '' : undefined}>
       {pause && (
         <button
           type="button"
@@ -43,7 +49,7 @@ export default function Hud({
       )}
       <button
         type="button"
-        className="rr-icon"
+        className="rr-icon rr-hud-more"
         onClick={onSound}
         aria-pressed={sound}
         aria-label="Sound"
@@ -54,7 +60,7 @@ export default function Hud({
       {canFull && (
         <button
           type="button"
-          className="rr-icon"
+          className="rr-icon rr-hud-more"
           onClick={onFull}
           aria-pressed={full}
           aria-label="Full screen"

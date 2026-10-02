@@ -38,6 +38,7 @@ import { JUMP_V, SNAP, gravityOf, isFlying, maxFallOf } from './physics';
 import { createRenderer } from './render';
 import { createSim } from './sim';
 import {
+  MAX_COUNT,
   SPEEDS,
   STEP,
   VIEW_H,
@@ -148,6 +149,11 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
   let attemptT0 = 0;
   let attemptJumps0 = 0;
   let passedBest = false;
+  /**
+   * The attempt on screen has begun and has not yet been counted (by a
+   * death, the finish, or being given up part-way).
+   */
+  let attemptOpen = false;
   /** The level's song has been started for this attempt (and not stopped). */
   let songOn = false;
   const checkpoints: Checkpoint[] = [];
@@ -195,6 +201,8 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
   let qualityPrev = 0;
   let qualityBefore = 0;
   let qualityLocked = false;
+  /** A new quality was decided mid-attempt and waits for a safe moment. */
+  let qualityPending = false;
   let hidden = typeof document !== 'undefined' && document.hidden;
   let onScreen = true;
   /** How much of the canvas is on screen (the IntersectionObserver's latest word). */
@@ -373,7 +381,17 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
   }
 
   function buttonDown() {
-    if (liveHeld) return; // already down (a second finger, a second key)
+    if (liveHeld) {
+      // Already down (a second finger, a second key): still a new press, as
+      // in Geometry Dash, so a finger can take a spirit lantern while
+      // another holds. It is a real press, so a held resume button now
+      // counts as held too (its release is no longer swallowed).
+      if (phase === 'playing') {
+        swallow = false;
+        enqueue(true);
+      }
+      return;
+    }
     liveHeld = true;
     if (phase === 'playing') enqueue(true);
     else if (phase === 'paused') resume();
@@ -404,7 +422,15 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
    */
   function beginAttempt(paused: boolean) {
     const s = sim!;
-    attempt++;
+    // A quality change waiting from the last attempt: before the clock starts.
+    flushQuality();
+    // The attempt being left part-way counts (see abandon). One that never
+    // ran gives its number to this one, so the count on screen is the count
+    // saved.
+    abandon();
+    // (Capped as the save is, so the end card and the level card agree.)
+    if (!attemptOpen) attempt = Math.min(MAX_COUNT, attempt + 1);
+    attemptOpen = true;
     runout = false;
     const cp =
       practice && checkpoints.length > 0
@@ -455,8 +481,26 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
     songOn = true;
   }
 
+  /**
+   * An attempt given up part-way (a restart, a practice switch, back to the
+   * menus, another level) still counts, as in Geometry Dash, if any of it
+   * was played: reported with `abandoned`, it adds an attempt and its jumps
+   * but sets no best and keeps no scrolls.
+   */
+  function abandon() {
+    if (!attemptOpen || !sim || !level || !(sim.state.t > attemptT0)) return;
+    attemptOpen = false;
+    const info = runInfo();
+    info.abandoned = true;
+    info.completed = false;
+    info.newBest = false;
+    info.best = attemptBest;
+    opts.onAttempt(info);
+  }
+
   /** The attempt ended (death or the finish line): report it, keep the bests. */
   function endAttempt(next: 'dying' | 'complete') {
+    attemptOpen = false;
     const info = runInfo();
     if (practice) bestPractice = Math.max(bestPractice, info.percent);
     else bestNormal = Math.max(bestNormal, info.percent);
@@ -831,6 +875,10 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
   function frame() {
     raf = 0;
     if (disposed || !sim) return;
+    // A quality change that waited out the attempt (adapt) happens now,
+    // while Kiru shatters or the finish plays, and before this frame takes
+    // its time: the long frame is spent inside the 0.6 s death delay.
+    if (qualityPending && phase !== 'playing') flushQuality();
     const now = performance.now();
     if (process.env.NODE_ENV !== 'production') devFrames++;
     let dt = (now - last) / 1000;
@@ -895,6 +943,9 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
    * then quality is left alone.
    */
   function adapt(dt: number) {
+    // A change waiting for a safe moment: until it is made, these frames
+    // are still at the old size and say nothing new.
+    if (qualityPending) return;
     // The frames right after a re-bake, and a stall (a long task, a
     // debugger), say nothing about how fast this device draws.
     if (winSkip > 0 || dt > 0.25) {
@@ -912,7 +963,7 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
       if (avg > qualityBefore * 0.9) {
         quality = qualityPrev;
         qualityLocked = true;
-        resize(true);
+        requestQuality();
       }
       qualityPrev = 0;
       return;
@@ -924,11 +975,28 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
       qualityPrev = quality;
       qualityBefore = avg;
       quality = Math.max(MIN_QUALITY, quality * k);
-      resize(true);
+      requestQuality();
     } else if (cost > 9) {
       quality = Math.max(MIN_QUALITY, quality * 0.75);
-      resize(true);
+      requestQuality();
     }
+  }
+
+  /**
+   * A new quality re-bakes every sprite: a long frame (hundreds of ms on the
+   * slow devices that need it). Never during an attempt, where it would
+   * freeze the run and cost a fair jump: it waits for the next safe moment
+   * (the death shatter, a pause, the next attempt, the finish, the menus).
+   * Behind the menus it happens at once.
+   */
+  function requestQuality() {
+    if (mode === 'level' && phase === 'playing') qualityPending = true;
+    else resize(true);
+  }
+
+  /** Make a waiting quality change now (a safe moment). */
+  function flushQuality() {
+    if (qualityPending) resize(true);
   }
 
   // ── Size ─────────────────────────────────────────────────────────────────
@@ -940,6 +1008,8 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
       d = Math.sqrt(MAX_PIXELS / (r.width * r.height));
     }
     if (!force && r.width === cssW && r.height === cssH && d === dpr) return;
+    // Any re-bake applies the current quality, a waiting change included.
+    qualityPending = false;
     cssW = r.width;
     cssH = r.height;
     dpr = d;
@@ -980,7 +1050,9 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
       simHeld = false;
       playedFor = (performance.now() - phaseAt) / 1000;
       setPhase('paused');
-      draw(performance.now());
+      // A waiting quality change: now, with the clock stopped (it redraws).
+      if (qualityPending) flushQuality();
+      else draw(performance.now());
       opts.onPhase('paused', runInfo());
     } else if (phase === 'dying') {
       // Paused during the shatter: the next attempt waits, set up and paused.
@@ -1012,6 +1084,8 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
   function start(lv: LevelDef, progress: LevelProgress, prac: boolean) {
     if (disposed) return;
     stopLoop();
+    // An attempt left part-way on the level before counts there.
+    abandon();
     mode = 'level';
     tBase = 0;
     attractDeadAt = 0;
@@ -1021,7 +1095,10 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
     bestNormal = progress.best;
     bestPractice = progress.practiceBest;
     practice = prac;
-    attempt = 0;
+    // Attempts are the level's, over every visit, as in Geometry Dash: this
+    // one is the next after those saved.
+    attempt = progress.attempts;
+    attemptOpen = false;
     checkpoints.length = 0;
     marks.length = 0;
     // The page may still be scrolling the game into view: until it has been
@@ -1035,6 +1112,9 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
   function enterAttract() {
     if (disposed) return;
     stopLoop();
+    // Back to the menus part-way through an attempt: it counts.
+    abandon();
+    attemptOpen = false;
     if (songOn) audio.stop();
     songOn = false;
     audio.menu();
@@ -1048,6 +1128,8 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
     devPressed = null;
     if (!attract) attract = createAttract(createSim);
     attractRestart();
+    // A quality change still waiting: behind the menus a long frame is harmless.
+    flushQuality();
     clearQueue();
     simHeld = false;
     setPhase('attract');
@@ -1057,6 +1139,8 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
 
   function setPractice(on: boolean) {
     if (mode !== 'level' || on === practice || disposed) return;
+    // The attempt being left counts, in the mode it was played in.
+    abandon();
     practice = on;
     checkpoints.length = 0;
     marks.length = 0;
@@ -1142,6 +1226,11 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
         break;
     }
   };
+  // Heard on the window, not the canvas: a key that went down on the canvas
+  // can come up after focus has moved to one of the game's own controls (a
+  // pause moves it to Resume). Missed there, the key stayed held, and the
+  // first press after resuming was swallowed. Only keys the canvas saw go
+  // down are in keysDown, so a keyup anywhere else changes nothing.
   const onKeyUp = (e: KeyboardEvent) => {
     const code =
       BUTTON_KEYS.has(e.code) || e.key === ' ' ? e.code || 'Space' : '';
@@ -1196,7 +1285,7 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
   const ro = new ResizeObserver(() => resize(false));
 
   canvas.addEventListener('keydown', onKeyDown);
-  canvas.addEventListener('keyup', onKeyUp);
+  window.addEventListener('keyup', onKeyUp, true);
   canvas.addEventListener('pointerdown', onPointerDown);
   canvas.addEventListener('pointerup', onPointerUp);
   canvas.addEventListener('pointercancel', onPointerUp);
@@ -1227,12 +1316,14 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
     },
     destroy() {
       if (disposed) return;
+      // Leaving the page part-way through an attempt: it counts.
+      abandon();
       disposed = true;
       stopLoop();
       io.disconnect();
       ro.disconnect();
       canvas.removeEventListener('keydown', onKeyDown);
-      canvas.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('keyup', onKeyUp, true);
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointerup', onPointerUp);
       canvas.removeEventListener('pointercancel', onPointerUp);
@@ -1302,6 +1393,8 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
         cssH,
         dpr,
         quality,
+        qualityPending,
+        attemptOpen,
         cost,
         frames: devFrames,
         steps: devSteps,

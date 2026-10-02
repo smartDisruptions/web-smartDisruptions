@@ -624,6 +624,12 @@ export interface LevelProgress {
   jumps: number;
 }
 
+/**
+ * Attempts and jumps stop counting here, in the save and on screen: a damaged
+ * save can't claim absurd numbers.
+ */
+export const MAX_COUNT = 9_999_999;
+
 export const EMPTY_PROGRESS: LevelProgress = {
   best: 0,
   practiceBest: 0,
@@ -636,6 +642,11 @@ export const EMPTY_PROGRESS: LevelProgress = {
 export interface DashRunInfo {
   levelId: LevelId;
   practice: boolean;
+  /**
+   * This attempt's number on this level, counted over every visit as in
+   * Geometry Dash (the saved attempts + 1 when the level starts): the
+   * canvas's "Attempt N".
+   */
   attempt: number;
   /** This attempt's progress, 0..100. */
   percent: number;
@@ -648,6 +659,12 @@ export interface DashRunInfo {
   jumps: number;
   /** Seconds this attempt lasted. */
   time: number;
+  /**
+   * The attempt was given up part-way (a restart, a practice switch, back to
+   * the menus, another level) after some of it was played. It counts as an
+   * attempt, with its jumps, but sets no best and keeps no scrolls.
+   */
+  abandoned?: boolean;
 }
 
 export interface DashEngineOptions {
@@ -660,7 +677,10 @@ export interface DashEngineOptions {
   skin: KiruSkin;
   /** The phase changed: the shell shows or hides its panels. */
   onPhase(phase: DashPhase, info: DashRunInfo | null): void;
-  /** An attempt ended (death or finish): the shell saves progress. */
+  /**
+   * An attempt ended (death or finish), or was given up part-way
+   * (`abandoned`): the shell saves progress.
+   */
   onAttempt(info: DashRunInfo): void;
   /** A shortcut key the shell handles: M sound, Esc/P pause, Q quit to levels. */
   onKey?(key: 'sound' | 'pause' | 'quit'): void;

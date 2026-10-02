@@ -27,6 +27,7 @@ import type {
   DashRunInfo,
   DashSave,
   KiruSkin,
+  LevelId,
 } from './dash/types';
 import Classic from './dash/ui/Classic';
 import CompletePanel, {
@@ -78,8 +79,15 @@ export default function Game({ helpId, onReady }: GameProps) {
   const phaseRef = useRef<DashPhase>('attract');
   const attemptRef = useRef(0);
   const introRef = useRef('');
+  /** The last death's words, said with the next attempt as one line. */
+  const deathRef = useRef('');
   const timerRef = useRef(0);
-  const visitRef = useRef({ jumps: 0, time: 0 });
+  /** This visit to a level: its jumps and time, for the end card. */
+  const visitRef = useRef<{ id: LevelId | null; jumps: number; time: number }>({
+    id: null,
+    jumps: 0,
+    time: 0,
+  });
   const doneRef = useRef<CompleteResult | null>(null);
 
   // Classic's sound effects: nothing is created until sound is turned on.
@@ -129,8 +137,10 @@ export default function Game({ helpId, onReady }: GameProps) {
     window.clearTimeout(timerRef.current);
     setResult(null);
     setScreen('levels');
+    deathRef.current = '';
     engineRef.current?.attract();
-    say(`Levels. ${describeLevel(meta, levelProgress(save, meta.id))}`);
+    // Read afresh: leaving part-way just counted an attempt (onAttempt).
+    say(`Levels. ${describeLevel(meta, levelProgress(loadSave(), meta.id))}`);
   };
 
   // ── The runtime's callbacks ──────────────────────────────────────────────
@@ -145,16 +155,20 @@ export default function Game({ helpId, onReady }: GameProps) {
       setPractice(info.practice);
       const fresh = info.attempt !== attemptRef.current;
       attemptRef.current = info.attempt;
+      // One line per death: "62 percent. New best. Attempt 5."
       say(
         fresh || prev !== 'paused'
-          ? `${introRef.current}Attempt ${info.attempt}.`
+          ? `${introRef.current}${deathRef.current}Attempt ${info.attempt}.`
           : 'Playing.'
       );
       introRef.current = '';
+      deathRef.current = '';
       // A new attempt, a resume or a restart from a panel: back to the game.
       focusInGame(canvasRef.current, false);
     } else if (p === 'paused') {
-      say('Paused.');
+      // Paused during the shatter: the death's words come first.
+      say(`${deathRef.current}Paused.`);
+      deathRef.current = '';
     } else if (p === 'complete') {
       window.clearTimeout(timerRef.current);
       timerRef.current = window.setTimeout(() => {
@@ -171,8 +185,13 @@ export default function Game({ helpId, onReady }: GameProps) {
     const wasDone = before.levels[info.levelId]?.completed === true;
     const next = recordAttempt(info);
     setSave(next);
-    visitRef.current.jumps += info.jumps;
-    visitRef.current.time += info.time;
+    // The visit's totals (an attempt left on another level isn't part of it).
+    if (info.levelId === visitRef.current.id) {
+      visitRef.current.jumps += info.jumps;
+      visitRef.current.time += info.time;
+    }
+    // Given up part-way: counted and saved, with nothing to say.
+    if (info.abandoned) return;
     if (info.completed) {
       const m = LEVEL_METAS.find((l) => l.id === info.levelId) ?? meta;
       doneRef.current = {
@@ -193,7 +212,8 @@ export default function Game({ helpId, onReady }: GameProps) {
         hasNext: m.n < LEVEL_METAS.length,
       };
     } else {
-      say(`${info.percent} percent.${info.newBest ? ' New best.' : ''}`);
+      // Said with the next attempt's number, as one line (onPhase).
+      deathRef.current = `${info.percent} percent.${info.newBest ? ' New best.' : ''} `;
     }
   });
 
@@ -300,14 +320,17 @@ export default function Game({ helpId, onReady }: GameProps) {
     if (!en || !m) return;
     window.clearTimeout(timerRef.current);
     doneRef.current = null;
-    visitRef.current = { jumps: 0, time: 0 };
+    visitRef.current = { id: m.id, jumps: 0, time: 0 };
     attemptRef.current = 0;
+    deathRef.current = '';
     introRef.current = `${m.name}${prac ? ', practice' : ''}. `;
     setLevelIdx(idx);
     setPractice(prac);
     setResult(null);
     setScreen('play');
-    en.start(getLevel(m.id), levelProgress(save, m.id), prac);
+    // Read afresh: the attempt count (the engine's "Attempt N") must include
+    // everything saved so far.
+    en.start(getLevel(m.id), levelProgress(loadSave(), m.id), prac);
     focusCanvas();
   };
 
@@ -357,7 +380,20 @@ export default function Game({ helpId, onReady }: GameProps) {
   // M toggles sound from anywhere in the game. A focused canvas handles its
   // own keys (the runtime reports M through onKey), so those are skipped.
   const onRootKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.target instanceof HTMLCanvasElement || !plainKey(e)) return;
+    // Arrow keys belong to the game here (the carousel, the tabs, the jump):
+    // they never scroll the page under it.
+    if (e.key.startsWith('Arrow') && !e.metaKey && !e.ctrlKey && !e.altKey)
+      e.preventDefault();
+    if (e.target instanceof HTMLCanvasElement) return;
+    // A key held down when a panel takes focus keeps auto-repeating onto
+    // its first button, and Space then clicks that button when it is let
+    // go: holding through the finish started the next level, and holding
+    // through a pause resumed it. A repeat is never a deliberate press.
+    if (e.repeat && (e.key === ' ' || e.key === 'Enter')) {
+      e.preventDefault();
+      return;
+    }
+    if (!plainKey(e)) return;
     if (e.code === 'KeyM') {
       e.preventDefault();
       toggleSound();
@@ -459,6 +495,8 @@ export default function Game({ helpId, onReady }: GameProps) {
                   engineRef.current?.setPractice(!practice);
                 }}
                 onLevels={toLevels}
+                sound={sound}
+                onSound={toggleSound}
               />
             )}
             {playing && result && (
@@ -482,6 +520,8 @@ export default function Game({ helpId, onReady }: GameProps) {
                   }
                 : undefined
             }
+            // While Kiru runs the buttons step back (dash.css).
+            inPlay={playing && (phase === 'playing' || phase === 'dying')}
             sound={sound}
             onSound={onSoundClick}
             canFull={canFull}

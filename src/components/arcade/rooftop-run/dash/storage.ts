@@ -11,6 +11,7 @@
 import {
   DEFAULT_SKIN,
   EMPTY_PROGRESS,
+  MAX_COUNT,
   type DashRunInfo,
   type DashSave,
   type KiruSkin,
@@ -38,8 +39,12 @@ const emptySave = (): DashSave => ({
   skin: { ...DEFAULT_SKIN },
 });
 
-// The source of truth once loaded. localStorage is only its backup.
+// localStorage is the source of truth while it works, read afresh each time:
+// another tab may have saved since (a copy loaded once and written back
+// wiped out progress made in a second tab). This copy carries the visit
+// once storage can't be read or written (blocked, private, full).
 let memory: DashSave | null = null;
+let memoryOnly = false;
 
 const isObj = (x: unknown): x is Record<string, unknown> =>
   typeof x === 'object' && x !== null && !Array.isArray(x);
@@ -50,7 +55,9 @@ const pct = (x: unknown) =>
     : 0;
 
 const count = (x: unknown) =>
-  typeof x === 'number' && Number.isFinite(x) && x > 0 ? Math.floor(x) : 0;
+  typeof x === 'number' && Number.isFinite(x) && x > 0
+    ? Math.min(MAX_COUNT, Math.floor(x))
+    : 0;
 
 function readProgress(x: unknown): LevelProgress | null {
   if (!isObj(x)) return null;
@@ -113,15 +120,15 @@ const copy = (s: DashSave): DashSave => ({
 
 /** The saved progress (a fresh copy: change it through the functions below). */
 export function loadSave(): DashSave {
-  if (!memory) {
-    let raw: string | null = null;
+  if (!memoryOnly) {
     try {
-      raw = localStorage.getItem(SAVE_KEY);
+      memory = parse(localStorage.getItem(SAVE_KEY));
     } catch {
       /* blocked storage: start fresh, keep progress in memory */
+      memoryOnly = true;
     }
-    memory = parse(raw);
   }
+  if (!memory) memory = emptySave();
   return copy(memory);
 }
 
@@ -132,6 +139,7 @@ export function saveSave(save: DashSave): void {
     localStorage.setItem(SAVE_KEY, JSON.stringify(memory));
   } catch {
     /* private mode, full or blocked: it lasts until the tab closes */
+    memoryOnly = true;
   }
 }
 
@@ -144,18 +152,21 @@ export function levelProgress(save: DashSave, id: LevelId): LevelProgress {
 }
 
 /**
- * Fold one finished attempt (a death or a finish) into the save and store
- * it. Practice runs count as attempts and jumps and raise the practice best,
- * but only a normal-mode finish completes a level, and only a completed
- * normal run keeps its scrolls (as in Geometry Dash).
+ * Fold one attempt (a death, a finish, or one given up part-way) into the
+ * save and store it. Every attempt counts, with its jumps, as in Geometry
+ * Dash. One given up sets no best and keeps nothing else. Practice runs
+ * raise the practice best, but only a normal-mode finish completes a level,
+ * and only a completed normal run keeps its scrolls.
  */
 export function recordAttempt(info: DashRunInfo): DashSave {
   const save = loadSave();
   const p = levelProgress(save, info.levelId);
   const percent = info.completed ? 100 : pct(info.percent);
-  p.attempts += 1;
-  p.jumps += count(info.jumps);
-  if (info.practice) {
+  p.attempts = Math.min(MAX_COUNT, p.attempts + 1);
+  p.jumps = Math.min(MAX_COUNT, p.jumps + count(info.jumps));
+  if (info.abandoned) {
+    // Counted above; nothing else.
+  } else if (info.practice) {
     p.practiceBest = Math.max(p.practiceBest, percent);
   } else {
     p.best = Math.max(p.best, percent);

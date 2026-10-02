@@ -31,7 +31,9 @@
 .rr-panel-pair .rr-start {
   margin-top: 0;
 }
-@media (max-width: 39.99rem) {
+/* Compact on a phone, upright or on its side (arcade.css fits the screen to
+   the window there). */
+@media (max-width: 39.99rem), (orientation: landscape) and (max-height: 32rem) {
   .rr-panel-pair {
     margin-top: 0.35rem;
   }
@@ -57,6 +59,40 @@
 .rr-dash :focus-visible {
   outline: 2.5px solid #fff3dc;
   outline-offset: 3px;
+}
+
+/* The corner buttons while Kiru runs a level: they step back so the signs
+   and gates passing under them read (half opacity, nothing blurred behind
+   them) and come forward on hover or focus. In a phone's box (the compact
+   layout, as .rr-dash sizes it) only Pause stays: sound and full screen are
+   on the menus and the pause panel. */
+.rr-game {
+  container: rr-box / size;
+}
+.rr-hud[data-play] {
+  opacity: 0.5;
+}
+.rr-hud[data-play]:focus-within {
+  opacity: 1;
+}
+@media (hover: hover) {
+  .rr-hud[data-play]:hover {
+    opacity: 1;
+  }
+}
+.rr-hud[data-play] .rr-icon {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@container rr-box (max-width: 33.99rem) or (max-height: 19.99rem) {
+  .rr-hud[data-play] .rr-hud-more {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rr-hud {
+    transition: opacity 0.2s ease;
+  }
 }
 
 /* A secondary button: a neon-outlined pill, coloured by data-tube. */
@@ -802,11 +838,22 @@
   backdrop-filter: blur(6px);
 }
 .rr-dpanel {
+  position: relative;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.3rem;
   width: min(100%, 22rem);
   min-width: 0;
   padding: 0.55rem 0.8rem 0.7rem;
+}
+/* Paused: the sound button in the panel's top-left corner, with the title
+   and its line kept clear of it. */
+.rr-panel-sound {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+}
+.rr-dpanel:has(> .rr-panel-sound) > :is(.rr-panel-title, .rr-panel-sub) {
+  padding-inline: 2.6rem;
 }
 .rr-dash .rr-panel-title {
   font-size: 1.25rem;

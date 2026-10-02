@@ -11,7 +11,10 @@ import {
 export interface CompleteResult {
   name: string;
   practice: boolean;
-  /** This visit's attempts, as counted on screen. */
+  /**
+   * The level's attempts over every visit, as on screen ("Attempt N") and on
+   * the level card.
+   */
   attempts: number;
   /** Jumps and seconds across this visit's attempts. */
   jumps: number;
@@ -36,7 +39,7 @@ export function describeResult(r: CompleteResult): string {
   const found = r.found.filter(Boolean).length;
   const parts = [
     r.practice ? `Practice complete: ${r.name}.` : `Level complete: ${r.name}!`,
-    `${r.attempts} ${r.attempts === 1 ? 'attempt' : 'attempts'}, ${r.jumps} jumps, ${formatTime(r.time)}.`,
+    `${r.attempts} ${r.attempts === 1 ? 'attempt' : 'attempts'}, ${r.jumps} ${r.jumps === 1 ? 'jump' : 'jumps'}, ${formatTime(r.time)}.`,
   ];
   if (!r.practice) {
     parts.push(`${found} of 3 scrolls found.`);

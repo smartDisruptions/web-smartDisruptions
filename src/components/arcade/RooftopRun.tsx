@@ -28,13 +28,23 @@ export default function RooftopRun({ poster, helpId }: { poster: ReactNode; help
   const start = useCallback(async () => {
     if (state === 'loading' || Game) return;
     setState('loading');
-    // Bring the whole cabinet on screen before the first jump.
+    // Bring the whole cabinet on screen before the first jump. A cabinet
+    // taller than the window (a phone on its side) can't be: then the screen
+    // itself, clear of the header and the tab bar (its scroll margins, in
+    // arcade.css).
     const cab = screenRef.current?.closest('.rr-cab');
     if (cab) {
       const r = cab.getBoundingClientRect();
       if (r.top < 56 || r.bottom > window.innerHeight) {
         const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        cab.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+        const target =
+          r.height > window.innerHeight && screenRef.current
+            ? screenRef.current
+            : cab;
+        target.scrollIntoView({
+          block: 'center',
+          behavior: reduce ? 'auto' : 'smooth',
+        });
       }
     }
     try {

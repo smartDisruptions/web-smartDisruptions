@@ -109,7 +109,7 @@ function LevelCard({ meta, p }: { meta: LevelMeta; p: LevelProgress }) {
       </div>
       <p className="rr-card-foot">
         {p.attempts > 0
-          ? `${p.attempts.toLocaleString('en-US')} ${p.attempts === 1 ? 'attempt' : 'attempts'} · ${p.jumps.toLocaleString('en-US')} jumps`
+          ? `${p.attempts.toLocaleString('en-US')} ${p.attempts === 1 ? 'attempt' : 'attempts'} · ${p.jumps.toLocaleString('en-US')} ${p.jumps === 1 ? 'jump' : 'jumps'}`
           : 'Not played yet'}
       </p>
     </article>

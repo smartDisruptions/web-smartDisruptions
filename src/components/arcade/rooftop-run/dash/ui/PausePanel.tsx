@@ -1,10 +1,17 @@
 import { useEffect, useId, useRef, type KeyboardEvent } from 'react';
 import { focusInGame, plainKey } from './focus';
-import { DiamondIcon, LevelsIcon, PlayIcon, RestartIcon } from './icons';
+import {
+  DiamondIcon,
+  LevelsIcon,
+  PlayIcon,
+  RestartIcon,
+  SoundIcon,
+} from './icons';
 
 /**
  * Paused mid-level. P or Esc resumes, R restarts, Q goes to the levels
- * (M, sound, is handled for the whole game).
+ * (M, sound, is handled for the whole game). Sound has a button here too:
+ * in a phone's box the corner's sound button stays hidden while Kiru runs.
  */
 export default function PausePanel({
   name,
@@ -15,6 +22,8 @@ export default function PausePanel({
   onRestart,
   onPractice,
   onLevels,
+  sound,
+  onSound,
 }: {
   name: string;
   practice: boolean;
@@ -25,6 +34,8 @@ export default function PausePanel({
   onRestart: () => void;
   onPractice: () => void;
   onLevels: () => void;
+  sound: boolean;
+  onSound: () => void;
 }) {
   const resumeRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
@@ -109,6 +120,17 @@ export default function PausePanel({
             Levels
           </button>
         </div>
+        {/* Last in the tab order, drawn in the panel's top-left corner. */}
+        <button
+          type="button"
+          className="rr-icon rr-panel-sound"
+          onClick={onSound}
+          aria-pressed={sound}
+          aria-label="Sound"
+          title={sound ? 'Sound on (M)' : 'Sound off (M)'}
+        >
+          <SoundIcon on={sound} />
+        </button>
         <p className="rr-panel-keys">
           <kbd>P</kbd> resume <kbd>R</kbd> restart <kbd>Q</kbd> levels{' '}
           <kbd>M</kbd> sound
