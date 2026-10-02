@@ -503,6 +503,19 @@ export interface KiruDashPose {
   blink: boolean;
   /** 0..1 while dying (he is about to shatter); 0 otherwise. */
   dying: number;
+  /**
+   * The launch that started jumpT came from a drum (pad: yellow, pink, red)
+   * or a spirit lantern (orb: yellow, pink, red, green). Run and Shadow Step
+   * answer it with a forward flip. Omitted: kiru-dash guesses from the
+   * take-off speed, which catches drums and red lanterns only.
+   */
+  boosted?: boolean;
+  /**
+   * The player asked for reduced motion (RenderFrame.reducedMotion): no white
+   * flash before the shatter (a steady fade instead) and no pop on a mode
+   * change.
+   */
+  reducedMotion?: boolean;
 }
 
 // ── Runtime ↔ renderer ─────────────────────────────────────────────────────
