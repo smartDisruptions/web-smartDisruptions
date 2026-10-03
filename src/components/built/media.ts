@@ -41,6 +41,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/lantern-night-2.webp': [1600, 900],
   '/images/apps/lantern-night-3.webp': [780, 1688],
   '/images/apps/lantern-night-thumbnail.webp': [1200, 630],
+  '/images/apps/night-parade-1.webp': [1600, 900],
+  '/images/apps/night-parade-2.webp': [1600, 900],
+  '/images/apps/night-parade-3.webp': [780, 1688],
+  '/images/apps/night-parade-thumbnail.webp': [1200, 630],
   '/images/apps/pebble-kart-1.png': [1600, 813],
   '/images/apps/pebble-kart-2.png': [1600, 813],
   '/images/apps/pebble-kart-3.png': [1600, 813],
@@ -132,6 +136,7 @@ const MARKS: Record<string, string> = {
   'going-traveling': '道', // the road
   'kitsune-kitchen': '作', // made
   'lantern-night': '光', // light: "Light the night"
+  'night-parade': '斬', // cut: Kiru cuts each yokai in two
 };
 
 export function markFor(slug: string): string {
