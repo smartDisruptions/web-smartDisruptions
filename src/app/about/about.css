@@ -805,6 +805,27 @@
   }
 }
 
+/* Where the CSS above cannot move him, PathFollow.tsx does: by script in a
+   browser without scroll timelines (data-follow="run"), or, under reduced
+   motion, by sitting with the year being read (data-follow="still"). It
+   places him with an inline translate, so the walker starts at the rail's
+   corner here. */
+.ab-path[data-follow] .ab-walker {
+  left: 0;
+  top: 0;
+}
+.ab-path[data-follow='run'] .ab-kiru-run {
+  display: block;
+}
+.ab-path[data-follow='run'][data-pose='run'] .ab-kiru-sit,
+.ab-path[data-follow='run'][data-pose='sit'] .ab-kiru-run {
+  visibility: hidden;
+}
+.ab-path[data-follow='run'] .ab-bleed,
+.ab-path[data-follow='run'] .ab-stroke {
+  stroke-dasharray: 1 2;
+}
+
 @keyframes ab-ink {
   from {
     stroke-dashoffset: 1;

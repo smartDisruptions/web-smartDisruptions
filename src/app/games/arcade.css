@@ -659,6 +659,35 @@
     aspect-ratio: 2 / 1;
   }
 }
+/* A phone on its side: a screen as wide as the page is taller than the
+   window, so part of it was always out of sight: its top (the progress bar
+   and the corner buttons) above the window, or its bottom (the road) under
+   the tab bar. It narrows until it fits between the header and the tab bar,
+   centred in the bezel, and its scroll margins let Start bring it into view
+   clear of both. */
+@media (orientation: landscape) and (max-height: 32rem) {
+  .rr-screen:not(:fullscreen) {
+    --rr-fit: calc(
+      100vh - 8.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
+    max-width: calc(var(--rr-fit) * 4 / 3);
+    margin-inline: auto;
+    scroll-margin-top: calc(4.25rem + env(safe-area-inset-top));
+    scroll-margin-bottom: calc(4.25rem + env(safe-area-inset-bottom));
+  }
+  @supports (height: 100dvh) {
+    .rr-screen:not(:fullscreen) {
+      --rr-fit: calc(
+        100dvh - 8.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+      );
+    }
+  }
+}
+@media (orientation: landscape) and (max-height: 32rem) and (min-width: 40rem) {
+  .rr-screen:not(:fullscreen) {
+    max-width: calc(var(--rr-fit) * 16 / 9);
+  }
+}
 /* CRT glass over whatever is on the screen: a soft reflection and a light
    vignette. Never interactive, never dark enough to hide a hazard. */
 .rr-screen:fullscreen {
@@ -1597,8 +1626,9 @@
   font-size: 0.72rem;
   color: var(--arc-ink-3);
 }
-@media (max-width: 39.99rem) {
-  /* A phone's screen is short: clear the HUD buttons and keep it compact. */
+@media (max-width: 39.99rem), (orientation: landscape) and (max-height: 32rem) {
+  /* A phone's screen is short: clear the HUD buttons and keep it compact.
+     (On its side too, where the screen is fitted to the window.) */
   .rr-panel-wrap {
     padding-top: 3.4rem;
     place-items: start center;

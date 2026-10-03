@@ -1,13 +1,14 @@
 import type { CSSProperties } from 'react';
 import Kiru from '@/components/kiru/Kiru';
 import Torii from './Torii';
+import PathFollow from './PathFollow';
 import { switchback, turnKeyframes } from './route';
 
 /**
  * 道 — the timeline on /about, drawn as a brush path that inks itself as you
  * scroll, with Kiru running it.
  *
- * NO JAVASCRIPT. Everything moves on one named view timeline (`--ab-path`,
+ * THE RUN IS PURE CSS. Everything moves on one named view timeline (`--ab-path`,
  * the list's own passage through the viewport):
  *
  *  - the stroke draws by animating stroke-dashoffset (pathLength="1"),
@@ -19,8 +20,11 @@ import { switchback, turnKeyframes } from './route';
  * 60% down the screen, 1 when its bottom is. So the ink tip — and Kiru — sit
  * on the reader's eye line the whole way down.
  *
- * Content never depends on any of it. Without scroll timelines, or with
- * reduced motion, the path is simply drawn in full and Kiru sits at the top.
+ * Content never depends on any of it. Where the CSS cannot run him (no scroll
+ * timelines, or reduced motion), PathFollow.tsx steps in: he runs by script,
+ * or, under reduced motion, sits with the year being read. Before it loads,
+ * and with no JavaScript at all, the path is drawn in full and he sits at
+ * the top.
  * All three rails (phone and tablet: a trail at the left; desktop: a wide one
  * down the middle) are server-rendered; CSS shows the one that fits.
  */
@@ -72,6 +76,7 @@ function Rail({
 export default function ThePath({ milestones }: { milestones: Milestone[] }) {
   return (
     <div className="ab-path">
+      <PathFollow />
       {/* The turn keyframes are generated from the same geometry as the path,
           so the corners and the turns can never drift apart. */}
       <style href="ab-path-turns" precedence="medium">
