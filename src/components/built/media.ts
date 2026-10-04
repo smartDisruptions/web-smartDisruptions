@@ -61,6 +61,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/spacex-mars-2.png': [1440, 900],
   '/images/apps/spacex-mars-3.png': [1440, 900],
   '/images/apps/spacex-mars-thumbnail.png': [1200, 630],
+  '/images/apps/tokaido-run-1.webp': [1600, 900],
+  '/images/apps/tokaido-run-2.webp': [1600, 900],
+  '/images/apps/tokaido-run-3.webp': [780, 1688],
+  '/images/apps/tokaido-run-thumbnail.webp': [1200, 630],
   '/images/websites/broom-blade.webp': [1200, 750],
   '/images/websites/kitsune-kitchen.webp': [1200, 750],
   '/images/websites/notebook.webp': [1200, 750],
@@ -137,6 +141,7 @@ const MARKS: Record<string, string> = {
   'kitsune-kitchen': '作', // made
   'lantern-night': '光', // light: "Light the night"
   'night-parade': '斬', // cut: Kiru cuts each yokai in two
+  'tokaido-run': '道', // the road: the Tōkaidō, 東海道
 };
 
 export function markFor(slug: string): string {

@@ -399,6 +399,33 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: '/games/night-parade',
   },
+  {
+    slug: 'tokaido-run',
+    name: "Kiru's T\u014dkaid\u014d Run",
+    description:
+      'Kiru runs the old road from Edo to Ky\u014dto, from morning to night. Swipe to change lanes, jump and roll, and tap to cut whatever gets in his way.',
+    longDescription:
+      'The T\u014dkaid\u014d was the great road of Edo Japan, from Nihonbashi to Ky\u014dto through 53 post stations, and Kiru runs all of it. Swipe left or right to change lanes, up to jump and down to roll, and tap to cut. Paper sh\u014dji walls, barrels and bamboo stakes split in two along the line of the blade, and so do lantern ghosts and diving tengu. A rival ninja leaves a log behind when cut, an oni bursts into beans and runs off crying, and fox fires fill the Ki meter for a Bolt Dash. Stumble once and an Edo constable and his shiba inu give chase; stumble again and he has you. The road runs from morning to night through five places: a post town, a hillside of a thousand vermilion torii, a bamboo grove, a mountain temple in autumn and a night festival, with rain and snow at the stations Hiroshige painted that way. Along it come a lucky cat that pulls in coins, a paper crane to ride over the rooftops and a daruma for double score. When the run ends, the game writes it up as a farewell haiku. It is drawn in 3D in the browser and makes all of its own music as you play, taiko and shamisen, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse, the keyboard or a game controller, and it is one file.',
+    thumbnailUrl: '/images/apps/tokaido-run-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/tokaido-run-1.webp',
+      '/images/apps/tokaido-run-2.webp',
+      '/images/apps/tokaido-run-3.webp',
+    ],
+    techStack: ['HTML5', 'Three.js', 'WebGL', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'A 3D runner in one file: the road, the towns, Kiru, every texture and every sound are made in the browser as it loads.',
+      'Cutting is the point: walls, barrels and bamboo stakes split in two along the line of the blade, and every yokai cut gets a brush stroke across the screen.',
+      'Every stretch of road is checked before it is laid down: a solver proves it can be run from any lane, and 10,000 simulated stretches found none that could not.',
+      'Ten AI agents built it side by side, each owning one part of the game. After the first play, the torii hillside was rebuilt so it no longer flashes red at speed, and a flicker test measured all five places against the photosensitivity limit.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/tokaido-run',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -415,6 +442,7 @@ export function getAppBySlug(slug: string): App | undefined {
 export const ARCADE_SLUGS = [
   'lantern-night',
   'night-parade',
+  'tokaido-run',
   'field-office',
   'cloth-simulator',
   'broom-blade',
