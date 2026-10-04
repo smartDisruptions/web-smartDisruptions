@@ -59,6 +59,11 @@ const nextConfig: NextConfig = {
           source: '/games/night-parade',
           destination: '/games/night-parade/index.html',
         },
+        // Kiru's Tōkaidō Run: the same, one file in public/games.
+        {
+          source: '/games/tokaido-run',
+          destination: '/games/tokaido-run/index.html',
+        },
       ],
       fallback: [],
     };
