@@ -1,26 +1,28 @@
 import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { apps, ARCADE_SLUGS, type App } from '@/data/apps';
-import { builtHref } from '@/data/projects';
+import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, type App } from '@/data/apps';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import RooftopRun from '@/components/arcade/RooftopRun';
 import RooftopPoster from './Poster';
+import Cabinets, { ArrowIcon } from './Cabinets';
 import { LANTERNS, TICKER_INK, WIRE_PATH, ticker } from './market';
 import './arcade.css';
 
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games, including a kart racer my son Gabe built, plus Kiru's Rooftop Run: six levels set to music, playable right here on the page.",
+    "Hand-built browser games starring Kiru and the Neo Dojo Cast, plus Kiru's Rooftop Run: six levels set to music, playable right here on the page.",
 };
 
 /**
  * THE ARCADE — a neon night market (Shadow Dojo, October 2026).
  *
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
- * call on the ordering); /apps reads the same list, so the two can't drift.
+ * call on the ordering): Kiru's games, then Neo Dojo Survivors. Every other
+ * game is in the archive, /games/archive, behind the door at the bottom of the
+ * page. /built reads the same lists, so the pages can't drift.
  *
  * This page is a server component. What moves is CSS on the compositor —
  * the neon's rare flicker, the lanterns, the ticker — and stops under reduced
@@ -29,35 +31,15 @@ export const metadata: Metadata = {
  * Start button; the game itself is a separate chunk fetched by pressing it.
  */
 
-const games: App[] = ARCADE_SLUGS.map((slug) => apps.find((app) => app.slug === slug)).filter(
-  (app): app is App => app !== undefined,
-);
-
-const PLATFORMS = ['HTML5', 'PixiJS', 'Vanilla JavaScript', 'SVG', 'Web Audio API'];
-const platforms = Array.from(new Set(games.flatMap((g) => g.techStack.filter((t) => PLATFORMS.includes(t)))));
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
-// One filter rule per platform, generated from the data so a new platform
-// needs no CSS edit. Slugs are [a-z0-9-] only, so the selectors are safe.
-const FILTER_CSS = platforms
-  .map((p) => `.arc-games:has(#arc-p-${slug(p)}:checked) .arc-grid>li:not([data-p~="${slug(p)}"]){display:none}`)
-  .join('');
-
-// Each cabinet gets a tube colour, cycling like the old red / yellow / blue.
-const TUBES = ['pink', 'amber', 'cyan'] as const;
+const byslug = (slugs: string[]) =>
+  slugs.map((slug) => apps.find((app) => app.slug === slug)).filter((app): app is App => app !== undefined);
+const games = byslug(ARCADE_SLUGS);
+const archived = byslug(ARCADE_ARCHIVE_SLUGS);
+// "The Pembroke File, Cloth Simulator … and AUREUM Snake", written out, so the
+// door says what is behind it.
+const ARCHIVE_NAMES = new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(archived.map((g) => g.name));
 
 const TICKER = ticker(games.map((g) => g.name));
-
-const ArrowIcon = () => (
-  <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 10h11M11 5.5 15.5 10 11 14.5" />
-  </svg>
-);
-const PlayIcon = () => (
-  <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
-    <path d="M6 4.2v11.6a.8.8 0 0 0 1.2.7l9.4-5.8a.8.8 0 0 0 0-1.4L7.2 3.5A.8.8 0 0 0 6 4.2Z" />
-  </svg>
-);
 
 export default function Arcade() {
   const live = games.filter((g) => g.status === 'live').length;
@@ -192,96 +174,24 @@ export default function Arcade() {
       </div>
 
       <div className="arc-wrap">
-        <section className="arc-games" aria-labelledby="arc-cabinets">
-          <style dangerouslySetInnerHTML={{ __html: FILTER_CSS }} />
-          <div className="arc-games-head">
-            <h2 id="arc-cabinets" className="arc-h2 font-display">
-              The cabinets
-            </h2>
-            {platforms.length > 1 && (
-              <fieldset className="arc-filter">
-                <legend className="sr-only">Show games built with</legend>
-                <input type="radio" name="arc-platform" id="arc-p-all" defaultChecked />
-                <label htmlFor="arc-p-all">All Worlds</label>
-                {platforms.map((p) => (
-                  <span key={p} className="contents">
-                    <input type="radio" name="arc-platform" id={`arc-p-${slug(p)}`} />
-                    <label htmlFor={`arc-p-${slug(p)}`}>{p}</label>
-                  </span>
-                ))}
-              </fieldset>
-            )}
-          </div>
+        <Cabinets games={games} from="arcade" title="The cabinets" titleId="arc-cabinets" />
 
-          {games.length > 0 ? (
-            <ul className="arc-grid">
-              {games.map((game, idx) => {
-                const href = `${builtHref(game.slug)}?from=arcade`;
-                return (
-                  <li
-                    key={game.slug}
-                    className="sd-reveal"
-                    data-p={game.techStack.filter((t) => PLATFORMS.includes(t)).map(slug).join(' ')}
-                  >
-                    <article className="arc-cab sd-tilt" data-tube={TUBES[idx % TUBES.length]}>
-                      <div className="arc-cab-top">
-                        <span className="arc-slot" aria-hidden="true" />
-                        <span className="arc-lamp" data-status={game.status}>
-                          {game.status === 'live' ? 'PLAY' : game.status.toUpperCase()}
-                        </span>
-                      </div>
-                      {/* The screen links to the same page as the name; it is
-                          skipped by keyboard and screen readers, which get the
-                          name link instead. */}
-                      <Link href={href} className="arc-screen" tabIndex={-1} aria-hidden="true">
-                        <span className="arc-screen-in">
-                          {/* eslint-disable-next-line @next/next/no-img-element -- small static thumbnails, sized by the screen box */}
-                          <img
-                            src={game.thumbnailUrl}
-                            alt={`${game.name} screenshot`}
-                            width={800}
-                            height={420}
-                            loading="lazy"
-                            decoding="async"
-                          />
-                          <span className="arc-scan" />
-                          <span className="arc-vig" />
-                        </span>
-                      </Link>
-                      <h3 className="arc-name font-display">
-                        <Link href={href}>{game.name}</Link>
-                      </h3>
-                      <p className="arc-desc">{game.description}</p>
-                      <ul className="arc-tags" aria-label="Built with">
-                        {game.techStack.map((t) => (
-                          <li key={t}>{t}</li>
-                        ))}
-                      </ul>
-                      <div className="arc-deck">
-                        {game.liveUrl && (
-                          <a className="arc-play" href={game.liveUrl} target="_blank" rel="noopener noreferrer">
-                            <PlayIcon />
-                            Press Start
-                            <span className="sr-only">: {game.name} (opens in a new tab)</span>
-                          </a>
-                        )}
-                        <Link className="arc-more" href={href}>
-                          Details
-                          <span className="sr-only"> about {game.name}</span>
-                          <ArrowIcon />
-                        </Link>
-                      </div>
-                    </article>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="arc-end-gabe" style={{ marginTop: '3rem' }}>
-              No games in this world. Insert another coin.
-            </p>
-          )}
-        </section>
+        {/* The door to the back room: every older cabinet, still playable. */}
+        {archived.length > 0 && (
+          <Link href="/games/archive" className="arc-door sd-reveal">
+            <span className="arc-door-kick">The back room</span>
+            <span className="arc-door-title font-display arc-neon" data-tube="amber">
+              The archive
+            </span>
+            <span className="arc-door-line">
+              {archived.length} older cabinets, still free to play: {ARCHIVE_NAMES}.
+            </span>
+            <span className="arc-door-go">
+              Open the archive
+              <ArrowIcon />
+            </span>
+          </Link>
+        )}
 
         <div className="arc-end">
           <p className="arc-end-line">

@@ -2,10 +2,10 @@
  * Shared by the back link (a client island) and its server fallback, so the
  * two cannot drift: where "back" goes, what it says, and its arrow.
  */
-export function backTarget(fromArcade: boolean) {
-  return fromArcade
-    ? { href: '/games', label: 'Back to the arcade' }
-    : { href: '/built', label: 'Everything I built' };
+export function backTarget(from: string | null) {
+  if (from === 'arcade') return { href: '/games', label: 'Back to the arcade' };
+  if (from === 'archive') return { href: '/games/archive', label: 'Back to the archive' };
+  return { href: '/built', label: 'Everything I built' };
 }
 
 export function BackArrow() {

@@ -3,7 +3,7 @@ import Kiru, { type KiruPose } from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import { getPublishedPosts } from '@/lib/posts';
 import { marketStormReports } from '@/data/marketStorm';
-import { apps, ARCADE_SLUGS } from '@/data/apps';
+import { apps, GAME_SLUGS } from '@/data/apps';
 import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
 import { IconArrowRight } from '@/components/icons';
 
@@ -15,7 +15,7 @@ import { IconArrowRight } from '@/components/icons';
  */
 export default function DojoMap() {
   const builds =
-    projects.length + apps.filter((a) => !(a.slug in PROJECT_APP_SLUGS) && !(ARCADE_SLUGS as readonly string[]).includes(a.slug)).length;
+    projects.length + apps.filter((a) => !(a.slug in PROJECT_APP_SLUGS) && !(GAME_SLUGS as readonly string[]).includes(a.slug)).length;
   const rooms: {
     href: string;
     title: string;
@@ -56,7 +56,7 @@ export default function DojoMap() {
       href: '/games',
       title: 'Arcade',
       line: 'Games you can play right now. One was built by my son.',
-      count: `${ARCADE_SLUGS.length} games`,
+      count: `${GAME_SLUGS.length} games`,
       kanji: '遊',
       pose: 'game',
       tone: 'hm-room-arcade',

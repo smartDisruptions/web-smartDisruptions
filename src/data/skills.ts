@@ -1,4 +1,4 @@
-import { apps } from './apps';
+import { apps, GAME_SLUGS } from './apps';
 import { builtHref } from './projects';
 
 /**
@@ -353,14 +353,14 @@ export const skillGroups: SkillGroup[] = [
         name: 'Game development',
         plain:
           'Game loops, collision, input, audio and the feel work that separates a demo from something worth playing.',
-        used: "The arcade is six cabinets. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. The newest cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
-        apps: ['field-office', 'broom-blade', 'aureum-snake', 'grove'],
+        used: "The arcade's front room is Kiru's games and Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward. The older cabinets are in its archive. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
+        apps: ['neo-dojo-survivors', 'field-office', 'broom-blade', 'aureum-snake', 'grove'],
         links: [
           {
             kind: 'site',
             label: 'The arcade',
             href: '/games',
-            detail: 'all six, playable in the browser',
+            detail: 'Kiru’s games up front, the older cabinets in the archive',
           },
         ],
       },
@@ -485,8 +485,8 @@ export const skillGroups: SkillGroup[] = [
         links: [
           {
             kind: 'site',
-            label: 'His cabinets in the arcade',
-            href: '/games',
+            label: 'His cabinets, in the arcade’s archive',
+            href: '/games/archive',
           },
         ],
       },
@@ -503,15 +503,11 @@ export interface ResolvedEvidence extends Evidence {
 
 const appBySlug = new Map(apps.map((a) => [a.slug, a]));
 
-/** Arcade cabinets, so an app can be labelled as a game rather than a tool. */
-const ARCADE = new Set([
-  'field-office',
-  'cloth-simulator',
-  'grove',
-  'broom-blade',
-  'pebble-kart',
-  'aureum-snake',
-]);
+/**
+ * Every game on the site (the Arcade's front room and its archive), so an app
+ * can be labelled as a game rather than a tool. Read from apps.ts, not retyped.
+ */
+const ARCADE = new Set<string>(GAME_SLUGS);
 
 /**
  * Everything that backs one skill, apps first.

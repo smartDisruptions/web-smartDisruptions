@@ -8,15 +8,15 @@ import { BackArrow, backTarget } from './back';
 /**
  * The back link on a /built detail page — the same rule as
  * src/components/BackLink.tsx, in this section's own clothes: the Arcade
- * tags its links with `?from=arcade`, so a visitor who came from the Arcade
- * goes back to the Arcade; everyone else goes back to /built.
+ * tags its links with `?from=arcade` and its archive with `?from=archive`, so
+ * a visitor goes back to the room they came from; everyone else goes back to
+ * /built.
  *
  * The page wraps it in <Suspense> with the /built version as the fallback,
  * so the route stays static and a soft navigation reads the param at once.
  */
 export default function BuiltBackLink({ variant }: { variant: 'top' | 'bottom' }) {
-  const fromArcade = useSearchParams().get('from') === 'arcade';
-  const { href, label } = backTarget(fromArcade);
+  const { href, label } = backTarget(useSearchParams().get('from'));
 
   if (variant === 'top') {
     return (

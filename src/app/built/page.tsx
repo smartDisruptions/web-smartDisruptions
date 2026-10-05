@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
-import { apps, ARCADE_SLUGS } from '@/data/apps';
+import { apps, GAME_SLUGS } from '@/data/apps';
 import { projects, PROJECT_APP_SLUGS, type Project } from '@/data/projects';
 import {
   SectionContainer,
@@ -83,7 +83,7 @@ type CatalogueEntry = {
  */
 const catalogue: CatalogueEntry[] = [
   ...apps
-    .filter((app) => !ARCADE_SLUGS.includes(app.slug) && !COVERED.has(app.slug))
+    .filter((app) => !GAME_SLUGS.includes(app.slug) && !COVERED.has(app.slug))
     .map((app) => ({
       key: app.slug,
       name: app.name,
@@ -106,8 +106,8 @@ const catalogue: CatalogueEntry[] = [
   },
 ];
 
-/** The games the arcade shows that no project card above already covers. */
-const games = ARCADE_SLUGS.filter((slug) => !COVERED.has(slug))
+/** The games the arcade shows (front room and archive) that no project card above already covers. */
+const games = GAME_SLUGS.filter((slug) => !COVERED.has(slug))
   .map((slug) => apps.find((a) => a.slug === slug))
   .filter((a) => a !== undefined);
 
@@ -195,7 +195,7 @@ function Hero() {
               <b>{wall.length}</b> on one wall
             </a>
             <Link href="/games" className="bt-jump">
-              <b>{ARCADE_SLUGS.length}</b> games
+              <b>{GAME_SLUGS.length}</b> games
               <IconArrowRight />
             </Link>
           </nav>
@@ -433,8 +433,8 @@ export default function BuiltPage() {
                 All the games are in one place
               </p>
               <p className="mt-3 text-[15px] leading-relaxed text-[var(--sd-sticky-ink)]/80">
-                Six games. All of them free, and all of them play in your
-                browser.
+                {GAME_SLUGS.length} games. All of them free, and all of them play
+                in your browser.
               </p>
               {/* Drawn on the slip, not themed: the paper is the same object
                   in both themes, so its ink is too. */}

@@ -79,7 +79,7 @@ export async function generateMetadata({
 }
 
 function TopBack() {
-  const { href, label } = backTarget(false);
+  const { href, label } = backTarget(null);
   return (
     <Suspense
       fallback={
@@ -95,7 +95,7 @@ function TopBack() {
 }
 
 function BottomBack() {
-  const { href, label } = backTarget(false);
+  const { href, label } = backTarget(null);
   return (
     <Suspense
       fallback={

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { apps, ARCADE_SLUGS } from '@/data/apps';
+import { apps, GAME_SLUGS } from '@/data/apps';
 import { builtHref } from '@/data/projects';
 import Kiru from '@/components/kiru/Kiru';
 import { Button } from '@/components/ui';
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui';
  */
 export default function FeaturedAppsSection() {
   const shown = apps.filter((a) => a.thumbnailUrl);
-  const games = new Set<string>(ARCADE_SLUGS as readonly string[]);
+  const games = new Set<string>(GAME_SLUGS as readonly string[]);
   const half = Math.ceil(shown.length / 2);
   const rows = [shown.slice(0, half), shown.slice(half)];
 

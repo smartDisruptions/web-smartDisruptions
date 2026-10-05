@@ -1,7 +1,7 @@
 import { getPublishedPosts } from '@/lib/posts';
 import { marketStormReports } from '@/data/marketStorm';
 import { projects } from '@/data/projects';
-import { apps, ARCADE_SLUGS } from '@/data/apps';
+import { apps, GAME_SLUGS } from '@/data/apps';
 import { builtHref } from '@/data/projects';
 
 /**
@@ -54,7 +54,7 @@ export function GET() {
     items.push({
       t: a.name,
       u: href,
-      k: (ARCADE_SLUGS as readonly string[]).includes(a.slug) ? 'Arcade' : 'Built',
+      k: (GAME_SLUGS as readonly string[]).includes(a.slug) ? 'Arcade' : 'Built',
       d: a.description,
       x: `${a.category} ${a.techStack.join(' ')}`,
     });

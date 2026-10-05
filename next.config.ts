@@ -64,6 +64,11 @@ const nextConfig: NextConfig = {
           source: '/games/tokaido-run',
           destination: '/games/tokaido-run/index.html',
         },
+        // Neo Dojo Survivors: the same, one file in public/games.
+        {
+          source: '/games/neo-dojo-survivors',
+          destination: '/games/neo-dojo-survivors/index.html',
+        },
       ],
       fallback: [],
     };
