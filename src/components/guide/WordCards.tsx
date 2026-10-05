@@ -73,7 +73,8 @@ export default function WordCards({ words }: { words: Word[] }) {
                   </svg>
                   <span className="gd-word-term">{w.term}</span>
                   <span className="gd-word-hint" aria-hidden>
-                    Tap to flip
+                    <span className="gd-only-touch">Tap to flip</span>
+                    <span className="gd-only-mouse">Click to flip</span>
                   </span>
                 </span>
                 <span className="gd-word-face gd-word-back">

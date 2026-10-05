@@ -109,6 +109,11 @@
   gap: clamp(2rem, 5vw, 3.5rem);
   align-items: center;
 }
+@media (min-width: 760px) {
+  .gd-hero-grid {
+    grid-template-columns: 1.25fr 0.75fr;
+  }
+}
 @media (min-width: 900px) {
   .gd-hero-grid {
     grid-template-columns: 1.2fr 0.8fr;
@@ -545,8 +550,8 @@
 .gd-rail-node {
   display: grid;
   place-items: center;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
   background: var(--sd-surface);
   border: 2px solid var(--sd-border-strong);
@@ -1318,7 +1323,7 @@
   flex-direction: column;
   align-items: center;
 }
-@media (min-width: 820px) {
+@media (min-width: 1000px) {
   .gd-flow-row {
     flex-direction: row;
     align-items: center;
@@ -1343,7 +1348,7 @@
   border: 1.5px solid var(--sd-border-strong);
   text-align: center;
 }
-@media (min-width: 820px) {
+@media (min-width: 1000px) {
   .gd-flow-node {
     width: 9.6rem;
     flex: none;
@@ -1427,7 +1432,7 @@
   background: var(--gd-api);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--gd-api) 30%, transparent);
 }
-@media (min-width: 820px) {
+@media (min-width: 1000px) {
   .gd-flow-link {
     flex: 1 1 auto;
     width: auto;
@@ -1462,7 +1467,7 @@
   .gd-flow-run {
     animation: gd-ride-y 1.65s linear infinite;
   }
-  @media (min-width: 820px) {
+  @media (min-width: 1000px) {
     .gd-flow-run {
       animation-name: gd-ride-x;
     }
@@ -2131,4 +2136,106 @@
   .gd-word {
     height: 9.75rem;
   }
+}
+
+/* ── Phone: the title screen's two objects sit side by side, small enough
+   to land above the tab bar on the first screen, instead of a tilted
+   desktop collage pushed below the fold. ───────────────────────────── */
+@media (max-width: 899px) {
+  .gd-hero-art {
+    display: grid;
+    gap: 0.7rem;
+    min-height: 0;
+    max-width: 22rem;
+    margin-top: -0.5rem;
+  }
+  .gd-ticket,
+  .gd-odo {
+    position: relative;
+    inset: auto;
+    width: auto;
+    align-content: start;
+    gap: 0.5rem;
+    padding: 0.85rem 0.9rem 0.9rem;
+  }
+  .gd-ticket {
+    rotate: -2deg;
+  }
+  .gd-odo {
+    rotate: 2deg;
+  }
+  .gd-ticket-plans b {
+    font-size: 1.3rem;
+  }
+  .gd-ticket-seal {
+    width: 1.7rem;
+    right: 0.7rem;
+    top: 0.65rem;
+  }
+  .gd-ticket-top,
+  .gd-odo-top,
+  .gd-ticket-foot,
+  .gd-odo-foot {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+  }
+  .gd-odo-digits {
+    font-size: 2rem;
+    margin-block: auto;
+  }
+  .gd-hero-kiru {
+    display: none;
+  }
+}
+/* On a phone the pass and the meter share one row, so each half is narrow. */
+@media (max-width: 759px) {
+  .gd-hero-art {
+    grid-template-columns: 1fr 1fr;
+    max-width: none;
+  }
+  .gd-ticket-plans {
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-block: 0.45rem;
+  }
+  .gd-ticket-plans span {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+  .gd-ticket-plans b {
+    font-size: 1.15rem;
+  }
+}
+
+/* Words that differ by input: "tap" under a finger, "click" under a mouse. */
+.gd-only-mouse {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .gd-only-mouse {
+    display: inline;
+  }
+  .gd-only-touch {
+    display: none;
+  }
+}
+/* Short meter labels on a phone, where the two meters share one row. */
+.gd-label-long {
+  display: none;
+}
+@media (min-width: 560px) {
+  .gd-label-long {
+    display: inline;
+  }
+  .gd-label-short {
+    display: none;
+  }
+}
+
+/* No double-tap zoom delay on anything you press in the guide. */
+.gd-page button,
+.gd-page summary,
+.gd-page input[type='range'] {
+  touch-action: manipulation;
 }

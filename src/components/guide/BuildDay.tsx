@@ -77,7 +77,10 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
     <div className="gd-day">
       <div className="gd-day-meters">
         <div className="gd-meter gd-meter-api">
-          <span className="gd-meter-label">If you paid per use</span>
+          <span className="gd-meter-label">
+            <span className="gd-label-long">If you paid per use</span>
+            <span className="gd-label-short">Per use</span>
+          </span>
           <span className="gd-meter-num tabular-nums" ref={numRef}>
             {money(0)}
           </span>
@@ -94,7 +97,10 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
           </span>
         </div>
         <div className="gd-meter gd-meter-plan">
-          <span className="gd-meter-label">Extra on your plan today</span>
+          <span className="gd-meter-label">
+            <span className="gd-label-long">Extra on your plan today</span>
+            <span className="gd-label-short">Your plan</span>
+          </span>
           <span className="gd-meter-num tabular-nums">{money(0)}</span>
           <span className="gd-meter-bar" aria-hidden>
             <span className="gd-meter-flat" />
