@@ -14,7 +14,7 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games starring Kiru and the Neo Dojo Cast, a rhythm duel still in pre-alpha, and Kiru's Rooftop Run: six levels set to music, playable right here on the page.",
+    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**

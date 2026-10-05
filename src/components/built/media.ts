@@ -152,6 +152,12 @@ const MARKS: Record<string, string> = {
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道
   'neo-dojo-survivors': '守', // defend: Tengu-9 holds the dojo for fifteen minutes
   'path-not-taken': '岐', // a fork in the road, as in 岐路: the path not taken
+  // The Broom & Blade Arcade
+  'hoop-quest': '籠', // a basket
+  'kid-volt-knockout': '拳', // a fist
+  'whack-a-dust-bunny': '兎', // a rabbit: the dust bunnies
+  'ring-toss': '輪', // a ring
+  'milk-bottle-knockdown': '倒', // to knock down
 };
 
 export function markFor(slug: string): string {
