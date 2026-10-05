@@ -30,6 +30,13 @@ export function GET() {
     { t: 'About Josh', u: '/about', k: 'Page', d: 'Who builds this, and how AI helps' },
     { t: 'Privacy', u: '/privacy', k: 'Page', d: 'What this site collects (very little)' },
     { t: 'Meet Kiru', u: '/kiru', k: 'Page', d: 'The ninja who lives on this site', x: 'mascot ninja' },
+    {
+      t: 'Claude Code subscription vs API credits',
+      u: '/guides/claude-code-subscription-vs-api',
+      k: 'Page',
+      d: 'One builds your game, one runs it',
+      x: 'pricing plan pro max api tokens cost subscription guide',
+    },
   ];
 
   for (const p of getPublishedPosts()) {
