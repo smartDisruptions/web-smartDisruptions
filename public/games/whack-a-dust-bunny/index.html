@@ -2,11 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#1A120B">
 <title>Whack-a-Dust-Bunny</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="A Broom &amp; Blade carnival booth. Bonk the dust bunnies as they pop up, grab the golden ones, and whatever you do, don&rsquo;t bonk Pip.">
+<link rel="canonical" href="https://smartdisruptions.com/games/whack-a-dust-bunny">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Smart Disruptions">
+<meta property="og:title" content="Whack-a-Dust-Bunny">
+<meta property="og:description" content="Seventy-five seconds, nine holes and a cellar full of dust bunnies. Grab the golden ones, fill the sign for FEVER, survive the Horde, and don&rsquo;t bonk Pip. A booth from the Broom &amp; Blade Arcade.">
+<meta property="og:url" content="https://smartdisruptions.com/games/whack-a-dust-bunny">
+<meta property="og:image" content="https://smartdisruptions.com/images/apps/whack-a-dust-bunny-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Whack-a-Dust-Bunny at FEVER: every dust bunny in the nine holes has turned gold, and the booth glows in a torchlit brick cellar under a red and cream striped awning">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1A120B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;900&family=Alegreya+Sans:wght@500;700;800&display=swap">
 <style>
 :root{
@@ -80,12 +95,32 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
 .big.pop{animation:pop .18s ease-out}
 @keyframes pop{from{transform:scale(1.25)}to{transform:scale(1)}}
 .tune-note{margin-top:3px;font-size:11px;opacity:.85;display:flex;justify-content:space-between;align-items:center;gap:8px}
+/* the way back to the arcade on smartdisruptions.com */
+.place{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;margin:-18px 0 2px;padding:0 8px;
+  font-size:13px;font-weight:700;letter-spacing:.4px;color:var(--parch);text-decoration:none;opacity:.86;-webkit-tap-highlight-color:transparent}
+.place:hover{color:var(--gold);opacity:1}
+.place:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:8px}
+.place.foot{margin:8px 0 -12px}
+/* Desktop wings: on a screen wider than the booth (5:8), the booth stands in the candlelit cellar.
+   Static art, nothing animates: one SVG in the canvas's own units (it's 640 tall, like the booth),
+   so the awning, the torches and the counter line up with the booth at any size. CSS mirrors it. */
+:root{--wing:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 640' preserveAspectRatio='xMaxYMid slice'%3E%3Cdefs%3E%3Cpattern id='b' width='176' height='80' patternUnits='userSpaceOnUse'%3E%3Crect width='176' height='80' fill='%23120B06'/%3E%3Crect x='1.5' y='1.5' width='41' height='17' rx='1.5' fill='%23291A0E'/%3E%3Crect x='1.5' y='1.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='45.5' y='1.5' width='41' height='17' rx='1.5' fill='%232E1C0E'/%3E%3Crect x='45.5' y='1.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='89.5' y='1.5' width='41' height='17' rx='1.5' fill='%23211409'/%3E%3Crect x='89.5' y='1.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='133.5' y='1.5' width='41' height='17' rx='1.5' fill='%23291A0E'/%3E%3Crect x='133.5' y='1.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='23.5' y='21.5' width='41' height='17' rx='1.5' fill='%23211409'/%3E%3Crect x='23.5' y='21.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='67.5' y='21.5' width='41' height='17' rx='1.5' fill='%2336231A'/%3E%3Crect x='67.5' y='21.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='111.5' y='21.5' width='41' height='17' rx='1.5' fill='%2324170C'/%3E%3Crect x='111.5' y='21.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='155.5' y='21.5' width='41' height='17' rx='1.5' fill='%23291A0E'/%3E%3Crect x='155.5' y='21.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='-20.5' y='21.5' width='41' height='17' rx='1.5' fill='%23291A0E'/%3E%3Crect x='-20.5' y='21.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='1.5' y='41.5' width='41' height='17' rx='1.5' fill='%23291A0E'/%3E%3Crect x='1.5' y='41.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='45.5' y='41.5' width='41' height='17' rx='1.5' fill='%2324170C'/%3E%3Crect x='45.5' y='41.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='89.5' y='41.5' width='41' height='17' rx='1.5' fill='%2333200F'/%3E%3Crect x='89.5' y='41.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='133.5' y='41.5' width='41' height='17' rx='1.5' fill='%232B1B0D'/%3E%3Crect x='133.5' y='41.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='23.5' y='61.5' width='41' height='17' rx='1.5' fill='%2333200F'/%3E%3Crect x='23.5' y='61.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='67.5' y='61.5' width='41' height='17' rx='1.5' fill='%2324170C'/%3E%3Crect x='67.5' y='61.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='111.5' y='61.5' width='41' height='17' rx='1.5' fill='%2333200F'/%3E%3Crect x='111.5' y='61.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='155.5' y='61.5' width='41' height='17' rx='1.5' fill='%23211409'/%3E%3Crect x='155.5' y='61.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='-20.5' y='61.5' width='41' height='17' rx='1.5' fill='%23211409'/%3E%3Crect x='-20.5' y='61.5' width='41' height='2' fill='%234A3520' opacity='.35'/%3E%3Crect x='6.1' y='4.8' width='6' height='3' fill='%23120B06' opacity='.7'/%3E%3Crect x='67.6' y='42.1' width='6' height='3' fill='%23120B06' opacity='.7'/%3E%3Crect x='113.6' y='12.7' width='6' height='3' fill='%23120B06' opacity='.7'/%3E%3Crect x='45.1' y='26.2' width='6' height='3' fill='%23120B06' opacity='.7'/%3E%3C/pattern%3E%3CradialGradient id='t'%3E%3Cstop offset='0' stop-color='%23F3B860' stop-opacity='.5'/%3E%3Cstop offset='.3' stop-color='%23E8923A' stop-opacity='.22'/%3E%3Cstop offset='.65' stop-color='%23D4622F' stop-opacity='.07'/%3E%3Cstop offset='1' stop-color='%23D4622F' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='fl' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23000' stop-opacity='0'/%3E%3Cstop offset='1' stop-color='%23000' stop-opacity='.55'/%3E%3C/linearGradient%3E%3ClinearGradient id='tp' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23000' stop-opacity='.45'/%3E%3Cstop offset='1' stop-color='%23000' stop-opacity='0'/%3E%3C/linearGradient%3E%3CradialGradient id='g'%3E%3Cstop offset='0' stop-color='%23F3D08A' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23F3D08A' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='sp' x1='1' x2='0'%3E%3Cstop offset='0' stop-color='%23E8B24A' stop-opacity='.16'/%3E%3Cstop offset='1' stop-color='%23E8B24A' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='p' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%231A120B'/%3E%3Cstop offset='.25' stop-color='%236B4F2F'/%3E%3Cstop offset='.55' stop-color='%234A3520'/%3E%3Cstop offset='1' stop-color='%23120B06'/%3E%3C/linearGradient%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%238C6A3E'/%3E%3Cstop offset='1' stop-color='%234A3520'/%3E%3C/linearGradient%3E%3ClinearGradient id='bm' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23140D07'/%3E%3Cstop offset='.8' stop-color='%232A1C10'/%3E%3Cstop offset='1' stop-color='%234A3520'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='640' fill='url(%23b)'/%3E%3Crect x='860' width='340' height='640' fill='url(%23sp)'/%3E%3Crect y='160' width='1200' height='70' fill='url(%23tp)'/%3E%3Crect y='380' width='1200' height='138' fill='url(%23fl)'/%3E%3Ccircle cx='1035' cy='188' r='250' fill='url(%23t)'/%3E%3Crect x='1026' y='212' width='18' height='5' rx='1' fill='%230E0905'/%3E%3Crect x='1033' y='208' width='4' height='16' fill='%230E0905'/%3E%3Cpath d='M1029 188 L1041 188 L1039 214 L1031 214 Z' fill='%234A3520'/%3E%3Crect x='1028' y='187' width='14' height='4' rx='1' fill='%231A120B'/%3E%3Cellipse cx='1035' cy='176' rx='8' ry='14' fill='%23D4622F'/%3E%3Cellipse cx='1035' cy='180' rx='3.6' ry='7.5' fill='%23F3D08A'/%3E%3Ccircle cx='1060.4' cy='266.5' r='2' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='1088.7' cy='180.1' r='1.2' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='1004.7' cy='203.4' r='1.7' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='1077.6' cy='279.5' r='2.1' fill='%23EDDDB5' opacity='0.3'/%3E%3Ccircle cx='974.1' cy='286.6' r='1.6' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='730' cy='188' r='250' fill='url(%23t)'/%3E%3Crect x='721' y='212' width='18' height='5' rx='1' fill='%230E0905'/%3E%3Crect x='728' y='208' width='4' height='16' fill='%230E0905'/%3E%3Cpath d='M724 188 L736 188 L734 214 L726 214 Z' fill='%234A3520'/%3E%3Crect x='723' y='187' width='14' height='4' rx='1' fill='%231A120B'/%3E%3Cellipse cx='730' cy='176' rx='8' ry='14' fill='%23D4622F'/%3E%3Cellipse cx='730' cy='180' rx='3.6' ry='7.5' fill='%23F3D08A'/%3E%3Ccircle cx='810' cy='248.8' r='1.8' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='720' cy='303.5' r='2.1' fill='%23EDDDB5' opacity='0.3'/%3E%3Ccircle cx='650.8' cy='212.8' r='1.2' fill='%23EDDDB5' opacity='0.3'/%3E%3Ccircle cx='703.3' cy='133.8' r='1.1' fill='%23EDDDB5' opacity='0.3'/%3E%3Ccircle cx='651.2' cy='226.1' r='1.7' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='425' cy='188' r='250' fill='url(%23t)'/%3E%3Crect x='416' y='212' width='18' height='5' rx='1' fill='%230E0905'/%3E%3Crect x='423' y='208' width='4' height='16' fill='%230E0905'/%3E%3Cpath d='M419 188 L431 188 L429 214 L421 214 Z' fill='%234A3520'/%3E%3Crect x='418' y='187' width='14' height='4' rx='1' fill='%231A120B'/%3E%3Cellipse cx='425' cy='176' rx='8' ry='14' fill='%23D4622F'/%3E%3Cellipse cx='425' cy='180' rx='3.6' ry='7.5' fill='%23F3D08A'/%3E%3Ccircle cx='508.6' cy='207.2' r='1.4' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='431.6' cy='250.7' r='1.6' fill='%23EDDDB5' opacity='0.3'/%3E%3Ccircle cx='423.6' cy='162.9' r='1.9' fill='%23EDDDB5' opacity='0.2'/%3E%3Ccircle cx='418.1' cy='208.2' r='2' fill='%23EDDDB5' opacity='0.4'/%3E%3Ccircle cx='414.1' cy='143.7' r='1.1' fill='%23EDDDB5' opacity='0.2'/%3E%3Crect width='1200' height='30' fill='url(%23bm)'/%3E%3Crect x='1073' y='0' width='14' height='31' fill='%230E0905'/%3E%3Ccircle cx='1080' cy='10' r='2' fill='%236B5A45'/%3E%3Ccircle cx='1080' cy='22' r='2' fill='%236B5A45'/%3E%3Crect x='833' y='0' width='14' height='31' fill='%230E0905'/%3E%3Ccircle cx='840' cy='10' r='2' fill='%236B5A45'/%3E%3Ccircle cx='840' cy='22' r='2' fill='%236B5A45'/%3E%3Crect x='593' y='0' width='14' height='31' fill='%230E0905'/%3E%3Ccircle cx='600' cy='10' r='2' fill='%236B5A45'/%3E%3Ccircle cx='600' cy='22' r='2' fill='%236B5A45'/%3E%3Crect x='353' y='0' width='14' height='31' fill='%230E0905'/%3E%3Ccircle cx='360' cy='10' r='2' fill='%236B5A45'/%3E%3Ccircle cx='360' cy='22' r='2' fill='%236B5A45'/%3E%3Crect x='113' y='0' width='14' height='31' fill='%230E0905'/%3E%3Ccircle cx='120' cy='10' r='2' fill='%236B5A45'/%3E%3Ccircle cx='120' cy='22' r='2' fill='%236B5A45'/%3E%3Cpath d='M1178 36 Q1028 84 878 36' fill='none' stroke='%232A1C10' stroke-width='2'/%3E%3Cpath d='M1136.7 45.5 L1152.7 45.5 L1144.7 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M1138.2 46.3 L1151.2 46.3 L1144.7 62 Z' fill='%238F2B1C'/%3E%3Cpath d='M1103.3 52.6 L1119.3 52.6 L1111.3 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M1104.8 53.4 L1117.8 53.4 L1111.3 69.1 Z' fill='%23F0E2C0'/%3E%3Cpath d='M1070 57.3 L1086 57.3 L1078 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M1071.5 58.1 L1084.5 58.1 L1078 73.8 Z' fill='%23E8B24A'/%3E%3Cpath d='M1036.7 59.7 L1052.7 59.7 L1044.7 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M1038.2 60.5 L1051.2 60.5 L1044.7 76.2 Z' fill='%238FAE5D'/%3E%3Cpath d='M1003.3 59.7 L1019.3 59.7 L1011.3 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M1004.8 60.5 L1017.8 60.5 L1011.3 76.2 Z' fill='%239B6BD1'/%3E%3Cpath d='M970 57.3 L986 57.3 L978 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M971.5 58.1 L984.5 58.1 L978 73.8 Z' fill='%23D4622F'/%3E%3Cpath d='M936.7 52.6 L952.7 52.6 L944.7 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M938.2 53.4 L951.2 53.4 L944.7 69.1 Z' fill='%238F2B1C'/%3E%3Cpath d='M903.3 45.5 L919.3 45.5 L911.3 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M904.8 46.3 L917.8 46.3 L911.3 62 Z' fill='%23F0E2C0'/%3E%3Cpath d='M878 36 Q728 84 578 36' fill='none' stroke='%232A1C10' stroke-width='2'/%3E%3Cpath d='M836.7 45.5 L852.7 45.5 L844.7 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M838.2 46.3 L851.2 46.3 L844.7 62 Z' fill='%23E8B24A'/%3E%3Cpath d='M803.3 52.6 L819.3 52.6 L811.3 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M804.8 53.4 L817.8 53.4 L811.3 69.1 Z' fill='%238FAE5D'/%3E%3Cpath d='M770 57.3 L786 57.3 L778 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M771.5 58.1 L784.5 58.1 L778 73.8 Z' fill='%239B6BD1'/%3E%3Cpath d='M736.7 59.7 L752.7 59.7 L744.7 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M738.2 60.5 L751.2 60.5 L744.7 76.2 Z' fill='%23D4622F'/%3E%3Cpath d='M703.3 59.7 L719.3 59.7 L711.3 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M704.8 60.5 L717.8 60.5 L711.3 76.2 Z' fill='%238F2B1C'/%3E%3Cpath d='M670 57.3 L686 57.3 L678 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M671.5 58.1 L684.5 58.1 L678 73.8 Z' fill='%23F0E2C0'/%3E%3Cpath d='M636.7 52.6 L652.7 52.6 L644.7 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M638.2 53.4 L651.2 53.4 L644.7 69.1 Z' fill='%23E8B24A'/%3E%3Cpath d='M603.3 45.5 L619.3 45.5 L611.3 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M604.8 46.3 L617.8 46.3 L611.3 62 Z' fill='%238FAE5D'/%3E%3Cpath d='M578 36 Q428 84 278 36' fill='none' stroke='%232A1C10' stroke-width='2'/%3E%3Cpath d='M536.7 45.5 L552.7 45.5 L544.7 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M538.2 46.3 L551.2 46.3 L544.7 62 Z' fill='%239B6BD1'/%3E%3Cpath d='M503.3 52.6 L519.3 52.6 L511.3 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M504.8 53.4 L517.8 53.4 L511.3 69.1 Z' fill='%23D4622F'/%3E%3Cpath d='M470 57.3 L486 57.3 L478 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M471.5 58.1 L484.5 58.1 L478 73.8 Z' fill='%238F2B1C'/%3E%3Cpath d='M436.7 59.7 L452.7 59.7 L444.7 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M438.2 60.5 L451.2 60.5 L444.7 76.2 Z' fill='%23F0E2C0'/%3E%3Cpath d='M403.3 59.7 L419.3 59.7 L411.3 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M404.8 60.5 L417.8 60.5 L411.3 76.2 Z' fill='%23E8B24A'/%3E%3Cpath d='M370 57.3 L386 57.3 L378 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M371.5 58.1 L384.5 58.1 L378 73.8 Z' fill='%238FAE5D'/%3E%3Cpath d='M336.7 52.6 L352.7 52.6 L344.7 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M338.2 53.4 L351.2 53.4 L344.7 69.1 Z' fill='%239B6BD1'/%3E%3Cpath d='M303.3 45.5 L319.3 45.5 L311.3 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M304.8 46.3 L317.8 46.3 L311.3 62 Z' fill='%23D4622F'/%3E%3Cpath d='M278 36 Q128 84 -22 36' fill='none' stroke='%232A1C10' stroke-width='2'/%3E%3Cpath d='M236.7 45.5 L252.7 45.5 L244.7 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M238.2 46.3 L251.2 46.3 L244.7 62 Z' fill='%238F2B1C'/%3E%3Cpath d='M203.3 52.6 L219.3 52.6 L211.3 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M204.8 53.4 L217.8 53.4 L211.3 69.1 Z' fill='%23F0E2C0'/%3E%3Cpath d='M170 57.3 L186 57.3 L178 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M171.5 58.1 L184.5 58.1 L178 73.8 Z' fill='%23E8B24A'/%3E%3Cpath d='M136.7 59.7 L152.7 59.7 L144.7 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M138.2 60.5 L151.2 60.5 L144.7 76.2 Z' fill='%238FAE5D'/%3E%3Cpath d='M103.3 59.7 L119.3 59.7 L111.3 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M104.8 60.5 L117.8 60.5 L111.3 76.2 Z' fill='%239B6BD1'/%3E%3Cpath d='M70 57.3 L86 57.3 L78 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M71.5 58.1 L84.5 58.1 L78 73.8 Z' fill='%23D4622F'/%3E%3Cpath d='M36.7 52.6 L52.7 52.6 L44.7 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M38.2 53.4 L51.2 53.4 L44.7 69.1 Z' fill='%238F2B1C'/%3E%3Cpath d='M3.3 45.5 L19.3 45.5 L11.3 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M4.8 46.3 L17.8 46.3 L11.3 62 Z' fill='%23F0E2C0'/%3E%3Cpath d='M-22 36 Q-172 84 -322 36' fill='none' stroke='%232A1C10' stroke-width='2'/%3E%3Cpath d='M-63.3 45.5 L-47.3 45.5 L-55.3 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M-61.8 46.3 L-48.8 46.3 L-55.3 62 Z' fill='%23E8B24A'/%3E%3Cpath d='M-96.7 52.6 L-80.7 52.6 L-88.7 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M-95.2 53.4 L-82.2 53.4 L-88.7 69.1 Z' fill='%238FAE5D'/%3E%3Cpath d='M-130 57.3 L-114 57.3 L-122 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M-128.5 58.1 L-115.5 58.1 L-122 73.8 Z' fill='%239B6BD1'/%3E%3Cpath d='M-163.3 59.7 L-147.3 59.7 L-155.3 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M-161.8 60.5 L-148.8 60.5 L-155.3 76.2 Z' fill='%23D4622F'/%3E%3Cpath d='M-196.7 59.7 L-180.7 59.7 L-188.7 78.7 Z' fill='%231A120B'/%3E%3Cpath d='M-195.2 60.5 L-182.2 60.5 L-188.7 76.2 Z' fill='%238F2B1C'/%3E%3Cpath d='M-230 57.3 L-214 57.3 L-222 76.3 Z' fill='%231A120B'/%3E%3Cpath d='M-228.5 58.1 L-215.5 58.1 L-222 73.8 Z' fill='%23F0E2C0'/%3E%3Cpath d='M-263.3 52.6 L-247.3 52.6 L-255.3 71.6 Z' fill='%231A120B'/%3E%3Cpath d='M-261.8 53.4 L-248.8 53.4 L-255.3 69.1 Z' fill='%23E8B24A'/%3E%3Cpath d='M-296.7 45.5 L-280.7 45.5 L-288.7 64.5 Z' fill='%231A120B'/%3E%3Cpath d='M-295.2 46.3 L-282.2 46.3 L-288.7 62 Z' fill='%238FAE5D'/%3E%3Cpath d='M1132.7 108 L1174 108 L1174 134 A20.7 20.7 0 0 1 1132.7 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M1091.3 108 L1132.7 108 L1132.7 134 A20.7 20.7 0 0 1 1091.3 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M1050 108 L1091.3 108 L1091.3 134 A20.7 20.7 0 0 1 1050 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M1008.7 108 L1050 108 L1050 134 A20.7 20.7 0 0 1 1008.7 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M967.3 108 L1008.7 108 L1008.7 134 A20.7 20.7 0 0 1 967.3 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M926 108 L967.3 108 L967.3 134 A20.7 20.7 0 0 1 926 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M884.7 108 L926 108 L926 134 A20.7 20.7 0 0 1 884.7 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M843.3 108 L884.7 108 L884.7 134 A20.7 20.7 0 0 1 843.3 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M802 108 L843.3 108 L843.3 134 A20.7 20.7 0 0 1 802 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M760.7 108 L802 108 L802 134 A20.7 20.7 0 0 1 760.7 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M719.3 108 L760.7 108 L760.7 134 A20.7 20.7 0 0 1 719.3 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M678 108 L719.3 108 L719.3 134 A20.7 20.7 0 0 1 678 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M636.7 108 L678 108 L678 134 A20.7 20.7 0 0 1 636.7 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M595.3 108 L636.7 108 L636.7 134 A20.7 20.7 0 0 1 595.3 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M554 108 L595.3 108 L595.3 134 A20.7 20.7 0 0 1 554 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M512.7 108 L554 108 L554 134 A20.7 20.7 0 0 1 512.7 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M471.3 108 L512.7 108 L512.7 134 A20.7 20.7 0 0 1 471.3 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M430 108 L471.3 108 L471.3 134 A20.7 20.7 0 0 1 430 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M388.7 108 L430 108 L430 134 A20.7 20.7 0 0 1 388.7 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M347.3 108 L388.7 108 L388.7 134 A20.7 20.7 0 0 1 347.3 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M306 108 L347.3 108 L347.3 134 A20.7 20.7 0 0 1 306 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M264.7 108 L306 108 L306 134 A20.7 20.7 0 0 1 264.7 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M223.3 108 L264.7 108 L264.7 134 A20.7 20.7 0 0 1 223.3 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M182 108 L223.3 108 L223.3 134 A20.7 20.7 0 0 1 182 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M140.7 108 L182 108 L182 134 A20.7 20.7 0 0 1 140.7 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M99.3 108 L140.7 108 L140.7 134 A20.7 20.7 0 0 1 99.3 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M58 108 L99.3 108 L99.3 134 A20.7 20.7 0 0 1 58 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M16.7 108 L58 108 L58 134 A20.7 20.7 0 0 1 16.7 134 Z' fill='%23F0E2C0'/%3E%3Cpath d='M-24.7 108 L16.7 108 L16.7 134 A20.7 20.7 0 0 1 -24.7 134 Z' fill='%238F2B1C'/%3E%3Cpath d='M-66 108 L-24.7 108 L-24.7 134 A20.7 20.7 0 0 1 -66 134 Z' fill='%23F0E2C0'/%3E%3Crect x='-60' y='155' width='1234' height='10' fill='%23000' opacity='.18'/%3E%3Crect x='-60' y='96' width='1240' height='14' fill='%235E1A10'/%3E%3Crect x='-60' y='96' width='1240' height='2' fill='%23B07E24'/%3E%3Crect x='-60' y='108' width='1240' height='2' fill='%232A0C06'/%3E%3Cpath transform='translate(1140 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(1058 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(976 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(894 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(812 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(730 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(648 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(566 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(484 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(402 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(320 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(238 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(156 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(74 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Cpath transform='translate(-8 103)' d='M0 -4.5L1.3 -1.3L4.5 0L1.3 1.3L0 4.5L-1.3 1.3L-4.5 0L-1.3 -1.3Z' fill='%23E8B24A'/%3E%3Ccircle cx='1153.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='1153.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='1132.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='1132.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='1112' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='1091.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='1091.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='1070.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='1070.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='1050' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='1029.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='1029.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='1008.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='1008.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='988' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='967.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='967.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='946.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='946.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='926' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='905.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='905.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='884.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='884.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='864' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='843.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='843.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='822.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='822.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='802' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='781.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='781.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='760.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='760.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='740' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='719.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='719.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='698.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='698.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='678' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='657.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='657.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='636.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='636.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='616' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='595.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='595.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='574.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='574.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='554' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='533.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='533.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='512.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='512.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='492' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='471.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='471.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='450.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='450.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='430' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='409.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='409.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='388.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='388.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='368' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='347.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='347.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='326.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='326.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='306' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='285.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='285.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='264.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='264.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='244' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='223.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='223.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='202.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='202.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='182' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='161.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='161.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='140.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='140.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='120' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='99.3' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='99.3' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='78.7' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='78.7' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='58' cy='148' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='37.3' cy='150' r='9' fill='url(%23g)'/%3E%3Ccircle cx='37.3' cy='150' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='16.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='16.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Ccircle cx='-4' cy='150' r='2.8' fill='%234A3520'/%3E%3Ccircle cx='-24.7' cy='148' r='9' fill='url(%23g)'/%3E%3Ccircle cx='-24.7' cy='148' r='2.8' fill='%23F3D08A'/%3E%3Crect x='1178' y='90' width='22' height='550' fill='url(%23p)'/%3E%3Crect x='1175' y='86' width='28' height='7' rx='2' fill='%23B07E24'/%3E%3Crect x='1175' y='86' width='28' height='2' rx='1' fill='%23F3D08A' opacity='.6'/%3E%3Crect x='1177' y='160' width='24' height='5' fill='%23B07E24'/%3E%3Crect x='1177' y='160' width='24' height='1.5' fill='%23F3D08A' opacity='.5'/%3E%3Crect x='1183' y='198' width='9' height='1.5' fill='%231A120B' opacity='.5'/%3E%3Crect x='1183' y='268' width='9' height='1.5' fill='%231A120B' opacity='.5'/%3E%3Crect x='1183' y='338' width='9' height='1.5' fill='%231A120B' opacity='.5'/%3E%3Crect x='1183' y='408' width='9' height='1.5' fill='%231A120B' opacity='.5'/%3E%3Crect x='1183' y='478' width='9' height='1.5' fill='%231A120B' opacity='.5'/%3E%3Cpath d='M1170 300 L1122 470' stroke='%231A120B' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M1170 300 L1122 470' stroke='%238C6A3E' stroke-width='4.5' stroke-linecap='round'/%3E%3Cg transform='translate(1122 470) rotate(15.8)'%3E%3Cpath d='M-9 -4 L9 -4 L22 42 L-22 42 Z' fill='%231A120B'/%3E%3Cpath d='M-7 -2 L7 -2 L20 40 L-20 40 Z' fill='%23D9B35A'/%3E%3Cpath d='M-5.4 2 L-16.2 39' stroke='%23A8741E' stroke-width='1.2'/%3E%3Cpath d='M-3.6 2 L-10.8 39' stroke='%23A8741E' stroke-width='1.2'/%3E%3Cpath d='M-1.8 2 L-5.4 39' stroke='%23A8741E' stroke-width='1.2'/%3E%3Cpath d='M0 2 L0 39' stroke='%23A8741E' stroke-width='1.2'/%3E%3Cpath d='M1.8 2 L5.4 39' stroke='%23A8741E' stroke-width='1.2'/%3E%3Cpath d='M3.6 2 L10.8 39' stroke='%23A8741E' stroke-width='1.2'/%3E%3Cpath d='M5.4 2 L16.2 39' stroke='%23A8741E' stroke-width='1.2'/%3E%3Crect x='-9' y='-8' width='18' height='6' fill='%238F2B1C'/%3E%3C/g%3E%3Cellipse cx='995' cy='516' rx='22' ry='4' fill='%23000' opacity='.35'/%3E%3Cg transform='translate(986.6 480.4) rotate(-20)'%3E%3Cellipse cy='-7' rx='7.2' ry='12' fill='%231A120B'/%3E%3Cellipse cy='-7' rx='5.2' ry='10' fill='%238E877B'/%3E%3Cellipse cy='-6.4' rx='2.4' ry='6.4' fill='%23C9A6A0'/%3E%3C/g%3E%3Cg transform='translate(1003.4 480.4) rotate(20)'%3E%3Cellipse cy='-7' rx='7.2' ry='12' fill='%231A120B'/%3E%3Cellipse cy='-7' rx='5.2' ry='10' fill='%238E877B'/%3E%3Cellipse cy='-6.4' rx='2.4' ry='6.4' fill='%23C9A6A0'/%3E%3C/g%3E%3Cg fill='%231A120B'%3E%3Ccircle cx='1011.4' cy='496' r='8.4'/%3E%3Ccircle cx='1009.5' cy='503.6' r='8.4'/%3E%3Ccircle cx='1004.3' cy='509.5' r='8.4'/%3E%3Ccircle cx='997' cy='512.3' r='8.4'/%3E%3Ccircle cx='989.2' cy='511.3' r='8.4'/%3E%3Ccircle cx='982.7' cy='506.9' r='8.4'/%3E%3Ccircle cx='979.1' cy='499.9' r='8.4'/%3E%3Ccircle cx='979.1' cy='492.1' r='8.4'/%3E%3Ccircle cx='982.7' cy='485.1' r='8.4'/%3E%3Ccircle cx='989.2' cy='480.7' r='8.4'/%3E%3Ccircle cx='997' cy='479.7' r='8.4'/%3E%3Ccircle cx='1004.3' cy='482.5' r='8.4'/%3E%3Ccircle cx='1009.5' cy='488.4' r='8.4'/%3E%3Ccircle cx='995' cy='496' r='19.2'/%3E%3C/g%3E%3Cg fill='%239C958A'%3E%3Ccircle cx='1011.4' cy='496' r='6.4'/%3E%3Ccircle cx='1009.5' cy='503.6' r='6.4'/%3E%3Ccircle cx='1004.3' cy='509.5' r='6.4'/%3E%3Ccircle cx='997' cy='512.3' r='6.4'/%3E%3Ccircle cx='989.2' cy='511.3' r='6.4'/%3E%3Ccircle cx='982.7' cy='506.9' r='6.4'/%3E%3Ccircle cx='979.1' cy='499.9' r='6.4'/%3E%3Ccircle cx='979.1' cy='492.1' r='6.4'/%3E%3Ccircle cx='982.7' cy='485.1' r='6.4'/%3E%3Ccircle cx='989.2' cy='480.7' r='6.4'/%3E%3Ccircle cx='997' cy='479.7' r='6.4'/%3E%3Ccircle cx='1004.3' cy='482.5' r='6.4'/%3E%3Ccircle cx='1009.5' cy='488.4' r='6.4'/%3E%3Ccircle cx='995' cy='496' r='17.2'/%3E%3C/g%3E%3Ccircle cx='989' cy='487' r='7' fill='%23BDB5A6' opacity='.6'/%3E%3Cellipse cx='988.2' cy='493.6' rx='6.6' ry='7.4' fill='%231A120B'/%3E%3Cellipse cx='988.2' cy='493.6' rx='5.2' ry='6' fill='%23FFFDF4'/%3E%3Ccircle cx='989.2' cy='495' r='2.6' fill='%231A120B'/%3E%3Cellipse cx='1001.8' cy='493.6' rx='6.6' ry='7.4' fill='%231A120B'/%3E%3Cellipse cx='1001.8' cy='493.6' rx='5.2' ry='6' fill='%23FFFDF4'/%3E%3Ccircle cx='1002.8' cy='495' r='2.6' fill='%231A120B'/%3E%3Cpath d='M991 502 Q995 506 999 502' fill='none' stroke='%231A120B' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M1005 504 l6 14 l-4 -2 l-3 4 Z' fill='%238F2B1C'/%3E%3Ccircle cx='1006' cy='504' r='4.5' fill='%23E8B24A'/%3E%3Ccircle cx='1006' cy='504' r='2' fill='%23B07E24'/%3E%3Cellipse cx='865' cy='516' rx='30' ry='5' fill='%23000' opacity='.35'/%3E%3Cpath d='M841 464 Q834 490 841 516 L889 516 Q896 490 889 464 Z' fill='%235A4128'/%3E%3Cpath d='M857 464 Q855 490 857 516 L871 516 Q873 490 871 464 Z' fill='%238C6A3E' opacity='.55'/%3E%3Crect x='837' y='472' width='56' height='4' fill='%231A120B'/%3E%3Crect x='837' y='506' width='56' height='4' fill='%231A120B'/%3E%3Cellipse cx='865' cy='464' rx='24' ry='5' fill='%233A2817'/%3E%3Cellipse cx='865' cy='464' rx='19' ry='3.5' fill='%232A1C10'/%3E%3Crect y='520' width='1200' height='120' fill='url(%23c)'/%3E%3Cpath d='M1200 520 L1170 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M1150 520 L1120 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M1100 520 L1070 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M1050 520 L1020 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M1000 520 L970 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M950 520 L920 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M900 520 L870 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M850 520 L820 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M800 520 L770 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M750 520 L720 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M700 520 L670 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M650 520 L620 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M600 520 L570 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M550 520 L520 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M500 520 L470 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M450 520 L420 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M400 520 L370 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M350 520 L320 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M300 520 L270 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M250 520 L220 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M200 520 L170 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M150 520 L120 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M100 520 L70 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M50 520 L20 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M0 520 L-30 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Cpath d='M-50 520 L-80 640' stroke='%231A120B' stroke-opacity='.5' stroke-width='2'/%3E%3Crect y='516' width='1200' height='6' fill='%231A120B'/%3E%3Crect y='523' width='1200' height='1.5' fill='%23F3D08A' opacity='.12'/%3E%3C/svg%3E");}
+#stage{z-index:1}
+@media (min-aspect-ratio: 5/8){
+  body::before,body::after{content:'';position:fixed;top:0;bottom:0;width:calc(50% - 31.25vh);width:calc(50% - 31.25dvh);pointer-events:none;
+    background:linear-gradient(90deg,rgba(10,6,3,.78),rgba(10,6,3,0) 80%),var(--wing) right center/auto 100% no-repeat,#120C07}
+  body::before{left:0}
+  body::after{right:0;transform:scaleX(-1)}
+  .overlay{background:linear-gradient(90deg,rgba(26,18,11,.55),rgba(26,18,11,.94) calc(50% - 31.25vh),rgba(26,18,11,.94) calc(50% + 31.25vh),rgba(26,18,11,.55))}
+}
 </style>
+</head>
 <body>
 <div id="stage"><canvas id="c"></canvas></div>
 
 <div class="overlay" id="menu">
   <div class="card">
+    <a class="place" href="/games#broom-blade-arcade"><span aria-hidden="true">&larr;</span> Smart Disruptions &middot; Broom &amp; Blade Arcade</a>
     <h1>Whack-a-Dust-Bunny</h1>
     <div class="sub">A Broom &amp; Blade carnival booth</div>
     <div class="rules">
@@ -94,8 +129,7 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
       <b>Don't bonk Pip!</b> (−2). Two bonks in a flash is a <b>DOUBLE BONK</b> (+2).<br>
       Bonk a <b>sneezy bunny</b> and watch out. Grab the glowing <b>powers</b>.<br>
       Watch out for <b>hoppers</b>, <b>mama bunnies</b> and <b>socks</b>. Bonks fill the sign: tap it for <b>FEVER</b>.<br>
-      Three <b>surprise events</b> each round, then <b>the Horde</b>.<br>
-      Your score <b>÷ 3</b> is the <b>gold</b> you win (the purse holds 30).
+      Three <b>surprise events</b> each round, then <b>the Horde</b>.
     </div>
     <div class="broom-label">Your broom</div>
     <div class="brooms" id="brooms"></div>
@@ -112,7 +146,8 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
     <div class="sub" id="finalMsg">points</div>
     <div class="rank" id="rank"></div>
     <div id="stats" class="rules"></div>
-    <div class="row"><button id="again">Play again</button><button id="menuBtn" class="ghost">Guild hall</button></div>
+    <div class="row"><button id="again">Play again</button><button id="menuBtn" class="ghost">Menu</button></div>
+    <a class="place foot" href="/games#broom-blade-arcade"><span aria-hidden="true">&larr;</span> Smart Disruptions &middot; Broom &amp; Blade Arcade</a>
   </div>
 </div>
 
@@ -167,7 +202,7 @@ function layout(){
   const gridBot = floorY - 62;
   rowGap = Math.max(100, Math.min(150, (gridBot - 250)/2));
   gridTop = gridBot - 2*rowGap;
-  for (const h of holes){ h.x = W/2 + COL_X[h.c]; h.y = gridTop + h.r*rowGap; }
+  for (const h of holes){ h.x = W/2 + COL_X[h.c]; h.y = gridTop + h.r*rowGap; h.pg = null; }
   canopyY = Math.max(100, 108 + (gridTop - 250)*0.4);
   calloutY = (canopyY + 36 + gridTop - 66)/2;
   seat = { x: W - 22, y: gridTop - 62 };
@@ -180,7 +215,7 @@ function layout(){
 // and the FRENZY to finish.
 const ROUND = 75, FRENZY_AT = 63;           // 75 s a round; the last 12 are the FRENZY
 const RAMP = 0.62;                          // by the frenzy, gaps and pop windows are 62% of their start
-// Half the brief's values (Josh, 2026-09-23: "I won too much gold"); gold is still score / 3.
+// Half the brief's values (Josh, 2026-09-23: "I won too much gold").
 const PTS_BUNNY = 1, PTS_GOLD = 3, PTS_RUSH = 2, PTS_HELMET = 2, PTS_SNEEZER = 2, PTS_PIP = -2, PTS_DOUBLE = 2;
 const STORM_SWEEP = 5, CONGA_PERFECT = 5;   // clear a whole dust storm / every conga bunny
 const DOUBLE_WIN = 0.4;                     // two bonks this close (s) are a DOUBLE BONK
@@ -189,10 +224,8 @@ const RISE = 0.13, RAZZ = 0.32, DUCK = 0.16, HIT = 0.42;
 // count) and THE DUST KING rises from the middle hole, once. Three bonks, 3 points each.
 const KING_AFTER = 5, KING_HITS = 3, KING_PTS = 3, KING_UP = 3.6;
 const JITTER = 0.15;                        // each gap is ±15% of the schedule
-// The booth's purse. Events and powers stack in too many ways to bound a best score neatly, so
-// the gold is capped instead: score / 3, never more than 30. The hall's WHACK_MOST must match.
-// A sharp round lands around 20-30.
-const PURSE = 30, WHACK_MOST = PURSE;
+// On smartdisruptions.com every round is free: no gold, no purse. The HUD's left panel shows the
+// best score on this device instead ('whack-best', plain points, also read by the /games page).
 
 // Three surprise events a round, at these times, picked from four. ?events=conga,lights,rush
 // forces the order (handy for trying one).
@@ -260,24 +293,24 @@ function popWindow(t){ return T.up/1000 * pace(t); }
 const CALM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const G = { state:'menu' };
 function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = (Math.random()*(i+1))|0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function freshStats(){ return { time:0, points:0, gold:0, goldPeak:0, bonks:0, escaped:0, whiffs:0, pipBonks:0, golden:0, kingGold:0, doubles:0, streak:0, bestStreak:0,
+function freshStats(){ return { time:0, points:0, newBest:false, bonks:0, escaped:0, whiffs:0, pipBonks:0, golden:0, kingGold:0, doubles:0, streak:0, bestStreak:0,
   spawnT:0.7, lastBonkT:-9, lastPaired:false, frenzy:false, over:false, endTimer:0, lastSec:ROUND, kingPending:false, kingDone:false, king:0, lastHole:-1, spawns:0,
   plan: (FORCED.length ? FORCED.concat(shuffle(Object.keys(EVENTS)).filter(k => !FORCED.includes(k))) : shuffle(Object.keys(EVENTS))).slice(0, EVENT_AT.length),
-  evNext:0, event:null, played:[], power:null, powerAt:-99, lastPower:'', powers:0, sneezers:0, storm:null, storms:0, stormsClean:0, congaPerfect:false, purseFull:false, feverM:0, fever:null, fevers:0, sockBonks:0, horde:0, newBrooms:[] }; }
+  evNext:0, event:null, played:[], power:null, powerAt:-99, lastPower:'', powers:0, sneezers:0, storm:null, storms:0, stormsClean:0, congaPerfect:false, feverM:0, fever:null, fevers:0, sockBonks:0, horde:0, newBrooms:[] }; }
 Object.assign(G, freshStats());
 let best = 0; try { best = +localStorage.getItem('whack-best') || 0; } catch(e){}
 $('best').textContent = 'Best: ' + best + ' pts';
 
-const parts = [], toasts = [], rings = [], confetti = [], flyers = [], puffs = [], swipes = [], lights = [], sweeps = [], hopTrails = [];
+const parts = [], toasts = [], rings = [], confetti = [], puffs = [], swipes = [], lights = [], sweeps = [], hopTrails = [];
 const motes = []; for (let i=0;i<26;i++) motes.push({ x: Math.random()*W, y: Math.random()*900, vx: (Math.random()-0.5)*6, vy: -2 - Math.random()*5, s: 0.8 + Math.random()*1.6, ph: Math.random()*6 });
 let shake = 0, flash = 0, flashC = '#F3D08A', callout = null, lastT = 0, razzAt = 0, dark = 0, slowFx = 0;
-let scoreShown = 0, boardFx = 0, boardGold = false, plusBadge = null, goldShown = 0, goldPop = 0;
+let scoreShown = 0, boardFx = 0, boardGold = false, plusBadge = null, bestPop = 0;
 
 function startGame(){
   Object.assign(G, freshStats());
   for (const h of holes) h.occ = null;
-  parts.length = toasts.length = rings.length = confetti.length = flyers.length = puffs.length = swipes.length = lights.length = sweeps.length = hopTrails.length = 0; MUS.step = 0; MUS.next = 0;
-  scoreShown = 0; goldShown = 0; plusBadge = null; callout = null; dark = 0; slowFx = 0;
+  parts.length = toasts.length = rings.length = confetti.length = puffs.length = swipes.length = lights.length = sweeps.length = hopTrails.length = 0; MUS.step = 0; MUS.next = 0;
+  scoreShown = 0; bestPop = 0; plusBadge = null; callout = null; dark = 0; slowFx = 0;
   Object.assign(mouse, { inHole:null, sad:0, jump:0, bubble:null, dizzy:0 });
   G.state = 'play'; $('menu').hidden = true; $('over').hidden = true; $('pause').hidden = true;
   if (TUNE_ON) $('tune').hidden = false;
@@ -306,11 +339,9 @@ function endGame(){
     `<div class="line"><span>🐭 Tricked (mice, socks)</span><b>${G.pipBonks + G.sockBonks ? (G.pipBonks + G.sockBonks) + ' (oops!)' : 'never 💛'}</b></div>` +
     (G.newBrooms.length ? `<div class="line"><span>🔓 New broom</span><b>${G.newBrooms.map(k => BROOMS[k].name).join(', ')}</b></div>` : '') +
     (G.king ? `<div class="line"><span>👑 The Dust King</span><b>${G.king === 2 ? 'defeated!' : 'escaped'}</b></div>` : '') +
-    `<div class="line gold"><span>Gold (score ÷ 3, purse ${PURSE})</span><b>${G.gold}</b></div>`;
+    `<div class="line gold"><span>Best on this device</span><b>${Math.max(best, G.points)}</b></div>`;
   renderBrooms();
   if (isBest){ best = G.points; try { localStorage.setItem('whack-best', best); } catch(e){} $('best').textContent = 'Best: ' + best + ' pts'; }
-  // The hall banks the gold; played straight from the URL there's no parent, so it's practice.
-  try { if (window.parent && window.parent !== window) window.parent.postMessage({ game:'whack-a-dust-bunny', done:true, gold:G.gold, points:G.points, bonks:G.bonks, golden:G.golden, pip:G.pipBonks, king:G.king === 2 }, location.origin); } catch(e){}
   $('over').hidden = false;
 }
 let countRun = 0;
@@ -391,10 +422,29 @@ function drawCalloutRays(){ if (!callout || callout.tier < 2 || CALM) return;
   const c = callout, tier = c.tier, now = performance.now()/1000, fade = Math.min(1, c.life*2.5);
   ctx.save(); ctx.translate(W/2, calloutY); ctx.globalAlpha = fade*(0.12 + 0.04*tier); ctx.rotate(now*(0.6 + 0.3*tier));
   const n = 8 + tier*2, R = 140 + tier*25;
-  for (let k=0;k<n;k++){ const g = ctx.createRadialGradient(0,0,0,0,0,R); const col = tier >= 4 ? `hsl(${(now*120 + k*360/n)%360},90%,65%)` : c.color;
-    g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g;
+  for (let k=0;k<n;k++){ let g = c.rayG;
+    if (tier >= 4 || !g){ g = ctx.createRadialGradient(0,0,0,0,0,R); g.addColorStop(0, tier >= 4 ? `hsl(${(now*120 + k*360/n)%360},90%,65%)` : c.color); g.addColorStop(1, 'rgba(0,0,0,0)'); if (tier < 4) c.rayG = g; }
+    ctx.fillStyle = g;
     ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R,(k/n)*Math.PI*2,((k+0.45)/n)*Math.PI*2); ctx.closePath(); ctx.fill(); }
   ctx.restore(); }
+// Big callouts (tier 3+) glow letter by letter, and blurring every letter twice every frame was the
+// booth's heaviest raster work (FEVER, the Horde, every golden bunny). So each callout bakes its two
+// glow layers once, at half resolution (a blur this wide looks the same), and each frame draws them in
+// the old order: the stroke's glow, the stroke, the fill's glow, the fill. (Perf pass, 2026-10-05.)
+function calloutGlow(c, fit){
+  const k = dpr*scale*fit;   // device pixels per callout unit once the pop settles
+  if (c.glow && c.glow.k === k) return c.glow;
+  const blur = 10 + c.tier*6, u = 0.5*k, pad = blur*1.8/k + 5, cells = [];
+  let tot = 0;
+  for (let i=0;i<c.text.length;i++){ const w = ctx.measureText(c.text[i]).width + 2*pad; cells.push({ x: tot, w }); tot += w; }
+  // four rows: the stroked letters, their glow, the filled letters, their glow; the letter rows are cleared
+  const RH = Math.ceil((c.size*1.5 + 2*pad)*u), C = document.createElement('canvas'); C.width = Math.ceil(tot*u) + 2; C.height = RH*4;
+  const g = C.getContext('2d'); g.setTransform(u, 0, 0, u, 0, 0); g.font = ctx.font; g.textBaseline = 'middle'; g.textAlign = 'left'; g.lineJoin = 'round'; g.lineWidth = 8;
+  g.fillStyle = g.strokeStyle = '#1A120B'; g.shadowColor = c.color; g.shadowBlur = blur*0.5; g.shadowOffsetY = RH;
+  for (let i=0;i<c.text.length;i++){ const x = cells[i].x + pad; g.strokeText(c.text[i], x, RH*0.5/u); g.fillText(c.text[i], x, RH*2.5/u); }
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, C.width, RH); g.clearRect(0, RH*2, C.width, RH);
+  return (c.glow = { k, u, pad, cells, C, RH, rh: RH/u });
+}
 function drawCallout(){ if (!callout) return;
   const c = callout, age = c.dur - c.life, tier = c.tier, now = performance.now()/1000;
   const pop = CALM ? 1 : age < 0.18 ? 0.6 + 0.6*(age/0.18) : 1.2 - Math.min(0.2, (age-0.18)*1.2), fade = Math.min(1, c.life*2.5);
@@ -406,8 +456,12 @@ function drawCallout(){ if (!callout) return;
     if (tier >= 4){ const h = (now*140)%360; g.addColorStop(0, `hsl(${h},95%,75%)`); g.addColorStop(0.5, '#F3D08A'); g.addColorStop(1, `hsl(${(h+120)%360},90%,60%)`); }
     else { g.addColorStop(0, '#FFF3D0'); g.addColorStop(0.55, c.color); g.addColorStop(1, '#D4622F'); } fill = g; }
   if (tier >= 1){ ctx.shadowColor = c.color; ctx.shadowBlur = 10 + tier*6; }
-  if (tier >= 3 && !CALM){ let x = -tw/2; for (let k=0;k<c.text.length;k++){ const ch = c.text[k], w = ctx.measureText(ch).width, y = Math.sin(now*10 + k*0.7)*(3 + tier*1.5);
-      ctx.textAlign = 'left'; ctx.lineWidth = 8; ctx.strokeStyle = '#1A120B'; ctx.strokeText(ch, x, y); ctx.fillStyle = fill; ctx.fillText(ch, x, y); x += w; } }
+  if (tier >= 3 && !CALM){ const gl = calloutGlow(c, fit); ctx.shadowBlur = 0;
+    let x = -tw/2; for (let k=0;k<c.text.length;k++){ const ch = c.text[k], w = ctx.measureText(ch).width, y = Math.sin(now*10 + k*0.7)*(3 + tier*1.5);
+      const cl = gl.cells[k], sx = cl.x*gl.u, sw = cl.w*gl.u, dx = x - gl.pad, dy = y - gl.rh/2;
+      ctx.textAlign = 'left'; ctx.lineWidth = 8; ctx.strokeStyle = '#1A120B';
+      ctx.drawImage(gl.C, sx, gl.RH, sw, gl.RH, dx, dy, cl.w, gl.rh); ctx.strokeText(ch, x, y);
+      ctx.drawImage(gl.C, sx, gl.RH*3, sw, gl.RH, dx, dy, cl.w, gl.rh); ctx.fillStyle = fill; ctx.fillText(ch, x, y); x += w; } }
   else { ctx.textAlign = 'center'; ctx.lineWidth = 8; ctx.strokeStyle = '#1A120B'; ctx.strokeText(c.text, 0, 0); ctx.fillStyle = fill; ctx.fillText(c.text, 0, 0); }
   if (c.sub){ ctx.shadowBlur = 0; ctx.textAlign = 'center'; ctx.font = '800 17px "Alegreya Sans", sans-serif'; ctx.lineWidth = 5; ctx.strokeStyle = '#1A120B'; ctx.strokeText(c.sub, 0, c.size*0.66); ctx.fillStyle = '#F0E2C0'; ctx.fillText(c.sub, 0, c.size*0.66); }
   ctx.restore(); ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; ctx.globalAlpha = 1; }
@@ -627,11 +681,11 @@ window.addEventListener('resize', resize);
 
 // ---------- bonking ----------
 function addPoints(n, x, y){
+  const was = G.points;
   G.points = Math.max(0, G.points + n);
-  const g = Math.min(PURSE, Math.floor(G.points / 3));
-  if (g > G.goldPeak){ for (let k=0;k<g - G.goldPeak;k++) flyers.push({ x0: x + k*12, y0: y, t: -k*0.15, spin: Math.random()*6 }); G.goldPeak = g; }
-  G.gold = g;
-  if (g >= PURSE && !G.purseFull){ G.purseFull = true; toasts.push({ x: W/2, y: SB.y + SB.h + 40, text: 'PURSE FULL!', color: '#F3D08A', life: 1.6, size: 24 }); }
+  // Passing your best on this device lights up the BEST panel (on the hall's booth this was the purse).
+  if (best > 0 && G.points > best && G.points > was){ bestPop = 1;
+    if (!G.newBest){ G.newBest = true; toasts.push({ x: W/2, y: SB.y + SB.h + 40, text: 'NEW BEST!', color: '#F3D08A', life: 1.6, size: 24 }); sfx.coin(); } }
 }
 function dustPoof(x, y, n, golden){
   for (let i=0;i<n;i++){ const a = Math.random()*Math.PI*2, v = 40 + Math.random()*110;
@@ -820,15 +874,14 @@ function update(dt){
   for (let i=toasts.length-1;i>=0;i--){ const t=toasts[i]; t.life-=dt; t.y -= 50*dt; if (t.life<=0) toasts.splice(i,1); }
   for (let i=rings.length-1;i>=0;i--){ const g=rings[i]; g.life-=dt; g.r += 110*dt; if (g.life<=0) rings.splice(i,1); }
   for (let i=confetti.length-1;i>=0;i--){ const c=confetti[i]; c.sway += dt*3; c.x += (c.vx + Math.sin(c.sway)*30)*dt; c.y += c.vy*dt; c.rot += c.vr*dt; if (c.y > floorY) confetti.splice(i,1); }
-  for (let i=flyers.length-1;i>=0;i--){ const f=flyers[i]; f.t += dt/0.75; if (f.t >= 1){ flyers.splice(i,1); goldShown++; goldPop = 1; sfx.coin(); } }
   if (callout){ callout.life -= dt; if (callout.life <= 0) callout = null; }
   scoreShown += (G.points - scoreShown)*Math.min(1, dt*6); if (Math.abs(G.points - scoreShown) < 0.01) scoreShown = G.points;
-  boardFx = Math.max(0, boardFx - dt); goldPop = Math.max(0, goldPop - dt*3); flash = Math.max(0, flash - dt*2.5); shake *= 0.85;
+  boardFx = Math.max(0, boardFx - dt); bestPop = Math.max(0, bestPop - dt*3); flash = Math.max(0, flash - dt*2.5); shake *= 0.85;
   if (plusBadge){ plusBadge.life -= dt; if (plusBadge.life <= 0) plusBadge = null; }
   // Pip watches the busiest hole
   const up = holes.find(h => h.occ && h.occ.kind !== 'pip');
   if (up && !m.inHole){ m.lookX += (Math.max(-1, Math.min(1, (up.x - seat.x)/120)) - m.lookX)*Math.min(1, dt*8); m.lookY += (Math.max(-1, Math.min(1, (up.y - seat.y)/160)) - m.lookY)*Math.min(1, dt*8); }
-  if (G.over && !holes.some(h => h.occ) && !flyers.length){ G.endTimer += dt; if (G.endTimer > 1.1) endGame(); }
+  if (G.over && !holes.some(h => h.occ)){ G.endTimer += dt; if (G.endTimer > 1.1) endGame(); }
 }
 
 // ---------- the crowd: mice on the sign, cheering and gasping ----------
@@ -884,41 +937,67 @@ function playStep(s, w){
 }
 
 // ---------- drawing ----------
-function drawRoom(){
-  const now = performance.now()/1000, wallB = canopyY + 36;
+// The cellar and the awning's fabric never change during a round, so they're drawn once per size into
+// offscreen canvases (pixel for pixel what this code used to draw every frame) and each frame copies
+// them: two draws instead of ~450, and one full-screen fill instead of five, which matters on a phone's
+// GPU. The torch flame, the dust motes and the marquee bulbs stay live on top. (Perf pass, 2026-10-05.)
+const roomC = document.createElement('canvas'), roomX = roomC.getContext('2d');
+const awnC = document.createElement('canvas'), awnX = awnC.getContext('2d');
+let roomFor = '', awnFor = '', awnTop = 0;
+try { document.fonts.addEventListener('loadingdone', () => { awnFor = ''; }); document.fonts.ready.then(() => { awnFor = ''; }); } catch(e){}
+function blit(c, top){   // copy a cache 1:1 onto the canvas, with the screen shake snapped to whole pixels
+  const m = ctx.getTransform(); ctx.save(); ctx.setTransform(1, 0, 0, 1, Math.round(m.e), top + Math.round(m.f)); ctx.drawImage(c, 0, 0); ctx.restore();
+}
+function roomStatic(g){
+  const wallB = canopyY + 36;
   // back wall: dark boards, candles
-  const g = ctx.createLinearGradient(0,0,0,wallB); g.addColorStop(0,'#1F150C'); g.addColorStop(1,'#2E2013');
-  ctx.fillStyle = g; ctx.fillRect(0,0,W,wallB);
-  ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 2; for (let x=18;x<W;x+=44){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,wallB); ctx.stroke(); }
+  const wg = g.createLinearGradient(0,0,0,wallB); wg.addColorStop(0,'#1F150C'); wg.addColorStop(1,'#2E2013');
+  g.fillStyle = wg; g.fillRect(0,0,W,wallB);
+  g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 2; for (let x=18;x<W;x+=44){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,wallB); g.stroke(); }
   // the cellar floor: long planks with staggered seams, lit warm in the middle
-  const fg = ctx.createLinearGradient(0, wallB, 0, floorY); fg.addColorStop(0,'#3A2817'); fg.addColorStop(1,'#5a4128');
-  ctx.fillStyle = fg; ctx.fillRect(0, wallB, W, floorY - wallB);
-  ctx.strokeStyle = 'rgba(26,18,11,.55)'; ctx.lineWidth = 2;
-  let k = 0; for (let y = wallB; y < floorY; y += 34, k++){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); const off = (k%3)*47; for (let x=off+30;x<W;x+=140){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+34); ctx.stroke(); }
-    ctx.fillStyle = 'rgba(0,0,0,.25)'; for (let x=off+18;x<W;x+=140){ ctx.beginPath(); ctx.arc(x, y+17, 1.6, 0, 7); ctx.fill(); } }
-  const lg = ctx.createRadialGradient(W/2, gridTop + rowGap, 30, W/2, gridTop + rowGap, 330); lg.addColorStop(0, 'rgba(232,178,74,.16)'); lg.addColorStop(1, 'rgba(0,0,0,.35)');
-  ctx.fillStyle = lg; ctx.fillRect(0, wallB, W, floorY - wallB);
+  const fg = g.createLinearGradient(0, wallB, 0, floorY); fg.addColorStop(0,'#3A2817'); fg.addColorStop(1,'#5a4128');
+  g.fillStyle = fg; g.fillRect(0, wallB, W, floorY - wallB);
+  g.strokeStyle = 'rgba(26,18,11,.55)'; g.lineWidth = 2;
+  let k = 0; for (let y = wallB; y < floorY; y += 34, k++){ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); const off = (k%3)*47; for (let x=off+30;x<W;x+=140){ g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+34); g.stroke(); }
+    g.fillStyle = 'rgba(0,0,0,.25)'; for (let x=off+18;x<W;x+=140){ g.beginPath(); g.arc(x, y+17, 1.6, 0, 7); g.fill(); } }
+  const lg = g.createRadialGradient(W/2, gridTop + rowGap, 30, W/2, gridTop + rowGap, 330); lg.addColorStop(0, 'rgba(232,178,74,.16)'); lg.addColorStop(1, 'rgba(0,0,0,.35)');
+  g.fillStyle = lg; g.fillRect(0, wallB, W, floorY - wallB);
   for (const tx of [22]){ const ty = canopyY + 70;
-    const tg = ctx.createRadialGradient(tx, ty, 5, tx, ty, 140); tg.addColorStop(0,'rgba(232,178,74,.3)'); tg.addColorStop(1,'rgba(232,178,74,0)');
-    ctx.fillStyle = tg; ctx.fillRect(tx-140, ty-140, 280, 280);
-    ctx.fillStyle = '#4A3520'; ctx.fillRect(tx-4, ty+10, 8, 26);
-    const fl = 1 + Math.sin(now*11 + tx)*0.15; ctx.fillStyle = '#D4622F'; ctx.beginPath(); ctx.ellipse(tx, ty, 7, 12*fl, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#F3D08A'; ctx.beginPath(); ctx.ellipse(tx, ty+3, 3, 6*fl, 0, 0, Math.PI*2); ctx.fill(); }
+    const tg = g.createRadialGradient(tx, ty, 5, tx, ty, 140); tg.addColorStop(0,'rgba(232,178,74,.3)'); tg.addColorStop(1,'rgba(232,178,74,0)');
+    g.fillStyle = tg; g.fillRect(tx-140, ty-140, 280, 280);
+    g.fillStyle = '#4A3520'; g.fillRect(tx-4, ty+10, 8, 26); }
   // front edge of the floor, where the sign hangs
-  const eg = ctx.createLinearGradient(0,floorY,0,H); eg.addColorStop(0,'#8C6A3E'); eg.addColorStop(1,'#4A3520'); ctx.fillStyle = eg; ctx.fillRect(0, floorY, W, H-floorY);
-  ctx.strokeStyle = 'rgba(26,18,11,.5)'; ctx.lineWidth = 2; for (let x=0;x<W;x+=50){ ctx.beginPath(); ctx.moveTo(x, floorY); ctx.lineTo(x-30, H); ctx.stroke(); }
-  ctx.fillStyle = '#1A120B'; ctx.fillRect(0, floorY-4, W, 6);
+  const eg = g.createLinearGradient(0,floorY,0,H); eg.addColorStop(0,'#8C6A3E'); eg.addColorStop(1,'#4A3520'); g.fillStyle = eg; g.fillRect(0, floorY, W, H-floorY);
+  g.strokeStyle = 'rgba(26,18,11,.5)'; g.lineWidth = 2; for (let x=0;x<W;x+=50){ g.beginPath(); g.moveTo(x, floorY); g.lineTo(x-30, H); g.stroke(); }
+  g.fillStyle = '#1A120B'; g.fillRect(0, floorY-4, W, 6);
+}
+function drawRoom(){
+  const key = canvas.width + 'x' + canvas.height + '/' + dpr*scale + '/' + H;
+  if (roomFor !== key){ roomFor = key; roomC.width = canvas.width; roomC.height = canvas.height; roomX.setTransform(dpr*scale, 0, 0, dpr*scale, 0, 0); roomStatic(roomX); }
+  blit(roomC, 0);
+  // the torch flame flickers
+  const now = performance.now()/1000, tx = 22, ty = canopyY + 70;
+  const fl = 1 + Math.sin(now*11 + tx)*0.15; ctx.fillStyle = '#D4622F'; ctx.beginPath(); ctx.ellipse(tx, ty, 7, 12*fl, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#F3D08A'; ctx.beginPath(); ctx.ellipse(tx, ty+3, 3, 6*fl, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(26,18,11,.5)'; ctx.lineWidth = 2; ctx.fillStyle = '#1A120B';
   // drifting dust in the candlelight
   for (const d of motes){ if (d.y < 0 || d.y > floorY) continue; ctx.globalAlpha = 0.25 + 0.2*Math.sin(d.ph*2); ctx.fillStyle = '#EDDDB5'; ctx.beginPath(); ctx.arc(d.x, d.y, d.s, 0, 7); ctx.fill(); }
   ctx.globalAlpha = 1;
 }
+function awningStatic(g){
+  const cy = canopyY, ch = 36, x0 = 14, x1 = W - 14, n = 9, sw = (x1 - x0)/n;
+  for (let i=0;i<n;i++){ g.fillStyle = i % 2 ? '#F0E2C0' : '#8F2B1C'; g.beginPath(); g.moveTo(x0 + i*sw, cy); g.lineTo(x0 + (i+1)*sw, cy); g.lineTo(x0 + (i+1)*sw, cy + ch - 10);
+    g.arc(x0 + (i+0.5)*sw, cy + ch - 10, sw/2, 0, Math.PI); g.closePath(); g.fill(); }
+  g.fillStyle = '#5E1A10'; g.fillRect(x0 - 6, cy - 12, x1 - x0 + 12, 14);
+  g.fillStyle = '#E8B24A'; g.font = '900 13px Alegreya, Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('★ WHACK-A-DUST-BUNNY ★', W/2, cy - 5);
+}
 function drawCanopy(){
-  const now = performance.now()/1000, cy = canopyY, ch = 36, x0 = 14, x1 = W - 14;
-  const n = 9, sw = (x1 - x0)/n;
-  for (let i=0;i<n;i++){ ctx.fillStyle = i % 2 ? '#F0E2C0' : '#8F2B1C'; ctx.beginPath(); ctx.moveTo(x0 + i*sw, cy); ctx.lineTo(x0 + (i+1)*sw, cy); ctx.lineTo(x0 + (i+1)*sw, cy + ch - 10);
-    ctx.arc(x0 + (i+0.5)*sw, cy + ch - 10, sw/2, 0, Math.PI); ctx.closePath(); ctx.fill(); }
-  ctx.fillStyle = '#5E1A10'; ctx.fillRect(x0 - 6, cy - 12, x1 - x0 + 12, 14);
-  ctx.fillStyle = '#E8B24A'; ctx.font = '900 13px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('★ WHACK-A-DUST-BUNNY ★', W/2, cy - 5); ctx.textBaseline = 'alphabetic';
+  const now = performance.now()/1000, cy = canopyY, ch = 36, x0 = 14, x1 = W - 14, k = dpr*scale;
+  const key = canvas.width + '/' + k + '/' + cy;
+  if (awnFor !== key){ awnFor = key; awnTop = Math.floor((cy - 14)*k) - 2;
+    awnC.width = canvas.width; awnC.height = Math.ceil((cy + 50)*k) + 2 - awnTop; awnX.setTransform(k, 0, 0, k, 0, -awnTop); awningStatic(awnX); }
+  blit(awnC, awnTop);
+  ctx.fillStyle = '#E8B24A'; ctx.font = '900 13px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   for (let i=0;i<=18;i++){ const bx = x0 + (x1 - x0)*i/18, by = cy + ch + 2 + Math.sin(i/18*Math.PI)*8, on = ((i + Math.floor(now*3)) % 3) !== 0 || boardFx > 0;
     const col = G.frenzy && G.state === 'play' ? (((i + Math.floor(now*12)) % 2) ? '#D4622F' : '#F08C6A') : boardFx > 0 ? (boardGold ? '#F3D08A' : `hsl(${(i*40 + now*300)%360},90%,70%)`) : '#F3D08A';
     ctx.fillStyle = on ? col : '#4A3520'; if (on){ ctx.shadowColor = col; ctx.shadowBlur = 6; } ctx.beginPath(); ctx.arc(bx, by, 2.6, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
@@ -949,6 +1028,7 @@ function drawSock(o){
   ctx.strokeStyle = '#1A120B'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-8, -24); for (let k=1;k<=4;k++) ctx.lineTo(-8 + k*4, k % 2 ? -21 : -24); ctx.stroke();
   ctx.restore();
 }
+const BODY_G = {};   // each kind's body shading, made once (it's in the bunny's own coordinates)
 function drawBunny(o){
   const now = performance.now()/1000, kind = o.kind, king = kind === 'king', gold = kind === 'golden';
   const R = bunnyR(o), mood = o.ph === 'hit' ? 'hit' : o.ph === 'razz' ? 'razz' : 'up';
@@ -967,7 +1047,7 @@ function drawBunny(o){
     ctx.fillStyle = gold ? '#FFF3D0' : '#C9A6A0'; ctx.beginPath(); ctx.ellipse(0, -R*0.32, R*0.12, R*0.32, 0, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
   // body: outline, then fluff with a lit top-left
   ctx.fillStyle = '#1A120B'; fluff(R + 2.2, 15, 1, now, o.ph0); ctx.fill();
-  const bg = ctx.createRadialGradient(-R*0.35, -R*0.4, 2, 0, 0, R*1.15); bg.addColorStop(0, light); bg.addColorStop(0.55, base); bg.addColorStop(1, dark);
+  const bg = BODY_G[kind] || (BODY_G[kind] = (() => { const q = ctx.createRadialGradient(-R*0.35, -R*0.4, 2, 0, 0, R*1.15); q.addColorStop(0, light); q.addColorStop(0.55, base); q.addColorStop(1, dark); return q; })());
   ctx.fillStyle = bg; fluff(R, 15, 1, now, o.ph0); ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,.18)'; for (let k=0;k<6;k++){ const a = k*1.1 + o.ph0; ctx.beginPath(); ctx.arc(Math.cos(a)*R*0.5, Math.sin(a)*R*0.45, 1.6, 0, 7); ctx.fill(); }
   // face
@@ -1033,7 +1113,7 @@ function drawHole(h){
   // the hole: a dark pit with a worn wooden rim
   ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(x, y + 4, HOLE_RX + 8, HOLE_RY + 6, 0, 0, Math.PI*2); ctx.fill();
   ctx.fillStyle = '#6B5132'; ctx.beginPath(); ctx.ellipse(x, y, HOLE_RX + 6, HOLE_RY + 5, 0, 0, Math.PI*2); ctx.fill();
-  const pg = ctx.createRadialGradient(x, y + 4, 2, x, y, HOLE_RX); pg.addColorStop(0, '#000'); pg.addColorStop(1, '#1A120B');
+  const pg = h.pg || (h.pg = (() => { const q = ctx.createRadialGradient(x, y + 4, 2, x, y, HOLE_RX); q.addColorStop(0, '#000'); q.addColorStop(1, '#1A120B'); return q; })());
   ctx.fillStyle = pg; ctx.beginPath(); ctx.ellipse(x, y, HOLE_RX, HOLE_RY, 0, 0, Math.PI*2); ctx.fill();
   if (o){
     const dy = riseDy(o);
@@ -1089,13 +1169,14 @@ function drawSwipe(s){
   ctx.fillStyle = L.band; ctx.fillRect(-8, -24, 16, 5);
   ctx.restore();
 }
+const HUD_G = {};   // the scoreboard's gradients, made once
 function drawHUD(){
   const h = SB.h, x = SB.x, w = W - 2*SB.x, y = SB.y, now = performance.now()/1000;
   ctx.fillStyle = '#120C07'; roundRect(x-3, y-3, w+6, h+6, 10); ctx.fill(); ctx.fillStyle = '#2A1C10'; roundRect(x, y, w, h, 8); ctx.fill();
   ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2; roundRect(x, y, w, h, 8); ctx.stroke();
   const bw = 132, bh = 76, bx = W/2 - bw/2, by = y - 8;
   ctx.fillStyle = '#120C07'; roundRect(bx-4, by-4, bw+8, bh+8, 12); ctx.fill();
-  const bg = ctx.createLinearGradient(0, by, 0, by+bh); bg.addColorStop(0, '#3A2817'); bg.addColorStop(1, '#1A120B'); ctx.fillStyle = bg; roundRect(bx, by, bw, bh, 10); ctx.fill();
+  const bg = HUD_G.board || (HUD_G.board = (() => { const q = ctx.createLinearGradient(0, by, 0, by+bh); q.addColorStop(0, '#3A2817'); q.addColorStop(1, '#1A120B'); return q; })()); ctx.fillStyle = bg; roundRect(bx, by, bw, bh, 10); ctx.fill();
   const bulbs = []; const step = 11;
   for (let t = 6; t < bw - 4; t += step) bulbs.push([bx + t, by + 3]); for (let t = 6; t < bh - 4; t += step) bulbs.push([bx + bw - 3, by + t]);
   for (let t = bw - 6; t > 4; t -= step) bulbs.push([bx + t, by + bh - 3]); for (let t = bh - 6; t > 4; t -= step) bulbs.push([bx + 3, by + t]);
@@ -1111,10 +1192,14 @@ function drawHUD(){
     ctx.fillStyle = pb.gold ? '#B07E24' : '#8F2B1C'; roundRect(-24, -14, 48, 28, 8); ctx.fill(); ctx.strokeStyle = '#F3D08A'; ctx.lineWidth = 2; roundRect(-24, -14, 48, 28, 8); ctx.stroke();
     ctx.fillStyle = '#FFFFFF'; ctx.font = '900 18px Alegreya, Georgia, serif'; ctx.textBaseline = 'middle'; ctx.fillText(pb.text, 0, 1); ctx.restore(); }
   const lx = x + w*0.14, rx = x + w*0.86;
-  ctx.textBaseline = 'alphabetic'; ctx.font = '700 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('GOLD', lx, y + 18); ctx.fillText('TIME LEFT', rx, y + 18);
-  ctx.fillStyle = '#B07E24'; ctx.beginPath(); ctx.arc(lx - 20, y + 42, 8, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.arc(lx - 20, y + 42, 6, 0, Math.PI*2); ctx.fill();
+  // BEST on this device (free play: no gold here). The round's score takes it over once you pass it.
+  const inRound = G.state !== 'menu', bestNow = inRound ? Math.max(best, G.points) : best, beating = inRound && best > 0 && G.points > best;
+  ctx.textBaseline = 'alphabetic'; ctx.font = '700 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('TIME LEFT', rx, y + 18);
+  ctx.fillStyle = beating ? '#F3D08A' : '#EDDDB5'; ctx.fillText(beating ? 'NEW BEST!' : 'BEST', lx, y + 18);
   ctx.font = '900 28px Alegreya, Georgia, serif';
-  ctx.save(); ctx.translate(lx + 8, y + 52); ctx.scale(1 + 0.35*goldPop, 1 + 0.35*goldPop); ctx.fillStyle = goldPop > 0.3 ? '#F3D08A' : '#E8B24A'; ctx.fillText(Math.min(goldShown, G.gold), 0, 0); ctx.restore();
+  const nw = ctx.measureText(bestNow).width, gx = lx - (nw + 26)/2;   // the crown and the number, centred under the label
+  drawBestCrown(gx + 9, y + 42);
+  ctx.save(); ctx.translate(gx + 26 + nw/2, y + 52); ctx.scale(1 + 0.35*bestPop, 1 + 0.35*bestPop); ctx.fillStyle = bestPop > 0.3 || beating ? '#F3D08A' : '#E8B24A'; ctx.fillText(bestNow, 0, 0); ctx.restore();
   const left = Math.max(0, ROUND - G.time), secs = G.state === 'menu' ? ROUND : Math.ceil(left), low = left <= ROUND - FRENZY_AT && G.state !== 'menu';
   ctx.fillStyle = low && Math.floor(now*3.3)%2 ? '#F08C6A' : (low ? '#D4622F' : '#8FAE5D'); ctx.fillText(secs, rx, y + 52);
   // the time bar: the frenzy stretch is red
@@ -1148,13 +1233,13 @@ function drawHUD(){
   if (TUNE_ON){ const q = B.gear; circ(q); ctx.save(); ctx.translate(q.x, q.y); ctx.strokeStyle='#E8B24A'; ctx.lineWidth=3;
     for (let i=0;i<8;i++){ ctx.rotate(Math.PI/4); ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(0,-11); ctx.stroke(); } ctx.beginPath(); ctx.arc(0,0,5,0,7); ctx.stroke(); ctx.restore(); }
 }
-function hudGoldPos(){ return { x: SB.x + (W - 2*SB.x)*0.14, y: SB.y + 40 }; }
-function drawFlyer(f){
-  const e = f.t*f.t*(3-2*f.t), to = hudGoldPos(), cx = (f.x0 + to.x)/2 - 60, cy = Math.min(f.y0, to.y) - 30;
-  const x = (1-e)*(1-e)*f.x0 + 2*(1-e)*e*cx + e*e*to.x, y = (1-e)*(1-e)*f.y0 + 2*(1-e)*e*cy + e*e*to.y, sq = Math.abs(Math.cos(f.spin + f.t*14)), r = 11 - 3*e;
-  ctx.save(); ctx.translate(x, y); ctx.scale(Math.max(0.15, sq), 1);
-  ctx.fillStyle = '#B07E24'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill(); ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.arc(0,0,r-2.5,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#F3D08A'; ctx.fillRect(-1.5, -r*0.5, 3, r); ctx.restore();
+// the BEST panel's icon: the Dust King's crown, small
+function drawBestCrown(cx, cy){
+  ctx.save(); ctx.translate(cx, cy + 4); ctx.scale(0.5, 0.5);
+  ctx.fillStyle = '#1A120B'; ctx.beginPath(); ctx.moveTo(-17, 4); ctx.lineTo(-19, -14); ctx.lineTo(-9, -5); ctx.lineTo(0, -19); ctx.lineTo(9, -5); ctx.lineTo(19, -14); ctx.lineTo(17, 4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.moveTo(-15, 2); ctx.lineTo(-16, -10); ctx.lineTo(-8, -2); ctx.lineTo(0, -15); ctx.lineTo(8, -2); ctx.lineTo(16, -10); ctx.lineTo(15, 2); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#8F2B1C'; ctx.beginPath(); ctx.arc(0, -2, 2.6, 0, 7); ctx.fill(); ctx.fillStyle = '#9FE2FF'; ctx.beginPath(); ctx.arc(-9, 0, 1.8, 0, 7); ctx.arc(9, 0, 1.8, 0, 7); ctx.fill();
+  ctx.restore();
 }
 function drawOdometer(val, cx, cy, digits, dh, color){
   // rolling digits: each wheel turns smoothly to the next number
@@ -1170,7 +1255,7 @@ function drawOdometer(val, cx, cy, digits, dh, color){
     ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 10;
     ctx.fillText(String(d), wx, cy - roll*dh + 2); ctx.fillText(String((d+1)%10), wx, cy + dh - roll*dh + 2);
     ctx.shadowBlur = 0;
-    const sh = ctx.createLinearGradient(0, cy - dh/2, 0, cy + dh/2); sh.addColorStop(0,'rgba(0,0,0,.55)'); sh.addColorStop(0.3,'rgba(0,0,0,0)'); sh.addColorStop(0.7,'rgba(0,0,0,0)'); sh.addColorStop(1,'rgba(0,0,0,.55)');
+    const sh = HUD_G['o' + cy + '/' + dh] || (HUD_G['o' + cy + '/' + dh] = (() => { const q = ctx.createLinearGradient(0, cy - dh/2, 0, cy + dh/2); q.addColorStop(0,'rgba(0,0,0,.55)'); q.addColorStop(0.3,'rgba(0,0,0,0)'); q.addColorStop(0.7,'rgba(0,0,0,0)'); q.addColorStop(1,'rgba(0,0,0,.55)'); return q; })());
     ctx.fillStyle = sh; ctx.fillRect(wx - dw/2, cy - dh/2, dw, dh);
     ctx.restore();
     ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(wx - dw/2 + 2, cy); ctx.lineTo(wx + dw/2 - 2, cy); ctx.stroke();
@@ -1283,7 +1368,10 @@ function draw(){
   ctx.globalAlpha = 1;
   for (const p of parts){ if (p.helmet){ drawHelmetBit(p); continue; } ctx.globalAlpha = Math.max(0, p.life*1.8); if (p.star) star(p.x, p.y, p.s, p.c); else { ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, p.s, p.s); } }
   ctx.globalAlpha = 1;
-  for (const c of confetti){ ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot); ctx.scale(1, Math.abs(Math.cos(c.rot*1.3)) + 0.2); ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); ctx.restore(); }
+  if (confetti.length){ const k = dpr*scale;   // the same matrix as translate, rotate, scale: one call per piece
+    for (const c of confetti){ const cs = Math.cos(c.rot), sn = Math.sin(c.rot), q = Math.abs(Math.cos(c.rot*1.3)) + 0.2;
+      ctx.setTransform(k*cs, k*sn, -k*sn*q, k*cs*q, k*(sx + c.x), k*(sy + c.y)); ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); }
+    ctx.setTransform(k, 0, 0, k, k*sx, k*sy); }
   ctx.restore();
   if (dark > 0.02) drawDark();
   // SLOW-MO: the room goes cool and blue
@@ -1303,13 +1391,12 @@ function draw(){
     const vg = ctx.createRadialGradient(0, 0, W*0.3, 0, 0, W*0.62); vg.addColorStop(0, 'rgba(232,178,74,0)'); vg.addColorStop(1, `rgba(232,178,74,${a})`);
     ctx.fillStyle = vg; ctx.fillRect(-W/2, -W/2, W, W); ctx.restore(); }
   drawHUD();
-  for (const f of flyers) if (f.t >= 0) drawFlyer(f);
   if (flash > 0){ ctx.globalAlpha = Math.min(0.35, flash); ctx.fillStyle = flashC; ctx.fillRect(0,0,W,H); ctx.globalAlpha = 1; }
 }
 
 function frame(t){ const dt = Math.min(0.033, (t - lastT)/1000 || 0); lastT = t; update(dt); draw(); requestAnimationFrame(frame); }
 resize(); requestAnimationFrame(t => { lastT = t; frame(t); });
-window.__whack = { G, holes, T, spawnOne, bonk, mouse, WHACK_MOST, put, startEvent, grabPower, spawnSneezer, spawnPower };   // for the test harness
+window.__whack = { G, holes, T, spawnOne, bonk, mouse, put, startEvent, grabPower, spawnSneezer, spawnPower };   // for the test harness
 })();
 </script>
 </body>

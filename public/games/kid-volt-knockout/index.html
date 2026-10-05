@@ -2,10 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#07061a">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Kid Volt Knockout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Kid Volt vs Disco Danny on a rooftop dance floor. He punches on the beat and a sparkle marks his opening. Counter, charge your super, and put him down three times for a TKO.">
+<link rel="canonical" href="https://smartdisruptions.com/games/kid-volt-knockout">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Smart Disruptions">
+<meta property="og:title" content="Kid Volt Knockout">
+<meta property="og:description" content="A boxing game for phones: Kid Volt against Disco Danny under a neon skyline. Read the sparkle, counter on the beat, save up a Supernova, and beat the clock. From the Broom &amp; Blade Arcade.">
+<meta property="og:url" content="https://smartdisruptions.com/games/kid-volt-knockout">
+<meta property="og:image" content="https://smartdisruptions.com/images/apps/kid-volt-knockout-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kid Volt Knockout: the pixel-art boxer Kid Volt, seen from behind with blue spiky hair and yellow gloves, squaring up to Disco Danny on a neon rooftop dance floor">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#07061a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Silkscreen:wght@400;700&display=swap">
@@ -130,14 +144,47 @@
     #padM { flex-direction: row; height: 64px; }
   }
   @media (prefers-reduced-motion: reduce) { .sup.ready { animation: none; } }
+
+  /* the way back to the arcade on smartdisruptions.com: a small neon sign of its own */
+  .home {
+    align-self: center; width: auto !important; box-sizing: border-box; min-height: 44px; padding: 7px 14px 7px 12px;
+    display: inline-flex; align-items: center; gap: 10px; text-decoration: none; text-align: left;
+    border: 2px solid var(--line); border-radius: 12px; background: rgba(18,14,44,.72);
+    font-size: 10px; line-height: 1.35; letter-spacing: .14em; color: var(--mute); -webkit-tap-highlight-color: transparent;
+  }
+  .home .arw { color: var(--cyan); font-size: 12px; }
+  .home b { display: block; color: var(--cyan); font-weight: 700; text-shadow: 0 0 8px rgba(94,242,255,.45); }
+  .home:hover, .home:focus-visible { border-color: var(--cyan); color: var(--text); box-shadow: 0 0 14px rgba(94,242,255,.3), inset 0 0 10px rgba(94,242,255,.12); outline: none; }
+  .home:active { transform: translateY(2px); }
+  a.ghost { display: block; box-sizing: border-box; text-align: center; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+  a.ghost:hover, a.ghost:focus-visible { border-color: var(--cyan); color: var(--cyan); outline: none; }
+  .keys { display: none; }
+
+  /* Desktop (wide, mouse and keyboard): the controls drop to a deck at the bottom with their keys,
+     and the rooftop carries on past the ring behind them (#sides: baked once per resize, static). */
+  #sides { display: none; }
+  @media (orientation: landscape) and (min-aspect-ratio: 5/4) and (hover: hover) and (pointer: fine) {
+    #sides { display: block; position: fixed; left: 0; top: 0; image-rendering: pixelated; image-rendering: crisp-edges; pointer-events: none; }
+    #app { z-index: 1; }
+    #stage { border-radius: 6px; box-shadow: 0 0 0 2px var(--line), 0 0 0 5px #07061a, 0 0 34px rgba(142,98,255,.28); }
+    #padL, #padR { justify-content: flex-end; }
+    #padL .btn, #padR .btn { flex: 0 0 auto; height: clamp(58px, 10.2vh, 96px); }
+    .btn { box-shadow: 0 4px 0 #04030c, inset 0 0 14px rgba(0,0,0,.45), 0 0 18px rgba(7,6,26,.9); }
+    .btn[data-key]::after {
+      content: attr(data-key); display: block; margin-top: 5px; padding: 2px 6px 1px; border: 1px solid currentColor; border-radius: 4px;
+      font-size: 9px; font-weight: 400; letter-spacing: .1em; line-height: 1.2; opacity: .7;
+    }
+  }
+  @media (hover: hover) and (pointer: fine) { .keys { display: block; margin-top: -4px; margin-bottom: 0; } }
 </style>
 </head>
 <body>
+<canvas id="sides" aria-hidden="true"></canvas>
 <div id="app">
   <div class="pad" id="padL">
-    <button class="btn hi" data-act="jabL" aria-label="Left jab">JAB<small>LEFT · HIGH</small></button>
-    <button class="btn lo" data-act="bodyL" aria-label="Left body blow">BODY<small>LEFT · LOW</small></button>
-    <button class="btn mv" data-act="dodgeL" aria-label="Dodge left">&#9664; DODGE</button>
+    <button class="btn hi" data-act="jabL" data-key="J" aria-label="Left jab">JAB<small>LEFT · HIGH</small></button>
+    <button class="btn lo" data-act="bodyL" data-key="N" aria-label="Left body blow">BODY<small>LEFT · LOW</small></button>
+    <button class="btn mv" data-act="dodgeL" data-key="A" aria-label="Dodge left">&#9664; DODGE</button>
   </div>
   <div id="center">
     <div id="stage">
@@ -146,19 +193,20 @@
       <button id="pauseBtn" aria-label="Pause">II</button>
     </div>
     <div class="pad" id="padM">
-      <button class="btn sup" id="superBtn" data-act="super" aria-label="Super punch">SUPER<span class="pips"><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span></span></button>
-      <button class="btn blk" data-act="block" aria-label="Block (hold)">BLOCK<small>HOLD</small></button>
-      <button class="btn mv" data-act="duck" aria-label="Duck">DUCK &#9660;</button>
+      <button class="btn sup" id="superBtn" data-act="super" data-key="SPACE" aria-label="Super punch">SUPER<span class="pips"><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span></span></button>
+      <button class="btn blk" data-act="block" data-key="W" aria-label="Block (hold)">BLOCK<small>HOLD</small></button>
+      <button class="btn mv" data-act="duck" data-key="S" aria-label="Duck">DUCK &#9660;</button>
     </div>
   </div>
   <div class="pad" id="padR">
-    <button class="btn hi" data-act="jabR" aria-label="Right jab">JAB<small>RIGHT · HIGH</small></button>
-    <button class="btn lo" data-act="bodyR" aria-label="Right body blow">BODY<small>RIGHT · LOW</small></button>
-    <button class="btn mv" data-act="dodgeR" aria-label="Dodge right">DODGE &#9654;</button>
+    <button class="btn hi" data-act="jabR" data-key="K" aria-label="Right jab">JAB<small>RIGHT · HIGH</small></button>
+    <button class="btn lo" data-act="bodyR" data-key="M" aria-label="Right body blow">BODY<small>RIGHT · LOW</small></button>
+    <button class="btn mv" data-act="dodgeR" data-key="D" aria-label="Dodge right">DODGE &#9654;</button>
   </div>
 </div>
 
 <div id="title" class="ov">
+  <a class="home" href="/games#broom-blade-arcade"><span class="arw" aria-hidden="true">&#9664;</span><span>SMART DISRUPTIONS ·<b>BROOM &amp; BLADE ARCADE</b></span></a>
   <div class="kicker">STAGE 1 · ROOFTOP RUMBLE</div>
   <h1 class="logo">KID VOLT</h1>
   <div class="vs">VS</div>
@@ -173,6 +221,7 @@
     <li>Counters charge <b>SUPER</b>. When he's dizzy, hit him as he sways back to center.</li>
   </ul>
   <button class="go" id="startBtn">FIGHT</button>
+  <div class="fine keys">Keyboard: A / D dodge · S duck · W block · J / K jab · N / M body · Space super</div>
   <div class="fine" id="bestLine">3 knockdowns = TKO · beat the clock</div>
 </div>
 
@@ -194,12 +243,13 @@
     <div><span>BEST</span><strong id="rBest">-</strong></div>
   </div>
   <button class="go" id="againBtn">REMATCH</button>
+  <a class="ghost" href="/games#broom-blade-arcade"><span aria-hidden="true">&#9664;</span> BROOM &amp; BLADE ARCADE</a>
   <div class="next">NEXT ON THE ROOFTOP: "IRON" IVAN BRASKO<br>STAGE 2 IS STILL IN THE GYM</div>
 </div>
 
 <script>
 "use strict";
-// Kid Volt Knockout: Stage 1. A Super Punch-Out-style boxer for phones.
+// Kid Volt Knockout: Stage 1. A boxer for phones, built from a study of the 16-bit classics.
 // Pixel engine from the vault's pixel-art skill (palette-index framebuffer, integer scale, fixed 60 Hz step).
 (function () {
   // ================================================================ palette
@@ -295,6 +345,7 @@
     tipEl.style.bottom = Math.round((ch - offY - H * scale) / dprNow + 8) + "px";
     pauseBtn.style.top = Math.round((offY + 20 * scale) / dprNow) + "px";
     pauseBtn.style.right = Math.round((cw - offX - W * scale) / dprNow + 2 * scale / dprNow) + "px";
+    if (BAYER) bakeSides();   // the desktop rooftop (a no-op elsewhere); BAYER is set once the helpers below exist
   }
   addEventListener("resize", resize);
   if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
@@ -486,6 +537,92 @@
     bg.set(fb);
   })();
 
+  // ================================================================ desktop sides (static)
+  // On a wide screen with a mouse and keyboard, the rooftop carries on past the ring: the same sky,
+  // skyline, crowd and dance floor, in the same palette and dither, at the ring's pixel scale, with
+  // the game's name in neon on the buildings. Baked once per resize into #sides; nothing runs per frame.
+  var sideCv = document.getElementById("sides");
+  var sideMQ = window.matchMedia ? matchMedia("(orientation: landscape) and (min-aspect-ratio: 5/4) and (hover: hover) and (pointer: fine)") : null;
+  function bakeSides() {
+    if (!sideCv || !sideMQ || !sideMQ.matches) { if (sideCv && sideCv.width) { sideCv.width = 0; sideCv.height = 0; } return; }
+    var s = scale, d = dprNow, rc = stage.getBoundingClientRect();
+    var gx = rc.left * d + offX, gy = rc.top * d + offY;                     // the ring's top-left, device px
+    var ox = ((gx % s) + s) % s, oy = ((gy % s) + s) % s;                     // keep both pixel grids in step
+    var fx = Math.round((gx - ox) / s) + 1, fy = Math.round((gy - oy) / s) + 1; // the ring's top-left, in side pixels
+    var PW = Math.ceil((innerWidth * d - ox + s) / s) + 1, PH = Math.ceil((innerHeight * d - oy + s) / s) + 1;
+    if (PW * PH > 600000) return;
+    var buf = new Uint8Array(PW * PH), sd = 5, x, y, n, r, c, t;
+    function rnd2() { sd = (sd * 16807) % 2147483647; return sd / 2147483647; }
+    function put(px, py, pc) { px |= 0; py |= 0; if (px >= 0 && py >= 0 && px < PW && py < PH) buf[py * PW + px] = pc; }
+    // the sky by the ring's rows (fading to the void above), and the dance floor below, lights resting
+    for (y = 0; y < PH; y++) {
+      r = y - fy;
+      for (x = 0; x < PW; x++) {
+        t = bay(x, y);
+        if (r < -16) c = ((-16 - r) * 2 > t) ? 0 : 1;
+        else if (r < 26) c = 1;
+        else if (r < 34) c = ((r - 26) * 2 > t) ? 2 : 1;
+        else if (r < 44) c = 2;
+        else if (r < 52) c = ((r - 44) * 2 > t) ? 3 : 2;
+        else if (r < 76) c = 3;
+        else {
+          var dy = r - 62, v = 240 / dy / 5, fv = v - Math.floor(v), vi = Math.floor(v);
+          var u = (x - fx - 60) / dy * 9 + 50, fu = u - Math.floor(u), ui = Math.floor(u);
+          if (fu < 0.07 || fv < 0.09) c = 11;
+          else { c = ((ui + vi) & 1) ? 12 : 11; if ((((ui * 7 + vi * 13) % 5) + 5) % 5 === 0) c = [37, 36, 38, 39][(ui * 3 + vi * 5) & 3]; }
+        }
+        buf[y * PW + x] = c;
+      }
+    }
+    for (n = 0; n < PW * 0.9; n++) { x = rnd2() * PW; y = fy - 40 + rnd2() * 70; if (y - fy < 30) put(x, y, rnd2() < 0.2 ? 43 : 44); }
+    // far skyline, then the near one with its neon trim and lit windows
+    var bx = -3, bw, top;
+    while (bx < PW) {
+      bw = 6 + (rnd2() * 9 | 0); top = fy + 30 + (rnd2() * 16 | 0);
+      for (y = top; y < fy + 60; y++) for (x = bx; x < bx + bw; x++) put(x, y, 4);
+      for (y = top + 2; y < fy + 58; y += 3) for (x = bx + 1; x < bx + bw - 1; x += 2) if (rnd2() < 0.25) put(x, y, rnd2() < 0.8 ? 38 : 36);
+      bx += bw + (rnd2() * 3 | 0);
+    }
+    bx = -5;
+    while (bx < PW) {
+      bw = 10 + (rnd2() * 14 | 0); top = fy + 42 + (rnd2() * 11 | 0);
+      for (y = top; y < fy + 62; y++) for (x = bx; x < bx + bw; x++) put(x, y, 5);
+      for (x = bx; x < bx + bw; x++) put(x, top, rnd2() < 0.5 ? 37 : 39);
+      for (y = top + 3; y < fy + 60; y += 3) for (x = bx + 2; x < bx + bw - 2; x += 3) if (rnd2() < 0.4) put(x, y, rnd2() < 0.75 ? 6 : 7);
+      bx += bw + 2;
+    }
+    // the game's name in neon on the rooftops either side of the ring
+    function sign(str, cx, y0, pc, rim) {
+      var w = str.length * 4 + 3, x0 = Math.round(cx - w / 2), xx, yy, i, k, bits;
+      for (yy = y0 - 2; yy < y0 + 7; yy++) for (xx = x0; xx < x0 + w; xx++) put(xx, yy, 0);
+      for (xx = x0; xx < x0 + w; xx++) { put(xx, y0 - 3, rim); put(xx, y0 + 7, rim); }
+      for (yy = y0 + 8; yy < y0 + 18; yy++) { put(x0 + 3, yy, 0); put(x0 + w - 4, yy, 0); }
+      for (i = 0; i < str.length; i++) { bits = FONT[str[i]] || FONT["?"]; for (k = 0; k < bits.length; k += 2) put(x0 + 2 + i * 4 + bits[k], y0 + bits[k + 1], pc); }
+    }
+    var lEdge = (rc.left * d - ox) / s + 1, rEdge = (rc.right * d - ox) / s + 1;
+    if (lEdge > 44) sign("KID VOLT", lEdge / 2, fy + 33, 7, 36);
+    if (PW - rEdge > 44) sign("KNOCKOUT", (rEdge + PW) / 2, fy + 33, 9, 38);
+    // the crowd, three rows deep, and the ring's apron line carried across
+    for (var row = 0; row < 3; row++) {
+      var cy = fy + 58 + row * 6;
+      for (x = (row & 1) * 3 - 2; x < PW + 4; x += 6) {
+        var head = row === 2 ? 42 : 41, shirt = [37, 36, 39, 42, 38][Math.abs((x * 7 + row * 3) >> 1) % 5];
+        for (y = -3; y <= 3; y++) for (var xx = -3; xx <= 3; xx++) {
+          if (xx * xx + y * y <= 8) put(x + xx, cy - 3 + y, head);
+          if (y >= 1 && Math.abs(xx) <= 3) put(x + xx, cy + 1 + y, shirt);
+        }
+      }
+    }
+    for (x = 0; x < PW; x++) { put(x, fy + 74, 0); put(x, fy + 75, 13); }
+    sideCv.width = PW; sideCv.height = PH;
+    var sx = sideCv.getContext("2d"), im = sx.createImageData(PW, PH), px32 = new Uint32Array(im.data.buffer);
+    for (n = 0; n < PW * PH; n++) px32[n] = lut[buf[n]];
+    sx.putImageData(im, 0, 0);
+    sideCv.style.width = (PW * s / d) + "px"; sideCv.style.height = (PH * s / d) + "px";
+    sideCv.style.left = ((ox - s) / d) + "px"; sideCv.style.top = ((oy - s) / d) + "px";
+  }
+  bakeSides();
+
   // ================================================================ particles
   var MAXP = 320;
   var pOn = new Uint8Array(MAXP), pRamp = new Uint8Array(MAXP);
@@ -639,7 +776,7 @@
     flow: 0, score: 0, count: 0, countT: 0, plan: null, introT: 0, resT: 0, outcome: null,
     ballY: 24, tipT: 0, paused: false, fightTime: 0
   };
-  var CLOCK_RATE = 1.5;                 // the fight clock runs faster than real time, like the SNES
+  var CLOCK_RATE = 1.5;                 // the fight clock runs faster than real time, like the 16-bit classics
   var bpm = 104, beatLen = 60 / bpm, beatT = 0, beatN = 0, beatPhase = 0;
   var PHASE_BPM = [104, 104, 116, 128];
 
