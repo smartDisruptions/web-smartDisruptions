@@ -23,14 +23,19 @@ export const metadata: Metadata = {
  *
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
  * call on the ordering): Kiru's games, then Neo Dojo Survivors, then Path Not
- * Taken, a rhythm duel in pre-alpha. Every other game is in the archive,
- * /games/archive, behind the door at the bottom of the page. /built reads the same lists, so the pages can't drift.
+ * Taken, a rhythm duel in pre-alpha. Below them the page goes downstairs into
+ * the Broom & Blade Arcade (./guild, BROOM_BLADE_ARCADE_SLUGS): Pip's room,
+ * where the page's theme turns from neon to firelight (docs/broom-blade-arcade.md).
+ * Every other game is in the archive, /games/archive, behind the hall's cellar
+ * door at the bottom. /built reads the same lists, so the pages can't drift.
  *
  * This page is a server component. What moves is CSS on the compositor —
- * the neon's rare flicker, the lanterns, the ticker — and stops under reduced
- * motion. The platform filter is native radio buttons and :has(), so it costs
- * no JavaScript either. The only client code is the Rooftop Run cabinet's
- * Start button; the game itself is a separate chunk fetched by pressing it.
+ * the neon's rare flicker, the lanterns, the ticker, the hall's firelight —
+ * and stops under reduced motion. The platform filter is native radio buttons
+ * and :has(), so it costs no JavaScript either. The client code is small:
+ * the Rooftop Run cabinet's Start button (the game itself is a separate chunk
+ * fetched by pressing it), MarketFX (pauses the market's loops off screen),
+ * and in the hall, HallFX, Pip's mouse hole and the machines' best scores.
  */
 
 const byslug = (slugs: string[]) =>
