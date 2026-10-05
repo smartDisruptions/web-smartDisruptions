@@ -13,16 +13,16 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games starring Kiru and the Neo Dojo Cast, plus Kiru's Rooftop Run: six levels set to music, playable right here on the page.",
+    "Hand-built browser games starring Kiru and the Neo Dojo Cast, a rhythm duel still in pre-alpha, and Kiru's Rooftop Run: six levels set to music, playable right here on the page.",
 };
 
 /**
  * THE ARCADE — a neon night market (Shadow Dojo, October 2026).
  *
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
- * call on the ordering): Kiru's games, then Neo Dojo Survivors. Every other
- * game is in the archive, /games/archive, behind the door at the bottom of the
- * page. /built reads the same lists, so the pages can't drift.
+ * call on the ordering): Kiru's games, then Neo Dojo Survivors, then Path Not
+ * Taken, a rhythm duel in pre-alpha. Every other game is in the archive,
+ * /games/archive, behind the door at the bottom of the page. /built reads the same lists, so the pages can't drift.
  *
  * This page is a server component. What moves is CSS on the compositor —
  * the neon's rare flicker, the lanterns, the ticker — and stops under reduced

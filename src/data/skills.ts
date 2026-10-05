@@ -353,8 +353,8 @@ export const skillGroups: SkillGroup[] = [
         name: 'Game development',
         plain:
           'Game loops, collision, input, audio and the feel work that separates a demo from something worth playing.',
-        used: "The arcade's front room is Kiru's games and Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward. The older cabinets are in its archive. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
-        apps: ['neo-dojo-survivors', 'field-office', 'broom-blade', 'aureum-snake', 'grove'],
+        used: "The arcade's front room is Kiru's games, Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward, and Path Not Taken, a rhythm duel in pre-alpha whose every tile sits on a measured hit in its song. The older cabinets are in its archive. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
+        apps: ['neo-dojo-survivors', 'path-not-taken', 'field-office', 'broom-blade', 'aureum-snake', 'grove'],
         links: [
           {
             kind: 'site',

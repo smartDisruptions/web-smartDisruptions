@@ -34,6 +34,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.4,
     },
+    {
+      url: `${BASE}/games/path-not-taken`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
     { url: `${BASE}/games/archive`, changeFrequency: 'monthly', priority: 0.3 },
     { url: `${BASE}/kiru`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE}/privacy`, changeFrequency: 'yearly', priority: 0.1 },

@@ -453,6 +453,33 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: '/games/neo-dojo-survivors',
   },
+  {
+    slug: 'path-not-taken',
+    name: 'Path Not Taken (Pre Alpha)',
+    description:
+      'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on three film-score battles, and one miss is death.',
+    longDescription:
+      'A first-person rhythm duel, and a pre-alpha: what is here are the first gameplay tests, with a greybox attacker standing in for the real one. Every glowing line that falls down the three lanes is a hit in the music. Dodge left, down or right as it touches its pad, hold a blue line for bullet time while one slow blow crawls in, dodge a burst of quick blows after an orange one, and strike when the red button comes up. One miss is death, and a death skips the intro, so you are straight back in. The three songs are short film-score battle cues I made with ElevenLabs Music: about ten seconds of intro, a minute of fighting and ten seconds to close. The story comes later.',
+    thumbnailUrl: '/images/apps/path-not-taken-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/path-not-taken-1.webp',
+      '/images/apps/path-not-taken-2.webp',
+      '/images/apps/path-not-taken-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API', 'ElevenLabs Music'],
+    category: 'Game',
+    status: 'development',
+    outcomes: [
+      'Every tile sits on a hit in the recording. I measured each song\u2019s tempo to a thousandth of a beat and its hits slot by slot, and the chart refuses a tile where the music has nothing to hit.',
+      'Three songs at 140, 150 and 162 BPM, each shaped as about ten seconds of intro, a minute of play and ten seconds of exit. A death restarts the song two seconds before the first tile.',
+      'One miss is death, judged within 200 ms on the forgiving setting, with a tap-along calibration for Bluetooth headphones and slow screens.',
+      'Pre-alpha, and it says so: the attacker is a greybox stand-in, and the game is still being built.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/path-not-taken',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -464,13 +491,15 @@ export function getAppBySlug(slug: string): App | undefined {
  *
  * Since 2026-10-05 the Arcade's front room is Kiru's games and Neo Dojo
  * Survivors, right below them (Josh's call); every other game moved to the
- * archive at /games/archive, linked from the bottom of /games.
+ * archive at /games/archive, linked from the bottom of /games. Path Not Taken,
+ * a rhythm duel in pre-alpha, is the last cabinet before the archive's door
+ * (Josh's call, the same day).
  *
  * These live here rather than in the games page because /built reads them too:
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken'];
 
 /** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
 export const ARCADE_ARCHIVE_SLUGS = ['field-office', 'cloth-simulator', 'broom-blade', 'grove', 'pebble-kart', 'aureum-snake'];

@@ -69,6 +69,12 @@ const nextConfig: NextConfig = {
           source: '/games/neo-dojo-survivors',
           destination: '/games/neo-dojo-survivors/index.html',
         },
+        // Path Not Taken (pre-alpha): the same. Its three songs are inlined, so
+        // the one file is 7.6 MB and loads nothing beside it.
+        {
+          source: '/games/path-not-taken',
+          destination: '/games/path-not-taken/index.html',
+        },
       ],
       fallback: [],
     };
