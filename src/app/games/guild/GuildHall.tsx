@@ -1,5 +1,5 @@
 import type { App } from '@/data/apps';
-import Pip from '@/components/pip/Pip';
+import Pip, { PipDefs } from '@/components/pip/Pip';
 import GuildMachines from './GuildMachines';
 import './guild.css';
 
@@ -13,6 +13,7 @@ import './guild.css';
 export default function GuildHall({ games }: { games: App[] }) {
   return (
     <section id="broom-blade-arcade" className="gh" aria-labelledby="gh-title">
+      <PipDefs />
       <h2 id="gh-title" className="font-display">
         The Broom &amp; Blade Arcade
       </h2>

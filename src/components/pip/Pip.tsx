@@ -31,6 +31,15 @@ export interface PipProps {
   still?: boolean;
 }
 
+/**
+ * Shared paint (gradients, filters) for every Pip on a page, rendered ONCE by
+ * the page that shows him (the hall renders it at the top of the room). The
+ * stub needs none, so it draws nothing.
+ */
+export function PipDefs() {
+  return null;
+}
+
 export default function Pip({ pose = 'idle', className, style, title, flip, still }: PipProps) {
   return (
     <svg
