@@ -490,15 +490,20 @@ export const apps: App[] = [
     slug: 'hoop-quest',
     name: 'Hoop Quest',
     description:
-      'Flick basketballs at a hoop in a candlelit cellar. Thirty balls, a basket that starts to move after ten, and three points for a shot that clears the backboard.',
+      'Flick basketballs at a hoop in a candlelit cellar. Thirty balls, a basket that starts moving after ten, and three points for a shot that clears the backboard.',
     longDescription:
-      'Finger-flick basketball in the Broom & Blade guild cellar. Hold a ball, drag it up and flick it at the hoop: thirty balls, a basket that holds still for the first ten and then starts to move, two points a basket and three for a Sky Shot that flies over the backboard. Pip the guild mouse rides the backboard, cheering every make.',
+      'Hoop Quest started the fair in Broom & Blade, the chore game I built for my family: it felt like a carnival game, so the guild hall grew a booth for each game. You drag a ball up off the rack and flick it at the hoop: thirty balls, two points a basket, and three for a Sky Shot thrown from down low that flies over the backboard. The basket holds still for the first ten balls, then starts to slide from side to side. Three baskets in a row set the ball on fire, eight turn the fire blue, and the callouts climb from NICE! to LEGENDARY!. Pip the guild mouse rides the top of the backboard: he watches the ball, cheers every make, backflips for a swish, waves a pennant on a streak and hides his eyes when you miss. A secret Space Shot, flicked so hard it leaves the top of the screen and still drops in, is worth five and turns Pip into a giant hype man. Every sound is made by the game as you play, with no recordings, and the whole game is one file. Here every round is free.',
     thumbnailUrl: '/images/apps/hoop-quest-thumbnail.webp',
     screenshotUrls: ['/images/apps/hoop-quest-1.webp', '/images/apps/hoop-quest-2.webp', '/images/apps/hoop-quest-3.webp'],
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
     category: 'Game',
     status: 'live',
-    outcomes: ['Thirty balls, two points a basket, three for a Sky Shot over the backboard.'],
+    outcomes: [
+      'Thirty balls: two points a basket, three for a Sky Shot over the backboard and five for the secret Space Shot, so a perfect round is 150.',
+      'The basket holds still for the first ten balls and then slides; three baskets in a row set the ball on fire, and eight turn the fire blue.',
+      'Every shot leaves the hand at the same power, so the skill is your aim and how far up you carry the ball: my own tuning, set after I made 20 of 30 on my phone.',
+      'Every sound, from the swish and the clank of the rim to Pip’s squeaks, is made by the Web Audio API as you play, with no recordings.',
+    ],
     buildDate: '2026-09',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
@@ -562,15 +567,20 @@ export const apps: App[] = [
     slug: 'ring-toss',
     name: 'Ring Toss',
     description:
-      'Flick rings onto a rack of bottles. Thirty rings, a golden bottle worth ten, bonuses for rows, columns and corners, and a BLACKOUT if you ring every one.',
+      'Flick rings onto twenty bottles under a striped awning. Thirty rings, a golden bottle worth ten, bonuses for rows, columns and corners, and a BLACKOUT for all twenty.',
     longDescription:
-      'A carnival ring toss for a phone. Drag a ring up and flick it at the bottles: a soft flick lands up front and a hard one reaches the back row. Rows are worth two to five, the golden bottle ten, and a full row, a column or all four corners pay a bonus. Ring every bottle for a BLACKOUT: the lights cut, a spotlight snaps on and the round ends in style.',
+      'A carnival ring toss, the second booth at the Broom & Blade fair, and Pip runs it. You grab a ring off the peg and flick it at a table of twenty bottles: a soft flick lands up front, a hard one reaches the back row, and the slant of the flick carries it sideways. The rows are worth two to five, one bottle is golden and worth ten, and each bottle takes one ring. A full row pays five times its value, a column pays 15 and the four corners 20. Three rows in, the string lights go rainbow and a heartbeat starts under the last bottles. Ring all twenty and the round ends in a BLACKOUT: the lights cut out, a spotlight snaps on, the word stamps in letter by letter, and the fair goes wild while Pip screams. Every sound is made by the game as you play, and the whole game is one file. Here every round is free.',
     thumbnailUrl: '/images/apps/ring-toss-thumbnail.webp',
     screenshotUrls: ['/images/apps/ring-toss-1.webp', '/images/apps/ring-toss-2.webp', '/images/apps/ring-toss-3.webp'],
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
     category: 'Game',
     status: 'live',
-    outcomes: ['Thirty rings, a golden bottle worth ten, and a BLACKOUT for ringing every bottle.'],
+    outcomes: [
+      'Twenty bottles in four rows worth 2, 3, 4 and 5, plus a golden bottle worth 10 that is never in the front row.',
+      'A full row pays five times its value, a column 15 and the four corners 20, so the bonuses can outscore the bottles.',
+      'Ringing all twenty ends the round in a BLACKOUT worth 50, plus 5 for every ring you didn’t need, so a perfect round is 342.',
+      'The blackout is a six-second show: the lights cut out, a spotlight snaps on, the word stamps in letter by letter, then fireworks, disco beams and confetti.',
+    ],
     buildDate: '2026-09',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
@@ -580,9 +590,9 @@ export const apps: App[] = [
     slug: 'milk-bottle-knockdown',
     name: 'Milk Bottle Knockdown',
     description:
-      'Twenty balls, three pyramids of milk bottles. Clear a pyramid with one ball for a clean-knock bonus, find the secret golden bottle, and clear the whole shelf.',
+      'Twenty balls, three pyramids of milk bottles. Clear a pyramid with one ball for a CLEAN KNOCK, find the secret golden bottle, and clear the whole shelf.',
     longDescription:
-      'The carnival milk-bottle throw for a phone. Drag a ball up and flick it at three pyramids of bottles: a soft flick hits low and a hard one hits high. Every bottle knocked off the shelf is a point, a pyramid cleared with one ball is a CLEAN KNOCK, one bottle is secretly golden, and clearing all three pyramids lights the lamps for a FULL SHELF.',
+      'The carnival milk-bottle throw from the Broom & Blade fair. You drag a ball up and flick it at three pyramids of six bottles: a soft flick hits low, a hard one hits high, and too soft falls short. A bottle only counts once it leaves the shelf. One ball through a whole pyramid is a CLEAN KNOCK, one bottle is secretly golden, and clearing all three pyramids lights the lamps for a FULL SHELF. The bottles fly in 3D: they bowl each other over, land on the shelf or drop to the booth floor, and a hard landing smashes them into glass and milk. Now and then one flies straight at you and cracks the screen, and a clean knock rolls an instant replay at a third of the speed. Pip watches from the counter and ducks when bottles come his way. Every sound is made by the game as you play, and the whole game is one file. Here every round is free.',
     thumbnailUrl: '/images/apps/milk-bottle-knockdown-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/milk-bottle-knockdown-1.webp',
@@ -592,7 +602,12 @@ export const apps: App[] = [
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
     category: 'Game',
     status: 'live',
-    outcomes: ['Twenty balls, three pyramids, a clean-knock bonus and a secret golden bottle.'],
+    outcomes: [
+      'Twenty balls at three pyramids of six: a bottle knocked off the shelf is a point, and one ball through a whole pyramid is a CLEAN KNOCK worth 5 more.',
+      'One of the first eighteen bottles is secretly golden and worth 5, and you only find out which when it falls.',
+      'Clearing all three pyramids lights the lamps for a FULL SHELF worth 10, and a perfect round is 284.',
+      'A CLEAN KNOCK or a FULL SHELF rolls an instant replay at a third of the speed, and about one direct hit in seven (twice a round at most) sends a bottle into the screen.',
+    ],
     buildDate: '2026-09',
     hasFullBreakdown: false,
     buildPlanAvailable: false,

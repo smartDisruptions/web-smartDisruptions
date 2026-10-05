@@ -9,6 +9,18 @@
  * Add a row when a new screenshot arrives.
  */
 export const SIZES: Record<string, readonly [number, number]> = {
+  '/images/apps/milk-bottle-knockdown-1.webp': [780, 1688],
+  '/images/apps/milk-bottle-knockdown-2.webp': [780, 1688],
+  '/images/apps/milk-bottle-knockdown-3.webp': [1600, 900],
+  '/images/apps/milk-bottle-knockdown-thumbnail.webp': [1200, 630],
+  '/images/apps/ring-toss-1.webp': [780, 1688],
+  '/images/apps/ring-toss-2.webp': [780, 1688],
+  '/images/apps/ring-toss-3.webp': [1600, 900],
+  '/images/apps/ring-toss-thumbnail.webp': [1200, 630],
+  '/images/apps/hoop-quest-1.webp': [780, 1688],
+  '/images/apps/hoop-quest-2.webp': [780, 1688],
+  '/images/apps/hoop-quest-3.webp': [1600, 900],
+  '/images/apps/hoop-quest-thumbnail.webp': [1200, 630],
   '/images/apps/kid-volt-knockout-1.webp': [780, 1688],
   '/images/apps/kid-volt-knockout-2.webp': [780, 1688],
   '/images/apps/kid-volt-knockout-3.webp': [1600, 900],

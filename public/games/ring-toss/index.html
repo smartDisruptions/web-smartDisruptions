@@ -2,11 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#1A120B">
 <title>Ring Toss</title>
-<meta name="description" content="A Broom &amp; Blade carnival booth. Flick rings onto bottles: back rows score more, and the golden bottle is worth 10.">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="A carnival ring toss for your phone. Flick rings onto a table of bottles: back rows score more, the golden bottle is worth 10, and ringing every bottle is a BLACKOUT. Free to play.">
+<link rel="canonical" href="https://smartdisruptions.com/games/ring-toss">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Smart Disruptions">
+<meta property="og:title" content="Ring Toss">
+<meta property="og:description" content="Thirty rings, twenty bottles and a golden one worth ten. Fill a row, a column or the corners for a bonus, and ring every bottle for a BLACKOUT. A free game from the Broom &amp; Blade Arcade.">
+<meta property="og:url" content="https://smartdisruptions.com/games/ring-toss">
+<meta property="og:image" content="https://smartdisruptions.com/images/apps/ring-toss-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Ring Toss title card in a candlelit cellar, with bunting, string lights, a crate of bottles and a peg of coloured rings either side of the booth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1A120B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;900&family=Alegreya+Sans:wght@500;700;800&display=swap">
 <style>
 :root{
@@ -18,11 +33,28 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;background:var(--night);color:var(--cream);font-family:var(--ui);
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;overscroll-behavior:none}
-#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+/* the stage keeps clear of a notch and the home bar (the page can run full screen from the home screen) */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
 canvas{display:block;touch-action:none}
-.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;
-  background:radial-gradient(ellipse at 50% 40%,rgba(42,28,16,.92),rgba(26,18,11,.97));z-index:10}
+/* the dim behind a card covers the booth (--cw, the canvas width) and only half-dims the cellar around it */
+.overlay{position:fixed;inset:0;display:flex;z-index:10;overflow-y:auto;
+  padding:max(24px,env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));
+  background:radial-gradient(ellipse at 50% 40%,rgba(42,28,16,.92),rgba(26,18,11,.97)) 50% 0/var(--cw,100%) 100% no-repeat,
+    linear-gradient(90deg,rgba(12,8,5,.5) calc(50% - var(--cw,100%)/2),transparent 0 calc(50% + var(--cw,100%)/2),rgba(12,8,5,.5) 0)}
+.overlay>.card{margin:auto}
 .overlay[hidden]{display:none}
+/* the way back to the arcade on smartdisruptions.com */
+.place{display:inline-flex;align-items:center;min-height:44px;margin:-16px 0 4px;padding:0 8px;border-radius:8px;
+  color:var(--parch);font-size:13px;font-weight:700;letter-spacing:.3px;text-decoration:none;opacity:.8}
+.place:hover{opacity:1;color:var(--gold)}
+.place:focus-visible,a.ghost:focus-visible,button:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px}
+a.ghost{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;padding:10px 18px;border:2px solid var(--oak);
+  border-radius:10px;color:var(--parch);font-family:var(--ui);font-weight:800;font-size:15px;letter-spacing:1px;text-transform:uppercase;text-decoration:none}
+a.ghost:hover{border-color:var(--gold-deep);color:var(--cream)}
+a.ghost:active{transform:translateY(3px)}
+/* wide screens: the booth stands in the cellar (static art, painted once, never animated) */
+.wings{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .card{width:min(360px,100%);background:linear-gradient(180deg,#3A2817,#241809);border:3px solid var(--gold-deep);
   border-radius:14px;padding:26px 22px 22px;text-align:center;box-shadow:0 0 0 3px #120C07,0 24px 60px rgba(0,0,0,.7)}
 h1{font-family:var(--display);font-weight:900;color:var(--gold);font-size:38px;line-height:1;letter-spacing:1px;
@@ -60,6 +92,7 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
 .card .line.gold b{color:var(--gold);font-size:18px}
 .rank{font-family:var(--display);font-style:italic;font-weight:900;color:var(--cream);font-size:20px;margin:-4px 0 10px}
 .tag.best{border-color:var(--gold);color:var(--night);background:var(--gold);animation:glow 1.1s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){.tag.best{animation:none;box-shadow:0 0 14px rgba(232,178,74,.6)}}   /* the new-best glow holds still */
 @keyframes glow{from{box-shadow:0 0 0 rgba(232,178,74,0)}to{box-shadow:0 0 18px rgba(232,178,74,.8)}}
 .big.pop{animation:pop .18s ease-out}
 @keyframes pop{from{transform:scale(1.25)}to{transform:scale(1)}}
@@ -67,10 +100,36 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
 </style>
 </head>
 <body>
+<!-- wide screens: the booth in the candlelit cellar (static, decorative) -->
+<svg class="wings" aria-hidden="true" focusable="false" viewBox="0 0 2400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140d07"/><stop offset=".5" stop-color="#21170e"/><stop offset=".8" stop-color="#1a110a"/><stop offset="1" stop-color="#110b06"/></linearGradient>
+<pattern id="bricks" width="84.375" height="112.5" patternUnits="userSpaceOnUse" x="918.75" y="0">
+<rect width="84.375" height="1.4" fill="#0b0704" fill-opacity=".6"/><rect y="111.1" width="84.375" height="1.4" fill="#0b0704" fill-opacity=".6"/>
+<rect y="54.85" width="84.375" height="2.8" fill="#0b0704" fill-opacity=".6"/>
+<rect width="1.4" height="56.25" fill="#0b0704" fill-opacity=".6"/><rect x="82.975" width="1.4" height="56.25" fill="#0b0704" fill-opacity=".6"/>
+<rect x="40.79" y="56.25" width="2.8" height="56.25" fill="#0b0704" fill-opacity=".6"/>
+<rect x="1.4" y="1.4" width="81.6" height="3" fill="#ffd9a0" fill-opacity=".035"/><rect x="0" y="57.65" width="40.79" height="3" fill="#ffd9a0" fill-opacity=".035"/><rect x="43.6" y="57.65" width="40.8" height="3" fill="#ffd9a0" fill-opacity=".035"/>
+</pattern>
+<radialGradient id="torchlight"><stop offset="0" stop-color="#f0a050" stop-opacity=".34"/><stop offset=".4" stop-color="#e8b24a" stop-opacity=".12"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></radialGradient>
+<radialGradient id="halo"><stop offset="0" stop-color="#F3D08A" stop-opacity=".55"/><stop offset="1" stop-color="#F3D08A" stop-opacity="0"/></radialGradient>
+<linearGradient id="spillL" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#e8b24a" stop-opacity=".16"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></linearGradient>
+<linearGradient id="spillR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8b24a" stop-opacity=".16"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></linearGradient>
+<linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3520"/><stop offset="1" stop-color="#1c130b"/></linearGradient>
+<linearGradient id="oak" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1c130b"/><stop offset=".35" stop-color="#4a3520"/><stop offset=".55" stop-color="#5a4128"/><stop offset="1" stop-color="#241809"/></linearGradient>
+<linearGradient id="barrel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a1c10"/><stop offset=".4" stop-color="#6a4d2e"/><stop offset=".6" stop-color="#5a4128"/><stop offset="1" stop-color="#241809"/></linearGradient>
+<radialGradient id="ball" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#F08C6A"/><stop offset=".5" stop-color="#D4622F"/><stop offset="1" stop-color="#8F2B1C"/></radialGradient>
+<radialGradient id="baseball" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#FFFBEF"/><stop offset="1" stop-color="#C9B48E"/></radialGradient>
+<radialGradient id="vig" cx="1200" cy="430" r="1250" gradientUnits="userSpaceOnUse"><stop offset=".3" stop-color="#050302" stop-opacity="0"/><stop offset=".72" stop-color="#050302" stop-opacity=".55"/><stop offset="1" stop-color="#050302" stop-opacity=".9"/></radialGradient>
+<linearGradient id="ceiling" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050302" stop-opacity=".75"/><stop offset=".22" stop-color="#050302" stop-opacity="0"/></linearGradient>
+<radialGradient id="floorglow"><stop offset="0" stop-color="#e8b24a" stop-opacity=".22"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></radialGradient>
+<linearGradient id="shadeL" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+<linearGradient id="shadeR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+</defs><rect width="2400" height="900" fill="url(#wall)"/><rect width="2400" height="731.25" fill="url(#bricks)"/><rect x="588.75" width="330" height="731.25" fill="url(#spillL)"/><rect x="1481.25" width="330" height="731.25" fill="url(#spillR)"/><circle cx="560" cy="300" r="230" fill="url(#torchlight)"/><path d="M544 352h32l-6 14h-20z" fill="#2a1c10"/><rect x="553" y="320" width="14" height="70" rx="3" fill="#4A3520"/><rect x="553" y="320" width="4" height="70" fill="#5a4128"/><path d="M540 322h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="560" cy="300" rx="15" ry="27" fill="#D4622F"/><ellipse cx="560" cy="306" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="560" cy="310" rx="4" ry="7" fill="#FFF3D0"/><circle cx="1840" cy="300" r="230" fill="url(#torchlight)"/><path d="M1824 352h32l-6 14h-20z" fill="#2a1c10"/><rect x="1833" y="320" width="14" height="70" rx="3" fill="#4A3520"/><rect x="1833" y="320" width="4" height="70" fill="#5a4128"/><path d="M1820 322h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="1840" cy="300" rx="15" ry="27" fill="#D4622F"/><ellipse cx="1840" cy="306" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="1840" cy="310" rx="4" ry="7" fill="#FFF3D0"/><circle cx="150" cy="280" r="230" fill="url(#torchlight)"/><path d="M134 332h32l-6 14h-20z" fill="#2a1c10"/><rect x="143" y="300" width="14" height="70" rx="3" fill="#4A3520"/><rect x="143" y="300" width="4" height="70" fill="#5a4128"/><path d="M130 302h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="150" cy="280" rx="15" ry="27" fill="#D4622F"/><ellipse cx="150" cy="286" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="150" cy="290" rx="4" ry="7" fill="#FFF3D0"/><circle cx="2250" cy="280" r="230" fill="url(#torchlight)"/><path d="M2234 332h32l-6 14h-20z" fill="#2a1c10"/><rect x="2243" y="300" width="14" height="70" rx="3" fill="#4A3520"/><rect x="2243" y="300" width="4" height="70" fill="#5a4128"/><path d="M2230 302h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="2250" cy="280" rx="15" ry="27" fill="#D4622F"/><ellipse cx="2250" cy="286" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="2250" cy="290" rx="4" ry="7" fill="#FFF3D0"/><rect y="731.25" width="2400" height="168.75" fill="url(#floor)"/><path d="M-600 731.25L-1590 900M-504 731.25L-1441.2 900M-408 731.25L-1292.4 900M-312 731.25L-1143.6 900M-216 731.25L-994.8 900M-120 731.25L-846 900M-24 731.25L-697.2 900M72 731.25L-548.4 900M168 731.25L-399.6 900M264 731.25L-250.8 900M360 731.25L-102 900M456 731.25L46.8 900M552 731.25L195.6 900M648 731.25L344.4 900M744 731.25L493.2 900M840 731.25L642 900M936 731.25L790.8 900M1032 731.25L939.6 900M1128 731.25L1088.4 900M1224 731.25L1237.2 900M1320 731.25L1386 900M1416 731.25L1534.8 900M1512 731.25L1683.6 900M1608 731.25L1832.4 900M1704 731.25L1981.2 900M1800 731.25L2130 900M1896 731.25L2278.8 900M1992 731.25L2427.6 900M2088 731.25L2576.4 900M2184 731.25L2725.2 900M2280 731.25L2874 900M2376 731.25L3022.8 900M2472 731.25L3171.6 900M2568 731.25L3320.4 900M2664 731.25L3469.2 900M2760 731.25L3618 900M2856 731.25L3766.8 900M2952 731.25L3915.6 900M0 768H2400M0 812H2400M0 866H2400" stroke="#0b0704" stroke-opacity=".45" stroke-width="2.6" fill="none"/><rect y="725.65" width="2400" height="8.4" fill="#120b06"/><ellipse cx="878.75" cy="761.25" rx="360" ry="70" fill="url(#floorglow)"/><ellipse cx="1521.25" cy="761.25" rx="360" ry="70" fill="url(#floorglow)"/><path d="M888.8 120Q640 250 300 70" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M882.1 123.4L839.2 142.5L860.8 175.5Z" fill="#8F2B1C"/><path d="M882.1 123.4L860.7 132.9L860.8 175.5Z" fill="#fff" fill-opacity=".08"/><path d="M825.4 147.6L780.8 160.8L803.3 196.7Z" fill="#F0E2C0"/><path d="M825.4 147.6L803.1 154.2L803.3 196.7Z" fill="#fff" fill-opacity=".08"/><path d="M766.5 164L720.2 171.5L743.5 210.3Z" fill="#8F2B1C"/><path d="M766.5 164L743.4 167.7L743.5 210.3Z" fill="#fff" fill-opacity=".08"/><path d="M705.3 172.9L657.3 174.5L681.5 216.2Z" fill="#F0E2C0"/><path d="M705.3 172.9L681.3 173.7L681.5 216.2Z" fill="#fff" fill-opacity=".08"/><path d="M641.9 174.1L592.2 169.8L617.2 214.5Z" fill="#E8B24A"/><path d="M641.9 174.1L617 171.9L617.2 214.5Z" fill="#fff" fill-opacity=".08"/><path d="M576.2 167.6L524.8 157.5L550.6 205.1Z" fill="#8F2B1C"/><path d="M576.2 167.6L550.5 162.6L550.6 205.1Z" fill="#fff" fill-opacity=".08"/><path d="M508.3 153.5L455.1 137.6L481.8 188.1Z" fill="#F0E2C0"/><path d="M508.3 153.5L481.7 145.5L481.8 188.1Z" fill="#fff" fill-opacity=".08"/><path d="M438.1 131.7L383.2 110L410.8 163.4Z" fill="#8F2B1C"/><path d="M438.1 131.7L410.6 120.8L410.8 163.4Z" fill="#fff" fill-opacity=".08"/><path d="M365.6 102.2L309.1 74.7L337.5 131Z" fill="#F0E2C0"/><path d="M365.6 102.2L337.3 88.5L337.5 131Z" fill="#fff" fill-opacity=".08"/><path d="M300 70Q150 150 -40 120" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M291 74.7L232.1 99.9L261.9 130.3Z" fill="#8F2B1C"/><path d="M291 74.7L261.5 87.3L261.9 130.3Z" fill="#fff" fill-opacity=".08"/><path d="M212.9 106.2L150.2 120.9L181.9 156.5Z" fill="#F0E2C0"/><path d="M212.9 106.2L181.5 113.5L181.9 156.5Z" fill="#fff" fill-opacity=".08"/><path d="M129.8 123.9L63.3 128.2L96.9 169Z" fill="#E8B24A"/><path d="M129.8 123.9L96.5 126L96.9 169Z" fill="#fff" fill-opacity=".08"/><path d="M41.7 127.9L-28.6 121.7L6.9 167.8Z" fill="#8F2B1C"/><path d="M41.7 127.9L6.5 124.8L6.9 167.8Z" fill="#fff" fill-opacity=".08"/><path d="M1511.2 120Q1760 250 2100 70" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M1517.9 123.4L1560.8 142.5L1539.2 175.5Z" fill="#F0E2C0"/><path d="M1517.9 123.4L1539.3 132.9L1539.2 175.5Z" fill="#fff" fill-opacity=".08"/><path d="M1574.6 147.6L1619.2 160.8L1596.7 196.7Z" fill="#8F2B1C"/><path d="M1574.6 147.6L1596.9 154.2L1596.7 196.7Z" fill="#fff" fill-opacity=".08"/><path d="M1633.5 164L1679.8 171.5L1656.5 210.3Z" fill="#F0E2C0"/><path d="M1633.5 164L1656.6 167.7L1656.5 210.3Z" fill="#fff" fill-opacity=".08"/><path d="M1694.7 172.9L1742.7 174.5L1718.5 216.2Z" fill="#E8B24A"/><path d="M1694.7 172.9L1718.7 173.7L1718.5 216.2Z" fill="#fff" fill-opacity=".08"/><path d="M1758.1 174.1L1807.8 169.8L1782.8 214.5Z" fill="#8F2B1C"/><path d="M1758.1 174.1L1783 171.9L1782.8 214.5Z" fill="#fff" fill-opacity=".08"/><path d="M1823.8 167.6L1875.2 157.5L1849.4 205.1Z" fill="#F0E2C0"/><path d="M1823.8 167.6L1849.5 162.6L1849.4 205.1Z" fill="#fff" fill-opacity=".08"/><path d="M1891.7 153.5L1944.9 137.6L1918.2 188.1Z" fill="#8F2B1C"/><path d="M1891.7 153.5L1918.3 145.5L1918.2 188.1Z" fill="#fff" fill-opacity=".08"/><path d="M1961.9 131.7L2016.8 110L1989.2 163.4Z" fill="#F0E2C0"/><path d="M1961.9 131.7L1989.4 120.8L1989.2 163.4Z" fill="#fff" fill-opacity=".08"/><path d="M2034.4 102.2L2090.9 74.7L2062.5 131Z" fill="#E8B24A"/><path d="M2034.4 102.2L2062.7 88.5L2062.5 131Z" fill="#fff" fill-opacity=".08"/><path d="M2100 70Q2250 150 2440 120" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M2109 74.7L2167.9 99.9L2138.1 130.3Z" fill="#8F2B1C"/><path d="M2109 74.7L2138.5 87.3L2138.1 130.3Z" fill="#fff" fill-opacity=".08"/><path d="M2187.1 106.2L2249.8 120.9L2218.1 156.5Z" fill="#F0E2C0"/><path d="M2187.1 106.2L2218.5 113.5L2218.1 156.5Z" fill="#fff" fill-opacity=".08"/><path d="M2270.2 123.9L2336.7 128.2L2303.1 169Z" fill="#8F2B1C"/><path d="M2270.2 123.9L2303.5 126L2303.1 169Z" fill="#fff" fill-opacity=".08"/><path d="M2358.3 127.9L2428.6 121.7L2393.1 167.8Z" fill="#F0E2C0"/><path d="M2358.3 127.9L2393.5 124.8L2393.1 167.8Z" fill="#fff" fill-opacity=".08"/><path d="M888.8 200Q560 360 60 190" fill="none" stroke="#1a120b" stroke-width="2.2"/><circle cx="863.2" cy="218.8" r="20" fill="url(#halo)"/><rect x="860.7" y="211.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="863.2" cy="220.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="861.7" cy="218.8" r="1.8" fill="#FFF3D0"/><circle cx="810.6" cy="239.5" r="20" fill="url(#halo)"/><rect x="808.1" y="232.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="810.6" cy="241.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="809.1" cy="239.5" r="1.8" fill="#FFF3D0"/><circle cx="756" cy="256.3" r="20" fill="url(#halo)"/><rect x="753.5" y="249.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="756" cy="258.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="754.5" cy="256.3" r="1.8" fill="#FFF3D0"/><circle cx="699.3" cy="269.2" r="20" fill="url(#halo)"/><rect x="696.8" y="262.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="699.3" cy="271.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="697.8" cy="269.2" r="1.8" fill="#FFF3D0"/><circle cx="640.6" cy="278.2" r="20" fill="url(#halo)"/><rect x="638.1" y="271.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="640.6" cy="280.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="639.1" cy="278.2" r="1.8" fill="#FFF3D0"/><circle cx="579.9" cy="283.3" r="20" fill="url(#halo)"/><rect x="577.4" y="276.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="579.9" cy="285.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="578.4" cy="283.3" r="1.8" fill="#FFF3D0"/><circle cx="517.2" cy="284.5" r="20" fill="url(#halo)"/><rect x="514.7" y="277.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="517.2" cy="286.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="515.7" cy="284.5" r="1.8" fill="#FFF3D0"/><circle cx="452.4" cy="281.8" r="20" fill="url(#halo)"/><rect x="449.9" y="274.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="452.4" cy="283.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="450.9" cy="281.8" r="1.8" fill="#FFF3D0"/><circle cx="385.6" cy="275.2" r="20" fill="url(#halo)"/><rect x="383.1" y="268.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="385.6" cy="277.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="384.1" cy="275.2" r="1.8" fill="#FFF3D0"/><circle cx="316.8" cy="264.6" r="20" fill="url(#halo)"/><rect x="314.3" y="257.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="316.8" cy="266.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="315.3" cy="264.6" r="1.8" fill="#FFF3D0"/><circle cx="246" cy="250.2" r="20" fill="url(#halo)"/><rect x="243.5" y="243.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="246" cy="252.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="244.5" cy="250.2" r="1.8" fill="#FFF3D0"/><circle cx="173.1" cy="231.8" r="20" fill="url(#halo)"/><rect x="170.6" y="224.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="173.1" cy="233.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="171.6" cy="231.8" r="1.8" fill="#FFF3D0"/><circle cx="98.2" cy="209.6" r="20" fill="url(#halo)"/><rect x="95.7" y="202.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="98.2" cy="211.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="96.7" cy="209.6" r="1.8" fill="#FFF3D0"/><path d="M1511.2 200Q1840 360 2340 190" fill="none" stroke="#1a120b" stroke-width="2.2"/><circle cx="1536.8" cy="218.8" r="20" fill="url(#halo)"/><rect x="1534.3" y="211.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="1536.8" cy="220.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1535.3" cy="218.8" r="1.8" fill="#FFF3D0"/><circle cx="1589.4" cy="239.5" r="20" fill="url(#halo)"/><rect x="1586.9" y="232.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="1589.4" cy="241.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1587.9" cy="239.5" r="1.8" fill="#FFF3D0"/><circle cx="1644" cy="256.3" r="20" fill="url(#halo)"/><rect x="1641.5" y="249.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="1644" cy="258.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1642.5" cy="256.3" r="1.8" fill="#FFF3D0"/><circle cx="1700.7" cy="269.2" r="20" fill="url(#halo)"/><rect x="1698.2" y="262.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="1700.7" cy="271.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1699.2" cy="269.2" r="1.8" fill="#FFF3D0"/><circle cx="1759.4" cy="278.2" r="20" fill="url(#halo)"/><rect x="1756.9" y="271.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="1759.4" cy="280.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1757.9" cy="278.2" r="1.8" fill="#FFF3D0"/><circle cx="1820.1" cy="283.3" r="20" fill="url(#halo)"/><rect x="1817.6" y="276.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="1820.1" cy="285.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1818.6" cy="283.3" r="1.8" fill="#FFF3D0"/><circle cx="1882.8" cy="284.5" r="20" fill="url(#halo)"/><rect x="1880.3" y="277.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="1882.8" cy="286.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1881.3" cy="284.5" r="1.8" fill="#FFF3D0"/><circle cx="1947.6" cy="281.8" r="20" fill="url(#halo)"/><rect x="1945.1" y="274.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="1947.6" cy="283.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1946.1" cy="281.8" r="1.8" fill="#FFF3D0"/><circle cx="2014.4" cy="275.2" r="20" fill="url(#halo)"/><rect x="2011.9" y="268.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="2014.4" cy="277.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2012.9" cy="275.2" r="1.8" fill="#FFF3D0"/><circle cx="2083.2" cy="264.6" r="20" fill="url(#halo)"/><rect x="2080.7" y="257.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="2083.2" cy="266.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2081.7" cy="264.6" r="1.8" fill="#FFF3D0"/><circle cx="2154" cy="250.2" r="20" fill="url(#halo)"/><rect x="2151.5" y="243.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="2154" cy="252.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2152.5" cy="250.2" r="1.8" fill="#FFF3D0"/><circle cx="2226.9" cy="231.8" r="20" fill="url(#halo)"/><rect x="2224.4" y="224.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="2226.9" cy="233.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2225.4" cy="231.8" r="1.8" fill="#FFF3D0"/><circle cx="2301.8" cy="209.6" r="20" fill="url(#halo)"/><rect x="2299.3" y="202.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="2301.8" cy="211.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2300.3" cy="209.6" r="1.8" fill="#FFF3D0"/><ellipse cx="740" cy="850" rx="98.6" ry="12" fill="#000" fill-opacity=".45"/><rect x="652" y="746" width="176" height="103" fill="#120b06"/><rect x="657" y="748" width="166" height="12" fill="#2a1c10"/><path d="M669 806V756.1Q669 738.8 677 731.1V714H687V731.1Q695 738.8 695 756.1V806Z" fill="#4E7A34"/><rect x="674" y="758" width="5" height="40.3" fill="#fff" fill-opacity=".35"/><rect x="675.5" y="710" width="13" height="6" fill="#D8CBB0"/><path d="M699 812V762.1Q699 744.8 707 737.1V720H717V737.1Q725 744.8 725 762.1V812Z" fill="#A8741E"/><rect x="704" y="764" width="5" height="40.3" fill="#fff" fill-opacity=".35"/><rect x="705.5" y="716" width="13" height="6" fill="#D8CBB0"/><path d="M729 806V756.1Q729 738.8 737 731.1V714H747V731.1Q755 738.8 755 756.1V806Z" fill="#2F6594"/><rect x="734" y="758" width="5" height="40.3" fill="#fff" fill-opacity=".35"/><rect x="735.5" y="710" width="13" height="6" fill="#D8CBB0"/><path d="M759 812V762.1Q759 744.8 767 737.1V720H777V737.1Q785 744.8 785 762.1V812Z" fill="#6C43A6"/><rect x="764" y="764" width="5" height="40.3" fill="#fff" fill-opacity=".35"/><rect x="765.5" y="716" width="13" height="6" fill="#D8CBB0"/><path d="M787 806V756.1Q787 738.8 795 731.1V714H805V731.1Q813 738.8 813 756.1V806Z" fill="#4E7A34"/><rect x="792" y="758" width="5" height="40.3" fill="#fff" fill-opacity=".35"/><rect x="793.5" y="710" width="13" height="6" fill="#D8CBB0"/><rect x="652" y="757" width="176" height="92" fill="#2a1c10"/><rect x="655" y="760" width="170" height="25.7" fill="#6a4d2e"/><rect x="655" y="788.7" width="170" height="25.7" fill="#6a4d2e"/><rect x="655" y="817.3" width="170" height="25.7" fill="#6a4d2e"/><path d="M661 766L819 840" stroke="#4a3520" stroke-width="12"/><rect x="655" y="760" width="12" height="86" fill="#4a3520"/><rect x="813" y="760" width="12" height="86" fill="#4a3520"/><rect x="655" y="760" width="170" height="3" fill="#8C6A3E"/><circle cx="661" cy="768" r="2.6" fill="#B07E24"/><circle cx="819" cy="768" r="2.6" fill="#B07E24"/><circle cx="661" cy="838" r="2.6" fill="#B07E24"/><circle cx="819" cy="838" r="2.6" fill="#B07E24"/><path d="M683 260H807V334Q807 390 745 416Q683 390 683 334Z" fill="#000" fill-opacity=".4" transform="translate(6 10)"/><path d="M683 260H807V334Q807 390 745 416Q683 390 683 334Z" fill="#4A3520" stroke="#E8B24A" stroke-width="6"/><path d="M697 274H793V332Q793 378 745 400Q697 378 697 332Z" fill="none" stroke="#B07E24" stroke-width="2.5"/><path d="M715 296L775 360M775 296L715 360" stroke="#E8B24A" stroke-width="7" stroke-linecap="round"/><path d="M715 360L699 374L729 376Z" fill="#8FAE5D"/><circle cx="695" cy="272" r="4.5" fill="#B07E24"/><circle cx="795" cy="272" r="4.5" fill="#B07E24"/><ellipse cx="1700" cy="850" rx="70" ry="10" fill="#000" fill-opacity=".45"/><rect x="1650" y="836" width="100" height="14" fill="#3B2A16"/><rect x="1694" y="700" width="12" height="140" fill="#5a4128"/><ellipse cx="1700" cy="830" rx="40" ry="11.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="13.6"/><ellipse cx="1700" cy="828" rx="40" ry="11.2" fill="none" stroke="#D4622F" stroke-width="10.4"/><ellipse cx="1700" cy="817" rx="40" ry="11.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="13.6"/><ellipse cx="1700" cy="815" rx="40" ry="11.2" fill="none" stroke="#E8B24A" stroke-width="10.4"/><ellipse cx="1700" cy="804" rx="40" ry="11.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="13.6"/><ellipse cx="1700" cy="802" rx="40" ry="11.2" fill="none" stroke="#8FAE5D" stroke-width="10.4"/><ellipse cx="1700" cy="791" rx="40" ry="11.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="13.6"/><ellipse cx="1700" cy="789" rx="40" ry="11.2" fill="none" stroke="#9B6BD1" stroke-width="10.4"/><ellipse cx="1700" cy="778" rx="40" ry="11.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="13.6"/><ellipse cx="1700" cy="776" rx="40" ry="11.2" fill="none" stroke="#5AB8F0" stroke-width="10.4"/><ellipse cx="1700" cy="765" rx="40" ry="11.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="13.6"/><ellipse cx="1700" cy="763" rx="40" ry="11.2" fill="none" stroke="#F08C6A" stroke-width="10.4"/><ellipse cx="1700" cy="752" rx="40" ry="11.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="13.6"/><ellipse cx="1700" cy="750" rx="40" ry="11.2" fill="none" stroke="#D4622F" stroke-width="10.4"/><ellipse cx="1855" cy="855.3" rx="50.5" ry="9.8" fill="#000" fill-opacity=".45"/><path d="M1817.3 733.9Q1804.2 790.5 1817.3 848.7Q1855 860.2 1892.7 848.7Q1905.8 790.5 1892.7 733.9Z" fill="url(#barrel)"/><path d="M1830.4 735.6Q1824.2 790.5 1830.4 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1845.2 735.6Q1842.7 790.5 1845.2 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1859.9 735.6Q1861.2 790.5 1859.9 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1874.7 735.6Q1879.6 790.5 1874.7 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1816.5 748.7Q1855 756.1 1893.5 748.7" fill="none" stroke="#1a120b" stroke-width="5.7"/><path d="M1813.6 773.3Q1855 780.7 1896.4 773.3" fill="none" stroke="#1a120b" stroke-width="5.7"/><path d="M1813.6 807.7Q1855 815.1 1896.4 807.7" fill="none" stroke="#1a120b" stroke-width="5.7"/><path d="M1816.5 834.8Q1855 842.2 1893.5 834.8" fill="none" stroke="#1a120b" stroke-width="5.7"/><ellipse cx="1855" cy="733.9" rx="37.7" ry="9.8" fill="#5a4128" stroke="#1a120b" stroke-width="4.1"/><ellipse cx="1855" cy="733.9" rx="27.9" ry="4.9" fill="#3b2a16"/><circle cx="640" cy="360" r="2" fill="#F3D08A" fill-opacity="0.35"/><circle cx="700" cy="250" r="1.6" fill="#F3D08A" fill-opacity="0.3"/><circle cx="520" cy="420" r="2.2" fill="#F3D08A" fill-opacity="0.25"/><circle cx="780" cy="300" r="1.4" fill="#F3D08A" fill-opacity="0.3"/><circle cx="590" cy="210" r="1.8" fill="#F3D08A" fill-opacity="0.2"/><circle cx="1760" cy="360" r="2" fill="#F3D08A" fill-opacity="0.35"/><circle cx="1700" cy="250" r="1.6" fill="#F3D08A" fill-opacity="0.3"/><circle cx="1880" cy="420" r="2.2" fill="#F3D08A" fill-opacity="0.25"/><circle cx="1620" cy="300" r="1.4" fill="#F3D08A" fill-opacity="0.3"/><circle cx="1810" cy="210" r="1.8" fill="#F3D08A" fill-opacity="0.2"/><rect width="2400" height="900" fill="url(#ceiling)"/><rect width="2400" height="900" fill="url(#vig)"/><rect x="828.75" width="70" height="900" fill="url(#shadeL)"/><rect x="1501.25" width="70" height="900" fill="url(#shadeR)"/><rect x="888.8" y="0" width="34" height="900" fill="url(#oak)"/><rect x="895.8" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><rect x="913.1" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><circle cx="905.8" cy="90" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="89" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="218" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="217" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="346" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="345" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="474" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="473" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="602" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="601" r="1.4" fill="#F3D08A"/><rect x="880.8" y="709.25" width="50" height="30" fill="#3b2a16"/><rect x="880.8" y="709.25" width="50" height="5" fill="#5a4128"/><rect x="880.8" y="709.25" width="50" height="30" fill="none" stroke="#B07E24" stroke-width="2"/><rect x="1477.2" y="0" width="34" height="900" fill="url(#oak)"/><rect x="1484.2" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><rect x="1501.7" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><circle cx="1494.2" cy="90" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="89" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="218" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="217" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="346" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="345" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="474" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="473" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="602" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="601" r="1.4" fill="#F3D08A"/><rect x="1469.2" y="709.25" width="50" height="30" fill="#3b2a16"/><rect x="1469.2" y="709.25" width="50" height="5" fill="#5a4128"/><rect x="1469.2" y="709.25" width="50" height="30" fill="none" stroke="#B07E24" stroke-width="2"/></svg>
 <div id="stage"><canvas id="c"></canvas></div>
 
 <div class="overlay" id="menu">
   <div class="card">
+    <a class="place" href="/games#broom-blade-arcade">Smart Disruptions · Broom &amp; Blade Arcade</a>
     <h1>Ring Toss</h1>
     <div class="sub">A Broom &amp; Blade carnival booth</div>
     <div class="rules">
@@ -78,8 +137,7 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
       A soft flick lands up front, a <b>hard</b> flick reaches the back.<br>
       Front row <b>2</b> · then <b>3</b> · <b>4</b> · back row <b>5</b>. The <b>golden bottle</b> is worth <b>10</b>.<br>
       One ring per bottle. <b>Bonuses:</b> fill a <b>row</b> (+5× its value), a <b>column</b> (+15), all <b>four corners</b> (+20).<br>
-      Ring <b>every bottle</b> for a <b>BLACKOUT</b>: the round ends in style, +50, and +5 for every ring you didn't need.<br>
-      Your score <b>÷ 3</b> is the <b>gold</b> you win.
+      Ring <b>every bottle</b> for a <b>BLACKOUT</b>: the round ends in style, +50, and +5 for every ring you didn't need.
     </div>
     <div id="best" class="tag">Best: 0 pts</div>
     <button id="play">Toss a ring</button>
@@ -93,7 +151,7 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
     <div class="sub" id="finalMsg">points</div>
     <div class="rank" id="rank"></div>
     <div id="stats" class="rules"></div>
-    <div class="row"><button id="again">Play again</button><button id="menuBtn" class="ghost">Guild hall</button></div>
+    <div class="row"><button id="again">Play again</button><a class="ghost" href="/games#broom-blade-arcade">Arcade</a></div>
   </div>
 </div>
 
@@ -118,7 +176,8 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
 <script>
 (() => {
 'use strict';
-const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+const canvas = document.getElementById('c');
+let ctx = canvas.getContext('2d');   // let: the frame-budget caches below borrow it to paint offscreen
 const $ = id => document.getElementById(id);
 const pick = a => a[(Math.random()*a.length)|0];
 
@@ -126,14 +185,60 @@ const pick = a => a[(Math.random()*a.length)|0];
 const W = 400; let H = 800, scale = 1, offX = 0, offY = 0, dpr = 1;
 function resize(){
   dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-  const vw = innerWidth, vh = innerHeight;
+  // the stage's padding is the safe area (a notch, the home bar): the booth fits inside it
+  const st = getComputedStyle($('stage')), pad = k => parseFloat(st[k]) || 0;
+  const vw = innerWidth - pad('paddingLeft') - pad('paddingRight'), vh = innerHeight - pad('paddingTop') - pad('paddingBottom');
   H = Math.max(640, Math.min(900, Math.round(W * vh / vw)));
   scale = Math.min(vw / W, vh / H);
   canvas.width = Math.round(W*scale*dpr); canvas.height = Math.round(H*scale*dpr);
   canvas.style.width = (W*scale)+'px'; canvas.style.height = (H*scale)+'px';
+  document.documentElement.style.setProperty('--cw', (W*scale)+'px');   // the cards' dim covers the booth, not the cellar
   const r = canvas.getBoundingClientRect(); offX = r.left; offY = r.top;
-  layout();
+  layout(); caches = {};
 }
+// ---------- frame budget (smartdisruptions.com port, 2026-10-05) ----------
+// A phone rasterises this canvas on its GPU, where every shadowBlur draw is its own offscreen blur
+// pass, and the booth and scoreboard lit forty-odd bulbs a frame. So each glow is drawn once into a small
+// sprite and stamped, and the parts of the room that never change live in bitmaps at the canvas's
+// own resolution. Same pixels, a fraction of the work. A layer only stamps in the plain view (the
+// base scale plus the shake); under any other transform it draws its vectors as before.
+let caches = {};
+if (document.fonts) document.fonts.addEventListener('loadingdone', () => { caches = {}; });   // repaint any cached text in the real font
+function plainView(m){ const k = dpr*scale; return !m.b && !m.c && Math.abs(m.a - k) < k*1e-5 && Math.abs(m.d - k) < k*1e-5; }   // the context keeps its matrix in float32
+function paintInto(c, e, f, paint){
+  const main = ctx, k = dpr*scale; ctx = c.getContext('2d'); ctx.lineCap = main.lineCap; ctx.setTransform(k, 0, 0, k, e, f);
+  try { paint(); } finally { ctx = main; }
+}
+function layer(key, x, y, w, h, paint){   // a static region (logical box) kept as a bitmap
+  const m = ctx.getTransform();
+  if (!plainView(m)){ paint(); return; }
+  let L = caches[key];
+  if (!L){
+    const k = dpr*scale, X0 = Math.floor(x*k), Y0 = Math.floor(y*k), c = document.createElement('canvas');
+    c.width = Math.max(1, Math.ceil((x + w)*k) - X0); c.height = Math.max(1, Math.ceil((y + h)*k) - Y0);
+    paintInto(c, -X0, -Y0, paint); L = caches[key] = { c, X0, Y0 };
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(L.c, L.X0 + Math.round(m.e), L.Y0 + Math.round(m.f)); ctx.setTransform(m);
+}
+function sprite(key, hw, hh, paint, below = hh){   // a small bitmap painted around a logical origin: hw either side, hh above, `below` below
+  let S = caches[key];
+  if (!S){
+    const k = dpr*scale, c = document.createElement('canvas'); c.width = Math.ceil(hw*2*k); c.height = Math.ceil((hh + below)*k);
+    S = caches[key] = { c, ox: Math.round(hw*k), oy: Math.round(hh*k) }; paintInto(c, S.ox, S.oy, paint);
+  }
+  return S;
+}
+function stamp(S, x, y, m){   // a sprite with its origin on (x, y), on whole device pixels
+  if (!plainView(m)){ const k = dpr*scale; ctx.drawImage(S.c, x - S.ox/k, y - S.oy/k, S.c.width/k, S.c.height/k); return; }
+  const X = Math.round(m.a*x + m.e) - S.ox, Y = Math.round(m.d*y + m.f) - S.oy;   // through the current transform, 1:1 and pixel-aligned
+  ctx.drawImage(S.c, (X - m.e)/m.a, (Y - m.f)/m.d, S.c.width/m.a, S.c.height/m.d);
+}
+function glowDot(x, y, r, col, blur, m){   // a lit bulb and its halo
+  const pad = r + (blur*1.6 + 2)/(dpr*scale);
+  stamp(sprite('dot' + col + '|' + r + '|' + blur, pad, pad, () => { ctx.shadowColor = col; ctx.shadowBlur = blur; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill(); }), x, y, m);
+}
+const hueStep = h => Math.round(h/6)*6;   // rainbow bulbs: 60 cached hues, a step finer than a frame's own hue jump
+
 // The table is drawn in perspective: depth d runs 0 (front edge) to 1 (back edge),
 // u runs -1..1 across it. project() turns table space into screen space.
 let floorY, table, peg;
@@ -163,7 +268,8 @@ const COL_BONUS = 15, CORNER_BONUS = 20;
 const BLACKOUT_BONUS = 50, SPARE_RING_BONUS = 5;
 // Most a round can score: all 20 bottles (golden at best in row 2: 70 - 3 + 10 = 77), every
 // row (70), every column (75), the corners (20), the blackout (50) and 10 spare rings (50)
-// = 342, so 114 gold. The hall's RING_MOST must match; a real round lands far lower.
+// = 342; a real round lands far lower. On smartdisruptions.com every round is free: the guild
+// hall's gold (score ÷ 3) and its payout are gone, and the scoreboard shows the best on this device.
 const RING_COLORS = ['#D4622F', '#E8B24A', '#8FAE5D', '#9B6BD1', '#5AB8F0', '#F08C6A'];
 
 const TUNE_ON = /[?&]tune=1/.test(location.search);
@@ -179,21 +285,21 @@ $('tuneReset').onclick = $('tuneDef').onclick = () => { Object.assign(T, TUNE_DE
 syncTune();
 
 const CALM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-const G = { state:'menu', thrown:0, ringers:0, points:0, gold:0, streak:0, bestStreak:0, golden:0, perfect:0, endTimer:0, rows:0, cols:0, corners:0, sweep:0, bonusPts:0, spare:0 };
+const G = { state:'menu', thrown:0, ringers:0, points:0, streak:0, bestStreak:0, golden:0, perfect:0, endTimer:0, rows:0, cols:0, corners:0, sweep:0, bonusPts:0, spare:0 };
 let best = 0; try { best = +localStorage.getItem('ringtoss-best') || 0; } catch(e){}
 $('best').textContent = 'Best: ' + best + ' pts';
 
 let bottles = [];      // { r, c, u, d, pts, golden, ring:null|color, ringT }
 const flying = [];     // rings in the air
 const lying = [];      // rings that missed, lying on the table for a moment
-const parts = [], toasts = [], rings = [], confetti = [], flyers = [];
+const parts = [], toasts = [], rings = [], confetti = [];
 const shotRes = [];
 let held = null, ptr = null, hist = [];
 let shake = 0, flash = 0, flashC = '#F3D08A', callout = null, lastT = 0;
 let hypeMode = false, blackT = 0, beatT = 0, slowT = 0;   // 3 rows in: rainbow hype; blackT > 0: the blackout show is running
 const fireworks = [];
 const BLACK_DUR = 6.2;
-let scoreShown = 0, boardFx = 0, boardGold = false, plusBadge = null, goldShown = 0, goldPop = 0, endShown = false;
+let scoreShown = 0, boardFx = 0, boardGold = false, plusBadge = null, bestPop = 0, bestSeen = 0, endShown = false;
 
 function newBottles(){
   bottles = [];
@@ -202,10 +308,10 @@ function newBottles(){
   for (const b of bottles) if (b.golden) b.pts = GOLD_PTS;
 }
 function startGame(){
-  Object.assign(G, { thrown:0, ringers:0, points:0, gold:0, streak:0, bestStreak:0, golden:0, perfect:0, endTimer:0, fiveShown:false, lastShown:false, rows:0, cols:0, corners:0, sweep:0, bonusPts:0, spare:0 });
+  Object.assign(G, { thrown:0, ringers:0, points:0, streak:0, bestStreak:0, golden:0, perfect:0, endTimer:0, fiveShown:false, lastShown:false, rows:0, cols:0, corners:0, sweep:0, bonusPts:0, spare:0 });
   hypeMode = false; blackT = 0; fireworks.length = 0; beatT = 0; slowT = 0;
-  newBottles(); flying.length = lying.length = parts.length = toasts.length = rings.length = confetti.length = flyers.length = shotRes.length = 0;
-  held = null; scoreShown = 0; goldShown = 0; plusBadge = null; endShown = false;
+  newBottles(); flying.length = lying.length = parts.length = toasts.length = rings.length = confetti.length = shotRes.length = 0;
+  held = null; scoreShown = 0; bestPop = 0; bestSeen = best; plusBadge = null; endShown = false;
   G.state = 'play'; $('menu').hidden = true; $('over').hidden = true; $('pause').hidden = true;
   if (TUNE_ON) $('tune').hidden = false;
   showCallout(RINGS + ' RINGS · GO!', '#F3D08A', 40);
@@ -232,10 +338,8 @@ function endGame(){
     (G.sweep ? `<div class="line"><span>⚫ BLACKOUT</span><b>+${BLACKOUT_BONUS}</b></div>` : '') +
     (G.sweep && G.spare ? `<div class="line"><span>Spare rings (${G.spare} × ${SPARE_RING_BONUS})</span><b>+${G.spare*SPARE_RING_BONUS}</b></div>` : '') +
     `<div class="line"><span>Bonus points</span><b>${G.bonusPts}</b></div>` +
-    `<div class="line gold"><span>Gold earned (score ÷ 3)</span><b>${G.gold}</b></div>`;
+    `<div class="line gold"><span>Best on this device</span><b>${Math.max(best, G.points)}</b></div>`;
   if (isBest){ best = G.points; try { localStorage.setItem('ringtoss-best', best); } catch(e){} $('best').textContent = 'Best: ' + best + ' pts'; }
-  // The hall banks the gold; played straight from the URL there's no parent, so it's practice.
-  try { if (window.parent && window.parent !== window) window.parent.postMessage({ game:'ring-toss', done:true, gold:G.gold, points:G.points, ringers:G.ringers, rings:G.thrown, bonus:G.bonusPts }, location.origin); } catch(e){}
   $('over').hidden = false;
 }
 let countRun = 0;
@@ -249,7 +353,6 @@ function countUp(el, n){
 }
 $('play').onclick = () => { audio(); startGame(); };
 $('again').onclick = () => startGame();
-$('menuBtn').onclick = () => { G.state='menu'; $('over').hidden = true; $('menu').hidden = false; };
 $('resume').onclick = () => { $('pause').hidden = true; G.state='play'; lastT = performance.now(); };
 $('quit').onclick = () => { $('pause').hidden = true; G.state='menu'; $('menu').hidden = false; };
 
@@ -446,8 +549,6 @@ function ringer(f, b, e){
     done.push({ name: 'BLACKOUT', pts: BLACKOUT_BONUS + G.spare*SPARE_RING_BONUS, set: bottles, c: '#E8B24A' }); }
   const bonus = done.reduce((a, x) => a + x.pts, 0);
   G.points += bonus; G.bonusPts += bonus;
-  const newGold = Math.floor(G.points / 3), coins = newGold - G.gold; G.gold = newGold;
-  for (let k=0;k<coins;k++) flyers.push({ x0: project(b.u, b.d).x + k*12, y0: project(b.u, b.d).y - 40, t: -k*0.15, spin: Math.random()*6 });
   const p = project(b.u, b.d), top = p.y - 72*p.s;
   const perfect = e < 0.2; if (perfect) G.perfect++;
   boardFx = bonus ? 2.4 : b.golden ? 2 : 0.9; boardGold = b.golden || bonus > 0; plusBadge = { text: '+' + (pts + bonus), gold: b.golden || bonus > 0, life: bonus ? 1.8 : 1.1, dur: bonus ? 1.8 : 1.1 };
@@ -512,7 +613,8 @@ function updateFireworks(dt){
 }
 // BLACKOUT: the lights cut out, a spotlight snaps on, the word stamps in letter by letter,
 // then the fair goes buck wild: fireworks, disco beams, a confetti storm, dancing bottles,
-// coin rain, and Pip, huge, screaming. The round ends when the show does.
+// and Pip, huge, screaming. The round ends when the show does. (The hall's coin rain is gone:
+// on smartdisruptions.com there is no gold.)
 function startBlackout(){
   G.state = 'blackout'; blackT = BLACK_DUR; held = null; flying.length = 0; callout = null; mouse.bubble = null;
   tone(440, 0.9, 'sawtooth', 0.12, 0, 55);                       // power-down
@@ -525,8 +627,7 @@ function updateBlackout(dt){
   if (hit(0.7)) tone(60, 0.25, 'square', 0.25);                     // the spotlight thunk
   for (let k=0;k<8;k++) if (hit(1.0 + k*0.12)){ tone(120 + k*40, 0.12, 'square', 0.18); shake = Math.max(shake, 5); }   // B-L-A-C-K-O-U-T
   if (hit(2.1)){ sfx.golden(); setTimeout(() => sfx.golden(), 200); setTimeout(() => sfx.golden(), 400); confettiBurst(240); flash = CALM ? 0 : 0.6; flashC = '#FFFFFF';
-    tone(1400, 0.6, 'sawtooth', 0.09, 0.2, 2800); tone(2400, 0.5, 'sine', 0.12, 0.7, 3200);           // Pip screams
-    for (let i=0;i<Math.min(40, G.gold);i++) flyers.push({ x0: Math.random()*W, y0: 200 + Math.random()*300, t: -i*0.05, spin: Math.random()*6 }); }
+    tone(1400, 0.6, 'sawtooth', 0.09, 0.2, 2800); tone(2400, 0.5, 'sine', 0.12, 0.7, 3200); }        // Pip screams
   if (t > 2.1 && t < BLACK_DUR - 0.8 && Math.random() < dt*6) launchFirework();
   if (t > 2.1) for (const b of bottles) b.wob = 1;
   updateFireworks(dt);
@@ -605,10 +706,11 @@ function update(dt){
   for (let i=toasts.length-1;i>=0;i--){ const t=toasts[i]; t.life-=dt; t.y -= 50*dt; if (t.life<=0) toasts.splice(i,1); }
   for (let i=rings.length-1;i>=0;i--){ const g=rings[i]; g.life-=dt; g.r += 90*dt; if (g.life<=0) rings.splice(i,1); }
   for (let i=confetti.length-1;i>=0;i--){ const c=confetti[i]; c.sway += dt*3; c.x += (c.vx + Math.sin(c.sway)*30)*dt; c.y += c.vy*dt; c.rot += c.vr*dt; if (c.y > floorY) confetti.splice(i,1); }
-  for (let i=flyers.length-1;i>=0;i--){ const f=flyers[i]; f.t += dt/0.75; if (f.t >= 1){ flyers.splice(i,1); goldShown++; goldPop = 1; sfx.coin(); } }
+  // the BEST panel: once a round passes this device's best it climbs with the score, popping as it goes
+  if (best > 0 && G.points > best && G.points > bestSeen){ bestSeen = G.points; bestPop = 1; }
   if (callout){ callout.life -= dt; if (callout.life <= 0) callout = null; }
   scoreShown += (G.points - scoreShown)*Math.min(1, dt*6); if (Math.abs(G.points - scoreShown) < 0.01) scoreShown = G.points;
-  boardFx = Math.max(0, boardFx - dt); goldPop = Math.max(0, goldPop - dt*3); flash = Math.max(0, flash - dt*2.5); shake *= 0.85;
+  boardFx = Math.max(0, boardFx - dt); bestPop = Math.max(0, bestPop - dt*3); flash = Math.max(0, flash - dt*2.5); shake *= 0.85;
   if (plusBadge){ plusBadge.life -= dt; if (plusBadge.life <= 0) plusBadge = null; }
   if (G.state === 'play' && ringsLeft() === 5 && !G.fiveShown){ G.fiveShown = true; showCallout('FIVE RINGS LEFT', '#F08C6A', 42); mouseSay('Five left! Aim for gold!', 1.8); }
   if (G.state === 'play' && ringsLeft() === 1 && !G.lastShown){ G.lastShown = true; showCallout('LAST RING!', '#F3D08A', 46, 2); mouseSay('Make it count!', 1.8); }
@@ -617,10 +719,7 @@ function update(dt){
 
 // ---------- drawing ----------
 function drawRoom(){
-  const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#2A1C10'); g.addColorStop(0.55,'#3A2817'); g.addColorStop(1,'#241809');
-  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle = 'rgba(26,18,11,.55)'; ctx.lineWidth = 2;
-  for (let y=0;y<floorY;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); const off=(y/40)%2?30:0; for (let x=off;x<W;x+=60){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+40); ctx.stroke(); } }
+  layer('room', 0, 0, W, H, paintRoom);   // the stone wall and the plank floor never change
   const now = performance.now()/1000;
   for (const tx of [26, W-26]){ const ty = table.farY - 40;
     const tg = ctx.createRadialGradient(tx, ty, 5, tx, ty, 150); tg.addColorStop(0,'rgba(232,178,74,.33)'); tg.addColorStop(1,'rgba(232,178,74,0)');
@@ -628,29 +727,42 @@ function drawRoom(){
     ctx.fillStyle = '#4A3520'; ctx.fillRect(tx-4, ty+10, 8, 34);
     const fl = 1 + Math.sin(now*11 + tx)*0.15; ctx.fillStyle = '#D4622F'; ctx.beginPath(); ctx.ellipse(tx, ty, 8, 14*fl, 0, 0, Math.PI*2); ctx.fill();
     ctx.fillStyle = '#F3D08A'; ctx.beginPath(); ctx.ellipse(tx, ty+3, 3.5, 7*fl, 0, 0, Math.PI*2); ctx.fill(); }
+}
+function paintRoom(){
+  const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#2A1C10'); g.addColorStop(0.55,'#3A2817'); g.addColorStop(1,'#241809');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = 'rgba(26,18,11,.55)'; ctx.lineWidth = 2;
+  for (let y=0;y<floorY;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); const off=(y/40)%2?30:0; for (let x=off;x<W;x+=60){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+40); ctx.stroke(); } }
+  // the floor (drawn after the torches before: they never overlap)
   const fg = ctx.createLinearGradient(0,floorY,0,H); fg.addColorStop(0,'#8C6A3E'); fg.addColorStop(1,'#4A3520'); ctx.fillStyle = fg; ctx.fillRect(0, floorY, W, H-floorY);
   ctx.strokeStyle = 'rgba(26,18,11,.5)'; ctx.lineWidth = 2; for (let x=0;x<W;x+=50){ ctx.beginPath(); ctx.moveTo(x, floorY); ctx.lineTo(x-30, H); ctx.stroke(); }
   ctx.fillStyle = '#1A120B'; ctx.fillRect(0, floorY-4, W, 6);
 }
 function drawBooth(){
-  // the booth: two striped posts, a scalloped red-and-cream canopy with string lights, then the table
+  // the booth: two striped posts, a scalloped red-and-cream canopy with string lights, then the table.
+  // Everything but the lamps and the lights is one bitmap; the lights never overlap the table.
   const now = performance.now()/1000, cy = 150, ch = 44, x0 = W/2 - table.farHW - 58, x1 = W/2 + table.farHW + 58;
+  layer('booth', 16, cy - 16, W - 32, table.nearY + 40 - cy, paintBooth);
+  const m = ctx.getTransform();
+  // the row lamps: one per row, lit as rows fill; all four is a blackout
+  ctx.fillStyle = '#E8B24A'; ctx.font = '900 12px Alegreya, Georgia, serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText(G.rows >= 3 ? 'BLACKOUT →' : 'ROWS', W/2 - 36, cy - 5);
+  for (let r=0;r<4;r++){ const lx = W/2 - 22 + r*22, lit = r < G.rows, col = lit ? (hypeMode ? `hsl(${hueStep((r*90 + now*240)%360)},95%,65%)` : '#F3D08A') : '#3B2A16';
+    if (lit) glowDot(lx, cy - 5, 5.5, col, 10, m); else { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(lx, cy - 5, 5.5, 0, Math.PI*2); ctx.fill(); }
+    ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(lx, cy - 5, 5.5, 0, Math.PI*2); ctx.stroke(); }
+  ctx.textAlign = 'left'; ctx.fillStyle = '#E8B24A'; ctx.fillText(G.rows + '/4', W/2 + 70, cy - 5);
+  ctx.textBaseline = 'alphabetic';
+  for (let i=0;i<=16;i++){ const bx = x0 + (x1 - x0)*i/16, by = cy + ch + 2 + Math.sin(i/16*Math.PI)*8, on = hypeMode ? ((i + Math.floor(now*12)) % 2) === 0 : ((i + Math.floor(now*3)) % 3) !== 0 || boardFx > 0;
+    const col = hypeMode || G.state === 'blackout' ? `hsl(${hueStep((i*40 + now*300)%360)},95%,68%)` : boardFx > 0 ? (boardGold ? '#F3D08A' : `hsl(${hueStep((i*40 + now*300)%360)},90%,70%)`) : '#F3D08A';
+    if (on) glowDot(bx, by, 2.6, col, 6, m); else { ctx.fillStyle = '#4A3520'; ctx.beginPath(); ctx.arc(bx, by, 2.6, 0, Math.PI*2); ctx.fill(); } }
+}
+function paintBooth(){
+  const cy = 150, ch = 44, x0 = W/2 - table.farHW - 58, x1 = W/2 + table.farHW + 58;
   ctx.fillStyle = '#2A1C10'; ctx.fillRect(x0 + 8, cy + ch, x1 - x0 - 16, table.farY - cy - ch + 4);   // back wall
   for (const px of [x0 + 4, x1 - 14]){ for (let y = cy; y < table.nearY; y += 16){ ctx.fillStyle = ((y - cy)/16) % 2 ? '#F0E2C0' : '#8F2B1C'; ctx.fillRect(px, y, 10, 16); } }
   const n = 8, sw = (x1 - x0)/n;
   for (let i=0;i<n;i++){ ctx.fillStyle = i % 2 ? '#F0E2C0' : '#8F2B1C'; ctx.beginPath(); ctx.moveTo(x0 + i*sw, cy); ctx.lineTo(x0 + (i+1)*sw, cy); ctx.lineTo(x0 + (i+1)*sw, cy + ch - 10);
     ctx.arc(x0 + (i+0.5)*sw, cy + ch - 10, sw/2, 0, Math.PI); ctx.closePath(); ctx.fill(); }
   ctx.fillStyle = '#5E1A10'; ctx.fillRect(x0 - 6, cy - 12, x1 - x0 + 12, 14);
-  // the row lamps: one per row, lit as rows fill; all four is a blackout
-  ctx.fillStyle = '#E8B24A'; ctx.font = '900 12px Alegreya, Georgia, serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText(G.rows >= 3 ? 'BLACKOUT →' : 'ROWS', W/2 - 36, cy - 5);
-  for (let r=0;r<4;r++){ const lx = W/2 - 22 + r*22, lit = r < G.rows, col = lit ? (hypeMode ? `hsl(${(r*90 + now*240)%360},95%,65%)` : '#F3D08A') : '#3B2A16';
-    ctx.fillStyle = col; if (lit){ ctx.shadowColor = col; ctx.shadowBlur = 10; } ctx.beginPath(); ctx.arc(lx, cy - 5, 5.5, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0;
-    ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = 1; ctx.stroke(); }
-  ctx.textAlign = 'left'; ctx.fillStyle = '#E8B24A'; ctx.fillText(G.rows + '/4', W/2 + 70, cy - 5);
-  ctx.textBaseline = 'alphabetic';
-  for (let i=0;i<=16;i++){ const bx = x0 + (x1 - x0)*i/16, by = cy + ch + 2 + Math.sin(i/16*Math.PI)*8, on = hypeMode ? ((i + Math.floor(now*12)) % 2) === 0 : ((i + Math.floor(now*3)) % 3) !== 0 || boardFx > 0;
-    const col = hypeMode || G.state === 'blackout' ? `hsl(${(i*40 + now*300)%360},95%,68%)` : boardFx > 0 ? (boardGold ? '#F3D08A' : `hsl(${(i*40 + now*300)%360},90%,70%)`) : '#F3D08A';
-    ctx.fillStyle = on ? col : '#4A3520'; if (on){ ctx.shadowColor = col; ctx.shadowBlur = 6; } ctx.beginPath(); ctx.arc(bx, by, 2.6, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
   // table top
   const a = project(-1, 1), b = project(1, 1), c = project(1, 0), d = project(-1, 0);
   const tg = ctx.createLinearGradient(0, a.y, 0, c.y); tg.addColorStop(0, '#5a4128'); tg.addColorStop(1, '#8C6A3E');
@@ -723,22 +835,25 @@ function drawHUD(){
   const bulbs = []; const step = 11;
   for (let t = 6; t < bw - 4; t += step) bulbs.push([bx + t, by + 3]); for (let t = 6; t < bh - 4; t += step) bulbs.push([bx + bw - 3, by + t]);
   for (let t = bw - 6; t > 4; t -= step) bulbs.push([bx + t, by + bh - 3]); for (let t = bh - 6; t > 4; t -= step) bulbs.push([bx + 3, by + t]);
-  const chase = boardFx > 0;
+  const chase = boardFx > 0, m = ctx.getTransform();
   bulbs.forEach(([qx, qy], k) => { let on, col;
-    if (chase){ const q = (k + Math.floor(now*(boardGold ? 30 : 18))) % 4; on = q < 2; col = boardGold ? `hsl(${(k*25 + now*400)%360},95%,70%)` : '#F3D08A'; }
+    if (chase){ const q = (k + Math.floor(now*(boardGold ? 30 : 18))) % 4; on = q < 2; col = boardGold ? `hsl(${hueStep((k*25 + now*400)%360)},95%,70%)` : '#F3D08A'; }
     else { on = ((k + Math.floor(now*2)) % 3) !== 0; col = '#E8B24A'; }
-    ctx.fillStyle = on ? col : '#4A3520'; if (on){ ctx.shadowColor = col; ctx.shadowBlur = 6; } ctx.beginPath(); ctx.arc(qx, qy, 2.2, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; });
+    if (on) glowDot(qx, qy, 2.2, col, 6, m); else { ctx.fillStyle = '#4A3520'; ctx.beginPath(); ctx.arc(qx, qy, 2.2, 0, Math.PI*2); ctx.fill(); } });
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.font = '800 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('SCORE', W/2, by + 18);
   drawOdometer(scoreShown, W/2, by + 47, scoreShown >= 99.5 ? 3 : 2, scoreShown >= 99.5 ? 34 : 40, chase ? '#FFF3D0' : '#F3D08A');   // a third wheel past 99
   if (plusBadge){ const pb = plusBadge, age = pb.dur - pb.life, sc = age < 0.12 ? 1.9 - age*7.5 : 1;
     ctx.save(); ctx.globalAlpha = Math.min(1, pb.life*2.5); ctx.translate(W/2 + 64, by + bh/2 + 10); ctx.rotate(-0.14); ctx.scale(sc, sc);
     ctx.fillStyle = pb.gold ? '#B07E24' : '#8F2B1C'; roundRect(-24, -14, 48, 28, 8); ctx.fill(); ctx.strokeStyle = '#F3D08A'; ctx.lineWidth = 2; roundRect(-24, -14, 48, 28, 8); ctx.stroke();
     ctx.fillStyle = '#FFFFFF'; ctx.font = '900 18px Alegreya, Georgia, serif'; ctx.textBaseline = 'middle'; ctx.fillText(pb.text, 0, 1); ctx.restore(); }
-  const lx = x + w*0.14, rx = x + w*0.86;
-  ctx.textBaseline = 'alphabetic'; ctx.font = '700 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('GOLD', lx, y + 18); ctx.fillText('RINGS LEFT', rx, y + 18);
-  ctx.fillStyle = '#B07E24'; ctx.beginPath(); ctx.arc(lx - 20, y + 42, 8, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.arc(lx - 20, y + 42, 6, 0, Math.PI*2); ctx.fill();
+  // the best on this device on the left (with a trophy; it climbs with a round that beats it), rings left on the right
+  const lx = x + w*0.14, rx = x + w*0.86, beat = best > 0 && G.points > best;
+  ctx.textBaseline = 'alphabetic'; ctx.font = '700 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('RINGS LEFT', rx, y + 18);
+  ctx.fillStyle = beat ? '#F3D08A' : '#EDDDB5'; ctx.fillText(beat ? 'NEW BEST' : 'BEST', lx, y + 18);
   ctx.font = '900 28px Alegreya, Georgia, serif';
-  ctx.save(); ctx.translate(lx + 8, y + 52); ctx.scale(1 + 0.35*goldPop, 1 + 0.35*goldPop); ctx.fillStyle = goldPop > 0.3 ? '#F3D08A' : '#E8B24A'; ctx.fillText(Math.min(goldShown, G.gold), 0, 0); ctx.restore();
+  const bestN = String(Math.max(best, G.points)), bw2 = bestWidth(bestN), gx = lx - (22 + bw2)/2;   // trophy + number, centred
+  stamp(sprite('trophy', 13, 11, () => drawTrophy(0, 0)), gx + 8, y + 42, ctx.getTransform());
+  ctx.save(); ctx.translate(gx + 22 + bw2/2, y + 52); ctx.scale(1 + 0.35*bestPop, 1 + 0.35*bestPop); ctx.fillStyle = bestPop > 0.3 || beat ? '#F3D08A' : '#E8B24A'; ctx.fillText(bestN, 0, 0); ctx.restore();
   const leftN = Math.max(0, ringsLeft()), low = leftN <= 3;
   ctx.fillStyle = low && Math.floor(now*3.3)%2 ? '#F08C6A' : (low ? '#D4622F' : '#8FAE5D'); ctx.fillText(leftN, rx, y + 52);
   const pw = Math.min(12, 340/RINGS), px0 = W/2 - (RINGS*pw)/2 + pw/2, py = y + h + 12;
@@ -760,15 +875,32 @@ function drawHUD(){
   if (TUNE_ON){ const q = B.gear; circ(q); ctx.save(); ctx.translate(q.x, q.y); ctx.strokeStyle='#E8B24A'; ctx.lineWidth=3;
     for (let i=0;i<8;i++){ ctx.rotate(Math.PI/4); ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(0,-11); ctx.stroke(); } ctx.beginPath(); ctx.arc(0,0,5,0,7); ctx.stroke(); ctx.restore(); }
 }
-function hudGoldPos(){ return { x: SB.x + (W - 2*SB.x)*0.14, y: SB.y + 40 }; }
-function drawFlyer(f){
-  const e = f.t*f.t*(3-2*f.t), to = hudGoldPos(), cx = (f.x0 + to.x)/2 - 60, cy = Math.min(f.y0, to.y) - 30;
-  const x = (1-e)*(1-e)*f.x0 + 2*(1-e)*e*cx + e*e*to.x, y = (1-e)*(1-e)*f.y0 + 2*(1-e)*e*cy + e*e*to.y, sq = Math.abs(Math.cos(f.spin + f.t*14)), r = 11 - 3*e;
-  ctx.save(); ctx.translate(x, y); ctx.scale(Math.max(0.15, sq), 1);
-  ctx.fillStyle = '#B07E24'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill(); ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.arc(0,0,r-2.5,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#F3D08A'; ctx.fillRect(-1.5, -r*0.5, 3, r); ctx.restore();
+function bestWidth(t){ const c = caches.bw || (caches.bw = {}); return c[t] !== undefined ? c[t] : (c[t] = ctx.measureText(t).width); }   // measured once per number
+function drawTrophy(cx, cy){
+  // the BEST panel's badge: a little cup in the coin's two golds
+  ctx.save(); ctx.translate(cx, cy); ctx.fillStyle = '#B07E24'; ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-7.5, -8); ctx.lineTo(7.5, -8); ctx.quadraticCurveTo(7.5, 2, 0, 3.5); ctx.quadraticCurveTo(-7.5, 2, -7.5, -8); ctx.fill();
+  ctx.beginPath(); ctx.arc(-7, -3.5, 3.2, Math.PI*0.5, Math.PI*1.5); ctx.stroke(); ctx.beginPath(); ctx.arc(7, -3.5, 3.2, -Math.PI*0.5, Math.PI*0.5); ctx.stroke();
+  ctx.fillRect(-1.6, 2.5, 3.2, 4); ctx.fillRect(-5.5, 6, 11, 2.8);
+  ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.moveTo(-5.5, -6.5); ctx.lineTo(5.5, -6.5); ctx.quadraticCurveTo(5.5, 0.4, 0, 1.6); ctx.quadraticCurveTo(-5.5, 0.4, -5.5, -6.5); ctx.fill();
+  ctx.fillStyle = '#F3D08A'; ctx.fillRect(-3.6, -5.6, 1.6, 4.6);
+  ctx.restore();
 }
 function drawOdometer(val, cx, cy, digits, dh, color){
+  // the glowing digits are a shadowBlur each: once the number stops rolling, the wheels are kept as a bitmap
+  const m = ctx.getTransform();
+  if (val !== Math.round(val) || !plainView(m)){ paintOdometer(val, cx, cy, digits, dh, color); return; }
+  const k = dpr*scale, dw = dh*0.62, X0 = Math.floor((cx - digits*dw/2)*k) - 2, Y0 = Math.floor((cy - dh/2)*k) - 2;
+  const w = Math.ceil(digits*dw*k) + 5, h = Math.ceil(dh*k) + 5, key = val + '|' + digits + '|' + dh + '|' + color + '|' + X0 + '|' + Y0;
+  let O = caches.odo;
+  if (!O || O.key !== key){
+    if (!O || O.c.width !== w || O.c.height !== h){ O = caches.odo = { c: document.createElement('canvas') }; O.c.width = w; O.c.height = h; }
+    else O.c.getContext('2d').clearRect(0, 0, w, h);
+    paintInto(O.c, -X0, -Y0, () => paintOdometer(val, cx, cy, digits, dh, color)); O.key = key;
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(O.c, X0 + Math.round(m.e), Y0 + Math.round(m.f)); ctx.setTransform(m);
+}
+function paintOdometer(val, cx, cy, digits, dh, color){
   // rolling digits: each wheel turns smoothly to the next number
   ctx.save(); ctx.font = '900 ' + Math.round(dh*0.95) + 'px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   const dw = dh*0.62, x0 = cx - (digits*dw)/2 + dw/2;
@@ -814,8 +946,11 @@ function draw(){
       ctx.moveTo(p.x-q*1.6, p.y); ctx.lineTo(p.x, p.y+q*0.45); ctx.lineTo(p.x+q*1.6, p.y); ctx.lineTo(p.x, p.y-q*0.45); ctx.closePath(); ctx.fill(); }
     else ctx.fillRect(p.x, p.y, p.s, p.s); }
   ctx.globalAlpha = 1;
-  for (const c of confetti){ ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot); ctx.scale(1, Math.abs(Math.cos(c.rot*1.3)) + 0.2); ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); ctx.restore(); }
-  for (const f of flyers) if (f.t >= 0) drawFlyer(f);
+  { const m = ctx.getTransform();   // confetti: the same translate-rotate-squash matrix per piece, set in one call
+    for (const c of confetti){ const co = Math.cos(c.rot), si = Math.sin(c.rot), q = Math.abs(Math.cos(c.rot*1.3)) + 0.2;
+      ctx.setTransform(m.a*co + m.c*si, m.b*co + m.d*si, (m.c*co - m.a*si)*q, (m.d*co - m.b*si)*q, m.a*c.x + m.c*c.y + m.e, m.b*c.x + m.d*c.y + m.f);
+      ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); }
+    ctx.setTransform(m); }
   for (const t of toasts){ ctx.globalAlpha = Math.min(1, t.life*2); ctx.font = '900 '+(t.size||26)+'px Alegreya, Georgia, serif'; ctx.textAlign='center'; ctx.lineWidth=5; ctx.strokeStyle='#1A120B'; ctx.strokeText(t.text, t.x, t.y); ctx.fillStyle = t.color; ctx.fillText(t.text, t.x, t.y); }
   ctx.globalAlpha = 1;
   drawCallout();

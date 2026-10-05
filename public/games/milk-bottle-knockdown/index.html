@@ -2,11 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#1A120B">
 <title>Milk Bottle Knockdown</title>
-<meta name="description" content="A Broom &amp; Blade carnival booth. Flick balls at pyramids of milk bottles: knock them off the shelf, clear a pyramid in one ball for a CLEAN KNOCK.">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="The carnival milk-bottle throw for your phone. Flick balls at three pyramids of bottles, clear one with a single ball for a CLEAN KNOCK, and find the secret golden bottle. Free to play.">
+<link rel="canonical" href="https://smartdisruptions.com/games/milk-bottle-knockdown">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Smart Disruptions">
+<meta property="og:title" content="Milk Bottle Knockdown">
+<meta property="og:description" content="Twenty balls, three pyramids of milk bottles. A bottle knocked off the shelf is a point, one ball through a whole pyramid is a CLEAN KNOCK, and one bottle is secretly golden. A free game from the Broom &amp; Blade Arcade.">
+<meta property="og:url" content="https://smartdisruptions.com/games/milk-bottle-knockdown">
+<meta property="og:image" content="https://smartdisruptions.com/images/apps/milk-bottle-knockdown-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Milk Bottle Knockdown title card in a candlelit cellar, with bunting, string lights, a crate of milk bottles and a basket of balls either side of the booth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1A120B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;900&family=Alegreya+Sans:wght@500;700;800&display=swap">
 <style>
 :root{
@@ -18,11 +33,28 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;background:var(--night);color:var(--cream);font-family:var(--ui);
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;overscroll-behavior:none}
-#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+/* the stage keeps clear of a notch and the home bar (the page can run full screen from the home screen) */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
 canvas{display:block;touch-action:none}
-.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;
-  background:radial-gradient(ellipse at 50% 40%,rgba(42,28,16,.92),rgba(26,18,11,.97));z-index:10}
+/* the dim behind a card covers the booth (--cw, the canvas width) and only half-dims the cellar around it */
+.overlay{position:fixed;inset:0;display:flex;z-index:10;overflow-y:auto;
+  padding:max(24px,env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));
+  background:radial-gradient(ellipse at 50% 40%,rgba(42,28,16,.92),rgba(26,18,11,.97)) 50% 0/var(--cw,100%) 100% no-repeat,
+    linear-gradient(90deg,rgba(12,8,5,.5) calc(50% - var(--cw,100%)/2),transparent 0 calc(50% + var(--cw,100%)/2),rgba(12,8,5,.5) 0)}
+.overlay>.card{margin:auto}
 .overlay[hidden]{display:none}
+/* the way back to the arcade on smartdisruptions.com */
+.place{display:inline-flex;align-items:center;min-height:44px;margin:-16px 0 4px;padding:0 8px;border-radius:8px;
+  color:var(--parch);font-size:13px;font-weight:700;letter-spacing:.3px;text-decoration:none;opacity:.8}
+.place:hover{opacity:1;color:var(--gold)}
+.place:focus-visible,a.ghost:focus-visible,button:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px}
+a.ghost{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;padding:10px 18px;border:2px solid var(--oak);
+  border-radius:10px;color:var(--parch);font-family:var(--ui);font-weight:800;font-size:15px;letter-spacing:1px;text-transform:uppercase;text-decoration:none}
+a.ghost:hover{border-color:var(--gold-deep);color:var(--cream)}
+a.ghost:active{transform:translateY(3px)}
+/* wide screens: the booth stands in the cellar (static art, painted once, never animated) */
+.wings{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .card{width:min(360px,100%);background:linear-gradient(180deg,#3A2817,#241809);border:3px solid var(--gold-deep);
   border-radius:14px;padding:26px 22px 22px;text-align:center;box-shadow:0 0 0 3px #120C07,0 24px 60px rgba(0,0,0,.7)}
 h1{font-family:var(--display);font-weight:900;color:var(--gold);font-size:38px;line-height:1;letter-spacing:1px;
@@ -60,6 +92,7 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
 .card .line.gold b{color:var(--gold);font-size:18px}
 .rank{font-family:var(--display);font-style:italic;font-weight:900;color:var(--cream);font-size:20px;margin:-4px 0 10px}
 .tag.best{border-color:var(--gold);color:var(--night);background:var(--gold);animation:glow 1.1s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){.tag.best{animation:none;box-shadow:0 0 14px rgba(232,178,74,.6)}}   /* the new-best glow holds still */
 @keyframes glow{from{box-shadow:0 0 0 rgba(232,178,74,0)}to{box-shadow:0 0 18px rgba(232,178,74,.8)}}
 .big.pop{animation:pop .18s ease-out}
 @keyframes pop{from{transform:scale(1.25)}to{transform:scale(1)}}
@@ -67,18 +100,43 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
 </style>
 </head>
 <body>
+<!-- wide screens: the booth in the candlelit cellar (static, decorative) -->
+<svg class="wings" aria-hidden="true" focusable="false" viewBox="0 0 2400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140d07"/><stop offset=".5" stop-color="#21170e"/><stop offset=".8" stop-color="#1a110a"/><stop offset="1" stop-color="#110b06"/></linearGradient>
+<pattern id="bricks" width="84.375" height="112.5" patternUnits="userSpaceOnUse" x="918.75" y="0">
+<rect width="84.375" height="1.4" fill="#0b0704" fill-opacity=".6"/><rect y="111.1" width="84.375" height="1.4" fill="#0b0704" fill-opacity=".6"/>
+<rect y="54.85" width="84.375" height="2.8" fill="#0b0704" fill-opacity=".6"/>
+<rect width="1.4" height="56.25" fill="#0b0704" fill-opacity=".6"/><rect x="82.975" width="1.4" height="56.25" fill="#0b0704" fill-opacity=".6"/>
+<rect x="40.79" y="56.25" width="2.8" height="56.25" fill="#0b0704" fill-opacity=".6"/>
+<rect x="1.4" y="1.4" width="81.6" height="3" fill="#ffd9a0" fill-opacity=".035"/><rect x="0" y="57.65" width="40.79" height="3" fill="#ffd9a0" fill-opacity=".035"/><rect x="43.6" y="57.65" width="40.8" height="3" fill="#ffd9a0" fill-opacity=".035"/>
+</pattern>
+<radialGradient id="torchlight"><stop offset="0" stop-color="#f0a050" stop-opacity=".34"/><stop offset=".4" stop-color="#e8b24a" stop-opacity=".12"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></radialGradient>
+<radialGradient id="halo"><stop offset="0" stop-color="#F3D08A" stop-opacity=".55"/><stop offset="1" stop-color="#F3D08A" stop-opacity="0"/></radialGradient>
+<linearGradient id="spillL" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#e8b24a" stop-opacity=".16"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></linearGradient>
+<linearGradient id="spillR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8b24a" stop-opacity=".16"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></linearGradient>
+<linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3520"/><stop offset="1" stop-color="#1c130b"/></linearGradient>
+<linearGradient id="oak" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1c130b"/><stop offset=".35" stop-color="#4a3520"/><stop offset=".55" stop-color="#5a4128"/><stop offset="1" stop-color="#241809"/></linearGradient>
+<linearGradient id="barrel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a1c10"/><stop offset=".4" stop-color="#6a4d2e"/><stop offset=".6" stop-color="#5a4128"/><stop offset="1" stop-color="#241809"/></linearGradient>
+<radialGradient id="ball" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#F08C6A"/><stop offset=".5" stop-color="#D4622F"/><stop offset="1" stop-color="#8F2B1C"/></radialGradient>
+<radialGradient id="baseball" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#FFFBEF"/><stop offset="1" stop-color="#C9B48E"/></radialGradient>
+<radialGradient id="vig" cx="1200" cy="430" r="1250" gradientUnits="userSpaceOnUse"><stop offset=".3" stop-color="#050302" stop-opacity="0"/><stop offset=".72" stop-color="#050302" stop-opacity=".55"/><stop offset="1" stop-color="#050302" stop-opacity=".9"/></radialGradient>
+<linearGradient id="ceiling" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050302" stop-opacity=".75"/><stop offset=".22" stop-color="#050302" stop-opacity="0"/></linearGradient>
+<radialGradient id="floorglow"><stop offset="0" stop-color="#e8b24a" stop-opacity=".22"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></radialGradient>
+<linearGradient id="shadeL" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+<linearGradient id="shadeR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+</defs><rect width="2400" height="900" fill="url(#wall)"/><rect width="2400" height="731.25" fill="url(#bricks)"/><rect x="588.75" width="330" height="731.25" fill="url(#spillL)"/><rect x="1481.25" width="330" height="731.25" fill="url(#spillR)"/><circle cx="560" cy="300" r="230" fill="url(#torchlight)"/><path d="M544 352h32l-6 14h-20z" fill="#2a1c10"/><rect x="553" y="320" width="14" height="70" rx="3" fill="#4A3520"/><rect x="553" y="320" width="4" height="70" fill="#5a4128"/><path d="M540 322h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="560" cy="300" rx="15" ry="27" fill="#D4622F"/><ellipse cx="560" cy="306" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="560" cy="310" rx="4" ry="7" fill="#FFF3D0"/><circle cx="1840" cy="300" r="230" fill="url(#torchlight)"/><path d="M1824 352h32l-6 14h-20z" fill="#2a1c10"/><rect x="1833" y="320" width="14" height="70" rx="3" fill="#4A3520"/><rect x="1833" y="320" width="4" height="70" fill="#5a4128"/><path d="M1820 322h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="1840" cy="300" rx="15" ry="27" fill="#D4622F"/><ellipse cx="1840" cy="306" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="1840" cy="310" rx="4" ry="7" fill="#FFF3D0"/><circle cx="150" cy="280" r="230" fill="url(#torchlight)"/><path d="M134 332h32l-6 14h-20z" fill="#2a1c10"/><rect x="143" y="300" width="14" height="70" rx="3" fill="#4A3520"/><rect x="143" y="300" width="4" height="70" fill="#5a4128"/><path d="M130 302h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="150" cy="280" rx="15" ry="27" fill="#D4622F"/><ellipse cx="150" cy="286" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="150" cy="290" rx="4" ry="7" fill="#FFF3D0"/><circle cx="2250" cy="280" r="230" fill="url(#torchlight)"/><path d="M2234 332h32l-6 14h-20z" fill="#2a1c10"/><rect x="2243" y="300" width="14" height="70" rx="3" fill="#4A3520"/><rect x="2243" y="300" width="4" height="70" fill="#5a4128"/><path d="M2230 302h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="2250" cy="280" rx="15" ry="27" fill="#D4622F"/><ellipse cx="2250" cy="286" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="2250" cy="290" rx="4" ry="7" fill="#FFF3D0"/><rect y="731.25" width="2400" height="168.75" fill="url(#floor)"/><path d="M-600 731.25L-1590 900M-504 731.25L-1441.2 900M-408 731.25L-1292.4 900M-312 731.25L-1143.6 900M-216 731.25L-994.8 900M-120 731.25L-846 900M-24 731.25L-697.2 900M72 731.25L-548.4 900M168 731.25L-399.6 900M264 731.25L-250.8 900M360 731.25L-102 900M456 731.25L46.8 900M552 731.25L195.6 900M648 731.25L344.4 900M744 731.25L493.2 900M840 731.25L642 900M936 731.25L790.8 900M1032 731.25L939.6 900M1128 731.25L1088.4 900M1224 731.25L1237.2 900M1320 731.25L1386 900M1416 731.25L1534.8 900M1512 731.25L1683.6 900M1608 731.25L1832.4 900M1704 731.25L1981.2 900M1800 731.25L2130 900M1896 731.25L2278.8 900M1992 731.25L2427.6 900M2088 731.25L2576.4 900M2184 731.25L2725.2 900M2280 731.25L2874 900M2376 731.25L3022.8 900M2472 731.25L3171.6 900M2568 731.25L3320.4 900M2664 731.25L3469.2 900M2760 731.25L3618 900M2856 731.25L3766.8 900M2952 731.25L3915.6 900M0 768H2400M0 812H2400M0 866H2400" stroke="#0b0704" stroke-opacity=".45" stroke-width="2.6" fill="none"/><rect y="725.65" width="2400" height="8.4" fill="#120b06"/><ellipse cx="878.75" cy="761.25" rx="360" ry="70" fill="url(#floorglow)"/><ellipse cx="1521.25" cy="761.25" rx="360" ry="70" fill="url(#floorglow)"/><path d="M888.8 120Q640 250 300 70" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M882.1 123.4L839.2 142.5L860.8 175.5Z" fill="#8F2B1C"/><path d="M882.1 123.4L860.7 132.9L860.8 175.5Z" fill="#fff" fill-opacity=".08"/><path d="M825.4 147.6L780.8 160.8L803.3 196.7Z" fill="#F0E2C0"/><path d="M825.4 147.6L803.1 154.2L803.3 196.7Z" fill="#fff" fill-opacity=".08"/><path d="M766.5 164L720.2 171.5L743.5 210.3Z" fill="#8F2B1C"/><path d="M766.5 164L743.4 167.7L743.5 210.3Z" fill="#fff" fill-opacity=".08"/><path d="M705.3 172.9L657.3 174.5L681.5 216.2Z" fill="#F0E2C0"/><path d="M705.3 172.9L681.3 173.7L681.5 216.2Z" fill="#fff" fill-opacity=".08"/><path d="M641.9 174.1L592.2 169.8L617.2 214.5Z" fill="#E8B24A"/><path d="M641.9 174.1L617 171.9L617.2 214.5Z" fill="#fff" fill-opacity=".08"/><path d="M576.2 167.6L524.8 157.5L550.6 205.1Z" fill="#8F2B1C"/><path d="M576.2 167.6L550.5 162.6L550.6 205.1Z" fill="#fff" fill-opacity=".08"/><path d="M508.3 153.5L455.1 137.6L481.8 188.1Z" fill="#F0E2C0"/><path d="M508.3 153.5L481.7 145.5L481.8 188.1Z" fill="#fff" fill-opacity=".08"/><path d="M438.1 131.7L383.2 110L410.8 163.4Z" fill="#8F2B1C"/><path d="M438.1 131.7L410.6 120.8L410.8 163.4Z" fill="#fff" fill-opacity=".08"/><path d="M365.6 102.2L309.1 74.7L337.5 131Z" fill="#F0E2C0"/><path d="M365.6 102.2L337.3 88.5L337.5 131Z" fill="#fff" fill-opacity=".08"/><path d="M300 70Q150 150 -40 120" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M291 74.7L232.1 99.9L261.9 130.3Z" fill="#8F2B1C"/><path d="M291 74.7L261.5 87.3L261.9 130.3Z" fill="#fff" fill-opacity=".08"/><path d="M212.9 106.2L150.2 120.9L181.9 156.5Z" fill="#F0E2C0"/><path d="M212.9 106.2L181.5 113.5L181.9 156.5Z" fill="#fff" fill-opacity=".08"/><path d="M129.8 123.9L63.3 128.2L96.9 169Z" fill="#E8B24A"/><path d="M129.8 123.9L96.5 126L96.9 169Z" fill="#fff" fill-opacity=".08"/><path d="M41.7 127.9L-28.6 121.7L6.9 167.8Z" fill="#8F2B1C"/><path d="M41.7 127.9L6.5 124.8L6.9 167.8Z" fill="#fff" fill-opacity=".08"/><path d="M1511.2 120Q1760 250 2100 70" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M1517.9 123.4L1560.8 142.5L1539.2 175.5Z" fill="#F0E2C0"/><path d="M1517.9 123.4L1539.3 132.9L1539.2 175.5Z" fill="#fff" fill-opacity=".08"/><path d="M1574.6 147.6L1619.2 160.8L1596.7 196.7Z" fill="#8F2B1C"/><path d="M1574.6 147.6L1596.9 154.2L1596.7 196.7Z" fill="#fff" fill-opacity=".08"/><path d="M1633.5 164L1679.8 171.5L1656.5 210.3Z" fill="#F0E2C0"/><path d="M1633.5 164L1656.6 167.7L1656.5 210.3Z" fill="#fff" fill-opacity=".08"/><path d="M1694.7 172.9L1742.7 174.5L1718.5 216.2Z" fill="#E8B24A"/><path d="M1694.7 172.9L1718.7 173.7L1718.5 216.2Z" fill="#fff" fill-opacity=".08"/><path d="M1758.1 174.1L1807.8 169.8L1782.8 214.5Z" fill="#8F2B1C"/><path d="M1758.1 174.1L1783 171.9L1782.8 214.5Z" fill="#fff" fill-opacity=".08"/><path d="M1823.8 167.6L1875.2 157.5L1849.4 205.1Z" fill="#F0E2C0"/><path d="M1823.8 167.6L1849.5 162.6L1849.4 205.1Z" fill="#fff" fill-opacity=".08"/><path d="M1891.7 153.5L1944.9 137.6L1918.2 188.1Z" fill="#8F2B1C"/><path d="M1891.7 153.5L1918.3 145.5L1918.2 188.1Z" fill="#fff" fill-opacity=".08"/><path d="M1961.9 131.7L2016.8 110L1989.2 163.4Z" fill="#F0E2C0"/><path d="M1961.9 131.7L1989.4 120.8L1989.2 163.4Z" fill="#fff" fill-opacity=".08"/><path d="M2034.4 102.2L2090.9 74.7L2062.5 131Z" fill="#E8B24A"/><path d="M2034.4 102.2L2062.7 88.5L2062.5 131Z" fill="#fff" fill-opacity=".08"/><path d="M2100 70Q2250 150 2440 120" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M2109 74.7L2167.9 99.9L2138.1 130.3Z" fill="#8F2B1C"/><path d="M2109 74.7L2138.5 87.3L2138.1 130.3Z" fill="#fff" fill-opacity=".08"/><path d="M2187.1 106.2L2249.8 120.9L2218.1 156.5Z" fill="#F0E2C0"/><path d="M2187.1 106.2L2218.5 113.5L2218.1 156.5Z" fill="#fff" fill-opacity=".08"/><path d="M2270.2 123.9L2336.7 128.2L2303.1 169Z" fill="#8F2B1C"/><path d="M2270.2 123.9L2303.5 126L2303.1 169Z" fill="#fff" fill-opacity=".08"/><path d="M2358.3 127.9L2428.6 121.7L2393.1 167.8Z" fill="#F0E2C0"/><path d="M2358.3 127.9L2393.5 124.8L2393.1 167.8Z" fill="#fff" fill-opacity=".08"/><path d="M888.8 200Q560 360 60 190" fill="none" stroke="#1a120b" stroke-width="2.2"/><circle cx="863.2" cy="218.8" r="20" fill="url(#halo)"/><rect x="860.7" y="211.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="863.2" cy="220.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="861.7" cy="218.8" r="1.8" fill="#FFF3D0"/><circle cx="810.6" cy="239.5" r="20" fill="url(#halo)"/><rect x="808.1" y="232.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="810.6" cy="241.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="809.1" cy="239.5" r="1.8" fill="#FFF3D0"/><circle cx="756" cy="256.3" r="20" fill="url(#halo)"/><rect x="753.5" y="249.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="756" cy="258.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="754.5" cy="256.3" r="1.8" fill="#FFF3D0"/><circle cx="699.3" cy="269.2" r="20" fill="url(#halo)"/><rect x="696.8" y="262.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="699.3" cy="271.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="697.8" cy="269.2" r="1.8" fill="#FFF3D0"/><circle cx="640.6" cy="278.2" r="20" fill="url(#halo)"/><rect x="638.1" y="271.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="640.6" cy="280.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="639.1" cy="278.2" r="1.8" fill="#FFF3D0"/><circle cx="579.9" cy="283.3" r="20" fill="url(#halo)"/><rect x="577.4" y="276.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="579.9" cy="285.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="578.4" cy="283.3" r="1.8" fill="#FFF3D0"/><circle cx="517.2" cy="284.5" r="20" fill="url(#halo)"/><rect x="514.7" y="277.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="517.2" cy="286.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="515.7" cy="284.5" r="1.8" fill="#FFF3D0"/><circle cx="452.4" cy="281.8" r="20" fill="url(#halo)"/><rect x="449.9" y="274.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="452.4" cy="283.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="450.9" cy="281.8" r="1.8" fill="#FFF3D0"/><circle cx="385.6" cy="275.2" r="20" fill="url(#halo)"/><rect x="383.1" y="268.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="385.6" cy="277.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="384.1" cy="275.2" r="1.8" fill="#FFF3D0"/><circle cx="316.8" cy="264.6" r="20" fill="url(#halo)"/><rect x="314.3" y="257.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="316.8" cy="266.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="315.3" cy="264.6" r="1.8" fill="#FFF3D0"/><circle cx="246" cy="250.2" r="20" fill="url(#halo)"/><rect x="243.5" y="243.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="246" cy="252.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="244.5" cy="250.2" r="1.8" fill="#FFF3D0"/><circle cx="173.1" cy="231.8" r="20" fill="url(#halo)"/><rect x="170.6" y="224.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="173.1" cy="233.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="171.6" cy="231.8" r="1.8" fill="#FFF3D0"/><circle cx="98.2" cy="209.6" r="20" fill="url(#halo)"/><rect x="95.7" y="202.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="98.2" cy="211.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="96.7" cy="209.6" r="1.8" fill="#FFF3D0"/><path d="M1511.2 200Q1840 360 2340 190" fill="none" stroke="#1a120b" stroke-width="2.2"/><circle cx="1536.8" cy="218.8" r="20" fill="url(#halo)"/><rect x="1534.3" y="211.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="1536.8" cy="220.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1535.3" cy="218.8" r="1.8" fill="#FFF3D0"/><circle cx="1589.4" cy="239.5" r="20" fill="url(#halo)"/><rect x="1586.9" y="232.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="1589.4" cy="241.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1587.9" cy="239.5" r="1.8" fill="#FFF3D0"/><circle cx="1644" cy="256.3" r="20" fill="url(#halo)"/><rect x="1641.5" y="249.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="1644" cy="258.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1642.5" cy="256.3" r="1.8" fill="#FFF3D0"/><circle cx="1700.7" cy="269.2" r="20" fill="url(#halo)"/><rect x="1698.2" y="262.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="1700.7" cy="271.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1699.2" cy="269.2" r="1.8" fill="#FFF3D0"/><circle cx="1759.4" cy="278.2" r="20" fill="url(#halo)"/><rect x="1756.9" y="271.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="1759.4" cy="280.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1757.9" cy="278.2" r="1.8" fill="#FFF3D0"/><circle cx="1820.1" cy="283.3" r="20" fill="url(#halo)"/><rect x="1817.6" y="276.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="1820.1" cy="285.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1818.6" cy="283.3" r="1.8" fill="#FFF3D0"/><circle cx="1882.8" cy="284.5" r="20" fill="url(#halo)"/><rect x="1880.3" y="277.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="1882.8" cy="286.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1881.3" cy="284.5" r="1.8" fill="#FFF3D0"/><circle cx="1947.6" cy="281.8" r="20" fill="url(#halo)"/><rect x="1945.1" y="274.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="1947.6" cy="283.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1946.1" cy="281.8" r="1.8" fill="#FFF3D0"/><circle cx="2014.4" cy="275.2" r="20" fill="url(#halo)"/><rect x="2011.9" y="268.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="2014.4" cy="277.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2012.9" cy="275.2" r="1.8" fill="#FFF3D0"/><circle cx="2083.2" cy="264.6" r="20" fill="url(#halo)"/><rect x="2080.7" y="257.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="2083.2" cy="266.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2081.7" cy="264.6" r="1.8" fill="#FFF3D0"/><circle cx="2154" cy="250.2" r="20" fill="url(#halo)"/><rect x="2151.5" y="243.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="2154" cy="252.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2152.5" cy="250.2" r="1.8" fill="#FFF3D0"/><circle cx="2226.9" cy="231.8" r="20" fill="url(#halo)"/><rect x="2224.4" y="224.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="2226.9" cy="233.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2225.4" cy="231.8" r="1.8" fill="#FFF3D0"/><circle cx="2301.8" cy="209.6" r="20" fill="url(#halo)"/><rect x="2299.3" y="202.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="2301.8" cy="211.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2300.3" cy="209.6" r="1.8" fill="#FFF3D0"/><ellipse cx="745" cy="850" rx="102.1" ry="12" fill="#000" fill-opacity=".45"/><rect x="654" y="752" width="182" height="97" fill="#120b06"/><rect x="659" y="754" width="172" height="12" fill="#2a1c10"/><path d="M660 796V752.3Q660 737.8 671.3 733.4V726.2H690.7V733.4Q702 737.8 702 752.3V796Z" fill="#F2EAD8" stroke="#1a120b" stroke-opacity=".5" stroke-width="1.6"/><rect x="660" y="763.2" width="42" height="11.6" fill="#B83A26"/><rect x="669.7" y="722.2" width="22.7" height="8.4" fill="#8F2B1C"/><rect x="667.6" y="745" width="4.9" height="43.7" fill="#fff" fill-opacity=".6"/><path d="M692 791V747.3Q692 732.8 703.3 728.4V721.2H722.7V728.4Q734 732.8 734 747.3V791Z" fill="#F2EAD8" stroke="#1a120b" stroke-opacity=".5" stroke-width="1.6"/><rect x="692" y="758.2" width="42" height="11.6" fill="#B83A26"/><rect x="701.7" y="717.2" width="22.7" height="8.4" fill="#8F2B1C"/><rect x="699.6" y="740" width="4.9" height="43.7" fill="#fff" fill-opacity=".6"/><path d="M724 796V752.3Q724 737.8 735.3 733.4V726.2H754.7V733.4Q766 737.8 766 752.3V796Z" fill="#F2EAD8" stroke="#1a120b" stroke-opacity=".5" stroke-width="1.6"/><rect x="724" y="763.2" width="42" height="11.6" fill="#B83A26"/><rect x="733.7" y="722.2" width="22.7" height="8.4" fill="#8F2B1C"/><rect x="731.6" y="745" width="4.9" height="43.7" fill="#fff" fill-opacity=".6"/><path d="M756 791V747.3Q756 732.8 767.3 728.4V721.2H786.7V728.4Q798 732.8 798 747.3V791Z" fill="#F2EAD8" stroke="#1a120b" stroke-opacity=".5" stroke-width="1.6"/><rect x="756" y="758.2" width="42" height="11.6" fill="#B83A26"/><rect x="765.7" y="717.2" width="22.7" height="8.4" fill="#8F2B1C"/><rect x="763.6" y="740" width="4.9" height="43.7" fill="#fff" fill-opacity=".6"/><path d="M788 796V752.3Q788 737.8 799.3 733.4V726.2H818.7V733.4Q830 737.8 830 752.3V796Z" fill="#F2EAD8" stroke="#1a120b" stroke-opacity=".5" stroke-width="1.6"/><rect x="788" y="763.2" width="42" height="11.6" fill="#B83A26"/><rect x="797.7" y="722.2" width="22.7" height="8.4" fill="#8F2B1C"/><rect x="795.6" y="745" width="4.9" height="43.7" fill="#fff" fill-opacity=".6"/><rect x="654" y="763" width="182" height="86" fill="#2a1c10"/><rect x="657" y="766" width="176" height="23.7" fill="#6a4d2e"/><rect x="657" y="792.7" width="176" height="23.7" fill="#6a4d2e"/><rect x="657" y="819.3" width="176" height="23.7" fill="#6a4d2e"/><path d="M663 772L827 840" stroke="#4a3520" stroke-width="12"/><rect x="657" y="766" width="12" height="80" fill="#4a3520"/><rect x="821" y="766" width="12" height="80" fill="#4a3520"/><rect x="657" y="766" width="176" height="3" fill="#8C6A3E"/><circle cx="663" cy="774" r="2.6" fill="#B07E24"/><circle cx="827" cy="774" r="2.6" fill="#B07E24"/><circle cx="663" cy="838" r="2.6" fill="#B07E24"/><circle cx="827" cy="838" r="2.6" fill="#B07E24"/><path d="M683 260H807V334Q807 390 745 416Q683 390 683 334Z" fill="#000" fill-opacity=".4" transform="translate(6 10)"/><path d="M683 260H807V334Q807 390 745 416Q683 390 683 334Z" fill="#4A3520" stroke="#E8B24A" stroke-width="6"/><path d="M697 274H793V332Q793 378 745 400Q697 378 697 332Z" fill="none" stroke="#B07E24" stroke-width="2.5"/><path d="M715 296L775 360M775 296L715 360" stroke="#E8B24A" stroke-width="7" stroke-linecap="round"/><path d="M715 360L699 374L729 376Z" fill="#8FAE5D"/><circle cx="695" cy="272" r="4.5" fill="#B07E24"/><circle cx="795" cy="272" r="4.5" fill="#B07E24"/><ellipse cx="1720" cy="850" rx="92" ry="12" fill="#000" fill-opacity=".45"/><circle cx="1688" cy="790" r="17" fill="url(#baseball)"/><path d="M1678.7 776.4Q1687.2 790 1678.7 803.6M1697.3 776.4Q1688.8 790 1697.3 803.6" fill="none" stroke="#B83A26" stroke-width="2.2"/><circle cx="1722" cy="786" r="17" fill="url(#baseball)"/><path d="M1712.7 772.4Q1721.2 786 1712.7 799.6M1731.3 772.4Q1722.8 786 1731.3 799.6" fill="none" stroke="#B83A26" stroke-width="2.2"/><circle cx="1756" cy="792" r="17" fill="url(#baseball)"/><path d="M1746.7 778.4Q1755.2 792 1746.7 805.6M1765.3 778.4Q1756.8 792 1765.3 805.6" fill="none" stroke="#B83A26" stroke-width="2.2"/><circle cx="1704" cy="766" r="17" fill="url(#baseball)"/><path d="M1694.7 752.4Q1703.2 766 1694.7 779.6M1713.3 752.4Q1704.8 766 1713.3 779.6" fill="none" stroke="#B83A26" stroke-width="2.2"/><circle cx="1740" cy="764" r="17" fill="url(#baseball)"/><path d="M1730.7 750.4Q1739.2 764 1730.7 777.6M1749.3 750.4Q1740.8 764 1749.3 777.6" fill="none" stroke="#B83A26" stroke-width="2.2"/><path d="M1640 796H1800L1782 850H1658Z" fill="#8C6A3E"/><path d="M1652 798L1664.0 848" stroke="#5a4128" stroke-width="3"/><path d="M1673 798L1681.5 848" stroke="#5a4128" stroke-width="3"/><path d="M1694 798L1699.0 848" stroke="#5a4128" stroke-width="3"/><path d="M1715 798L1716.5 848" stroke="#5a4128" stroke-width="3"/><path d="M1736 798L1734.0 848" stroke="#5a4128" stroke-width="3"/><path d="M1757 798L1751.5 848" stroke="#5a4128" stroke-width="3"/><path d="M1778 798L1769.0 848" stroke="#5a4128" stroke-width="3"/><path d="M1799 798L1786.5 848" stroke="#5a4128" stroke-width="3"/><path d="M1638 796H1802" stroke="#E8B24A" stroke-width="4"/><ellipse cx="1880" cy="855.3" rx="50.5" ry="9.8" fill="#000" fill-opacity=".45"/><path d="M1842.3 733.9Q1829.2 790.5 1842.3 848.7Q1880 860.2 1917.7 848.7Q1930.8 790.5 1917.7 733.9Z" fill="url(#barrel)"/><path d="M1855.4 735.6Q1849.2 790.5 1855.4 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1870.2 735.6Q1867.7 790.5 1870.2 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1884.9 735.6Q1886.2 790.5 1884.9 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1899.7 735.6Q1904.6 790.5 1899.7 850.4" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1841.5 748.7Q1880 756.1 1918.5 748.7" fill="none" stroke="#1a120b" stroke-width="5.7"/><path d="M1838.6 773.3Q1880 780.7 1921.4 773.3" fill="none" stroke="#1a120b" stroke-width="5.7"/><path d="M1838.6 807.7Q1880 815.1 1921.4 807.7" fill="none" stroke="#1a120b" stroke-width="5.7"/><path d="M1841.5 834.8Q1880 842.2 1918.5 834.8" fill="none" stroke="#1a120b" stroke-width="5.7"/><ellipse cx="1880" cy="733.9" rx="37.7" ry="9.8" fill="#5a4128" stroke="#1a120b" stroke-width="4.1"/><ellipse cx="1880" cy="733.9" rx="27.9" ry="4.9" fill="#3b2a16"/><circle cx="640" cy="360" r="2" fill="#F3D08A" fill-opacity="0.35"/><circle cx="700" cy="250" r="1.6" fill="#F3D08A" fill-opacity="0.3"/><circle cx="520" cy="420" r="2.2" fill="#F3D08A" fill-opacity="0.25"/><circle cx="780" cy="300" r="1.4" fill="#F3D08A" fill-opacity="0.3"/><circle cx="590" cy="210" r="1.8" fill="#F3D08A" fill-opacity="0.2"/><circle cx="1760" cy="360" r="2" fill="#F3D08A" fill-opacity="0.35"/><circle cx="1700" cy="250" r="1.6" fill="#F3D08A" fill-opacity="0.3"/><circle cx="1880" cy="420" r="2.2" fill="#F3D08A" fill-opacity="0.25"/><circle cx="1620" cy="300" r="1.4" fill="#F3D08A" fill-opacity="0.3"/><circle cx="1810" cy="210" r="1.8" fill="#F3D08A" fill-opacity="0.2"/><rect width="2400" height="900" fill="url(#ceiling)"/><rect width="2400" height="900" fill="url(#vig)"/><rect x="828.75" width="70" height="900" fill="url(#shadeL)"/><rect x="1501.25" width="70" height="900" fill="url(#shadeR)"/><rect x="888.8" y="0" width="34" height="900" fill="url(#oak)"/><rect x="895.8" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><rect x="913.1" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><circle cx="905.8" cy="90" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="89" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="218" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="217" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="346" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="345" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="474" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="473" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="602" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="601" r="1.4" fill="#F3D08A"/><rect x="880.8" y="709.25" width="50" height="30" fill="#3b2a16"/><rect x="880.8" y="709.25" width="50" height="5" fill="#5a4128"/><rect x="880.8" y="709.25" width="50" height="30" fill="none" stroke="#B07E24" stroke-width="2"/><rect x="1477.2" y="0" width="34" height="900" fill="url(#oak)"/><rect x="1484.2" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><rect x="1501.7" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><circle cx="1494.2" cy="90" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="89" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="218" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="217" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="346" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="345" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="474" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="473" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="602" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="601" r="1.4" fill="#F3D08A"/><rect x="1469.2" y="709.25" width="50" height="30" fill="#3b2a16"/><rect x="1469.2" y="709.25" width="50" height="5" fill="#5a4128"/><rect x="1469.2" y="709.25" width="50" height="30" fill="none" stroke="#B07E24" stroke-width="2"/></svg>
 <div id="stage"><canvas id="c"></canvas></div>
 
 <div class="overlay" id="menu">
   <div class="card">
+    <a class="place" href="/games#broom-blade-arcade">Smart Disruptions · Broom &amp; Blade Arcade</a>
     <h1>Milk Bottle Knockdown</h1>
     <div class="sub">A Broom &amp; Blade carnival booth</div>
     <div class="rules">
       <b>Drag</b> a ball up and <b>flick</b> it at the milk bottles. You get <b>20 balls</b>.<br>
       A soft flick hits <b>low</b>, a <b>hard</b> flick hits high. Too soft falls short.<br>
       Every bottle knocked <b>off the shelf</b>: <b>1</b>. Knocked over but still on the shelf doesn't count.<br>
-      Clear a pyramid with <b>one ball</b>: <b>+5 CLEAN KNOCK</b> (two balls: +2). One bottle is secretly <b>golden</b>: <b>5</b>. Clear all <b>three</b> pyramids (the lamps light up): <b>+10 FULL SHELF</b>.<br>
-      Your score <b>÷ 6</b> is the <b>gold</b> you win, up to <b>50</b>.
+      Clear a pyramid with <b>one ball</b>: <b>+5 CLEAN KNOCK</b> (two balls: +2). One bottle is secretly <b>golden</b>: <b>5</b>. Clear all <b>three</b> pyramids (the lamps light up): <b>+10 FULL SHELF</b>.
     </div>
     <div id="best" class="tag">Best: 0 pts</div>
     <button id="play">Throw a ball</button>
@@ -92,7 +150,7 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
     <div class="sub" id="finalMsg">points</div>
     <div class="rank" id="rank"></div>
     <div id="stats" class="rules"></div>
-    <div class="row"><button id="again">Play again</button><button id="menuBtn" class="ghost">Guild hall</button></div>
+    <div class="row"><button id="again">Play again</button><a class="ghost" href="/games#broom-blade-arcade">Arcade</a></div>
   </div>
 </div>
 
@@ -119,7 +177,8 @@ button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid
 <script>
 (() => {
 'use strict';
-const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+const canvas = document.getElementById('c');
+let ctx = canvas.getContext('2d');   // let: the frame-budget caches below borrow it to paint offscreen
 const $ = id => document.getElementById(id);
 const pick = a => a[(Math.random()*a.length)|0];
 const rnd = (a, b) => a + Math.random()*(b - a);
@@ -129,14 +188,62 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const W = 400; let H = 800, scale = 1, offX = 0, offY = 0, dpr = 1;
 function resize(){
   dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-  const vw = innerWidth, vh = innerHeight;
+  // the stage's padding is the safe area (a notch, the home bar): the booth fits inside it
+  const st = getComputedStyle($('stage')), pad = k => parseFloat(st[k]) || 0;
+  const vw = innerWidth - pad('paddingLeft') - pad('paddingRight'), vh = innerHeight - pad('paddingTop') - pad('paddingBottom');
   H = Math.max(640, Math.min(900, Math.round(W * vh / vw)));
   scale = Math.min(vw / W, vh / H);
   canvas.width = Math.round(W*scale*dpr); canvas.height = Math.round(H*scale*dpr);
   canvas.style.width = (W*scale)+'px'; canvas.style.height = (H*scale)+'px';
+  document.documentElement.style.setProperty('--cw', (W*scale)+'px');   // the cards' dim covers the booth, not the cellar
   const r = canvas.getBoundingClientRect(); offX = r.left; offY = r.top;
-  layout();
+  layout(); caches = {};
 }
+// ---------- frame budget (smartdisruptions.com port, 2026-10-05) ----------
+// A phone rasterises this canvas on its GPU, where every shadowBlur draw is its own offscreen blur
+// pass, and the booth and scoreboard lit forty-odd bulbs a frame. So each glow is drawn once into a small
+// sprite and stamped, and the parts of the room that never change live in bitmaps at the canvas's
+// own resolution. Same pixels, a fraction of the work. A layer only stamps in the plain view (the
+// base scale plus the shake); under any other transform (the camera punch, the replay's zoom) it
+// draws its vectors as before, so a zoom never shows a stretched bitmap.
+let caches = {};
+if (document.fonts) document.fonts.addEventListener('loadingdone', () => { caches = {}; });   // repaint any cached text in the real font
+function plainView(m){ const k = dpr*scale; return !m.b && !m.c && Math.abs(m.a - k) < k*1e-5 && Math.abs(m.d - k) < k*1e-5; }   // the context keeps its matrix in float32
+function paintInto(c, e, f, paint){
+  const main = ctx, k = dpr*scale; ctx = c.getContext('2d'); ctx.lineCap = main.lineCap; ctx.setTransform(k, 0, 0, k, e, f);
+  try { paint(); } finally { ctx = main; }
+}
+function layer(key, x, y, w, h, paint){   // a static region (logical box) kept as a bitmap
+  const m = ctx.getTransform();
+  if (!plainView(m)){ paint(); return; }
+  let L = caches[key];
+  if (!L){
+    const k = dpr*scale, X0 = Math.floor(x*k), Y0 = Math.floor(y*k), c = document.createElement('canvas');
+    c.width = Math.max(1, Math.ceil((x + w)*k) - X0); c.height = Math.max(1, Math.ceil((y + h)*k) - Y0);
+    paintInto(c, -X0, -Y0, paint); L = caches[key] = { c, X0, Y0 };
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(L.c, L.X0 + Math.round(m.e), L.Y0 + Math.round(m.f)); ctx.setTransform(m);
+}
+function sprite(key, hw, hh, paint, below = hh){   // a small bitmap painted around a logical origin: hw either side, hh above, `below` below
+  let S = caches[key];
+  if (!S){
+    const k = dpr*scale, c = document.createElement('canvas'); c.width = Math.ceil(hw*2*k); c.height = Math.ceil((hh + below)*k);
+    S = caches[key] = { c, ox: Math.round(hw*k), oy: Math.round(hh*k) }; paintInto(c, S.ox, S.oy, paint);
+  }
+  return S;
+}
+function stamp(S, x, y, m){   // a sprite with its origin on (x, y), on whole device pixels
+  if (!plainView(m)){ const k = dpr*scale; ctx.drawImage(S.c, x - S.ox/k, y - S.oy/k, S.c.width/k, S.c.height/k); return; }
+  const X = Math.round(m.a*x + m.e) - S.ox, Y = Math.round(m.d*y + m.f) - S.oy;   // through the current transform, 1:1 and pixel-aligned
+  ctx.drawImage(S.c, (X - m.e)/m.a, (Y - m.f)/m.d, S.c.width/m.a, S.c.height/m.d);
+}
+function glowDot(x, y, r, col, blur, m){   // a lit bulb and its halo
+  const pad = r + (blur*1.6 + 2)/(dpr*scale);
+  stamp(sprite('dot' + col + '|' + r + '|' + blur, pad, pad, () => { ctx.shadowColor = col; ctx.shadowBlur = blur; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill(); }), x, y, m);
+}
+const hueStep = h => Math.round(h/6)*6;   // rainbow bulbs: 60 cached hues, a step finer than a frame's own hue jump
+
+
 // The booth in world space: x across (screen px at the shelf), h = height above the shelf top,
 // z = depth toward the player (0 = the pyramids' line). scr() turns world space into screen space.
 // Knocked bottles fly in 3D, land on the shelf or drop past its edge to the booth floor below.
@@ -158,13 +265,10 @@ function onShelf(j){ return j.x > SX0 && j.x < SX1 && j.z > ZB && j.z < ZF; }
 // ---------- the game ----------
 const BALLS = 20;   // Josh 09-23: 15 paid too much, 10 felt too short
 const JUG_PTS = 1, GOLD_PTS = 5, CLEAN_BONUS = 5, TWO_BONUS = 2, FULL_BONUS = 10;   // Josh, 2026-09-23: "way too much gold" (was 10 / 5 / 20)
-const GOLD_CAP = 50;   // a round pays at most 50 gold, the same ceiling as Hoop Quest
-const GOLD_DIV = 6;    // Josh 09-23: a longer round (20 balls) at the fair's usual ÷ 3 paid 21-49 gold, so this booth pays score ÷ 6
-// Ceiling: 50 gold, the same as Hoop Quest. A perfect round scores 20 balls x (6 bottles + CLEAN
-// KNOCK 5) = 220, + the golden bottle's extra 4, + 6 FULL SHELFs (a clear every ball, 6 x 10 = 60)
-// = 284 points, so 47 gold at score ÷ 6. GOLD_CAP = 50 guards the rare ball that clears two pyramids
-// at once. The hall's MILK_MOST must be 50. History (09-23): 15 balls at ÷ 3 paid Josh 78 gold; 10 balls
-// felt too short; 20 balls at ÷ 6 pays a good-aim bot about 10-25.
+// A perfect round scores 20 balls x (6 bottles + CLEAN KNOCK 5) = 220, + the golden bottle's extra 4,
+// + 6 FULL SHELFs (a clear every ball, 6 x 10 = 60) = 284 points. On smartdisruptions.com every round
+// is free: the guild hall's gold (score ÷ 6, at most 50) and its payout are gone, and the scoreboard
+// shows the best on this device instead.
 const GRAV = 1500;
 
 const TUNE_ON = /[?&]tune=1/.test(location.search);
@@ -181,7 +285,7 @@ syncTune();
 
 const CALM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const G = { state:'menu' };
-function freshG(){ return { thrown:0, hits:0, points:0, gold:0, streak:0, bestStreak:0, jugs:0, clean:0, two:0, full:0, golden:0, bonusPts:0, endTimer:0, fiveShown:false, lastShown:false, cams:0 }; }
+function freshG(){ return { thrown:0, hits:0, points:0, streak:0, bestStreak:0, jugs:0, clean:0, two:0, full:0, golden:0, bonusPts:0, endTimer:0, fiveShown:false, lastShown:false, cams:0 }; }
 Object.assign(G, freshG());
 let best = 0; try { best = +localStorage.getItem('milkbottle-best') || 0; } catch(e){}
 $('best').textContent = 'Best: ' + best + ' pts';
@@ -190,14 +294,14 @@ let jugs = [];            // every bottle in play: { x, h, z, vx, vh, vz, a, va,
 const slots = [];         // { pyr:{ jugs, gen }, refill, lit }
 const flying = [];        // balls in the air
 const spent = [];         // balls that already hit, bouncing to the floor
-const parts = [], toasts = [], ripples = [], confetti = [], flyers = [];
+const parts = [], toasts = [], ripples = [], confetti = [];
 const shotRes = [];
 let held = null, ptr = null, hist = [];
 let shake = 0, flash = 0, flashC = '#F3D08A', callout = null, lastT = 0, slowT = 0, litFlash = 0;
 // spectacle: hit-stop, a camera punch toward big hits, milk puddles, the cracked screen, and the instant replay
 let hitStop = 0, camPunch = 0, camF = { x: W/2, y: 400 }, crack = null, simT = 0, replay = null, replayQ = null;
 const puddles = [], rec = [], evlog = [], impactT = [];
-let scoreShown = 0, boardFx = 0, boardGold = false, plusBadge = null, goldShown = 0, goldPop = 0;
+let scoreShown = 0, boardFx = 0, boardGold = false, plusBadge = null, bestPop = 0, bestSeen = 0;
 
 function newPyramid(s, drop){
   const cx = SLOT_X[s], pyr = { slot: s, jugs: [], gen: (slots[s] && slots[s].pyr ? slots[s].pyr.gen + 1 : 0) };
@@ -216,8 +320,8 @@ function startGame(){
   jugs = []; slots.length = 0;
   for (let s=0;s<3;s++) newPyramid(s, true);
   pick(jugs).golden = true;   // hidden until it falls
-  flying.length = spent.length = parts.length = toasts.length = ripples.length = confetti.length = flyers.length = shotRes.length = 0;
-  held = null; scoreShown = 0; goldShown = 0; plusBadge = null; slowT = 0; litFlash = 0;
+  flying.length = spent.length = parts.length = toasts.length = ripples.length = confetti.length = shotRes.length = 0;
+  held = null; scoreShown = 0; bestPop = 0; bestSeen = best; plusBadge = null; slowT = 0; litFlash = 0;
   hitStop = 0; camPunch = 0; crack = null; simT = 0; replay = null; replayQ = null; puddles.length = rec.length = evlog.length = impactT.length = 0;
   G.state = 'play'; $('menu').hidden = true; $('over').hidden = true; $('pause').hidden = true;
   if (TUNE_ON) $('tune').hidden = false;
@@ -243,10 +347,8 @@ function endGame(){
     (G.full ? `<div class="line"><span>FULL SHELF</span><b>${G.full}</b></div>` : '') +
     (G.golden ? `<div class="line"><span>✨ Golden bottle</span><b>✓</b></div>` : '') +
     `<div class="line"><span>Bonus points</span><b>${G.bonusPts}</b></div>` +
-    `<div class="line gold"><span>Gold earned (score ÷ ${GOLD_DIV}, max ${GOLD_CAP})</span><b>${G.gold}</b></div>`;
+    `<div class="line gold"><span>Best on this device</span><b>${Math.max(best, G.points)}</b></div>`;
   if (isBest){ best = G.points; try { localStorage.setItem('milkbottle-best', best); } catch(e){} $('best').textContent = 'Best: ' + best + ' pts'; }
-  // The hall banks the gold; played straight from the URL there's no parent, so it's practice.
-  try { if (window.parent && window.parent !== window) window.parent.postMessage({ game:'milk-bottle', done:true, gold:G.gold, points:G.points, jugs:G.jugs, balls:G.thrown, bonus:G.bonusPts }, location.origin); } catch(e){}
   $('over').hidden = false;
 }
 let countRun = 0;
@@ -260,7 +362,6 @@ function countUp(el, n){
 }
 $('play').onclick = () => { audio(); startGame(); };
 $('again').onclick = () => startGame();
-$('menuBtn').onclick = () => { G.state='menu'; $('over').hidden = true; $('menu').hidden = false; };
 $('resume').onclick = () => { $('pause').hidden = true; G.state='play'; lastT = performance.now(); };
 $('quit').onclick = () => { $('pause').hidden = true; G.state='menu'; $('menu').hidden = false; };
 
@@ -494,8 +595,6 @@ function count(j, p){   // a bottle just left the shelf
 }
 function addPoints(pts, x, y, bonus){
   G.points += pts; if (bonus) G.bonusPts += pts;
-  const newGold = Math.min(GOLD_CAP, Math.floor(G.points / GOLD_DIV)), coins = newGold - G.gold; G.gold = newGold;
-  for (let k=0;k<coins;k++) flyers.push({ x0: x + k*12, y0: y - 20, t: -k*0.15, spin: Math.random()*6 });
   if (!plusBadge || bonus || plusBadge.life < plusBadge.dur - 0.3) plusBadge = { text: '+' + pts, gold: !!bonus, life: bonus ? 1.8 : 1.0, dur: bonus ? 1.8 : 1.0 };
   if (!boardFx || bonus) { boardFx = Math.max(boardFx, bonus ? 2.4 : 0.6); boardGold = boardGold || !!bonus; }
 }
@@ -611,10 +710,11 @@ function update(rdt){
   for (let i=toasts.length-1;i>=0;i--){ const t=toasts[i]; t.life-=dt; t.y -= 50*dt; if (t.life<=0) toasts.splice(i,1); }
   for (let i=ripples.length-1;i>=0;i--){ ripples[i].life -= dt; if (ripples[i].life <= 0) ripples.splice(i,1); }
   for (let i=confetti.length-1;i>=0;i--){ const c=confetti[i]; c.sway += rdt*3; c.x += (c.vx + Math.sin(c.sway)*30)*rdt; c.y += c.vy*rdt; c.rot += c.vr*rdt; if (c.y > floorY) confetti.splice(i,1); }
-  for (let i=flyers.length-1;i>=0;i--){ const f=flyers[i]; f.t += rdt/0.75; if (f.t >= 1){ flyers.splice(i,1); goldShown++; goldPop = 1; sfx.coin(); } }
+  // the BEST panel: once a round passes this device's best it climbs with the score, popping as it goes
+  if (best > 0 && G.points > best && G.points > bestSeen){ bestSeen = G.points; bestPop = 1; }
   if (callout){ callout.life -= rdt; if (callout.life <= 0) callout = null; }
   scoreShown += (G.points - scoreShown)*Math.min(1, rdt*6); if (Math.abs(G.points - scoreShown) < 0.01) scoreShown = G.points;
-  boardFx = Math.max(0, boardFx - rdt); if (!boardFx) boardGold = false; goldPop = Math.max(0, goldPop - rdt*3); flash = Math.max(0, flash - rdt*2.5); shake *= 0.85;
+  boardFx = Math.max(0, boardFx - rdt); if (!boardFx) boardGold = false; bestPop = Math.max(0, bestPop - rdt*3); flash = Math.max(0, flash - rdt*2.5); shake *= 0.85;
   if (plusBadge){ plusBadge.life -= rdt; if (plusBadge.life <= 0) plusBadge = null; }
   if (ballsLeft() === 3 && !G.fiveShown){ G.fiveShown = true; showCallout('THREE BALLS LEFT', '#F08C6A', 42); mouseSay('Three left! Aim low!', 1.8); }
   if (ballsLeft() === 1 && !G.lastShown){ G.lastShown = true; showCallout('LAST BALL!', '#F3D08A', 46, 2); mouseSay('Make it count!', 1.8); }
@@ -762,7 +862,8 @@ function drawReplay(){
 }
 
 // ---------- drawing ----------
-function drawRoom(){
+function drawRoom(){ layer('room', 0, 0, W, H, paintRoom); }   // the stone wall and the plank floor never change
+function paintRoom(){
   const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#2A1C10'); g.addColorStop(0.55,'#3A2817'); g.addColorStop(1,'#241809');
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
   ctx.strokeStyle = 'rgba(26,18,11,.55)'; ctx.lineWidth = 2;
@@ -774,35 +875,43 @@ function drawRoom(){
 function drawBoothBack(){
   // striped posts, a scalloped canopy with string lights, a velvet curtain, three lamps (one per pyramid), the booth floor
   const now = performance.now()/1000, cy = canopyY, ch = 44, x0 = 4, x1 = W - 4, floorTop = scr(0, -SHELF_H, ZB).y;
-  const cg = ctx.createLinearGradient(0, cy + ch, 0, floorTop); cg.addColorStop(0, '#4A1810'); cg.addColorStop(1, '#2A0E08');
-  ctx.fillStyle = cg; ctx.fillRect(x0 + 8, cy + ch, x1 - x0 - 16, floorTop - cy - ch + 2);
+  // the curtain and the booth floor are one bitmap, the posts, canopy and sign another; the folds sway, the lights live
+  layer('curtain', x0 + 6, cy + ch - 2, x1 - x0 - 12, counterY - cy - ch + 4, () => paintCurtain(cy, ch, x0, x1, floorTop));
   for (let x = x0 + 14; x < x1 - 8; x += 18){ const w = Math.sin(now*0.8 + x*0.05)*1.5; ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(x + w, cy + ch, 6, floorTop - cy - ch); ctx.fillStyle = 'rgba(255,120,90,.06)'; ctx.fillRect(x + 8 + w, cy + ch, 3, floorTop - cy - ch); }
   for (const r of ripples){ if (r.ring) continue; const a = r.life/0.7; ctx.strokeStyle = `rgba(0,0,0,${0.5*a})`; ctx.lineWidth = 3;
     for (let k=0;k<3;k++){ ctx.beginPath(); ctx.ellipse(r.x, r.y, (1 - a)*30 + k*8, (1 - a)*12 + k*4, 0, 0, Math.PI*2); ctx.stroke(); } }
-  // booth floor, below the shelf
+  layer('canopy', 0, cy - 14, W, counterY - cy + 16, () => paintCanopy(cy, ch, x0, x1));
+  const m = ctx.getTransform();
+  for (let i=0;i<=18;i++){ const bx = x0 + (x1 - x0)*i/18, by = cy + ch + 2 + Math.sin(i/18*Math.PI)*8, on = ((i + Math.floor(now*3)) % 3) !== 0 || boardFx > 0;
+    const col = boardFx > 0 ? (boardGold ? '#F3D08A' : `hsl(${hueStep((i*40 + now*300)%360)},90%,70%)`) : '#F3D08A';
+    if (on) glowDot(bx, by, 2.6, col, 6, m); else { ctx.fillStyle = '#4A3520'; ctx.beginPath(); ctx.arc(bx, by, 2.6, 0, Math.PI*2); ctx.fill(); } }
+  // the three FULL SHELF lamps
+  const ly = Math.round((cy + ch + 10 + shelfY - PYR_H)/2);
+  slots.forEach((s, i) => { const lx = SLOT_X[i], lit = s.lit, blink = litFlash > 0 ? Math.floor(now*10) % 2 === 0 : true;
+    ctx.strokeStyle = '#4A3520'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(lx, cy + ch); ctx.lineTo(lx, ly - 9); ctx.stroke();
+    ctx.fillStyle = '#1A120B'; ctx.beginPath(); ctx.arc(lx, ly, 10, 0, Math.PI*2); ctx.fill();
+    if (lit && blink) glowDot(lx, ly, 7, '#F3D08A', Math.round(14 + 6*Math.sin(now*6)), m);   // the breathing glow, a sprite per whole blur step
+    else { ctx.fillStyle = '#4A3520'; ctx.beginPath(); ctx.arc(lx, ly, 7, 0, Math.PI*2); ctx.fill(); }
+    ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(lx, ly, 10, 0, Math.PI*2); ctx.stroke(); });
+}
+function paintCurtain(cy, ch, x0, x1, floorTop){
+  const cg = ctx.createLinearGradient(0, cy + ch, 0, floorTop); cg.addColorStop(0, '#4A1810'); cg.addColorStop(1, '#2A0E08');
+  ctx.fillStyle = cg; ctx.fillRect(x0 + 8, cy + ch, x1 - x0 - 16, floorTop - cy - ch + 2);
+  // booth floor, below the shelf (drawn after the folds before: they never overlap)
   const fgr = ctx.createLinearGradient(0, floorTop, 0, counterY); fgr.addColorStop(0, '#3A2817'); fgr.addColorStop(1, '#5a4128');
   ctx.fillStyle = fgr; ctx.fillRect(x0 + 8, floorTop, x1 - x0 - 16, counterY - floorTop);
   ctx.strokeStyle = 'rgba(26,18,11,.45)'; ctx.lineWidth = 1.5; for (let z = 0; z < 200; z += 22){ const y = scr(0, -SHELF_H, z).y; if (y > counterY) break; ctx.beginPath(); ctx.moveTo(x0 + 8, y); ctx.lineTo(x1 - 8, y); ctx.stroke(); }
+}
+function paintCanopy(cy, ch, x0, x1){
   for (const px of [x0 + 4, x1 - 14]){ for (let y = cy; y < counterY; y += 16){ ctx.fillStyle = ((y - cy)/16) % 2 ? '#F0E2C0' : '#8F2B1C'; ctx.fillRect(px, y, 10, 16); } }
   const n = 9, sw = (x1 - x0)/n;
   for (let i=0;i<n;i++){ ctx.fillStyle = i % 2 ? '#F0E2C0' : '#8F2B1C'; ctx.beginPath(); ctx.moveTo(x0 + i*sw, cy); ctx.lineTo(x0 + (i+1)*sw, cy); ctx.lineTo(x0 + (i+1)*sw, cy + ch - 10);
     ctx.arc(x0 + (i+0.5)*sw, cy + ch - 10, sw/2, 0, Math.PI); ctx.closePath(); ctx.fill(); }
   ctx.fillStyle = '#5E1A10'; ctx.fillRect(x0 - 2, cy - 12, x1 - x0 + 4, 14);
   ctx.fillStyle = '#E8B24A'; ctx.font = '900 13px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('★ MILK BOTTLE KNOCKDOWN ★', W/2, cy - 5); ctx.textBaseline = 'alphabetic';
-  for (let i=0;i<=18;i++){ const bx = x0 + (x1 - x0)*i/18, by = cy + ch + 2 + Math.sin(i/18*Math.PI)*8, on = ((i + Math.floor(now*3)) % 3) !== 0 || boardFx > 0;
-    const col = boardFx > 0 ? (boardGold ? '#F3D08A' : `hsl(${(i*40 + now*300)%360},90%,70%)`) : '#F3D08A';
-    ctx.fillStyle = on ? col : '#4A3520'; if (on){ ctx.shadowColor = col; ctx.shadowBlur = 6; } ctx.beginPath(); ctx.arc(bx, by, 2.6, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
-  // the three FULL SHELF lamps
-  const ly = Math.round((cy + ch + 10 + shelfY - PYR_H)/2);
-  slots.forEach((s, i) => { const lx = SLOT_X[i], lit = s.lit, blink = litFlash > 0 ? Math.floor(now*10) % 2 === 0 : true;
-    ctx.strokeStyle = '#4A3520'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(lx, cy + ch); ctx.lineTo(lx, ly - 9); ctx.stroke();
-    ctx.fillStyle = '#1A120B'; ctx.beginPath(); ctx.arc(lx, ly, 10, 0, Math.PI*2); ctx.fill();
-    const col = lit && blink ? '#F3D08A' : '#4A3520';
-    if (lit && blink){ ctx.shadowColor = '#F3D08A'; ctx.shadowBlur = 14 + 6*Math.sin(now*6); }
-    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(lx, ly, 7, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0;
-    ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(lx, ly, 10, 0, Math.PI*2); ctx.stroke(); });
 }
-function drawShelf(){
+function drawShelf(){ layer('shelf', 0, shelfY - 10, W, SHELF_H*1.1 + 40, paintShelf); }   // static, kept as a bitmap
+function paintShelf(){
   const a = scr(SX0, 0, ZB), b = scr(SX1, 0, ZB), c = scr(SX1, 0, ZF), d = scr(SX0, 0, ZF);
   // legs down to the booth floor
   for (const lx of [SX0 + 14, W/2, SX1 - 14]){ const top = scr(lx, 0, ZF - 4), bot = scr(lx, -SHELF_H, ZF - 4); ctx.fillStyle = '#3B2A16'; ctx.fillRect(top.x - 5, top.y, 10, bot.y - top.y); }
@@ -813,7 +922,8 @@ function drawShelf(){
   const nb = 14, bw = (c.x - d.x)/nb;
   for (let i=0;i<nb;i++){ ctx.fillStyle = i % 2 ? '#F0E2C0' : '#8F2B1C'; ctx.beginPath(); ctx.moveTo(d.x + i*bw + 1, d.y + fh); ctx.lineTo(d.x + (i+1)*bw - 1, d.y + fh); ctx.lineTo(d.x + (i+0.5)*bw, d.y + fh + 12); ctx.closePath(); ctx.fill(); }
 }
-function drawCounter(){
+function drawCounter(){ layer('counter', 0, counterY - 6, W, floorY - counterY + 4, paintCounter); }   // static, kept as a bitmap
+function paintCounter(){
   // the throwing counter: everything past it is in the booth
   const y = counterY;
   const g = ctx.createLinearGradient(0, y, 0, floorY); g.addColorStop(0, '#5a4128'); g.addColorStop(1, '#3A2817');
@@ -880,22 +990,25 @@ function drawHUD(){
   const bulbs = []; const step = 11;
   for (let t = 6; t < bw - 4; t += step) bulbs.push([bx + t, by + 3]); for (let t = 6; t < bh - 4; t += step) bulbs.push([bx + bw - 3, by + t]);
   for (let t = bw - 6; t > 4; t -= step) bulbs.push([bx + t, by + bh - 3]); for (let t = bh - 6; t > 4; t -= step) bulbs.push([bx + 3, by + t]);
-  const chase = boardFx > 0;
+  const chase = boardFx > 0, m = ctx.getTransform();
   bulbs.forEach(([qx, qy], k) => { let on, col;
-    if (chase){ const q = (k + Math.floor(now*(boardGold ? 30 : 18))) % 4; on = q < 2; col = boardGold ? `hsl(${(k*25 + now*400)%360},95%,70%)` : '#F3D08A'; }
+    if (chase){ const q = (k + Math.floor(now*(boardGold ? 30 : 18))) % 4; on = q < 2; col = boardGold ? `hsl(${hueStep((k*25 + now*400)%360)},95%,70%)` : '#F3D08A'; }
     else { on = ((k + Math.floor(now*2)) % 3) !== 0; col = '#E8B24A'; }
-    ctx.fillStyle = on ? col : '#4A3520'; if (on){ ctx.shadowColor = col; ctx.shadowBlur = 6; } ctx.beginPath(); ctx.arc(qx, qy, 2.2, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; });
+    if (on) glowDot(qx, qy, 2.2, col, 6, m); else { ctx.fillStyle = '#4A3520'; ctx.beginPath(); ctx.arc(qx, qy, 2.2, 0, Math.PI*2); ctx.fill(); } });
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.font = '800 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('SCORE', W/2, by + 18);
   drawOdometer(scoreShown, W/2, by + 47, 3, 36, chase ? '#FFF3D0' : '#F3D08A');
   if (plusBadge){ const pb = plusBadge, age = pb.dur - pb.life, sc = age < 0.12 ? 1.9 - age*7.5 : 1;
     ctx.save(); ctx.globalAlpha = Math.min(1, pb.life*2.5); ctx.translate(W/2 + 64, by + bh/2 + 10); ctx.rotate(-0.14); ctx.scale(sc, sc);
     ctx.fillStyle = pb.gold ? '#B07E24' : '#8F2B1C'; roundRect(-24, -14, 48, 28, 8); ctx.fill(); ctx.strokeStyle = '#F3D08A'; ctx.lineWidth = 2; roundRect(-24, -14, 48, 28, 8); ctx.stroke();
     ctx.fillStyle = '#FFFFFF'; ctx.font = '900 18px Alegreya, Georgia, serif'; ctx.textBaseline = 'middle'; ctx.fillText(pb.text, 0, 1); ctx.restore(); }
-  const lx = x + w*0.14, rx = x + w*0.86;
-  ctx.textBaseline = 'alphabetic'; ctx.font = '700 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('GOLD', lx, y + 18); ctx.fillText('BALLS LEFT', rx, y + 18);
-  ctx.fillStyle = '#B07E24'; ctx.beginPath(); ctx.arc(lx - 20, y + 42, 8, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.arc(lx - 20, y + 42, 6, 0, Math.PI*2); ctx.fill();
+  // the best on this device on the left (with a trophy; it climbs with a round that beats it), balls left on the right
+  const lx = x + w*0.14, rx = x + w*0.86, beat = best > 0 && G.points > best;
+  ctx.textBaseline = 'alphabetic'; ctx.font = '700 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5'; ctx.fillText('BALLS LEFT', rx, y + 18);
+  ctx.fillStyle = beat ? '#F3D08A' : '#EDDDB5'; ctx.fillText(beat ? 'NEW BEST' : 'BEST', lx, y + 18);
   ctx.font = '900 28px Alegreya, Georgia, serif';
-  ctx.save(); ctx.translate(lx + 8, y + 52); ctx.scale(1 + 0.35*goldPop, 1 + 0.35*goldPop); ctx.fillStyle = goldPop > 0.3 ? '#F3D08A' : '#E8B24A'; ctx.fillText(Math.min(goldShown, G.gold), 0, 0); ctx.restore();
+  const bestN = String(Math.max(best, G.points)), bw2 = bestWidth(bestN), gx = lx - (22 + bw2)/2;   // trophy + number, centred
+  stamp(sprite('trophy', 13, 11, () => drawTrophy(0, 0)), gx + 8, y + 42, ctx.getTransform());
+  ctx.save(); ctx.translate(gx + 22 + bw2/2, y + 52); ctx.scale(1 + 0.35*bestPop, 1 + 0.35*bestPop); ctx.fillStyle = bestPop > 0.3 || beat ? '#F3D08A' : '#E8B24A'; ctx.fillText(bestN, 0, 0); ctx.restore();
   const leftN = Math.max(0, ballsLeft()), low = leftN <= 3;
   ctx.fillStyle = low && Math.floor(now*3.3)%2 ? '#F08C6A' : (low ? '#D4622F' : '#8FAE5D'); ctx.fillText(leftN, rx, y + 52);
   const pw = 14, px0 = W/2 - (BALLS*pw)/2 + pw/2, py = y + h + 12;
@@ -917,15 +1030,32 @@ function drawHUD(){
   if (TUNE_ON){ const q = B.gear; circ(q); ctx.save(); ctx.translate(q.x, q.y); ctx.strokeStyle='#E8B24A'; ctx.lineWidth=3;
     for (let i=0;i<8;i++){ ctx.rotate(Math.PI/4); ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(0,-11); ctx.stroke(); } ctx.beginPath(); ctx.arc(0,0,5,0,7); ctx.stroke(); ctx.restore(); }
 }
-function hudGoldPos(){ return { x: SB.x + (W - 2*SB.x)*0.14, y: SB.y + 40 }; }
-function drawFlyer(f){
-  const e = f.t*f.t*(3-2*f.t), to = hudGoldPos(), cx = (f.x0 + to.x)/2 - 60, cy = Math.min(f.y0, to.y) - 30;
-  const x = (1-e)*(1-e)*f.x0 + 2*(1-e)*e*cx + e*e*to.x, y = (1-e)*(1-e)*f.y0 + 2*(1-e)*e*cy + e*e*to.y, sq = Math.abs(Math.cos(f.spin + f.t*14)), r = 11 - 3*e;
-  ctx.save(); ctx.translate(x, y); ctx.scale(Math.max(0.15, sq), 1);
-  ctx.fillStyle = '#B07E24'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill(); ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.arc(0,0,r-2.5,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#F3D08A'; ctx.fillRect(-1.5, -r*0.5, 3, r); ctx.restore();
+function bestWidth(t){ const c = caches.bw || (caches.bw = {}); return c[t] !== undefined ? c[t] : (c[t] = ctx.measureText(t).width); }   // measured once per number
+function drawTrophy(cx, cy){
+  // the BEST panel's badge: a little cup in the coin's two golds
+  ctx.save(); ctx.translate(cx, cy); ctx.fillStyle = '#B07E24'; ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-7.5, -8); ctx.lineTo(7.5, -8); ctx.quadraticCurveTo(7.5, 2, 0, 3.5); ctx.quadraticCurveTo(-7.5, 2, -7.5, -8); ctx.fill();
+  ctx.beginPath(); ctx.arc(-7, -3.5, 3.2, Math.PI*0.5, Math.PI*1.5); ctx.stroke(); ctx.beginPath(); ctx.arc(7, -3.5, 3.2, -Math.PI*0.5, Math.PI*0.5); ctx.stroke();
+  ctx.fillRect(-1.6, 2.5, 3.2, 4); ctx.fillRect(-5.5, 6, 11, 2.8);
+  ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.moveTo(-5.5, -6.5); ctx.lineTo(5.5, -6.5); ctx.quadraticCurveTo(5.5, 0.4, 0, 1.6); ctx.quadraticCurveTo(-5.5, 0.4, -5.5, -6.5); ctx.fill();
+  ctx.fillStyle = '#F3D08A'; ctx.fillRect(-3.6, -5.6, 1.6, 4.6);
+  ctx.restore();
 }
 function drawOdometer(val, cx, cy, digits, dh, color){
+  // the glowing digits are a shadowBlur each: once the number stops rolling, the wheels are kept as a bitmap
+  const m = ctx.getTransform();
+  if (val !== Math.round(val) || !plainView(m)){ paintOdometer(val, cx, cy, digits, dh, color); return; }
+  const k = dpr*scale, dw = dh*0.62, X0 = Math.floor((cx - digits*dw/2)*k) - 2, Y0 = Math.floor((cy - dh/2)*k) - 2;
+  const w = Math.ceil(digits*dw*k) + 5, h = Math.ceil(dh*k) + 5, key = val + '|' + digits + '|' + dh + '|' + color + '|' + X0 + '|' + Y0;
+  let O = caches.odo;
+  if (!O || O.key !== key){
+    if (!O || O.c.width !== w || O.c.height !== h){ O = caches.odo = { c: document.createElement('canvas') }; O.c.width = w; O.c.height = h; }
+    else O.c.getContext('2d').clearRect(0, 0, w, h);
+    paintInto(O.c, -X0, -Y0, () => paintOdometer(val, cx, cy, digits, dh, color)); O.key = key;
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(O.c, X0 + Math.round(m.e), Y0 + Math.round(m.f)); ctx.setTransform(m);
+}
+function paintOdometer(val, cx, cy, digits, dh, color){
   // rolling digits: each wheel turns smoothly to the next number
   ctx.save(); ctx.font = '900 ' + Math.round(dh*0.95) + 'px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   const dw = dh*0.62, x0 = cx - (digits*dw)/2 + dw/2;
@@ -959,8 +1089,11 @@ function draw(){
   for (const f of flying){ const q = flightPos(f); drawBall(q.x, q.y, q.r, f.t*14); }
   if (held) drawBall(held.x, held.y, 15, 0);
   drawParts(parts);
-  for (const c of confetti){ ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot); ctx.scale(1, Math.abs(Math.cos(c.rot*1.3)) + 0.2); ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); ctx.restore(); }
-  for (const f of flyers) if (f.t >= 0) drawFlyer(f);
+  { const m = ctx.getTransform();   // confetti: the same translate-rotate-squash matrix per piece, set in one call
+    for (const c of confetti){ const co = Math.cos(c.rot), si = Math.sin(c.rot), q = Math.abs(Math.cos(c.rot*1.3)) + 0.2;
+      ctx.setTransform(m.a*co + m.c*si, m.b*co + m.d*si, (m.c*co - m.a*si)*q, (m.d*co - m.b*si)*q, m.a*c.x + m.c*c.y + m.e, m.b*c.x + m.d*c.y + m.f);
+      ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); }
+    ctx.setTransform(m); }
   for (const t of toasts){ ctx.globalAlpha = Math.min(1, t.life*2); ctx.font = '900 '+(t.size||26)+'px Alegreya, Georgia, serif'; ctx.textAlign='center'; ctx.lineWidth=5; ctx.strokeStyle='#1A120B'; ctx.strokeText(t.text, t.x, t.y); ctx.fillStyle = t.color; ctx.fillText(t.text, t.x, t.y); }
   ctx.globalAlpha = 1;
   ctx.restore();
