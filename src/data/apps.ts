@@ -426,6 +426,33 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: '/games/tokaido-run',
   },
+  {
+    slug: 'neo-dojo-survivors',
+    name: 'Neo Dojo Survivors',
+    description:
+      'Tengu-9, the mech samurai of the Neo Dojo, holds a neon rooftop for fifteen minutes against six rogues and their hordes. You only move him: his weapons fire on their own.',
+    longDescription:
+      'A horde game in the style of Vampire Survivors, starring Tengu-9 from the Neo Dojo Cast, the heroes and rogues I drew on Kiru\u2019s rig. You only steer him, his weapons fire on their own, and for fifteen minutes the dojo roof fills with hundreds of rogues. Each act belongs to one rogue, and its minions are its jokes: buzzwords that pivot when you hit them, pitch decks shouting 10\u00d7, porcelain deepfakes of Tengu-9 that bow to him, flocks of em-dashes and six-fingered hands. At the end of each act the rogue arrives as its boss. Bagu splits every time it is patched, Bazu runs a keynote with sweeping spotlights, Kusarigumo fences you in and charges an exit fee, and Emperor Kemuri hides behind a COMING SOON shield whose release date slips with every pillar you cut. Each level up offers a new weapon or an upgrade, and from six minutes on, a weapon at its top level with its partner upgrade turns into something bigger when you open a chest. The game makes all of its own music as you play, taiko drums and synthesizers that build with each act, with no recordings to download. It plays on a phone with one thumb and on a computer with the keyboard, a mouse or a game controller, and it is one file.',
+    thumbnailUrl: '/images/apps/neo-dojo-survivors-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/neo-dojo-survivors-1.webp',
+      '/images/apps/neo-dojo-survivors-2.webp',
+      '/images/apps/neo-dojo-survivors-3.webp',
+    ],
+    techStack: ['HTML5', 'WebGL2', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Hundreds of enemies on screen at once, drawn in WebGL with no game engine and no libraries, and every weapon lights the ground in its own colour.',
+      'Six acts and six bosses, each one a rogue from the Neo Dojo Cast with a fight built around its joke.',
+      'Ten AI agents built it side by side, each owning one part of the game: the hero, the horde, the bosses, two sets of weapons, levelling up, the world, the effects, the music and the screens.',
+      'After the first play it was rebalanced with an autopilot that plays whole runs in fast-forward. It used to reach level 168 by the end; now it reaches about 53, and the last minutes fight back.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/neo-dojo-survivors',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -435,21 +462,24 @@ export function getAppBySlug(slug: string): App | undefined {
 /**
  * The Arcade line-up, in cabinet order. Josh's call on the ordering.
  *
- * This lives here rather than in the games page because /apps reads it too —
- * anything in the arcade is deliberately absent from the catalogue, so the two
- * pages must not keep separate lists that can drift apart.
+ * Since 2026-10-05 the Arcade's front room is Kiru's games and Neo Dojo
+ * Survivors, right below them (Josh's call); every other game moved to the
+ * archive at /games/archive, linked from the bottom of /games.
+ *
+ * These live here rather than in the games page because /built reads them too:
+ * anything in the arcade, front room or archive, is deliberately absent from
+ * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = [
-  'lantern-night',
-  'night-parade',
-  'tokaido-run',
-  'field-office',
-  'cloth-simulator',
-  'broom-blade',
-  'grove',
-  'pebble-kart',
-  'aureum-snake',
-];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors'];
+
+/** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
+export const ARCADE_ARCHIVE_SLUGS = ['field-office', 'cloth-simulator', 'broom-blade', 'grove', 'pebble-kart', 'aureum-snake'];
+
+/**
+ * Every game on the site, the front room and the archive: what the catalogue,
+ * the search index and the home page's counts treat as a game.
+ */
+export const GAME_SLUGS = [...ARCADE_SLUGS, ...ARCADE_ARCHIVE_SLUGS];
 
 /** Projects with a full write-up on /websites, so they skip the catalogue. */
 // Slugs that live on /websites as a full write-up and are therefore filtered out

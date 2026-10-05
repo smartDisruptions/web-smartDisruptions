@@ -1,6 +1,6 @@
 import { getPublishedPosts } from '@/lib/posts';
 import { marketStormReports } from '@/data/marketStorm';
-import { apps, ARCADE_SLUGS } from '@/data/apps';
+import { apps, GAME_SLUGS } from '@/data/apps';
 import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
 
 /**
@@ -10,12 +10,12 @@ import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
  */
 export default function ReceiptsBand() {
   const builds =
-    projects.length + apps.filter((a) => !(a.slug in PROJECT_APP_SLUGS) && !(ARCADE_SLUGS as readonly string[]).includes(a.slug)).length;
+    projects.length + apps.filter((a) => !(a.slug in PROJECT_APP_SLUGS) && !(GAME_SLUGS as readonly string[]).includes(a.slug)).length;
   const items = [
     `${getPublishedPosts().length} notes from the bench`,
     `${marketStormReports.length} Market Storm reports`,
     `${builds} things built`,
-    `${ARCADE_SLUGS.length} games in the arcade`,
+    `${GAME_SLUGS.length} games in the arcade`,
     'Mistakes included. Always.',
     'Receipts over claims',
   ];

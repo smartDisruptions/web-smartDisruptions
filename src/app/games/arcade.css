@@ -1459,6 +1459,123 @@
   scale: 0.96;
 }
 
+/* ── The door to the archive (the bottom of /games) ─────────────────────── */
+/* One link the size of a cabinet's marquee: what's behind it, then the way in.
+   Amber, so it reads as a different tube from the cabinets above it. */
+.arc-door {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 4rem;
+  padding: 1.6rem 1.4rem 1.5rem;
+  border-radius: 22px;
+  text-decoration: none;
+  color: var(--arc-ink-2);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 30%),
+    linear-gradient(180deg, #161a39 0%, #10132b 100%);
+  border: 1px dashed color-mix(in srgb, var(--arc-amber) 45%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 26px 50px -32px rgba(0, 0, 0, 0.95),
+    0 0 34px -18px color-mix(in srgb, var(--arc-amber) 55%, transparent);
+  transition:
+    translate 0.45s var(--ease-out-expo),
+    border-color 0.3s ease;
+}
+@media (min-width: 40rem) {
+  .arc-door {
+    padding: 2rem 2.2rem 1.9rem;
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .arc-door:hover {
+    translate: 0 -4px;
+  }
+}
+.arc-door:hover {
+  border-color: color-mix(in srgb, var(--arc-amber) 80%, transparent);
+}
+.arc-door-kick {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--arc-cyan-ink);
+}
+.arc-door-title {
+  font-size: clamp(2rem, 7vw, 3.1rem);
+  line-height: 1.05;
+}
+.arc-door-line {
+  max-width: 44rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.arc-door-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--arc-amber-ink);
+}
+.arc-door-go svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* ── The archive's hero: no sign, no scoreboard, one column ──────────────── */
+/* (later in the file than .arc-hero, so it wins at every width) */
+.arc-hero-archive {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'kick'
+    'title'
+    'lead'
+    'back';
+}
+.arc-back {
+  grid-area: back;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  margin-top: 1.5rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--arc-amber-ink);
+  border: 1px solid color-mix(in srgb, var(--arc-amber) 55%, transparent);
+  transition:
+    background-color 0.2s ease,
+    scale 0.12s ease;
+}
+.arc-back:hover {
+  background: color-mix(in srgb, var(--arc-amber) 12%, transparent);
+}
+.arc-back:active {
+  scale: 0.96;
+}
+.arc-back svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.arc-end-link {
+  color: var(--arc-amber-ink);
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
 /* ── The end of the row ─────────────────────────────────────────────────── */
 .arc-end {
   position: relative;
