@@ -7,6 +7,7 @@ import Kanji, { Seal } from '@/components/brand/Kanji';
 import RooftopRun from '@/components/arcade/RooftopRun';
 import RooftopPoster from './Poster';
 import Cabinets, { ArrowIcon } from './Cabinets';
+import MarketFX from './MarketFX';
 import GuildHall from './guild/GuildHall';
 import { LANTERNS, TICKER_INK, WIRE_PATH, ticker } from './market';
 import './arcade.css';
@@ -48,8 +49,9 @@ export default function Arcade() {
   const live = onPage.filter((g) => g.status === 'live').length;
   return (
     <div className="arc">
+      <MarketFX />
       {/* The lantern string */}
-      <div className="arc-lanterns" aria-hidden="true">
+      <div className="arc-lanterns" aria-hidden="true" data-market="">
         <svg className="arc-wire" viewBox="0 0 1000 72" preserveAspectRatio="none">
           <path d={WIRE_PATH} fill="none" stroke="#2c2a3c" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
         </svg>
@@ -65,7 +67,7 @@ export default function Arcade() {
       </div>
 
       <div className="arc-wrap">
-        <header className="arc-hero">
+        <header className="arc-hero" data-market="">
           <Kanji char="遊" className="arc-watermark" />
           <p className="arc-kicker">★ Player One ★</p>
           <h1 className="arc-title font-display">
@@ -104,7 +106,7 @@ export default function Arcade() {
         </header>
 
         {/* Free play: Kiru's Rooftop Run */}
-        <section className="rr" aria-labelledby="rr-title">
+        <section className="rr" aria-labelledby="rr-title" data-market="">
           <Kiru pose="game" className="rr-kiru" />
           <div className="rr-cab">
             <div className="rr-marquee">
@@ -155,7 +157,7 @@ export default function Arcade() {
       </div>
 
       {/* The ticker */}
-      <div className="arc-ticker" aria-hidden="true">
+      <div className="arc-ticker" aria-hidden="true" data-market="">
         <div className="arc-ticker-track" style={{ '--arc-ticker-s': `${TICKER.seconds}s` } as CSSProperties}>
           {['a', 'b'].map((k) => (
             <div key={k} className="arc-ticker-seg">
