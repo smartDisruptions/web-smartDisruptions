@@ -57,6 +57,55 @@
   color: var(--gh-cream);
 }
 
+/* ── Rendered on approach (the site's sd-defer pattern) ──────────────────────
+   The hall is ~2,500 elements of drawn art below the fold. Rendered with the
+   rest of the page it more than doubled /games' load work on a phone (4x CPU,
+   median of five: blocking time 258 ms on main -> 686 ms). Its four big blocks
+   skip style, layout and paint until they near the screen, which brings it
+   back to 315 ms. Each placeholder height is the block's measured height in
+   that layout, and `auto` keeps the real one once a block has rendered, so
+   the page never jumps. Checked: nothing in these blocks paints outside them,
+   so the paint containment this implies clips nothing. */
+.gh-stair,
+.gh-head,
+.gh-floor,
+.gh-exit {
+  content-visibility: auto;
+}
+.gh-stair {
+  contain-intrinsic-block-size: auto 140vw; /* the phone stair is 1.4x as tall as it is wide */
+}
+.gh-head {
+  contain-intrinsic-block-size: auto 590px;
+}
+.gh-floor {
+  contain-intrinsic-block-size: auto 1100px; /* the swipe row */
+}
+.gh-exit {
+  contain-intrinsic-block-size: auto 770px;
+}
+@media (min-width: 37.5rem) {
+  .gh-stair {
+    contain-intrinsic-block-size: auto min(50vw, 500px);
+  }
+}
+@media (min-width: 48rem) {
+  .gh-head {
+    contain-intrinsic-block-size: auto 750px;
+  }
+  .gh-floor {
+    contain-intrinsic-block-size: auto 1950px; /* three machines, then two */
+  }
+  .gh-exit {
+    contain-intrinsic-block-size: auto 590px;
+  }
+}
+@media (min-width: 75rem) {
+  .gh-floor {
+    contain-intrinsic-block-size: auto 1100px; /* one row of five */
+  }
+}
+
 .gh-defs {
   position: absolute;
   width: 0;
@@ -87,7 +136,8 @@
   @supports (animation-timeline: view()) {
     /* The whole hall's own view timeline drives the tint: it rises while the
        hall's top comes up the window (the stair, its entry range) and fades
-       while its bottom leaves (the door, its exit range). An ancestor's
+       as its bottom comes up to the window's (the door, the end of its
+       contain range), so the night below starts clean. An ancestor's
        named timeline: measured, a timeline shared through timeline-scope
        costs Chrome about twice the style passes while scrolling. */
     .gh-world {
@@ -114,7 +164,9 @@
         linear-gradient(180deg, rgba(40, 20, 8, 0.3), rgba(40, 20, 8, 0.55));
       animation: gh-fade-out linear both;
       animation-timeline: --gh-world;
-      animation-range: exit 5% exit 75%;
+      /* gone by the time the hall's bottom edge reaches the window's: the
+         page below the door is night again, not night under firelight */
+      animation-range: contain 70% contain 100%;
     }
   }
 }
