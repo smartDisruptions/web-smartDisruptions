@@ -508,9 +508,9 @@ export const apps: App[] = [
     slug: 'kid-volt-knockout',
     name: 'Kid Volt Knockout',
     description:
-      'A boxing game for phones: Kid Volt against Disco Danny on a rooftop dance floor. Danny punches on the beat, a sparkle shows where he is open, and three knockdowns is a TKO.',
+      'A boxing game I built for phones. Kid Volt vs Disco Danny on a rooftop: he punches on the beat, a sparkle shows where he’s open, and three knockdowns is a TKO.',
     longDescription:
-      'A boxing game for phones, built from a study of the classic arcade boxers. Kid Volt fights Disco Danny on a rooftop dance floor: Danny throws every punch on the beat of the music, a sparkle marks where he is open during his wind-up, and a counter there charges a super punch. Dodge, duck or block, hit him while he is dizzy, and put him down three times for a TKO before the clock runs out.',
+      'A boxing game I built for phones, from a study of the 16-bit boxing classics. Kid Volt fights Disco Danny on a rooftop dance floor. Danny throws every punch on the beat of a disco loop, and during a real wind-up a sparkle marks where he’s open. Punch that spot to counter and charge your super: one charge is a Volt Hook, three is a Supernova. Dodge, duck or hold block, hit him as he sways back to center when he’s dizzy, and put him down three times for a TKO before the fight clock runs out. Every pixel is drawn into a 120 by 140 frame, and every sound is synthesised in the browser.',
     thumbnailUrl: '/images/apps/kid-volt-knockout-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/kid-volt-knockout-1.webp',
@@ -520,7 +520,12 @@ export const apps: App[] = [
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
     category: 'Game',
     status: 'live',
-    outcomes: ['Danny punches on the beat, and a sparkle marks where he is open.'],
+    outcomes: [
+      'Danny punches on the beat: 104 beats a minute to start, 116 after his first knockdown and 128 for the last dance.',
+      'A counter charges half a super, and saving three charges unlocks the Supernova.',
+      'The fight clock starts at 3:00, runs one and a half times faster than real time, and stops while Danny is dizzy.',
+      'Three knockdowns is a TKO, and your fastest win is kept on your device as your best KO time.',
+    ],
     buildDate: '2026-09',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
@@ -530,9 +535,9 @@ export const apps: App[] = [
     slug: 'whack-a-dust-bunny',
     name: 'Whack-a-Dust-Bunny',
     description:
-      'Seventy-five seconds of bonking dust bunnies as they pop up. Golden ones are worth three, helmets take two bonks, and whatever you do, don’t bonk Pip.',
+      'A booth from the chore game I built for my family. Bonk dust bunnies for 75 seconds, grab the golden ones, survive the Horde, and whatever you do, don’t bonk Pip.',
     longDescription:
-      'A whack-a-mole in the Broom & Blade cellar. Dust bunnies pop up out of nine holes and you have seventy-five seconds to bonk them: golden bunnies are worth three, helmeted ones take two bonks, and two bonks in a flash is a DOUBLE BONK. Sneezy bunnies, hoppers, mama bunnies, socks, powers and three surprise events a round keep it changing, and the round ends with the Horde. Pip pops up too. Don’t bonk Pip.',
+      'At home this is a booth in Broom & Blade, the chore game I built for my family: a finished chore earns a ticket, and a ticket buys a round. Here every round is free. Dust bunnies pop out of nine holes in a candlelit cellar and you have 75 seconds to bonk them. Golden ones are worth three, helmets take two bonks, and two bonks in a flash is a DOUBLE BONK. Sneezy bunnies, hoppers, mama bunnies, socks and three surprise events a round keep it changing, your bonks fill the sign for FEVER, and the last twelve seconds bring the Horde. Pip pops up too. Don’t bonk Pip.',
     thumbnailUrl: '/images/apps/whack-a-dust-bunny-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/whack-a-dust-bunny-1.webp',
@@ -542,7 +547,12 @@ export const apps: App[] = [
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
     category: 'Game',
     status: 'live',
-    outcomes: ['Seventy-five seconds, nine holes, and a mouse you must not bonk.'],
+    outcomes: [
+      'A round is 75 seconds across nine holes, and the last 12 are the frenzy, when the Horde arrives: eight bonks turn it to dust for a 10-point bonus.',
+      'Twenty bonks fill the sign (a broken streak knocks four off), and tapping it gives six seconds of FEVER, when every bunny is gold.',
+      'Each round plays three surprise events drawn from four: Golden Rush, Lights Out, Pip’s Cousins and the Conga Line.',
+      'Five brooms, four of them unlocked by playing well, from bonking 50 bunnies in a round to a streak of 40.',
+    ],
     buildDate: '2026-09',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
