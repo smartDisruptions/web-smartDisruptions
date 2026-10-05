@@ -45,6 +45,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/neo-dojo-survivors-2.webp': [1600, 900],
   '/images/apps/neo-dojo-survivors-3.webp': [780, 1688],
   '/images/apps/neo-dojo-survivors-thumbnail.webp': [1200, 630],
+  '/images/apps/path-not-taken-1.webp': [1600, 900],
+  '/images/apps/path-not-taken-2.webp': [1600, 900],
+  '/images/apps/path-not-taken-3.webp': [780, 1688],
+  '/images/apps/path-not-taken-thumbnail.webp': [1200, 630],
   '/images/apps/night-parade-1.webp': [1600, 900],
   '/images/apps/night-parade-2.webp': [1600, 900],
   '/images/apps/night-parade-3.webp': [780, 1688],
@@ -147,6 +151,7 @@ const MARKS: Record<string, string> = {
   'night-parade': '斬', // cut: Kiru cuts each yokai in two
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道
   'neo-dojo-survivors': '守', // defend: Tengu-9 holds the dojo for fifteen minutes
+  'path-not-taken': '岐', // a fork in the road, as in 岐路: the path not taken
 };
 
 export function markFor(slug: string): string {
