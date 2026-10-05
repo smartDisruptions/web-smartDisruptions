@@ -182,27 +182,30 @@ export default function Arcade() {
         <Cabinets games={games} from="arcade" title="The cabinets" titleId="arc-cabinets" />
       </div>
 
-      {/* Downstairs: the Broom & Blade Arcade, Pip's room. */}
-      <GuildHall games={guild} />
+      {/* Downstairs: the Broom & Blade Arcade, Pip's room, and below it the
+          door to the back room (every older cabinet, still playable). */}
+      <GuildHall
+        games={guild}
+        door={
+          archived.length > 0 && (
+            <Link href="/games/archive" className="gh-door">
+              <span className="gh-door-card">
+                <span className="gh-door-kick">The back room</span>
+                <span className="gh-door-title font-display">The archive</span>
+                <span className="gh-door-line">
+                  {archived.length} older cabinets, still free to play: {ARCHIVE_NAMES}.
+                </span>
+                <span className="gh-door-go">
+                  Open the archive
+                  <ArrowIcon />
+                </span>
+              </span>
+            </Link>
+          )
+        }
+      />
 
       <div className="arc-wrap">
-        {/* The door to the back room: every older cabinet, still playable. */}
-        {archived.length > 0 && (
-          <Link href="/games/archive" className="arc-door sd-reveal">
-            <span className="arc-door-kick">The back room</span>
-            <span className="arc-door-title font-display arc-neon" data-tube="amber">
-              The archive
-            </span>
-            <span className="arc-door-line">
-              {archived.length} older cabinets, still free to play: {ARCHIVE_NAMES}.
-            </span>
-            <span className="arc-door-go">
-              Open the archive
-              <ArrowIcon />
-            </span>
-          </Link>
-        )}
-
         <div className="arc-end">
           <p className="arc-end-line">
             <span style={{ color: 'var(--arc-pink-ink)' }}>──</span>{' '}

@@ -1,9 +1,31 @@
 /* ── The Broom & Blade Arcade. Prefix gh- (the hall), gm- (the machines). ───
 
+   Downstairs from the neon market: the guild hall's cellar arcade, after
+   dark. Stone, oak, gold leaf, red-and-cream bunting, warm bulbs, torches.
+
    The hall is an OBJECT, like the neon market above it: the same colours in
-   both themes. Its palette is Broom & Blade's own, taken from the games.
-   Tokens are defined on .gh, so everything inside the room (the machines,
-   Pip) reads them.                                                         */
+   both site themes. Its palette is Broom & Blade's own, taken from the games.
+   Tokens are defined on .gh (the contract), and on .gh-world, the wrapper
+   that also holds the stair down and the door out.
+
+   Contrast (WCAG, measured 2026-10-05 against the BRIGHTEST pixel behind
+   the text at 390, 768 and 1440 wide, not a nominal ground): the lead,
+   parch #edddb5 on the torchlit stone, 8.5:1 at worst; the kicker, gold
+   #e8b24a, 5.4:1 at worst. On solid grounds: the ticket stub #1a120b on
+   gold 9.6:1; Pip's bubble #2a1c10 on #f6ead0 13.8:1; "OW! Not me!" white
+   on blood #8f2b1c 8.3:1; the archive note #2a1c10 on parch 12.3:1, its
+   red lines (blood on parch) 6.2:1, its title 13.4:1. The neon signs are
+   near-white cores on navy, like the market's.
+
+   Motion: opacity and transform only, on the compositor.
+   - Scroll timelines (inside @supports, and only without reduced motion):
+     the tint, the torches lighting, the neon's spill fading, Kiru's bow,
+     the sign swinging in. Without them the room is simply finished and lit.
+   - Loops (loops.css, generated): few, long, shared, on one 16 s clock;
+     gated on [data-live] (HallFX), held while the page scrolls, absent
+     under reduced motion. Nothing is hidden by stopping them.             */
+
+.gh-world,
 .gh {
   --gh-night: #1a120b;
   --gh-wood: #2a1c10;
@@ -18,12 +40,1266 @@
   --gh-rune: #9b6bd1;
   --gh-blood: #8f2b1c;
 
+  /* The cellar wall: two courses of dressed stone, a 120×64 tile, drawn
+     once. No noise filters (they are slow to raster on a phone). */
+  --gh-masonry: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='64'%3E%3Crect width='120' height='64' fill='%23170f09'/%3E%3Cg fill='%23332418'%3E%3Crect x='1.5' y='1.5' width='57' height='29' rx='3'/%3E%3Crect x='31.5' y='33.5' width='57' height='29' rx='3'/%3E%3C/g%3E%3Cg fill='%232d2016'%3E%3Crect x='61.5' y='1.5' width='57' height='29' rx='3'/%3E%3Crect x='-28.5' y='33.5' width='57' height='29' rx='3'/%3E%3Crect x='91.5' y='33.5' width='57' height='29' rx='3'/%3E%3C/g%3E%3Cg fill='%23fff' opacity='.045'%3E%3Crect x='3' y='2' width='54' height='2' rx='1'/%3E%3Crect x='63' y='2' width='54' height='2' rx='1'/%3E%3Crect x='33' y='34' width='54' height='2' rx='1'/%3E%3Crect x='-27' y='34' width='54' height='2' rx='1'/%3E%3Crect x='93' y='34' width='54' height='2' rx='1'/%3E%3C/g%3E%3Cg fill='%23000' opacity='.22'%3E%3Crect x='3' y='27' width='54' height='3' rx='1'/%3E%3Crect x='63' y='27' width='54' height='3' rx='1'/%3E%3Crect x='33' y='59' width='54' height='3' rx='1'/%3E%3Crect x='-27' y='59' width='54' height='3' rx='1'/%3E%3Crect x='93' y='59' width='54' height='3' rx='1'/%3E%3C/g%3E%3Ccircle cx='22' cy='14' r='2' fill='%23000' opacity='.18'/%3E%3Ccircle cx='76' cy='48' r='1.6' fill='%23000' opacity='.18'/%3E%3Ccircle cx='98' cy='12' r='1.2' fill='%23fff' opacity='.05'/%3E%3C/svg%3E");
+  /* A flame: a teardrop with its base at the bottom of the box. */
+  --gh-flame-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 64'%3E%3CradialGradient id='g' cx='.5' cy='.78' r='.62'%3E%3Cstop offset='0' stop-color='%23ffd27a'/%3E%3Cstop offset='.55' stop-color='%23ff8a2a'/%3E%3Cstop offset='1' stop-color='%23d5401a'/%3E%3C/radialGradient%3E%3Cpath d='M20 0C24 14 39 25 38 42A18 18 0 0 1 2 42C1 30 11 22 13 10C15 17 18 20 20 0Z' fill='url(%23g)'/%3E%3C/svg%3E");
+  --gh-flame-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 64'%3E%3CradialGradient id='g' cx='.5' cy='.8' r='.6'%3E%3Cstop offset='0' stop-color='%23fff2bf'/%3E%3Cstop offset='.6' stop-color='%23ffc04d'/%3E%3Cstop offset='1' stop-color='%23ff9a2e'/%3E%3C/radialGradient%3E%3Cpath d='M20 2C25 16 38 27 37 43A17 17 0 0 1 3 43C2 29 15 20 20 2Z' fill='url(%23g)'/%3E%3C/svg%3E");
+  --gh-flame-c: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 64'%3E%3Cpath d='M20 6C25 20 36 30 35 45A15 15 0 0 1 5 45C4 32 16 24 20 6Z' fill='%23fffbea'/%3E%3C/svg%3E");
+  /* A chain: one oval link face on, one edge on, 10×16, tiled down. */
+  --gh-chain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16'%3E%3Crect x='1.6' y='-3' width='6.8' height='10' rx='3.4' fill='none' stroke='%23736a62' stroke-width='2'/%3E%3Crect x='4' y='6' width='2' height='11' rx='1' fill='%234a433d'/%3E%3Crect x='1.6' y='13' width='6.8' height='10' rx='3.4' fill='none' stroke='%23736a62' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+.gh-world {
   position: relative;
   z-index: 1;
-  padding: 4rem 1rem;
   color: var(--gh-cream);
-  background: var(--gh-night);
 }
-.gh-pip {
-  width: 120px;
+
+.gh-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ── The scroll hold ──────────────────────────────────────────────────────
+   While the page scrolls, every running loop costs Chrome a style pass per
+   frame (it runs a main frame per scrolling frame). HallFX sets data-hold on
+   .gh-world and .gh for the length of a scroll; every loop in the room
+   pauses on it. !important, because an animation shorthand in a more
+   specific rule would reset the play state. Scroll timelines are never
+   held: they ARE the scrolling. */
+.gh-world[data-hold] .gh-loop {
+  animation-play-state: paused !important;
+}
+
+/* ── The tint: firelight over the whole window ───────────────────────────── */
+/* Fixed, under everything in the hall (z-index -1 inside .gh-world's stacking
+   context) and over the neon above it: as the stair comes up, the market
+   itself warms. Opacity only; two nested layers multiply, so one can fade in
+   as the hall arrives and the other out as it leaves. */
+.gh-tint {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* The whole hall's own view timeline drives the tint: it rises while the
+       hall's top comes up the window (the stair, its entry range) and fades
+       while its bottom leaves (the door, its exit range). An ancestor's
+       named timeline: measured, a timeline shared through timeline-scope
+       costs Chrome about twice the style passes while scrolling. */
+    .gh-world {
+      view-timeline: --gh-world;
+    }
+    .gh-stair {
+      view-timeline: --gh-stair;
+    }
+    .gh-tint {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      animation: gh-fade-in linear both;
+      animation-timeline: --gh-world;
+      animation-range: entry 8% entry 100%;
+    }
+    .gh-tint-in {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(150% 80% at 50% 118%, rgba(255, 146, 52, 0.5), rgba(255, 112, 36, 0.2) 46%, transparent 74%),
+        linear-gradient(180deg, rgba(40, 20, 8, 0.3), rgba(40, 20, 8, 0.55));
+      animation: gh-fade-out linear both;
+      animation-timeline: --gh-world;
+      animation-range: exit 5% exit 75%;
+    }
+  }
+}
+@keyframes gh-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes gh-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ── The threshold: the stair down from the neon ─────────────────────────── */
+.gh-stair {
+  position: relative;
+  margin-top: 4.5rem;
+  /* the stairwell's wall rises out of the night: neon-cold at the top,
+     firelit at the foot */
+  background:
+    linear-gradient(180deg, #0a0b1a 0, rgba(10, 11, 26, 0) 26%),
+    linear-gradient(180deg, rgba(30, 32, 78, 0.6), rgba(30, 32, 78, 0.2) 45%, rgba(26, 18, 11, 0) 70%),
+    linear-gradient(rgba(8, 5, 3, 0.5), rgba(8, 5, 3, 0.5)),
+    var(--gh-masonry) 0 0 / 120px 64px,
+    #1d140d;
+}
+.gh-spill {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(100%, 64rem);
+  height: 70%;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 46% at 72% 16%, rgba(255, 79, 154, 0.3), transparent 72%),
+    radial-gradient(34% 40% at 88% 30%, rgba(61, 225, 255, 0.14), transparent 72%);
+}
+.gh-stair-box {
+  position: relative;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+.gh-stair-phone {
+  width: 100%;
+  --u: calc(100cqw / 400);
+}
+.gh-stair-wide {
+  display: none;
+  width: min(100%, 1000px);
+  --u: calc(100cqw / 1000 * 1.12);
+}
+@media (min-width: 34rem) {
+  .gh-stair-phone {
+    display: none;
+  }
+  .gh-stair-wide {
+    display: block;
+  }
+}
+.gh-stair-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.gh-pools {
+  position: absolute;
+  inset: 0;
+}
+.gh-pool {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--u) * 330);
+  aspect-ratio: 1;
+  translate: -50% -56%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 176, 86, 0.5), rgba(255, 140, 60, 0.18) 50%, transparent);
+}
+.gh-stair-torch {
+  left: var(--x);
+  top: var(--y);
+}
+
+/* The neon DOWNSTAIRS sign: the last tube before the firelight. */
+.gh-neon {
+  position: absolute;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.15em;
+  padding: 0.4em 0.6em;
+  border-radius: 14px;
+  font-size: calc(var(--u) * 9);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 79, 154, 0.16), transparent 70%),
+    linear-gradient(180deg, #141332, #0b0a1d);
+  border: 2px solid #ffc6e2;
+  box-shadow:
+    0 0 0 1px rgba(255, 79, 154, 0.5),
+    0 0 12px rgba(255, 79, 154, 0.65),
+    0 0 34px rgba(255, 79, 154, 0.32),
+    inset 0 0 14px rgba(255, 79, 154, 0.32),
+    0 24px 40px -22px rgba(0, 0, 0, 0.9);
+}
+/* its two wires up into the dark */
+.gh-neon::before,
+.gh-neon::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  width: 2px;
+  height: 4.5em;
+  background: linear-gradient(0deg, #4c4a66, rgba(76, 74, 102, 0));
+}
+.gh-neon::before {
+  left: 18%;
+}
+.gh-neon::after {
+  right: 18%;
+}
+.gh-neon-sub {
+  font-size: 1em;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;
+  text-transform: uppercase;
+}
+.gh-neon-main {
+  font-family: var(--font-display);
+  font-size: 2.6em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.gh-neon-arrow {
+  position: absolute;
+  right: -0.9em;
+  bottom: -1.5em;
+  width: 3.4em;
+  height: 3.4em;
+  overflow: visible;
+  fill: none;
+  stroke: #e6fcff;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px #3de1ff) drop-shadow(0 0 7px rgba(61, 225, 255, 0.85));
+}
+.gh-stair-phone .gh-neon {
+  font-size: calc(var(--u) * 8.6);
+}
+.gh-stair-phone .gh-neon-main {
+  font-size: 1.95em;
+}
+.gh-stair-phone .gh-neon-sub {
+  font-size: 1.05em;
+}
+.gh-stair-phone .gh-neon-arrow {
+  right: auto;
+  left: -1.6em;
+  bottom: -2.6em;
+  rotate: 90deg;
+}
+
+.gh-kiru {
+  position: absolute;
+}
+.gh-kiru svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.gh-kiru .gh-kiru-wave {
+  display: none;
+}
+
+/* ── Torches (the stair's, the sign's, the door's) ───────────────────────── */
+/* A torch is a point (the mouth of its cup); everything is drawn round it in
+   --u units, so one rule set serves every size. */
+.gh-torch {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.gh-sconce {
+  position: absolute;
+  left: calc(var(--u) * -30);
+  top: calc(var(--u) * -6);
+  width: calc(var(--u) * 60);
+  height: calc(var(--u) * 60);
+  overflow: visible;
+}
+.gh-fire {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.gh-halo {
+  position: absolute;
+  left: calc(var(--u) * -46);
+  top: calc(var(--u) * -78);
+  width: calc(var(--u) * 92);
+  height: calc(var(--u) * 92);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 196, 96, 0.62), rgba(255, 140, 50, 0.2) 50%, transparent);
+}
+.gh-flame {
+  position: absolute;
+  bottom: calc(var(--u) * -4);
+  left: calc(var(--u) * -14);
+  width: calc(var(--u) * 28);
+  height: calc(var(--u) * 46);
+  background: var(--gh-flame-a) 50% 100% / 100% 100% no-repeat;
+  transform-origin: 50% 92%;
+}
+.gh-flame-b {
+  left: calc(var(--u) * -10);
+  width: calc(var(--u) * 20);
+  height: calc(var(--u) * 32);
+  background-image: var(--gh-flame-b);
+}
+.gh-flame-c {
+  left: calc(var(--u) * -5.5);
+  width: calc(var(--u) * 11);
+  height: calc(var(--u) * 17);
+  background-image: var(--gh-flame-c);
+}
+.gh-burn,
+.gh-embers {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+/* sparks show only while they rise (loops.css) */
+.gh-embers {
+  opacity: 0;
+}
+.gh-ember {
+  position: absolute;
+  left: calc(var(--u) * -1.6);
+  top: calc(var(--u) * -30);
+  width: calc(var(--u) * 3.2);
+  height: calc(var(--u) * 3.2);
+  border-radius: 50%;
+  background: #ffe2a0;
+  box-shadow: 0 0 calc(var(--u) * 5) calc(var(--u) * 1) rgba(255, 150, 60, 0.9);
+}
+.gh-ember-b {
+  left: calc(var(--u) * 3);
+  top: calc(var(--u) * -22);
+  scale: 0.75;
+}
+
+/* ── The threshold's scroll choreography ─────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* Each torch lights as it comes up the screen: a spark, a flare, a flame.
+       The light on the wall comes up with it. */
+    .gh-stair-torch .gh-fire {
+      animation: gh-ignite linear both;
+      animation-timeline: view();
+      animation-range: cover 12% cover 30%;
+    }
+    .gh-pool {
+      animation: gh-fade-in linear both;
+      animation-timeline: view();
+      animation-range: cover 24% cover 40%;
+    }
+    /* The neon's spill on the wall fades as the firelight takes over. */
+    .gh-spill {
+      animation: gh-fade-out linear both;
+      animation-timeline: --gh-stair;
+      animation-range: cover 40% cover 80%;
+    }
+    /* The sign buzzes on as it comes into view. */
+    .gh-neon {
+      animation: gh-neon-on linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 40%;
+    }
+    /* Kiru waves you down, then bows as you go. */
+    .gh-kiru .gh-kiru-wave {
+      display: block;
+      position: absolute;
+      inset: 0 auto auto 0;
+      animation: gh-fade-out linear both;
+      animation-timeline: view();
+      animation-range: cover 44% cover 50%;
+    }
+    .gh-kiru-bow {
+      animation: gh-fade-in linear both;
+      animation-timeline: view();
+      animation-range: cover 44% cover 50%;
+    }
+  }
+}
+@keyframes gh-ignite {
+  0% {
+    opacity: 0;
+    scale: 0.12;
+  }
+  45% {
+    opacity: 1;
+    scale: 1.3;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+@keyframes gh-neon-on {
+  0% {
+    opacity: 0.12;
+  }
+  18% {
+    opacity: 0.9;
+  }
+  24% {
+    opacity: 0.2;
+  }
+  38% {
+    opacity: 1;
+  }
+  46% {
+    opacity: 0.45;
+  }
+  58%,
+  100% {
+    opacity: 1;
+  }
+}
+/* ── The room ────────────────────────────────────────────────────────────── */
+.gh {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  scroll-margin-top: 4.5rem;
+  color: var(--gh-cream);
+  background:
+    linear-gradient(180deg, rgba(10, 6, 3, 0.55), transparent 18%, transparent 82%, rgba(10, 6, 3, 0.4)),
+    var(--gh-masonry) 0 0 / 120px 64px,
+    var(--gh-night);
+}
+
+/* The ceiling: an oak beam, and under it the booths' carnival awning, red
+   and cream stripes ending in scallops with a bulb at every tip. The stripes
+   and the scallop mask are both centred on the room, and the bulbs are
+   placed from the middle out, so all three line up at any width. */
+.gh-ceiling {
+  --scallop: 46px;
+  position: relative;
+  z-index: 2;
+  height: 5.6rem;
+  pointer-events: none;
+}
+.gh-beam {
+  position: absolute;
+  inset: -1.25rem 0 auto;
+  height: 3.25rem;
+  background:
+    linear-gradient(180deg, rgba(255, 214, 150, 0.2), transparent 18%, transparent 66%, rgba(0, 0, 0, 0.5)),
+    repeating-linear-gradient(90deg, transparent 0 236px, #221c18 236px 252px, transparent 252px 480px),
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 6px, rgba(255, 220, 170, 0.05) 6px 7px, transparent 7px 11px),
+    linear-gradient(180deg, #6a4422, #47301a 55%, #2c1c0d);
+  background-position: calc(50% + 120px) 0;
+  box-shadow:
+    0 1px 0 rgba(255, 220, 160, 0.12) inset,
+    0 18px 26px -10px rgba(0, 0, 0, 0.75);
+}
+.gh-awning {
+  position: absolute;
+  inset: 2rem 0 auto;
+  height: 3.3rem;
+  background:
+    linear-gradient(180deg, #e8b24a 0 4px, #8a5a1a 4px 6px, transparent 6px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 35%, rgba(0, 0, 0, 0.3)),
+    repeating-linear-gradient(90deg, #a8392a 0 var(--scallop), #efe1bd var(--scallop) calc(2 * var(--scallop)))
+      calc(50% + var(--scallop)) 0 / calc(2 * var(--scallop)) 100%;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--scallop) / 2) no-repeat,
+    radial-gradient(circle at 50% 0, #000 calc(var(--scallop) / 2 - 0.5px), transparent calc(var(--scallop) / 2))
+      calc(50% + var(--scallop) / 2) 100% / var(--scallop) calc(var(--scallop) / 2) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--scallop) / 2) no-repeat,
+    radial-gradient(circle at 50% 0, #000 calc(var(--scallop) / 2 - 0.5px), transparent calc(var(--scallop) / 2))
+      calc(50% + var(--scallop) / 2) 100% / var(--scallop) calc(var(--scallop) / 2) repeat-x;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55));
+}
+.gh-awning-g {
+  position: absolute;
+  inset: 0;
+}
+.gh-awning-g > span {
+  position: absolute;
+  left: calc(50% + (var(--k) + 0.5) * var(--scallop));
+  top: calc(2rem + 3.3rem);
+  width: 24px;
+  height: 24px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffdf0 0 16%, #ffe08a 27%, rgba(255, 196, 92, 0.55) 44%, rgba(255, 160, 50, 0) 70%);
+}
+/* The festoon over the machines: warm bulbs and pennants on one wire. */
+.gh-festoon {
+  position: relative;
+  height: 7rem;
+  pointer-events: none;
+}
+.gh-festoon-wide {
+  display: none;
+}
+@media (min-width: 48rem) {
+  .gh-festoon-wide {
+    display: block;
+  }
+  .gh-festoon-phone {
+    display: none;
+  }
+}
+.gh-wire {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 92px;
+  overflow: visible;
+}
+.gh-wire path {
+  fill: none;
+  stroke: #120c08;
+  stroke-width: 1.8;
+  vector-effect: non-scaling-stroke;
+}
+.gh-flag {
+  position: absolute;
+  width: 22px;
+  height: 30px;
+  translate: -50% -1px;
+  transform-origin: 50% 0;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(90deg, #a33724, #c4492e 50%, #8f2b1c);
+}
+.gh-flag[data-c='cream'] {
+  background: linear-gradient(90deg, #d8c79d, #f3e6c4 50%, #cdbb90);
+}
+.gh-flag::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.28);
+}
+.gh-festoon-g {
+  position: absolute;
+  inset: 0;
+}
+.gh-light {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  translate: -50% 0;
+  transform-origin: 50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 55%, #fffbe6 0 13%, #ffd88a 23%, rgba(255, 190, 90, 0.5) 40%, rgba(255, 160, 60, 0) 68%);
+}
+.gh-light::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  width: 5px;
+  height: 7px;
+  translate: -50% 0;
+  border-radius: 1.5px;
+  background: #2a2420;
+}
+/* ── The head: the sign, Pip, and what the room is ───────────────────────── */
+.gh-head {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding: 0 1rem 3.5rem;
+  text-align: center;
+}
+/* The torchlight on the wall is centred on the signboard, so the words
+   under it sit on darker stone (measured: the lead >= 7:1, the kicker
+   >= 5:1 against the brightest stone behind them, at every width). */
+.gh-walllight {
+  position: absolute;
+  left: 50%;
+  top: -10rem;
+  width: min(150vw, 70rem);
+  height: 36rem;
+  translate: -50% 0;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 168, 80, 0.3), rgba(255, 140, 60, 0.08) 60%, transparent);
+}
+@media (min-width: 48rem) {
+  .gh-walllight {
+    top: -9rem;
+    height: 46rem;
+  }
+}
+.gh-kicker {
+  position: relative;
+  z-index: 2;
+  margin-top: 2.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gh-gold);
+  text-shadow: 0 1px 0 #000, 0 0 12px rgba(232, 178, 74, 0.45);
+}
+
+.gh-sign {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 50rem);
+  margin-top: 0.4rem;
+  container-type: inline-size;
+}
+.gh-sign-swing {
+  position: relative;
+  padding-top: clamp(3.4rem, 9cqw, 4.4rem);
+  /* it hangs from the beam, above the top of this box */
+  transform-origin: 50% -5rem;
+}
+.gh-chain {
+  position: absolute;
+  top: -5rem;
+  width: 10px;
+  height: calc(5rem + clamp(3.4rem, 9cqw, 4.4rem) + 5.4cqw);
+  translate: -50% 0;
+  background: var(--gh-chain) 0 0 / 10px 16px repeat-y;
+}
+.gh-chain-l {
+  left: 27.5%;
+}
+.gh-chain-r {
+  left: 72.5%;
+}
+.gh-board {
+  position: relative;
+}
+.gh-title {
+  margin: 0;
+  line-height: 0;
+}
+.gh-sign-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.55));
+}
+.gh-bulbs,
+.gh-bulbs-g {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.gh-bulbs-g > span {
+  position: absolute;
+  width: 4.2cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffdf0 0 14%, #ffe08a 24%, rgba(255, 196, 92, 0.6) 40%, rgba(255, 160, 50, 0) 68%);
+}
+/* Pip on the board's top edge: his seat (y = 150 of his 200) on the edge,
+   which is 44 of the art's 344 units down, i.e. 5.5cqw. */
+.gh-sitter {
+  position: absolute;
+  left: 79cqw;
+  top: calc(5.5cqw - 0.75 * 19cqw);
+  width: 19cqw;
+}
+.gh-sitter-pip {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.gh-bubble {
+  position: absolute;
+  z-index: 2;
+  padding: 0.45em 0.8em;
+  border-radius: 999px;
+  font-size: clamp(0.7rem, 2.6cqw, 0.92rem);
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: #2a1c10;
+  background: #f6ead0;
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.25),
+    0 10px 20px -8px rgba(0, 0, 0, 0.6);
+}
+.gh-bubble::after {
+  content: '';
+  position: absolute;
+  width: 0.8em;
+  height: 0.8em;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.gh-bubble-hi {
+  right: 62%;
+  bottom: 72%;
+}
+.gh-bubble-hi::after {
+  right: 0.9em;
+  top: calc(100% - 0.1em);
+}
+
+.gh-lead {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+  margin-top: 1rem;
+  font-size: 1.06rem;
+  line-height: 1.7;
+  color: var(--gh-parch);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+@media (min-width: 40rem) {
+  .gh-lead {
+    font-size: 1.16rem;
+  }
+}
+
+/* The playful line, on a carnival ticket stub. */
+.gh-ticket {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.1rem;
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.6rem 0.65rem;
+  rotate: -2deg;
+  color: var(--gh-night);
+  background:
+    radial-gradient(circle at 0 50%, transparent 0.55rem, var(--gh-gold) 0.6rem) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 50%, transparent 0.55rem, var(--gh-gold) 0.6rem) right / 51% 100% no-repeat;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+}
+.gh-ticket::before {
+  content: '';
+  position: absolute;
+  inset: 0.3rem 0.95rem;
+  border: 1.5px dashed rgba(26, 18, 11, 0.45);
+  border-radius: 3px;
+  pointer-events: none;
+}
+.gh-ticket-big {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.gh-ticket-line {
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+/* Banners and the sign's torches stand either side of it on a wide screen. */
+.gh-banner {
+  display: none;
+}
+.gh-head-torch {
+  display: none;
+  --u: 1px;
+  top: 13rem;
+}
+@media (min-width: 40rem) {
+  .gh-head-torch {
+    display: block;
+  }
+}
+.gh-head-torch-l {
+  left: 7%;
+}
+.gh-head-torch-r {
+  right: 7%;
+}
+@media (min-width: 64rem) {
+  .gh-banner {
+    display: block;
+    position: absolute;
+    top: 1.5rem;
+    width: 7.5rem;
+    pointer-events: none;
+    transform-origin: 50% 0;
+  }
+  .gh-banner svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .gh-banner-l {
+    left: max(1.5rem, calc(50% - 38rem));
+  }
+  .gh-banner-r {
+    right: max(1.5rem, calc(50% - 38rem));
+  }
+  .gh-head-torch {
+    --u: 1.25px;
+    top: 15rem;
+  }
+  .gh-head-torch-l {
+    left: max(11rem, calc(50% - 29rem));
+  }
+  .gh-head-torch-r {
+    right: max(11rem, calc(50% - 29rem));
+  }
+}
+
+/* Dust drifting in the torchlight: three layers, each drifting as one
+   (loops.css), the motes still within them. */
+.gh-motes {
+  position: absolute;
+  z-index: -1;
+  inset: -2rem -22% 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.gh-motes-g {
+  position: absolute;
+  inset: 0;
+}
+.gh-motes-g > span {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 238, 196, 0.95), rgba(255, 214, 150, 0) 72%);
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The sign swings in on its chains as it arrives (its sway is a loop). */
+  @supports (animation-timeline: view()) {
+    .gh-sign-drop {
+      transform-origin: 50% -5rem;
+      animation: gh-drop linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 34%;
+    }
+    /* Pip hops onto the sign. Never scaled small: a Pip is drawn at 56px
+       or more in every frame he's visible (his face needs it). */
+    .gh-sitter {
+      transform-origin: 50% 78%;
+      animation: gh-hop-on linear both;
+      animation-timeline: view();
+      animation-range: entry 60% cover 38%;
+    }
+    .gh-bubble-hi {
+      transform-origin: 85% 100%;
+      animation: gh-pop linear both;
+      animation-timeline: view();
+      animation-range: cover 30% cover 40%;
+    }
+  }
+}
+@keyframes gh-drop {
+  from {
+    translate: 0 -3.5rem;
+    rotate: -4deg;
+  }
+  to {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+@keyframes gh-hop-on {
+  0% {
+    opacity: 0;
+    translate: 0 -34%;
+    scale: 0.9;
+  }
+  55% {
+    opacity: 1;
+    translate: 0 5%;
+    scale: 1.03 0.96;
+  }
+  75% {
+    translate: 0 -3%;
+    scale: 1;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+@keyframes gh-pop {
+  0% {
+    opacity: 0;
+    scale: 0.3;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.12;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* ── The floor and the machines on it ────────────────────────────────────── */
+.gh-floor {
+  position: relative;
+}
+.gh-machines {
+  position: relative;
+  z-index: 2;
+}
+.gh-ground {
+  position: relative;
+  margin-top: -2.5rem;
+}
+.gh-baseboard {
+  position: relative;
+  height: 1.6rem;
+  background:
+    linear-gradient(180deg, #9a7044 0 2px, #5a3a1c 2px 5px, #3f2812 5px, #2a1a0b);
+  box-shadow: 0 -10px 18px -6px rgba(0, 0, 0, 0.5);
+}
+.gh-floor-art {
+  display: block;
+  width: 100%;
+  height: clamp(5.5rem, 14vw, 10rem);
+}
+/* Pip's mouse hole, cut through the baseboard into the wall beside the
+   archive's door (nothing ever stands there, at any width). */
+.gh-hole-spot {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  bottom: 0;
+}
+.gh-hole {
+  --pip: 3.9rem;
+  position: relative;
+  width: 5.2rem;
+  height: 4.9rem;
+}
+.gh-hole-mouth {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0;
+  height: 3.6rem;
+  border-radius: 2rem 2rem 0 0;
+  background: radial-gradient(ellipse 80% 90% at 50% 100%, #000 40%, #120a05);
+}
+.gh-hole-arch {
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0;
+  height: 3.85rem;
+  border: 5px solid #7a5530;
+  border-bottom: 0;
+  border-radius: 2.3rem 2.3rem 0 0;
+  pointer-events: none;
+  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.35);
+}
+.gh-hole-btn {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 2.6rem 2.6rem 0.5rem 0.5rem;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 0.12s ease;
+}
+.gh-hole-btn:active {
+  scale: 0.96;
+}
+.gh-hole-btn:focus-visible {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 3px;
+}
+.gh-hole-pip {
+  position: absolute;
+  left: 50%;
+  width: var(--pip);
+  translate: -50% 0;
+}
+.gh-hole-pipsvg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* both poses stand in the hole: feet (y = 188 of 200) on its sill */
+.gh-hole-rest,
+.gh-hole-flinch {
+  bottom: calc(-0.06 * var(--pip));
+}
+.gh-hole-flinch {
+  opacity: 0;
+}
+.gh-hole[data-mood='ow'] .gh-hole-rest {
+  opacity: 0;
+}
+.gh-hole[data-mood='ow'] .gh-hole-flinch {
+  opacity: 1;
+}
+.gh-ow {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.4rem);
+  translate: -50% 0;
+  padding: 0.4em 0.75em;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--gh-blood);
+  box-shadow: 0 8px 16px -6px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.gh-ow:empty {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-hole[data-mood='ow'] .gh-hole-flinch {
+    animation: gh-flinch 0.35s ease-out;
+  }
+  .gh-hole[data-mood='back'] .gh-hole-rest {
+    animation: gh-peekback 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+  }
+  .gh-ow:not(:empty) {
+    animation: gh-pop 0.3s ease-out;
+  }
+}
+@keyframes gh-flinch {
+  0% {
+    translate: -50% 0;
+  }
+  20% {
+    translate: calc(-50% - 5px) 2px;
+  }
+  45% {
+    translate: calc(-50% + 4px) 0;
+  }
+  70% {
+    translate: calc(-50% - 2px) 1px;
+  }
+  100% {
+    translate: -50% 0;
+  }
+}
+@keyframes gh-peekback {
+  from {
+    translate: -50% 40%;
+  }
+  to {
+    translate: -50% 0;
+  }
+}
+
+/* ── The way out: the archive's door ─────────────────────────────────────── */
+.gh-exit {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  padding: 4.5rem 1rem 0;
+  background:
+    linear-gradient(180deg, rgba(10, 6, 3, 0.5), transparent 20%),
+    radial-gradient(50% 30rem at 50% 18rem, rgba(255, 158, 70, 0.18), transparent 75%),
+    var(--gh-masonry) 0 0 / 120px 64px,
+    var(--gh-night);
+}
+.gh-doorway {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -1.4rem;
+  display: grid;
+  grid-template-areas: 'note' 'door';
+  justify-items: center;
+  gap: 4.75rem;
+  width: min(100%, 44rem);
+}
+.gh-door-spot {
+  grid-area: door;
+  position: relative;
+  /* the hole stands in this, left of the door: door and hole are centred
+     together on a phone */
+  padding-left: 5.9rem;
+}
+.gh-door {
+  grid-area: note;
+}
+@media (min-width: 48rem) {
+  .gh-doorway {
+    grid-template-areas: 'door note';
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 5.5rem;
+    width: min(100%, 50rem);
+    padding-top: 2rem;
+  }
+  .gh-door-spot {
+    align-self: end;
+  }
+}
+.gh-door-neon {
+  position: absolute;
+  bottom: calc(100% + 1rem);
+  left: 50%;
+  translate: -50% 0;
+  white-space: nowrap;
+  padding: 0.25rem 0.9rem 0.35rem;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #121330, #0a0b1c);
+  border: 2px solid #b8f4ff;
+  box-shadow:
+    0 0 0 1px rgba(61, 225, 255, 0.45),
+    0 0 10px rgba(61, 225, 255, 0.6),
+    0 0 26px rgba(61, 225, 255, 0.3),
+    inset 0 0 12px rgba(61, 225, 255, 0.3);
+}
+.gh-door-way {
+  position: relative;
+  display: block;
+  width: min(15rem, 54vw);
+  aspect-ratio: 300 / 420;
+}
+.gh-door-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gh-door-leaf {
+  position: absolute;
+  left: 15.33%;
+  top: 10.95%;
+  width: 69.33%;
+  height: 89.05%;
+  transform-origin: 0 50%;
+  transition: transform 0.7s var(--ease-out-expo);
+}
+.gh-door-leaf-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* The whole door is the link: its ::before is stretched over the doorway
+   (the containing block is .gh-doorway, so the link itself must stay
+   untransformed: the note's tilt lives on the card inside it). */
+.gh-door {
+  position: static;
+  display: block;
+  max-width: 26rem;
+  text-decoration: none;
+  color: #2a1c10;
+}
+.gh-door::before {
+  content: '';
+  position: absolute;
+  inset: -0.6rem;
+  border-radius: 14px;
+}
+@media (min-width: 48rem) {
+  /* take in the neon sign that rides above the door */
+  .gh-door::before {
+    top: -2.6rem;
+  }
+}
+.gh-door:focus-visible {
+  outline: none;
+}
+.gh-door:focus-visible::before {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 2px;
+}
+.gh-door-card {
+  position: relative;
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.1rem 1.25rem 1.2rem;
+  border-radius: 6px;
+  text-align: left;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #f6ead0, transparent 70%),
+    var(--gh-parch);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 18px 30px -16px rgba(0, 0, 0, 0.85);
+  rotate: 1deg;
+  transition:
+    rotate 0.4s var(--ease-out-expo),
+    scale 0.12s ease;
+}
+.gh-door:hover .gh-door-card {
+  rotate: 0deg;
+}
+.gh-door:active .gh-door-card {
+  scale: 0.985;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-doorway:has(.gh-door:hover) .gh-door-leaf,
+  .gh-doorway:has(.gh-door:focus-visible) .gh-door-leaf {
+    transform: perspective(700px) rotateY(-38deg);
+  }
+}
+.gh-door-kick {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gh-blood);
+}
+.gh-door-title {
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  line-height: 1.05;
+  color: #1f140a;
+}
+.gh-door-line {
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.gh-door-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gh-blood);
+}
+.gh-door-go svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.gh-door-torch {
+  --u: 0.95px;
+  top: 40%;
+}
+.gh-door-torch-l {
+  left: -14%;
+}
+.gh-door-torch-r {
+  right: -11%;
+}
+@media (min-width: 48rem) {
+  .gh-door-torch-r {
+    right: -14%;
+  }
+}
+.gh-exit-floor {
+  position: relative;
+  justify-self: stretch;
+  margin-inline: -1rem;
+  border-top: 1.4rem solid #3f2812;
+}
+/* the cellar floor runs out into the dark, and the night takes the page
+   back before the town's skyline */
+.gh-exit-floor::after {
+  content: '';
+  position: absolute;
+  inset: 30% 0 0;
+  background: linear-gradient(180deg, rgba(10, 11, 26, 0), #0a0b1a);
 }
