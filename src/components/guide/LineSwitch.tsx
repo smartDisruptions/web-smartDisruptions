@@ -20,7 +20,7 @@ const SCENES: Record<
     hot: 0,
     bill: 'Who pays: your plan, one flat price',
     caption:
-      "Claude helped you make the game, and your plan paid for that. Once it's out, your players are only playing a game. Nothing they do calls Claude.",
+      "This is most games. Claude helped you make it, and your plan paid for that. Once it's out, players are only playing a game. Nothing they do calls Claude.",
   },
   run: {
     nodes: [
@@ -36,7 +36,7 @@ const SCENES: Record<
     hot: 2,
     bill: 'Who pays: you, for every request',
     caption:
-      'Now the game itself needs Claude to work. Every time a player starts that conversation, your game asks Claude, and the meter ticks. A thousand players means a thousand trips.',
+      'Here the game asks Claude for something new while people play. Every time a player starts that conversation, the meter ticks. A thousand players means a thousand trips.',
   },
 };
 
@@ -81,7 +81,7 @@ export default function LineSwitch() {
               setCount(0);
             }}
           >
-            {m === 'build' ? 'Building your game' : 'Your game running'}
+            {m === 'build' ? 'A normal game' : 'Claude inside'}
           </button>
         ))}
         <span className="gd-switch-thumb" aria-hidden />

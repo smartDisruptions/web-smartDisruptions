@@ -2239,3 +2239,107 @@
 .gd-page input[type='range'] {
   touch-action: manipulation;
 }
+
+/* "Almost always" / "Only sometimes": how often each lane applies. */
+.gd-lane-tag {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.12rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.gd-lane[data-tone='plan'] .gd-lane-tag {
+  background: var(--gd-plan-soft);
+  color: var(--gd-plan-ink);
+}
+.gd-lane[data-tone='api'] .gd-lane-tag {
+  background: var(--gd-api-soft);
+  color: var(--gd-api-ink);
+}
+
+/* Level 4: what runs on its own, and what has Claude inside. */
+.gd-cases {
+  display: grid;
+  gap: var(--gd-gap);
+  margin-top: clamp(1.5rem, 4vw, 2.25rem);
+}
+@media (min-width: 760px) {
+  .gd-cases {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+.gd-case {
+  position: relative;
+  padding: 1.35rem 1.4rem 1.4rem;
+  border-radius: var(--radius-xl);
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  overflow: clip;
+}
+.gd-case::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--gd-plan);
+}
+.gd-case[data-tone='api']::before {
+  background: var(--gd-api);
+}
+.gd-case-h {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.3rem;
+  line-height: 1.15;
+}
+.gd-case[data-tone='plan'] .gd-case-h {
+  color: var(--gd-plan-ink);
+}
+.gd-case[data-tone='api'] .gd-case-h {
+  color: var(--gd-api-ink);
+}
+.gd-case-sub {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sd-text-secondary);
+}
+.gd-case ul {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+.gd-case li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--sd-text-primary);
+}
+.gd-case li::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 0.55em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 2px;
+  rotate: 45deg;
+  background: var(--gd-plan);
+}
+.gd-case[data-tone='api'] li::before {
+  background: var(--gd-api);
+}
+.gd-cases-note {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--sd-text-secondary);
+}
+.gd-cases-note a {
+  color: var(--sd-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

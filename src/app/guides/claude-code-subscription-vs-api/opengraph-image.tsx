@@ -13,7 +13,7 @@ import {
 // (a fork in the road) brushed behind. Words stay inside a wide margin
 // because LinkedIn crops the sides.
 export const alt =
-  'Claude Code subscription vs API credits: one builds your game, one runs it. Building is your plan; your game calling Claude for players is the API.';
+  'Claude Code subscription vs API credits: most games never need the API. Your plan pays when Claude builds your game; the API only pays when Claude is inside the finished game.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -129,12 +129,12 @@ export default function Image() {
       </div>
       <div style={{ display: 'flex', gap: 22 }}>
         <Lane
-          when="Claude builds your game"
+          when="Almost always: Claude builds your game"
           then="Your plan pays"
           color={PLAN}
         />
         <Lane
-          when="Your game calls Claude for players"
+          when="Only if Claude is inside the game"
           then="The API pays"
           color={API}
         />

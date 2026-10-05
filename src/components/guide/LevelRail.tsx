@@ -58,8 +58,7 @@ export default function LevelRail({ levels }: { levels: Level[] }) {
                 <Kanji char={l.kanji} />
               </span>
               <span className="gd-rail-label">
-                <span className="gd-rail-n">Level {l.n}</span>
-                {l.label}
+                <span className="gd-rail-n">Level {l.n}</span> {l.label}
               </span>
             </a>
           </li>

@@ -2,10 +2,10 @@
 // Prices are Anthropic's list prices as of October 2026.
 
 export const TITLE =
-  'Claude Code subscription vs API credits: one builds your game, one runs it';
+  'Claude Code subscription vs API credits: most games never need the API';
 
 export const EXCERPT =
-  "A flat monthly plan covers Claude building, fixing and growing your project. API credits are for when your finished app talks to Claude for other people. Here's where the line sits, in plain words.";
+  "Your Claude plan covers building your game, website or app. Once it's made, most of them run on their own. The API only comes in when you want Claude inside the finished thing, like a character that talks back.";
 
 export const PRICES = {
   pro: 20,
@@ -146,9 +146,9 @@ export const SORT: SortItem[] = [
     why: 'Every player conversation is a request to Claude, so each one runs on the meter.',
   },
   {
-    text: 'A program runs Claude thousands of times a day on its own',
-    answer: 'api',
-    why: 'Big automatic jobs that run without a person are API work.',
+    text: "Claude writes all the dialogue for your game's characters",
+    answer: 'plan',
+    why: "Claude writes it once while you build, and it's saved into the game. Players read it. Nothing calls Claude while they play.",
   },
 ];
 
@@ -160,7 +160,7 @@ export const LEVELS: Level[] = [
   { id: 'why', n: 1, label: 'Why I asked', kanji: '探' },
   { id: 'pay', n: 2, label: 'Two ways to pay', kanji: '道' },
   { id: 'day', n: 3, label: 'A day of building', kanji: '作' },
-  { id: 'line', n: 4, label: 'Where the line is', kanji: '岐' },
+  { id: 'line', n: 4, label: 'Do you need the API?', kanji: '岐' },
   { id: 'sort', n: 5, label: 'Your turn', kanji: '遊' },
   { id: 'month', n: 6, label: 'Your month', kanji: '月' },
 ];

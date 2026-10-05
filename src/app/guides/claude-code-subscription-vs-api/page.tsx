@@ -109,13 +109,14 @@ export default function GuidePage() {
             <h1 className="font-display gd-title">
               Claude Code subscription vs API credits:{' '}
               <span className="gd-title-turn">
-                one builds your game, one runs it
+                most games never need the API
               </span>
             </h1>
             <p className="gd-dek font-read">
-              Same Claude, two very different bills. Here&rsquo;s which one you
-              pay when Claude builds your game, your website or your app, and
-              which one starts ticking once people use what you made.
+              Same Claude, two different bills. Your plan pays while Claude
+              builds your game, your website or your app. Most of what you make
+              never touches the second bill. Here&rsquo;s how to tell if yours
+              will.
             </p>
             <p className="gd-byline">
               <span>Josh Escusa</span>
@@ -182,8 +183,9 @@ export default function GuidePage() {
             </h2>
             <div className="gd-lane" data-tone="plan">
               <Seal char="作" className="gd-lane-seal" />
+              <p className="gd-lane-tag">Almost always</p>
               <p className="gd-lane-when">
-                Claude is helping <em>you</em> make the thing
+                Claude helps <em>you</em> build a game, a website or an app
               </p>
               <p className="gd-lane-then font-display">Your plan pays</p>
               <p className="gd-lane-note">
@@ -196,12 +198,15 @@ export default function GuidePage() {
             </span>
             <div className="gd-lane" data-tone="api">
               <Seal char="遊" className="gd-lane-seal" />
+              <p className="gd-lane-tag">Only sometimes</p>
               <p className="gd-lane-when">
-                The thing you made needs Claude to work for{' '}
-                <em>other people</em>
+                The finished thing has <em>Claude inside it</em>, like a
+                character that talks back
               </p>
               <p className="gd-lane-then font-display">The API pays</p>
-              <p className="gd-lane-note">a small charge every time</p>
+              <p className="gd-lane-note">
+                a small charge each time it&rsquo;s used
+              </p>
             </div>
           </section>
 
@@ -247,17 +252,18 @@ export default function GuidePage() {
                 every time Claude writes code for me?
               </p>
               <p>
-                It isn&rsquo;t. Working out why turned out to be one of the most
-                useful things I&rsquo;ve learned about building on a small
-                budget. So let&rsquo;s walk through it together, the way I wish
-                someone had walked me through it.
+                It isn&rsquo;t. And for most of what I build, the API never
+                comes into it at all. Working out why turned out to be one of
+                the most useful things I&rsquo;ve learned about building on a
+                small budget. So let&rsquo;s walk through it together, the way I
+                wish someone had walked me through it.
               </p>
             </div>
             <figure className="gd-quote">
               <span className="gd-quote-tag">Something I kept seeing</span>
               <blockquote className="font-display">
-                &ldquo;This version of Claude cost <mark>$37</mark> to finish
-                one coding test.&rdquo;
+                &ldquo;This version of Claude cost <mark>$37</mark>&#32;to
+                finish one coding test.&rdquo;
               </blockquote>
               <figcaption>
                 Real number. Useful number. We&rsquo;ll come back to it in Level
@@ -299,7 +305,7 @@ export default function GuidePage() {
                 room than Pro before you reach your limit.
               </p>
               <p className="gd-way-like">
-                <span>Feels like</span> a phone plan. One price, up to your
+                <span>Feels like</span>&#32;a phone plan. One price, up to your
                 plan&rsquo;s limit, and then it resets.
               </p>
             </article>
@@ -319,8 +325,9 @@ export default function GuidePage() {
               </ul>
               <p className="font-read">
                 The API is how an app talks to Claude on its own, with no person
-                typing. You pay for what goes in and what comes out. These are
-                the prices for Claude Opus 5.5, Anthropic&rsquo;s current Opus
+                typing. You only need it if your finished app has Claude inside
+                it. You pay for what goes in and what comes out. These are the
+                prices for Claude Opus 5.5, Anthropic&rsquo;s current Opus
                 model.
               </p>
               <p className="gd-way-like">
@@ -395,30 +402,69 @@ export default function GuidePage() {
 
         {/* ── Level 4 ─────────────────────────────────────────────────── */}
         <section id="line" className="gd-level" aria-labelledby="line-h">
-          <LevelHead n={4}>Where the line is</LevelHead>
+          <LevelHead n={4}>Do you ever need the API?</LevelHead>
           <p className="gd-lede font-read">
-            So when does the API come in? Here&rsquo;s the rule I use:
+            For most of what I build, no. Here&rsquo;s the rule I use:
           </p>
           <p className="gd-rule font-display">
-            If Claude is helping you <span data-tone="plan">make</span> the
-            thing, your plan covers it. If the thing you made needs Claude to{' '}
-            <span data-tone="api">work for other people</span>, that&rsquo;s the
-            API.
+            If Claude is helping you <span data-tone="plan">make</span>&#32;the
+            thing, your plan covers it. Most games run on their own once
+            they&rsquo;re made. You only need the API if you want{' '}
+            <span data-tone="api">Claude inside</span> the finished game,
+            answering players while they play.
           </p>
 
           <LineSwitch />
 
+          <div className="gd-cases">
+            <div className="gd-case" data-tone="plan">
+              <h3 className="gd-case-h">Runs on its own</h3>
+              <p className="gd-case-sub">Your plan built it. No API needed.</p>
+              <ul className="font-read">
+                <li>Platformers, puzzle games, rhythm games, runners</li>
+                <li>
+                  A game full of story, as long as the lines were written while
+                  you built it
+                </li>
+                <li>Your portfolio, a business site, a menu or booking page</li>
+                <li>A habit tracker, a to-do app, a tool for your own work</li>
+              </ul>
+            </div>
+            <div className="gd-case" data-tone="api">
+              <h3 className="gd-case-h">Has Claude inside</h3>
+              <p className="gd-case-sub">These need the API.</p>
+              <ul className="font-read">
+                <li>
+                  A character who makes up new lines based on what the player
+                  types
+                </li>
+                <li>A helper you can chat with inside your app or website</li>
+                <li>
+                  An app that writes something new for each person, like a
+                  custom study guide
+                </li>
+                <li>A game master that invents quests while you play</li>
+              </ul>
+            </div>
+          </div>
+          <p className="gd-cases-note font-read">
+            Almost everything in <Link href="/games">my arcade</Link> is in the
+            first column.
+          </p>
+
           <div className="gd-split gd-split-even">
             <div className="sd-sheet gd-sheet font-read">
-              <h3 className="gd-h4">Why one plan can&rsquo;t run your game</h3>
+              <h3 className="gd-h4">If you do put Claude inside</h3>
               <p>
                 A personal plan is made for one person at the keyboard. It
-                isn&rsquo;t meant to be the engine behind thousands of players.
+                isn&rsquo;t meant to be the engine behind your players.
               </p>
               <p>
-                When your app talks to Claude for other people, that runs on the
-                API, and you pay for each use. It&rsquo;s the same Claude, doing
-                a different job, on a different bill.
+                So when your game or app asks Claude something for someone else,
+                that goes through the API, and you pay a little for each use. It
+                can be a great feature. It&rsquo;s worth choosing on purpose,
+                because it&rsquo;s the one part of a project that costs more as
+                more people use it.
               </p>
             </div>
             <div className="sd-sheet gd-sheet gd-callback font-read">
