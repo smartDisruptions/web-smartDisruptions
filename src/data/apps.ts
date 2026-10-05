@@ -443,7 +443,7 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'Hundreds of enemies on screen at once, drawn in WebGL with no game engine and no libraries, and its weapons light the ground in their own colours.',
+      'Hundreds of enemies on screen at once, drawn in WebGL with no game engine and no libraries, and every weapon lights the ground in its own colour.',
       'Six acts and six bosses, each one a rogue from the Neo Dojo Cast with a fight built around its joke.',
       'Ten AI agents built it side by side, each owning one part of the game: the hero, the horde, the bosses, two sets of weapons, levelling up, the world, the effects, the music and the screens.',
       'After the first play it was rebalanced with an autopilot that plays whole runs in fast-forward. It used to reach level 168 by the end; now it reaches about 42, and the last minutes fight back.',
