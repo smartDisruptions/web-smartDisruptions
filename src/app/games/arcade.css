@@ -221,12 +221,17 @@
 
 /* Rare, subtle flicker: a few blips in a long cycle, on opacity only. The
    title also flickers on once as the page opens, like a sign being switched
-   on; it never drops below a quarter, so it is painted from the first frame. */
+   on; it never drops below a quarter, so it is painted from the first frame.
+   The switch-on runs on the h1 and the flicker on its tube: two opacity
+   animations on ONE element can't run on the compositor, and Chrome then ran
+   both on the main thread, a full frame every vsync while the flicker loops.
+   Opacities multiply and arc-on ends at 1, so it looks exactly the same. */
 @media (prefers-reduced-motion: no-preference) {
+  .arc-title {
+    animation: arc-on 1s steps(1, end) 0.15s both;
+  }
   .arc-title .arc-neon {
-    animation:
-      arc-on 1s steps(1, end) 0.15s both,
-      arc-flicker 13s steps(1, end) 4s infinite;
+    animation: arc-flicker 13s steps(1, end) 4s infinite;
   }
   .arc-flicker {
     animation: arc-flicker var(--flicker, 13s) steps(1, end) var(--flicker-delay, 2s) infinite;
