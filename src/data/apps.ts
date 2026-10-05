@@ -480,6 +480,114 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: '/games/path-not-taken',
   },
+  /*
+   * The Broom & Blade Arcade: the five machines of Broom & Blade's games room,
+   * free to play here. The games themselves live in Josh's vault
+   * (Tools/broom-blade/<booth>/ and Tools/kid-volt/); public/games/<slug> holds
+   * the site's copy, rewritten for free play.
+   */
+  {
+    slug: 'hoop-quest',
+    name: 'Hoop Quest',
+    description:
+      'Flick basketballs at a hoop in a candlelit cellar. Thirty balls, a basket that starts to move after ten, and three points for a shot that clears the backboard.',
+    longDescription:
+      'Finger-flick basketball in the Broom & Blade guild cellar. Hold a ball, drag it up and flick it at the hoop: thirty balls, a basket that holds still for the first ten and then starts to move, two points a basket and three for a Sky Shot that flies over the backboard. Pip the guild mouse rides the backboard, cheering every make.',
+    thumbnailUrl: '/images/apps/hoop-quest-thumbnail.webp',
+    screenshotUrls: ['/images/apps/hoop-quest-1.webp', '/images/apps/hoop-quest-2.webp', '/images/apps/hoop-quest-3.webp'],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: ['Thirty balls, two points a basket, three for a Sky Shot over the backboard.'],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/hoop-quest',
+  },
+  {
+    slug: 'kid-volt-knockout',
+    name: 'Kid Volt Knockout',
+    description:
+      'A boxing game for phones: Kid Volt against Disco Danny on a rooftop dance floor. Danny punches on the beat, a sparkle shows where he is open, and three knockdowns is a TKO.',
+    longDescription:
+      'A boxing game for phones, built from a study of the classic arcade boxers. Kid Volt fights Disco Danny on a rooftop dance floor: Danny throws every punch on the beat of the music, a sparkle marks where he is open during his wind-up, and a counter there charges a super punch. Dodge, duck or block, hit him while he is dizzy, and put him down three times for a TKO before the clock runs out.',
+    thumbnailUrl: '/images/apps/kid-volt-knockout-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/kid-volt-knockout-1.webp',
+      '/images/apps/kid-volt-knockout-2.webp',
+      '/images/apps/kid-volt-knockout-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: ['Danny punches on the beat, and a sparkle marks where he is open.'],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/kid-volt-knockout',
+  },
+  {
+    slug: 'whack-a-dust-bunny',
+    name: 'Whack-a-Dust-Bunny',
+    description:
+      'Seventy-five seconds of bonking dust bunnies as they pop up. Golden ones are worth three, helmets take two bonks, and whatever you do, don’t bonk Pip.',
+    longDescription:
+      'A whack-a-mole in the Broom & Blade cellar. Dust bunnies pop up out of nine holes and you have seventy-five seconds to bonk them: golden bunnies are worth three, helmeted ones take two bonks, and two bonks in a flash is a DOUBLE BONK. Sneezy bunnies, hoppers, mama bunnies, socks, powers and three surprise events a round keep it changing, and the round ends with the Horde. Pip pops up too. Don’t bonk Pip.',
+    thumbnailUrl: '/images/apps/whack-a-dust-bunny-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/whack-a-dust-bunny-1.webp',
+      '/images/apps/whack-a-dust-bunny-2.webp',
+      '/images/apps/whack-a-dust-bunny-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: ['Seventy-five seconds, nine holes, and a mouse you must not bonk.'],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/whack-a-dust-bunny',
+  },
+  {
+    slug: 'ring-toss',
+    name: 'Ring Toss',
+    description:
+      'Flick rings onto a rack of bottles. Thirty rings, a golden bottle worth ten, bonuses for rows, columns and corners, and a BLACKOUT if you ring every one.',
+    longDescription:
+      'A carnival ring toss for a phone. Drag a ring up and flick it at the bottles: a soft flick lands up front and a hard one reaches the back row. Rows are worth two to five, the golden bottle ten, and a full row, a column or all four corners pay a bonus. Ring every bottle for a BLACKOUT: the lights cut, a spotlight snaps on and the round ends in style.',
+    thumbnailUrl: '/images/apps/ring-toss-thumbnail.webp',
+    screenshotUrls: ['/images/apps/ring-toss-1.webp', '/images/apps/ring-toss-2.webp', '/images/apps/ring-toss-3.webp'],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: ['Thirty rings, a golden bottle worth ten, and a BLACKOUT for ringing every bottle.'],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/ring-toss',
+  },
+  {
+    slug: 'milk-bottle-knockdown',
+    name: 'Milk Bottle Knockdown',
+    description:
+      'Twenty balls, three pyramids of milk bottles. Clear a pyramid with one ball for a clean-knock bonus, find the secret golden bottle, and clear the whole shelf.',
+    longDescription:
+      'The carnival milk-bottle throw for a phone. Drag a ball up and flick it at three pyramids of bottles: a soft flick hits low and a hard one hits high. Every bottle knocked off the shelf is a point, a pyramid cleared with one ball is a CLEAN KNOCK, one bottle is secretly golden, and clearing all three pyramids lights the lamps for a FULL SHELF.',
+    thumbnailUrl: '/images/apps/milk-bottle-knockdown-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/milk-bottle-knockdown-1.webp',
+      '/images/apps/milk-bottle-knockdown-2.webp',
+      '/images/apps/milk-bottle-knockdown-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: ['Twenty balls, three pyramids, a clean-knock bonus and a secret golden bottle.'],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/milk-bottle-knockdown',
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -501,14 +609,28 @@ export function getAppBySlug(slug: string): App | undefined {
  */
 export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken'];
 
+/**
+ * The Broom & Blade Arcade, the last room on /games before the archive's door
+ * (Josh's call, 2026-10-05): the five machines of Broom & Blade's games room,
+ * hosted by Pip the guild mouse, in machine order.
+ */
+export const BROOM_BLADE_ARCADE_SLUGS = [
+  'hoop-quest',
+  'kid-volt-knockout',
+  'whack-a-dust-bunny',
+  'ring-toss',
+  'milk-bottle-knockdown',
+];
+
 /** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
 export const ARCADE_ARCHIVE_SLUGS = ['field-office', 'cloth-simulator', 'broom-blade', 'grove', 'pebble-kart', 'aureum-snake'];
 
 /**
- * Every game on the site, the front room and the archive: what the catalogue,
- * the search index and the home page's counts treat as a game.
+ * Every game on the site, the front room, the Broom & Blade Arcade and the
+ * archive: what the catalogue, the search index and the home page's counts
+ * treat as a game.
  */
-export const GAME_SLUGS = [...ARCADE_SLUGS, ...ARCADE_ARCHIVE_SLUGS];
+export const GAME_SLUGS = [...ARCADE_SLUGS, ...BROOM_BLADE_ARCADE_SLUGS, ...ARCADE_ARCHIVE_SLUGS];
 
 /** Projects with a full write-up on /websites, so they skip the catalogue. */
 // Slugs that live on /websites as a full write-up and are therefore filtered out

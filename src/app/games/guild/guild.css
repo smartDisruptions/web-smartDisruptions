@@ -1,0 +1,11 @@
+/* ── The Broom & Blade Arcade (stub). Prefix gh-. ─────────────────────────── */
+.gh {
+  position: relative;
+  z-index: 1;
+  padding: 4rem 1rem;
+  color: #f0e2c0;
+  background: #1a120b;
+}
+.gh-pip {
+  width: 120px;
+}

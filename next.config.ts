@@ -75,6 +75,11 @@ const nextConfig: NextConfig = {
           source: '/games/path-not-taken',
           destination: '/games/path-not-taken/index.html',
         },
+        // The Broom & Blade Arcade's five machines: the same, one file each.
+        ...['hoop-quest', 'kid-volt-knockout', 'whack-a-dust-bunny', 'ring-toss', 'milk-bottle-knockdown'].map((name) => ({
+          source: `/games/${name}`,
+          destination: `/games/${name}/index.html`,
+        })),
       ],
       fallback: [],
     };

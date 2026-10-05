@@ -1,12 +1,13 @@
 import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, type App } from '@/data/apps';
+import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, BROOM_BLADE_ARCADE_SLUGS, type App } from '@/data/apps';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import RooftopRun from '@/components/arcade/RooftopRun';
 import RooftopPoster from './Poster';
 import Cabinets, { ArrowIcon } from './Cabinets';
+import GuildHall from './guild/GuildHall';
 import { LANTERNS, TICKER_INK, WIRE_PATH, ticker } from './market';
 import './arcade.css';
 
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
 const byslug = (slugs: string[]) =>
   slugs.map((slug) => apps.find((app) => app.slug === slug)).filter((app): app is App => app !== undefined);
 const games = byslug(ARCADE_SLUGS);
+const guild = byslug(BROOM_BLADE_ARCADE_SLUGS);
 const archived = byslug(ARCADE_ARCHIVE_SLUGS);
 // "The Pembroke File, Cloth Simulator … and AUREUM Snake", written out, so the
 // door says what is behind it.
@@ -42,7 +44,8 @@ const ARCHIVE_NAMES = new Intl.ListFormat('en-GB', { type: 'conjunction' }).form
 const TICKER = ticker(games.map((g) => g.name));
 
 export default function Arcade() {
-  const live = games.filter((g) => g.status === 'live').length;
+  const onPage = [...games, ...guild];
+  const live = onPage.filter((g) => g.status === 'live').length;
   return (
     <div className="arc">
       {/* The lantern string */}
@@ -74,7 +77,7 @@ export default function Arcade() {
           <dl className="arc-stats">
             <div className="arc-stat">
               <dt>Games</dt>
-              <dd className="font-display arc-neon">{String(games.length).padStart(2, '0')}</dd>
+              <dd className="font-display arc-neon">{String(onPage.length).padStart(2, '0')}</dd>
             </div>
             <div className="arc-stat" style={{ '--tube': 'var(--arc-amber)' } as CSSProperties}>
               <dt>Live</dt>
@@ -175,7 +178,12 @@ export default function Arcade() {
 
       <div className="arc-wrap">
         <Cabinets games={games} from="arcade" title="The cabinets" titleId="arc-cabinets" />
+      </div>
 
+      {/* Downstairs: the Broom & Blade Arcade, Pip's room. */}
+      <GuildHall games={guild} />
+
+      <div className="arc-wrap">
         {/* The door to the back room: every older cabinet, still playable. */}
         {archived.length > 0 && (
           <Link href="/games/archive" className="arc-door sd-reveal">
