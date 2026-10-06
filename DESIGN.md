@@ -216,9 +216,13 @@ animation of layout properties, nothing that animates while off screen.
 
 ## Native on a phone
 
-- A **tab bar** (Home, Writing, Storm, Built, Arcade) where a thumb reaches;
+- A **tab bar** (Home, Writing, Learn, Built, Arcade) where a thumb reaches;
   About is the avatar in the top bar. The top bar tucks away while you scroll
   down and returns when you scroll up.
+- **Market Storm lives inside Writing** (since October 2026): a section of
+  the Writing page, with `/market-storm` as its archive. The archive, its
+  pages and every report light the Writing tab, and so do the guides, which
+  Writing lists among its field notes (`sectionOf()` in `nav/nav.ts`).
 - `viewport-fit=cover` with safe-area padding on the header and the tab bar.
 - Every tappable thing is ≥44px and **presses in** (`active:scale`).
 - The browser chrome takes the theme colour (`theme-color`), and the site

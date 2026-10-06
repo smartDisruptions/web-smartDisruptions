@@ -45,7 +45,17 @@ export const IconWriting = (p: IconProps) => (
   </Icon>
 );
 
-/** Lightning — Market Storm. */
+/** An open book — Learn. Pages only, no lines, so it never reads as a
+    second Writing scroll beside it in the tab bar. */
+export const IconLearn = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 6.4c3.5-.9 6.6-.4 9 1.5 2.4-1.9 5.5-2.4 9-1.5v11.7c-3.5-.9-6.6-.4-9 1.5-2.4-1.9-5.5-2.4-9-1.5z" />
+    <path d="M12 7.9v11.7" />
+  </Icon>
+);
+
+/** Lightning — Market Storm. Left the tab bar when Market Storm moved into
+    Writing; still exported for the section to use. */
 export const IconStorm = (p: IconProps) => (
   <Icon {...p}>
     <path d="M13.5 2.5 5 13.5h6.5L10 21.5l9-11.5h-6.5z" />

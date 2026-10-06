@@ -17,14 +17,41 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#090b16',
     categories: ['education', 'technology', 'productivity'],
     icons: [
-      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      {
+        src: '/icons/icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icons/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icons/maskable-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
     ],
     shortcuts: [
-      { name: 'Writing', url: '/content', icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }] },
-      { name: 'Market Storm', url: '/market-storm', icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }] },
-      { name: 'Arcade', url: '/games', icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }] },
+      {
+        name: 'Writing',
+        url: '/content',
+        icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }],
+      },
+      {
+        name: 'Learn',
+        url: '/learn',
+        icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }],
+      },
+      {
+        name: 'Arcade',
+        url: '/games',
+        icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }],
+      },
     ],
   };
 }

@@ -21,14 +21,23 @@ export type SearchItem = {
 };
 
 export function GET() {
+  // The sections first, in the nav's order: with an empty query the palette
+  // lists every Page before anything else, so this is its table of contents.
   const items: SearchItem[] = [
     { t: 'Home', u: '/', k: 'Page', d: 'Start here' },
-    { t: 'Writing', u: '/content', k: 'Page', d: 'Every note from the bench' },
     {
-      t: 'Market Storm',
-      u: '/market-storm',
+      t: 'Writing',
+      u: '/content',
       k: 'Page',
-      d: 'The AI market, read by a research method',
+      d: 'Field notes from the bench, and Market Storm',
+      x: 'notes articles posts market storm',
+    },
+    {
+      t: 'Learn to build, together',
+      u: '/learn',
+      k: 'Page',
+      d: 'Websites, apps and games, in plain words',
+      x: 'learn newsletter email subscribe beginner course',
     },
     {
       t: 'What I Built',
@@ -37,6 +46,13 @@ export function GET() {
       d: 'Websites, apps and tools, live',
     },
     { t: 'Arcade', u: '/games', k: 'Page', d: 'Games you can play right now' },
+    {
+      t: 'Market Storm archive',
+      u: '/market-storm',
+      k: 'Page',
+      d: 'Every report: the AI market, read by a research method',
+      x: 'storm reports earnings research thesis',
+    },
     {
       t: 'About Josh',
       u: '/about',
@@ -62,13 +78,6 @@ export function GET() {
       k: 'Page',
       d: 'Most games never need the API',
       x: 'pricing plan pro max api tokens cost subscription guide',
-    },
-    {
-      t: 'Learn to build, together',
-      u: '/learn',
-      k: 'Page',
-      d: 'Websites, apps and games, in plain words',
-      x: 'learn newsletter email subscribe beginner course',
     },
   ];
 

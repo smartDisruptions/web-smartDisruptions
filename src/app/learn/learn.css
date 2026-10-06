@@ -70,7 +70,8 @@
   color: var(--sd-text-secondary);
 }
 .ln-calm span {
-  color: var(--sd-pen);
+  /* Vermilion as text is --sd-pen-ink (AA); --sd-pen is for marks. */
+  color: var(--sd-pen-ink);
 }
 .ln-lede {
   max-width: 34rem;
@@ -120,7 +121,7 @@
   height: 1.7rem;
   border-radius: 50%;
   background: color-mix(in srgb, var(--sd-pen) 14%, transparent);
-  color: var(--sd-pen);
+  color: var(--sd-pen-ink);
   font: 800 0.85rem/1 var(--font-sans);
 }
 .ln-item h2 {
@@ -172,5 +173,5 @@
 .ln-card-go {
   font-weight: 700;
   font-size: 0.92rem;
-  color: var(--sd-pen);
+  color: var(--sd-pen-ink);
 }

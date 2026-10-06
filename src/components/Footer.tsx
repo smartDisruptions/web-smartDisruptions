@@ -12,7 +12,10 @@ import { NAV } from '@/components/nav/nav';
  */
 export default function Footer() {
   return (
-    <footer className="sd-defer relative mt-16 text-[#eceefa]" style={{ containIntrinsicSize: 'auto 560px' }}>
+    <footer
+      className="sd-defer relative mt-16 text-[#eceefa]"
+      style={{ containIntrinsicSize: 'auto 560px' }}
+    >
       <Skyline className="h-[clamp(120px,15.28vw,340px)]">
         <svg
           viewBox="0 0 1440 220"
@@ -31,8 +34,9 @@ export default function Footer() {
               <span className="font-display text-xl">Smart Disruptions</span>
             </Link>
             <p className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-[#b4b8d2]">
-              I build real things with AI and write up exactly how — so it&apos;s
-              usable for people who feel behind, stuck, or underpowered.
+              I build real things with AI and write up exactly how — so
+              it&apos;s usable for people who feel behind, stuck, or
+              underpowered.
             </p>
           </div>
 
@@ -51,6 +55,19 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              {/* Market Storm left the nav for a section of the Writing page.
+                  Every report still lives in its archive, linked from here so
+                  it stays one tap from any page. "Market Storm archive" wrapped
+                  to two lines in this column at every width; the page it opens
+                  says it is the archive. */}
+              <li>
+                <Link
+                  href="/market-storm"
+                  className="text-[0.95rem] font-semibold text-[#dfe3fb] transition-colors hover:text-[#ff8166]"
+                >
+                  Market Storm
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/privacy"
@@ -63,16 +80,24 @@ export default function Footer() {
           </div>
 
           <div className="flex items-start gap-4 max-md:hidden">
-            <Vertical text="スマート・ディスラプションズ" className="h-[230px] w-[22px] text-[#3a4170]" />
+            <Vertical
+              text="スマート・ディスラプションズ"
+              className="h-[230px] w-[22px] text-[#3a4170]"
+            />
             <Seal char="忍" className="w-12" />
           </div>
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-xs text-[#8f95b8] sm:px-6">
-            <span>&copy; {new Date().getFullYear()} Smart Disruptions · Josh Escusa</span>
+            <span>
+              &copy; {new Date().getFullYear()} Smart Disruptions · Josh Escusa
+            </span>
             <span className="flex items-center gap-2">
               <span aria-hidden>Kiru keeps watch.</span>
-              <Link href="/privacy" className="underline underline-offset-2 hover:text-[#ff8166]">
+              <Link
+                href="/privacy"
+                className="underline underline-offset-2 hover:text-[#ff8166]"
+              >
                 Privacy
               </Link>
             </span>
