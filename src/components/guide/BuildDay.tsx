@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import type { Task } from './copy';
 
 const money = (n: number) =>
-  n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  n.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  });
 
 /**
  * One building day, told as you scroll. The task cards scroll past; the two
@@ -78,7 +82,7 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
       <div className="gd-day-meters">
         <div className="gd-meter gd-meter-api">
           <span className="gd-meter-label">
-            <span className="gd-label-long">If you paid per use</span>
+            <span className="gd-label-long">If I had paid per use</span>
             <span className="gd-label-short">Per use</span>
           </span>
           <span className="gd-meter-num tabular-nums" ref={numRef}>
@@ -92,14 +96,14 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
           </span>
           <span className="gd-meter-note">
             {active < 0
-              ? 'What this would cost on the API, by my rough math'
-              : `${active + 1} of ${tasks.length} jobs done`}
+              ? 'My real session, at API prices'
+              : `${active + 1} of ${tasks.length} parts counted`}
           </span>
         </div>
         <div className="gd-meter gd-meter-plan">
           <span className="gd-meter-label">
-            <span className="gd-label-long">Extra on your plan today</span>
-            <span className="gd-label-short">Your plan</span>
+            <span className="gd-label-long">Extra on my plan</span>
+            <span className="gd-label-short">My plan</span>
           </span>
           <span className="gd-meter-num tabular-nums">{money(0)}</span>
           <span className="gd-meter-bar" aria-hidden>
@@ -107,7 +111,7 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
           </span>
           <span className="gd-meter-note">
             {done
-              ? "Still $0 extra, inside your plan's limits"
+              ? 'Still $0 extra. It used about 15% of one week'
               : 'Already paid for'}
           </span>
         </div>
@@ -116,7 +120,7 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
       <p className="sr-only" aria-live="polite">
         {active < 0
           ? ''
-          : `Job ${active + 1} done (${tasks[active].title}): ${money(target)} if paid per use, $0 extra on your plan.`}
+          : `Part ${active + 1} (${tasks[active].title}): ${money(target)} so far at API prices, $0 extra on my plan.`}
       </p>
 
       <ol className="gd-day-list" ref={listRef}>
@@ -134,9 +138,9 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
             <p className="gd-task-plain font-read">{t.plain}</p>
             <p className="gd-task-chips">
               <span className="gd-chip gd-chip-api">
-                +{money(t.cost)} per use
+                about {money(t.cost)} at API prices
               </span>
-              <span className="gd-chip gd-chip-plan">+$0.00 on your plan</span>
+              <span className="gd-chip gd-chip-plan">+$0 on my plan</span>
             </p>
           </li>
         ))}

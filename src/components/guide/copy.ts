@@ -15,10 +15,6 @@ export const PRICES = {
   apiOut: 20,
 };
 
-// My rough math for one hour of steady building in Claude Code, priced as if
-// it ran on the API. Shown in full in the "how I got this number" panel.
-export const DOLLARS_PER_HOUR = 6;
-
 export type Word = {
   term: string;
   plain: string;
@@ -55,51 +51,37 @@ export const WORDS: Word[] = [
 export type Task = {
   title: string;
   plain: string;
-  cost: number; // illustrative API-equivalent dollars
+  cost: number; // dollars at API prices, from my real receipt
 };
 
+// Where my real $535.94 went (vault, AI Builder Skill Tree, "My plan vs the
+// API"). The tracker splits it 61% rereading, 17% saving to the cache, 22%
+// output; the output is split here by tokens (6.4M of 9.7M were thinking),
+// so those two are close estimates. Rounded to whole dollars, they sum to $536.
 export const DAY: Task[] = [
   {
-    title: 'Build the combat system',
+    title: 'Rereading the whole conversation',
     plain:
-      'Claude writes the code that decides what happens when you swing, block and get hit.',
-    cost: 8.4,
+      "Before every step, Claude reads everything so far again so it doesn't lose track. Mine was about 440,000 tokens a step, over and over. Most of it came from a cheap short-term memory, but it added up.",
+    cost: 327,
   },
   {
-    title: 'Fix a bug',
+    title: 'Saving new work to memory',
     plain:
-      'The sword hits twice instead of once. Claude reads the code, finds out why, and fixes it.',
-    cost: 3.1,
+      'Every new message and every file Claude opens gets saved to that short-term memory, so the next step can reread it cheaply.',
+    cost: 91,
   },
   {
-    title: 'Make the glow effects',
+    title: 'Thinking before acting',
     plain:
-      'These are called shaders: small programs that tell the screen how to draw light, sparks and color.',
-    cost: 4.6,
+      'Claude works a problem through before it writes anything. 6.4 million of the 9.7 million tokens it wrote were thinking.',
+    cost: 78,
   },
   {
-    title: 'Write the branching dialogue',
+    title: 'Writing the code and the words',
     plain:
-      'Conversations that change depending on what the player picks. Claude builds the system that keeps track.',
-    cost: 5.2,
-  },
-  {
-    title: 'Build a level-making tool',
-    plain:
-      'A small helper that makes it faster to put levels together, so you spend less time on busywork.',
-    cost: 3.9,
-  },
-  {
-    title: 'Run the checks',
-    plain:
-      "Quick automatic tests that make sure the new stuff didn't break the old stuff.",
-    cost: 1.8,
-  },
-  {
-    title: 'Tidy everything up',
-    plain:
-      "Reorganizing the code so it's easier to change later. Like cleaning your room so you can find things again.",
-    cost: 4.3,
+      'The part you actually see: the code for the levels, the files, and the replies to me. It was the smallest slice.',
+    cost: 40,
   },
 ];
 
@@ -154,15 +136,16 @@ export const SORT: SortItem[] = [
 
 export type Level = { id: string; n: number; label: string; kanji: string };
 
-// The page is laid out like a level-select map: six stops, then the finish.
+// The page is laid out like a level-select map: seven stops, then the finish.
 // Kanji are drawn from the baked brush set (src/components/brand/glyphs.ts).
 export const LEVELS: Level[] = [
   { id: 'why', n: 1, label: 'Why I asked', kanji: '探' },
   { id: 'pay', n: 2, label: 'Two ways to pay', kanji: '道' },
-  { id: 'day', n: 3, label: 'A day of building', kanji: '作' },
-  { id: 'line', n: 4, label: 'Do you need the API?', kanji: '岐' },
-  { id: 'sort', n: 5, label: 'Your turn', kanji: '遊' },
-  { id: 'month', n: 6, label: 'Your month', kanji: '月' },
+  { id: 'day', n: 3, label: 'Where my $536 went', kanji: '作' },
+  { id: 'others', n: 4, label: "Other people's bills", kanji: '学' },
+  { id: 'line', n: 5, label: 'Do you need the API?', kanji: '岐' },
+  { id: 'sort', n: 6, label: 'Your turn', kanji: '遊' },
+  { id: 'month', n: 7, label: 'Your month', kanji: '月' },
 ];
 
 // My real receipt, from the vault (AI Builder Skill Tree, "My plan vs the
@@ -184,4 +167,11 @@ export const RECEIPT = {
   times: 75,
   rereadShare: 61,
   rereadPerStep: '440,000',
+  // Day rates for the calculator, from the same receipt: Oct 3 (ten helper
+  // agents) was about $400; the other three days shared the remaining ~$136.
+  bigDay: 400,
+  normalDay: 45,
+  // If 15% of a week's allowance was $535.94 at API prices, a full week is
+  // worth about $3,573. A rough reading, and the calculator says so.
+  weekAllowance: 3573,
 };

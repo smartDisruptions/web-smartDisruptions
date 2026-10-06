@@ -12,7 +12,6 @@ import SortGame from '@/components/guide/SortGame';
 import MonthCalc from '@/components/guide/MonthCalc';
 import {
   DAY,
-  DOLLARS_PER_HOUR,
   EXCERPT,
   LEVELS,
   PRICES,
@@ -269,7 +268,7 @@ export default function GuidePage() {
               </blockquote>
               <figcaption>
                 Real number. Useful number. We&rsquo;ll come back to it in Level
-                4, because it belongs to a different bill.
+                5, because it belongs to a different bill.
               </figcaption>
             </figure>
           </div>
@@ -346,7 +345,8 @@ export default function GuidePage() {
               Those prices look tiny, and a million tokens is a lot of words.
               But when Claude is building, it rereads your project again and
               again to keep track of what it&rsquo;s doing. So the tokens pile
-              up much faster than you&rsquo;d guess.
+              up much faster than you&rsquo;d guess. In my real session, that
+              rereading was {RECEIPT.rereadShare}% of the cost.
             </p>
           </div>
 
@@ -356,20 +356,21 @@ export default function GuidePage() {
 
         {/* ── Level 3 ─────────────────────────────────────────────────── */}
         <section id="day" className="gd-level" aria-labelledby="day-h">
-          <LevelHead n={3}>A day of building, on two meters</LevelHead>
+          <LevelHead n={3}>Where my $536 actually went</LevelHead>
           <p className="gd-lede font-read">
-            This is where it clicked for me. Picture a normal building day on a
-            samurai game, like the ones in <Link href="/games">my arcade</Link>.
-            Scroll through it and watch both meters.
+            This is where it clicked for me. Here&rsquo;s my real session, the
+            four days I spent building levels for my rhythm game, split into
+            what Claude was actually doing. Scroll through it and watch both
+            meters.
           </p>
 
           <BuildDay tasks={DAY} />
 
           <div className="gd-result">
             <p className="gd-result-line font-read">
-              That made-up day comes to about{' '}
-              <strong>${dayTotal.toFixed(0)}</strong>&#32;at per-use prices, by
-              my rough math. Here&rsquo;s a real one.
+              That&rsquo;s the whole ${dayTotal}, and only about $
+              {DAY[DAY.length - 1].cost} of it was Claude writing the code.
+              Here&rsquo;s the receipt it came from.
             </p>
 
             <figure className="gd-receipt">
@@ -424,7 +425,7 @@ export default function GuidePage() {
 
         {/* ── Level 4 ─────────────────────────────────────────────────── */}
         <section id="line" className="gd-level" aria-labelledby="line-h">
-          <LevelHead n={4}>Do you ever need the API?</LevelHead>
+          <LevelHead n={5}>Do you ever need the API?</LevelHead>
           <p className="gd-lede font-read">
             For most of what I build, no. Here&rsquo;s the rule I use:
           </p>
@@ -523,7 +524,7 @@ export default function GuidePage() {
 
         {/* ── Level 5 ─────────────────────────────────────────────────── */}
         <section id="sort" className="gd-level" aria-labelledby="sort-h">
-          <LevelHead n={5}>Your turn: sort these</LevelHead>
+          <LevelHead n={6}>Your turn: sort these</LevelHead>
           <p className="gd-lede font-read">
             Eight situations. For each one, call which bill it lands on. No
             pressure, and no score that counts. We&rsquo;re learning this
@@ -557,14 +558,17 @@ export default function GuidePage() {
 
         {/* ── Level 6 ─────────────────────────────────────────────────── */}
         <section id="month" className="gd-level" aria-labelledby="month-h">
-          <LevelHead n={6}>Your month, roughly</LevelHead>
+          <LevelHead n={7}>Your month, with my numbers</LevelHead>
           <p className="gd-lede font-read">
-            Now try it with your own numbers. Slide these to match how you
-            build. It&rsquo;s a feel for scale, not a quote.
+            Now try my real day rates on a month of your own. Set how many
+            normal days and big days you&rsquo;d have. It&rsquo;s a feel for
+            scale, not a quote.
           </p>
 
           <MonthCalc
-            perHour={DOLLARS_PER_HOUR}
+            normalDay={RECEIPT.normalDay}
+            bigDay={RECEIPT.bigDay}
+            weekAllowance={RECEIPT.weekAllowance}
             plans={[
               { label: 'Pro', price: PRICES.pro },
               { label: 'Max', price: PRICES.maxLow },
@@ -573,24 +577,25 @@ export default function GuidePage() {
           />
 
           <details className="gd-how font-read">
-            <summary>How I got ${DOLLARS_PER_HOUR} an hour</summary>
+            <summary>How I got these numbers</summary>
             <p>
-              Each time Claude Code takes a step, it sends Claude everything it
-              needs to know about your project again. Most of that is reread
-              from a short-term memory called a cache, at $0.20 per million
-              tokens. Some of it is new, at ${PRICES.apiIn} per million. What
-              Claude writes, including its thinking, is ${PRICES.apiOut} per
-              million.
+              They all come from the one receipt in Level 3. The big day is
+              October 3, when ten helper agents built levels at once: about $
+              {RECEIPT.bigDay} at API prices. The other three days shared the
+              rest, about ${Math.round(RECEIPT.apiTotal) - RECEIPT.bigDay}, so a
+              normal day is about ${RECEIPT.normalDay}.
             </p>
             <p>
-              Add that up over a steady hour and I land somewhere around $5 to
-              $8. I used ${DOLLARS_PER_HOUR}. Small projects cost less. Long
-              sessions on big projects cost more. Your hours will look different
-              from mine, and that&rsquo;s fine.
+              The weekly line works backwards from my plan&rsquo;s usage screen:
+              if {RECEIPT.planShare}% of a week was $
+              {RECEIPT.apiTotal.toFixed(2)} at API prices, a full week is worth
+              about ${RECEIPT.weekAllowance.toLocaleString('en-US')}. That
+              reading is rough, because it also counted my other sessions that
+              week.
             </p>
             <p>
-              My real receipt in Level 3 ran much heavier than this, because{' '}
-              {RECEIPT.helpers} helper agents were working at the same time.
+              This is one person&rsquo;s numbers from one project. A small game
+              will cost less. A long session on a big project will cost more.
             </p>
           </details>
         </section>

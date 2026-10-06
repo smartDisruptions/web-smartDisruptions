@@ -9,65 +9,80 @@ const money = (n: number) =>
     maximumFractionDigits: 0,
   });
 
+const WEEKS_PER_MONTH = 4.33;
+
 /**
- * Two sliders and four bars: roughly what a month of building would cost at
- * per-use prices, set against the three plan prices. The bars are scaleX
- * transforms on one shared scale, so the comparison is honest by eye.
+ * A month of building, priced with my real numbers: a normal day (~$45 at
+ * API prices) and a big day with ten helper agents (~$400), both from one
+ * receipt. The bars put that against the plan prices on one shared scale,
+ * and the last line reads it against my plan's weekly allowance, which I
+ * only know roughly (15% of a week was $535.94).
  */
 export default function MonthCalc({
-  perHour,
+  normalDay,
+  bigDay,
+  weekAllowance,
   plans,
 }: {
-  perHour: number;
+  normalDay: number;
+  bigDay: number;
+  weekAllowance: number;
   plans: { label: string; price: number }[];
 }) {
-  const [hours, setHours] = useState(3);
-  const [days, setDays] = useState(12);
-  const hId = useId();
-  const dId = useId();
-  const api = hours * days * perHour;
+  const [normal, setNormal] = useState(12);
+  const [big, setBig] = useState(1);
+  const nId = useId();
+  const bId = useId();
+  const api = normal * normalDay + big * bigDay;
   const scale = Math.max(api, ...plans.map((p) => p.price)) * 1.08;
+  const weekShare = Math.round((api / WEEKS_PER_MONTH / weekAllowance) * 100);
 
   const rows = [
-    { label: 'Paid per use (my estimate)', value: api, tone: 'api' },
+    { label: 'At API prices', value: api, tone: 'api' },
     ...plans.map((p) => ({ label: p.label, value: p.price, tone: 'plan' })),
   ];
 
   return (
     <div className="gd-calc">
       <div className="gd-calc-inputs">
-        <label className="gd-slider" htmlFor={hId}>
+        <label className="gd-slider" htmlFor={nId}>
           <span className="gd-slider-top">
-            <span>Hours of building a day</span>
-            <output className="tabular-nums" htmlFor={hId}>
-              {hours}
+            <span>Normal build days a month</span>
+            <output className="tabular-nums" htmlFor={nId}>
+              {normal}
             </output>
           </span>
-          <input
-            id={hId}
-            type="range"
-            min={1}
-            max={10}
-            step={1}
-            value={hours}
-            onChange={(e) => setHours(Number(e.target.value))}
-          />
-        </label>
-        <label className="gd-slider" htmlFor={dId}>
-          <span className="gd-slider-top">
-            <span>Days a month</span>
-            <output className="tabular-nums" htmlFor={dId}>
-              {days}
-            </output>
+          <span className="gd-slider-note">
+            One session, no helpers. About {money(normalDay)} each.
           </span>
           <input
-            id={dId}
+            id={nId}
             type="range"
-            min={1}
+            min={0}
             max={30}
             step={1}
-            value={days}
-            onChange={(e) => setDays(Number(e.target.value))}
+            value={normal}
+            onChange={(e) => setNormal(Number(e.target.value))}
+          />
+        </label>
+        <label className="gd-slider" htmlFor={bId}>
+          <span className="gd-slider-top">
+            <span>Big days with 10 helpers</span>
+            <output className="tabular-nums" htmlFor={bId}>
+              {big}
+            </output>
+          </span>
+          <span className="gd-slider-note">
+            Like my level build. About {money(bigDay)} each.
+          </span>
+          <input
+            id={bId}
+            type="range"
+            min={0}
+            max={8}
+            step={1}
+            value={big}
+            onChange={(e) => setBig(Number(e.target.value))}
           />
         </label>
       </div>
@@ -77,8 +92,7 @@ export default function MonthCalc({
           {money(api)}
         </span>
         <span className="gd-calc-sub">
-          is roughly what {hours * days} hours of building would cost at per-use
-          prices.
+          is what that month would cost at API prices, using my real numbers.
         </span>
       </p>
 
@@ -99,6 +113,12 @@ export default function MonthCalc({
           </li>
         ))}
       </ul>
+
+      <p className="gd-calc-week" data-over={weekShare > 100}>
+        {weekShare > 100
+          ? `On my $200 Max plan, that's more than a full week's allowance every week (about ${weekShare}%). I'd hit the limit and wait for it to reset.`
+          : `On my $200 Max plan, that's about ${weekShare}% of a week's allowance in an average week.`}
+      </p>
     </div>
   );
 }

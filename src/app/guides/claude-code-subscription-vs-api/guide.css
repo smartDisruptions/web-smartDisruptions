@@ -2511,3 +2511,21 @@
     box-shadow: none;
   }
 }
+
+.gd-slider-note {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sd-text-secondary);
+}
+.gd-calc-week {
+  padding: 0.75rem 0.95rem;
+  border-radius: 12px;
+  background: var(--gd-plan-soft);
+  color: var(--sd-text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.gd-calc-week[data-over='true'] {
+  background: var(--sd-warn-soft);
+}
