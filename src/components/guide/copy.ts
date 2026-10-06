@@ -168,7 +168,7 @@ export type Level = { id: string; n: number; label: string; kanji: string };
 // The page is laid out like a level-select map: seven stops, then the finish.
 // Kanji are drawn from the baked brush set (src/components/brand/glyphs.ts).
 export const LEVELS: Level[] = [
-  { id: 'why', n: 1, label: 'Why I asked', kanji: '探' },
+  { id: 'why', n: 1, label: 'The question', kanji: '探' },
   { id: 'pay', n: 2, label: 'Two ways to pay', kanji: '道' },
   { id: 'day', n: 3, label: 'Where my $536 went', kanji: '作' },
   { id: 'others', n: 4, label: "Other people's bills", kanji: '学' },

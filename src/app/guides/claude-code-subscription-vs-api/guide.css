@@ -2659,3 +2659,50 @@ div.gd-lede p + p,
 .gd-receipt-total::before {
   display: none;
 }
+
+/* Level 1 as an experiment: labelled steps and an answer card. */
+.gd-steps strong {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  color: var(--sd-text-primary);
+}
+.gd-glance-list {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+}
+.gd-glance-list > div {
+  display: grid;
+  gap: 0.15rem;
+}
+.gd-glance-list dt {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.gd-glance-list dd {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--sd-text-primary);
+}
+.gd-glance-list dd[data-tone] {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  line-height: 1.05;
+}
+.gd-glance-list dd[data-tone='api'] {
+  color: var(--gd-api-ink);
+}
+.gd-glance-list dd[data-tone='plan'] {
+  color: var(--gd-plan-ink);
+}
+.gd-wide {
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+}
+.gd-finish > .gd-h3 {
+  margin-top: 0.5rem;
+}

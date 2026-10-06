@@ -282,38 +282,51 @@ export default function GuidePage() {
           <WordCards words={WORDS} />
         </section>
 
-        {/* ── Level 1 ─────────────────────────────────────────────────── */}
+        {/* ── Level 1: the question ──────────────────────────────────── */}
         <section id="why" className="gd-level" aria-labelledby="why-h">
-          <LevelHead n={1}>Why I asked what this costs</LevelHead>
+          <LevelHead n={1}>The question</LevelHead>
           <div className="gd-split">
-            <div className="sd-sheet gd-sheet font-read">
+            <div className="sd-sheet gd-sheet font-read gd-steps">
               <p>
-                When I started building games with Claude, I kept seeing big
-                numbers in videos and posts, like &ldquo;$37 to finish one
-                coding test.&rdquo; A coding test is a standard set of coding
-                tasks that companies use to compare AI models.
+                <strong>What I noticed.</strong>&#32;People online have said
+                that asking Claude to build a website cost them hundreds of
+                dollars. I didn&rsquo;t note exact amounts.
               </p>
               <p>
-                My first thought was: wait. Am I going to pay that every time
-                Claude writes code for me?
+                <strong>The question.</strong>&#32;I build games and websites
+                with Claude Code on a monthly plan. Does building on a plan cost
+                anything like that?
               </p>
               <p>
-                No. For most of what I build, I never pay per use at all. I pay
-                one flat monthly price. Working out why was one of the most
-                useful things I&rsquo;ve learned about building on a small
-                budget, so let&rsquo;s walk through it together.
+                <strong>How I checked.</strong>&#32;Claude Code keeps a running
+                count of what each session would cost if it were paid per use. I
+                took one real build that lasted 4 days and compared that count
+                with how much of my plan it used.
               </p>
             </div>
-            <figure className="gd-quote">
-              <span className="gd-quote-tag">Something I kept seeing</span>
-              <blockquote className="font-display">
-                &ldquo;This version of Claude cost <mark>$37</mark>&#32;to
-                finish one coding test.&rdquo;
-              </blockquote>
+            <figure className="gd-quote gd-glance">
+              <span className="gd-quote-tag">The answer at a glance</span>
+              <dl className="gd-glance-list">
+                <div>
+                  <dt>What was measured</dt>
+                  <dd>One build, 4 days, October 2 to 6, 2026</dd>
+                </div>
+                <div>
+                  <dt>If paid per use</dt>
+                  <dd className="tabular-nums" data-tone="api">
+                    ${total}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Share of my $200 plan it used</dt>
+                  <dd className="tabular-nums" data-tone="plan">
+                    about ${RECEIPT.planCost}
+                  </dd>
+                </div>
+              </dl>
               <figcaption>
-                That&rsquo;s a real number, and a useful one. It&rsquo;s just
-                for a different kind of bill. We&rsquo;ll come back to it in
-                Level 5.
+                The full breakdown, and how each number was worked out, is in
+                Level 3.
               </figcaption>
             </figure>
           </div>
@@ -364,7 +377,10 @@ export default function GuidePage() {
               <h3 className="font-display gd-h3">Paying per use (the API)</h3>
               <ul className="gd-plans gd-plans-rows" role="list">
                 <li>
-                  <span>Sonnet 5.5, the middle-size Claude I mostly use</span>
+                  <span>
+                    Sonnet 5.5, the middle-size Claude that did most of my
+                    measured build
+                  </span>
                   <b className="tabular-nums">
                     {usd(PRICES.sonnetIn)} to read a million tokens,{' '}
                     {usd(PRICES.sonnetOut)} to write a million
@@ -415,8 +431,8 @@ export default function GuidePage() {
           <LevelHead n={3}>Where my ${total} actually went</LevelHead>
           <div className="gd-lede font-read">
             <p>
-              This is where it clicked for me. In October I spent 4 days
-              building levels for my rhythm game with Claude Code.
+              In October I spent 4 days building levels for my rhythm game with
+              Claude Code.
             </p>
             <p>
               Claude Code keeps a running total of what that work would have
@@ -496,7 +512,8 @@ export default function GuidePage() {
             </p>
             <p className="gd-result-line font-read">
               Paying per use would have cost about {RECEIPT.times} times more.
-              For one person building on their own, that gap is a big deal.
+              What it means: a $200 monthly plan covered work that would have
+              cost ${total} if paid per use.
             </p>
             <p className="gd-result-line font-read">
               To be clear about the two numbers: the work cost me nothing on top
@@ -515,14 +532,13 @@ export default function GuidePage() {
           <LevelHead n={4}>Other people&rsquo;s bills</LevelHead>
           <div className="gd-lede font-read">
             <p>
-              While I was learning this, I found people who had shared what
-              building with AI cost them. Sometimes it was hundreds of dollars,
-              sometimes thousands.
+              Other people have shared what building with AI cost them.
+              Sometimes it was hundreds of dollars, sometimes thousands.
             </p>
             <p>
               They put their real numbers in public, and that&rsquo;s how the
               rest of us learn. Here are five numbers people have shared, and
-              what I took from each one.
+              what each one shows.
             </p>
           </div>
 
@@ -538,7 +554,7 @@ export default function GuidePage() {
                 </p>
                 <p className="gd-bill-what font-read">{b.what}</p>
                 <p className="gd-bill-lesson font-read">
-                  <span>What I took from it</span>
+                  <span>What it shows</span>
                   {b.lesson}
                 </p>
                 <a
@@ -571,12 +587,12 @@ export default function GuidePage() {
               <p>
                 Paying per use is the right choice for plenty of people, like
                 companies and anyone who needs more than a plan allows. Nobody
-                here did anything wrong. They shared what they learned, and
-                that&rsquo;s how I learned it.
+                here did anything wrong. Sharing their numbers is what makes a
+                comparison like this possible.
               </p>
             </div>
             <div className="sd-sheet gd-sheet font-read">
-              <h3 className="gd-h4">Habits I picked up from them</h3>
+              <h3 className="gd-h4">What these cases suggest</h3>
               <ul className="gd-habits">
                 <li>
                   <strong>Start a new conversation for each job.</strong>
@@ -610,7 +626,7 @@ export default function GuidePage() {
         <section id="line" className="gd-level" aria-labelledby="line-h">
           <LevelHead n={5}>Do you ever need to pay per use?</LevelHead>
           <p className="gd-lede font-read">
-            For most of what I build, no. Here&rsquo;s the rule I use:
+            For most of what I build, no. Here is the rule:
           </p>
           <div className="gd-rules">
             <p className="gd-rule font-display">
@@ -668,56 +684,36 @@ export default function GuidePage() {
             own&rdquo; list.
           </p>
 
-          <div className="gd-split gd-split-even">
-            <div className="sd-sheet gd-sheet font-read">
-              <h3 className="gd-h4">If you do put Claude inside</h3>
-              <p>
-                A monthly plan is for one person, you, using Claude yourself. It
-                isn&rsquo;t meant to power an app that thousands of other people
-                use.
-              </p>
-              <p>
-                So when your app asks Claude something for someone else, you pay
-                per use. It can be a great feature. Just choose it on purpose,
-                because it&rsquo;s the one part of a project that costs more as
-                more people use it.
-              </p>
-              <p>
-                Anthropic&rsquo;s rules say the same thing. In their words,
-                developers may not{' '}
-                <q>
-                  route requests through Free, Pro, or Max plan credentials on
-                  behalf of their users.
-                </q>
-              </p>
-              <p>
-                In plain words: don&rsquo;t let other people use Claude through
-                your personal plan, including the free version. Building
-                something you sell, or a website for a client, on your plan is
-                fine.
-              </p>
-              <p className="gd-sheet-small">
-                I read Anthropic&rsquo;s rules in October 2026. This isn&rsquo;t
-                legal advice.
-              </p>
-            </div>
-            <div className="sd-sheet gd-sheet gd-callback font-read">
-              <p className="gd-callback-tag">Back to that $37</p>
-              <p>
-                That number is real, and it&rsquo;s useful. It&rsquo;s what one
-                coding test cost when paid per use, so it&rsquo;s a fair way to
-                compare versions of Claude.
-              </p>
-              <p>
-                It&rsquo;s also the kind of number that matters once your app
-                uses Claude for other people.
-              </p>
-              <p>
-                But it&rsquo;s not my bill when I sit down with Claude Code and
-                say, <q>let&rsquo;s build the combat for my game today.</q> That
-                day costs me nothing extra on top of my plan.
-              </p>
-            </div>
+          <div className="sd-sheet gd-sheet gd-wide font-read">
+            <h3 className="gd-h4">If you do put Claude inside</h3>
+            <p>
+              A monthly plan is for one person, you, using Claude yourself. It
+              isn&rsquo;t meant to power an app that thousands of other people
+              use.
+            </p>
+            <p>
+              So when your app asks Claude something for someone else, you pay
+              per use. It can be a great feature. Just choose it on purpose,
+              because it&rsquo;s the one part of a project that costs more as
+              more people use it.
+            </p>
+            <p>
+              Anthropic&rsquo;s rules say the same thing. In their words,
+              developers may not{' '}
+              <q>
+                route requests through Free, Pro, or Max plan credentials on
+                behalf of their users.
+              </q>
+            </p>
+            <p>
+              In plain words: don&rsquo;t let other people use Claude through
+              your personal plan, including the free version. Building something
+              you sell, or a website for a client, on your plan is fine.
+            </p>
+            <p className="gd-sheet-small">
+              I read Anthropic&rsquo;s rules in October 2026. This isn&rsquo;t
+              legal advice.
+            </p>
           </div>
         </section>
 
@@ -828,9 +824,53 @@ export default function GuidePage() {
             <span>Stage clear</span>
           </div>
           <h2 id="finish-h" className="font-display gd-h2 sd-brush-under">
-            Good to know before you start
+            What this shows, and its limits
           </h2>
 
+          <div className="gd-split gd-split-even">
+            <div className="sd-sheet gd-sheet font-read">
+              <h3 className="gd-h4">What this experiment shows</h3>
+              <ul className="gd-habits">
+                <li>
+                  Building with Claude Code on a $200 monthly plan used about $
+                  {RECEIPT.planCost} of the plan, for work that would have cost
+                  ${total} if paid per use.
+                </li>
+                <li>
+                  Most of the per-use cost came from Claude rereading the
+                  conversation. Only about ${codeShare} was Claude writing code.
+                </li>
+                <li>
+                  Paying per use is only needed when the finished game or app
+                  uses Claude for other people.
+                </li>
+                <li>
+                  For building on your own, what you can get done each month on
+                  a plan matters more than the price of a single token.
+                </li>
+              </ul>
+            </div>
+            <div className="sd-sheet gd-sheet font-read">
+              <h3 className="gd-h4">Limits of this experiment</h3>
+              <ul className="gd-habits">
+                <li>It measures one person, one project and 4 days.</li>
+                <li>
+                  The {RECEIPT.planShare}% plan reading is approximate, because
+                  the usage meter also counted my other work that week.
+                </li>
+                <li>
+                  Your costs depend on how big your project is and how many
+                  helper agents you run.
+                </li>
+                <li>
+                  Prices are the ones Anthropic listed on October 6, 2026.
+                  I&rsquo;ll update this page when they change.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 className="font-display gd-h3">Good to know before you start</h3>
           <ul className="gd-fine" role="list">
             <li>
               <h3>Plans have limits</h3>
@@ -856,10 +896,10 @@ export default function GuidePage() {
               </p>
             </li>
             <li>
-              <h3>Prices change</h3>
+              <h3>Check which account is paying</h3>
               <p className="font-read">
-                Every price here is what Anthropic listed on October 6, 2026.
-                When they change, I&rsquo;ll update this page.
+                In Claude Code, type /status and press Enter. It shows whether
+                you&rsquo;re using your plan or paying per use.
               </p>
             </li>
           </ul>
@@ -884,7 +924,7 @@ export default function GuidePage() {
                   it to a friend, and let Claude build it.
                 </li>
                 <li>
-                  Ask for one change. Then another. Notice that trying again
+                  Ask for one change. Then another. On a plan, trying again
                   doesn&rsquo;t cost anything extra.
                 </li>
               </ol>
@@ -893,19 +933,8 @@ export default function GuidePage() {
 
           <div className="sd-sheet gd-sheet gd-close font-read">
             <p>
-              We&rsquo;re all figuring this out while the tools keep changing.
-              This is where I&rsquo;ve landed for now, and I&rsquo;ll update
-              this page if I learn something new.
-            </p>
-            <p>
-              If you&rsquo;re building games, websites or apps on your own,
-              here&rsquo;s what I&rsquo;d pay attention to: how much you can get
-              done each month for $20, $100 or $200. That matters more than the
-              price of a single token.
-            </p>
-            <p>
-              That steady, predictable price is a big part of why building on
-              your own is getting so exciting right now.
+              I&rsquo;ll update this page if Anthropic changes its plans or
+              prices, or if I run a new measurement.
             </p>
             <Kiru pose="bow" className="gd-close-kiru" />
           </div>
