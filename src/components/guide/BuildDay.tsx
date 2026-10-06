@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { Task } from './copy';
+import { RECEIPT, type Task } from './copy';
 
 const money = (n: number) =>
   n.toLocaleString('en-US', {
@@ -76,6 +76,9 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
   }, [target]);
 
   const done = active === tasks.length - 1;
+  // The plan meter splits my one real reading (15% of a week for all 4 days)
+  // in proportion to each cost's share of the per-use price.
+  const planUsed = Math.round((target / total) * RECEIPT.planShare);
 
   return (
     <div className="gd-day">
@@ -110,11 +113,19 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
             <small>{' a month'}</small>
           </span>
           <span className="gd-meter-bar" aria-hidden>
-            <span className="gd-meter-flat" />
+            <span
+              className="gd-meter-fill gd-meter-fill-plan"
+              style={{ transform: `scaleX(${planUsed / 100})` }}
+            />
+          </span>
+          <span className="gd-meter-used tabular-nums">
+            {active < 0
+              ? "Plan used so far: 0% of one week's limit"
+              : `Plan used so far: about ${planUsed}% of one week's limit`}
           </span>
           <span className="gd-meter-note">
             {done
-              ? 'Same $200 a month. No extra charge for these 4 days.'
+              ? `${RECEIPT.planShare}% of a week = about $${RECEIPT.planCost} of my $200. No extra charge.`
               : 'My flat monthly plan. No extra charge for these days.'}
           </span>
         </div>

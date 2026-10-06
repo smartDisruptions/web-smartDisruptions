@@ -463,6 +463,43 @@ export default function GuidePage() {
               the price check it came from.
             </p>
 
+            <div className="gd-calcbox">
+              <p className="gd-calcbox-h">
+                How {RECEIPT.planShare}% of my plan equals about $
+                {RECEIPT.planCost}
+              </p>
+              <ol className="gd-calcbox-steps">
+                <li>
+                  <span>My plan costs</span>
+                  <b className="tabular-nums">$200 a month</b>
+                </li>
+                <li>
+                  <span>A month is about 4.3 weeks, so one week costs</span>
+                  <b className="tabular-nums">
+                    $200 ÷ 4.3 ≈ ${RECEIPT.planWeek}
+                  </b>
+                </li>
+                <li>
+                  <span>These 4 days used of one week&rsquo;s limit</span>
+                  <b className="tabular-nums">{RECEIPT.planShare}%</b>
+                </li>
+                <li>
+                  <span>So these 4 days used</span>
+                  <b className="tabular-nums">
+                    {RECEIPT.planShare}% × ${RECEIPT.planWeek} ≈ $
+                    {RECEIPT.planCost}
+                  </b>
+                </li>
+              </ol>
+              <p className="gd-calcbox-note">
+                The {RECEIPT.planShare}% comes from the usage meter in my Claude
+                settings. It&rsquo;s approximate, because it also counts other
+                work I did that week. The percentages on the meter above split
+                that {RECEIPT.planShare}% by each cost&rsquo;s share of the $
+                {total} price.
+              </p>
+            </div>
+
             <figure className="gd-receipt">
               <figcaption className="gd-receipt-head">
                 <span>Price check</span>
@@ -503,28 +540,9 @@ export default function GuidePage() {
                   <dd className="tabular-nums">about ${RECEIPT.planCost}</dd>
                 </div>
               </dl>
-              <div className="gd-receipt-note">
-                <p>How I got the share of about ${RECEIPT.planCost}:</p>
-                <ol>
-                  <li>
-                    My plan costs ${PRICES.maxHigh}&#32;a month. That&rsquo;s
-                    about ${RECEIPT.planWeek} a week.
-                  </li>
-                  <li>
-                    These 4 days used about {RECEIPT.planShare}% of what my plan
-                    allows in a week.
-                  </li>
-                  <li>
-                    {RECEIPT.planShare}% of ${RECEIPT.planWeek} is about $
-                    {RECEIPT.planCost}.
-                  </li>
-                </ol>
-                <p>
-                  I took the {RECEIPT.planShare}% from the usage meter in my
-                  Claude settings. It&rsquo;s approximate, because it also
-                  includes other work I did that week.
-                </p>
-              </div>
+              <p className="gd-receipt-note">
+                The ${RECEIPT.planCost} share is worked out in the box above.
+              </p>
             </figure>
 
             <p className="gd-result-big font-display">

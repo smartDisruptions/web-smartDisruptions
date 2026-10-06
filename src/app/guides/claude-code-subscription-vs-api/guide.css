@@ -2712,3 +2712,80 @@ div.gd-lede p + p,
   font-weight: 700;
   color: var(--sd-text-secondary);
 }
+
+/* Plan meter: how much of a week's limit has been used. Always visible,
+   phones included, because it is the point of the meter. */
+.gd-meter-fill-plan {
+  background: var(--gd-plan);
+}
+.gd-meter-used {
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--gd-plan-ink);
+}
+.gd-meter-plan .gd-meter-flat {
+  display: none;
+}
+
+/* The 15% → $7 calculation, step by step. */
+.gd-calcbox {
+  width: 100%;
+  max-width: 34rem;
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.15rem 1.25rem;
+  border-radius: var(--radius-xl);
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  border-top: 4px solid var(--gd-plan);
+  text-align: left;
+}
+.gd-calcbox-h {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1.2;
+  color: var(--sd-text-primary);
+}
+.gd-calcbox-steps {
+  display: grid;
+  gap: 0.5rem;
+  counter-reset: gd-calc;
+}
+.gd-calcbox-steps li {
+  counter-increment: gd-calc;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.2rem 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--sd-border-strong);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.gd-calcbox-steps li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.gd-calcbox-steps li span::before {
+  content: counter(gd-calc) '. ';
+  font-weight: 800;
+  color: var(--sd-text-secondary);
+}
+.gd-calcbox-steps span {
+  color: var(--sd-text-secondary);
+}
+.gd-calcbox-steps b {
+  font-weight: 800;
+  color: var(--gd-plan-ink);
+  white-space: nowrap;
+}
+.gd-calcbox-steps li:last-child b {
+  font-size: 1.1rem;
+}
+.gd-calcbox-note {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--sd-text-secondary);
+}
