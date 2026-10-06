@@ -7,9 +7,9 @@ import { useEffect } from 'react';
  * otherwise each need their own listener:
  *
  *  1. Liveness — every <Kiru> (and every <Pip>, the guild mouse) idles only
- *     while on screen. An IntersectionObserver sets `data-live` and pauses
- *     his SMIL tails when he scrolls away, so a page full of ninjas costs
- *     nothing per frame.
+ *     while on screen. An IntersectionObserver sets `data-live`, which is
+ *     what their CSS loops (Kiru's headband included) run on, so a page full
+ *     of ninjas costs nothing per frame.
  *  2. Gaze — visible ninjas and mice look at the pointer (or the last
  *     touch). One rAF-throttled listener writes --lx/--ly on each; CSS moves
  *     the pupils.
@@ -44,7 +44,6 @@ export default function SiteFX() {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const visible = new Set<SVGSVGElement>();
-    const begun = new WeakSet<SVGSVGElement>();
 
     // Pip's scroll hold. A passive listener catches the first scroll event
     // (just the first, where scrollend exists, so nothing runs per scrolling
@@ -84,16 +83,10 @@ export default function SiteFX() {
       const isPip = svg.dataset.pip !== undefined;
       if (on) {
         svg.setAttribute('data-live', '');
-        if (!begun.has(svg)) {
-          begun.add(svg);
-          svg.querySelectorAll<SVGAnimationElement>('animate').forEach((a) => a.beginElement?.());
-        }
-        svg.unpauseAnimations?.();
         visible.add(svg);
         if (isPip) pips.add(svg);
       } else {
         svg.removeAttribute('data-live');
-        svg.pauseAnimations?.();
         visible.delete(svg);
         if (isPip) {
           pips.delete(svg);
@@ -119,7 +112,6 @@ export default function SiteFX() {
       document.querySelectorAll<SVGSVGElement>('svg[data-kiru], svg[data-pip]').forEach((svg) => {
         if (seen.has(svg)) return;
         seen.add(svg);
-        svg.pauseAnimations?.();
         io.observe(svg);
         // The scroll hold is armed only on a page that shows Pip.
         if (!armed && svg.dataset.pip !== undefined) {

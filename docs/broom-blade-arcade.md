@@ -65,6 +65,6 @@ All of these came from CDP traces at 4x CPU in Chromium 141.
    may paint outside its box, or the containment will clip it.
 
 At rest with the room on screen, the page now does no style, layout or paint work at
-all. Kiru's headband tails are SMIL, which never composites: wherever he is on screen
-(the top of the page, the stair), they cost a main frame every vsync. That is
-site-wide and older than this room.
+all. Kiru's headband tails used to be SMIL, which never composites and cost a main
+frame every vsync wherever he was on screen; since web PR #118 they are transforms
+like the rest of his loops (`scripts/build-kiru-tails.mjs`).
