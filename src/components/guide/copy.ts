@@ -164,3 +164,24 @@ export const LEVELS: Level[] = [
   { id: 'sort', n: 5, label: 'Your turn', kanji: '遊' },
   { id: 'month', n: 6, label: 'Your month', kanji: '月' },
 ];
+
+// My real receipt, from the vault (AI Builder Skill Tree, "My plan vs the
+// API", checked 2026-10-06). API figures are Claude Code's own cost tracker;
+// the plan share is a reading of Settings → Usage, which also counts other
+// sessions that week, so it is approximate.
+export const RECEIPT = {
+  dates: 'Oct 2–6, 2026',
+  days: 4,
+  helpers: 10,
+  lines: [
+    { model: 'Sonnet 5.5', cost: 408.67 },
+    { model: 'Opus 5.5', cost: 126.98 },
+    { model: 'Haiku', cost: 0.29 },
+  ],
+  apiTotal: 535.94,
+  planShare: 15,
+  planCost: 7,
+  times: 75,
+  rereadShare: 61,
+  rereadPerStep: '440,000',
+};

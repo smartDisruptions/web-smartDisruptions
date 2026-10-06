@@ -16,6 +16,7 @@ import {
   EXCERPT,
   LEVELS,
   PRICES,
+  RECEIPT,
   SORT,
   TITLE,
   WORDS,
@@ -66,7 +67,6 @@ const jsonLd = {
 
 const usd = (n: number) => `$${n}`;
 const dayTotal = DAY.reduce((s, t) => s + t.cost, 0);
-const monthTotal = Math.round(dayTotal * 20);
 
 function LevelHead({ n, children }: { n: number; children: ReactNode }) {
   const level = LEVELS[n - 1];
@@ -148,7 +148,7 @@ export default function GuidePage() {
               <span className="gd-odo-top">Per-use meter</span>
               <span className="gd-odo-digits">
                 <span className="gd-odo-sign">$</span>
-                {String(monthTotal)
+                {String(Math.round(RECEIPT.apiTotal))
                   .split('')
                   .map((d, i) => (
                     <span
@@ -169,7 +169,9 @@ export default function GuidePage() {
                     </span>
                   ))}
               </span>
-              <span className="gd-odo-foot">a busy month, paid per use</span>
+              <span className="gd-odo-foot">
+                one real 4-day build, at API prices
+              </span>
             </div>
             <Kiru pose="build" className="gd-hero-kiru" />
           </div>
@@ -302,7 +304,8 @@ export default function GuidePage() {
               <p className="font-read">
                 Claude Code comes included. You pay the same price whether you
                 build for one hour this month or forty. Max gives you a lot more
-                room than Pro before you reach your limit.
+                room than Pro before you reach your limit. I build on the $200
+                Max plan.
               </p>
               <p className="gd-way-like">
                 <span>Feels like</span>&#32;a phone plan. One price, up to your
@@ -364,38 +367,57 @@ export default function GuidePage() {
 
           <div className="gd-result">
             <p className="gd-result-line font-read">
-              That&rsquo;s one day: about{' '}
-              <strong>${dayTotal.toFixed(0)}</strong> at per-use prices, by my
-              rough math. Do that twenty days in a month and the meter reads
-              about <strong>${monthTotal}</strong>.
+              That made-up day comes to about{' '}
+              <strong>${dayTotal.toFixed(0)}</strong>&#32;at per-use prices, by
+              my rough math. Here&rsquo;s a real one.
             </p>
-            <div
-              className="gd-vs"
-              aria-label={`$${monthTotal} paid per use, compared with $100 to $200 on a plan`}
-            >
-              <span className="gd-vs-side" data-tone="api">
-                <b className="font-display tabular-nums">${monthTotal}</b>
-                <span>paid per use</span>
-              </span>
-              <span className="gd-vs-mid" aria-hidden>
-                vs
-              </span>
-              <span className="gd-vs-side" data-tone="plan">
-                <b className="font-display tabular-nums">
-                  ${PRICES.maxLow}–{PRICES.maxHigh}
-                </b>
-                <span>on a plan</span>
-              </span>
-            </div>
+
+            <figure className="gd-receipt">
+              <figcaption className="gd-receipt-head">
+                <span>My receipt</span>
+                <span>{RECEIPT.dates}</span>
+              </figcaption>
+              <p className="gd-receipt-what">
+                {RECEIPT.days} days building the levels for my rhythm game, with{' '}
+                {RECEIPT.helpers} helper agents working at once, then a long
+                review of my site.
+              </p>
+              <dl className="gd-receipt-lines">
+                {RECEIPT.lines.map((l) => (
+                  <div key={l.model}>
+                    <dt>{l.model}</dt>
+                    <dd className="tabular-nums">${l.cost.toFixed(2)}</dd>
+                  </div>
+                ))}
+                <div className="gd-receipt-total" data-tone="api">
+                  <dt>At API prices</dt>
+                  <dd className="tabular-nums">
+                    ${RECEIPT.apiTotal.toFixed(2)}
+                  </dd>
+                </div>
+                <div className="gd-receipt-total" data-tone="plan">
+                  <dt>On my ${PRICES.maxHigh} Max plan</dt>
+                  <dd className="tabular-nums">about ${RECEIPT.planCost}</dd>
+                </div>
+              </dl>
+              <p className="gd-receipt-note">
+                Claude Code keeps its own count of what a session would cost at
+                API prices. The same session used about {RECEIPT.planShare}% of
+                my plan&rsquo;s week, which is about ${RECEIPT.planCost} of the
+                ${PRICES.maxHigh}. That {RECEIPT.planShare}% is my best reading:
+                it also counts my other sessions that week.
+              </p>
+            </figure>
+
+            <p className="gd-result-big font-display">
+              About {RECEIPT.times} times less.
+            </p>
             <p className="gd-result-line font-read">
-              A month that busy is more than Pro is built for, so you&rsquo;d
-              probably want Max. Even then, ${PRICES.maxLow} or $
-              {PRICES.maxHigh} is a long way from ${monthTotal}. For one person
-              building on their own, that gap is a big deal.
+              For one person building on their own, that gap is a big deal.
             </p>
             <p className="gd-result-line gd-result-catch font-read">
-              That $0 has one catch: plans have usage limits. I&rsquo;ll come
-              back to that at the end.
+              That $0 extra has one catch: plans have usage limits. I&rsquo;ll
+              come back to that at the end.
             </p>
           </div>
         </section>
@@ -465,6 +487,20 @@ export default function GuidePage() {
                 can be a great feature. It&rsquo;s worth choosing on purpose,
                 because it&rsquo;s the one part of a project that costs more as
                 more people use it.
+              </p>
+              <p>
+                Anthropic&rsquo;s terms draw the same line. They say developers
+                may not{' '}
+                <q>
+                  route requests through Free, Pro, or Max plan credentials on
+                  behalf of their users.
+                </q>{' '}
+                Building something to sell, or a site for a client, on your plan
+                is fine. What matters is who is using Claude: you building, or
+                your product answering someone else.
+              </p>
+              <p className="gd-sheet-small">
+                I read the terms in October 2026. This isn&rsquo;t legal advice.
               </p>
             </div>
             <div className="sd-sheet gd-sheet gd-callback font-read">
@@ -552,6 +588,10 @@ export default function GuidePage() {
               sessions on big projects cost more. Your hours will look different
               from mine, and that&rsquo;s fine.
             </p>
+            <p>
+              My real receipt in Level 3 ran much heavier than this, because{' '}
+              {RECEIPT.helpers} helper agents were working at the same time.
+            </p>
           </details>
         </section>
 
@@ -589,13 +629,20 @@ export default function GuidePage() {
               </p>
             </li>
             <li>
-              <h3>Prices move</h3>
+              <h3>Start fresh for each task</h3>
               <p className="font-read">
-                Everything here is the price Anthropic posted on October 5,
-                2026. When it changes, I&rsquo;ll update this page.
+                {RECEIPT.rereadShare}% of my ${Math.round(RECEIPT.apiTotal)}{' '}
+                session was Claude rereading the conversation, about{' '}
+                {RECEIPT.rereadPerStep}&#32;tokens every step. A new session for
+                each task keeps that small, so you stay further from your
+                plan&rsquo;s limits.
               </p>
             </li>
           </ul>
+          <p className="gd-fine-date font-read">
+            Prices are the ones Anthropic posted on October 5, 2026. When they
+            change, I&rsquo;ll update this page.
+          </p>
 
           <div className="gd-try">
             <Kiru pose="game" className="gd-try-kiru" />

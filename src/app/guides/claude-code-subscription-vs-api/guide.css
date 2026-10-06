@@ -2400,3 +2400,114 @@
       border-color 0.35s ease;
   }
 }
+
+/* Level 3: the real receipt, printed on till paper. Same paper in both
+   themes, like the pass on the title screen. */
+.gd-receipt {
+  width: 100%;
+  max-width: 26rem;
+  margin: 0;
+  padding: 1.25rem 1.35rem 1.9rem;
+  background: var(--sd-sticky);
+  color: var(--sd-sticky-ink);
+  text-align: left;
+  font-family: var(--font-mono);
+  rotate: -0.8deg;
+  box-shadow: 0 20px 36px -26px var(--sd-card-shadow);
+  /* Torn bottom edge. */
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+      bottom / 14px 10px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+      bottom / 14px 10px repeat-x;
+}
+.gd-receipt-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px dashed rgba(31, 26, 20, 0.3);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.gd-receipt-what {
+  margin-top: 0.75rem;
+  font-family: var(--font-read);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.gd-receipt-lines {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+  font-size: 0.88rem;
+}
+.gd-receipt-lines > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.gd-receipt-lines dt {
+  flex: none;
+}
+.gd-receipt-lines > div::before {
+  content: '';
+  order: 1;
+  flex: 1;
+  border-bottom: 1px dotted rgba(31, 26, 20, 0.35);
+  translate: 0 -0.25em;
+}
+.gd-receipt-lines dd {
+  order: 2;
+  margin: 0;
+  font-weight: 700;
+}
+.gd-receipt-total {
+  padding-top: 0.45rem;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.gd-receipt-total[data-tone='api'] {
+  margin-top: 0.3rem;
+  border-top: 2px dashed rgba(31, 26, 20, 0.3);
+}
+.gd-receipt-total[data-tone='api'] dd {
+  color: #8a5a00;
+}
+.gd-receipt-total[data-tone='plan'] dd {
+  color: #1d4ed8;
+}
+.gd-receipt-note {
+  margin-top: 0.9rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #5a4e3c;
+}
+.gd-result-big {
+  font-size: clamp(1.9rem, 6vw, 3rem);
+  line-height: 1.05;
+  color: var(--gd-plan-ink);
+}
+.gd-sheet .gd-sheet-small,
+.gd-fine-date {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--sd-text-secondary);
+}
+.gd-fine-date {
+  margin-top: -0.5rem;
+}
+.gd-sheet q {
+  font-style: italic;
+}
+@media (hover: none) and (pointer: coarse) {
+  .gd-receipt {
+    box-shadow: none;
+  }
+}
