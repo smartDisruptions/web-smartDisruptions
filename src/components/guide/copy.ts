@@ -49,7 +49,7 @@ export const WORDS: Word[] = [
     term: 'Usage limit',
     icon: 'clock',
     plain:
-      'Your plan has a cap on how much you can use. The cap resets on a schedule, and there is also a weekly cap. If you hit it, you wait for the reset or move to a bigger plan. The price never jumps on you.',
+      "Your plan has a cap on how much you can use. The cap resets on a schedule, and there is also a weekly cap. If you hit it, you can't use Claude until it resets, unless you move to a bigger plan or pay per use for more. The price of your plan never jumps on you.",
   },
   {
     term: 'API (paying per use)',
@@ -170,7 +170,7 @@ export type Level = { id: string; n: number; label: string; kanji: string };
 export const LEVELS: Level[] = [
   { id: 'why', n: 1, label: 'The question', kanji: '探' },
   { id: 'pay', n: 2, label: 'Two ways to pay', kanji: '道' },
-  { id: 'day', n: 3, label: 'Where my $536 went', kanji: '作' },
+  { id: 'day', n: 3, label: '4 days, priced two ways', kanji: '作' },
   { id: 'others', n: 4, label: "Other people's bills", kanji: '学' },
   { id: 'line', n: 5, label: 'Do you need to pay per use?', kanji: '岐' },
   { id: 'sort', n: 6, label: 'Your turn', kanji: '遊' },
@@ -237,7 +237,7 @@ export const BILLS: Bill[] = [
     who: 'A programmer who writes online as ksred',
     what: 'They used a free tracking tool to add up eight months of their Claude Code use. Paid per use, it would have cost over $15,000. They were on a monthly plan instead and paid about $800 in total.',
     lesson:
-      'More than 90% of their usage was Claude rereading earlier work. That is the same pattern as my own receipt.',
+      'More than 90% of their usage was Claude rereading earlier work. That is the same pattern as my own measurement.',
     source: 'ksred.com: Claude Code Pricing Guide',
     url: 'https://www.ksred.com/claude-code-pricing-guide-which-plan-actually-saves-you-money/',
   },

@@ -2706,3 +2706,9 @@ div.gd-lede p + p,
 .gd-finish > .gd-h3 {
   margin-top: 0.5rem;
 }
+.gd-meter-num small {
+  font-family: var(--font-sans);
+  font-size: 0.42em;
+  font-weight: 700;
+  color: var(--sd-text-secondary);
+}

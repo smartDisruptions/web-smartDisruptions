@@ -82,8 +82,8 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
       <div className="gd-day-meters">
         <div className="gd-meter gd-meter-api">
           <span className="gd-meter-label">
-            <span className="gd-label-long">If I had paid per use</span>
-            <span className="gd-label-short">Per use</span>
+            <span className="gd-label-long">Price if I had paid per use</span>
+            <span className="gd-label-short">If paid per use</span>
           </span>
           <span className="gd-meter-num tabular-nums" ref={numRef}>
             {money(0)}
@@ -96,23 +96,26 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
           </span>
           <span className="gd-meter-note">
             {active < 0
-              ? 'My real 4 days of building'
+              ? 'A price comparison. I never paid this.'
               : `${active + 1} of ${tasks.length} costs added`}
           </span>
         </div>
         <div className="gd-meter gd-meter-plan">
           <span className="gd-meter-label">
-            <span className="gd-label-long">Extra on my plan</span>
-            <span className="gd-label-short">My plan</span>
+            <span className="gd-label-long">What I actually paid</span>
+            <span className="gd-label-short">Actually paid</span>
           </span>
-          <span className="gd-meter-num tabular-nums">{money(0)}</span>
+          <span className="gd-meter-num tabular-nums">
+            {'$200'}
+            <small>{' a month'}</small>
+          </span>
           <span className="gd-meter-bar" aria-hidden>
             <span className="gd-meter-flat" />
           </span>
           <span className="gd-meter-note">
             {done
-              ? "Still $0 extra. It used about 15% of my plan's weekly limit."
-              : 'Covered by my $200 monthly plan'}
+              ? 'Same $200 a month. No extra charge for these 4 days.'
+              : 'My flat monthly plan. No extra charge for these days.'}
           </span>
         </div>
       </div>
@@ -120,7 +123,7 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
       <p className="sr-only" aria-live="polite">
         {active < 0
           ? ''
-          : `${tasks[active].title}: ${money(target)} so far if paid per use, $0 extra on my plan.`}
+          : `${tasks[active].title}: ${money(target)} so far at pay-per-use prices. No extra charge on my $200 plan.`}
       </p>
 
       <ol className="gd-day-list" ref={listRef}>
@@ -144,7 +147,9 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
               <span className="gd-chip gd-chip-api">
                 about {money(t.cost)} if paid per use
               </span>
-              <span className="gd-chip gd-chip-plan">+$0 on my plan</span>
+              <span className="gd-chip gd-chip-plan">
+                No extra charge on my plan
+              </span>
             </p>
           </li>
         ))}

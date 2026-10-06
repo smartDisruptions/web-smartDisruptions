@@ -152,7 +152,7 @@ export default function GuidePage() {
               <Seal char="作" className="gd-ticket-seal" />
             </div>
             <div className="gd-odo">
-              <span className="gd-odo-top">Pay per use</span>
+              <span className="gd-odo-top">Price if paid per use</span>
               <span className="gd-odo-digits">
                 <span className="gd-odo-sign">$</span>
                 {String(total)
@@ -177,7 +177,7 @@ export default function GuidePage() {
                   ))}
               </span>
               <span className="gd-odo-foot">
-                my 4 days of building, if paid per use
+                for my 4-day build. I never paid it.
               </span>
             </div>
             <Kiru pose="build" className="gd-hero-kiru" />
@@ -202,7 +202,8 @@ export default function GuidePage() {
               <p className="gd-lane-note">
                 {usd(PRICES.pro)} to {usd(PRICES.maxHigh)}&#32;a month. The
                 price stays the same no matter how much you build, up to the
-                plan&rsquo;s limit.
+                plan&rsquo;s limit. Past the limit, Claude stops until it
+                resets, unless you upgrade or pay per use for more.
               </p>
             </div>
             <span className="gd-fork" aria-hidden>
@@ -318,7 +319,11 @@ export default function GuidePage() {
                   </dd>
                 </div>
                 <div>
-                  <dt>Share of my $200 plan it used</dt>
+                  <dt>What I actually paid</dt>
+                  <dd>My usual $200 a month, nothing extra</dd>
+                </div>
+                <div>
+                  <dt>Share of that $200 it used</dt>
                   <dd className="tabular-nums" data-tone="plan">
                     about ${RECEIPT.planCost}
                   </dd>
@@ -367,8 +372,10 @@ export default function GuidePage() {
                 limit. I&rsquo;m on the $200 Max plan.
               </p>
               <p className="gd-way-like">
-                <span>Feels like</span>&#32;a phone plan. One price each month,
-                and if you use it all up, it resets.
+                <span>Feels like</span>&#32;a phone plan with a data cap. One
+                price each month. If you use it all up, you can&rsquo;t use
+                Claude again until the limit resets, unless you upgrade or pay
+                per use for more.
               </p>
             </article>
 
@@ -428,17 +435,22 @@ export default function GuidePage() {
 
         {/* ── Level 3 ─────────────────────────────────────────────────── */}
         <section id="day" className="gd-level" aria-labelledby="day-h">
-          <LevelHead n={3}>Where my ${total} actually went</LevelHead>
+          <LevelHead n={3}>My 4 days of building, priced two ways</LevelHead>
           <div className="gd-lede font-read">
             <p>
               In October I spent 4 days building levels for my rhythm game with
               Claude Code.
             </p>
             <p>
-              Claude Code keeps a running total of what that work would have
-              cost if I had paid per use. It came to ${total}. Below, that total
-              is split into the four things Claude was actually doing. Scroll
-              down and watch both meters.
+              Claude Code keeps a running count of what that work would have
+              cost at pay-per-use prices. It came to ${total}. I didn&rsquo;t
+              pay that. I&rsquo;m on the $200-a-month plan, and these 4 days
+              didn&rsquo;t add anything to my bill.
+            </p>
+            <p>
+              Below, the ${total} price is split into the four things Claude was
+              doing. As you scroll, the left meter adds up the pay-per-use
+              price. The right meter shows what I actually paid.
             </p>
           </div>
 
@@ -446,14 +458,14 @@ export default function GuidePage() {
 
           <div className="gd-result">
             <p className="gd-result-line font-read">
-              That&rsquo;s the whole ${total}. Only about ${codeShare}&#32;of it
-              was Claude writing the code. Here&rsquo;s the receipt it came
-              from.
+              That&rsquo;s the full ${total} pay-per-use price. Only about $
+              {codeShare}&#32;of it was Claude writing the code. Here&rsquo;s
+              the price check it came from.
             </p>
 
             <figure className="gd-receipt">
               <figcaption className="gd-receipt-head">
-                <span>My receipt</span>
+                <span>Price check</span>
                 <span>{RECEIPT.dates}</span>
               </figcaption>
               <p className="gd-receipt-what">
@@ -473,18 +485,26 @@ export default function GuidePage() {
                   </div>
                 ))}
                 <div className="gd-receipt-total" data-tone="api">
-                  <dt>If I had paid per use</dt>
+                  <dt>Price if I had paid per use</dt>
                   <dd className="tabular-nums">
                     ${RECEIPT.apiTotal.toFixed(2)}
                   </dd>
                 </div>
                 <div className="gd-receipt-total" data-tone="plan">
-                  <dt>What it used of my ${PRICES.maxHigh} plan</dt>
+                  <dt>What I actually paid</dt>
+                  <dd className="tabular-nums">$200 a month</dd>
+                </div>
+                <div className="gd-receipt-total" data-tone="plan">
+                  <dt>Extra charge for these 4 days</dt>
+                  <dd className="tabular-nums">None</dd>
+                </div>
+                <div className="gd-receipt-total" data-tone="plan">
+                  <dt>Share of my $200 these days used</dt>
                   <dd className="tabular-nums">about ${RECEIPT.planCost}</dd>
                 </div>
               </dl>
               <div className="gd-receipt-note">
-                <p>How I got about ${RECEIPT.planCost}:</p>
+                <p>How I got the share of about ${RECEIPT.planCost}:</p>
                 <ol>
                   <li>
                     My plan costs ${PRICES.maxHigh}&#32;a month. That&rsquo;s
@@ -508,7 +528,7 @@ export default function GuidePage() {
             </figure>
 
             <p className="gd-result-big font-display">
-              ${total} versus about ${RECEIPT.planCost}.
+              A ${total} price, covered by about ${RECEIPT.planCost} of my plan.
             </p>
             <p className="gd-result-line font-read">
               Paying per use would have cost about {RECEIPT.times} times more.
@@ -516,13 +536,14 @@ export default function GuidePage() {
               cost ${total} if paid per use.
             </p>
             <p className="gd-result-line font-read">
-              To be clear about the two numbers: the work cost me nothing on top
-              of the $200 I already pay each month. The $7 is just the share of
-              that $200 it used up.
+              To be clear: I never paid ${total}. I paid my usual $200 for the
+              month, and nothing extra. The $7 is the part of that $200 these 4
+              days used up.
             </p>
             <p className="gd-result-line gd-result-catch font-read">
-              The catch: plans have usage limits. If you use too much in a week,
-              you wait for it to reset. More on that at the end.
+              The catch: plans have usage limits. If you hit the weekly limit,
+              you can&rsquo;t use Claude again until it resets, unless you
+              upgrade or pay per use for more. More on that at the end.
             </p>
           </div>
         </section>
@@ -573,7 +594,7 @@ export default function GuidePage() {
             <div className="sd-sheet gd-sheet font-read">
               <h3 className="gd-h4">Same causes, different bill</h3>
               <p>
-                Most of these stories, and my receipt, have the same causes.
+                Most of these stories, and my measurement, have the same causes.
                 Most of the cost is Claude rereading a long conversation. The
                 rest comes from helper agents, from leaving Claude running, and
                 from using the biggest version of Claude.
@@ -581,8 +602,8 @@ export default function GuidePage() {
               <p>
                 The difference is who pays for it. When you pay per use, every
                 reread is a charge. On a monthly plan, it comes out of a weekly
-                allowance you&rsquo;ve already paid for. My ${total} of work
-                used about ${RECEIPT.planCost} of my plan.
+                allowance you&rsquo;ve already paid for. Work priced at ${total}{' '}
+                per use took about ${RECEIPT.planCost} of my $200 plan.
               </p>
               <p>
                 Paying per use is the right choice for plenty of people, like
@@ -602,7 +623,7 @@ export default function GuidePage() {
                 <li>
                   <strong>Use helper agents only when they really help.</strong>
                   &#32; My one day with 10 of them cost about ${RECEIPT.bigDay}
-                  &#32;of my ${total}.
+                  &#32;of the ${total} per-use price.
                 </li>
                 <li>
                   <strong>
@@ -782,8 +803,8 @@ export default function GuidePage() {
           <details className="gd-how font-read">
             <summary>How I got these numbers</summary>
             <p>
-              All of them come from my one receipt in Level 3, which covered 4
-              days and ${total}.
+              All of them come from my one price check in Level 3, which covered
+              4 days and ${total}.
             </p>
             <ul>
               <li>
@@ -876,8 +897,9 @@ export default function GuidePage() {
               <h3>Plans have limits</h3>
               <p className="font-read">
                 Your plan&rsquo;s usage resets on a schedule, including a weekly
-                limit. If you hit the limit, you wait for it to reset or move to
-                a bigger plan. The price never jumps on you.
+                limit. If you hit the limit, you can&rsquo;t use Claude until it
+                resets, unless you move to a bigger plan or pay per use for
+                more. The price of your plan never jumps on you.
               </p>
             </li>
             <li>
