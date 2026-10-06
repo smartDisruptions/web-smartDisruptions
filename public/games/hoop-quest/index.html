@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hoop Quest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Flick basketballs at a hoop in a candlelit cellar. Thirty balls, a basket that starts to move after ten, and three points for a Sky Shot over the backboard. Free to play.">
+<link rel="canonical" href="https://smartdisruptions.com/games/hoop-quest">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Smart Disruptions">
+<meta property="og:title" content="Hoop Quest">
+<meta property="og:description" content="Thumb-flick basketball in the Broom &amp; Blade cellar: thirty balls, a basket that starts to move after ten, and Pip the guild mouse cheering every make from the backboard. A free game from the Broom &amp; Blade Arcade.">
+<meta property="og:url" content="https://smartdisruptions.com/games/hoop-quest">
+<meta property="og:image" content="https://smartdisruptions.com/images/apps/hoop-quest-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Hoop Quest title card in a candlelit cellar, with bunting, string lights, a broom and a crate of basketballs either side of the booth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1A120B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;900&family=Alegreya+Sans:wght@500;700;800&display=swap">
+<style>
+:root{
+  --night:#1A120B; --wood:#2A1C10; --oak:#4A3520; --oak-light:#8C7659;
+  --gold:#E8B24A; --gold-deep:#B07E24; --ember:#D4622F; --moss:#8FAE5D;
+  --cream:#F0E2C0; --parch:#EDDDB5; --rune:#9B6BD1; --blood:#8F2B1C;
+  --display:'Alegreya','Georgia',serif; --ui:'Alegreya Sans','Trebuchet MS',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--night);color:var(--cream);font-family:var(--ui);
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;overscroll-behavior:none}
+/* the stage keeps clear of a notch and the home bar (the page can run full screen from the home screen) */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+canvas{display:block;touch-action:none}
+/* the dim behind a card covers the booth (--cw, the canvas width) and only half-dims the cellar around it */
+.overlay{position:fixed;inset:0;display:flex;z-index:10;overflow-y:auto;
+  padding:max(24px,env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));
+  background:radial-gradient(ellipse at 50% 40%,rgba(42,28,16,.92),rgba(26,18,11,.97)) 50% 0/var(--cw,100%) 100% no-repeat,
+    linear-gradient(90deg,rgba(12,8,5,.5) calc(50% - var(--cw,100%)/2),transparent 0 calc(50% + var(--cw,100%)/2),rgba(12,8,5,.5) 0)}
+.overlay>.card{margin:auto}
+.overlay[hidden]{display:none}
+/* the way back to the arcade on smartdisruptions.com */
+.place{display:inline-flex;align-items:center;min-height:44px;margin:-16px 0 4px;padding:0 8px;border-radius:8px;
+  color:var(--parch);font-size:13px;font-weight:700;letter-spacing:.3px;text-decoration:none;opacity:.8}
+.place:hover{opacity:1;color:var(--gold)}
+.place:focus-visible,a.ghost:focus-visible,button:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px}
+a.ghost{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;padding:10px 18px;border:2px solid var(--oak);
+  border-radius:10px;color:var(--parch);font-family:var(--ui);font-weight:800;font-size:15px;letter-spacing:1px;text-transform:uppercase;text-decoration:none}
+a.ghost:hover{border-color:var(--gold-deep);color:var(--cream)}
+a.ghost:active{transform:translateY(3px)}
+/* wide screens: the booth stands in the cellar (static art, painted once, never animated) */
+.wings{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.card{width:min(360px,100%);background:linear-gradient(180deg,#3A2817,#241809);border:3px solid var(--gold-deep);
+  border-radius:14px;padding:26px 22px 22px;text-align:center;box-shadow:0 0 0 3px #120C07,0 24px 60px rgba(0,0,0,.7)}
+h1{font-family:var(--display);font-weight:900;color:var(--gold);font-size:38px;line-height:1;letter-spacing:1px;
+  text-shadow:0 2px 0 #7a5210,0 4px 12px rgba(0,0,0,.6)}
+.sub{font-family:var(--display);font-style:italic;color:var(--parch);opacity:.85;margin:8px 0 18px;font-size:17px}
+.rules{color:var(--parch);font-size:15px;line-height:1.5;margin-bottom:18px;text-align:left}
+.rules b{color:var(--gold)}
+.big{font-family:var(--display);font-size:64px;font-weight:900;color:var(--gold);line-height:1;margin:6px 0}
+.tag{display:inline-block;background:var(--wood);border:2px solid var(--oak);border-radius:999px;padding:4px 12px;
+  font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--parch);margin:4px 2px}
+.tag.win{border-color:var(--moss);color:var(--moss)} .tag.lose{border-color:var(--ember);color:var(--ember)}
+button{font-family:var(--ui);font-weight:800;font-size:19px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  border:none;border-radius:10px;padding:14px 26px;margin-top:12px;color:#1A120B;
+  background:linear-gradient(180deg,#F3D08A,var(--gold) 50%,var(--gold-deep));box-shadow:0 4px 0 #6b4a10,0 8px 18px rgba(0,0,0,.5)}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #6b4a10}
+button.ghost{background:none;color:var(--parch);box-shadow:none;border:2px solid var(--oak);font-size:15px;padding:10px 18px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#tune{position:fixed;left:50%;transform:translateX(-50%);top:54px;width:min(380px,calc(100% - 16px));z-index:20;
+  background:rgba(36,24,9,.9);border:2px solid var(--gold-deep);border-radius:12px;padding:6px 10px 6px;
+  box-shadow:0 12px 30px rgba(0,0,0,.6);font-size:13px;color:var(--parch)}
+#tune .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+#tune .presets{display:flex;gap:4px;flex:1;min-width:0}
+#tune .presets button{flex:1;min-width:0;white-space:nowrap;padding-left:2px;padding-right:2px}
+#tune .readout{margin-top:3px;font-size:11px;color:var(--gold);font-variant-numeric:tabular-nums}
+#tune[hidden]{display:none}
+.tune-head{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--gold);font-size:14px}
+#tune label{display:block;margin:2px 0 0;font-size:12px}
+#tune label span{float:right;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+#tune input[type=range]{width:100%;accent-color:var(--gold);margin:0;height:22px}
+#tune button.ghost{margin:0;padding:3px 7px;font-size:11px;letter-spacing:.5px}
+.card .line{display:flex;justify-content:space-between;gap:12px;padding:6px 2px;border-bottom:1px solid rgba(232,178,74,.18);font-size:15px}
+.card .line:last-child{border-bottom:none}
+.card .line b{color:var(--cream);font-variant-numeric:tabular-nums}
+.card .line.gold{margin-top:4px;border-top:2px solid var(--gold-deep);border-bottom:none;padding-top:10px;color:var(--gold)}
+.card .line.gold b{color:var(--gold);font-size:18px}
+.rank{font-family:var(--display);font-style:italic;font-weight:900;color:var(--cream);font-size:20px;margin:-4px 0 10px}
+.tag.best{border-color:var(--gold);color:var(--night);background:var(--gold);animation:glow 1.1s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){.tag.best{animation:none;box-shadow:0 0 14px rgba(232,178,74,.6)}}   /* the new-best glow holds still */
+@keyframes glow{from{box-shadow:0 0 0 rgba(232,178,74,0)}to{box-shadow:0 0 18px rgba(232,178,74,.8)}}
+.big.pop{animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(1.25)}to{transform:scale(1)}}
+.tune-note{margin-top:3px;font-size:11px;opacity:.85;display:flex;justify-content:space-between;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+<!-- wide screens: the booth in the candlelit cellar (static, decorative) -->
+<svg class="wings" aria-hidden="true" focusable="false" viewBox="0 0 2400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140d07"/><stop offset=".5" stop-color="#21170e"/><stop offset=".8" stop-color="#1a110a"/><stop offset="1" stop-color="#110b06"/></linearGradient>
+<pattern id="bricks" width="84.375" height="112.5" patternUnits="userSpaceOnUse" x="918.75" y="0">
+<rect width="84.375" height="1.4" fill="#0b0704" fill-opacity=".6"/><rect y="111.1" width="84.375" height="1.4" fill="#0b0704" fill-opacity=".6"/>
+<rect y="54.85" width="84.375" height="2.8" fill="#0b0704" fill-opacity=".6"/>
+<rect width="1.4" height="56.25" fill="#0b0704" fill-opacity=".6"/><rect x="82.975" width="1.4" height="56.25" fill="#0b0704" fill-opacity=".6"/>
+<rect x="40.79" y="56.25" width="2.8" height="56.25" fill="#0b0704" fill-opacity=".6"/>
+<rect x="1.4" y="1.4" width="81.6" height="3" fill="#ffd9a0" fill-opacity=".035"/><rect x="0" y="57.65" width="40.79" height="3" fill="#ffd9a0" fill-opacity=".035"/><rect x="43.6" y="57.65" width="40.8" height="3" fill="#ffd9a0" fill-opacity=".035"/>
+</pattern>
+<radialGradient id="torchlight"><stop offset="0" stop-color="#f0a050" stop-opacity=".34"/><stop offset=".4" stop-color="#e8b24a" stop-opacity=".12"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></radialGradient>
+<radialGradient id="halo"><stop offset="0" stop-color="#F3D08A" stop-opacity=".55"/><stop offset="1" stop-color="#F3D08A" stop-opacity="0"/></radialGradient>
+<linearGradient id="spillL" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#e8b24a" stop-opacity=".16"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></linearGradient>
+<linearGradient id="spillR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8b24a" stop-opacity=".16"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></linearGradient>
+<linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3520"/><stop offset="1" stop-color="#1c130b"/></linearGradient>
+<linearGradient id="oak" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1c130b"/><stop offset=".35" stop-color="#4a3520"/><stop offset=".55" stop-color="#5a4128"/><stop offset="1" stop-color="#241809"/></linearGradient>
+<linearGradient id="barrel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a1c10"/><stop offset=".4" stop-color="#6a4d2e"/><stop offset=".6" stop-color="#5a4128"/><stop offset="1" stop-color="#241809"/></linearGradient>
+<radialGradient id="ball" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#F08C6A"/><stop offset=".5" stop-color="#D4622F"/><stop offset="1" stop-color="#8F2B1C"/></radialGradient>
+<radialGradient id="baseball" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#FFFBEF"/><stop offset="1" stop-color="#C9B48E"/></radialGradient>
+<radialGradient id="vig" cx="1200" cy="430" r="1250" gradientUnits="userSpaceOnUse"><stop offset=".3" stop-color="#050302" stop-opacity="0"/><stop offset=".72" stop-color="#050302" stop-opacity=".55"/><stop offset="1" stop-color="#050302" stop-opacity=".9"/></radialGradient>
+<linearGradient id="ceiling" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050302" stop-opacity=".75"/><stop offset=".22" stop-color="#050302" stop-opacity="0"/></linearGradient>
+<radialGradient id="floorglow"><stop offset="0" stop-color="#e8b24a" stop-opacity=".22"/><stop offset="1" stop-color="#e8b24a" stop-opacity="0"/></radialGradient>
+<linearGradient id="shadeL" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+<linearGradient id="shadeR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+</defs><rect width="2400" height="900" fill="url(#wall)"/><rect width="2400" height="731.25" fill="url(#bricks)"/><rect x="588.75" width="330" height="731.25" fill="url(#spillL)"/><rect x="1481.25" width="330" height="731.25" fill="url(#spillR)"/><circle cx="560" cy="300" r="230" fill="url(#torchlight)"/><path d="M544 352h32l-6 14h-20z" fill="#2a1c10"/><rect x="553" y="320" width="14" height="70" rx="3" fill="#4A3520"/><rect x="553" y="320" width="4" height="70" fill="#5a4128"/><path d="M540 322h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="560" cy="300" rx="15" ry="27" fill="#D4622F"/><ellipse cx="560" cy="306" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="560" cy="310" rx="4" ry="7" fill="#FFF3D0"/><circle cx="1840" cy="300" r="230" fill="url(#torchlight)"/><path d="M1824 352h32l-6 14h-20z" fill="#2a1c10"/><rect x="1833" y="320" width="14" height="70" rx="3" fill="#4A3520"/><rect x="1833" y="320" width="4" height="70" fill="#5a4128"/><path d="M1820 322h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="1840" cy="300" rx="15" ry="27" fill="#D4622F"/><ellipse cx="1840" cy="306" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="1840" cy="310" rx="4" ry="7" fill="#FFF3D0"/><circle cx="150" cy="280" r="230" fill="url(#torchlight)"/><path d="M134 332h32l-6 14h-20z" fill="#2a1c10"/><rect x="143" y="300" width="14" height="70" rx="3" fill="#4A3520"/><rect x="143" y="300" width="4" height="70" fill="#5a4128"/><path d="M130 302h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="150" cy="280" rx="15" ry="27" fill="#D4622F"/><ellipse cx="150" cy="286" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="150" cy="290" rx="4" ry="7" fill="#FFF3D0"/><circle cx="2250" cy="280" r="230" fill="url(#torchlight)"/><path d="M2234 332h32l-6 14h-20z" fill="#2a1c10"/><rect x="2243" y="300" width="14" height="70" rx="3" fill="#4A3520"/><rect x="2243" y="300" width="4" height="70" fill="#5a4128"/><path d="M2230 302h40l-8 14h-24z" fill="#3b2a16"/><ellipse cx="2250" cy="280" rx="15" ry="27" fill="#D4622F"/><ellipse cx="2250" cy="286" rx="8" ry="15" fill="#F3D08A"/><ellipse cx="2250" cy="290" rx="4" ry="7" fill="#FFF3D0"/><rect y="731.25" width="2400" height="168.75" fill="url(#floor)"/><path d="M-600 731.25L-1590 900M-504 731.25L-1441.2 900M-408 731.25L-1292.4 900M-312 731.25L-1143.6 900M-216 731.25L-994.8 900M-120 731.25L-846 900M-24 731.25L-697.2 900M72 731.25L-548.4 900M168 731.25L-399.6 900M264 731.25L-250.8 900M360 731.25L-102 900M456 731.25L46.8 900M552 731.25L195.6 900M648 731.25L344.4 900M744 731.25L493.2 900M840 731.25L642 900M936 731.25L790.8 900M1032 731.25L939.6 900M1128 731.25L1088.4 900M1224 731.25L1237.2 900M1320 731.25L1386 900M1416 731.25L1534.8 900M1512 731.25L1683.6 900M1608 731.25L1832.4 900M1704 731.25L1981.2 900M1800 731.25L2130 900M1896 731.25L2278.8 900M1992 731.25L2427.6 900M2088 731.25L2576.4 900M2184 731.25L2725.2 900M2280 731.25L2874 900M2376 731.25L3022.8 900M2472 731.25L3171.6 900M2568 731.25L3320.4 900M2664 731.25L3469.2 900M2760 731.25L3618 900M2856 731.25L3766.8 900M2952 731.25L3915.6 900M0 768H2400M0 812H2400M0 866H2400" stroke="#0b0704" stroke-opacity=".45" stroke-width="2.6" fill="none"/><rect y="725.65" width="2400" height="8.4" fill="#120b06"/><ellipse cx="878.75" cy="761.25" rx="360" ry="70" fill="url(#floorglow)"/><ellipse cx="1521.25" cy="761.25" rx="360" ry="70" fill="url(#floorglow)"/><path d="M888.8 120Q640 250 300 70" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M882.1 123.4L839.2 142.5L860.8 175.5Z" fill="#8F2B1C"/><path d="M882.1 123.4L860.7 132.9L860.8 175.5Z" fill="#fff" fill-opacity=".08"/><path d="M825.4 147.6L780.8 160.8L803.3 196.7Z" fill="#F0E2C0"/><path d="M825.4 147.6L803.1 154.2L803.3 196.7Z" fill="#fff" fill-opacity=".08"/><path d="M766.5 164L720.2 171.5L743.5 210.3Z" fill="#8F2B1C"/><path d="M766.5 164L743.4 167.7L743.5 210.3Z" fill="#fff" fill-opacity=".08"/><path d="M705.3 172.9L657.3 174.5L681.5 216.2Z" fill="#F0E2C0"/><path d="M705.3 172.9L681.3 173.7L681.5 216.2Z" fill="#fff" fill-opacity=".08"/><path d="M641.9 174.1L592.2 169.8L617.2 214.5Z" fill="#E8B24A"/><path d="M641.9 174.1L617 171.9L617.2 214.5Z" fill="#fff" fill-opacity=".08"/><path d="M576.2 167.6L524.8 157.5L550.6 205.1Z" fill="#8F2B1C"/><path d="M576.2 167.6L550.5 162.6L550.6 205.1Z" fill="#fff" fill-opacity=".08"/><path d="M508.3 153.5L455.1 137.6L481.8 188.1Z" fill="#F0E2C0"/><path d="M508.3 153.5L481.7 145.5L481.8 188.1Z" fill="#fff" fill-opacity=".08"/><path d="M438.1 131.7L383.2 110L410.8 163.4Z" fill="#8F2B1C"/><path d="M438.1 131.7L410.6 120.8L410.8 163.4Z" fill="#fff" fill-opacity=".08"/><path d="M365.6 102.2L309.1 74.7L337.5 131Z" fill="#F0E2C0"/><path d="M365.6 102.2L337.3 88.5L337.5 131Z" fill="#fff" fill-opacity=".08"/><path d="M300 70Q150 150 -40 120" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M291 74.7L232.1 99.9L261.9 130.3Z" fill="#8F2B1C"/><path d="M291 74.7L261.5 87.3L261.9 130.3Z" fill="#fff" fill-opacity=".08"/><path d="M212.9 106.2L150.2 120.9L181.9 156.5Z" fill="#F0E2C0"/><path d="M212.9 106.2L181.5 113.5L181.9 156.5Z" fill="#fff" fill-opacity=".08"/><path d="M129.8 123.9L63.3 128.2L96.9 169Z" fill="#E8B24A"/><path d="M129.8 123.9L96.5 126L96.9 169Z" fill="#fff" fill-opacity=".08"/><path d="M41.7 127.9L-28.6 121.7L6.9 167.8Z" fill="#8F2B1C"/><path d="M41.7 127.9L6.5 124.8L6.9 167.8Z" fill="#fff" fill-opacity=".08"/><path d="M1511.2 120Q1760 250 2100 70" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M1517.9 123.4L1560.8 142.5L1539.2 175.5Z" fill="#F0E2C0"/><path d="M1517.9 123.4L1539.3 132.9L1539.2 175.5Z" fill="#fff" fill-opacity=".08"/><path d="M1574.6 147.6L1619.2 160.8L1596.7 196.7Z" fill="#8F2B1C"/><path d="M1574.6 147.6L1596.9 154.2L1596.7 196.7Z" fill="#fff" fill-opacity=".08"/><path d="M1633.5 164L1679.8 171.5L1656.5 210.3Z" fill="#F0E2C0"/><path d="M1633.5 164L1656.6 167.7L1656.5 210.3Z" fill="#fff" fill-opacity=".08"/><path d="M1694.7 172.9L1742.7 174.5L1718.5 216.2Z" fill="#E8B24A"/><path d="M1694.7 172.9L1718.7 173.7L1718.5 216.2Z" fill="#fff" fill-opacity=".08"/><path d="M1758.1 174.1L1807.8 169.8L1782.8 214.5Z" fill="#8F2B1C"/><path d="M1758.1 174.1L1783 171.9L1782.8 214.5Z" fill="#fff" fill-opacity=".08"/><path d="M1823.8 167.6L1875.2 157.5L1849.4 205.1Z" fill="#F0E2C0"/><path d="M1823.8 167.6L1849.5 162.6L1849.4 205.1Z" fill="#fff" fill-opacity=".08"/><path d="M1891.7 153.5L1944.9 137.6L1918.2 188.1Z" fill="#8F2B1C"/><path d="M1891.7 153.5L1918.3 145.5L1918.2 188.1Z" fill="#fff" fill-opacity=".08"/><path d="M1961.9 131.7L2016.8 110L1989.2 163.4Z" fill="#F0E2C0"/><path d="M1961.9 131.7L1989.4 120.8L1989.2 163.4Z" fill="#fff" fill-opacity=".08"/><path d="M2034.4 102.2L2090.9 74.7L2062.5 131Z" fill="#E8B24A"/><path d="M2034.4 102.2L2062.7 88.5L2062.5 131Z" fill="#fff" fill-opacity=".08"/><path d="M2100 70Q2250 150 2440 120" fill="none" stroke="#2a1c10" stroke-width="3"/><path d="M2109 74.7L2167.9 99.9L2138.1 130.3Z" fill="#8F2B1C"/><path d="M2109 74.7L2138.5 87.3L2138.1 130.3Z" fill="#fff" fill-opacity=".08"/><path d="M2187.1 106.2L2249.8 120.9L2218.1 156.5Z" fill="#F0E2C0"/><path d="M2187.1 106.2L2218.5 113.5L2218.1 156.5Z" fill="#fff" fill-opacity=".08"/><path d="M2270.2 123.9L2336.7 128.2L2303.1 169Z" fill="#8F2B1C"/><path d="M2270.2 123.9L2303.5 126L2303.1 169Z" fill="#fff" fill-opacity=".08"/><path d="M2358.3 127.9L2428.6 121.7L2393.1 167.8Z" fill="#F0E2C0"/><path d="M2358.3 127.9L2393.5 124.8L2393.1 167.8Z" fill="#fff" fill-opacity=".08"/><path d="M888.8 200Q560 360 60 190" fill="none" stroke="#1a120b" stroke-width="2.2"/><circle cx="863.2" cy="218.8" r="20" fill="url(#halo)"/><rect x="860.7" y="211.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="863.2" cy="220.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="861.7" cy="218.8" r="1.8" fill="#FFF3D0"/><circle cx="810.6" cy="239.5" r="20" fill="url(#halo)"/><rect x="808.1" y="232.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="810.6" cy="241.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="809.1" cy="239.5" r="1.8" fill="#FFF3D0"/><circle cx="756" cy="256.3" r="20" fill="url(#halo)"/><rect x="753.5" y="249.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="756" cy="258.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="754.5" cy="256.3" r="1.8" fill="#FFF3D0"/><circle cx="699.3" cy="269.2" r="20" fill="url(#halo)"/><rect x="696.8" y="262.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="699.3" cy="271.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="697.8" cy="269.2" r="1.8" fill="#FFF3D0"/><circle cx="640.6" cy="278.2" r="20" fill="url(#halo)"/><rect x="638.1" y="271.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="640.6" cy="280.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="639.1" cy="278.2" r="1.8" fill="#FFF3D0"/><circle cx="579.9" cy="283.3" r="20" fill="url(#halo)"/><rect x="577.4" y="276.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="579.9" cy="285.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="578.4" cy="283.3" r="1.8" fill="#FFF3D0"/><circle cx="517.2" cy="284.5" r="20" fill="url(#halo)"/><rect x="514.7" y="277.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="517.2" cy="286.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="515.7" cy="284.5" r="1.8" fill="#FFF3D0"/><circle cx="452.4" cy="281.8" r="20" fill="url(#halo)"/><rect x="449.9" y="274.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="452.4" cy="283.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="450.9" cy="281.8" r="1.8" fill="#FFF3D0"/><circle cx="385.6" cy="275.2" r="20" fill="url(#halo)"/><rect x="383.1" y="268.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="385.6" cy="277.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="384.1" cy="275.2" r="1.8" fill="#FFF3D0"/><circle cx="316.8" cy="264.6" r="20" fill="url(#halo)"/><rect x="314.3" y="257.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="316.8" cy="266.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="315.3" cy="264.6" r="1.8" fill="#FFF3D0"/><circle cx="246" cy="250.2" r="20" fill="url(#halo)"/><rect x="243.5" y="243.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="246" cy="252.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="244.5" cy="250.2" r="1.8" fill="#FFF3D0"/><circle cx="173.1" cy="231.8" r="20" fill="url(#halo)"/><rect x="170.6" y="224.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="173.1" cy="233.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="171.6" cy="231.8" r="1.8" fill="#FFF3D0"/><circle cx="98.2" cy="209.6" r="20" fill="url(#halo)"/><rect x="95.7" y="202.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="98.2" cy="211.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="96.7" cy="209.6" r="1.8" fill="#FFF3D0"/><path d="M1511.2 200Q1840 360 2340 190" fill="none" stroke="#1a120b" stroke-width="2.2"/><circle cx="1536.8" cy="218.8" r="20" fill="url(#halo)"/><rect x="1534.3" y="211.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="1536.8" cy="220.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1535.3" cy="218.8" r="1.8" fill="#FFF3D0"/><circle cx="1589.4" cy="239.5" r="20" fill="url(#halo)"/><rect x="1586.9" y="232.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="1589.4" cy="241.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1587.9" cy="239.5" r="1.8" fill="#FFF3D0"/><circle cx="1644" cy="256.3" r="20" fill="url(#halo)"/><rect x="1641.5" y="249.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="1644" cy="258.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1642.5" cy="256.3" r="1.8" fill="#FFF3D0"/><circle cx="1700.7" cy="269.2" r="20" fill="url(#halo)"/><rect x="1698.2" y="262.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="1700.7" cy="271.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1699.2" cy="269.2" r="1.8" fill="#FFF3D0"/><circle cx="1759.4" cy="278.2" r="20" fill="url(#halo)"/><rect x="1756.9" y="271.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="1759.4" cy="280.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1757.9" cy="278.2" r="1.8" fill="#FFF3D0"/><circle cx="1820.1" cy="283.3" r="20" fill="url(#halo)"/><rect x="1817.6" y="276.3" width="5" height="5" fill="#3b2a16"/><ellipse cx="1820.1" cy="285.3" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1818.6" cy="283.3" r="1.8" fill="#FFF3D0"/><circle cx="1882.8" cy="284.5" r="20" fill="url(#halo)"/><rect x="1880.3" y="277.5" width="5" height="5" fill="#3b2a16"/><ellipse cx="1882.8" cy="286.5" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1881.3" cy="284.5" r="1.8" fill="#FFF3D0"/><circle cx="1947.6" cy="281.8" r="20" fill="url(#halo)"/><rect x="1945.1" y="274.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="1947.6" cy="283.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="1946.1" cy="281.8" r="1.8" fill="#FFF3D0"/><circle cx="2014.4" cy="275.2" r="20" fill="url(#halo)"/><rect x="2011.9" y="268.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="2014.4" cy="277.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2012.9" cy="275.2" r="1.8" fill="#FFF3D0"/><circle cx="2083.2" cy="264.6" r="20" fill="url(#halo)"/><rect x="2080.7" y="257.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="2083.2" cy="266.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2081.7" cy="264.6" r="1.8" fill="#FFF3D0"/><circle cx="2154" cy="250.2" r="20" fill="url(#halo)"/><rect x="2151.5" y="243.2" width="5" height="5" fill="#3b2a16"/><ellipse cx="2154" cy="252.2" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2152.5" cy="250.2" r="1.8" fill="#FFF3D0"/><circle cx="2226.9" cy="231.8" r="20" fill="url(#halo)"/><rect x="2224.4" y="224.8" width="5" height="5" fill="#3b2a16"/><ellipse cx="2226.9" cy="233.8" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2225.4" cy="231.8" r="1.8" fill="#FFF3D0"/><circle cx="2301.8" cy="209.6" r="20" fill="url(#halo)"/><rect x="2299.3" y="202.6" width="5" height="5" fill="#3b2a16"/><ellipse cx="2301.8" cy="211.6" rx="5" ry="6.5" fill="#F3D08A"/><circle cx="2300.3" cy="209.6" r="1.8" fill="#FFF3D0"/><g transform="rotate(-11 560 840)"><rect x="555" y="510" width="10" height="250" rx="4" fill="#8C6A3E"/><rect x="555" y="510" width="3" height="250" fill="#a8885a"/><rect x="546" y="748" width="28" height="16" rx="3" fill="#B07E24"/><path d="M544 762L576 762L594 840L526 840Z" fill="#C9A45A"/><path d="M548.3 764L534 838" stroke="#8C6A3E" stroke-width="2"/><path d="M553.7 764L546 838" stroke="#8C6A3E" stroke-width="2"/><path d="M559.1 764L558 838" stroke="#8C6A3E" stroke-width="2"/><path d="M564.5 764L570 838" stroke="#8C6A3E" stroke-width="2"/><path d="M569.9 764L582 838" stroke="#8C6A3E" stroke-width="2"/></g><ellipse cx="760" cy="850" rx="92.8" ry="12" fill="#000" fill-opacity=".45"/><rect x="677" y="751" width="166" height="98" fill="#2a1c10"/><rect x="680" y="754" width="160" height="27.7" fill="#6a4d2e"/><rect x="680" y="784.7" width="160" height="27.7" fill="#6a4d2e"/><rect x="680" y="815.3" width="160" height="27.7" fill="#6a4d2e"/><path d="M686 760L834 840" stroke="#4a3520" stroke-width="12"/><rect x="680" y="754" width="12" height="92" fill="#4a3520"/><rect x="828" y="754" width="12" height="92" fill="#4a3520"/><rect x="680" y="754" width="160" height="3" fill="#8C6A3E"/><circle cx="686" cy="762" r="2.6" fill="#B07E24"/><circle cx="834" cy="762" r="2.6" fill="#B07E24"/><circle cx="686" cy="838" r="2.6" fill="#B07E24"/><circle cx="834" cy="838" r="2.6" fill="#B07E24"/><circle cx="712" cy="726" r="30" fill="url(#ball)"/><g transform="rotate(20 712 726)" stroke="#E8B24A" stroke-width="2.7" fill="none" ><path d="M682 726H742M712 696V756"/><path d="M693.4 702.6Q706.6 726 693.4 749.4"/><path d="M730.6 702.6Q717.4 726 730.6 749.4"/></g><circle cx="712" cy="726" r="29" fill="none" stroke="#1a120b" stroke-opacity=".7" stroke-width="2.4"/><circle cx="774" cy="722" r="31" fill="url(#ball)"/><g transform="rotate(-15 774 722)" stroke="#E8B24A" stroke-width="2.8" fill="none" ><path d="M743 722H805M774 691V753"/><path d="M754.8 697.8Q768.4 722 754.8 746.2"/><path d="M793.2 697.8Q779.6 722 793.2 746.2"/></g><circle cx="774" cy="722" r="30" fill="none" stroke="#1a120b" stroke-opacity=".7" stroke-width="2.4"/><circle cx="742" cy="678" r="30" fill="url(#ball)"/><g transform="rotate(40 742 678)" stroke="#E8B24A" stroke-width="2.7" fill="none" ><path d="M712 678H772M742 648V708"/><path d="M723.4 654.6Q736.6 678 723.4 701.4"/><path d="M760.6 654.6Q747.4 678 760.6 701.4"/></g><circle cx="742" cy="678" r="29" fill="none" stroke="#1a120b" stroke-opacity=".7" stroke-width="2.4"/><ellipse cx="1700" cy="853.8" rx="58.5" ry="11.4" fill="#000" fill-opacity=".45"/><path d="M1656.3 713.2Q1641.1 778.8 1656.3 846.2Q1700 859.5 1743.7 846.2Q1758.9 778.8 1743.7 713.2Z" fill="url(#barrel)"/><path d="M1671.5 715.1Q1664.4 778.8 1671.5 848.1" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1688.6 715.1Q1685.8 778.8 1688.6 848.1" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1705.7 715.1Q1707.1 778.8 1705.7 848.1" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1722.8 715.1Q1728.5 778.8 1722.8 848.1" fill="none" stroke="#2a1c10" stroke-opacity=".7" stroke-width="2"/><path d="M1655.3 730.3Q1700 738.8 1744.7 730.3" fill="none" stroke="#1a120b" stroke-width="6.6"/><path d="M1652 758.8Q1700 767.3 1748 758.8" fill="none" stroke="#1a120b" stroke-width="6.6"/><path d="M1652 798.7Q1700 807.2 1748 798.7" fill="none" stroke="#1a120b" stroke-width="6.6"/><path d="M1655.3 830Q1700 838.6 1744.7 830" fill="none" stroke="#1a120b" stroke-width="6.6"/><ellipse cx="1700" cy="713.2" rx="43.7" ry="11.4" fill="#5a4128" stroke="#1a120b" stroke-width="4.8"/><ellipse cx="1700" cy="713.2" rx="32.3" ry="5.7" fill="#3b2a16"/><circle cx="1832" cy="822" r="30" fill="url(#ball)"/><g transform="rotate(60 1832 822)" stroke="#E8B24A" stroke-width="2.7" fill="none" ><path d="M1802 822H1862M1832 792V852"/><path d="M1813.4 798.6Q1826.6 822 1813.4 845.4"/><path d="M1850.6 798.6Q1837.4 822 1850.6 845.4"/></g><circle cx="1832" cy="822" r="29" fill="none" stroke="#1a120b" stroke-opacity=".7" stroke-width="2.4"/><path d="M1593 260H1717V334Q1717 390 1655 416Q1593 390 1593 334Z" fill="#000" fill-opacity=".4" transform="translate(6 10)"/><path d="M1593 260H1717V334Q1717 390 1655 416Q1593 390 1593 334Z" fill="#4A3520" stroke="#E8B24A" stroke-width="6"/><path d="M1607 274H1703V332Q1703 378 1655 400Q1607 378 1607 332Z" fill="none" stroke="#B07E24" stroke-width="2.5"/><path d="M1625 296L1685 360M1685 296L1625 360" stroke="#E8B24A" stroke-width="7" stroke-linecap="round"/><path d="M1625 360L1609 374L1639 376Z" fill="#8FAE5D"/><circle cx="1605" cy="272" r="4.5" fill="#B07E24"/><circle cx="1705" cy="272" r="4.5" fill="#B07E24"/><circle cx="640" cy="360" r="2" fill="#F3D08A" fill-opacity="0.35"/><circle cx="700" cy="250" r="1.6" fill="#F3D08A" fill-opacity="0.3"/><circle cx="520" cy="420" r="2.2" fill="#F3D08A" fill-opacity="0.25"/><circle cx="780" cy="300" r="1.4" fill="#F3D08A" fill-opacity="0.3"/><circle cx="590" cy="210" r="1.8" fill="#F3D08A" fill-opacity="0.2"/><circle cx="1760" cy="360" r="2" fill="#F3D08A" fill-opacity="0.35"/><circle cx="1700" cy="250" r="1.6" fill="#F3D08A" fill-opacity="0.3"/><circle cx="1880" cy="420" r="2.2" fill="#F3D08A" fill-opacity="0.25"/><circle cx="1620" cy="300" r="1.4" fill="#F3D08A" fill-opacity="0.3"/><circle cx="1810" cy="210" r="1.8" fill="#F3D08A" fill-opacity="0.2"/><rect width="2400" height="900" fill="url(#ceiling)"/><rect width="2400" height="900" fill="url(#vig)"/><rect x="828.75" width="70" height="900" fill="url(#shadeL)"/><rect x="1501.25" width="70" height="900" fill="url(#shadeR)"/><rect x="888.8" y="0" width="34" height="900" fill="url(#oak)"/><rect x="895.8" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><rect x="913.1" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><circle cx="905.8" cy="90" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="89" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="218" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="217" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="346" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="345" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="474" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="473" r="1.4" fill="#F3D08A"/><circle cx="905.8" cy="602" r="3.6" fill="#B07E24"/><circle cx="904.8" cy="601" r="1.4" fill="#F3D08A"/><rect x="880.8" y="709.25" width="50" height="30" fill="#3b2a16"/><rect x="880.8" y="709.25" width="50" height="5" fill="#5a4128"/><rect x="880.8" y="709.25" width="50" height="30" fill="none" stroke="#B07E24" stroke-width="2"/><rect x="1477.2" y="0" width="34" height="900" fill="url(#oak)"/><rect x="1484.2" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><rect x="1501.7" y="0" width="2.6" height="723.25" fill="#B07E24" fill-opacity=".85"/><circle cx="1494.2" cy="90" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="89" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="218" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="217" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="346" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="345" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="474" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="473" r="1.4" fill="#F3D08A"/><circle cx="1494.2" cy="602" r="3.6" fill="#B07E24"/><circle cx="1493.2" cy="601" r="1.4" fill="#F3D08A"/><rect x="1469.2" y="709.25" width="50" height="30" fill="#3b2a16"/><rect x="1469.2" y="709.25" width="50" height="5" fill="#5a4128"/><rect x="1469.2" y="709.25" width="50" height="30" fill="none" stroke="#B07E24" stroke-width="2"/></svg>
+<div id="stage"><canvas id="c"></canvas></div>
+
+<div class="overlay" id="menu">
+  <div class="card">
+    <a class="place" href="/games#broom-blade-arcade">Smart Disruptions · Broom &amp; Blade Arcade</a>
+    <h1>Hoop Quest</h1>
+    <div class="sub">A Broom &amp; Blade arcade cabinet</div>
+    <div class="rules">
+      <b>Drag</b> a ball up with your finger and <b>flick</b> it at the hoop.<br>
+      You get <b>30 balls</b>. The basket holds still for the first <b>10</b>, then starts to move.<br>
+      A basket is <b>2 points</b>. Flick <b>hard</b> from down low so it flies over the backboard: a <b>★ Sky Shot</b> is <b>3 points</b>.
+    </div>
+    <div id="best" class="tag">Best: 0 pts</div>
+    <button id="play">Take the shot</button>
+  </div>
+</div>
+
+<div class="overlay" id="over" hidden>
+  <div class="card">
+    <div id="resultTag" class="tag win">Quest complete</div>
+    <div class="big" id="finalScore">0</div>
+    <div class="sub" id="finalMsg">points</div>
+    <div class="rank" id="rank"></div>
+    <div id="stats" class="rules"></div>
+    <div class="row"><button id="again">Play again</button><a class="ghost" href="/games#broom-blade-arcade">Arcade</a></div>
+  </div>
+</div>
+
+<div id="tune" hidden>
+  <div class="tune-head">
+    <div class="presets"><button class="ghost" data-preset="floaty">Floaty</button><button class="ghost" data-preset="rec">Default</button><button class="ghost" data-preset="swipe">Swipe</button><button class="ghost" data-preset="snappy">Snappy</button></div>
+    <button id="tuneClose" class="ghost">Hide</button></div>
+  <div class="grid">
+  <label title="Higher = faster, flatter shots">Gravity ↑ faster <span id="vGrav"></span><input type="range" id="sGrav" min="800" max="3200" step="50"></label>
+  <label title="Finger speed (px/s) that gives the strongest shot. Lower = easier to hit full power">Full-power swipe <span id="vSens"></span><input type="range" id="sSens" min="1200" max="6000" step="100"></label>
+  <label title="Launch power of the gentlest flick">Weakest shot <span id="vMin"></span><input type="range" id="sMin" min="500" max="2000" step="10"></label>
+  <label title="Launch power of the hardest flick">Strongest shot <span id="vMax"></span><input type="range" id="sMax" min="600" max="2400" step="10"></label>
+  <label title="Finger speed (px/s) where a flick starts kicking up into a Sky Shot">Sky flick at <span id="vSkyAt"></span><input type="range" id="sSkyAt" min="2500" max="8000" step="100"></label>
+  <label title="Launch power of a full Sky flick">Sky power <span id="vSky"></span><input type="range" id="sSky" min="1100" max="2000" step="10"></label>
+  <label title="Finger speed (px/s) where a flick starts kicking up into a Space Shot">Space flick at <span id="vSpaceAt"></span><input type="range" id="sSpaceAt" min="4000" max="10000" step="100"></label>
+  <label title="Launch power of a full Space flick">Space power <span id="vSpace"></span><input type="range" id="sSpace" min="1400" max="2400" step="10"></label>
+  </div>
+  <div class="readout" id="tuneLast">Flick a ball to see its numbers.</div>
+  <div class="tune-note"><span>This device only. Send Claude the 4 numbers to make them everyone's.</span><button id="tuneReset" class="ghost">Reset</button></div>
+</div>
+
+<div class="overlay" id="pause" hidden>
+  <div class="card"><h1 style="font-size:30px">Paused</h1><div class="row"><button id="resume">Resume</button><button id="quit" class="ghost">Quit</button></div></div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const canvas = document.getElementById('c');
+let ctx = canvas.getContext('2d');   // let: the frame-budget caches below borrow it to paint offscreen
+const $ = id => document.getElementById(id);
+
+// ---------- layout (logical 400 x H, letterboxed) ----------
+const W = 400; let H = 800, scale = 1, offX = 0, offY = 0, dpr = 1;
+function resize(){
+  dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  // the stage's padding is the safe area (a notch, the home bar): the booth fits inside it
+  const st = getComputedStyle($('stage')), pad = k => parseFloat(st[k]) || 0;
+  const vw = innerWidth - pad('paddingLeft') - pad('paddingRight'), vh = innerHeight - pad('paddingTop') - pad('paddingBottom');
+  H = Math.max(640, Math.min(900, Math.round(W * vh / vw)));
+  scale = Math.min(vw / W, vh / H);
+  canvas.width = Math.round(W*scale*dpr); canvas.height = Math.round(H*scale*dpr);
+  canvas.style.width = (W*scale)+'px'; canvas.style.height = (H*scale)+'px';
+  document.documentElement.style.setProperty('--cw', (W*scale)+'px');   // the cards' dim covers the booth, not the cellar
+  const r = canvas.getBoundingClientRect(); offX = r.left; offY = r.top;
+  layout(); caches = {};
+}
+// ---------- frame budget (smartdisruptions.com port, 2026-10-05) ----------
+// A phone rasterises this canvas on its GPU, where every shadowBlur draw is its own offscreen blur
+// pass, and the scoreboard alone lit two dozen bulbs a frame. So each glow is drawn once into a small
+// sprite and stamped, and the parts of the room that never change live in bitmaps at the canvas's
+// own resolution. Same pixels, a fraction of the work. A layer only stamps in the plain view (the
+// base scale plus the shake); under any other transform it draws its vectors as before.
+let caches = {};
+if (document.fonts) document.fonts.addEventListener('loadingdone', () => { caches = {}; });   // repaint any cached text in the real font
+function plainView(m){ const k = dpr*scale; return !m.b && !m.c && Math.abs(m.a - k) < k*1e-5 && Math.abs(m.d - k) < k*1e-5; }   // the context keeps its matrix in float32
+function paintInto(c, e, f, paint){
+  const main = ctx, k = dpr*scale; ctx = c.getContext('2d'); ctx.lineCap = main.lineCap; ctx.setTransform(k, 0, 0, k, e, f);
+  try { paint(); } finally { ctx = main; }
+}
+function layer(key, x, y, w, h, paint){   // a static region (logical box) kept as a bitmap
+  const m = ctx.getTransform();
+  if (!plainView(m)){ paint(); return; }
+  let L = caches[key];
+  if (!L){
+    const k = dpr*scale, X0 = Math.floor(x*k), Y0 = Math.floor(y*k), c = document.createElement('canvas');
+    c.width = Math.max(1, Math.ceil((x + w)*k) - X0); c.height = Math.max(1, Math.ceil((y + h)*k) - Y0);
+    paintInto(c, -X0, -Y0, paint); L = caches[key] = { c, X0, Y0 };
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(L.c, L.X0 + Math.round(m.e), L.Y0 + Math.round(m.f)); ctx.setTransform(m);
+}
+function sprite(key, hw, hh, paint, below = hh){   // a small bitmap painted around a logical origin: hw either side, hh above, `below` below
+  let S = caches[key];
+  if (!S){
+    const k = dpr*scale, c = document.createElement('canvas'); c.width = Math.ceil(hw*2*k); c.height = Math.ceil((hh + below)*k);
+    S = caches[key] = { c, ox: Math.round(hw*k), oy: Math.round(hh*k) }; paintInto(c, S.ox, S.oy, paint);
+  }
+  return S;
+}
+function stamp(S, x, y, m){   // a sprite with its origin on (x, y), on whole device pixels
+  if (!plainView(m)){ const k = dpr*scale; ctx.drawImage(S.c, x - S.ox/k, y - S.oy/k, S.c.width/k, S.c.height/k); return; }
+  const X = Math.round(m.a*x + m.e) - S.ox, Y = Math.round(m.d*y + m.f) - S.oy;   // through the current transform, 1:1 and pixel-aligned
+  ctx.drawImage(S.c, (X - m.e)/m.a, (Y - m.f)/m.d, S.c.width/m.a, S.c.height/m.d);
+}
+function glowDot(x, y, r, col, blur, m){   // a lit bulb and its halo
+  const pad = r + (blur*1.6 + 2)/(dpr*scale);
+  stamp(sprite('dot' + col + '|' + r + '|' + blur, pad, pad, () => { ctx.shadowColor = col; ctx.shadowBlur = blur; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill(); }), x, y, m);
+}
+const hueStep = h => Math.round(h/6)*6;   // rainbow bulbs: 60 cached hues, a step finer than a frame's own hue jump
+// scene anchors
+let hoop, rack, floorY;
+function layout(){
+  floorY = H - 120;
+  hoop = { x: W/2, baseX: W/2, y: Math.round(H*0.36), r: 42, rimT: 6, z: 0, boardW: 190, boardH: 130 };
+  rack = { y: floorY - 28, spots: [70, 140, 200, 260, 330] };
+}
+
+// ---------- game state ----------
+const SHOTS_PER_GAME = 30;   // 30 balls (Josh, 2026-09-20); up to 5 points each (Space Shot)
+const STILL_SHOTS = 10;      // the basket holds still for the first 10 balls, then starts to move (Josh, 2026-09-23)
+// The shot-tuning sliders are for whoever is dialling the physics in, not for
+// whoever is playing. They used to hang off a gear in the corner, which is the
+// first thing a kid taps. Now only ?tune=1 in the address brings them back.
+const TUNE_ON = /[?&]tune=1/.test(location.search);
+const shotRes = [];   // per ball, for the pips: 'make' | 'miss'
+// Points are the score: 2 a make, 3 for a Sky Shot, 5 for the secret Space Shot, so 150 at best.
+// On smartdisruptions.com every round is free: the guild hall's gold (score ÷ 3) and its payout are gone,
+// and the scoreboard's left panel shows the best on this device instead.
+const G = { state:'menu', made:0, shots:0, swish:0, streak:0, bestStreak:0, endTimer:0, points:0, sky:0, space:0 };
+let best = 0; try { best = +localStorage.getItem('hoopquest-best-pts3') || 0; } catch(e){}
+$('best').textContent = 'Best: ' + best + ' pts';
+
+const balls = []; // {x,y,vx,vy,z,r, state:'rack'|'held'|'flight'|'dead', spin, rot, scored, passedRim}
+const parts = []; // particles
+const toasts = []; // floating text
+let held = null, ptr = null, hist = [];
+let shake = 0, netWob = 0, rimFlash = 0, lastT = 0, spawnTimer = 0;
+// the show on top of the game: none of this touches the physics or the score
+const CALM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+let scoreShown = 0, boardFx = 0, boardFxSky = false, plusBadge = null, skyFlash = 0;
+let spaceFx = 0, hype = 0;               // seconds left on the space show / Pip's hype moment
+const SPACE_DUR = 3.2, HYPE_DUR = 2.2;
+const warp = [];
+function spaceShow(){
+  spaceFx = SPACE_DUR; hype = HYPE_DUR; sfx.spaceScore(); setTimeout(() => sfx.scream(), 450);
+  mouse.bubble = null;
+  if (!CALM){ slowT = 0.6; flash = 0.5; flashC = '#FFFFFF'; shake = 12; }
+  showCallout('SPACE SHOT!!!', '#E0B0FF', 60, 4, 0.22);   // up in the stars, clear of Pip's big moment below
+  confettiBurst(160);
+  for (let i=0;i<60;i++){ const a = Math.random()*Math.PI*2, v = 200 + Math.random()*500;
+    addPart({ x: hoop.x, y: hoop.y, vx: Math.cos(a)*v, vy: Math.sin(a)*v, g: 150, life: 1 + Math.random()*0.8, c: ['#FFFFFF','#E0B0FF','#9FE2FF','#F3D08A'][i%4], s: 3 + Math.random()*4, star: true }); }
+  for (let k=0;k<4;k++) rings.push({ r: hoop.r*(0.8 + k*0.5), life: 0.6 + k*0.2, c: ['#E0B0FF','#9FE2FF','#F3D08A','#FFFFFF'][k] });
+  vibrate([60, 40, 60, 40, 120]);
+}
+function drawSpace(){
+  // the cellar falls away into deep space: a night sky, a planet, a moon, and warp streaks rushing out
+  if (spaceFx <= 0) return;
+  const a = Math.min(1, spaceFx*1.5, (SPACE_DUR - spaceFx)*4), now = performance.now()/1000;
+  ctx.save(); ctx.globalAlpha = a*0.92;
+  const g = ctx.createRadialGradient(W/2, H*0.4, 20, W/2, H*0.4, H*0.8); g.addColorStop(0, '#3A1D6E'); g.addColorStop(0.5, '#140B30'); g.addColorStop(1, '#05030D');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  while (warp.length < 90) warp.push({ a: Math.random()*Math.PI*2, d: Math.random()*40, v: 150 + Math.random()*500 });
+  const cx = W/2, cy = H*0.42;
+  for (const w of warp){ w.d += w.v*(1/60)*(1 + (SPACE_DUR - spaceFx)); if (w.d > H){ w.d = Math.random()*30; w.a = Math.random()*Math.PI*2; }
+    const x1 = cx + Math.cos(w.a)*w.d, y1 = cy + Math.sin(w.a)*w.d, len = 6 + w.d*0.12;
+    ctx.strokeStyle = w.v > 450 ? '#E0B0FF' : '#FFFFFF'; ctx.globalAlpha = a*Math.min(1, w.d/120); ctx.lineWidth = 1 + w.d/300;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + Math.cos(w.a)*len, y1 + Math.sin(w.a)*len); ctx.stroke(); }
+  ctx.globalAlpha = a;
+  // ringed planet
+  const px = W*0.18 + Math.sin(now*0.5)*6, py = H*0.2;
+  const pg = ctx.createRadialGradient(px - 10, py - 10, 4, px, py, 34); pg.addColorStop(0, '#F3D08A'); pg.addColorStop(1, '#B0503A');
+  ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(px, py, 30, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(224,176,255,.8)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.ellipse(px, py, 52, 12, -0.35, 0, Math.PI*2); ctx.stroke();
+  // moon
+  ctx.fillStyle = '#E6E0F0'; ctx.beginPath(); ctx.arc(W*0.84, H*0.13, 18, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#C9C0DA'; ctx.beginPath(); ctx.arc(W*0.84 - 5, H*0.13 + 3, 4, 0, Math.PI*2); ctx.arc(W*0.84 + 6, H*0.13 - 5, 3, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function drawHype(){
+  // Pip leaps off the backboard to the front of the screen, huge, and loses it
+  if (hype <= 0) return;
+  const t = HYPE_DUR - hype, now = performance.now()/1000;
+  const inT = Math.min(1, t/0.35), outT = Math.min(1, hype/0.3), k = Math.min(inT, outT);
+  const ease = 1 - Math.pow(1 - k, 3);
+  const from = mousePos(), to = { x: W/2, y: H*0.72 };
+  const x = from.x + (to.x - from.x)*ease, y = from.y + (to.y - from.y)*ease - Math.sin(ease*Math.PI)*120;
+  const sc = 1.35 + 3.4*ease, bounce = Math.abs(Math.sin(now*14))*10*ease;
+  ctx.save(); ctx.translate(x + Math.sin(now*40)*3*ease, y - bounce); ctx.scale(sc/1.35, sc/1.35);
+  // reuse Pip's own drawing, mid-cheer, at the origin
+  const save = { jump: mouse.jump, jumpDur: mouse.jumpDur, flip: mouse.flip, sad: mouse.sad, bubble: mouse.bubble };
+  mouse.jump = 0.3; mouse.jumpDur = 0.6; mouse.flip = false; mouse.sad = 0; mouse.bubble = null;
+  drawMouseAt(0, 0);
+  Object.assign(mouse, save);
+  ctx.restore();
+  // the scream
+  if (ease > 0.6){
+    const words = 'OH MY GOD!!!', fs = 44 + Math.sin(now*30)*3;
+    ctx.save(); ctx.translate(W/2 + (Math.random()-0.5)*6, y - 150*sc/4.75 - 30 + (Math.random()-0.5)*6); ctx.rotate(-0.06 + Math.sin(now*20)*0.03);
+    ctx.globalAlpha = Math.min(1, (ease - 0.6)*4, hype*3);
+    ctx.font = '900 ' + fs + 'px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const tw = Math.min(W - 24, ctx.measureText(words).width + 36);
+    // a jagged comic-book shout bubble
+    ctx.fillStyle = '#FFF3D0'; ctx.beginPath();
+    for (let i=0;i<=24;i++){ const a = (i/24)*Math.PI*2, rr = (i%2 ? 0.86 : 1.08); ctx.lineTo(Math.cos(a)*tw/2*rr, Math.sin(a)*52*rr); }
+    ctx.closePath(); ctx.fill(); ctx.strokeStyle = '#1A120B'; ctx.lineWidth = 4; ctx.stroke();
+    const fit = Math.min(1, (tw - 30) / ctx.measureText(words).width); ctx.scale(fit, fit);
+    const gg = ctx.createLinearGradient(-tw/2, 0, tw/2, 0); const h0 = (now*300)%360; gg.addColorStop(0, `hsl(${h0},90%,50%)`); gg.addColorStop(1, `hsl(${(h0+140)%360},90%,50%)`);
+    ctx.lineWidth = 6; ctx.strokeStyle = '#1A120B'; ctx.strokeText(words, 0, 2); ctx.fillStyle = gg; ctx.fillText(words, 0, 2);
+    ctx.restore();
+  }
+}
+function skyY(){ return hoop.y - hoop.boardH; }                 // just above the backboard's top edge
+function throwY(){ return (hoop.y + rack.y) / 2; }              // Sky Shots must leave the hand below this
+let wakeT = 0, lastShown = false, moving = false, clock = 0, slowT = 0, flash = 0, flashC = '#F3D08A', callout = null, fire = 0, finalShown = false;
+let bestPop = 0, bestSeen = 0, madePop = 0, netDrop = 0;
+const rings = [], motes = [];
+function addPart(p){ if (parts.length < 400) parts.push(p); }
+// a callout's tier sets how loud it is: 0 plain · 1 glow · 2 + light rays · 3 + dancing letters and confetti · 4 + shimmer and sparkles
+function showCallout(text, color, size, tier, yFrac){
+  tier = tier || 0; const dur = 1.4 + tier*0.25;
+  callout = { text, color, size: size || 44, tier, life: dur, dur, yf: yFrac || 0.56 };
+  if (tier >= 3 && !CALM) confettiBurst(tier === 3 ? 40 : 90);
+}
+const EMBER_RED = ['#F3D08A','#E8B24A','#D4622F','#F08C6A'];
+const EMBER_BLUE = ['#F2FBFF','#9FE2FF','#5AB8F0','#C9A8FF'];   // 8 in a row and the fire burns blue
+const BLUE_AT = 8;
+let EMBER = EMBER_RED;
+const confetti = [];
+const CONF_C = ['#E8B24A','#F3D08A','#D4622F','#8FAE5D','#9B6BD1','#9FE2FF','#F0E2C0'];
+function confettiBurst(n){ for (let i=0;i<n && confetti.length<240;i++) confetti.push({ x:Math.random()*W, y:-10-Math.random()*120, vx:(Math.random()-0.5)*60, vy:60+Math.random()*80,
+  rot:Math.random()*6, vr:(Math.random()-0.5)*10, w:4+Math.random()*4, h:7+Math.random()*5, c:CONF_C[(Math.random()*CONF_C.length)|0], sway:Math.random()*6 }); }
+// the streak ladder: phrase, tier, colour
+const LADDER = {
+  2:['NICE!',0,'#F0E2C0'], 3:['HEATING UP!',1,'#E8B24A'], 4:['GREAT SHOT!',1,'#F3D08A'], 5:['ON FIRE!',2,'#D4622F'],
+  6:['INCREDIBLE!',2,'#F08C6A'], 7:['UNBELIEVABLE!',3,'#F3D08A'], 8:['BLUE FLAME!',3,'#9FE2FF'], 9:['UNSTOPPABLE!',3,'#9FE2FF'],
+  10:['LEGENDARY!',4,'#E8B24A'], 12:['LEGEND OF THE LOOM!',4,'#9B6BD1'], 15:['BROOM KING!',4,'#F3D08A'], 20:['ARE YOU EVEN REAL?!',4,'#9FE2FF'],
+};
+const onFire = () => G.streak >= 3;
+
+// ---------- sound ----------
+// Synthesised on the spot, no files. Starts on the first tap (browsers require
+// one), remembers mute per device, and stays quiet under reduced motion only if muted.
+let AC = null, master = null, muted = false;
+try { muted = localStorage.getItem('hoopquest-mute') === '1'; } catch(e){}
+function audio(){
+  if (AC || muted) return AC;
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = 0.22; master.connect(AC.destination); } catch(e){ AC = null; }
+  return AC;
+}
+function tone(freq, dur, type, vol, when, slideTo){
+  if (muted || !audio()) return; const t = AC.currentTime + (when || 0);
+  const o = AC.createOscillator(), g = AC.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t);
+  if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.5, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
+}
+function noise(dur, fFrom, fTo, vol){
+  if (muted || !audio()) return; const t = AC.currentTime, n = Math.floor(AC.sampleRate*dur);
+  const buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0); for (let i=0;i<n;i++) d[i] = Math.random()*2 - 1;
+  const src = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain(); src.buffer = buf;
+  f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(fFrom, t); f.frequency.exponentialRampToValueAtTime(fTo, t + dur);
+  g.gain.setValueAtTime(vol || 0.6, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(f); f.connect(g); g.connect(master); src.start(t);
+}
+const sfx = {
+  swish(){ noise(0.28, 5000, 1200, 0.7); },
+  score(){ noise(0.18, 2500, 900, 0.4); tone(330, 0.12, 'triangle', 0.25); },
+  clank(){ tone(620, 0.25, 'square', 0.12, 0, 380); tone(1240, 0.18, 'triangle', 0.1); },
+  thud(){ tone(110, 0.14, 'sine', 0.35, 0, 60); },
+  coin(){ tone(988, 0.08, 'square', 0.12); tone(1319, 0.22, 'square', 0.12, 0.07); },
+  squeak(){ tone(1800, 0.09, 'sine', 0.18, 0, 2600); tone(2200, 0.08, 'sine', 0.14, 0.1, 3000); },
+  tier(t){ const base = [523, 587, 659, 784, 880][Math.min(4, t)]; [0, 4, 7, 12].forEach((st, i) => tone(base*Math.pow(2, st/12), 0.25, 'triangle', 0.18, i*0.07)); },
+  moves(){ tone(220, 0.35, 'sawtooth', 0.08, 0, 440); },
+  sky(){ tone(660, 0.35, 'sine', 0.14, 0, 1760); },
+  space(){ noise(0.6, 400, 4000, 0.35); tone(300, 0.6, 'sawtooth', 0.06, 0, 1200); },
+  spaceScore(){ noise(0.9, 6000, 300, 0.5);
+    [0, 4, 7, 12, 16, 19, 24].forEach((st, i) => { tone(523*Math.pow(2, st/12), 0.35, 'square', 0.1, i*0.07); tone(523*Math.pow(2, st/12)*1.5, 0.35, 'triangle', 0.08, i*0.07 + 0.03); });
+    tone(1046, 1.2, 'triangle', 0.12, 0.55); },
+  scream(){ tone(1400, 0.5, 'sawtooth', 0.09, 0, 2800); tone(1700, 0.45, 'square', 0.06, 0.08, 3400); tone(2400, 0.4, 'sine', 0.12, 0.5, 3200); },
+  skyScore(){ [0, 4, 7, 12, 16].forEach((st, i) => tone(784*Math.pow(2, st/12), 0.3, 'sine', 0.16, i*0.06)); },
+};
+
+// ---------- Pip, the guild mouse ----------
+// Rides the top corner of the backboard, so it moves with the basket. Watches
+// the ball, ducks when one flies close, cheers makes, flips for swishes, waves a
+// pennant on a streak and hides its eyes on a miss. Pure show, no rules.
+const mouse = { jump:0, jumpDur:0.5, flip:false, sad:0, blink:2, duck:0, bubble:null, lookX:0, lookY:0 };
+const pick = a => a[(Math.random()*a.length)|0];
+function mouseSay(text, life){ mouse.bubble = { text, life: life || 1.5, dur: life || 1.5 }; sfx.squeak(); }
+function mouseCheer(swish, tier){
+  mouse.sad = 0; mouse.jump = mouse.jumpDur = swish ? 0.65 : 0.5; mouse.flip = swish;
+  if (tier >= 0) mouseSay(tier >= 4 ? pick(['LEGEND!!','I can\'t look away!','Squeeeak!!!']) : tier >= 3 ? pick(['Unreal!','Blue fire!','Keep going!']) : tier >= 2 ? pick(['You\'re on fire!','Hot hot hot!','Again!']) : pick(['Squeak!','Yes!!','Woo!','Nice one!','In!']));
+  else if (Math.random() < 0.5) mouseSay(swish ? pick(['Swish!','Clean!','Nothing but net!']) : pick(['Squeak!','Yes!','In!']));
+}
+function mouseSad(bigStreak){
+  mouse.sad = 0.9; mouse.jump = 0;
+  if (bigStreak) mouseSay(pick(['Nooo!','So close!','Shake it off!']));
+  else if (Math.random() < 0.4) mouseSay(pick(['Eep!','Next one!','Almost!']));
+}
+
+const BALL_R = 26;
+// The default is Josh's own tuning (2026-09-23, 20 of 30 on his phone): gravity
+// 2000 with weakest = strongest = 1120, so every shot leaves at the same power
+// and swipe speed doesn't matter (the full-power swipe setting does nothing while
+// min = max). The skill is aim, and dragging the ball far enough up before
+// letting go: a short flick from the rack falls short. The sim's pick, which
+// scales power with swipe speed, is kept as the "Swipe power" preset.
+const TUNE_PRESETS = {
+  floaty: { min: 820,  max: 1150, grav: 1100, sens: 3000, skyAt: 4600, sky: 1450, spaceAt: 6600, space: 1800 },   // the old feel
+  rec:    { min: 1120, max: 1120, grav: 2000, sens: 6000, skyAt: 4600, sky: 1450, spaceAt: 6600, space: 1800 },   // Josh's, the default
+  swipe:  { min: 1120, max: 1490, grav: 2000, sens: 3500, skyAt: 4600, sky: 1450, spaceAt: 6600, space: 1800 },   // physics-sim pick: harder swipe, harder shot
+  snappy: { min: 1230, max: 1640, grav: 2400, sens: 3500, skyAt: 4600, sky: 1600, spaceAt: 6600, space: 1900 },
+};
+// Sky Shots: a flick faster than skyAt px/s kicks the power up toward `sky` (full
+// at skyAt + 1000). The sim put 1450 at the sweet spot: from the rack it clears
+// the backboard with a 14-19 degree aim window, about as forgiving as a normal
+// shot. Josh's normal flicks (~4150 px/s) stay at 1120, untouched.
+// The secret Space Shot: a flick past spaceAt kicks on toward `space` (full at
+// spaceAt + 1000). At 1800 the ball leaves the top of the screen and every make
+// takes 1.5 s or more, with a ~7 degree aim window: rare on purpose.
+const TUNE_DEF = TUNE_PRESETS.rec;
+const T = Object.assign({}, TUNE_DEF);
+// A tuned device keeps its numbers only in tune mode, so players always get the
+// defaults (and an old gear-era tuning left on a kid's phone can't override them).
+if (TUNE_ON){ try { Object.assign(T, JSON.parse(localStorage.getItem('hoopquest-tune-v2') || '{}')); } catch(e){} }
+function saveTune(){ try { localStorage.setItem('hoopquest-tune-v2', JSON.stringify(T)); } catch(e){} }
+const tuneIds = { min:['sMin','vMin'], max:['sMax','vMax'], grav:['sGrav','vGrav'], sens:['sSens','vSens'], skyAt:['sSkyAt','vSkyAt'], sky:['sSky','vSky'], spaceAt:['sSpaceAt','vSpaceAt'], space:['sSpace','vSpace'] };
+function syncTune(){ for (const k in tuneIds){ $(tuneIds[k][0]).value = T[k]; $(tuneIds[k][1]).textContent = T[k]; } }
+for (const k in tuneIds){ $(tuneIds[k][0]).addEventListener('input', e => { T[k] = +e.target.value; if (T.max < T.min) T.max = T.min; syncTune(); saveTune(); }); }
+$('tuneClose').onclick = () => { $('tune').hidden = true; };
+$('tuneReset').onclick = () => { Object.assign(T, TUNE_DEF); syncTune(); saveTune(); };
+document.querySelectorAll('[data-preset]').forEach(el => el.onclick = () => { Object.assign(T, TUNE_PRESETS[el.dataset.preset]); syncTune(); saveTune(); });
+syncTune();
+
+function spawnBall(i){
+  const x = rack.spots[i % rack.spots.length] + (Math.random()*10-5);
+  balls.push({ x, y: rack.y - 70, vx:0, vy:0, z:1, r:BALL_R, state:'rack', rot:Math.random()*6, spin:0, scored:false, passedRim:false, life:0 });
+}
+function resetBalls(){ balls.length = 0; for (let i=0;i<5;i++) spawnBall(i); }
+
+function startGame(){
+  G.made = 0; G.shots = 0; G.swish = 0; G.streak = 0; G.bestStreak = 0; G.endTimer = 0; G.points = 0; G.sky = 0; G.space = 0; spaceFx = 0; hype = 0;
+  scoreShown = 0; boardFx = 0; boardFxSky = false; plusBadge = null;
+  hoop.x = hoop.baseX; held = null; parts.length = 0; toasts.length = 0;
+  wakeT = 0; lastShown = false; moving = false; clock = 0; slowT = 0; flash = 0; fire = 0; finalShown = false; bestPop = 0; bestSeen = best; madePop = 0; netDrop = 0;
+  rings.length = 0; shotRes.length = 0; confetti.length = 0;
+  showCallout(SHOTS_PER_GAME + ' BALLS · GO!', '#F3D08A', 38);
+  Object.assign(mouse, { jump:0, sad:0, duck:0, bubble:null }); setTimeout(() => { if (G.state === 'play' && G.shots === 0) mouseSay('Hi! I\'m Pip. Shoot!', 2); }, 1200);
+  resetBalls(); G.state = 'play';
+  $('menu').hidden = true; $('over').hidden = true; $('pause').hidden = true;
+  if (TUNE_ON) $('tune').hidden = false;   // tune mode opens the sliders with every round; the gear toggles them
+  lastT = performance.now();
+}
+function endGame(){
+  G.state = 'over';
+  $('tune').hidden = true;   // never cover the result card
+  const pct = G.shots ? Math.round(100*G.made/G.shots) : 0;
+  countUp($('finalScore'), G.points);
+  // the guild's own titles, by points (90 is a perfect round of Sky Shots)
+  $('rank').textContent = G.points >= 54 ? 'Legend of the Loom' : G.points >= 36 ? 'Grime Slayer' : G.points >= 18 ? 'Mop Knight' : 'Dust Squire';
+  const isBest = G.points > best && G.points > 0;
+  $('resultTag').textContent = isBest ? 'New best!' : 'Round over';
+  $('resultTag').className = isBest ? 'tag best' : 'tag win';
+  $('finalMsg').textContent = G.points === 1 ? 'point' : 'points';
+  $('stats').innerHTML =
+    `<div class="line"><span>Shots taken</span><b>${G.shots}</b></div>` +
+    `<div class="line"><span>Shots made</span><b>${G.made}</b></div>` +
+    `<div class="line"><span>★ Sky Shots (3 pts)</span><b>${G.sky}</b></div>` +
+    (G.space ? `<div class="line"><span>🚀 SPACE SHOTS (5 pts)</span><b>${G.space}</b></div>` : '') +
+    `<div class="line"><span>Accuracy</span><b>${pct}%</b></div>` +
+    `<div class="line"><span>Clean swishes</span><b>${G.swish}</b></div>` +
+    `<div class="line"><span>Best streak</span><b>${G.bestStreak}</b></div>` +
+    `<div class="line gold"><span>Best on this device</span><b>${Math.max(best, G.points)}</b></div>`;
+  if (G.points > best){ best = G.points; try { localStorage.setItem('hoopquest-best-pts3', best); } catch(e){} $('best').textContent = 'Best: ' + best + ' pts'; }
+  $('over').hidden = false;
+}
+let countRun = 0;
+function countUp(el, n){
+  const run = ++countRun, t0 = performance.now(); let shown = -1;
+  if (!n || CALM){ el.textContent = n; return; }
+  (function tick(now){
+    if (run !== countRun) return;
+    const k = Math.min(n, Math.round(n * Math.min(1, (now - t0) / 800)));   // timed, so a slow frame can't strand it short
+    if (k !== shown){ shown = k; el.textContent = k; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+    if (k < n) requestAnimationFrame(tick);
+  })(t0);
+}
+$('play').onclick = () => { audio(); startGame(); };
+$('again').onclick = () => startGame();
+$('resume').onclick = () => { $('pause').hidden = true; G.state='play'; lastT = performance.now(); };
+$('quit').onclick = () => { $('pause').hidden = true; G.state='menu'; $('menu').hidden = false; };
+
+// ---------- input ----------
+function toLocal(e){ return { x:(e.clientX-offX)/scale, y:(e.clientY-offY)/scale, t:performance.now() }; }
+canvas.addEventListener('pointerdown', e => {
+  if (G.state !== 'play') return;
+  const p = toLocal(e);
+  audio();
+  // pause button
+  const B = btn(), hit = q => Math.hypot(p.x - q.x, p.y - q.y) < 26;
+  if (hit(B.pause)){ G.state='pause'; $('pause').hidden=false; return; }
+  // sound on/off, left of pause
+  if (hit(B.mute)){ muted = !muted; try { localStorage.setItem('hoopquest-mute', muted ? '1' : '0'); } catch(e){} if (AC) master.gain.value = muted ? 0 : 0.22; if (!muted) { audio(); sfx.coin(); } return; }
+  if (TUNE_ON && hit(B.gear)){ $('tune').hidden = !$('tune').hidden; return; }
+  if (held || G.shots >= SHOTS_PER_GAME) return;
+  let pick = null, bd = 1e9;
+  for (const b of balls){ if (b.state!=='rack') continue; const d = Math.hypot(b.x-p.x, b.y-p.y); if (d < b.r*1.6 && d < bd){ bd=d; pick=b; } }
+  if (pick){ held = pick; pick.state='held'; pick.vx=pick.vy=0; pick.calmY = pick.y; ptr = p; hist = [p]; canvas.setPointerCapture(e.pointerId); }
+});
+canvas.addEventListener('pointermove', e => {
+  if (!held) return; const prev = ptr; ptr = toLocal(e); hist.push(ptr); if (hist.length > 8) hist.shift();
+  // where the ball sits while the finger is only carrying it (slow): a Sky Shot is judged
+  // from here, not from the release point a hard flick has already raced up to
+  if (prev && Math.hypot(ptr.x - prev.x, ptr.y - prev.y) / Math.max(0.004, (ptr.t - prev.t)/1000) < 1200) held.calmY = held.y;
+});
+function release(){
+  if (!held) return;
+  const b = held; held = null;
+  // velocity from recent pointer history
+  const now = performance.now(); let a = hist[0];
+  for (const h of hist){ if (now - h.t <= 90){ a = h; break; } }
+  const last = hist[hist.length-1]; const dt = Math.max(16, last.t - a.t) / 1000;
+  let vx = (last.x - a.x)/dt, vy = (last.y - a.y)/dt;
+  const sp = Math.hypot(vx, vy);
+  if (vy > -150 || sp < 200){ // not a real flick: drop it back
+    b.state='rack'; b.vy = 0; b.vx = 0; return;
+  }
+  // Finger speed on a phone runs 500..4000 px/s; a shot only needs ~850..1150.
+  // Map swipe speed onto that band (soft, so a hard flick is a long shot, not a rocket)
+  // and take the aim angle from the swipe direction, clamped near vertical.
+  const t = Math.min(1, Math.max(0, (sp - 400) / (T.sens - 400)));       // 0 = gentle, 1 = hard
+  const base = T.min + (T.max - T.min) * Math.sqrt(t);
+  const kick = Math.min(1, Math.max(0, (sp - T.skyAt) / 1000));   // a hard flick kicks toward Sky power
+  const skyL = base + Math.max(0, T.sky - base) * kick;
+  const kick2 = Math.min(1, Math.max(0, (sp - T.spaceAt) / 1000));   // harder still: toward Space power
+  const launch = skyL + Math.max(0, T.space - skyL) * kick2;
+  let ang = Math.atan2(vx, -vy);                                 // 0 = straight up
+  ang = Math.max(-0.45, Math.min(0.45, ang));
+  vx = Math.sin(ang) * launch; vy = -Math.cos(ang) * launch;
+  if (TUNE_ON) $('tuneLast').textContent = `Last flick: ${Math.round(sp)} px/s → power ${Math.round(launch)}${kick2 > 0 ? ' 🚀 space kick ' + Math.round(kick2*100) + '%' : kick > 0 ? ' ★ sky kick ' + Math.round(kick*100) + '%' : ''}, aim ${Math.round(ang*180/Math.PI)}°`;
+  b.vx = vx; b.vy = vy; b.state='flight'; b.spin = -vx*0.02 - 6; b.scored=false; b.passedRim=false; b.life=0; b.trail=[]; b.shot=G.shots;
+  // only a shot thrown from down low can be a Sky Shot, so carrying the ball up under the hoop can't farm 2-pointers
+  b.skyOK = (b.calmY === undefined ? b.y : b.calmY) >= throwY(); b.sky = false;
+  G.shots++;
+}
+canvas.addEventListener('pointerup', release);
+canvas.addEventListener('pointercancel', release);
+window.addEventListener('resize', resize);
+
+// ---------- physics ----------
+function update(dt){
+  updateMotes(dt); updateLife(dt);
+  if (G.state !== 'play') return;
+  // a swish holds the moment for a blink; the basket runs on the game's own
+  // clock so it slows with everything else
+  if (slowT > 0){ slowT -= dt; dt *= 0.35; }
+  // still for the first STILL_SHOTS balls; it wakes once the tenth has come down
+  // (or 1.2 s after it left the hand, so rapid shooting can't keep it still for
+  // good), starting from the middle (sin 0) so it never jumps
+  if (G.shots >= STILL_SHOTS) wakeT += dt;
+  if (!moving && G.shots >= STILL_SHOTS && (wakeT > 1.2 || !balls.some(b => b.state === 'flight'))){
+    moving = true; clock = 0; showCallout('THE BASKET MOVES!', '#9B6BD1', 40); sfx.moves(); mouseSay('Whoa! Hold on!', 1.8);
+  }
+  if (moving){ clock += dt; hoop.x = hoop.baseX + Math.sin(clock) * 78; } else hoop.x = hoop.baseX;
+  if (!finalShown && G.shots > 0 && SHOTS_PER_GAME - G.shots <= 5 && G.shots < SHOTS_PER_GAME){
+    finalShown = true; showCallout('FINAL FIVE', '#F08C6A', 46); mouseSay('Five left! You got this!', 1.8);
+  }
+  if (!lastShown && G.shots === SHOTS_PER_GAME - 1){
+    lastShown = true; showCallout('LAST BALL!', '#F3D08A', 48, 2); mouseSay('Make it count!', 1.8);
+  }
+  // round ends once the last shot is spent and nothing is still in the air
+  if (G.shots >= SHOTS_PER_GAME){
+    const live = balls.some(b => b.state === 'flight');
+    G.endTimer = live ? 0 : G.endTimer + dt;
+    if (G.endTimer > 0.9){ endGame(); return; }
+  }
+  if (held && ptr){ held.x += (ptr.x - held.x)*0.6; held.y += (ptr.y - held.y)*0.6; held.z = 1.15; }
+
+  spawnTimer -= dt;
+  const rackCount = balls.filter(b => b.state==='rack' || b.state==='held').length;
+  const need = Math.min(5, SHOTS_PER_GAME - G.shots);   // the rack never shows more balls than you have left
+  if (rackCount < need && spawnTimer <= 0){ spawnTimer = 0.35; spawnBall(balls.length); }
+  if (rackCount > need){ const k = balls.findIndex(b => b.state === 'rack'); if (k >= 0){ puff(balls[k].x, rack.y, 'dust'); balls.splice(k, 1); } }
+
+  for (let i=balls.length-1;i>=0;i--){
+    const b = balls[i];
+    if (b.state==='rack'){ // settle onto rack
+      b.vy += T.grav*dt*0.6; b.y += b.vy*dt;
+      if (b.y > rack.y - b.r){ b.y = rack.y - b.r; b.vy = 0; }
+      // ease toward a free spot horizontally
+      const spot = nearestFreeSpot(b); b.x += (spot - b.x)*Math.min(1, dt*4);
+      b.z = 1;
+      continue;
+    }
+    if (b.state!=='flight') continue;
+    b.life += dt;
+    b.vy += T.grav*dt; b.x += b.vx*dt; b.y += b.vy*dt; b.rot += b.spin*dt;
+    if (b.trail){ b.trail.push({ x:b.x, y:b.y, z:b.z }); if (b.trail.length > 9) b.trail.shift(); }
+    if (b.skyOK && !b.sky && b.y < skyY()){
+      b.sky = true; skyFlash = 1; sfx.sky();
+      if (!mouse.bubble) mouseSay(pick(['Whoa, so high!','To the moon!','Sky ball!']), 1.2);
+    }
+    if (b.skyOK && !b.offTop && b.y < -b.r){
+      b.offTop = true; sfx.space();
+      if (!mouse.bubble) mouseSay(pick(['Where\'d it go?!','Into SPACE?!','Whoooa!']), 1.4);
+    }
+    if (b.sky && Math.random() < 0.9) addPart({ x:b.x+(Math.random()-0.5)*b.r, y:b.y+(Math.random()-0.5)*b.r, vx:(Math.random()-0.5)*40, vy:(Math.random()-0.5)*40, g:0, life:0.5, c: Math.random() < 0.5 ? '#FFFFFF' : '#9FE2FF', s:2+Math.random()*2, star:true });
+    if (fire > 0.5 && Math.random() < 0.8) addPart({ x:b.x+(Math.random()-0.5)*b.r*b.z, y:b.y+(Math.random()-0.5)*b.r*b.z,
+      vx:(Math.random()-0.5)*60, vy:-40-Math.random()*80, g:-120, life:0.35+Math.random()*0.25, c:EMBER[(Math.random()*4)|0], s:2+Math.random()*3 });
+    // depth: shrinks as it travels "away" toward the hoop
+    const prog = Math.max(0, Math.min(1, (rack.y - b.y) / (rack.y - hoop.y)));
+    b.z = 1 - 0.32*prog;
+    const r = b.r*b.z;
+
+    // walls
+    if (b.x < r){ b.x = r; b.vx = -b.vx*0.6; } else if (b.x > W-r){ b.x = W-r; b.vx = -b.vx*0.6; }
+
+    // backboard: never a ceiling. The ball may fly as high as it likes; only a
+    // *falling* ball that comes down behind the rim banks off the board and
+    // drops toward the hoop.
+    const bbTop = hoop.y - hoop.boardH + 10;
+    if (b.vy > 0 && !b.scored && b.y > bbTop && b.y < hoop.y - r*0.5 && Math.abs(b.x - hoop.x) < hoop.boardW/2 && Math.abs(b.x - hoop.x) > hoop.r + r*0.2 && !b.banked){
+      b.banked = true; b.vx = (hoop.x - b.x) * 2.2; b.vy *= 0.7; shake = 3; rimFlash = 0.1; b.touchedRim = true;
+    }
+    // rim collision: two rim end points as circles
+    const rimL = { x: hoop.x - hoop.r, y: hoop.y }, rimR = { x: hoop.x + hoop.r, y: hoop.y };
+    for (const p of [rimL, rimR]){
+      const dx = b.x - p.x, dy = b.y - p.y, d = Math.hypot(dx,dy), min = r + hoop.rimT;
+      if (d < min && d > 0 && b.vy > 0){
+        const nx = dx/d, ny = dy/d, dot = b.vx*nx + b.vy*ny;
+        if (dot < 0){ b.vx -= 1.75*dot*nx; b.vy -= 1.75*dot*ny; b.vx *= 0.8; b.vy *= 0.8; }
+        if (rimFlash <= 0) sfx.clank();
+        b.x = p.x + nx*min; b.y = p.y + ny*min; b.touchedRim = true; rimFlash = 0.15; shake = 3;
+        b.spin = -b.vx*0.03;
+      }
+    }
+    // score: ball crosses rim plane downward inside the rim
+    if (!b.scored && b.vy > 0 && b.y - r*0.2 > hoop.y && b.y - r*0.2 - b.vy*dt <= hoop.y && Math.abs(b.x - hoop.x) < hoop.r - r*0.55){
+      b.scored = true; onScore(b);
+      b.vx *= 0.3; b.vy *= 0.55; netWob = 1;
+    }
+    // net drag
+    if (b.scored && b.y < hoop.y + 60){ b.vy = Math.min(b.vy, 420); b.x += (hoop.x - b.x)*0.15; }
+    // floor
+    if (b.y > floorY - r && b.life > 0.3){
+      b.y = floorY - r; b.vy = -b.vy*0.45; b.vx *= 0.8; if (Math.abs(b.vy) < 80) b.vy = 0;
+      if (!b.landed){ b.landed = true; sfx.thud(); puff(b.x, floorY, b.scored ? 'gold' : 'dust'); if (!b.scored) onMiss(b); }
+    }
+    if (b.life > 4.5 || (b.landed && Math.abs(b.vy) < 1 && Math.abs(b.vx) < 5) || b.y > H + 100){
+      if (!b.scored) onMiss(b);
+      balls.splice(i,1);
+    }
+  }
+  // particles
+  for (let i=parts.length-1;i>=0;i--){ const p=parts[i]; p.life-=dt; p.vy += (p.g === undefined ? 900 : p.g)*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; if (p.life<=0) parts.splice(i,1); }
+  for (let i=toasts.length-1;i>=0;i--){ const t=toasts[i]; t.life-=dt; t.y -= 60*dt; if (t.life<=0) toasts.splice(i,1); }
+  shake *= 0.85; netWob *= 0.94; rimFlash = Math.max(0, rimFlash - dt);
+  fire += ((onFire() ? 1 : 0) - fire) * Math.min(1, dt*3);
+  EMBER = G.streak >= BLUE_AT ? EMBER_BLUE : EMBER_RED;
+  for (let i=confetti.length-1;i>=0;i--){ const c=confetti[i]; c.sway += dt*3; c.x += (c.vx + Math.sin(c.sway)*30)*dt; c.y += c.vy*dt; c.rot += c.vr*dt; if (c.y > floorY) confetti.splice(i,1); }
+  if (fire > 0.5 && Math.random() < 0.5){ const a = Math.random()*Math.PI*2;
+    addPart({ x:hoop.x+Math.cos(a)*hoop.r, y:hoop.y+Math.sin(a)*hoop.r*0.28, vx:(Math.random()-0.5)*30, vy:-30-Math.random()*60, g:-80, life:0.4+Math.random()*0.3, c:EMBER[(Math.random()*4)|0], s:2+Math.random()*2 }); }
+  for (let i=rings.length-1;i>=0;i--){ const g=rings[i]; g.life-=dt; g.r += 160*dt; if (g.life<=0) rings.splice(i,1); }
+  // the BEST panel: once a round passes this device's best it climbs with the score, popping as it goes
+  if (best > 0 && G.points > best && G.points > bestSeen){ bestSeen = G.points; bestPop = 1; }
+  if (callout){ callout.life -= dt; if (callout.life <= 0) callout = null; }
+  updateMouse(dt);
+  scoreShown += (G.points - scoreShown) * Math.min(1, dt*6); if (Math.abs(G.points - scoreShown) < 0.01) scoreShown = G.points;
+  spaceFx = Math.max(0, spaceFx - dt); hype = Math.max(0, hype - dt);
+  boardFx = Math.max(0, boardFx - dt); skyFlash = Math.max(0, skyFlash - dt*1.5);
+  if (plusBadge){ plusBadge.life -= dt; if (plusBadge.life <= 0) plusBadge = null; }
+  flash = Math.max(0, flash - dt*2.5); bestPop = Math.max(0, bestPop - dt*3); madePop = Math.max(0, madePop - dt*3); netDrop *= 0.9;
+}
+function mousePos(){ return { x: hoop.x + hoop.boardW/2 - 30, y: hoop.y - hoop.boardH + 10 }; }
+function updateMouse(dt){
+  const m = mouse, mp = mousePos();
+  m.jump = Math.max(0, m.jump - dt); m.sad = Math.max(0, m.sad - dt);
+  m.blink -= dt; if (m.blink < -0.12) m.blink = 2 + Math.random()*3;
+  if (m.bubble){ m.bubble.life -= dt; if (m.bubble.life <= 0) m.bubble = null; }
+  // watch the nearest ball in the air; duck if it comes close
+  let near = null, nd = 1e9;
+  for (const b of balls){ if (b.state !== 'flight' && b.state !== 'held') continue; const d = Math.hypot(b.x - mp.x, b.y - (mp.y - 20)); if (d < nd){ nd = d; near = b; } }
+  const tx = near ? Math.max(-1, Math.min(1, (near.x - mp.x)/120)) : 0, ty = near ? Math.max(-1, Math.min(1, (near.y - mp.y)/160)) : 0;
+  m.lookX += (tx - m.lookX)*Math.min(1, dt*8); m.lookY += (ty - m.lookY)*Math.min(1, dt*8);
+  m.duck += (((nd < 55 && near && near.state === 'flight') ? 1 : 0) - m.duck)*Math.min(1, dt*14);
+}
+const bats = []; let batT = 4;
+const sparks = [];
+const WINDOWS = [{ x: 62, y: 168 }, { x: W - 62, y: 168 }];
+const eyes = [];   // pairs of glowing eyes in the windows; more come to watch as the streak grows
+function updateLife(dt){
+  batT -= dt*(1 + fire*2);
+  if (batT <= 0){ batT = 7 + Math.random()*9; const dir = Math.random() < 0.5 ? 1 : -1;
+    bats.push({ x: dir > 0 ? -20 : W + 20, y: 120 + Math.random()*90, dir, sp: 90 + Math.random()*60, ph: Math.random()*6 }); }
+  for (let i=bats.length-1;i>=0;i--){ const b = bats[i]; b.ph += dt*18; b.x += b.dir*b.sp*dt; b.y += Math.sin(b.ph*0.2)*20*dt; if (b.x < -30 || b.x > W + 30) bats.splice(i,1); }
+  for (const tx of [38, W-38]) if (Math.random() < dt*(3 + fire*8)) sparks.push({ x: tx + (Math.random()-0.5)*6, y: 238, vx:(Math.random()-0.5)*16, vy:-30-Math.random()*40, life: 0.8 + Math.random()*0.6 });
+  for (let i=sparks.length-1;i>=0;i--){ const p = sparks[i]; p.life -= dt; p.x += (p.vx + Math.sin(p.life*9)*8)*dt; p.y += p.vy*dt; if (p.life <= 0) sparks.splice(i,1); }
+  const want = G.state === 'play' ? Math.min(8, 1 + Math.floor(G.streak*0.8)) : 1;
+  while (eyes.length < want){ const w = eyes.length % 2; eyes.push({ w, dx: (Math.random()-0.5)*26, dy: (Math.random()-0.5)*20, blink: Math.random()*3, a: 0, hue: Math.random() < 0.3 ? '#9FE2FF' : '#F3D08A' }); }
+  for (let i=eyes.length-1;i>=0;i--){ const e = eyes[i]; e.blink -= dt; if (e.blink < -0.15) e.blink = 1.5 + Math.random()*4;
+    if (i >= want){ e.a -= dt*2; if (e.a <= 0) eyes.splice(i,1); } else e.a = Math.min(1, e.a + dt*1.5); }
+}
+function drawWindows(){
+  for (let k=0;k<2;k++){
+    const w = WINDOWS[k];
+    ctx.fillStyle = '#0E0906'; ctx.beginPath(); ctx.moveTo(w.x-24, w.y+22); ctx.lineTo(w.x-24, w.y-10); ctx.arc(w.x, w.y-10, 24, Math.PI, 0); ctx.lineTo(w.x+24, w.y+22); ctx.closePath(); ctx.fill();
+    const m = ctx.getTransform();
+    for (const e of eyes){ if (e.w !== k || e.blink < 0) continue;
+      ctx.globalAlpha = e.a;
+      const ex = w.x + e.dx + (hoop.x - W/2)*0.03, ey = w.y + e.dy;   // they follow the basket
+      const pad = 4.8 + 12/(dpr*scale);
+      stamp(sprite('eyes' + e.hue, pad, pad, () => { ctx.fillStyle = e.hue; ctx.shadowColor = e.hue; ctx.shadowBlur = 6;
+        ctx.beginPath(); ctx.ellipse(-3, 0, 1.8, 2.4, 0, 0, 7); ctx.ellipse(3, 0, 1.8, 2.4, 0, 0, 7); ctx.fill(); }), ex, ey, m); }
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#4A3520'; ctx.lineWidth = 3;   // iron bars and stone frame
+    ctx.beginPath(); for (const bx of [-10, 0, 10]){ ctx.moveTo(w.x+bx, w.y-33); ctx.lineTo(w.x+bx, w.y+22); } ctx.stroke();
+    ctx.strokeStyle = '#5a4128'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(w.x-26, w.y+23); ctx.lineTo(w.x-26, w.y-10); ctx.arc(w.x, w.y-10, 26, Math.PI, 0); ctx.lineTo(w.x+26, w.y+23); ctx.stroke();
+    ctx.fillStyle = '#5a4128'; ctx.fillRect(w.x-30, w.y+22, 60, 5);
+  }
+}
+function drawLife(){
+  for (const p of sparks){ ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.fillStyle = G.streak >= BLUE_AT ? '#9FE2FF' : '#F3D08A'; ctx.fillRect(p.x, p.y, 2, 2); }
+  ctx.globalAlpha = 1;
+  for (const b of bats){
+    const f = Math.sin(b.ph); ctx.save(); ctx.translate(b.x, b.y); ctx.scale(b.dir, 1); ctx.fillStyle = '#120C07';
+    ctx.beginPath(); ctx.ellipse(0, 0, 5, 3.5, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-2, -1); ctx.quadraticCurveTo(-9, -10*f - 2, -16, -2*f); ctx.quadraticCurveTo(-9, 1, -2, 2); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(2, -1); ctx.quadraticCurveTo(9, -10*f - 2, 16, -2*f); ctx.quadraticCurveTo(9, 1, 2, 2); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#E8B24A'; ctx.fillRect(2.5, -1.5, 1.2, 1.2); ctx.restore();
+  }
+}
+function updateMotes(dt){
+  while (motes.length < 24) motes.push({ x:Math.random()*W, y:120+Math.random()*(floorY-160), vx:(Math.random()-0.5)*8, vy:-4-Math.random()*8, a:Math.random()*6 });
+  for (const m of motes){ m.a += dt; m.x += (m.vx + Math.sin(m.a)*6)*dt; m.y += m.vy*dt*(1+fire*2);
+    if (m.y < 100 || m.x < -5 || m.x > W+5){ m.y = floorY - 20; m.x = Math.random()*W; } }
+}
+function onMiss(b){
+  if (b.missed) return; b.missed = true; shotRes[b.shot] = 'miss';
+  mouseSad(G.streak >= 3);
+  if (G.streak >= 3) showCallout('The fire goes out', '#8C7659', 30);
+  G.streak = 0;
+  if (b.touchedRim) toasts.push({ x: Math.max(60, Math.min(W-60, b.x)), y: hoop.y - 40, text: 'CLANK', color: '#8C7659', life: 0.8, size: 22 });
+}
+function nearestFreeSpot(b){
+  let bestS = rack.spots[0], bd = 1e9;
+  for (const s of rack.spots){
+    const taken = balls.some(o => o!==b && (o.state==='rack') && Math.abs(o.x - s) < 20);
+    const d = Math.abs(s - b.x) + (taken ? 1000 : 0);
+    if (d < bd){ bd = d; bestS = s; }
+  }
+  return bestS;
+}
+function onScore(b){
+  const swish = !b.touchedRim;
+  shotRes[b.shot] = 'make';
+  G.made++; G.streak++; G.bestStreak = Math.max(G.bestStreak, G.streak);
+  { const L0 = LADDER[G.streak] || (G.streak > 10 ? [0,4] : null); mouseCheer(!b.touchedRim, L0 ? L0[1] : -1); }
+  if (swish) G.swish++;
+  swish ? sfx.swish() : sfx.score();
+  // the secret Space Shot: thrown from down low, gone off the top of the screen,
+  // and 1.5 s or more from release to the net. Worth 5.
+  const space = b.skyOK && b.offTop && b.life >= 1.5;
+  const pts = space ? 5 : b.sky ? 3 : 2;   // every basket counts: 2, 3 for a Sky Shot
+  if (space){ G.space++; spaceShow(); }
+  G.points += pts; if (b.sky && !space) G.sky++;
+  boardFx = space ? 3 : b.sky ? 1.6 : 0.9; boardFxSky = !!b.sky; plusBadge = { text: '+' + pts, sky: !!b.sky, space, life: space ? 2.2 : 1.1 };
+  if (b.sky){
+    sfx.skyScore();
+    for (let i=0;i<30;i++){ const a = Math.random()*Math.PI*2, v = 120 + Math.random()*260;
+      addPart({ x: hoop.x, y: hoop.y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 120, g: 300, life: 0.8 + Math.random()*0.4, c: ['#FFFFFF','#9FE2FF','#F3D08A'][i%3], s: 3 + Math.random()*3, star: true }); }
+    rings.push({ r: hoop.r*1.4, life: 0.8, c: '#9FE2FF' });
+  }
+  // gold sparks on a basket that crosses a multiple of 3 points (the hall's old coin beat), ember otherwise
+  const third = Math.floor(G.points / 3) > Math.floor((G.points - pts) / 3);
+  if (space) toasts.push({ x: hoop.x, y: hoop.y - 60, text: '🚀 +5', color: '#E0B0FF', life: 1.6, size: 36 });
+  else toasts.push(b.sky ? { x: hoop.x, y: hoop.y - 60, text: '★ SKY SHOT +3', color: '#9FE2FF', life: 1.3, size: 32 }
+                     : { x: hoop.x, y: hoop.y - 60, text: swish ? 'SWISH!' : 'IN!', color: swish ? '#F3D08A' : '#F0E2C0', life: 1, size: swish ? 36 : 30 });
+  const hot = G.streak >= 3;
+  for (let i=0;i<(hot ? 34 : 18);i++) addPart({ x: hoop.x, y: hoop.y+10, vx:(Math.random()-0.5)*(hot ? 520 : 400), vy:-Math.random()*(hot ? 450 : 350), life:0.6+Math.random()*0.4, c: hot ? EMBER[(Math.random()*4)|0] : (third ? '#E8B24A' : '#D4622F'), s: 3+Math.random()*3 });
+  rings.push({ r: hoop.r, life: 0.45, c: swish ? '#F3D08A' : '#E8B24A' });
+  if (swish) rings.push({ r: hoop.r*0.6, life: 0.6, c: '#F0E2C0' });
+  netDrop = 1; madePop = 1;
+  if (!CALM){ if (swish){ slowT = 0.14; flash = 0.35; flashC = '#F3D08A'; } shake = Math.max(shake, hot ? 6 : 4); }
+  const L = LADDER[G.streak] || (G.streak > 10 ? [G.streak + ' IN A ROW!', 4, '#E8B24A'] : null);
+  if (L && !space){
+    showCallout(L[0], L[2], 40 + L[1]*4, L[1]); if (L[1] >= 1) sfx.tier(L[1]);
+    if (!CALM && L[1] >= 2){ flash = 0.2 + 0.06*L[1]; flashC = L[2]; shake = Math.max(shake, 3 + L[1]*2); }
+    if (L[1] >= 2) rings.push({ r: hoop.r*1.2, life: 0.7, c: L[2] });
+  } else if (space){
+    // spaceShow() owns the big words
+  } else if (b.sky){
+    showCallout(pick(['SKY SHOT!','FROM THE CLOUDS!','MOONBALL!','SKY HIGH!']), '#9FE2FF', 46, 3);
+    if (!CALM){ flash = 0.3; flashC = '#9FE2FF'; }
+  }
+  vibrate(swish ? [20,30,20] : 15);
+}
+function puff(x,y,kind){ for (let i=0;i<8;i++) parts.push({ x, y, vx:(Math.random()-0.5)*200, vy:-Math.random()*150, life:0.4, c: kind==='gold' ? '#B07E24' : '#8C7659', s: 2+Math.random()*3 }); }
+function vibrate(p){ try { navigator.vibrate && navigator.vibrate(p); } catch(e){} }
+
+// ---------- drawing ----------
+function draw(){
+  ctx.setTransform(dpr*scale,0,0,dpr*scale,0,0);
+  const sx = (Math.random()-0.5)*shake, sy = (Math.random()-0.5)*shake;
+  ctx.save(); ctx.translate(sx, sy);
+  drawRoom(); drawWindows(); drawLife(); drawMotes(); drawSpace(); drawSkyLine(); drawCalloutRays(); drawHoopBack(); drawMouse(); drawRack(); drawRings();
+  // balls behind net vs in front: scored balls falling through are behind the net front
+  const sorted = balls.slice().sort((a,b) => a.z - b.z);
+  for (const b of sorted) if (b.state==='flight') drawTrail(b);
+  for (const b of sorted) if (b.state==='flight' && b.y < hoop.y + 80 && b.scored) drawBall(b);
+  drawNet();
+  drawRim();
+  for (const b of sorted) if (!(b.state==='flight' && b.y < hoop.y + 80 && b.scored)) drawBall(b);
+  for (const p of parts){ ctx.globalAlpha = Math.max(0, p.life*1.8); ctx.fillStyle = p.c;
+    if (p.star){ const q = p.s; ctx.beginPath(); ctx.moveTo(p.x, p.y-q*1.6); ctx.lineTo(p.x+q*0.45, p.y); ctx.lineTo(p.x, p.y+q*1.6); ctx.lineTo(p.x-q*0.45, p.y); ctx.closePath();
+      ctx.moveTo(p.x-q*1.6, p.y); ctx.lineTo(p.x, p.y+q*0.45); ctx.lineTo(p.x+q*1.6, p.y); ctx.lineTo(p.x, p.y-q*0.45); ctx.closePath(); ctx.fill(); }
+    else ctx.fillRect(p.x, p.y, p.s, p.s); }
+  ctx.globalAlpha = 1;
+  { const m = ctx.getTransform();   // confetti: the same translate-rotate-squash matrix per piece, set in one call
+    for (const c of confetti){ const co = Math.cos(c.rot), si = Math.sin(c.rot), q = Math.abs(Math.cos(c.rot*1.3)) + 0.2;
+      ctx.setTransform(m.a*co + m.c*si, m.b*co + m.d*si, (m.c*co - m.a*si)*q, (m.d*co - m.b*si)*q, m.a*c.x + m.c*c.y + m.e, m.b*c.x + m.d*c.y + m.f);
+      ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); }
+    ctx.setTransform(m); }
+  for (const t of toasts){ ctx.globalAlpha = Math.min(1, t.life*2); ctx.font = '900 '+(t.size||30)+'px Alegreya, Georgia, serif'; ctx.textAlign='center'; ctx.lineWidth=5; ctx.strokeStyle='#1A120B'; ctx.strokeText(t.text, t.x, t.y); ctx.fillStyle = t.color; ctx.fillText(t.text, t.x, t.y); }
+  ctx.globalAlpha = 1;
+  drawCallout();
+  ctx.restore();
+  drawFinalVignette();
+  drawHUD();
+  for (const b of balls) if (b.state === 'flight' && b.y < -b.r){   // off the top of the screen: a marker under the scoreboard so it isn't lost
+    const my = SB.y + SB.h + 20; ctx.fillStyle = b.offTop ? '#E0B0FF' : '#9FE2FF'; ctx.beginPath(); ctx.moveTo(b.x, my); ctx.lineTo(b.x - 9, my + 13); ctx.lineTo(b.x + 9, my + 13); ctx.closePath(); ctx.fill(); }
+  drawHype();
+  if (flash > 0){ ctx.globalAlpha = Math.min(0.35, flash); ctx.fillStyle = flashC; ctx.fillRect(0,0,W,H); ctx.globalAlpha = 1; }
+}
+function drawMouse(){ if (hype > 0) return; drawMouseAt(); }   // Pip is off being a hype man
+function drawMouseAt(ox, oy){
+  const m = mouse, p = ox === undefined ? mousePos() : { x: ox, y: oy }, now = performance.now()/1000;
+  const jt = m.jumpDur ? 1 - m.jump/m.jumpDur : 1, hop = m.jump > 0 ? Math.sin(jt*Math.PI)*28 : 0;
+  const breathe = Math.sin(now*3)*0.8, squash = 1 - 0.35*m.duck;
+  const cheering = m.jump > 0, sad = m.sad > 0, hot = G.streak >= 5;
+  ctx.save(); ctx.translate(p.x, p.y - hop);
+  if (m.flip && m.jump > 0){ ctx.translate(0, -16); ctx.rotate(-jt*Math.PI*2); ctx.translate(0, 16); }   // a backflip for a swish
+  ctx.scale(1.35, 1.35*squash);
+  const fur = '#A89582', furD = '#7E6C5B', pink = '#E8A6A6';
+  // tail
+  ctx.strokeStyle = '#C79A8A'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(8, -4); ctx.quadraticCurveTo(26, -2 + Math.sin(now*4)*4, 22, -18 + Math.sin(now*4 + 1)*5); ctx.stroke();
+  // pennant on a streak (behind the body, held up in the far paw)
+  if (hot){
+    const blue = G.streak >= BLUE_AT, wave = Math.sin(now*9);
+    ctx.strokeStyle = '#4A3520'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(9, -8); ctx.lineTo(13, -50); ctx.stroke();
+    ctx.fillStyle = blue ? '#5AB8F0' : '#D4622F';
+    ctx.beginPath(); ctx.moveTo(13, -50); ctx.quadraticCurveTo(22, -48 + wave*2, 31, -45 + wave*3); ctx.lineTo(13, -40); ctx.closePath(); ctx.fill();
+  }
+  // body + belly + feet
+  ctx.fillStyle = fur; ctx.beginPath(); ctx.ellipse(0, -10 + breathe*0.3, 10, 11, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#E6D5C0'; ctx.beginPath(); ctx.ellipse(-2, -8, 6, 7, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = pink; ctx.beginPath(); ctx.ellipse(-5, 0, 3.5, 2, 0, 0, Math.PI*2); ctx.ellipse(5, 0, 3.5, 2, 0, 0, Math.PI*2); ctx.fill();
+  // head (faces left, toward the hoop and the player)
+  const hx = -3, hy = -26 + breathe*0.4;
+  const earDrop = sad ? 0.6 : 0;
+  for (const [ex, ey, a] of [[hx+7, hy-8, 0.3 + earDrop], [hx-6, hy-9, -0.3 - earDrop]]){
+    ctx.save(); ctx.translate(ex, ey); ctx.rotate(a);
+    ctx.fillStyle = fur; ctx.beginPath(); ctx.arc(0, 0, 6.5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = pink; ctx.beginPath(); ctx.arc(0, 0.5, 4, 0, Math.PI*2); ctx.fill(); ctx.restore();
+  }
+  ctx.fillStyle = fur; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(hx-8, hy+2, 6, 4.5, 0.2, 0, Math.PI*2); ctx.fill();            // snout
+  ctx.fillStyle = pink; ctx.beginPath(); ctx.arc(hx-13.5, hy+1.5, 1.8, 0, Math.PI*2); ctx.fill(); // nose
+  // guild scarf
+  ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.ellipse(hx+1, hy+8.5, 8, 2.8, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillRect(hx+4, hy+9, 3, 7);
+  // eye: follows the ball, blinks, squeezes shut when happy
+  const eyeX = hx-4 + m.lookX*1.6, eyeY = hy-2 + m.lookY*1.4;
+  ctx.strokeStyle = '#1A120B'; ctx.fillStyle = '#1A120B'; ctx.lineWidth = 1.6;
+  if (cheering){ ctx.beginPath(); ctx.arc(hx-4, hy-1, 2.2, Math.PI*1.1, Math.PI*1.9); ctx.stroke(); }
+  else if (m.blink < 0){ ctx.beginPath(); ctx.moveTo(eyeX-2, eyeY); ctx.lineTo(eyeX+2, eyeY); ctx.stroke(); }
+  else { ctx.beginPath(); ctx.arc(eyeX, eyeY, 2.1, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillRect(eyeX-1, eyeY-1.4, 1, 1); }
+  // whiskers
+  ctx.strokeStyle = 'rgba(240,226,192,.7)'; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(hx-11, hy+2); ctx.lineTo(hx-20, hy-1); ctx.moveTo(hx-11, hy+3); ctx.lineTo(hx-20, hy+4); ctx.stroke();
+  // paws: up for a cheer, over the eyes when sad, folded otherwise
+  ctx.strokeStyle = furD; ctx.lineWidth = 3; ctx.fillStyle = pink;
+  const paw = (x0, y0, x1, y1) => { ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.beginPath(); ctx.arc(x1, y1, 2.2, 0, Math.PI*2); ctx.fill(); };
+  if (cheering){ const w = Math.sin(now*20)*3; paw(-6, -16, -14, -32 + w); paw(5, -16, 10, -33 - w); }
+  else if (sad){ paw(-6, -15, hx-5, hy-1); paw(4, -15, hx-1, hy); }
+  else if (hot){ paw(-6, -15, -5, -9); paw(4, -15, 10, -20); }
+  else { paw(-6, -15, -5, -9); paw(4, -15, 1, -9); }
+  ctx.restore();
+  // speech bubble
+  const bb = m.bubble;
+  if (bb){
+    ctx.save(); ctx.font = '800 12px "Alegreya Sans", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const tw = ctx.measureText(bb.text).width + 16, bh = 22;
+    const bx = Math.max(6 + tw/2, p.x - 28 - tw/2), by = p.y - hop - 40;
+    const age = bb.dur - bb.life, sc = age < 0.12 ? 0.5 + 4*age : 1;
+    ctx.globalAlpha = Math.min(1, bb.life*4); ctx.translate(bx, by); ctx.scale(sc, sc);
+    ctx.fillStyle = '#F0E2C0'; roundRect(-tw/2, -bh/2, tw, bh, 9); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(tw/2 - 1, -5); ctx.lineTo(tw/2 + 9, 2); ctx.lineTo(tw/2 - 1, 5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#1A120B'; ctx.fillText(bb.text, 0, 1); ctx.restore();
+  }
+}
+function drawSkyLine(){
+  // a row of little stars on the wall just above the backboard: clear it from down low and it's worth 2
+  const y = skyY(), glow = skyFlash, now = performance.now()/1000;
+  ctx.save();
+  for (let x = 10; x < W; x += 22){
+    if (WINDOWS.some(w => Math.abs(x - w.x) < 30)) continue;   // not across the window bars
+    const tw = 0.35 + 0.25*Math.sin(now*3 + x*0.3) + glow*0.6, q = 2 + glow*1.5;
+    ctx.globalAlpha = Math.min(1, tw*0.8); ctx.fillStyle = glow > 0.05 ? '#FFFFFF' : '#9FE2FF';
+    ctx.beginPath(); ctx.moveTo(x, y-q*1.5); ctx.lineTo(x+q*0.4, y); ctx.lineTo(x, y+q*1.5); ctx.lineTo(x-q*0.4, y); ctx.closePath(); ctx.fill();
+  }
+  ctx.globalAlpha = 0.75 + glow*0.25; ctx.font = '800 10px "Alegreya Sans", sans-serif'; ctx.textAlign = 'left'; ctx.fillStyle = '#9FE2FF';
+  ctx.fillText('↑ SKY LINE · 3 PTS', 8, y + 26);
+  ctx.restore();
+  // holding a ball above the throw line: show where Sky Shots start
+  if (held && held.calmY !== undefined && held.calmY < throwY()){
+    const ty = throwY(); ctx.save(); ctx.setLineDash([6, 6]); ctx.strokeStyle = 'rgba(159,226,255,.5)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(W, ty); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '800 11px "Alegreya Sans", sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(159,226,255,.85)';
+    ctx.fillText('Too close for a Sky Shot · throw from below this line', W/2, ty + 16); ctx.restore();
+  }
+}
+function drawMotes(){
+  for (const m of motes){ ctx.globalAlpha = 0.25 + 0.25*Math.sin(m.a*2); ctx.fillStyle = fire > 0.5 ? '#F08C6A' : '#F3D08A'; ctx.fillRect(m.x, m.y, 2, 2); }
+  ctx.globalAlpha = 1;
+}
+function drawRings(){
+  for (const g of rings){ ctx.globalAlpha = Math.max(0, g.life*2); ctx.strokeStyle = g.c; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.ellipse(hoop.x, hoop.y, g.r, g.r*0.32, 0, 0, Math.PI*2); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+}
+function drawTrail(b){
+  const tr = b.trail; if (!tr || tr.length < 2) return;
+  for (let i=0;i<tr.length-1;i++){
+    const k = i/tr.length, p = tr[i];
+    ctx.globalAlpha = k*(fire > 0.5 ? 0.55 : 0.28);
+    ctx.fillStyle = fire > 0.5 ? EMBER[i%3 + 1] : '#F0E2C0';
+    ctx.beginPath(); ctx.arc(p.x, p.y, b.r*p.z*(0.35+0.6*k), 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+function bestWidth(t){ const c = caches.bw || (caches.bw = {}); return c[t] !== undefined ? c[t] : (c[t] = ctx.measureText(t).width); }   // measured once per number
+function drawTrophy(cx, cy){
+  // the BEST panel's badge: a little cup in the coin's two golds
+  ctx.save(); ctx.translate(cx, cy); ctx.fillStyle = '#B07E24'; ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-7.5, -8); ctx.lineTo(7.5, -8); ctx.quadraticCurveTo(7.5, 2, 0, 3.5); ctx.quadraticCurveTo(-7.5, 2, -7.5, -8); ctx.fill();
+  ctx.beginPath(); ctx.arc(-7, -3.5, 3.2, Math.PI*0.5, Math.PI*1.5); ctx.stroke(); ctx.beginPath(); ctx.arc(7, -3.5, 3.2, -Math.PI*0.5, Math.PI*0.5); ctx.stroke();
+  ctx.fillRect(-1.6, 2.5, 3.2, 4); ctx.fillRect(-5.5, 6, 11, 2.8);
+  ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.moveTo(-5.5, -6.5); ctx.lineTo(5.5, -6.5); ctx.quadraticCurveTo(5.5, 0.4, 0, 1.6); ctx.quadraticCurveTo(-5.5, 0.4, -5.5, -6.5); ctx.fill();
+  ctx.fillStyle = '#F3D08A'; ctx.fillRect(-3.6, -5.6, 1.6, 4.6);
+  ctx.restore();
+}
+// tier 2+: a slow sunburst of light behind the words. Drawn under the balls and the
+// hoop so it never hides a shot, and it fades toward the rack.
+function drawCalloutRays(){
+  if (!callout || callout.tier < 2) return;
+  const c = callout, tier = c.tier, now = performance.now()/1000, fade = Math.min(1, c.life*2.5);
+  ctx.save(); ctx.translate(W/2, H*c.yf); ctx.globalAlpha = fade*(0.12 + 0.04*tier); ctx.rotate(now*(0.6 + 0.3*tier));
+  const n = 8 + tier*2, R = 140 + tier*25;
+  for (let k=0;k<n;k++){
+    const g = ctx.createRadialGradient(0,0,0,0,0,R); const col = tier >= 4 ? `hsl(${(now*120 + k*360/n)%360},90%,65%)` : c.color;
+    g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R,(k/n)*Math.PI*2,((k+0.45)/n)*Math.PI*2); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
+}
+function drawCallout(){
+  if (!callout) return;
+  const c = callout, age = c.dur - c.life, tier = c.tier, now = performance.now()/1000;
+  const pop = age < 0.18 ? 0.6 + 0.6*(age/0.18) : 1.2 - Math.min(0.2, (age-0.18)*1.2);
+  const fade = Math.min(1, c.life*2.5);
+  ctx.save(); ctx.translate(W/2, H*c.yf);
+  ctx.scale(pop, pop); ctx.rotate(-0.04 + (tier >= 3 ? Math.sin(now*6)*0.02 : 0));
+  ctx.globalAlpha = fade;
+  ctx.font = '900 '+c.size+'px Alegreya, Georgia, serif'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  // shrink to fit the width
+  let tw = ctx.measureText(c.text).width; const fit = Math.min(1, (W - 40) / tw);
+  ctx.scale(fit, fit);
+  let fill = c.color;
+  if (tier >= 3){
+    const g = ctx.createLinearGradient(0, -c.size/2, 0, c.size/2);
+    if (tier >= 4){ const h = (now*140)%360; g.addColorStop(0, `hsl(${h},95%,75%)`); g.addColorStop(0.5, '#F3D08A'); g.addColorStop(1, `hsl(${(h+120)%360},90%,60%)`); }
+    else { g.addColorStop(0, '#FFF3D0'); g.addColorStop(0.55, c.color); g.addColorStop(1, '#D4622F'); }
+    fill = g;
+  }
+  if (tier >= 1){ ctx.shadowColor = c.color; ctx.shadowBlur = 10 + tier*6; }
+  if (tier >= 3){
+    // each letter dances on its own beat
+    let x = -tw/2;
+    for (let k=0;k<c.text.length;k++){
+      const ch = c.text[k], w = ctx.measureText(ch).width, y = Math.sin(now*10 + k*0.7) * (3 + tier*1.5);
+      ctx.textAlign = 'left'; ctx.lineWidth = 8; ctx.strokeStyle = '#1A120B'; ctx.strokeText(ch, x, y);
+      ctx.fillStyle = fill; ctx.fillText(ch, x, y); x += w;
+    }
+  } else {
+    ctx.textAlign = 'center'; ctx.lineWidth = 8; ctx.strokeStyle = '#1A120B'; ctx.strokeText(c.text, 0, 0);
+    ctx.fillStyle = fill; ctx.fillText(c.text, 0, 0);
+  }
+  ctx.shadowBlur = 0;
+  // tier 4: sparkles orbit the words
+  if (tier >= 4){
+    for (let k=0;k<10;k++){ const a = now*2 + k*0.628, rx = tw*0.55, ry = c.size*0.9, sx = Math.cos(a)*rx, sy = Math.sin(a)*ry, s2 = 3 + 2*Math.sin(now*9 + k);
+      ctx.fillStyle = k%2 ? '#FFF3D0' : '#9FE2FF'; ctx.beginPath(); ctx.moveTo(sx, sy-s2*2); ctx.lineTo(sx+s2*0.6, sy); ctx.lineTo(sx, sy+s2*2); ctx.lineTo(sx-s2*0.6, sy); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(sx-s2*2, sy); ctx.lineTo(sx, sy+s2*0.6); ctx.lineTo(sx+s2*2, sy); ctx.lineTo(sx, sy-s2*0.6); ctx.closePath(); ctx.fill(); }
+  }
+  ctx.restore(); ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; ctx.globalAlpha = 1;
+}
+function drawFinalVignette(){
+  const left = SHOTS_PER_GAME - G.shots;
+  if (G.state !== 'play' || left > 5 || left <= 0) return;
+  const pulse = 0.18 + 0.1*Math.sin(performance.now()/180);
+  const v = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*0.75);
+  v.addColorStop(0, 'rgba(143,43,28,0)'); v.addColorStop(1, `rgba(143,43,28,${pulse})`);
+  ctx.fillStyle = v; ctx.fillRect(0,0,W,H);
+}
+function drawRoom(){
+  layer('room', 0, 0, W, H, paintRoom);   // the stone wall and the plank floor never change
+  // torch glow
+  for (const tx of [38, W-38]){
+    const tg = ctx.createRadialGradient(tx, 250, 5, tx, 250, 170 + 60*fire); tg.addColorStop(0,`rgba(${fire > 0.5 ? (G.streak >= BLUE_AT ? '90,184,240' : '212,98,47') : '232,178,74'},${.35 + .2*fire})`); tg.addColorStop(1,'rgba(232,178,74,0)');
+    ctx.fillStyle = tg; ctx.fillRect(tx-170, 80, 340, 340);
+    // sconce
+    ctx.fillStyle = '#4A3520'; ctx.fillRect(tx-5, 262, 10, 40);
+    const fl = (1 + Math.sin(performance.now()/90 + tx)*0.15) * (1 + 0.5*fire);
+    ctx.fillStyle = G.streak >= BLUE_AT ? '#5AB8F0' : '#D4622F'; ctx.beginPath(); ctx.ellipse(tx, 250, 9, 16*fl, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#F3D08A'; ctx.beginPath(); ctx.ellipse(tx, 254, 4, 8*fl, 0, 0, Math.PI*2); ctx.fill();
+  }
+}
+function paintRoom(){
+  // stone cellar wall
+  const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#2A1C10'); g.addColorStop(0.55,'#3A2817'); g.addColorStop(1,'#241809');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  // stone blocks
+  ctx.strokeStyle = 'rgba(26,18,11,.55)'; ctx.lineWidth = 2;
+  for (let y=0;y<floorY;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); const off=(y/40)%2?30:0; for (let x=off;x<W;x+=60){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+40); ctx.stroke(); } }
+  // floor planks (drawn after the torches before: they never overlap)
+  const fg = ctx.createLinearGradient(0,floorY,0,H); fg.addColorStop(0,'#8C6A3E'); fg.addColorStop(1,'#4A3520');
+  ctx.fillStyle = fg; ctx.fillRect(0, floorY, W, H-floorY);
+  ctx.strokeStyle = 'rgba(26,18,11,.5)'; ctx.lineWidth = 2;
+  for (let x=0;x<W;x+=50){ ctx.beginPath(); ctx.moveTo(x, floorY); ctx.lineTo(x-30, H); ctx.stroke(); }
+  ctx.fillStyle = '#1A120B'; ctx.fillRect(0, floorY-4, W, 6);
+}
+function drawHoopBack(){
+  // the backboard and its post are one sprite that rides with the basket (its shadowBlur was the frame's biggest)
+  const S = sprite('board', hoop.boardW/2 + 30, hoop.boardH + 64, () => paintHoopBack(0, 0), 34);
+  stamp(S, hoop.x, hoop.y, ctx.getTransform());
+  ctx.lineCap = 'round';   // the crest leaves round caps on for the rest of the scene (the net), as it always did
+}
+function paintHoopBack(x, y){
+  const {boardW,boardH} = hoop;
+  // iron post
+  ctx.fillStyle = '#3B2A16'; ctx.fillRect(x-10, y-boardH-60, 20, boardH+40);
+  ctx.fillStyle = '#5a4128'; ctx.fillRect(x-4, y-boardH-60, 4, boardH+40);
+  // oak backboard (shield shape)
+  ctx.save(); ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=20; ctx.shadowOffsetY=8;
+  const bx = x-boardW/2, by = y-boardH+10;
+  ctx.fillStyle = '#4A3520';
+  ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx+boardW, by); ctx.lineTo(bx+boardW, by+boardH*0.62); ctx.quadraticCurveTo(x, by+boardH+30, bx, by+boardH*0.62); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = 5; ctx.stroke();
+  ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2; ctx.strokeRect(bx+14, by+14, boardW-28, boardH*0.45);
+  // rivets
+  ctx.fillStyle = '#B07E24'; for (const [rx,ry] of [[bx+10,by+10],[bx+boardW-10,by+10],[bx+10,by+boardH*0.6],[bx+boardW-10,by+boardH*0.6]]){ ctx.beginPath(); ctx.arc(rx,ry,4,0,7); ctx.fill(); }
+  // small target square
+  ctx.strokeStyle = 'rgba(240,226,192,.7)'; ctx.lineWidth = 3; ctx.strokeRect(x-26, y-52, 52, 40);
+  // broom & blade crest
+  ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = 3; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x-14, y-44); ctx.lineTo(x+14, y-20); ctx.stroke(); // blade
+  ctx.beginPath(); ctx.moveTo(x+14, y-44); ctx.lineTo(x-14, y-20); ctx.stroke(); // broom
+  ctx.fillStyle='#8FAE5D'; ctx.beginPath(); ctx.moveTo(x-14,y-20); ctx.lineTo(x-22,y-14); ctx.lineTo(x-8,y-12); ctx.closePath(); ctx.fill();
+}
+function drawNet(){
+  const {x,y,r} = hoop; const w = Math.sin(performance.now()/60)*netWob*6;
+  ctx.strokeStyle = 'rgba(240,226,192,.85)'; ctx.lineWidth = 1.5;
+  const rows = 4, cols = 10, depth = 58 + netDrop*22;
+  for (let c=0;c<cols;c++){
+    const a0 = (c/cols)*Math.PI, a1 = ((c+1)/cols)*Math.PI;
+    for (let rr=0; rr<rows; rr++){
+      const t0 = rr/rows, t1=(rr+1)/rows;
+      const w0 = r*(1-0.45*t0), w1 = r*(1-0.45*t1);
+      const p0 = { x: x - w0*Math.cos(a0) + w*t0, y: y + depth*t0 }, p1 = { x: x - w1*Math.cos(a1) + w*t1, y: y + depth*t1 };
+      const q0 = { x: x - w0*Math.cos(a1) + w*t0, y: y + depth*t0 }, q1 = { x: x - w1*Math.cos(a0) + w*t1, y: y + depth*t1 };
+      ctx.beginPath(); ctx.moveTo(p0.x,p0.y); ctx.lineTo(p1.x,p1.y); ctx.moveTo(q0.x,q0.y); ctx.lineTo(q1.x,q1.y); ctx.stroke();
+    }
+  }
+}
+function drawRim(){
+  const {x,y,r,rimT} = hoop;
+  // bracket
+  ctx.fillStyle = '#3B2A16'; ctx.fillRect(x-8, y-8, 16, 8);
+  if (fire <= 0.05){   // the everyday rim and its drop shadow, a sprite per colour
+    const col = rimFlash > 0 ? '#F3D08A' : '#E8B24A';
+    stamp(sprite('rim' + col, r + rimT + 6, r*0.28 + rimT + 8, () => {
+      ctx.save(); ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=6; ctx.shadowOffsetY=3; ctx.strokeStyle = col; ctx.lineWidth = rimT*2;
+      ctx.beginPath(); ctx.ellipse(0, 0, r, r*0.28, 0, 0, Math.PI*2); ctx.stroke(); ctx.restore();
+      ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, r, r*0.28, 0, 0, Math.PI*2); ctx.stroke(); }), x, y, ctx.getTransform());
+    return;
+  }
+  ctx.save(); ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=6; ctx.shadowOffsetY=3;
+  if (fire > 0.05){ ctx.shadowColor = G.streak >= BLUE_AT ? `rgba(90,184,240,${fire})` : `rgba(212,98,47,${fire})`; ctx.shadowBlur = 18 + 8*Math.sin(performance.now()/80); ctx.shadowOffsetY = 0; }
+  ctx.strokeStyle = rimFlash > 0 ? '#F3D08A' : (fire > 0.5 ? EMBER[3] : '#E8B24A'); ctx.lineWidth = rimT*2;
+  ctx.beginPath(); ctx.ellipse(x, y, r, r*0.28, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(x, y, r, r*0.28, 0, 0, Math.PI*2); ctx.stroke();
+}
+function drawRack(){
+  const y = rack.y;
+  ctx.fillStyle = '#2A1C10'; ctx.fillRect(20, y, W-40, 14);
+  ctx.fillStyle = '#4A3520'; ctx.fillRect(20, y, W-40, 5);
+  ctx.strokeStyle='#E8B24A'; ctx.lineWidth=2; ctx.strokeRect(20, y, W-40, 14);
+  for (const s of rack.spots){ ctx.fillStyle='#1A120B'; ctx.beginPath(); ctx.ellipse(s, y+2, 22, 5, 0, 0, 7); ctx.fill(); }
+}
+function drawBall(b){
+  const r = b.r * b.z; const x = b.x, y = b.y;
+  // shadow
+  if (b.state !== 'flight' || b.y < floorY - 5){
+    const sh = b.state==='flight' ? Math.max(0.2, 1 - (floorY - y)/500) : 0.9;
+    const sy = b.state==='flight' && b.y < hoop.y + 100 ? hoop.y + 100 : floorY;
+    ctx.fillStyle = `rgba(0,0,0,${0.35*sh})`; ctx.beginPath(); ctx.ellipse(x, Math.min(sy, floorY)-2, r*sh, r*0.3*sh, 0, 0, 7); ctx.fill();
+  }
+  if (fire > 0.5 && b.state === 'flight'){
+    const hg = ctx.createRadialGradient(x, y, r*0.8, x, y, r*1.9); const blue = G.streak >= BLUE_AT; hg.addColorStop(0, blue ? 'rgba(159,226,255,.6)' : 'rgba(240,140,106,.55)'); hg.addColorStop(1, blue ? 'rgba(90,184,240,0)' : 'rgba(212,98,47,0)');
+    ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(x, y, r*1.9, 0, Math.PI*2); ctx.fill();
+  }
+  if (b.sky && b.state === 'flight'){
+    const hg = ctx.createRadialGradient(x, y, r*0.7, x, y, r*2.1); hg.addColorStop(0,'rgba(200,240,255,.7)'); hg.addColorStop(1,'rgba(159,226,255,0)');
+    ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(x, y, r*2.1, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.save(); ctx.translate(x,y); ctx.rotate(b.rot);
+  const g = ctx.createRadialGradient(-r*0.35, -r*0.4, r*0.1, 0, 0, r);
+  g.addColorStop(0,'#F08C6A'); g.addColorStop(0.5,'#D4622F'); g.addColorStop(1,'#8F2B1C');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+  // Gold seams, kept inside the ball. They are drawn to overshoot on purpose —
+  // the cross runs the full width and the curved side seams are struck from
+  // centres outside the ball, which is what gives them their bulge — and a
+  // round cap adds half a line width past every end on top of that. Clipping
+  // to the ball is what makes them seams rather than spikes.
+  // Clipped a shade inside the rim, not on it, so the seam ends tuck under the
+  // dark outline instead of showing through it as muddy stubs.
+  ctx.save();
+  ctx.beginPath(); ctx.arc(0,0,Math.max(1, r-2),0,Math.PI*2); ctx.clip();
+  ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = Math.max(1.5, r*0.09); ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(-r,0); ctx.lineTo(r,0); ctx.moveTo(0,-r); ctx.lineTo(0,r); ctx.stroke();
+  ctx.beginPath(); ctx.arc(-r*1.15, 0, r*0.85, -Math.PI*0.4, Math.PI*0.4); ctx.stroke();
+  ctx.beginPath(); ctx.arc(r*1.15, 0, r*0.85, Math.PI*0.6, Math.PI*1.4); ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(26,18,11,.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0,0,r-1,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+  if (b.state==='held'){ ctx.strokeStyle='rgba(232,178,74,.6)'; ctx.lineWidth=2; ctx.setLineDash([6,6]); ctx.beginPath(); ctx.arc(x,y,r+8,0,7); ctx.stroke(); ctx.setLineDash([]); }
+}
+// Layout (Josh, 2026-09-23): the scoreboard runs across the top; the HOOP QUEST
+// sign sits at the bottom where the scoreboard was, with sound and pause beside it.
+const SB = { x: 10, y: 12, h: 60 };                       // the top scoreboard plank
+function btn(){ const y = floorY + 58; return { mute: { x: 40, y }, gear: { x: 86, y }, pause: { x: W - 40, y } }; }
+function drawOdometer(val, cx, cy, digits, dh, color){
+  // the glowing digits are a shadowBlur each: once the number stops rolling, the wheels are kept as a bitmap
+  const m = ctx.getTransform();
+  if (val !== Math.round(val) || !plainView(m)){ paintOdometer(val, cx, cy, digits, dh, color); return; }
+  const k = dpr*scale, dw = dh*0.62, X0 = Math.floor((cx - digits*dw/2)*k) - 2, Y0 = Math.floor((cy - dh/2)*k) - 2;
+  const w = Math.ceil(digits*dw*k) + 5, h = Math.ceil(dh*k) + 5, key = val + '|' + digits + '|' + dh + '|' + color + '|' + X0 + '|' + Y0;
+  let O = caches.odo;
+  if (!O || O.key !== key){
+    if (!O || O.c.width !== w || O.c.height !== h){ O = caches.odo = { c: document.createElement('canvas') }; O.c.width = w; O.c.height = h; }
+    else O.c.getContext('2d').clearRect(0, 0, w, h);
+    paintInto(O.c, -X0, -Y0, () => paintOdometer(val, cx, cy, digits, dh, color)); O.key = key;
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(O.c, X0 + Math.round(m.e), Y0 + Math.round(m.f)); ctx.setTransform(m);
+}
+function paintOdometer(val, cx, cy, digits, dh, color){
+  // rolling digits: each wheel turns smoothly to the next number
+  ctx.save(); ctx.font = '900 ' + Math.round(dh*0.95) + 'px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const dw = dh*0.62, x0 = cx - (digits*dw)/2 + dw/2;
+  for (let k=0;k<digits;k++){
+    const place = Math.pow(10, digits-1-k), v = val / place, d = Math.floor(v) % 10;
+    // only the wheel whose lower digits are all rolling over moves; the rest click into place
+    const lower = val - Math.floor(val/place)*place, roll = place === 1 ? v - Math.floor(v) : Math.max(0, (lower - (place - 1)));
+    const wx = x0 + k*dw;
+    ctx.fillStyle = '#0B0704'; roundRect(wx - dw/2 + 1.5, cy - dh/2, dw - 3, dh, 5); ctx.fill();
+    ctx.save(); roundRect(wx - dw/2 + 1.5, cy - dh/2, dw - 3, dh, 5); ctx.clip();
+    ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 10;
+    ctx.fillText(String(d), wx, cy - roll*dh + 2); ctx.fillText(String((d+1)%10), wx, cy + dh - roll*dh + 2);
+    ctx.shadowBlur = 0;
+    const sh = ctx.createLinearGradient(0, cy - dh/2, 0, cy + dh/2); sh.addColorStop(0,'rgba(0,0,0,.55)'); sh.addColorStop(0.3,'rgba(0,0,0,0)'); sh.addColorStop(0.7,'rgba(0,0,0,0)'); sh.addColorStop(1,'rgba(0,0,0,.55)');
+    ctx.fillStyle = sh; ctx.fillRect(wx - dw/2, cy - dh/2, dw, dh);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(wx - dw/2 + 2, cy); ctx.lineTo(wx + dw/2 - 2, cy); ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawHUD(){
+  // the arcade scoreboard: a plank on the floor, a raised lit SCORE box in the middle with rolling
+  // digits, and a frame of bulbs that chase on every make (rainbow for a Sky Shot)
+  const h = SB.h, x = SB.x, w = W - 2*SB.x, y = SB.y, now = performance.now()/1000;
+  ctx.fillStyle = '#120C07'; roundRect(x-3, y-3, w+6, h+6, 10); ctx.fill();
+  ctx.fillStyle = '#2A1C10'; roundRect(x, y, w, h, 8); ctx.fill();
+  ctx.strokeStyle = '#B07E24'; ctx.lineWidth = 2; roundRect(x, y, w, h, 8); ctx.stroke();
+  // the raised score box
+  const bw = 132, bh = 76, bx = W/2 - bw/2, by = y - 8;
+  ctx.fillStyle = '#120C07'; roundRect(bx-4, by-4, bw+8, bh+8, 12); ctx.fill();
+  const bg = ctx.createLinearGradient(0, by, 0, by+bh); bg.addColorStop(0, '#3A2817'); bg.addColorStop(1, '#1A120B');
+  ctx.fillStyle = bg; roundRect(bx, by, bw, bh, 10); ctx.fill();
+  // bulbs around the score box
+  const bulbs = []; const step = 11;
+  for (let t = 6; t < bw - 4; t += step){ bulbs.push([bx + t, by + 3]); }
+  for (let t = 6; t < bh - 4; t += step){ bulbs.push([bx + bw - 3, by + t]); }
+  for (let t = bw - 6; t > 4; t -= step){ bulbs.push([bx + t, by + bh - 3]); }
+  for (let t = bh - 6; t > 4; t -= step){ bulbs.push([bx + 3, by + t]); }
+  const chase = boardFx > 0, speed = boardFxSky ? 30 : 18, m = ctx.getTransform();
+  bulbs.forEach(([qx, qy], k) => {
+    let on, col;
+    if (chase){ on = ((k + Math.floor(now*speed)) % 4) === 0 || ((k + Math.floor(now*speed)) % 4) === 1; col = boardFxSky ? `hsl(${hueStep((k*25 + now*400)%360)},95%,70%)` : '#F3D08A'; }
+    else { on = ((k + Math.floor(now*2)) % 3) !== 0; col = '#E8B24A'; }
+    if (on) glowDot(qx, qy, 2.2, col, 6, m);
+    else { ctx.fillStyle = '#4A3520'; ctx.beginPath(); ctx.arc(qx, qy, 2.2, 0, Math.PI*2); ctx.fill(); }
+  });
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.font = '800 11px "Alegreya Sans", sans-serif';
+  ctx.fillStyle = boardFxSky && chase ? '#9FE2FF' : '#EDDDB5'; ctx.fillText('SCORE', W/2, by + 18);
+  const scol = boardFxSky && chase ? '#9FE2FF' : (chase ? '#FFF3D0' : '#F3D08A');
+  drawOdometer(scoreShown, W/2, by + 47, scoreShown >= 99.5 ? 3 : 2, scoreShown >= 99.5 ? 34 : 40, scol);   // a third wheel past 99 (Space Shots can get there)
+  // +2 / +3 stamp that pops off the score box
+  if (plusBadge){
+    // stamped down onto the digits: lands big, settles, fades
+    const pb = plusBadge, dur = pb.space ? 2.2 : 1.1, age = dur - pb.life, sc = age < 0.12 ? 1.9 - age*7.5 : 1;
+    ctx.save(); ctx.globalAlpha = Math.min(1, pb.life*2.5); ctx.translate(W/2 + 64, by + bh/2 + 10); ctx.rotate(-0.14); ctx.scale(sc, sc);   // on the box edge, clear of the digits
+    ctx.fillStyle = pb.space ? '#7A3FC0' : pb.sky ? '#5AB8F0' : '#B07E24'; roundRect(-22, -14, 44, 28, 8); ctx.fill();
+    ctx.strokeStyle = pb.space ? '#F3D08A' : pb.sky ? '#E6F7FF' : '#F3D08A'; ctx.lineWidth = 2; roundRect(-22, -14, 44, 28, 8); ctx.stroke();
+    ctx.fillStyle = '#FFFFFF'; ctx.font = '900 18px Alegreya, Georgia, serif'; ctx.textBaseline = 'middle'; ctx.fillText(pb.text + (pb.space ? '🚀' : pb.sky ? '★' : ''), 0, 1);
+    ctx.restore();
+  }
+  // the best on this device on the left (with a trophy; it climbs with a round that beats it), balls left on the right
+  const lx = x + w*0.14, rx = x + w*0.86, beat = best > 0 && G.points > best;
+  ctx.textBaseline = 'alphabetic'; ctx.font = '700 11px "Alegreya Sans", sans-serif'; ctx.fillStyle = '#EDDDB5';
+  ctx.fillText('BALLS LEFT', rx, y + 18); ctx.fillStyle = beat ? '#F3D08A' : '#EDDDB5'; ctx.fillText(beat ? 'NEW BEST' : 'BEST', lx, y + 18);
+  ctx.font = '900 28px Alegreya, Georgia, serif';
+  const leftN = Math.max(0, SHOTS_PER_GAME - G.shots);
+  const bump = (v, k, xx, col) => { ctx.save(); ctx.translate(xx, y+52); ctx.scale(1+0.35*k, 1+0.35*k); ctx.fillStyle = col; ctx.fillText(v, 0, 0); ctx.restore(); };
+  const bestN = String(Math.max(best, G.points)), bw2 = bestWidth(bestN), gx = lx - (22 + bw2)/2;   // trophy + number, centred
+  stamp(sprite('trophy', 13, 11, () => drawTrophy(0, 0)), gx + 8, y + 42, ctx.getTransform());
+  bump(bestN, bestPop, gx + 22 + bw2/2, bestPop > 0.3 || beat ? '#F3D08A' : '#E8B24A');
+  // thirty pips under the board, one per ball: makes light gold, misses go dark, the last five glow ember
+  const pw = 10, px0 = W/2 - (SHOTS_PER_GAME*pw)/2 + pw/2, py = y + h + 12;
+  for (let i=0;i<SHOTS_PER_GAME;i++){
+    ctx.fillStyle = shotRes[i] === 'make' ? '#E8B24A' : shotRes[i] === 'miss' ? '#2A1C10' : i < G.shots ? '#6b4a2a' : (SHOTS_PER_GAME - i <= 5 ? '#D4622F' : '#8C6A3E');
+    ctx.beginPath(); ctx.arc(px0 + i*pw, py, 3.5, 0, Math.PI*2); ctx.fill();
+  }
+  const low = leftN <= 3;
+  ctx.font = '900 28px Alegreya, Georgia, serif';
+  ctx.fillStyle = low && Math.floor(performance.now()/300)%2 ? '#F08C6A' : (low ? '#D4622F' : '#8FAE5D'); ctx.fillText(leftN, rx, y+52);
+  // level badge + streak, top corners under the banner
+  const still = !moving, stillLeft = Math.max(0, STILL_SHOTS - G.shots);
+  const badge = still ? (stillLeft ? `STILL BASKET · ${stillLeft} LEFT` : 'STILL BASKET · LAST ONE') : 'MOVING BASKET ⟷';
+  ctx.font = '800 11px "Alegreya Sans", sans-serif';
+  ctx.fillStyle = still ? '#5E7A3A' : '#9B6BD1'; roundRect(12, 98, ctx.measureText(badge).width + 16, 20, 6); ctx.fill();
+  ctx.fillStyle = '#F0E2C0'; ctx.textAlign='left'; ctx.fillText(badge, 20, 112);
+  if (G.streak >= 2){
+    const hot = onFire(), s = hot ? 1 + 0.08*Math.sin(performance.now()/110) : 1;
+    ctx.save(); ctx.translate(W-12, 112); ctx.scale(s, s); ctx.textAlign='right';
+    ctx.font = (hot ? '900 14px' : '800 11px') + ' "Alegreya Sans", sans-serif';
+    ctx.fillStyle = hot ? '#F08C6A' : '#E8B24A'; ctx.fillText(`🔥 ${G.streak} STREAK${hot ? ' · ON FIRE' : ''}`, 0, 0); ctx.restore();
+  }
+  // bottom: the HOOP QUEST sign, a red ribbon with swallow-tail ends, sound on the left, pause on the right
+  const B = btn(), sy = B.pause.y, sw2 = 96;
+  ctx.fillStyle = '#5E1A10';
+  for (const d of [-1, 1]){ const ex = W/2 + d*sw2; ctx.beginPath(); ctx.moveTo(ex - d*6, sy - 12); ctx.lineTo(ex + d*18, sy - 12); ctx.lineTo(ex + d*10, sy + 2); ctx.lineTo(ex + d*18, sy + 16); ctx.lineTo(ex - d*6, sy + 16); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = '#8F2B1C'; roundRect(W/2 - sw2, sy - 20, sw2*2, 38, 6); ctx.fill();
+  ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = 2.5; roundRect(W/2 - sw2, sy - 20, sw2*2, 38, 6); ctx.stroke();
+  ctx.strokeStyle = 'rgba(232,178,74,.45)'; ctx.lineWidth = 1; roundRect(W/2 - sw2 + 5, sy - 15, sw2*2 - 10, 28, 4); ctx.stroke();
+  ctx.fillStyle = '#E8B24A'; ctx.font = '900 22px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowOffsetY = 2; ctx.fillText('HOOP QUEST', W/2, sy + 1); ctx.shadowOffsetY = 0; ctx.shadowColor = 'transparent';
+  ctx.textBaseline = 'alphabetic';
+  const circ = q => { ctx.fillStyle = '#2A1C10'; ctx.beginPath(); ctx.arc(q.x, q.y, 18, 0, 7); ctx.fill(); ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = 2; ctx.stroke(); };
+  // sound
+  { const q = B.mute, X = q.x, Y = q.y; circ(q);
+    ctx.fillStyle = '#E8B24A'; ctx.beginPath(); ctx.moveTo(X-9, Y-4); ctx.lineTo(X-4, Y-4); ctx.lineTo(X+2, Y-9); ctx.lineTo(X+2, Y+9); ctx.lineTo(X-4, Y+4); ctx.lineTo(X-9, Y+4); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#E8B24A'; ctx.lineWidth = 1.8;
+    if (muted){ ctx.beginPath(); ctx.moveTo(X+5, Y-5); ctx.lineTo(X+11, Y+5); ctx.moveTo(X+11, Y-5); ctx.lineTo(X+5, Y+5); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(X+2, Y, 5, -0.9, 0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(X+2, Y, 9, -0.9, 0.9); ctx.stroke(); } }
+  // pause
+  { const q = B.pause; circ(q); ctx.fillStyle = '#E8B24A'; ctx.fillRect(q.x-6, q.y-8, 4, 16); ctx.fillRect(q.x+2, q.y-8, 4, 16); }
+  // tuning gear, only when ?tune=1 asked for it
+  if (TUNE_ON){
+    const q = B.gear; circ(q);
+    ctx.save(); ctx.translate(q.x, q.y); ctx.strokeStyle='#E8B24A'; ctx.lineWidth=3;
+    for (let i=0;i<8;i++){ ctx.rotate(Math.PI/4); ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(0,-11); ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(0,0,5,0,7); ctx.stroke(); ctx.restore();
+  }
+  // hint
+  if (G.state==='play' && G.shots===0){ ctx.textAlign='center'; ctx.font='italic 700 16px Alegreya, Georgia, serif'; ctx.fillStyle='rgba(240,226,192,.8)'; ctx.fillText('Drag a ball up and flick it at the hoop ↑', W/2, rack.y - 110); }
+}
+function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+// ---------- loop ----------
+function frame(t){
+  const dt = Math.min(0.033, (t - lastT)/1000 || 0); lastT = t;
+  update(dt); draw(); requestAnimationFrame(frame);
+}
+resize(); resetBalls(); requestAnimationFrame(t => { lastT = t; frame(t); });
+})();
+</script>
+</body>
+</html>

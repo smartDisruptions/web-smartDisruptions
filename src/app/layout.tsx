@@ -5,6 +5,7 @@ import { ViewTransition } from 'react';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
+import '@/components/kiru/tails.css';
 import SiteHeader from '@/components/nav/SiteHeader';
 import TabBar from '@/components/nav/TabBar';
 import Footer from '@/components/Footer';

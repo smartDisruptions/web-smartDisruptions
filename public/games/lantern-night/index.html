@@ -521,7 +521,7 @@ h1 span::after { content: ''; position: absolute; z-index: -1; left: -3%; right:
     <div class="title-main">
       <div class="title-head">
         <div class="title-row"><h1 id="uiTitleH">Lantern <span>Night</span></h1><svg class="seal" id="titleSeal" viewBox="0 0 100 100" aria-hidden="true"></svg></div>
-        <p class="lede">The festival lanterns have gone dark. Kiru has 30 spirit flames. Light the night.</p>
+        <p class="lede">The festival lanterns have gone dark. Kiru has <span id="uiFlamesN">30</span> spirit flames. Light the night.</p>
         <ul class="how">
           <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 19.5C6.5 13 10.5 8.5 18 6.5"/><path d="M12.5 5l5.5 1.5-1.5 5.5"/></svg><span><b class="t-touch">Swipe up</b><b class="t-mouse">Drag up</b> to throw. Longer goes farther.</span></li>
           <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1.5v3.5"/><path d="M9.5 7.5h5"/><ellipse cx="12" cy="14" rx="5.5" ry="6"/><path d="M9.5 20.5h5"/></svg><span>Drop the flame <b>into the top</b> of a lantern.</span></li>
@@ -3452,6 +3452,25 @@ const SETS_WIDE = [
 ];
 const BAIL = 13; // the cord ties on 13 above the mouth, at the top of the bail
 let rope = null, lanterns = [], skyL = [], crane = null;
+// ── How forgiving a throw is (2026-10-05) ──
+// Josh: "Kiru's Lantern Night is too hard." These soften it; the developer panel (src/dev.js) tunes
+// every one, and its "As designed" preset puts back v2's numbers (in brackets). tools/sim.mjs reads
+// this table, so its numbers are always the ones that ship.
+//   catch     extra half-width of a lantern's opening, world units: a flame that comes down on the
+//             inner edge of the rim drops in instead of bouncing off it (v2 0)
+//   pull      lantern pull, 0–1: a falling flame that would come down near a dark lantern's opening is
+//             drawn gently into it, as if the warm air pulled it in (v2 0). pullR is how near (from the
+//             middle of the opening, where it would cross its height), pullH how far above it begins.
+//   wind      wind strength (v2 1) · windFrom the first rope it blows on (v2 2, the third rope) ·
+//             headwind a headwind's share of a tailwind's strength (v2 0.6)
+//   sway      how far the lanterns swing (v2 1) · bounce flames bounce off lanterns (off: they pass
+//             through, and only an opening counts) · moon the moon's size as a target for blue fire (v2 1)
+//   crane     the paper crane's speed (v2 1)
+//   guide     the aim guide drawn while aiming: 0 off · 1 a short way · 2 to the top of the arc ·
+//             3 the whole way (v2 0)
+// Josh tuned it in the panel the same day and made his numbers the defaults: no aim guide, and the
+// pull at 0.35 (it shipped at 2 and 0.6).
+const ASSIST = { catch: 4, pull: 0.35, pullR: 45, pullH: 150, wind: 0.7, windFrom: 2, headwind: 0.6, sway: 0.7, bounce: true, moon: 1, crane: 1, guide: 0 };
 // Lantern x in a set table is measured as if Kiru stood at x 92 (the tall layout); it moves with him.
 const SET_KX = 92;
 // ── Pure geometry, shared with tools/sim.mjs (it evaluates these very functions): no game state. ──
@@ -3512,20 +3531,23 @@ function buildSet(n, relayout) {
   const L = X0 - 14, R = X0 + VW + 14;
   rope = { L, R, up: wldRope(base.tilt, base.sag, Ls, L, R), drop: relayout && rope ? rope.drop : 1, n, mode: MODE, count: Ls.length };
   if (!relayout) {
-    G.wind = 0;
     // a headwind (blowing back at Kiru) is kept gentler than a tailwind: the simulator showed a strong
-    // one leaves the highest lanterns almost out of reach
-    if (base.wind) { const w = rnd(base.wind[0], base.wind[1]); G.wind = Math.random() < 0.5 ? w : -w * 0.6; }
-    G.windBase = G.wind;
+    // one leaves the highest lanterns almost out of reach. G.windBase is the wind as rolled; G.wind is
+    // what blows (ASSIST.wind of it, breathing: updateGame). From ASSIST.windFrom on, a rope whose
+    // table has no wind gets a light one.
+    const wr = n >= 0 && n >= ASSIST.windFrom ? base.wind || [40, 80] : null;
+    G.windBase = 0;
+    if (wr) { const w = rnd(wr[0], wr[1]); G.windBase = Math.random() < 0.5 ? w : -w * ASSIST.headwind; }
+    G.wind = G.windBase * ASSIST.wind;
   }
   lanterns = Ls.map((l) => {
     const p = l.p, keep = same && p;
     return { x: l.x, up: l.up, kind: l.kind, val: LKIND[l.kind].val, cord: rope.up(l.x) - l.up - BAIL, lit: !!(keep && p.lit), litT: keep ? p.litT : 0, gone: false,
-      sway: base.sway, phase: p ? p.phase : rnd(0, TAU), w: p ? p.w : rnd(2.1, 2.9), kick: p ? p.kick : 0, kickV: p ? p.kickV : 0,
+      sway: base.sway * ASSIST.sway, sway0: base.sway, phase: p ? p.phase : rnd(0, TAU), w: p ? p.w : rnd(2.1, 2.9), kick: p ? p.kick : 0, kickV: p ? p.kickV : 0,
       th: 0, mx: 0, my: 0, ca: 1, sa: 0, topX: 0, topY: 0, i: l.i, jx: l.jx, ju: l.ju };
   });
-  G.setCrane = !!base.crane;
-  if (base.crane && !crane && !relayout) G.craneIn = rnd(4, 9);
+  G.setCrane = n >= 0 && n >= RULES.craneFrom;
+  if (G.setCrane && !crane && !relayout) G.craneIn = rnd(4, 9);
   wldAt.hx = HAND.x; wldAt.hy = HAND.y; wldAt.x0 = X0; wldAt.vw = VW;
   placeLanterns(0);
 }
@@ -3622,7 +3644,7 @@ function wldCraneBand() {
   const hi = clamp(HAND.y - Y0 - SAFE.t - 112, 205, 330); // its wing tips stay ~15 below the top
   return [hi - 50, hi];
 }
-function wldCraneSpeed() { return MODE === 'wide' ? (VW + 160) / rnd(19, 24) : rnd(30, 40); }
+function wldCraneSpeed() { return (MODE === 'wide' ? (VW + 160) / rnd(19, 24) : rnd(30, 40)) * ASSIST.crane; }
 function updateCrane(dt) {
   if (G.setCrane && !crane && G.state === 'play') { G.craneIn -= dt; if (G.craneIn <= 0) spawnCrane(); }
   if (!crane) return;
@@ -3643,9 +3665,9 @@ function spawnCrane() {
   const dir = Math.random() < 0.5 ? 1 : -1, [lo, hi] = wldCraneBand(), up = rnd(lo, hi);
   const y0 = HAND.y - up - 12 - 26 - BAIL;
   crane = { x: dir > 0 ? X0 - 80 : X0 + VW + 80, y0, y: y0, vx: dir * wldCraneSpeed(), t: 0,
-    lantern: { kind: 'gold', val: 5, cord: 26, lit: false, litT: 0, kick: 0, kickV: 0, th: 0, mx: 0, my: 0, ca: 1, sa: 0, topX: 0, topY: 0, crane: true } };
+    lantern: { kind: 'gold', val: RULES.crane, cord: 26, lit: false, litT: 0, kick: 0, kickV: 0, th: 0, mx: 0, my: 0, ca: 1, sa: 0, topX: 0, topY: 0, crane: true } };
   G.coT = G.playT || 0;
-  callout('A paper crane!', { sub: 'Light its lantern · 5 points', ch: '光', small: true });
+  callout('A paper crane!', { sub: 'Light its lantern · ' + RULES.crane + ' points', ch: '光', small: true });
   sfx.crane();
 }
 // ───────────────────────────── 7. Spirit flames ─────────────────────────────
@@ -3656,6 +3678,23 @@ function spawnCrane() {
 // 4–5° window for blue fire on every screen.
 const PHYS = { g: 1500, vmin: 740, vmax: 1520, vblue: 1760, r: 6, rim: 3.2, swipeMin: 16, swipeFull: 150, swipeBlue: 186 };
 const STEP = 1 / 240;
+// The lantern pull (ASSIST.pull), for one step of h seconds: a falling flame f ({ x, y, vx, vy }) that
+// would come down within pullR of the middle of a dark opening (L.mx, L.my; a lit L is skipped) is
+// steered toward that middle. Where it would cross each opening's height is foreseen (gravity and wind),
+// and the opening it would miss by least wins: a flame passing over one lantern on its way to another
+// isn't pulled off course. Only from within pullH above the opening. Pure: tools/sim.mjs flies it too.
+function wldSteer(f, list, wind, h) {
+  if (f.vy <= 0) return;
+  let best = 1e9, bt = 0;
+  for (let i = 0; i < list.length; i++) {
+    const L = list[i], dy = L.my - f.y;
+    if (L.lit || dy < -2 || dy > ASSIST.pullH) continue;
+    const t = (Math.sqrt(f.vy * f.vy + 2 * PHYS.g * Math.max(0, dy)) - f.vy) / PHYS.g;
+    const d = L.mx - (f.x + f.vx * t + 0.5 * wind * t * t);
+    if (Math.abs(d) < ASSIST.pullR && Math.abs(d) < Math.abs(best)) { best = d; bt = t; }
+  }
+  if (best < 1e9) f.vx += best / Math.max(bt, 0.04) * Math.min(1, ASSIST.pull * 8 * h);
+}
 let flames = [];
 const ghost = []; // the last throw's path, left faintly in the sky so the next one can be adjusted
 function launch(angle, power, blue) {
@@ -3663,24 +3702,33 @@ function launch(angle, power, blue) {
   const f = { x: HAND.x, y: HAND.y, px: HAND.x, py: HAND.y, vx: Math.cos(angle) * v, vy: Math.sin(angle) * v, t: 0, blue, touched: false, done: false, fire: fireStart(), trail: 0, path: [HAND.x, HAND.y], moon: false };
   flames.push(f);
   ghost.length = 0;
-  G.shots++; G.flames--;
+  G.shots++; if (!RULES.endless) G.flames--;
   if (G.flames === 0) { f.last = true; if (!G.last) { G.last = 1; intensity(); } } // the very last flame
-  K.hasFlame = false; K.relight = 0.42;
+  K.hasFlame = false; K.relight = RULES.relight;
   kiruSet('throw');
   sfx.throw(power, blue);
   hudFlames();
   return f;
 }
+// Can the moon still take a shot tonight? RULES.moonShots a night (0: no limit).
+function wldMoonOpen() { return !RULES.moonShots || G.moons < RULES.moonShots; }
+// What the pull can draw a flame into this frame: the rope's lanterns and the crane's (rebuilt each frame
+// in updateWorld; a lantern lit meanwhile is skipped by its flag).
+const wldPL = [];
+function wldPullList() { wldPL.length = 0; for (const L of lanterns) wldPL.push(L); if (crane) wldPL.push(crane.lantern); }
 function stepFlames(h) {
   for (const f of flames) {
     if (f.done) continue;
     f.px = f.x; f.py = f.y;
     f.vy += PHYS.g * h; f.vx += G.wind * h;
+    if (ASSIST.pull > 0) wldSteer(f, wldPL, G.wind, h);
     f.x += f.vx * h; f.y += f.vy * h; f.t += h;
     for (const L of lanterns) if (!L.lit) { if (hitLantern(f, L)) break; }
     if (!f.done && crane && !crane.lantern.lit) hitLantern(f, crane.lantern);
     if (f.done) continue;
-    if (f.blue && !f.moon) { const dx = f.x - MOON.x, dy = f.y - MOON.y; if (dx * dx + dy * dy < MOON.r * MOON.r * 0.5) { f.moon = true; onMoon(f); } }
+    // only blue fire reaches the moon, and the moon takes RULES.moonShots a night: past that, blue
+    // fire flies on by (the first one that does says so)
+    if (f.blue && !f.moon) { const dx = f.x - MOON.x, dy = f.y - MOON.y, mr = MOON.r * ASSIST.moon; if (dx * dx + dy * dy < mr * mr * 0.5) { f.moon = true; if (wldMoonOpen()) onMoon(f); else gameMoonSpent(); } }
     const onRoof = f.x < ROOF_R + 4 && f.y > ROOF_Y + 4;
     if (onRoof || f.y > H - 40 || f.x < X0 - 70 || f.x > X0 + VW + 70 || f.t > 7) { f.done = true; onMiss(f, onRoof); }
   }
@@ -3693,9 +3741,11 @@ function hitLantern(f, L) {
   const plx = px0 * ca + py0 * sa, ply = -px0 * sa + py0 * ca;
   if (lx < -60 || lx > 60 || ly < -40 || ly > 80) return false;
   let lvx = f.vx * ca + f.vy * sa, lvy = -f.vx * sa + f.vy * ca;
-  const M = LN.mouth, r = PHYS.r;
-  // dropped in through the open top
-  if (ply < 0 && ly >= 0 && lvy > 0 && Math.abs(lx) < M - r * 0.6) { f.done = true; f.x = L.mx + lx * ca; f.y = L.my + lx * sa; onLight(L, f); return true; }
+  const M = LN.mouth, r = PHYS.r, C = ASSIST.catch;
+  // dropped in through the open top. ASSIST.catch widens what counts, and a falling flame that reaches
+  // the rim's height inside that width counts too: it would have rolled in off the rim's inner edge.
+  if (lvy > 0 && Math.abs(lx) < M - r * 0.6 + C && ((ply < 0 && ly >= 0) || (C > 0 && ly < 0 && ly > -(PHYS.rim + r)))) { f.done = true; f.x = L.mx + lx * ca; f.y = L.my + lx * sa; onLight(L, f); return true; }
+  if (!ASSIST.bounce) return false;
   let hit = false;
   // the two ends of the black cap ring
   for (const sx of [-M - 1, M + 1]) {
@@ -3728,9 +3778,58 @@ function hitLantern(f, L) {
   }
   return false;
 }
+// ── The aim guide (ASSIST.guide) ──
+// The path a throw would take, flown with stepFlames' own steps (gravity, wind, the lantern pull)
+// against the lanterns as they hang this moment (a swing in the meantime isn't foreseen). It writes a
+// point every WLD_GAP units of path into WLD_PATH and says in wldPath how the path ends: 1 into an
+// opening (L: which lantern) · -1 against a lantern · 2 into the moon · 0 none of those.
+// mode: 1 a short way (0.3 s) · 2 up to the top of the arc · 3 the whole way. No allocations.
+const WLD_GAP = 13, WLD_PATH = new Float32Array(2 * 400);
+const wldPath = { n: 0, end: 0, L: null };
+const wldF = { x: 0, y: 0, px: 0, py: 0, vx: 0, vy: 0 };
+function wldPredict(angle, power, blue, mode) {
+  const v = blue ? PHYS.vblue : lerp(PHYS.vmin, PHYS.vmax, power), f = wldF, tMax = mode === 1 ? 0.3 : 4;
+  wldPullList();
+  f.x = f.px = HAND.x; f.y = f.py = HAND.y; f.vx = Math.cos(angle) * v; f.vy = Math.sin(angle) * v;
+  let n = 0, run = 0, t = 0;
+  wldPath.end = 0; wldPath.L = null;
+  WLD_PATH[n++] = f.x; WLD_PATH[n++] = f.y;
+  while (t < tMax) {
+    f.px = f.x; f.py = f.y;
+    f.vy += PHYS.g * STEP; f.vx += G.wind * STEP;
+    if (ASSIST.pull > 0) wldSteer(f, wldPL, G.wind, STEP);
+    f.x += f.vx * STEP; f.y += f.vy * STEP; t += STEP;
+    run += Math.hypot(f.x - f.px, f.y - f.py);
+    if (run >= WLD_GAP && n < WLD_PATH.length) { WLD_PATH[n++] = f.x; WLD_PATH[n++] = f.y; run = 0; }
+    if (mode === 2 && f.vy >= 0) break; // the top of the arc
+    let e = 0;
+    for (const L of lanterns) if (!L.lit) { e = wldTouch(f, L); if (e) { wldPath.L = L; break; } }
+    if (!e && crane && !crane.lantern.lit) { e = wldTouch(f, crane.lantern); if (e) wldPath.L = crane.lantern; }
+    if (!e && blue && wldMoonOpen()) { const dx = f.x - MOON.x, dy = f.y - MOON.y, mr = MOON.r * ASSIST.moon; if (dx * dx + dy * dy < mr * mr * 0.5) e = 2; }
+    if (e) { wldPath.end = e; break; }
+    if ((f.x < ROOF_R + 4 && f.y > ROOF_Y + 4) || f.y > H - 40 || f.x < X0 - 70 || f.x > X0 + VW + 70) break;
+  }
+  if (run > 2 && n < WLD_PATH.length) { WLD_PATH[n++] = f.x; WLD_PATH[n++] = f.y; }
+  wldPath.n = n;
+  return wldPath;
+}
+// For the guide: would this flame drop into L's opening (1), or touch the lantern (-1)? hitLantern's
+// own tests, read-only.
+function wldTouch(f, L) {
+  const ca = L.ca, sa = L.sa, rx = f.x - L.mx, ry = f.y - L.my, lx = rx * ca + ry * sa, ly = -rx * sa + ry * ca;
+  if (lx < -60 || lx > 60 || ly < -40 || ly > 80) return 0;
+  const ply = -(f.px - L.mx) * sa + (f.py - L.my) * ca, lvy = -f.vx * sa + f.vy * ca;
+  const M = LN.mouth, r = PHYS.r, C = ASSIST.catch, min = PHYS.rim + r;
+  if (lvy > 0 && Math.abs(lx) < M - r * 0.6 + C && ((ply < 0 && ly >= 0) || (C > 0 && ly < 0 && ly > -min))) return 1;
+  if (!ASSIST.bounce) return 0;
+  if (Math.hypot(lx + M + 1, ly) < min || Math.hypot(lx - M - 1, ly) < min) return -1;
+  const ex = lx / (LN.rx + r), ey = (ly - LN.cap - LN.ry) / (LN.ry + r);
+  return ex * ex + ey * ey < 1 && ly > 1.5 ? -1 : 0;
+}
 // ───────────────────────────── 13. Update & render ─────────────────────────────
 let acc = 0; // unspent game time for the 240 Hz flight steps
 function updateWorld(sdt) {
+  wldPullList();
   acc += sdt;
   let n = 0;
   while (acc >= STEP && n < 48) { stepFlames(STEP); acc -= STEP; n++; }
@@ -3965,6 +4064,7 @@ function shell(x, y, bx, by, type, pal, scale = 1, minT = 0.62) {
 }
 const FX_ESCORTS = ['peony', 'chrys', 'ring', 'strobe', 'palm', 'comet', 'saturn', 'glitter'], FX_QUIET = ['peony', 'strobe', 'glitter'], FX_ESCORT_C = [0, 3, 5, 2, 7];
 function fxLaunch(x, y, bx, by, type, pal, scale, minT, loud) {
+  scale *= LOOK.fireworks;
   const t0 = live() ? now() : 0;
   let T = minT;
   if (live() && M.on && A.musicOn) T = clamp(nextBeat(t0 + minT, 2) - t0, minT, minT + 0.5);
@@ -4281,7 +4381,7 @@ function fxStreaks() {
 // where it ended, with a slow shimmer running along it.
 function drawGhost(c) {
   const n = ghost.length;
-  if (n < 4) return;
+  if (n < 4 || !LOOK.ghost) return;
   c.globalCompositeOperation = 'lighter';
   const spr = SPR.glow[8], t = G.time * 3;
   for (let i = 0; i < n; i += 2) { const u = i / n; c.globalAlpha = (0.08 + 0.2 * u) * (0.8 + 0.2 * Math.sin(t - i * 0.08)); c.drawImage(spr, ghost[i] - 2.2, ghost[i + 1] - 2.2, 4.4, 4.4); }
@@ -4885,13 +4985,21 @@ function drawFrontLayer(c) {
 
 // ════════ game.js ════════
 // ───────────────────────────── 10. The night: rules, score, flow ─────────────────────────────
-const FLAMES = 30;
-const G = { state: 'title', time: 0, score: 0, flames: FLAMES, lit: 0, shots: 0, makes: 0, clean: 0, streak: 0, bestStreak: 0, set: 0, ropes: 0, cranes: 0, moons: 0,
+// The rules, in one table the developer panel (src/dev.js) can tune: flames a round, the bonuses
+// (a lantern's own points live in LKIND, sprites.js), the crane, the pause while a flame relights,
+// and endless flames (a practice switch: a throw costs nothing). moonShots: how many moon shots
+// count a night (0: no limit). Josh, 2026-10-05: just the one.
+const RULES = { flames: 30, clean: 1, blue: 1, rope: 5, moon: 7, moonShots: 1, crane: 5, craneFrom: 4, relight: 0.42, endless: false };
+// Look switches the developer panel sets: screen shake, the last throw's trail left in the sky, the
+// size of the fireworks, and (for tuning) each dark opening's catch width and pull drawn over it.
+const LOOK = { shake: true, ghost: true, fireworks: 1, zones: false };
+const G = { state: 'title', time: 0, speed: 1, score: 0, flames: RULES.flames, lit: 0, shots: 0, makes: 0, clean: 0, streak: 0, bestStreak: 0, set: 0, ropes: 0, cranes: 0, moons: 0,
   wind: 0, windBase: 0, progress: 0.12, shake: 0, slow: 0, slowTo: 0.35, ts: 1, moonT: -1, boost: 0, finaleT: 0, finaleLen: 6.5, nextSetT: 0, setDoneT: 0, setCrane: false, craneIn: 0, titleFw: 1.5,
-  playT: 0, coT: -9, last: 0, windSeen: false, best: store.get('best', 0) };
+  playT: 0, coT: -9, last: 0, windSeen: false, moonSaid: false, best: store.get('best', 0) };
 // G.last: 0 · 1 the last flame is in Kiru's hand or in the air (the band hushes) · 2 it has landed
-// Points: 2 a red lantern, 3 a white one, 5 a gold one (and the crane's). +1 for a clean drop that
-// touches nothing, +1 for blue fire, +5 for lighting a whole rope, +7 for the moon.
+// G.speed: the developer panel's game speed (1 as designed)
+// Points (as designed): 2 a red lantern, 3 a white one, 5 a gold one (and the crane's). +1 for a clean
+// drop that touches nothing, +1 for blue fire, +5 for lighting a whole rope, +7 for the moon (RULES).
 const LADDER = { 2: ['Nice!', '火'], 3: ['On fire!', '火'], 4: ['Sugoi!', '花', 'Amazing'], 5: ['Hanabi!', '花', 'Fireworks'], 6: ['Unstoppable', '雷'], 8: ['Matsuri master', '祭', 'Festival master'], 10: ['Shadow legend', '光'], 13: ['Light of the night', '灯'], 16: ['Moon ninja', '月'] };
 const RANKS = [[0, 'Paper apprentice'], [10, 'Ember student'], [25, 'Lantern keeper'], [45, 'Festival shadow'], [70, 'Matsuri master'], [100, 'Moon ninja']];
 function intensity() {
@@ -4930,7 +5038,7 @@ function onLight(L, f) {
   fireStop(f.fire); keepGhost(f);
   L.lit = true; L.litT = 0;
   const clean = !f.touched;
-  let pts = L.val + (clean ? 1 : 0) + (f.blue ? 1 : 0);
+  let pts = L.val + (clean ? RULES.clean : 0) + (f.blue ? RULES.blue : 0);
   G.makes++; G.lit++; if (clean) G.clean++;
   G.streak++; G.bestStreak = Math.max(G.bestStreak, G.streak);
   if (f.last) G.last = 2;
@@ -4975,21 +5083,27 @@ function onMoon(f) {
   G.moons++; G.makes++; G.streak++; G.bestStreak = Math.max(G.bestStreak, G.streak);
   if (f.last) G.last = 2;
   const first = G.moons === 1;
-  G.score += 7;
-  popup(MOON.x, MOON.y + MOON.r + 18, '+7', 'Moon shot', true);
+  G.score += RULES.moon;
+  popup(MOON.x, MOON.y + MOON.r + 18, '+' + RULES.moon, 'Moon shot', true);
   sfx.moon(); sfx.pound(0.95); sfx.pound(1.3); sfx.pound(1.65);
   G.moonT = 0; G.slow = first ? 1.7 : 0.7; G.slowTo = 0.35; if (!RM) G.shake = 0.45;
-  gameSay(first ? 'Moon shot!!' : 'Moon shot!', { ch: '月', sub: first ? 'The moon rabbit saw that' : '+7', moon: true, big: true });
+  gameSay(first ? 'Moon shot!!' : 'Moon shot!', { ch: '月', sub: first ? 'The moon rabbit saw that' : '+' + RULES.moon, moon: true, big: true });
   kiruSet('wow', 'surprised', 1.6); kiruJump(310, true);
   const n = first ? 8 : 4, types = ['kamuro', 'chrys', 'saturn', 'glitter', 'bolt', 'heart', 'multi', 'willow'];
   for (let i = 0; i < n; i++) shell(MOON.x + rnd(-20, 20), MOON.y + 10, X0 + VW * (0.12 + 0.76 * (i / (n - 1))), Y0 + rnd(100, 250), types[i], [pick([0, 3, 2, 5]), pick([1, 4, 7])], 1.25, 0.7 + i * 0.22);
   G.boost = 9; intensity(); hudAll(true);
   vibrate([20, 40, 60]);
 }
+// Blue fire into the moon after tonight's moon shot is spent: it flies on by, and the first one says why.
+function gameMoonSpent() {
+  if (G.moonSaid) return;
+  G.moonSaid = true;
+  gameSay(RULES.moonShots === 1 ? 'One moon shot a night' : RULES.moonShots + ' moon shots a night', { ch: '月', small: true });
+}
 function keepGhost(f) { ghost.length = 0; for (let i = 0; i < f.path.length; i++) ghost.push(f.path[i]); }
 function setComplete() {
-  G.ropes++; G.score += 5;
-  gameSay('Rope lit!', { ch: '祭', sub: '+5 · on to the next one', big: true });
+  G.ropes++; G.score += RULES.rope;
+  gameSay('Rope lit!', { ch: '祭', sub: '+' + RULES.rope + ' · on to the next one', big: true });
   sfx.roll(); G.boost = 6; intensity();
   for (const L of lanterns) skyL.push({ x: L.mx, y: L.my + 24, vx: rnd(-8, 8), vy: -6, t: 0, ph: rnd(0, TAU), k: 2.2, c: L.kind === 'white' ? 3 : 0, kind: L.kind, stop: Y0 + rnd(30, Math.min(220, VH * 0.26)) });
   lanterns = [];
@@ -5004,8 +5118,8 @@ function startRound() {
   for (const f of flames) fireStop(f.fire);
   flames = []; shells.length = 0; flashes.length = 0; skyL.length = 0; crane = null; ghost.length = 0; pN = 0;
   aim.queued = null; aim.on = false; aim.kbd = 0; // nothing from the last round (a throw queued before a Restart) carries over
-  Object.assign(G, { state: 'play', score: 0, flames: FLAMES, lit: 0, shots: 0, makes: 0, clean: 0, streak: 0, bestStreak: 0, set: 0, ropes: 0, cranes: 0, moons: 0,
-    progress: 0.12, boost: 0, finaleT: 0, finaleLen: 6.5, nextSetT: 0, setDoneT: 0, slow: 0, slowTo: 0.35, ts: 1, moonT: -1, playT: 0, coT: -9, last: 0, windSeen: false, endWait: 0 });
+  Object.assign(G, { state: 'play', score: 0, flames: RULES.flames, lit: 0, shots: 0, makes: 0, clean: 0, streak: 0, bestStreak: 0, set: 0, ropes: 0, cranes: 0, moons: 0,
+    progress: 0.12, boost: 0, finaleT: 0, finaleLen: 6.5, nextSetT: 0, setDoneT: 0, slow: 0, slowTo: 0.35, ts: 1, moonT: -1, playT: 0, coT: -9, last: 0, windSeen: false, moonSaid: false, endWait: 0 });
   buildSet(0);
   K.hasFlame = false; K.relight = 0.6; kiruSet('idle');
   uiShowPlay();
@@ -5065,7 +5179,7 @@ function gameClock(dt) {
   const want = G.slow > 0 ? G.slowTo : 1;
   G.ts += (want - G.ts) * Math.min(1, dt * (want < G.ts ? 16 : 5));
   if (Math.abs(G.ts - want) < 0.002) G.ts = want;
-  const sdt = dt * G.ts;
+  const sdt = dt * G.ts * G.speed;
   G.time += sdt;
   if (G.state === 'play') G.playT += dt;
   return sdt;
@@ -5083,7 +5197,7 @@ function gameLastFlame() {
   if (G.last !== 1) return;
   for (const f of flames) {
     if (!f.last || f.done || f.slowed || f.vy <= 0) continue;
-    let near = f.blue && (f.x - MOON.x) * (f.x - MOON.x) + (f.y - MOON.y) * (f.y - MOON.y) < 120 * 120;
+    let near = f.blue && wldMoonOpen() && (f.x - MOON.x) * (f.x - MOON.x) + (f.y - MOON.y) * (f.y - MOON.y) < 120 * 120;
     for (const L of lanterns) if (!near && !L.lit) { const dy = L.my - f.y; near = dy > -6 && dy < 110 && Math.abs(f.x - L.mx) < 50 + dy * 0.45; }
     if (!near && crane && !crane.lantern.lit) { const L = crane.lantern, dy = L.my - f.y; near = dy > -6 && dy < 110 && Math.abs(f.x - L.mx) < 50 + dy * 0.45; }
     if (near) { f.slowed = true; G.slow = Math.max(G.slow, 0.7); G.slowTo = 0.3; }
@@ -5112,8 +5226,8 @@ function gameTitleShell(minT) {
 function updateGame(dt) {
   if (G.moonT >= 0) { G.moonT += dt; if (G.moonT > 3.2) G.moonT = -1; }
   if (G.boost > 0) { G.boost -= dt; if (G.boost <= 0) intensity(); }
-  if (G.shake > 0) { G.shake = Math.max(0, G.shake - dt); SX = (Math.random() - 0.5) * G.shake * 14; SY = (Math.random() - 0.5) * G.shake * 14; } else { SX = SY = 0; }
-  if (G.windBase) G.wind = G.windBase * (1 + 0.16 * Math.sin(G.time * 0.7) + 0.07 * Math.sin(G.time * 2.3));
+  if (G.shake > 0 && LOOK.shake) { G.shake = Math.max(0, G.shake - dt); SX = (Math.random() - 0.5) * G.shake * 14; SY = (Math.random() - 0.5) * G.shake * 14; } else { G.shake = 0; SX = SY = 0; }
+  if (G.windBase) G.wind = G.windBase * ASSIST.wind * (1 + 0.16 * Math.sin(G.time * 0.7) + 0.07 * Math.sin(G.time * 2.3));
   if (G.state === 'play' || G.state === 'finale') {
     if (G.setDoneT > 0) { G.setDoneT -= dt; if (G.setDoneT <= 0) setComplete(); }
     if (G.nextSetT > 0) {
@@ -5224,7 +5338,7 @@ function hudAll(pop) {
 }
 function hudFlames() {
   if (hudLast.f === G.flames) return;
-  const el = $('hFlames'), max = typeof FLAMES === 'number' ? FLAMES : 30;
+  const el = $('hFlames'), max = Math.max(1, RULES.flames);
   el.textContent = G.flames; hudLast.f = G.flames;
   $('uiFlameBar').style.setProperty('--f', clamp(G.flames / max, 0, 1).toFixed(3));
   el.parentNode.classList.toggle('low', G.flames <= 5);
@@ -5482,6 +5596,7 @@ for (const id of ['uiFull', 'uiTitleFull', 'uiPauseFull']) $(id).addEventListene
 // screen. P and Esc (pause) belong to input.js. A key on a focused button stays that button's.
 addEventListener('keydown', (e) => {
   uiKbd = true;
+  if (devOpen) return; // the developer settings are open: Enter, M and F wait
   // a key held down through the finale skip mustn't auto-repeat its way past the score card
   if (e.repeat && (e.key === 'Enter' || e.key === ' ') && G.state === 'over') { e.preventDefault(); e.stopImmediatePropagation(); return; }
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
@@ -5598,6 +5713,7 @@ function throwNow(angle, power, blue) {
 addEventListener('pointerdown', (e) => inpSetMode(e.pointerType === 'mouse' ? 'mouse' : e.pointerType === 'pen' ? 'pen' : 'touch'), true);
 cv.addEventListener('pointerdown', (e) => {
   if (e.pointerType === 'mouse') { inpCur.on = true; inpCur.cx = e.clientX; inpCur.cy = e.clientY; }
+  if (devHolding()) return; // the developer settings are holding time: the night stands still
   if (G.state === 'finale') { if (e.button === 0 && G.finaleT > 1.5) endRound(); return; }
   if (G.state !== 'play') return;
   if (aim.on) {
@@ -5689,6 +5805,7 @@ function inpOnControl(e) {
 addEventListener('keydown', (e) => {
   inpFine = e.shiftKey;
   const k = e.key;
+  if (devOpen) { if (k === 'Escape') { e.preventDefault(); devToggle(false); return; } if (devHolding()) return; } // keys while the developer settings hold time
   if (k === 'Escape') {
     if (aim.on) { inpEndAim(false); e.preventDefault(); return; }
     if (inpPad.charge) { inpPadCancel(); return; }
@@ -6030,6 +6147,7 @@ function drawAim(c) {
     const tier = inpTier(), W = inpWidthOf(tier, aim.power);
     if (aim.angOK && aim.L > 4) inpTicks(c, aim.sx, aim.sy, (aim.x - aim.sx) / aim.L, (aim.y - aim.sy) / aim.L, aim.L, inpReach(aim.type), 1);
     inpStroke(c, aim.sx, aim.sy, aim.x, aim.y, tier, W, 1, inpR, 0);
+    if (aim.valid) inpDrawGuide(c, tier, 1);
     if (tier === 3) { // the label sits beside the stroke on its left, clear of a right thumb
       const ux = (aim.x - aim.sx) / aim.L, uy = (aim.y - aim.sy) / aim.L, s = -uy > 0 ? -1 : 1, o = W + 14 / SCALE;
       inpText(c, 'BLUE FIRE', aim.sx + (aim.x - aim.sx) * 0.45 - uy * s * o, aim.sy + (aim.y - aim.sy) * 0.45 + ux * s * o, 'right', '#c8eeff', 11, 1);
@@ -6044,8 +6162,36 @@ function drawAim(c) {
   const W = inpWidthOf(tier, aim.power);
   inpTicks(c, inpG.x, inpG.y, inpG.ux, inpG.uy, inpG.len, inpG.reach, a);
   inpStroke(c, inpG.x, inpG.y, inpG.ex, inpG.ey, tier, W, 0.92 * a, inpR, 0);
+  if (aim.valid) inpDrawGuide(c, tier, a);
   inpSparks(c, inpG.ex, inpG.ey, tier, aim.power, a * 0.9, 0.6, 10); // beyond the tip: the line the flame sets off on
   if (tier === 3) inpText(c, 'BLUE FIRE', inpG.ex + 12 / SCALE, inpG.ey - 10 / SCALE, 'left', '#c8eeff', 11, a);
+}
+// The aim guide (ASSIST.guide, world.js wldPredict): small embers along the path the flame would
+// take, fading as they go. They begin past the sparks at Kiru's hand (those own the first stretch).
+// On "the whole way", the opening it would drop into wears a ring.
+function inpDrawGuide(c, tier, a) {
+  if (!ASSIST.guide) return;
+  const p = wldPredict(aim.angle, aim.power, aim.blue, ASSIST.guide), n = p.n >> 1;
+  const from = Math.ceil((40 + 4 * (9 + 9 * aim.power + (tier === 3 ? 5 : 0))) / WLD_GAP);
+  if (n > from) {
+    const spr = SPR.glow[tier === 3 ? 9 : tier === 2 ? 0 : 8], span = Math.max(1, n - from);
+    c.globalCompositeOperation = 'lighter';
+    for (let i = from; i < n; i++) {
+      const u = (i - from) / span, x = WLD_PATH[i * 2], y = WLD_PATH[i * 2 + 1], s = 4.6 - 1.8 * u;
+      c.globalAlpha = a * (0.95 - 0.55 * u); c.drawImage(spr, x - s, y - s, s * 2, s * 2);
+      const w = s * 0.3; c.globalAlpha = a * (0.5 - 0.3 * u); c.drawImage(SPR.white, x - w, y - w, w * 2, w * 2);
+    }
+    c.globalCompositeOperation = 'source-over';
+  }
+  if (p.end === 1 && p.L && ASSIST.guide === 3) {
+    const L = p.L, r = LN.mouth + 7, pulse = RM ? 0.5 : Math.sin(G.time * 6) * 0.5 + 0.5;
+    c.globalCompositeOperation = 'lighter'; c.globalAlpha = a * (0.35 + 0.2 * pulse);
+    c.drawImage(SPR.soft[0], L.mx - r * 1.8, L.my - r * 1.8, r * 3.6, r * 3.6);
+    c.globalCompositeOperation = 'source-over';
+    c.globalAlpha = a * 0.9; c.strokeStyle = '#ffcf70'; c.lineWidth = 1.6;
+    c.beginPath(); c.ellipse(L.mx, L.my, r, r * 0.42, Math.atan2(L.sa, L.ca), 0, TAU); c.stroke();
+  }
+  c.globalAlpha = 1;
 }
 // The stroke that was just thrown (snapping up into the throw) or let go of (lifting away, grey).
 const inpFd = { t: -1, kind: 0, sx: 0, sy: 0, x: 0, y: 0, tier: 1, W: 0 };
@@ -6291,6 +6437,18 @@ function inpDrawCursorLayer(c) { inpCursorTop = true; inpDrawCursor(c); }
 // Test hooks for the headless checks.
 window.__lanternInput = { aim, mode: () => inpMode, reach: inpReach, pad: inpPad, cursor: inpCur };
 
+// ════════ dev-off.js ════════
+// ───────────────────────────── dev-off: the player edition's stand-in for dev.js ─────────────────────────────
+// build.mjs puts this in dev.js's place in index.html, the copy players get: no developer settings, no
+// button, no ` key, no ?dev, and no tuning saved in the browser is read. The game keeps the numbers it
+// starts with. These are only the names the rest of the game asks of dev.js, answering "closed".
+const devOpen = false;
+function devHolding() { return false; } // the night never stands still for the settings
+function devRedraw() { return false; }
+function devToggle() {}
+function devTick() {}
+function devDraw() {}
+
 // ════════ loop.js ════════
 // ───────────────────────────── loop: update + render orchestration, quality, boot ─────────────────────────────
 // This file owns ORDER, not content. Every module exposes the same few entry points and the loop
@@ -6308,6 +6466,7 @@ function update(dt) {
   updateFx(sdt);
   updateAmbience(sdt, dt);
   updateGame(dt);
+  devTick(dt); // the developer settings' autoplay
 }
 function render(dt) {
   const c = ctx;
@@ -6322,20 +6481,24 @@ function render(dt) {
   drawKiruLayer(c); // Kiru, and the flame in his hand
   drawFlames(c);
   drawInputLayer(c); // the brush stroke, aim sparks, first-throw hint
+  devDraw(c); // the developer settings' catch zones (off unless switched on)
   drawFrontLayer(c); // petals and the sakura branch
   typeof inpDrawCursorLayer === 'function' && inpDrawCursorLayer(c); // the brush-tip cursor (mouse), above everything in the world
   drawOverlay(c); // full-screen flashes (screen space)
 }
 
 let lastT = 0, rafId = 0, errLogged = false;
-const perf = { win: [], t: 0, bad: 0, good: 0, cool: 2.5, stepped: false, upUsed: false, floor: 0, check: false, before: 0 };
+const perf = { win: [], t: 0, bad: 0, good: 0, cool: 2.5, stepped: false, upUsed: false, floor: 0, check: false, before: 0, lock: false }; // lock: quality fixed in the developer settings
 function frame(t) {
   rafId = requestAnimationFrame(frame);
   const raw = lastT ? t - lastT : 16.7;
   lastT = t;
   const dt = Math.min(0.05, raw / 1000);
   try {
-    if (G.state !== 'pause') { update(dt); render(dt); }
+    // Hold time (the developer settings, open) stands a round still; a held or paused frame is drawn
+    // again once after a change there, so the change shows.
+    if (G.state !== 'pause' && !devHolding()) { update(dt); render(dt); }
+    else if (devRedraw()) render(0);
     watchPerf(raw);
   } catch (e) { if (!errLogged) { errLogged = true; console.error(e); } }
 }
@@ -6348,7 +6511,7 @@ function frame(t) {
 // its cap) and on coming back to the tab. A device that stepped down and then runs with lots of
 // headroom for ~12 s gets ONE step back up (once per session, so it can't oscillate).
 function watchPerf(raw) {
-  if (G.state === 'pause' || document.hidden || raw > 250) return;
+  if (G.state === 'pause' || document.hidden || raw > 250 || perf.lock || devHolding()) return;
   perf.cool -= raw / 1000;
   perf.win.push(raw); perf.t += raw;
   if (perf.t < 900 || perf.win.length < 20) return;
@@ -6395,7 +6558,7 @@ function boot() {
   rafId = requestAnimationFrame(frame);
 }
 // Test hooks for the headless checks: the same throw a finger would make, and a peek at state.
-window.__lanternNight = { G, K, PHYS, HAND, A, M, get MOON() { return MOON; }, moon: () => MOON, mode: () => MODE, lanterns: () => lanterns, keepOn: wldKeepOn, throwAt: (angle, power, blue) => throwNow(angle, power, !!blue), start: startRound, quality: () => QL };
+window.__lanternNight = { G, K, PHYS, ASSIST, RULES, LKIND, HAND, A, M, predict: wldPredict, get MOON() { return MOON; }, moon: () => MOON, mode: () => MODE, lanterns: () => lanterns, keepOn: wldKeepOn, throwAt: (angle, power, blue) => throwNow(angle, power, !!blue), start: startRound, quality: () => QL };
 boot();
 
 })();

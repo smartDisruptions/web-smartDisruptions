@@ -785,8 +785,9 @@ p {
 
 /* ── Kiru ───────────────────────────────────────────────────────────────────
    The rig is in src/components/kiru/Kiru.tsx. These are his idle motions —
-   transforms only, all off under reduced motion. `data-live` is set by the
-   SiteFX island only while he is on screen, so off-screen ninjas cost zero. */
+   transforms only, all off under reduced motion. His headband tails move in
+   components/kiru/tails.css. `data-live` is set by the SiteFX island only
+   while he is on screen, so off-screen ninjas cost zero. */
 .kiru {
   overflow: visible;
   --lx: 0;
@@ -796,12 +797,6 @@ p {
 .kiru .ko {
   stroke: var(--kiru-line);
   stroke-width: 6px;
-  stroke-linejoin: round;
-  paint-order: stroke;
-}
-.kiru .kt {
-  stroke: var(--kiru-line);
-  stroke-width: 4px;
   stroke-linejoin: round;
   paint-order: stroke;
 }

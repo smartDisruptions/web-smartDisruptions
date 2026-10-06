@@ -181,9 +181,10 @@ all.
 - He is an **object**: the same colours in both themes. Only his outline
   (`--kiru-line`) and moonlight rim (`--kiru-rim`) follow the theme — ink by
   day, moonlit at night.
-- He **idles only on screen**. `SiteFX` sets `data-live` while he is visible
-  and pauses his SMIL headband tails when he isn't. A page of ninjas costs
-  nothing per frame off screen.
+- He **idles only on screen**. `SiteFX` sets `data-live` while he is visible,
+  and every loop he has runs on it, the headband's included. A page of ninjas
+  costs nothing per frame off screen, and on screen his loops are transforms
+  the compositor runs.
 - His **eyes follow the pointer** (or the last touch) through `--lx/--ly`.
 - He is **decorative** (`aria-hidden`) unless given a `title`.
 - Every page has him, doing that page's job. He never covers text and never
@@ -202,6 +203,13 @@ animation of layout properties, nothing that animates while off screen.
   stroke glide to their new place because they carry view-transition names.
 - **Reduced motion stops things, it doesn't strobe them.** Infinite loops are
   stopped outright, not shortened.
+- **No SMIL.** Chrome runs it on the main thread every frame, and an
+  `<animate>` on an element keeps even that element's CSS transforms off the
+  compositor. On SVG, animate `transform` itself: Chrome won't composite the
+  separate `translate`, `rotate` and `scale` properties there. Kiru's headband
+  tails were SMIL path morphs until October 2026 and kept a throttled phone's
+  main thread a third busy while he was on screen; they are now two pieces on
+  a joint (`scripts/build-kiru-tails.mjs`).
 - **Canvas and WebGL** effects are islands: they start after first paint,
   render at a capped resolution, pause when off screen or the tab is hidden,
   and draw a single still frame under reduced motion.

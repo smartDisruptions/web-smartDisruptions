@@ -405,9 +405,9 @@ function ReportCard({ report }: { report: MarketStormReport }) {
               {formatDate(report.publishDate)}
             </span>
           </div>
-          {/* The mark, not the hero. HeroImage takes whatever pair it is handed,
-              so the card feeds it the logo and the report page feeds it the
-              generated card. */}
+          {/* The ledger card, not the hero. HeroImage takes whatever pair it is
+              handed, so the card feeds it the counts-and-finding card and the
+              report page feeds it the generated hero. */}
           {report.cardImage && (
             <div className="aspect-[2.5/1] w-full overflow-hidden border-b border-border sm:aspect-[1200/630]">
               <HeroImage

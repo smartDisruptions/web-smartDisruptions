@@ -2,10 +2,6 @@
  "title": "AMD — Market Storm",
  "category": "Market Storm",
  "out": "amd-q2-2026-card",
- "logo": {
-  "file": "amd.svg",
-  "scale": 0.52
- },
  "before": {
   "label": "Company",
   "text": "AMD"
@@ -14,5 +10,11 @@
   "label": "Section",
   "text": "Market Storm"
  },
- "alt": "AMD logo"
+ "alt": "AMD — Market Storm: 5 claims confirmed, 4 partly true, 2 corrected. A record quarter, and a fifth of the pre-tax profit came from investment gains.",
+ "ledger": {
+  "confirmed": 5,
+  "partlyTrue": 4,
+  "corrected": 2,
+  "finding": "A record quarter, and a fifth of the pre-tax profit came from investment gains."
+ }
 }

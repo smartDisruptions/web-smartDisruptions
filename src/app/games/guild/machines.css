@@ -1,0 +1,2056 @@
+/* ── The Broom & Blade Arcade: the machines. Prefix gm-. ─────────────────────
+
+   Five machines standing on the cellar floor. Each is an OBJECT, like the
+   neon market above: the same colours in both site themes. The palette is
+   the hall's (--gh-* on .gh) plus each machine's own paint.
+
+   Contrast (WCAG, measured at the worst end of each gradient): Hoop's ink
+   on parchment 8.1 · gold on oak 5.6 · cream on oak 7.3 · Kid Volt's text
+   on his panel 13.3, yellow 11.7, pink 8.4 · Whack's ink on cream 8.2, red
+   5.3 · Milk's chalk on slate 12.5 · ticket cream on red 5.9 · the gold
+   names on red 5.2 and on the boards 7.5.
+
+   Motion: compositor only (transform, opacity, on HTML boxes). Every loop
+   runs on the room's 16 s clock, paused unless the room is live
+   (.gh[data-live]) AND the machine is on screen (data-on) or reached for,
+   and held while the page scrolls or the row is swiped. Reduced motion
+   stops all of it and shows each machine's designed still.               */
+
+.gm {
+  position: relative;
+  container: gm / inline-size;
+}
+.gm-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ── The row ─────────────────────────────────────────────────────────────── */
+.gm-row {
+  display: flex;
+  align-items: flex-end;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gm-m {
+  position: relative;
+  min-width: 0;
+}
+/* Each machine stands in its own pool of shadow on the floor. */
+.gm-m::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  left: -3%;
+  right: -3%;
+  bottom: -1.1rem;
+  height: 2.2rem;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0));
+  pointer-events: none;
+}
+
+/* Phone: a row you swipe along, the next machine peeking in. A scroll-snap
+   list of links: Tab walks it (the browser scrolls each one into view), a
+   screen reader reads it as a list, nothing traps focus. */
+@container gm (max-width: 39.999rem) {
+  .gm-row {
+    gap: 1.1rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    padding: 1.5rem 1.25rem 2.25rem;
+    scrollbar-width: none;
+  }
+  .gm-row::-webkit-scrollbar {
+    display: none;
+  }
+  .gm-m {
+    flex: 0 0 min(80%, 20rem);
+    scroll-snap-align: start;
+  }
+}
+
+/* Tablet and small laptops: a row that wraps three and two, each line on
+   its own floor. (Five abreast below ~1150px would squeeze a machine to
+   170px, too narrow for its words; three abreast keeps them generous.) */
+@container gm (min-width: 40rem) {
+  .gm-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4rem 1.25rem;
+    padding: 1.5rem 1rem;
+  }
+  .gm-m {
+    flex: 0 1 calc((100% - 2.5rem) / 3);
+    max-width: 20rem;
+  }
+}
+
+/* Desktop: all five in one row on the hall's floor. Widths by weight, so
+   the silhouettes differ; Kid Volt stands apart, on his own mat. */
+@container gm (min-width: 72rem) {
+  .gm-row {
+    flex-wrap: nowrap;
+    gap: 1.1rem;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding: 2rem 1rem 1.5rem;
+  }
+  .gm-m {
+    flex: var(--gm-k, 1) 1 0;
+    max-width: 19.5rem;
+  }
+  .gm-m-volt {
+    --gm-k: 0.92;
+    margin-inline: 0.7rem;
+  }
+  .gm-m-whack {
+    --gm-k: 1.1;
+  }
+  .gm-m-milk {
+    --gm-k: 1.04;
+  }
+}
+
+/* ── A machine ───────────────────────────────────────────────────────────── */
+.gm-cab {
+  position: relative;
+  z-index: 1;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+}
+.gm-top {
+  position: relative;
+  z-index: 2;
+}
+.gm-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.gm-body {
+  position: relative;
+  z-index: 1;
+}
+.gm-base {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.gm-name {
+  margin: 0;
+}
+
+/* The screen: a 3:4 tube under warm glass. */
+.gm-bezel {
+  position: relative;
+  width: var(--gm-screen, 72cqi);
+  margin-inline: auto;
+}
+.gm-screen {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.gm-screen-in {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  /* A tube bulges: rounder corners than a panel. */
+  border-radius: 9% / 6.75%;
+  background:
+    radial-gradient(85% 65% at 50% 40%, rgba(255, 190, 110, 0.3), transparent 72%),
+    linear-gradient(#2b1b0f, #110a05);
+  isolation: isolate;
+}
+.gm-screen-idle {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 800 0.66rem/1 var(--font-mono);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255, 214, 150, 0.78);
+}
+.gm-screen img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* A still that hasn't landed (or failed) renders its ::before in Chrome and
+   Firefox, which covers the broken-image icon with the same lit, empty
+   screen. A loaded image never renders it. */
+.gm-screen img::before {
+  content: 'Free play';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 800 0.66rem/1 var(--font-mono);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255, 214, 150, 0.78);
+  background:
+    radial-gradient(85% 65% at 50% 40%, rgba(255, 190, 110, 0.3), transparent 72%),
+    linear-gradient(#2b1b0f, #110a05);
+}
+.gm-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    /* the reflection: a window's worth of glare across the curve */
+    linear-gradient(
+      122deg,
+      rgba(255, 248, 230, 0.15) 0%,
+      rgba(255, 248, 230, 0.05) 24%,
+      rgba(255, 248, 230, 0) 25%,
+      rgba(255, 248, 230, 0) 62%,
+      rgba(255, 248, 230, 0.05) 63%,
+      rgba(255, 248, 230, 0) 76%
+    ),
+    /* the vignette */ radial-gradient(ellipse at 50% 46%, rgba(10, 5, 2, 0) 52%, rgba(10, 5, 2, 0.6) 100%),
+    /* scanlines */ repeating-linear-gradient(0deg, rgba(24, 12, 4, 0.22) 0 1px, rgba(24, 12, 4, 0) 1px 3px),
+    /* warm phosphor */ linear-gradient(rgba(255, 168, 80, 0.07), rgba(255, 138, 60, 0.05));
+  box-shadow:
+    inset 0 0 1.2rem rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 222, 170, 0.08);
+  transition: opacity 0.45s ease;
+}
+/* Reach for a machine and its glass clears a little: the tube warms up. */
+.gm-cab:is(:hover, :focus-within) .gm-glass {
+  opacity: 0.72;
+}
+/* The plate: what it is, your best and the details, then the ticket. */
+.gm-plate {
+  position: relative;
+  container: gm-plate / inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.gm-desc {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+/* Best and Details share one line that never wraps: the best score swaps in
+   after hydration, and nothing may move when it does. */
+.gm-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.gm-best {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
+  height: 2.3rem;
+  margin: 0;
+  line-height: 1.1;
+}
+.gm-best-k {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+.gm-best-v {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.gm-best-none {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+/* Only a very narrow plate stacks the two. The switch reads the plate's
+   width, never the score, so the score arriving after hydration can't move
+   a thing. */
+@container gm-plate (max-width: 9.25rem) {
+  .gm-meta {
+    flex-direction: column;
+    gap: 0;
+  }
+  .gm-best {
+    flex: none;
+    width: 100%;
+    align-items: center;
+  }
+}
+
+/* The ticket slot: a brass dispenser mouth the ticket hangs out of. */
+.gm-slot {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-top: 0.42rem;
+}
+.gm-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(11.5rem, 94%);
+  height: 0.85rem;
+  translate: -50% 0;
+  border-radius: 0.5rem;
+  background: linear-gradient(#050302, #1c120a);
+  box-shadow:
+    0 0 0 2.5px #b07e24,
+    0 0 0 3.5px #5c3d0e,
+    0 3px 4px 2px rgba(0, 0, 0, 0.5);
+}
+.gm-slot > .gm-tk {
+  z-index: 1;
+}
+
+/* ── The ticket: Play ────────────────────────────────────────────────────── */
+/* A torn-off carnival ticket: notched ends, a perforated stub. The paper is
+   masked (true holes, whatever is behind); the link around it carries the
+   focus ring and the shadow, so neither is clipped. It sits a little
+   crooked, lifts toward you on hover and presses in. */
+.gm-tk {
+  --tk-stub: 2.25rem;
+  position: relative;
+  display: inline-flex;
+  min-height: 3.5rem;
+  color: #fbeed0;
+  text-decoration: none;
+  rotate: -1.6deg;
+  transition:
+    translate 0.3s var(--ease-out-expo),
+    rotate 0.3s var(--ease-out-expo),
+    scale 0.12s ease;
+}
+.gm-tk::before {
+  content: '';
+  position: absolute;
+  inset: 0.5rem 0.4rem -0.15rem;
+  border-radius: 4px;
+  box-shadow: 0 0.5rem 0.9rem -0.25rem rgba(0, 0, 0, 0.75);
+  transition: opacity 0.3s ease;
+  opacity: 0.75;
+}
+@media (hover: hover) {
+  .gm-tk:hover {
+    translate: 0 -2px;
+    rotate: -3.4deg;
+  }
+  .gm-tk:hover::before {
+    opacity: 1;
+  }
+}
+.gm-tk:active {
+  translate: 0 1px;
+  scale: 0.96;
+  transition-duration: 0.06s;
+}
+.gm-tk:focus-visible {
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.gm-tk-paper {
+  --notch: 0.42rem;
+  --perf: calc(100% - var(--tk-stub));
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border-radius: 3px;
+  background:
+    radial-gradient(130% 160% at 22% 0%, rgba(255, 236, 200, 0.16), rgba(255, 236, 200, 0) 55%),
+    repeating-linear-gradient(90deg, rgba(60, 10, 0, 0.06) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    linear-gradient(#a7311d, #8c2717);
+  mask:
+    radial-gradient(circle at 0 50%, #0000 var(--notch), #000 calc(var(--notch) + 0.5px)),
+    radial-gradient(circle at 100% 50%, #0000 var(--notch), #000 calc(var(--notch) + 0.5px)),
+    radial-gradient(circle at var(--perf) 0, #0000 0.3rem, #000 calc(0.3rem + 0.5px)),
+    radial-gradient(circle at var(--perf) 100%, #0000 0.3rem, #000 calc(0.3rem + 0.5px)),
+    radial-gradient(circle at var(--perf) 50%, #0000 1.5px, #000 2px) 0 0 / 100% 7px repeat-y;
+  mask-composite: intersect;
+}
+.gm-tk-main {
+  display: grid;
+  grid-template-areas: 'admit' 'play' 'free';
+  justify-items: center;
+  align-content: center;
+  gap: 0.18rem;
+  margin: 0.3rem 0.2rem 0.3rem 0.62rem;
+  padding: 0.22rem 0.8rem 0.24rem;
+  border: 1px solid rgba(251, 238, 208, 0.42);
+  border-radius: 2px;
+}
+.gm-tk-play {
+  grid-area: play;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-family: var(--font-display);
+  font-size: 1.14rem;
+  font-size-adjust: 0.5;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.gm-tk-play svg {
+  width: 0.78em;
+  height: 0.78em;
+  flex: none;
+}
+.gm-tk-admit,
+.gm-tk-free {
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.gm-tk-admit {
+  grid-area: admit;
+}
+.gm-tk-free {
+  grid-area: free;
+}
+.gm-tk-stub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--tk-stub);
+  padding-right: 0.2rem;
+  font: 800 0.8rem/1 var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.gm-tk-stub span {
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Details: a quiet link beside the ticket. */
+.gm-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: none;
+  min-height: 44px;
+  padding: 0;
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--gm-more, #f0e2c0);
+  transition:
+    color 0.2s ease,
+    scale 0.12s ease;
+}
+.gm-more svg {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+  transition: translate 0.25s var(--ease-out-expo);
+}
+.gm-more:hover {
+  color: var(--gm-more-hover, #ffe1a0);
+}
+.gm-more:hover svg {
+  translate: 3px 0;
+}
+.gm-more:active {
+  scale: 0.96;
+}
+
+/* ── Marquee bulbs ───────────────────────────────────────────────────────── */
+.gm-bulbs {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+}
+.gm-bulbs svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.gm-bulbs-lit {
+  position: absolute;
+  inset: 0;
+}
+/* ── Hoop Quest ──────────────────────────────────────────────────────────── */
+.gm-hoop .gm-top {
+  aspect-ratio: 300 / 224;
+}
+.gm-hoop .gm-name {
+  position: absolute;
+  z-index: 1;
+  left: 16%;
+  right: 16%;
+  top: 34.5%;
+  font-family: var(--font-read);
+  font-size: 10.6cqi;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.005em;
+  text-align: center;
+  white-space: nowrap;
+  color: #f2c25a;
+  text-shadow:
+    0 0.1em 0 #1a110a,
+    0 0 0.5em rgba(232, 178, 74, 0.35);
+}
+.gm-hoop-bulbs {
+  left: 4%;
+  width: 92%;
+  top: 88.6%;
+}
+.gm-hoop-ball {
+  position: absolute;
+  z-index: 2;
+  left: 3%;
+  top: 92.4%;
+  width: 10%;
+  aspect-ratio: 1;
+}
+.gm-hoop-ball-y {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.gm-hoop-ball-y svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.gm-hoop-net,
+.gm-hoop-rim {
+  position: absolute;
+  left: 36.667%;
+  top: 82.143%;
+  width: 26.667%;
+  height: auto;
+  overflow: visible;
+}
+.gm-hoop-net {
+  display: block;
+}
+.gm-hoop-net > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.gm-hoop-net {
+  z-index: 3;
+  transform-origin: 50% 9%;
+}
+.gm-hoop-rim {
+  z-index: 4;
+}
+.gm-hoop-pip {
+  position: absolute;
+  z-index: 5;
+  left: 58%;
+  top: 0.5%;
+  width: 28%;
+}
+.gm-hoop-pip > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* A lob: up past the board's top edge, then steeply down through the rim
+   (the eases are exact quadratics, so x-linear + y-eased is a parabola). */
+.gm-hoop .gm-body {
+  margin-inline: 4%;
+  padding: 6.5cqi 4.5cqi 4.5cqi;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.09) 0 1px,
+      rgba(0, 0, 0, 0) 1px 9px,
+      rgba(255, 220, 160, 0.035) 9px 10px,
+      rgba(0, 0, 0, 0) 10px 17px
+    ),
+    linear-gradient(90deg, #21160b, #4a3520 9%, #5a4229 50%, #4a3520 91%, #21160b);
+  box-shadow: inset 0 12px 14px -10px rgba(0, 0, 0, 0.75);
+}
+.gm-hoop .gm-bezel {
+  padding: 3cqi;
+  border-radius: 6cqi;
+  background: linear-gradient(#f6d784, #c8922e 45%, #8a6018);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 220, 0.75),
+    inset 0 -2px 0 rgba(60, 30, 0, 0.5),
+    0 10px 18px -10px rgba(0, 0, 0, 0.85);
+}
+.gm-hoop .gm-screen {
+  padding: 1.6cqi;
+  border-radius: 4cqi;
+  background: #0d0805;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+.gm-hoop .gm-plate {
+  margin-top: 5.5cqi;
+}
+.gm-hoop .gm-desc {
+  position: relative;
+  padding: 0.6rem 0.95rem 0.65rem;
+  color: #3b2a16;
+  background: radial-gradient(130% 100% at 30% 15%, #f7ebcc, #ead8ad 65%, #dcc594);
+  border-radius: 2px;
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.3),
+    0 12px 18px -12px rgba(0, 0, 0, 0.9);
+  rotate: -0.5deg;
+}
+.gm-hoop .gm-desc::before,
+.gm-hoop .gm-desc::after {
+  content: '';
+  position: absolute;
+  top: 0.38rem;
+  width: 0.46rem;
+  height: 0.46rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3c4, #e8b24a 45%, #6e4a10);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+.gm-hoop .gm-desc::before {
+  left: 0.36rem;
+}
+.gm-hoop .gm-desc::after {
+  right: 0.36rem;
+}
+.gm-hoop .gm-best {
+  color: #f0c25a;
+}
+
+/* ── Kid Volt Knockout ───────────────────────────────────────────────────── */
+.gm-volt {
+  --gm-more: #ff9ccb;
+  --gm-more-hover: #ffd1e6;
+}
+.gm-volt .gm-top {
+  aspect-ratio: 300 / 236;
+}
+.gm-volt .gm-name {
+  position: absolute;
+  z-index: 1;
+  left: 10.67%;
+  width: 44%;
+  top: 16%;
+  font-family: var(--font-display);
+  font-size: 9.6cqi;
+  font-size-adjust: 0.5;
+  line-height: 1.02;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+  color: #fff0f7;
+  text-shadow:
+    0 0 0.05em #fff,
+    0 0 0.2em #ff4f9a,
+    0 0 0.5em rgba(255, 79, 154, 0.85),
+    0 0 1.1em rgba(255, 79, 154, 0.5);
+}
+.gm-volt .gm-name span {
+  display: block;
+  margin-top: 0.2em;
+  font-size: 0.56em;
+  letter-spacing: 0.1em;
+  color: #fffbe0;
+  text-shadow:
+    0 0 0.05em #fff,
+    0 0 0.22em #ffd21f,
+    0 0 0.6em rgba(255, 210, 31, 0.7);
+}
+.gm-volt-readout,
+.gm-volt-crackle,
+.gm-volt-flash,
+.gm-volt-pow,
+.gm-volt-spring,
+.gm-volt-glove {
+  position: absolute;
+  height: auto;
+  overflow: visible;
+}
+.gm-volt-pow,
+.gm-volt-spring,
+.gm-volt-glove {
+  display: block;
+}
+.gm-volt-pow > svg,
+.gm-volt-spring > svg,
+.gm-volt-glove > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.gm-volt-readout {
+  z-index: 1;
+}
+.gm-volt-crackle {
+  z-index: 2;
+  opacity: 0;
+}
+.gm-volt-flash {
+  z-index: 2;
+  opacity: 0;
+}
+.gm-volt-spring {
+  z-index: 3;
+  transform-origin: 100% 50%;
+}
+.gm-volt-glove {
+  z-index: 4;
+}
+.gm-volt-pow {
+  z-index: 5;
+  opacity: 0;
+}
+/* Two soft flickers at each punch, then quiet: well under three a second. */
+.gm-volt .gm-body {
+  margin-inline: 3%;
+  padding: 6cqi 6.5cqi 4.5cqi;
+  background: linear-gradient(90deg, #06040b, #19112c 10%, #241a42 50%, #19112c 90%, #06040b);
+  box-shadow: inset 0 12px 16px -10px #000;
+}
+/* Pink neon tubes down both sides. */
+.gm-volt .gm-body::before,
+.gm-volt .gm-body::after {
+  content: '';
+  position: absolute;
+  top: 2.5cqi;
+  bottom: 2.5cqi;
+  width: 2px;
+  border-radius: 2px;
+  background: #ffe3f0;
+  box-shadow:
+    0 0 2px 1px #ff4f9a,
+    0 0 9px 2px rgba(255, 79, 154, 0.6),
+    0 0 20px 3px rgba(255, 79, 154, 0.28);
+}
+.gm-volt .gm-body::before {
+  left: 2.4cqi;
+}
+.gm-volt .gm-body::after {
+  right: 2.4cqi;
+}
+.gm-volt .gm-bezel {
+  padding: 2.4cqi;
+  border-radius: 5cqi;
+  background: linear-gradient(#ecebf5, #8d88a0 44%, #4a465a 56%, #b4afc6);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 0 18px -2px rgba(255, 79, 154, 0.45),
+    0 10px 18px -10px #000;
+}
+.gm-volt .gm-screen {
+  padding: 1.4cqi;
+  border-radius: 3.8cqi;
+  background: #07040d;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 79, 154, 0.75),
+    inset 0 0 10px rgba(255, 79, 154, 0.35);
+}
+.gm-volt .gm-plate {
+  margin-top: 5cqi;
+}
+.gm-volt .gm-desc {
+  font-family: var(--font-sans);
+  color: #ece6ff;
+}
+.gm-volt .gm-best {
+  color: #ffd84a;
+}
+.gm-volt .gm-slot::before {
+  box-shadow:
+    0 0 0 2.5px #b4afc6,
+    0 0 0 3.5px #2a2438,
+    0 0 12px 2px rgba(255, 79, 154, 0.35);
+}
+/* His own mat, his own light. */
+.gm-m-volt::after {
+  left: -6%;
+  right: -6%;
+  bottom: -1.6rem;
+  height: 3.2rem;
+  background: radial-gradient(closest-side, rgba(255, 79, 154, 0.3), rgba(255, 79, 154, 0));
+}
+
+/* ── Whack-a-Dust-Bunny ──────────────────────────────────────────────────── */
+.gm-whack {
+  --gm-more: #8f2b1c;
+  --gm-more-hover: #5c1a0e;
+}
+.gm-whack .gm-top {
+  aspect-ratio: 300 / 96;
+}
+.gm-whack .gm-name {
+  position: absolute;
+  z-index: 1;
+  left: 2%;
+  right: 2%;
+  top: 31.25%;
+  height: 29.17%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-family: var(--font-read);
+  font-size: 6.3cqi;
+  font-weight: 900;
+  line-height: 1;
+  color: #f7d27c;
+  text-shadow: 0 0.09em 0 #3e0e07;
+}
+.gm-whack {
+  --gm-screen: 62cqi;
+}
+.gm-whack-box {
+  margin-inline: 6%;
+  padding: 6cqi 6cqi 4cqi;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 11px),
+    linear-gradient(90deg, #21160b, #4a3520 9%, #5a4229 50%, #4a3520 91%, #21160b);
+  /* the awning's shadow across the top */
+  box-shadow: inset 0 16px 16px -8px rgba(0, 0, 0, 0.8);
+}
+.gm-whack .gm-bezel {
+  padding: 2.6cqi;
+  border-radius: 4.5cqi;
+  background: linear-gradient(#b8402a, #7e2414);
+  box-shadow:
+    inset 0 0 0 1.5px #e8b24a,
+    inset 0 2px 0 rgba(255, 220, 190, 0.35),
+    0 10px 18px -10px #000;
+}
+.gm-whack .gm-screen {
+  padding: 1.4cqi;
+  border-radius: 3.4cqi;
+  background: #0d0805;
+}
+.gm-whack-deck {
+  position: relative;
+  z-index: 3;
+  aspect-ratio: 300 / 100;
+}
+.gm-whack-hole,
+.gm-whack-pipbox {
+  position: absolute;
+  overflow: hidden;
+}
+.gm-whack-hole {
+  top: -36%;
+  width: 20.667%;
+  height: 76.5%;
+  /* clipped to the hole's front edge */
+  border-radius: 0 0 50% 50% / 0 0 13.7% 13.7%;
+}
+.gm-whack-h1 {
+  left: 13.667%;
+}
+.gm-whack-h2 {
+  left: 39.667%;
+}
+.gm-whack-h3 {
+  left: 65.667%;
+}
+.gm-whack-critter {
+  position: absolute;
+  left: 14.5%;
+  bottom: -7.2%;
+  width: 71%;
+  display: block;
+  translate: 0 106%;
+}
+.gm-whack-critter > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.gm-whack-h1 > .gm-whack-critter {
+  translate: 0 0;
+}
+.gm-whack-h3 > svg {
+}
+.gm-whack-h2 > svg {
+}
+.gm-whack-pipbox {
+  left: 34%;
+  width: 32%;
+  top: -52%;
+  height: 83%;
+}
+.gm-whack-pip {
+  position: absolute;
+  inset: 0 0 auto;
+  display: block;
+}
+.gm-whack-pip > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.gm-whack-rims {
+  position: absolute;
+  z-index: 4;
+  height: auto;
+  overflow: visible;
+}
+.gm-whack-bubble {
+  position: absolute;
+  z-index: 6;
+  left: 58%;
+  top: -48%;
+  padding: 0.38em 0.7em 0.42em;
+  border-radius: 1em;
+  font: 800 max(0.66rem, 3.7cqi) / 1 var(--font-sans);
+  white-space: nowrap;
+  color: #3b2a16;
+  background: #fbf3dc;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  transform-origin: 8% 100%;
+}
+.gm-whack-bubble::after {
+  content: '';
+  position: absolute;
+  left: 0.5em;
+  bottom: -0.42em;
+  border: 0.3em solid transparent;
+  border-top: 0.5em solid #fbf3dc;
+  border-left-width: 0;
+  rotate: 18deg;
+}
+.gm-whack-mallet {
+  position: absolute;
+  z-index: 5;
+  left: 91%;
+  top: 61%;
+  width: 11.33%;
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 3%;
+}
+/* The pops. Up is quick with a little overshoot; down is a duck. */
+.gm-whack-cab {
+  margin-inline: 6%;
+  padding: 5cqi 5.5cqi 4.5cqi;
+  background:
+    repeating-linear-gradient(90deg, rgba(110, 60, 20, 0.05) 0 1px, rgba(0, 0, 0, 0) 1px 9px),
+    linear-gradient(#f2e4c2, #e2cd9c);
+  box-shadow:
+    inset 0 0 0 3px #8f2b1c,
+    inset 0 0 0 5px #e8b24a,
+    inset 0 -18px 22px -14px rgba(90, 40, 10, 0.35);
+}
+.gm-whack .gm-desc {
+  color: #5e1c10;
+}
+.gm-whack .gm-best {
+  color: #8f2b1c;
+}
+
+/* ── Ring Toss ───────────────────────────────────────────────────────────── */
+.gm-ring .gm-top {
+  aspect-ratio: 300 / 112;
+}
+/* The candy-striped posts, finial to floor. */
+.gm-ring::before,
+.gm-ring::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 8.6cqi;
+  bottom: 0;
+  width: 5.33cqi;
+  border-radius: 2cqi 2cqi 0 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.4), rgba(255, 244, 220, 0.22) 32%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5)),
+    repeating-linear-gradient(-32deg, #f0e2c0 0 7px, #9a2a1b 7px 14px);
+}
+.gm-ring::before {
+  left: 1.33cqi;
+}
+.gm-ring::after {
+  right: 1.33cqi;
+}
+.gm-ring .gm-name {
+  position: absolute;
+  z-index: 1;
+  left: 18%;
+  right: 18%;
+  top: 42%;
+  font-family: var(--font-read);
+  font-size: 10cqi;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  color: #f2c25a;
+  text-shadow:
+    0 0.1em 0 #1a110a,
+    0 0 0.5em rgba(232, 178, 74, 0.35);
+}
+.gm-ring-wall,
+.gm-ring-rack {
+  margin-inline: 7.33%;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0) 12%, rgba(0, 0, 0, 0) 88%, rgba(0, 0, 0, 0.45)),
+    repeating-linear-gradient(90deg, #561409 0, #8a2a19 11px, #561409 22px);
+}
+.gm-ring {
+  --gm-screen: 62cqi;
+}
+.gm-ring-wall {
+  padding: 6.5cqi 5cqi 3cqi;
+  box-shadow: inset 0 14px 16px -8px rgba(0, 0, 0, 0.75);
+}
+.gm-ring .gm-bezel {
+  padding: 2.6cqi;
+  border-radius: 3cqi;
+  background: linear-gradient(#f6d784, #c8922e 45%, #8a6018);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 220, 0.75),
+    0 12px 18px -8px rgba(0, 0, 0, 0.85);
+}
+.gm-ring .gm-screen {
+  padding: 1.2cqi;
+  border-radius: 2cqi;
+  background: #0d0805;
+}
+.gm-ring-rack {
+  position: relative;
+  z-index: 3;
+  aspect-ratio: 256 / 118;
+}
+.gm-ring-fly,
+.gm-ring-gold {
+  position: absolute;
+  display: block;
+  height: auto;
+  overflow: visible;
+}
+.gm-ring-back {
+  z-index: 1;
+}
+.gm-ring-gold {
+  z-index: 2;
+}
+.gm-ring-front {
+  z-index: 3;
+}
+.gm-ring-fly > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+/* A falling arc, sampled (x even, y accelerating), tumbling as it comes. */
+.gm-ring-counter {
+  margin-inline: 7.33%;
+  padding: 5cqi 5cqi 4.5cqi;
+  border-top: 3px solid #b07e24;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 13px),
+    linear-gradient(#5a4229, #3e2b18);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 230, 170, 0.25),
+    0 -6px 10px -4px rgba(0, 0, 0, 0.6);
+}
+.gm-ring .gm-desc {
+  color: #f0e2c0;
+}
+.gm-ring .gm-best {
+  color: #f0c25a;
+}
+
+/* ── Milk Bottle Knockdown ───────────────────────────────────────────────── */
+.gm-milk .gm-top {
+  aspect-ratio: 300 / 206;
+}
+/* Oak posts, ribbon to floor. */
+.gm-milk::before,
+.gm-milk::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 9cqi;
+  bottom: 0;
+  width: 3.4cqi;
+  background: linear-gradient(90deg, #1c1209, #5a4229 40%, #2a1c10);
+}
+.gm-milk::before {
+  left: 2cqi;
+}
+.gm-milk::after {
+  right: 2cqi;
+}
+.gm-milk .gm-name {
+  position: absolute;
+  z-index: 1;
+  left: 12%;
+  right: 12%;
+  top: 2.9%;
+  height: 25.2%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-read);
+  font-size: 7.4cqi;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  color: #f7d27c;
+  text-shadow: 0 0.09em 0 #3e0e07;
+}
+.gm-milk-top {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  transform-origin: 50% 85%;
+}
+.gm-milk-top > svg,
+.gm-milk-ball-y > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.gm-milk-ball {
+  position: absolute;
+  z-index: 3;
+  display: block;
+}
+.gm-milk-ball-y {
+  display: block;
+  width: 100%;
+  opacity: 0;
+}
+.gm-milk-pip {
+  position: absolute;
+  z-index: 4;
+  left: 75.33%;
+  top: 52.43%;
+  width: 26.67%;
+  transform-origin: 50% 75%;
+}
+.gm-milk-pip > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Pip ducks as the bottle flies his way. */
+.gm-milk {
+  --gm-screen: 64cqi;
+}
+.gm-milk-wall {
+  margin-inline: 6%;
+  padding: 6cqi 5cqi 4cqi;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.28) 0 1px, rgba(0, 0, 0, 0) 1px 15px),
+    linear-gradient(90deg, #21160b, #4a3520 9%, #533c25 50%, #4a3520 91%, #21160b);
+  box-shadow: inset 0 14px 16px -8px rgba(0, 0, 0, 0.8);
+}
+.gm-milk .gm-bezel {
+  padding: 2.8cqi;
+  border-radius: 4cqi;
+  background: linear-gradient(#5a4229, #2e1f12);
+  box-shadow:
+    inset 0 0 0 1.5px #b07e24,
+    inset 0 1px 0 rgba(255, 230, 170, 0.3),
+    0 10px 18px -10px #000;
+}
+.gm-milk .gm-screen {
+  padding: 1.4cqi;
+  border-radius: 3cqi;
+  background: #0d0805;
+}
+.gm-milk-counter {
+  margin-inline: 6%;
+  padding: 5cqi 5cqi 4.5cqi;
+  border-top: 3px solid #b07e24;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 13px),
+    linear-gradient(#5a4229, #3e2b18);
+}
+/* The rules, chalked on a slate. */
+.gm-milk .gm-desc {
+  padding: 0.6rem 0.75rem 0.65rem;
+  color: #eeeee6;
+  border-radius: 3px;
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 60%),
+    #262a24;
+  box-shadow:
+    0 0 0 3px #6e5034,
+    0 0 0 4px #24180d,
+    0 8px 14px -8px rgba(0, 0, 0, 0.8);
+}
+.gm-milk .gm-best {
+  color: #f0c25a;
+}
+
+/* ── Attract loops: one 16-second clock ──────────────────────────────────────
+
+   Every loop runs on the room's shared 16 s period (Pip's and the hall's)
+   with no per-element delays. The quick moves (the swish, the jab, the pops,
+   the toss, the throw) are beats inside the long keyframes, and the machines
+   take turns across the lap. So each machine has one iteration boundary
+   every 16 s, and only 23 boxes move in the whole row. Comments give times in
+   seconds into the lap (1 s = 6.25%). Only HTML boxes and whole <svg> roots
+   move, by transform and opacity, on the compositor. The gates are at the
+   end of the file: paused unless the room is live and the machine is on
+   screen, held while the page scrolls, and none at all under reduced motion.
+
+   Longhands only, so nothing here resets animation-play-state. */
+.gm-a {
+  animation-duration: 16s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+/* Marquee bulbs: every other bulb blinks, once a second. */
+.gm-bulbs-lit {
+  animation-name: gm-twinkle;
+  animation-timing-function: steps(1, end);
+}
+@keyframes gm-twinkle {
+  0%,
+  12.5%,
+  25%,
+  37.5%,
+  50%,
+  62.5%,
+  75%,
+  87.5%,
+  100% {
+    opacity: 1;
+  }
+  6.25%,
+  18.75%,
+  31.25%,
+  43.75%,
+  56.25%,
+  68.75%,
+  81.25%,
+  93.75% {
+    opacity: 0.3;
+  }
+}
+
+/* Hoop Quest: three lobs, at 0.4 s, 5.6 s and 10.8 s. x rides the outer box
+   (even), y the inner one (exact quadratic eases), so the path is a
+   parabola; it clears the board's corner and drops through the rim. */
+.gm-hoop-ball {
+  animation-name: gm-hoop-x;
+}
+.gm-hoop-ball-y {
+  animation-name: gm-hoop-y;
+}
+.gm-hoop-net {
+  animation-name: gm-hoop-net;
+  animation-timing-function: ease-out;
+}
+.gm-hoop-pip {
+  animation-name: gm-hoop-pip;
+  animation-timing-function: ease-out;
+}
+@keyframes gm-hoop-x {
+  0%,
+  4.06% {
+    translate: 0 0;
+  }
+  17.19%,
+  28% {
+    translate: 420% 0;
+  }
+  28.01%,
+  36.56% {
+    translate: 0 0;
+  }
+  49.69%,
+  60% {
+    translate: 420% 0;
+  }
+  60.01%,
+  69.06% {
+    translate: 0 0;
+  }
+  82.19%,
+  100% {
+    translate: 420% 0;
+  }
+}
+@keyframes gm-hoop-y {
+  0%,
+  2.5%,
+  35%,
+  67.5%,
+  100% {
+    translate: 0 0;
+    scale: 1.4;
+    rotate: 0deg;
+    opacity: 0;
+  }
+  4.06%,
+  36.56%,
+  69.06% {
+    translate: 0 0;
+    scale: 1.34;
+    rotate: 0deg;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.33, 0.67, 0.67, 1);
+  }
+  11.56%,
+  44.06%,
+  76.56% {
+    translate: 0 -547%;
+    scale: 1.06;
+    rotate: -280deg;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0.33);
+  }
+  17.19%,
+  49.69%,
+  82.19% {
+    translate: 0 -107%;
+    scale: 0.96;
+    rotate: -500deg;
+    animation-timing-function: cubic-bezier(0.25, 0.6, 0.45, 1);
+  }
+  20.63%,
+  53.13%,
+  85.63% {
+    translate: 0 40%;
+    scale: 0.96;
+    rotate: -540deg;
+    opacity: 1;
+  }
+  22.5%,
+  55%,
+  87.5% {
+    translate: 0 70%;
+    scale: 0.96;
+    rotate: -548deg;
+    opacity: 0;
+  }
+}
+/* The net kicks as the ball drops through (2.75 s, 7.95 s, 13.15 s). */
+@keyframes gm-hoop-net {
+  0%,
+  16.9%,
+  22.6%,
+  49.4%,
+  55.1%,
+  81.9%,
+  87.6%,
+  100% {
+    scale: 1 1;
+  }
+  18.3%,
+  50.8%,
+  83.3% {
+    scale: 0.93 1.17;
+  }
+  19.7%,
+  52.2%,
+  84.7% {
+    scale: 1.04 0.94;
+  }
+  21.1%,
+  53.6%,
+  86.1% {
+    scale: 0.99 1.04;
+  }
+}
+/* ...and Pip hops for every swish. */
+@keyframes gm-hoop-pip {
+  0%,
+  17.5%,
+  19.7%,
+  21.3%,
+  50%,
+  52.2%,
+  53.8%,
+  82.5%,
+  84.7%,
+  86.3%,
+  100% {
+    translate: 0 0;
+  }
+  18.7%,
+  51.2%,
+  83.7% {
+    translate: 0 -13%;
+  }
+  20.5%,
+  53%,
+  85.5% {
+    translate: 0 -5%;
+  }
+}
+
+/* Kid Volt: a one-two into the readout at 1.6 s, 7 s and 12.4 s, a bob
+   between. At each punch the readout flares, a POW pops, the bolt crackles
+   (two soft flickers, well under three a second). */
+.gm-volt-glove {
+  animation-name: gm-volt-glove;
+}
+.gm-volt-spring {
+  animation-name: gm-volt-spring;
+}
+.gm-volt-flash {
+  animation-name: gm-volt-flash;
+}
+.gm-volt-pow {
+  animation-name: gm-volt-pow;
+  animation-timing-function: ease-out;
+}
+.gm-volt-crackle {
+  animation-name: gm-volt-crackle;
+}
+@keyframes gm-volt-glove {
+  0%,
+  10%,
+  32.5%,
+  43.75%,
+  66.25%,
+  77.5% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45);
+  }
+  11.13%,
+  11.38%,
+  44.88%,
+  45.13%,
+  78.63%,
+  78.88% {
+    translate: -30% 0;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  13.13%,
+  13.88%,
+  46.88%,
+  47.63%,
+  80.63%,
+  81.38% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45);
+  }
+  14.88%,
+  15.13%,
+  48.63%,
+  48.88%,
+  82.38%,
+  82.63% {
+    translate: -33% 0;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  17.19%,
+  20%,
+  50.94%,
+  53.75%,
+  84.69%,
+  87.5% {
+    translate: 0 0;
+    animation-timing-function: ease-in-out;
+  }
+  26.25%,
+  60%,
+  93.75% {
+    translate: 0 -4%;
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+@keyframes gm-volt-spring {
+  0%,
+  10%,
+  32.5%,
+  43.75%,
+  66.25%,
+  77.5% {
+    translate: 0 0;
+    scale: 1 1;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45);
+  }
+  11.13%,
+  11.38%,
+  44.88%,
+  45.13%,
+  78.63%,
+  78.88% {
+    translate: 0 0;
+    scale: 2.04 1;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  13.13%,
+  13.88%,
+  46.88%,
+  47.63%,
+  80.63%,
+  81.38% {
+    translate: 0 0;
+    scale: 1 1;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45);
+  }
+  14.88%,
+  15.13%,
+  48.63%,
+  48.88%,
+  82.38%,
+  82.63% {
+    translate: 0 0;
+    scale: 2.14 1;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  17.19%,
+  20%,
+  50.94%,
+  53.75%,
+  84.69%,
+  87.5% {
+    translate: 0 0;
+    scale: 1 1;
+    animation-timing-function: ease-in-out;
+  }
+  26.25%,
+  60%,
+  93.75% {
+    translate: 0 -11%;
+    scale: 1 1;
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+}
+@keyframes gm-volt-flash {
+  0%,
+  11.05%,
+  12.8%,
+  14.8%,
+  16.6%,
+  44.8%,
+  46.55%,
+  48.55%,
+  50.35%,
+  78.55%,
+  80.3%,
+  82.3%,
+  84.1%,
+  100% {
+    opacity: 0;
+  }
+  11.3%,
+  15.05%,
+  45.05%,
+  48.8%,
+  78.8%,
+  82.55% {
+    opacity: 1;
+  }
+}
+@keyframes gm-volt-pow {
+  0%,
+  11.05%,
+  14.8%,
+  44.8%,
+  48.55%,
+  78.55%,
+  82.3% {
+    opacity: 0;
+    scale: 0.4;
+  }
+  11.4%,
+  45.15%,
+  78.9% {
+    opacity: 1;
+    scale: 1.05;
+  }
+  12.3%,
+  46.05%,
+  79.8% {
+    opacity: 0;
+    scale: 1.25;
+  }
+  15.15%,
+  48.9%,
+  82.65% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  16.05%,
+  49.8%,
+  83.55%,
+  100% {
+    opacity: 0;
+    scale: 1.35;
+  }
+}
+@keyframes gm-volt-crackle {
+  0%,
+  11.05%,
+  12.6%,
+  14.8%,
+  15.9%,
+  44.8%,
+  46.35%,
+  48.55%,
+  49.65%,
+  78.55%,
+  80.1%,
+  82.3%,
+  83.4%,
+  100% {
+    opacity: 0;
+  }
+  11.3%,
+  15.05%,
+  45.05%,
+  48.8%,
+  78.8%,
+  82.55% {
+    opacity: 1;
+  }
+  11.7%,
+  45.45%,
+  79.2% {
+    opacity: 0.35;
+  }
+  12%,
+  45.75%,
+  79.5% {
+    opacity: 0.9;
+  }
+}
+
+/* Whack-a-Dust-Bunny: a dozen pops a lap across three holes, a golden
+   bunny twice, and Pip once: up at 14.4 s with "Not me!", and still up
+   at the top of the lap, so the lap's first frame is the machine's still. */
+.gm-whack-h1 > .gm-whack-critter {
+  animation-name: gm-whack-a;
+}
+.gm-whack-h3 > .gm-whack-critter {
+  animation-name: gm-whack-c;
+}
+.gm-whack-h2 > .gm-whack-critter {
+  animation-name: gm-whack-g;
+}
+.gm-whack-pip {
+  animation-name: gm-whack-pip;
+}
+.gm-whack-bubble {
+  animation-name: gm-whack-bubble;
+}
+/* Up is quick with an overshoot; down is a duck. */
+@keyframes gm-whack-a {
+  0%,
+  6.25%,
+  30.63%,
+  36.88%,
+  63.13%,
+  68.75% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  7.81%,
+  28.75%,
+  38.44%,
+  61.25%,
+  70.31%,
+  91.25% {
+    translate: 0 106%;
+    animation-timing-function: cubic-bezier(0.3, 1.5, 0.6, 1);
+  }
+  93.13%,
+  100% {
+    translate: 0 0;
+  }
+}
+@keyframes gm-whack-c {
+  0%,
+  13.75%,
+  22.81%,
+  45%,
+  54.06%,
+  76.25% {
+    translate: 0 106%;
+    animation-timing-function: cubic-bezier(0.3, 1.5, 0.6, 1);
+  }
+  15.63%,
+  21.25%,
+  46.88%,
+  52.5%,
+  78.13%,
+  83.75% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  85.31%,
+  100% {
+    translate: 0 106%;
+  }
+}
+@keyframes gm-whack-g {
+  0%,
+  35%,
+  44.06%,
+  66.25% {
+    translate: 0 106%;
+    animation-timing-function: cubic-bezier(0.3, 1.5, 0.6, 1);
+  }
+  36.88%,
+  42.5%,
+  68.13%,
+  73.75% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  75.31%,
+  100% {
+    translate: 0 106%;
+  }
+}
+@keyframes gm-whack-pip {
+  0%,
+  7.5% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  9.06%,
+  90% {
+    translate: 0 88%;
+    animation-timing-function: cubic-bezier(0.3, 1.45, 0.6, 1);
+  }
+  91.88%,
+  100% {
+    translate: 0 0;
+  }
+}
+@keyframes gm-whack-bubble {
+  0%,
+  6.25% {
+    opacity: 1;
+    scale: 1;
+  }
+  7.5% {
+    opacity: 0;
+    scale: 0.8;
+  }
+  92.5% {
+    opacity: 0;
+    scale: 0.55;
+    animation-timing-function: cubic-bezier(0.3, 1.6, 0.6, 1);
+  }
+  94.38%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* Ring Toss: two tosses, at 3.4 s and 11.4 s. The fall is sampled (x even,
+   y accelerating) and tumbles; both halves of the ring share it. */
+.gm-ring-fly {
+  animation-name: gm-ring-toss;
+}
+@keyframes gm-ring-toss {
+  0%,
+  21.25%,
+  71.25% {
+    translate: -212% -1100%;
+    rotate: -46deg;
+    scale: 1 2.3;
+    opacity: 0;
+  }
+  22.81%,
+  72.81% {
+    translate: -212% -1100%;
+    rotate: -40deg;
+    scale: 1 2.2;
+    opacity: 1;
+  }
+  24.69%,
+  74.69% {
+    translate: -170% -1058%;
+    rotate: -24deg;
+    scale: 1 1.7;
+  }
+  26.56%,
+  76.56% {
+    translate: -127% -930%;
+    rotate: -6deg;
+    scale: 1 2;
+  }
+  28.44%,
+  78.44% {
+    translate: -85% -718%;
+    rotate: 10deg;
+    scale: 1 1.5;
+  }
+  30.31%,
+  80.31% {
+    translate: -42% -422%;
+    rotate: 14deg;
+    scale: 1 1.7;
+  }
+  32.19%,
+  82.19% {
+    translate: 0 -60%;
+    rotate: 9deg;
+    scale: 1 1.25;
+    animation-timing-function: cubic-bezier(0.3, 0.7, 0.5, 1);
+  }
+  33.75%,
+  83.75% {
+    translate: 0 0;
+    rotate: -7deg;
+    scale: 1 1;
+    animation-timing-function: ease-in-out;
+  }
+  35.31%,
+  85.31% {
+    rotate: 5deg;
+  }
+  36.56%,
+  86.56% {
+    rotate: -2.5deg;
+  }
+  38.13%,
+  58.75%,
+  88.13%,
+  97.5% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1 1;
+    opacity: 1;
+  }
+  61.25%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1 1;
+    opacity: 0;
+  }
+}
+
+/* Milk Bottle Knockdown: two throws, at 4.4 s and 11 s. The ball knocks the
+   top bottle off, it tumbles toward Pip, Pip ducks, and the bottle drops
+   back into place before the next throw. */
+.gm-milk-ball {
+  animation-name: gm-milk-x;
+}
+.gm-milk-ball-y {
+  animation-name: gm-milk-y;
+}
+.gm-milk-top {
+  animation-name: gm-milk-tumble;
+}
+.gm-milk-pip {
+  animation-name: gm-milk-duck;
+}
+@keyframes gm-milk-x {
+  0%,
+  29.06% {
+    translate: -712% 0;
+  }
+  36.25% {
+    translate: 0 0;
+  }
+  40.63%,
+  50% {
+    translate: -200% 0;
+  }
+  50.01%,
+  70.31% {
+    translate: -712% 0;
+  }
+  77.5% {
+    translate: 0 0;
+  }
+  81.88%,
+  100% {
+    translate: -200% 0;
+  }
+}
+@keyframes gm-milk-y {
+  0%,
+  27.5%,
+  68.75%,
+  100% {
+    translate: 0 612%;
+    scale: 1.8;
+    opacity: 0;
+  }
+  29.06%,
+  70.31% {
+    translate: 0 612%;
+    scale: 1.7;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.33, 0.67, 0.67, 1);
+  }
+  36.25%,
+  77.5% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0.33);
+  }
+  39.06%,
+  80.31% {
+    opacity: 1;
+  }
+  40.63%,
+  81.88% {
+    translate: 0 330%;
+    scale: 1;
+    opacity: 0;
+  }
+}
+@keyframes gm-milk-tumble {
+  0%,
+  36.25%,
+  56.56%,
+  77.5% {
+    translate: 0 0;
+    rotate: 0deg;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  38.13%,
+  79.38% {
+    translate: 60% -55%;
+    rotate: 70deg;
+    animation-timing-function: linear;
+  }
+  39.69%,
+  80.94% {
+    translate: 110% -60%;
+    rotate: 140deg;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.8, 0.6);
+  }
+  41.88%,
+  83.13% {
+    translate: 165% 40%;
+    rotate: 230deg;
+    opacity: 1;
+  }
+  43.13%,
+  84.38% {
+    translate: 190% 150%;
+    rotate: 290deg;
+    opacity: 0;
+  }
+  52.5%,
+  93.75% {
+    translate: 0 -70%;
+    rotate: 0deg;
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  54.69%,
+  95.94% {
+    translate: 0 0;
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  55.63%,
+  96.88% {
+    translate: 0 -8%;
+  }
+  97.81%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+    opacity: 1;
+  }
+}
+@keyframes gm-milk-duck {
+  0%,
+  35.63%,
+  43.75%,
+  76.88% {
+    translate: 0 0;
+    scale: 1 1;
+    animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1);
+  }
+  36.88%,
+  41.25%,
+  78.13%,
+  82.5% {
+    translate: 0 9%;
+    scale: 1.07 0.84;
+    animation-timing-function: cubic-bezier(0.3, 1.6, 0.6, 1);
+  }
+  85%,
+  100% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+}
+
+/* ── The gates ───────────────────────────────────────────────────────────────
+   Paused unless the room is live (.gh[data-live], the hall's) AND this
+   machine is on screen (data-on) or reached for. Held while the page scrolls
+   (.gh[data-hold], the hall's) and while the phone's row is swiped
+   (.gm[data-hold], ours), so a scrolling frame restyles none of it;
+   !important because the hold must beat everything. Under reduced motion
+   there are no loops at all, and each machine shows its designed still. */
+.gm .gm-a {
+  animation-play-state: paused;
+}
+.gh[data-live] .gm-m:is([data-on], :hover, :focus-within) .gm-a {
+  animation-play-state: running;
+}
+.gh[data-hold] .gm .gm-a,
+.gm[data-hold] .gm-a {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gm .gm-a {
+    animation: none;
+  }
+  .gm-tk,
+  .gm-tk::before,
+  .gm-more,
+  .gm-more svg,
+  .gm-glass {
+    transition: none;
+  }
+}

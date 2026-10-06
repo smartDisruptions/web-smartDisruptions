@@ -5,6 +5,7 @@
 export function backTarget(from: string | null) {
   if (from === 'arcade') return { href: '/games', label: 'Back to the arcade' };
   if (from === 'archive') return { href: '/games/archive', label: 'Back to the archive' };
+  if (from === 'guild') return { href: '/games#broom-blade-arcade', label: 'Back to the Broom & Blade Arcade' };
   return { href: '/built', label: 'Everything I built' };
 }
 

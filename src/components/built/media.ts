@@ -9,6 +9,26 @@
  * Add a row when a new screenshot arrives.
  */
 export const SIZES: Record<string, readonly [number, number]> = {
+  '/images/apps/milk-bottle-knockdown-1.webp': [780, 1688],
+  '/images/apps/milk-bottle-knockdown-2.webp': [780, 1688],
+  '/images/apps/milk-bottle-knockdown-3.webp': [1600, 900],
+  '/images/apps/milk-bottle-knockdown-thumbnail.webp': [1200, 630],
+  '/images/apps/ring-toss-1.webp': [780, 1688],
+  '/images/apps/ring-toss-2.webp': [780, 1688],
+  '/images/apps/ring-toss-3.webp': [1600, 900],
+  '/images/apps/ring-toss-thumbnail.webp': [1200, 630],
+  '/images/apps/hoop-quest-1.webp': [780, 1688],
+  '/images/apps/hoop-quest-2.webp': [780, 1688],
+  '/images/apps/hoop-quest-3.webp': [1600, 900],
+  '/images/apps/hoop-quest-thumbnail.webp': [1200, 630],
+  '/images/apps/kid-volt-knockout-1.webp': [780, 1688],
+  '/images/apps/kid-volt-knockout-2.webp': [780, 1688],
+  '/images/apps/kid-volt-knockout-3.webp': [1600, 900],
+  '/images/apps/kid-volt-knockout-thumbnail.webp': [1200, 630],
+  '/images/apps/whack-a-dust-bunny-1.webp': [780, 1688],
+  '/images/apps/whack-a-dust-bunny-2.webp': [780, 1688],
+  '/images/apps/whack-a-dust-bunny-3.webp': [1600, 900],
+  '/images/apps/whack-a-dust-bunny-thumbnail.webp': [1200, 630],
   '/images/apps/ai-diary-1.png': [1024, 1520],
   '/images/apps/ai-diary-2.png': [1024, 1520],
   '/images/apps/ai-diary-3.png': [1024, 1520],
@@ -152,6 +172,12 @@ const MARKS: Record<string, string> = {
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道
   'neo-dojo-survivors': '守', // defend: Tengu-9 holds the dojo for fifteen minutes
   'path-not-taken': '岐', // a fork in the road, as in 岐路: the path not taken
+  // The Broom & Blade Arcade
+  'hoop-quest': '籠', // a basket
+  'kid-volt-knockout': '拳', // a fist
+  'whack-a-dust-bunny': '兎', // a rabbit: the dust bunnies
+  'ring-toss': '輪', // a ring
+  'milk-bottle-knockdown': '倒', // to knock down
 };
 
 export function markFor(slug: string): string {

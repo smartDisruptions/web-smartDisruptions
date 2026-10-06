@@ -86,7 +86,7 @@ export const apps: App[] = [
   },
   {
     slug: 'spacex-mars',
-    name: 'SpaceX Mars Transfer Simulation',
+    name: 'Earth–Mars Transfer Simulation',
     description:
       'Shows the path a spacecraft takes from Earth to Mars. You can change the settings and watch the trip play out.',
     longDescription:
@@ -446,7 +446,7 @@ export const apps: App[] = [
       'Hundreds of enemies on screen at once, drawn in WebGL with no game engine and no libraries, and every weapon lights the ground in its own colour.',
       'Six acts and six bosses, each one a rogue from the Neo Dojo Cast with a fight built around its joke.',
       'Ten AI agents built it side by side, each owning one part of the game: the hero, the horde, the bosses, two sets of weapons, levelling up, the world, the effects, the music and the screens.',
-      'After the first play it was rebalanced with an autopilot that plays whole runs in fast-forward. It used to reach level 168 by the end; now it reaches about 53, and the last minutes fight back.',
+      'After the first play it was rebalanced with an autopilot that plays whole runs in fast-forward. It used to reach level 168 by the end; now it reaches about 42, and the last minutes fight back.',
     ],
     buildDate: '2026-10',
     hasFullBreakdown: false,
@@ -457,9 +457,9 @@ export const apps: App[] = [
     slug: 'path-not-taken',
     name: 'Path Not Taken (Pre Alpha)',
     description:
-      'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on three film-score battles, and one miss is death.',
+      'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on six film-score battles, and one miss is death.',
     longDescription:
-      'A first-person rhythm duel, and a pre-alpha: what is here are the first gameplay tests, with a greybox attacker standing in for the real one. Every glowing line that falls down the three lanes is a hit in the music. Dodge left, down or right as it touches its pad, hold a blue line for bullet time while one slow blow crawls in, dodge a burst of quick blows after an orange one, and strike when the red button comes up. One miss is death, and a death skips the intro, so you are straight back in. The three songs are short film-score battle cues I made with ElevenLabs Music: about ten seconds of intro, a minute of fighting and ten seconds to close. The story comes later.',
+      'A first-person rhythm duel, and a pre-alpha: what is here are the first gameplay tests, with a greybox attacker standing in for the real one. Every glowing line that falls down the three lanes is a hit in the music. Dodge left, down or right as it touches its pad, hold a blue line for bullet time while one slow blow crawls in, dodge a burst of quick blows after an orange one, and strike when the red button comes up. One miss is death, and a death skips the intro, so you are straight back in. The six songs are short battle cues I made with ElevenLabs Music: three film-score fights, and three darker ones with Japanese instruments, each with a quiet stretch you play in bullet time. Every one has about ten seconds of intro, a minute or more of fighting and ten seconds to close. The story comes later.',
     thumbnailUrl: '/images/apps/path-not-taken-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/path-not-taken-1.webp',
@@ -471,7 +471,8 @@ export const apps: App[] = [
     status: 'development',
     outcomes: [
       'Every tile sits on a hit in the recording. I measured each song\u2019s tempo to a thousandth of a beat and its hits slot by slot, and the chart refuses a tile where the music has nothing to hit.',
-      'Three songs at 140, 150 and 162 BPM, each shaped as about ten seconds of intro, a minute of play and ten seconds of exit. A death restarts the song two seconds before the first tile.',
+      'Six songs from 140 to 184 BPM, each shaped as about ten seconds of intro, a minute or more of play and ten seconds of exit. A death restarts the song two seconds before the first tile.',
+      'The page is about half a megabyte. Each song is downloaded the first time you pick its level, so playing one battle costs one song, about 2 MB.',
       'One miss is death, judged within 200 ms on the forgiving setting, with a tap-along calibration for Bluetooth headphones and slow screens.',
       'Pre-alpha, and it says so: the attacker is a greybox stand-in, and the game is still being built.',
     ],
@@ -479,6 +480,139 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/path-not-taken',
+  },
+  /*
+   * The Broom & Blade Arcade: the five machines of Broom & Blade's games room,
+   * free to play here. The games themselves live in Josh's vault
+   * (Tools/broom-blade/<booth>/ and Tools/kid-volt/); public/games/<slug> holds
+   * the site's copy, rewritten for free play.
+   */
+  {
+    slug: 'hoop-quest',
+    name: 'Hoop Quest',
+    description:
+      'Flick basketballs at a hoop in a candlelit cellar. Thirty balls, a basket that starts moving after ten, and three points for a shot that clears the backboard.',
+    longDescription:
+      'Hoop Quest started the fair in Broom & Blade, the chore game I built for my family: it felt like a carnival game, so the guild hall grew a booth for each game. You drag a ball up off the rack and flick it at the hoop: thirty balls, two points a basket, and three for a Sky Shot thrown from down low that flies over the backboard. The basket holds still for the first ten balls, then starts to slide from side to side. Three baskets in a row set the ball on fire, eight turn the fire blue, and the callouts climb from NICE! to LEGENDARY!. Pip the guild mouse rides the top of the backboard: he watches the ball, cheers every make, backflips for a swish, waves a pennant on a streak and hides his eyes when you miss. A secret Space Shot, flicked so hard it leaves the top of the screen and still drops in, is worth five and turns Pip into a giant hype man. Every sound is made by the game as you play, with no recordings, and the whole game is one file. Here every round is free.',
+    thumbnailUrl: '/images/apps/hoop-quest-thumbnail.webp',
+    screenshotUrls: ['/images/apps/hoop-quest-1.webp', '/images/apps/hoop-quest-2.webp', '/images/apps/hoop-quest-3.webp'],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Thirty balls: two points a basket, three for a Sky Shot over the backboard and five for the secret Space Shot, so a perfect round is 150.',
+      'The basket holds still for the first ten balls and then slides; three baskets in a row set the ball on fire, and eight turn the fire blue.',
+      'Every shot leaves the hand at the same power, so the skill is your aim and how far up you carry the ball: my own tuning, set after I made 20 of 30 on my phone.',
+      'Every sound, from the swish and the clank of the rim to Pip’s squeaks, is made by the Web Audio API as you play, with no recordings.',
+    ],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/hoop-quest',
+  },
+  {
+    slug: 'kid-volt-knockout',
+    name: 'Kid Volt Knockout',
+    description:
+      'A boxing game I built for phones. Kid Volt vs Disco Danny on a rooftop: he punches on the beat, a sparkle shows where he’s open, and three knockdowns is a TKO.',
+    longDescription:
+      'A boxing game I built for phones, from a study of the 16-bit boxing classics. Kid Volt fights Disco Danny on a rooftop dance floor. Danny throws every punch on the beat of a disco loop, and during a real wind-up a sparkle marks where he’s open. Punch that spot to counter and charge your super: one charge is a Volt Hook, three is a Supernova. Dodge, duck or hold block, hit him as he sways back to center when he’s dizzy, and put him down three times for a TKO before the fight clock runs out. Every pixel is drawn into a 120 by 140 frame, and every sound is synthesised in the browser.',
+    thumbnailUrl: '/images/apps/kid-volt-knockout-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/kid-volt-knockout-1.webp',
+      '/images/apps/kid-volt-knockout-2.webp',
+      '/images/apps/kid-volt-knockout-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Danny punches on the beat: 104 beats a minute to start, 116 after his first knockdown and 128 for the last dance.',
+      'A counter charges half a super, and saving three charges unlocks the Supernova.',
+      'The fight clock starts at 3:00, runs one and a half times faster than real time, and stops while Danny is dizzy.',
+      'Three knockdowns is a TKO, and your fastest win is kept on your device as your best KO time.',
+    ],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/kid-volt-knockout',
+  },
+  {
+    slug: 'whack-a-dust-bunny',
+    name: 'Whack-a-Dust-Bunny',
+    description:
+      'A booth from the chore game I built for my family. Bonk dust bunnies for 75 seconds, grab the golden ones, survive the Horde, and whatever you do, don’t bonk Pip.',
+    longDescription:
+      'At home this is a booth in Broom & Blade, the chore game I built for my family: a finished chore earns a ticket, and a ticket buys a round. Here every round is free. Dust bunnies pop out of nine holes in a candlelit cellar and you have 75 seconds to bonk them. Golden ones are worth three, helmets take two bonks, and two bonks in a flash is a DOUBLE BONK. Sneezy bunnies, hoppers, mama bunnies, socks and three surprise events a round keep it changing, your bonks fill the sign for FEVER, and the last twelve seconds bring the Horde. Pip pops up too. Don’t bonk Pip.',
+    thumbnailUrl: '/images/apps/whack-a-dust-bunny-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/whack-a-dust-bunny-1.webp',
+      '/images/apps/whack-a-dust-bunny-2.webp',
+      '/images/apps/whack-a-dust-bunny-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'A round is 75 seconds across nine holes, and the last 12 are the frenzy, when the Horde arrives: eight bonks turn it to dust for a 10-point bonus.',
+      'Twenty bonks fill the sign (a broken streak knocks four off), and tapping it gives six seconds of FEVER, when every bunny is gold.',
+      'Each round plays three surprise events drawn from four: Golden Rush, Lights Out, Pip’s Cousins and the Conga Line.',
+      'Five brooms, four of them unlocked by playing well, from bonking 50 bunnies in a round to a streak of 40.',
+    ],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/whack-a-dust-bunny',
+  },
+  {
+    slug: 'ring-toss',
+    name: 'Ring Toss',
+    description:
+      'Flick rings onto twenty bottles under a striped awning. Thirty rings, a golden bottle worth ten, bonuses for rows, columns and corners, and a BLACKOUT for all twenty.',
+    longDescription:
+      'A carnival ring toss, the second booth at the Broom & Blade fair, and Pip runs it. You grab a ring off the peg and flick it at a table of twenty bottles: a soft flick lands up front, a hard one reaches the back row, and the slant of the flick carries it sideways. The rows are worth two to five, one bottle is golden and worth ten, and each bottle takes one ring. A full row pays five times its value, a column pays 15 and the four corners 20. Three rows in, the string lights go rainbow and a heartbeat starts under the last bottles. Ring all twenty and the round ends in a BLACKOUT: the lights cut out, a spotlight snaps on, the word stamps in letter by letter, and the fair goes wild while Pip screams. Every sound is made by the game as you play, and the whole game is one file. Here every round is free.',
+    thumbnailUrl: '/images/apps/ring-toss-thumbnail.webp',
+    screenshotUrls: ['/images/apps/ring-toss-1.webp', '/images/apps/ring-toss-2.webp', '/images/apps/ring-toss-3.webp'],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Twenty bottles in four rows worth 2, 3, 4 and 5, plus a golden bottle worth 10 that is never in the front row.',
+      'A full row pays five times its value, a column 15 and the four corners 20, so the bonuses can outscore the bottles.',
+      'Ringing all twenty ends the round in a BLACKOUT worth 50, plus 5 for every ring you didn’t need, so a perfect round is 342.',
+      'The blackout is a six-second show: the lights cut out, a spotlight snaps on, the word stamps in letter by letter, then fireworks, disco beams and confetti.',
+    ],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/ring-toss',
+  },
+  {
+    slug: 'milk-bottle-knockdown',
+    name: 'Milk Bottle Knockdown',
+    description:
+      'Twenty balls, three pyramids of milk bottles. Clear a pyramid with one ball for a CLEAN KNOCK, find the secret golden bottle, and clear the whole shelf.',
+    longDescription:
+      'The carnival milk-bottle throw from the Broom & Blade fair. You drag a ball up and flick it at three pyramids of six bottles: a soft flick hits low, a hard one hits high, and too soft falls short. A bottle only counts once it leaves the shelf. One ball through a whole pyramid is a CLEAN KNOCK, one bottle is secretly golden, and clearing all three pyramids lights the lamps for a FULL SHELF. The bottles fly in 3D: they bowl each other over, land on the shelf or drop to the booth floor, and a hard landing smashes them into glass and milk. Now and then one flies straight at you and cracks the screen, and a clean knock rolls an instant replay at a third of the speed. Pip watches from the counter and ducks when bottles come his way. Every sound is made by the game as you play, and the whole game is one file. Here every round is free.',
+    thumbnailUrl: '/images/apps/milk-bottle-knockdown-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/milk-bottle-knockdown-1.webp',
+      '/images/apps/milk-bottle-knockdown-2.webp',
+      '/images/apps/milk-bottle-knockdown-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Twenty balls at three pyramids of six: a bottle knocked off the shelf is a point, and one ball through a whole pyramid is a CLEAN KNOCK worth 5 more.',
+      'One of the first eighteen bottles is secretly golden and worth 5, and you only find out which when it falls.',
+      'Clearing all three pyramids lights the lamps for a FULL SHELF worth 10, and a perfect round is 284.',
+      'A CLEAN KNOCK or a FULL SHELF rolls an instant replay at a third of the speed, and about one direct hit in seven (twice a round at most) sends a bottle into the screen.',
+    ],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/milk-bottle-knockdown',
   },
 ];
 
@@ -501,14 +635,28 @@ export function getAppBySlug(slug: string): App | undefined {
  */
 export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken'];
 
+/**
+ * The Broom & Blade Arcade, the last room on /games before the archive's door
+ * (Josh's call, 2026-10-05): the five machines of Broom & Blade's games room,
+ * hosted by Pip the guild mouse, in machine order.
+ */
+export const BROOM_BLADE_ARCADE_SLUGS = [
+  'hoop-quest',
+  'kid-volt-knockout',
+  'whack-a-dust-bunny',
+  'ring-toss',
+  'milk-bottle-knockdown',
+];
+
 /** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
 export const ARCADE_ARCHIVE_SLUGS = ['field-office', 'cloth-simulator', 'broom-blade', 'grove', 'pebble-kart', 'aureum-snake'];
 
 /**
- * Every game on the site, the front room and the archive: what the catalogue,
- * the search index and the home page's counts treat as a game.
+ * Every game on the site, the front room, the Broom & Blade Arcade and the
+ * archive: what the catalogue, the search index and the home page's counts
+ * treat as a game.
  */
-export const GAME_SLUGS = [...ARCADE_SLUGS, ...ARCADE_ARCHIVE_SLUGS];
+export const GAME_SLUGS = [...ARCADE_SLUGS, ...BROOM_BLADE_ARCADE_SLUGS, ...ARCADE_ARCHIVE_SLUGS];
 
 /** Projects with a full write-up on /websites, so they skip the catalogue. */
 // Slugs that live on /websites as a full write-up and are therefore filtered out

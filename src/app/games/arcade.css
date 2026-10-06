@@ -182,6 +182,18 @@
   }
 }
 
+/* Off screen, the market's loops stop (MarketFX sets data-off on each tagged
+   region while it is out of view): every loop iteration on this page wakes
+   the main thread, and down in the Broom & Blade Arcade those wakes were
+   restyling the room ~47 times a second. Paused only, never reset, so a
+   region picks up where it left off. */
+[data-market][data-off],
+[data-market][data-off] *,
+[data-market][data-off] *::before,
+[data-market][data-off] *::after {
+  animation-play-state: paused !important;
+}
+
 /* ── Neon ───────────────────────────────────────────────────────────────── */
 /* A tube: a near-white core that carries the contrast, the colour as glow. */
 .arc-neon {
@@ -209,12 +221,17 @@
 
 /* Rare, subtle flicker: a few blips in a long cycle, on opacity only. The
    title also flickers on once as the page opens, like a sign being switched
-   on; it never drops below a quarter, so it is painted from the first frame. */
+   on; it never drops below a quarter, so it is painted from the first frame.
+   The switch-on runs on the h1 and the flicker on its tube: two opacity
+   animations on ONE element can't run on the compositor, and Chrome then ran
+   both on the main thread, a full frame every vsync while the flicker loops.
+   Opacities multiply and arc-on ends at 1, so it looks exactly the same. */
 @media (prefers-reduced-motion: no-preference) {
+  .arc-title {
+    animation: arc-on 1s steps(1, end) 0.15s both;
+  }
   .arc-title .arc-neon {
-    animation:
-      arc-on 1s steps(1, end) 0.15s both,
-      arc-flicker 13s steps(1, end) 4s infinite;
+    animation: arc-flicker 13s steps(1, end) 4s infinite;
   }
   .arc-flicker {
     animation: arc-flicker var(--flicker, 13s) steps(1, end) var(--flicker-delay, 2s) infinite;
@@ -1457,76 +1474,6 @@
 }
 .arc-more:active {
   scale: 0.96;
-}
-
-/* ── The door to the archive (the bottom of /games) ─────────────────────── */
-/* One link the size of a cabinet's marquee: what's behind it, then the way in.
-   Amber, so it reads as a different tube from the cabinets above it. */
-.arc-door {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 0.55rem;
-  margin-top: 4rem;
-  padding: 1.6rem 1.4rem 1.5rem;
-  border-radius: 22px;
-  text-decoration: none;
-  color: var(--arc-ink-2);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 30%),
-    linear-gradient(180deg, #161a39 0%, #10132b 100%);
-  border: 1px dashed color-mix(in srgb, var(--arc-amber) 45%, transparent);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.5),
-    0 26px 50px -32px rgba(0, 0, 0, 0.95),
-    0 0 34px -18px color-mix(in srgb, var(--arc-amber) 55%, transparent);
-  transition:
-    translate 0.45s var(--ease-out-expo),
-    border-color 0.3s ease;
-}
-@media (min-width: 40rem) {
-  .arc-door {
-    padding: 2rem 2.2rem 1.9rem;
-  }
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .arc-door:hover {
-    translate: 0 -4px;
-  }
-}
-.arc-door:hover {
-  border-color: color-mix(in srgb, var(--arc-amber) 80%, transparent);
-}
-.arc-door-kick {
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--arc-cyan-ink);
-}
-.arc-door-title {
-  font-size: clamp(2rem, 7vw, 3.1rem);
-  line-height: 1.05;
-}
-.arc-door-line {
-  max-width: 44rem;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-.arc-door-go {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-top: 0.35rem;
-  font-size: 0.78rem;
-  font-weight: 850;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--arc-amber-ink);
-}
-.arc-door-go svg {
-  width: 1.05rem;
-  height: 1.05rem;
 }
 
 /* ── The archive's hero: no sign, no scoreboard, one column ──────────────── */

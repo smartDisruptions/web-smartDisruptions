@@ -1,19 +1,21 @@
 import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, type App } from '@/data/apps';
+import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, BROOM_BLADE_ARCADE_SLUGS, type App } from '@/data/apps';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import RooftopRun from '@/components/arcade/RooftopRun';
 import RooftopPoster from './Poster';
 import Cabinets, { ArrowIcon } from './Cabinets';
+import MarketFX from './MarketFX';
+import GuildHall from './guild/GuildHall';
 import { LANTERNS, TICKER_INK, WIRE_PATH, ticker } from './market';
 import './arcade.css';
 
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games starring Kiru and the Neo Dojo Cast, a rhythm duel still in pre-alpha, and Kiru's Rooftop Run: six levels set to music, playable right here on the page.",
+    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**
@@ -21,19 +23,25 @@ export const metadata: Metadata = {
  *
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
  * call on the ordering): Kiru's games, then Neo Dojo Survivors, then Path Not
- * Taken, a rhythm duel in pre-alpha. Every other game is in the archive,
- * /games/archive, behind the door at the bottom of the page. /built reads the same lists, so the pages can't drift.
+ * Taken, a rhythm duel in pre-alpha. Below them the page goes downstairs into
+ * the Broom & Blade Arcade (./guild, BROOM_BLADE_ARCADE_SLUGS): Pip's room,
+ * where the page's theme turns from neon to firelight (docs/broom-blade-arcade.md).
+ * Every other game is in the archive, /games/archive, behind the hall's cellar
+ * door at the bottom. /built reads the same lists, so the pages can't drift.
  *
  * This page is a server component. What moves is CSS on the compositor —
- * the neon's rare flicker, the lanterns, the ticker — and stops under reduced
- * motion. The platform filter is native radio buttons and :has(), so it costs
- * no JavaScript either. The only client code is the Rooftop Run cabinet's
- * Start button; the game itself is a separate chunk fetched by pressing it.
+ * the neon's rare flicker, the lanterns, the ticker, the hall's firelight —
+ * and stops under reduced motion. The platform filter is native radio buttons
+ * and :has(), so it costs no JavaScript either. The client code is small:
+ * the Rooftop Run cabinet's Start button (the game itself is a separate chunk
+ * fetched by pressing it), MarketFX (pauses the market's loops off screen),
+ * and in the hall, HallFX, Pip's mouse hole and the machines' best scores.
  */
 
 const byslug = (slugs: string[]) =>
   slugs.map((slug) => apps.find((app) => app.slug === slug)).filter((app): app is App => app !== undefined);
 const games = byslug(ARCADE_SLUGS);
+const guild = byslug(BROOM_BLADE_ARCADE_SLUGS);
 const archived = byslug(ARCADE_ARCHIVE_SLUGS);
 // "The Pembroke File, Cloth Simulator … and AUREUM Snake", written out, so the
 // door says what is behind it.
@@ -42,11 +50,13 @@ const ARCHIVE_NAMES = new Intl.ListFormat('en-GB', { type: 'conjunction' }).form
 const TICKER = ticker(games.map((g) => g.name));
 
 export default function Arcade() {
-  const live = games.filter((g) => g.status === 'live').length;
+  const onPage = [...games, ...guild];
+  const live = onPage.filter((g) => g.status === 'live').length;
   return (
     <div className="arc">
+      <MarketFX />
       {/* The lantern string */}
-      <div className="arc-lanterns" aria-hidden="true">
+      <div className="arc-lanterns" aria-hidden="true" data-market="">
         <svg className="arc-wire" viewBox="0 0 1000 72" preserveAspectRatio="none">
           <path d={WIRE_PATH} fill="none" stroke="#2c2a3c" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
         </svg>
@@ -62,7 +72,7 @@ export default function Arcade() {
       </div>
 
       <div className="arc-wrap">
-        <header className="arc-hero">
+        <header className="arc-hero" data-market="">
           <Kanji char="遊" className="arc-watermark" />
           <p className="arc-kicker">★ Player One ★</p>
           <h1 className="arc-title font-display">
@@ -74,7 +84,7 @@ export default function Arcade() {
           <dl className="arc-stats">
             <div className="arc-stat">
               <dt>Games</dt>
-              <dd className="font-display arc-neon">{String(games.length).padStart(2, '0')}</dd>
+              <dd className="font-display arc-neon">{String(onPage.length).padStart(2, '0')}</dd>
             </div>
             <div className="arc-stat" style={{ '--tube': 'var(--arc-amber)' } as CSSProperties}>
               <dt>Live</dt>
@@ -101,7 +111,7 @@ export default function Arcade() {
         </header>
 
         {/* Free play: Kiru's Rooftop Run */}
-        <section className="rr" aria-labelledby="rr-title">
+        <section className="rr" aria-labelledby="rr-title" data-market="">
           <Kiru pose="game" className="rr-kiru" />
           <div className="rr-cab">
             <div className="rr-marquee">
@@ -152,7 +162,7 @@ export default function Arcade() {
       </div>
 
       {/* The ticker */}
-      <div className="arc-ticker" aria-hidden="true">
+      <div className="arc-ticker" aria-hidden="true" data-market="">
         <div className="arc-ticker-track" style={{ '--arc-ticker-s': `${TICKER.seconds}s` } as CSSProperties}>
           {['a', 'b'].map((k) => (
             <div key={k} className="arc-ticker-seg">
@@ -175,24 +185,32 @@ export default function Arcade() {
 
       <div className="arc-wrap">
         <Cabinets games={games} from="arcade" title="The cabinets" titleId="arc-cabinets" />
+      </div>
 
-        {/* The door to the back room: every older cabinet, still playable. */}
-        {archived.length > 0 && (
-          <Link href="/games/archive" className="arc-door sd-reveal">
-            <span className="arc-door-kick">The back room</span>
-            <span className="arc-door-title font-display arc-neon" data-tube="amber">
-              The archive
-            </span>
-            <span className="arc-door-line">
-              {archived.length} older cabinets, still free to play: {ARCHIVE_NAMES}.
-            </span>
-            <span className="arc-door-go">
-              Open the archive
-              <ArrowIcon />
-            </span>
-          </Link>
-        )}
+      {/* Downstairs: the Broom & Blade Arcade, Pip's room, and below it the
+          door to the back room (every older cabinet, still playable). */}
+      <GuildHall
+        games={guild}
+        door={
+          archived.length > 0 && (
+            <Link href="/games/archive" className="gh-door">
+              <span className="gh-door-card">
+                <span className="gh-door-kick">The back room</span>
+                <span className="gh-door-title font-display">The archive</span>
+                <span className="gh-door-line">
+                  {archived.length} older cabinets, still free to play: {ARCHIVE_NAMES}.
+                </span>
+                <span className="gh-door-go">
+                  Open the archive
+                  <ArrowIcon />
+                </span>
+              </span>
+            </Link>
+          )
+        }
+      />
 
+      <div className="arc-wrap">
         <div className="arc-end">
           <p className="arc-end-line">
             <span style={{ color: 'var(--arc-pink-ink)' }}>──</span>{' '}
