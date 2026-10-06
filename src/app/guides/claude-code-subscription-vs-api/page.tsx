@@ -11,6 +11,7 @@ import LineSwitch from '@/components/guide/LineSwitch';
 import SortGame from '@/components/guide/SortGame';
 import MonthCalc from '@/components/guide/MonthCalc';
 import {
+  BILLS,
   DAY,
   EXCERPT,
   LEVELS,
@@ -317,20 +318,26 @@ export default function GuidePage() {
               <h3 className="font-display gd-h3">API credits</h3>
               <ul className="gd-plans" role="list">
                 <li>
-                  <b className="tabular-nums">{usd(PRICES.apiIn)}</b>
-                  <span>per million tokens (chunks of words) Claude reads</span>
+                  <b className="tabular-nums">
+                    {usd(PRICES.sonnetIn)} · {usd(PRICES.sonnetOut)}
+                  </b>
+                  <span>
+                    Sonnet 5.5, per million tokens (chunks of words) read ·
+                    written. Most of my session ran on this one.
+                  </span>
                 </li>
                 <li>
-                  <b className="tabular-nums">{usd(PRICES.apiOut)}</b>
-                  <span>per million tokens Claude writes</span>
+                  <b className="tabular-nums">
+                    {usd(PRICES.apiIn)} · {usd(PRICES.apiOut)}
+                  </b>
+                  <span>Opus 5.5, the bigger model, read · written</span>
                 </li>
               </ul>
               <p className="font-read">
                 The API is how an app talks to Claude on its own, with no person
                 typing. You only need it if your finished app has Claude inside
-                it. You pay for what goes in and what comes out. These are the
-                prices for Claude Opus 5.5, Anthropic&rsquo;s current Opus
-                model.
+                it. You pay for what goes in and what comes out, and the bigger
+                the model, the higher the price.
               </p>
               <p className="gd-way-like">
                 <span>Feels like</span> a taxi meter. Every trip costs a little,
@@ -369,7 +376,7 @@ export default function GuidePage() {
           <div className="gd-result">
             <p className="gd-result-line font-read">
               That&rsquo;s the whole ${dayTotal}, and only about $
-              {DAY[DAY.length - 1].cost} of it was Claude writing the code.
+              {DAY[DAY.length - 1].cost}&#32;of it was Claude writing the code.
               Here&rsquo;s the receipt it came from.
             </p>
 
@@ -423,7 +430,90 @@ export default function GuidePage() {
           </div>
         </section>
 
-        {/* ── Level 4 ─────────────────────────────────────────────────── */}
+        {/* ── Level 4: other people's bills ─────────────────────────────── */}
+        <section id="others" className="gd-level" aria-labelledby="others-h">
+          <LevelHead n={4}>Other people&rsquo;s bills</LevelHead>
+          <p className="gd-lede font-read">
+            When I started reading about this, I kept finding people who had
+            shared what AI coding cost them. Sometimes it was hundreds of
+            dollars, sometimes thousands. They put real numbers in public, which
+            is how the rest of us learn. Here&rsquo;s what I took from them.
+          </p>
+
+          <ul className="gd-bills" role="list">
+            {BILLS.map((b) => (
+              <li key={b.url} className="gd-bill">
+                <p className="gd-bill-top">
+                  <span className="gd-bill-kind">{b.kind}</span>
+                  <span className="gd-bill-who">{b.who}</span>
+                </p>
+                <p className="gd-bill-amount font-display tabular-nums">
+                  {b.amount}
+                </p>
+                <p className="gd-bill-what font-read">{b.what}</p>
+                <p className="gd-bill-lesson font-read">
+                  <span>What I took from it</span>
+                  {b.lesson}
+                </p>
+                <a
+                  className="gd-bill-src"
+                  href={b.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {b.source}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <div className="gd-split gd-split-even">
+            <div className="sd-sheet gd-sheet font-read">
+              <h3 className="gd-h4">Same shape, different bill</h3>
+              <p>
+                Their stories and my receipt have the same shape. Most of the
+                cost is Claude rereading a long conversation, and the rest comes
+                from agents left running, extra helpers and big models.
+              </p>
+              <p>
+                The difference is who carries it. On the API, every reread is a
+                charge. On my plan, it comes out of a weekly allowance I already
+                paid for. My ${Math.round(RECEIPT.apiTotal)} session came to
+                about ${RECEIPT.planCost} of my plan.
+              </p>
+              <p>
+                Paying per use is the right choice for plenty of people:
+                companies, teams, and anyone who needs more than a plan allows.
+                Nobody here did anything wrong. They shared what they learned,
+                and that&rsquo;s how I learned it.
+              </p>
+            </div>
+            <div className="sd-sheet gd-sheet font-read">
+              <h3 className="gd-h4">The habits I kept from them</h3>
+              <ul className="gd-habits">
+                <li>
+                  <strong>Start a fresh session for each job.</strong> Long
+                  conversations are where most of the cost hides.
+                </li>
+                <li>
+                  <strong>Use helpers only when it pays.</strong> My one day
+                  with ten helpers was about ${RECEIPT.bigDay} of my $
+                  {Math.round(RECEIPT.apiTotal)}.
+                </li>
+                <li>
+                  <strong>Don&rsquo;t leave agents running unattended.</strong>{' '}
+                  Round-the-clock agents are what the weekly limits are for.
+                </li>
+                <li>
+                  <strong>Check which account is paying.</strong> Type /status
+                  in Claude Code. It shows whether you&rsquo;re on your plan.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Level 5 ─────────────────────────────────────────────────── */}
         <section id="line" className="gd-level" aria-labelledby="line-h">
           <LevelHead n={5}>Do you ever need the API?</LevelHead>
           <p className="gd-lede font-read">
@@ -634,20 +724,13 @@ export default function GuidePage() {
               </p>
             </li>
             <li>
-              <h3>Start fresh for each task</h3>
+              <h3>Prices move</h3>
               <p className="font-read">
-                {RECEIPT.rereadShare}% of my ${Math.round(RECEIPT.apiTotal)}{' '}
-                session was Claude rereading the conversation, about{' '}
-                {RECEIPT.rereadPerStep}&#32;tokens every step. A new session for
-                each task keeps that small, so you stay further from your
-                plan&rsquo;s limits.
+                Everything here is the price Anthropic posted on October 5,
+                2026. When it changes, I&rsquo;ll update this page.
               </p>
             </li>
           </ul>
-          <p className="gd-fine-date font-read">
-            Prices are the ones Anthropic posted on October 5, 2026. When they
-            change, I&rsquo;ll update this page.
-          </p>
 
           <div className="gd-try">
             <Kiru pose="game" className="gd-try-kiru" />

@@ -13,6 +13,8 @@ export const PRICES = {
   maxHigh: 200,
   apiIn: 4,
   apiOut: 20,
+  sonnetIn: 2,
+  sonnetOut: 10,
 };
 
 export type Word = {
@@ -175,3 +177,69 @@ export const RECEIPT = {
   // worth about $3,573. A rough reading, and the calculator says so.
   weekAllowance: 3573,
 };
+
+export type Bill = {
+  amount: string;
+  kind: 'Bill' | 'At API prices' | 'Average';
+  who: string;
+  what: string;
+  lesson: string;
+  source: string;
+  url: string;
+};
+
+// People who shared what AI coding cost them, checked 2026-10-06. Each one
+// links to the source; nothing here is from a secondary rumour. The tone is
+// thanks: they put real numbers in public, which is how the rest of us learn.
+export const BILLS: Bill[] = [
+  {
+    amount: '$13 a day',
+    kind: 'Average',
+    who: "Anthropic's own numbers",
+    what: 'Across companies using Claude Code on the API, the average developer costs about $13 per active day, or $150 to $250 a month. 90% stay under $30 a day.',
+    lesson:
+      'Anthropic says big bills usually come from long sessions that were never cleared, or from the biggest model left on all the time.',
+    source: 'Claude Code docs, Manage costs effectively',
+    url: 'https://code.claude.com/docs/en/costs',
+  },
+  {
+    amount: '$15,000+',
+    kind: 'At API prices',
+    who: 'A developer who writes as ksred',
+    what: 'They tracked eight months of Claude Code with a free tool called ccusage. By their count it would have cost over $15,000 at API prices. On the Max plan they paid about $800.',
+    lesson:
+      'Over 90% of their tokens were Claude rereading earlier work. Same pattern as my receipt.',
+    source: 'ksred.com, Claude Code Pricing Guide',
+    url: 'https://www.ksred.com/claude-code-pricing-guide-which-plan-actually-saves-you-money/',
+  },
+  {
+    amount: 'Tens of thousands',
+    kind: 'At API prices',
+    who: 'One subscriber, in an Anthropic announcement',
+    what: 'In July 2025 Anthropic said one person had used tens of thousands of dollars of Claude on a $200 plan, mostly by running Claude Code around the clock.',
+    lesson:
+      "That's part of why plans now have weekly limits. Plans can be generous because most of us aren't running agents 24/7.",
+    source: 'Anthropic on X, July 28, 2025',
+    url: 'https://x.com/AnthropicAI/status/1949898511287226425',
+  },
+  {
+    amount: '$1,800 in 2 days',
+    kind: 'Bill',
+    who: 'A Max subscriber on GitHub',
+    what: 'Scheduled scripts were running Claude in a loop. A leftover API key in their setup sent the charges to a pay-per-use account instead of their plan.',
+    lesson:
+      'Know which account is paying. Typing /status in Claude Code shows it. An old API key can quietly switch the bill.',
+    source: 'GitHub issue #37686, March 2026',
+    url: 'https://github.com/anthropics/claude-code/issues/37686',
+  },
+  {
+    amount: '$8,000 a month',
+    kind: 'Bill',
+    who: 'Jason Lemkin, founder of SaaStr',
+    what: "Lemkin wrote that they expected to spend about $8,000 in one month building an app with Replit's AI agent, which charges per use.",
+    lesson:
+      'Their view was that it was still far cheaper than paying a team to build it. Paying per use can be the right call when the work is worth it.',
+    source: "SaaStr, Why I'll Likely Spend $8,000 on Replit This Month Alone",
+    url: 'https://www.saastr.com/why-ill-likely-spend-8000-on-replit-this-month-alone-and-why-thats-ok/',
+  },
+];

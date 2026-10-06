@@ -2529,3 +2529,119 @@
 .gd-calc-week[data-over='true'] {
   background: var(--sd-warn-soft);
 }
+
+/* Level 4: other people's bills, as a row of stubs. */
+.gd-bills {
+  display: grid;
+  gap: 0.9rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.25rem);
+}
+@media (min-width: 640px) {
+  .gd-bills {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (min-width: 1040px) {
+  .gd-bills {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.gd-bill {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.15rem 1.2rem 1.1rem;
+  border-radius: var(--radius-xl);
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  border-top: 4px solid var(--gd-api);
+  min-width: 0;
+}
+.gd-bill-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sd-text-secondary);
+}
+.gd-bill-kind {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--gd-api-soft);
+  color: var(--gd-api-ink);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.gd-bill-amount {
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  line-height: 1.05;
+  color: var(--gd-api-ink);
+}
+.gd-bill-what {
+  font-size: 0.97rem;
+  line-height: 1.55;
+  color: var(--sd-text-primary);
+}
+.gd-bill-lesson {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  background: var(--gd-plan-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sd-text-primary);
+}
+.gd-bill-lesson span {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gd-plan-ink);
+}
+.gd-bill-src {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sd-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.gd-habits {
+  display: grid;
+  gap: 0.7rem;
+}
+.gd-habits li {
+  position: relative;
+  padding-left: 1.4rem;
+  max-width: 62ch;
+}
+.gd-habits li::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 0.62em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 2px;
+  rotate: 45deg;
+  background: var(--gd-plan);
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  @supports (animation-timeline: view()) {
+    .gd-bill {
+      animation: gd-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 20%;
+    }
+  }
+}
