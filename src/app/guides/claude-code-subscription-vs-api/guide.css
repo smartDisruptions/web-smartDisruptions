@@ -2343,3 +2343,60 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ── Touch screens: the light build ────────────────────────────────────────
+   Profiling in Chromium shows 60fps even at 4x CPU slowdown, but phones
+   (WebKit above all) pay more for three things this page used freely:
+   scroll-linked animations that can run on the main thread, blurred
+   shadows repainted on the CPU, and the SVG-filter grain under the whole
+   page. On a touch screen the page drops all three. Every resting state was
+   already the final state, so nothing here changes what a reader sees,
+   only what the phone has to compute while it scrolls. */
+@media (hover: none) and (pointer: coarse) {
+  body:has(.gd-page) {
+    background-image: radial-gradient(
+      1200px 620px at 78% -180px,
+      var(--sd-glow),
+      transparent 70%
+    );
+  }
+  .gd-progress {
+    display: none !important;
+  }
+  .gd-way,
+  .gd-quote,
+  .gd-fine li,
+  .gd-flow,
+  .gd-calc,
+  .gd-try,
+  .gd-level-badge,
+  .gd-finish-banner,
+  .gd-page .sd-reveal {
+    animation: none !important;
+  }
+  .gd-page .sd-sheet,
+  .gd-way,
+  .gd-quote,
+  .gd-lane,
+  .gd-task,
+  .gd-meter,
+  .gd-word-front,
+  .gd-flow,
+  .gd-sort-card,
+  .gd-calc,
+  .gd-try,
+  .gd-aside,
+  .gd-ticket,
+  .gd-odo {
+    box-shadow: 0 1px 2px var(--sd-border);
+  }
+  /* Opacity only: a scale change makes WebKit re-raster each card's text. */
+  .gd-task,
+  .gd-task[data-state='now'],
+  .gd-task[data-state='done'] {
+    scale: none;
+    transition:
+      opacity 0.35s ease,
+      border-color 0.35s ease;
+  }
+}
