@@ -2,18 +2,11 @@ import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 import Kiru, { type KiruPose } from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
-import { getPublishedPosts } from '@/lib/posts';
+import { getFieldNotes } from '@/lib/fieldNotes';
 import { marketStormReports } from '@/data/marketStorm';
 import { apps, GAME_SLUGS } from '@/data/apps';
 import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
 import { IconArrowRight } from '@/components/icons';
-
-/**
- * Writing lists one guide among its field notes (the Claude Code plan guide,
- * /guides/claude-code-subscription-vs-api), so its note count is the
- * published posts plus that one.
- */
-const GUIDES_IN_WRITING = 1;
 
 /**
  * The Learn room's fireflies: where each one hovers and its own rhythm, so
@@ -41,7 +34,9 @@ export default function DojoMap() {
         !(a.slug in PROJECT_APP_SLUGS) &&
         !(GAME_SLUGS as readonly string[]).includes(a.slug)
     ).length;
-  const notes = getPublishedPosts().length + GUIDES_IN_WRITING;
+  // The same list /content pages through (posts plus the pinned guide), so
+  // this count and the Writing page's can never disagree.
+  const notes = getFieldNotes().length;
   const rooms: {
     href: string;
     title: string;
