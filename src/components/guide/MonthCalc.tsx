@@ -59,7 +59,7 @@ export default function MonthCalc({
             id={nId}
             type="range"
             min={0}
-            max={30}
+            max={30 - big}
             step={1}
             value={normal}
             onChange={(e) => setNormal(Number(e.target.value))}
@@ -79,7 +79,7 @@ export default function MonthCalc({
             id={bId}
             type="range"
             min={0}
-            max={8}
+            max={Math.min(8, 30 - normal)}
             step={1}
             value={big}
             onChange={(e) => setBig(Number(e.target.value))}
@@ -117,8 +117,8 @@ export default function MonthCalc({
 
       <p className="gd-calc-week" data-over={weekShare > 100}>
         {weekShare > 100
-          ? `On my $200 Max plan, that would be more than the plan allows each week (about ${weekShare}% of the weekly limit). I'd have to wait for it to reset.`
-          : `On my $200 Max plan, that much building would use about ${weekShare}% of what the plan allows in a week.`}
+          ? `Spread over the month, that's about ${money(api / WEEKS_PER_MONTH)} of building a week. On my $200 Max plan, that's more than the weekly limit (about ${weekShare}%), so I'd have to wait for it to reset.`
+          : `Spread over the month, that's about ${money(api / WEEKS_PER_MONTH)} of building a week. On my $200 Max plan, that's about ${weekShare}% of the weekly limit.`}
       </p>
     </div>
   );

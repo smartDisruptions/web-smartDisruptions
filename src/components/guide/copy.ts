@@ -4,10 +4,10 @@
 // jargon. Prices are Anthropic's posted prices as of October 2026.
 
 export const TITLE =
-  'Claude Code subscription vs API credits: most games never need the API';
+  'Claude Code: monthly plan or pay per use? Most games only need the plan';
 
 export const EXCERPT =
-  'A plain-language guide to paying for Claude, the AI that can build games, websites and apps for you. A flat monthly plan covers the building. Paying per use only comes in if your finished app needs Claude to talk to other people.';
+  'Claude Code subscription vs API credits, in plain words. A flat monthly plan covers building your game, website or app with Claude. Paying per use only comes in if your finished app needs Claude to talk to other people.';
 
 export const PRICES = {
   pro: 20,
@@ -22,15 +22,7 @@ export const PRICES = {
 export type Word = {
   term: string;
   plain: string;
-  icon:
-    | 'code'
-    | 'door'
-    | 'chunk'
-    | 'clock'
-    | 'spark'
-    | 'stack'
-    | 'people'
-    | 'chat';
+  icon: 'code' | 'door' | 'chunk' | 'clock' | 'spark' | 'stack' | 'people';
 };
 
 // The words a reader meets on this page, in the order they meet them.
@@ -57,7 +49,7 @@ export const WORDS: Word[] = [
     term: 'Usage limit',
     icon: 'clock',
     plain:
-      'How much your plan lets you use before it resets, including a weekly limit. If you hit it, you wait for the reset or move to a bigger plan. The price never jumps on you.',
+      'Your plan has a cap on how much you can use. The cap resets on a schedule, and there is also a weekly cap. If you hit it, you wait for the reset or move to a bigger plan. The price never jumps on you.',
   },
   {
     term: 'API (paying per use)',
@@ -75,13 +67,7 @@ export const WORDS: Word[] = [
     term: 'Sonnet, Opus and Haiku',
     icon: 'stack',
     plain:
-      'Different sizes of Claude. Opus is the biggest and costs the most, Sonnet is the middle one, and Haiku is the smallest and cheapest.',
-  },
-  {
-    term: 'Session',
-    icon: 'chat',
-    plain:
-      'One conversation with Claude Code, from the first message to the last. A session can last minutes or days.',
+      'Different sizes of Claude. Opus is the biggest and costs the most, Sonnet is the middle one, and Haiku is the smallest and cheapest. A number after the name, like 5.5, is the version.',
   },
   {
     term: 'Helper agents',
@@ -105,13 +91,13 @@ export const DAY: Task[] = [
   {
     title: 'Rereading the whole conversation',
     plain:
-      "Claude doesn't remember the way you do. Before every step, it reads the whole conversation again from the start so it doesn't lose track. Mine grew to about 440,000 tokens, about four novels long, and Claude reread it thousands of times. Each reread is cheap, but thousands of them made this the biggest part of the bill.",
+      "Claude doesn't remember the way you do. Before every step, it reads the whole conversation again from the start so it doesn't lose track.\n\nMine grew to about 440,000 tokens, about four novels long, and Claude reread it thousands of times. Each reread is cheap, but thousands of them made this the biggest part of the bill.",
     cost: 327,
   },
   {
-    title: 'Saving new work to memory',
+    title: 'Saving new work so it can be reread cheaply',
     plain:
-      'Every time something new came in, like a message from me or a file Claude opened, it was saved to a short-term memory so it could be reread cheaply later. Saving costs a little more than rereading.',
+      'The conversation is kept ready so rereading it costs less. Every time something new was added, like a message from me or a file Claude opened, adding it cost a little more than rereading it.',
     cost: 91,
   },
   {
@@ -196,7 +182,7 @@ export const LEVELS: Level[] = [
 // tracker; the plan share is a reading of the plan's usage screen, which also
 // counts other work that week, so it is approximate.
 export const RECEIPT = {
-  dates: 'Oct 2–6, 2026',
+  dates: 'Oct 2 to Oct 6, 2026',
   days: 4,
   helpers: 10,
   lines: [
@@ -222,7 +208,7 @@ export const RECEIPT = {
 
 export type Bill = {
   amount: string;
-  kind: 'Real bill' | 'If paid per use' | 'Average cost';
+  kind: 'Real bill' | 'Expected bill' | 'If paid per use' | 'Average cost';
   who: string;
   what: string;
   lesson: string;
@@ -256,7 +242,7 @@ export const BILLS: Bill[] = [
     url: 'https://www.ksred.com/claude-code-pricing-guide-which-plan-actually-saves-you-money/',
   },
   {
-    amount: 'Tens of thousands',
+    amount: 'Tens of thousands of dollars',
     kind: 'If paid per use',
     who: 'One person on the $200 plan',
     what: 'In July 2025, Anthropic said one person on the $200 plan had used tens of thousands of dollars worth of Claude, mostly by leaving it running day and night.',
@@ -277,7 +263,7 @@ export const BILLS: Bill[] = [
   },
   {
     amount: '$8,000 a month',
-    kind: 'Real bill',
+    kind: 'Expected bill',
     who: 'Jason Lemkin, founder of the business community SaaStr',
     what: 'Lemkin wrote that they expected to spend about $8,000 in one month building an app with Replit, a different AI building tool that charges per use.',
     lesson:

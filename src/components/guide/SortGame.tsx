@@ -64,7 +64,7 @@ export default function SortGame({ items }: { items: SortItem[] }) {
               ? "Every one right. You've got the idea."
               : score >= items.length - 2
                 ? 'Nearly all of them. The list below has the reason behind each one.'
-                : 'This line takes a minute to see. The list below has every answer and the reason for it.'}
+                : 'The difference between the two bills takes a minute to see. The list below has every answer and the reason for it.'}
           </p>
           <button
             type="button"

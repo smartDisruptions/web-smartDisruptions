@@ -36,7 +36,7 @@ const SCENES: Record<
     hot: 2,
     bill: 'Who pays: you, a little for every reply',
     caption:
-      'Here the game asks Claude for something new while people play. Every time a player starts that conversation, the meter ticks. A thousand players means a thousand trips.',
+      'Here the game asks Claude for something new while people play. Every reply the character gives is one paid trip, so a thousand players chatting means thousands of trips.',
   },
 };
 

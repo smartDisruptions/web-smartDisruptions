@@ -135,7 +135,11 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
               {String(i + 1).padStart(2, '0')}
             </span>
             <h3 className="gd-task-title">{t.title}</h3>
-            <p className="gd-task-plain font-read">{t.plain}</p>
+            {t.plain.split('\n\n').map((para) => (
+              <p key={para} className="gd-task-plain font-read">
+                {para}
+              </p>
+            ))}
             <p className="gd-task-chips">
               <span className="gd-chip gd-chip-api">
                 about {money(t.cost)} if paid per use

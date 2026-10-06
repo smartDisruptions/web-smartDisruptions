@@ -41,7 +41,7 @@ import './guide.css';
 
 const SLUG = 'claude-code-subscription-vs-api';
 const PATH = `/guides/${SLUG}`;
-const PUBLISHED = '2026-10-05';
+const PUBLISHED = '2026-10-06';
 
 export const metadata: Metadata = {
   title: `${TITLE} — SmartDisruptions`,
@@ -110,11 +110,13 @@ export default function GuidePage() {
         <Kanji char="岐" className="sd-watermark gd-hero-mark" />
         <div className="gd-wrap gd-hero-grid">
           <div className="gd-hero-copy">
-            <p className="sd-kicker">Field guide · Paying for AI</p>
+            <p className="sd-kicker">
+              Field guide · Claude Code subscription vs API credits
+            </p>
             <h1 className="font-display gd-title">
-              Claude Code subscription vs API credits:{' '}
+              Claude Code: monthly plan or pay per use?{' '}
               <span className="gd-title-turn">
-                most games never need the API
+                Most games only need the plan
               </span>
             </h1>
             <p className="gd-dek font-read">
@@ -126,7 +128,7 @@ export default function GuidePage() {
             <p className="gd-byline">
               <span>Josh Escusa</span>
               <span aria-hidden>·</span>
-              <time dateTime={PUBLISHED}>October 5, 2026</time>
+              <time dateTime={PUBLISHED}>October 6, 2026</time>
               <span aria-hidden>·</span>
               <span>10-minute read, plus a mini-game</span>
             </p>
@@ -143,7 +145,7 @@ export default function GuidePage() {
                   <b>{usd(PRICES.maxLow)}</b> Max
                 </span>
                 <span>
-                  <b>{usd(PRICES.maxHigh)}</b> Max
+                  <b>{usd(PRICES.maxHigh)}</b> Max+
                 </span>
               </span>
               <span className="gd-ticket-foot">Claude Code included</span>
@@ -229,7 +231,7 @@ export default function GuidePage() {
                   <span className="gd-map-node" aria-hidden>
                     0
                   </span>
-                  <span className="gd-map-label">Words to know</span>
+                  <span className="gd-map-label">Words you&rsquo;ll see</span>
                 </a>
               </li>
               {LEVELS.map((l) => (
@@ -282,13 +284,14 @@ export default function GuidePage() {
 
         {/* ── Level 1 ─────────────────────────────────────────────────── */}
         <section id="why" className="gd-level" aria-labelledby="why-h">
-          <LevelHead n={1}>Why I asked</LevelHead>
+          <LevelHead n={1}>Why I asked what this costs</LevelHead>
           <div className="gd-split">
             <div className="sd-sheet gd-sheet font-read">
               <p>
                 When I started building games with Claude, I kept seeing big
                 numbers in videos and posts, like &ldquo;$37 to finish one
-                coding test.&rdquo;
+                coding test.&rdquo; A coding test is a standard set of coding
+                tasks that companies use to compare AI models.
               </p>
               <p>
                 My first thought was: wait. Am I going to pay that every time
@@ -438,9 +441,10 @@ export default function GuidePage() {
                 <span>{RECEIPT.dates}</span>
               </figcaption>
               <p className="gd-receipt-what">
-                {RECEIPT.days} days building levels for my rhythm game. For part
-                of it, {RECEIPT.helpers} helper agents (extra copies of Claude)
-                worked at the same time. At the end, Claude reviewed my website.
+                {RECEIPT.days} days of building levels for my rhythm game. For
+                part of it, {RECEIPT.helpers} helper agents (extra copies of
+                Claude) worked at the same time. At the end, Claude reviewed my
+                website.
               </p>
               <dl className="gd-receipt-lines">
                 {RECEIPT.lines.map((l) => (
@@ -480,8 +484,9 @@ export default function GuidePage() {
                   </li>
                 </ol>
                 <p>
-                  The {RECEIPT.planShare}% is my best reading. It also counts my
-                  other work that week.
+                  I took the {RECEIPT.planShare}% from the usage meter in my
+                  Claude settings. It&rsquo;s approximate, because it also
+                  includes other work I did that week.
                 </p>
               </div>
             </figure>
@@ -492,6 +497,11 @@ export default function GuidePage() {
             <p className="gd-result-line font-read">
               Paying per use would have cost about {RECEIPT.times} times more.
               For one person building on their own, that gap is a big deal.
+            </p>
+            <p className="gd-result-line font-read">
+              To be clear about the two numbers: the work cost me nothing on top
+              of the $200 I already pay each month. The $7 is just the share of
+              that $200 it used up.
             </p>
             <p className="gd-result-line gd-result-catch font-read">
               The catch: plans have usage limits. If you use too much in a week,
@@ -511,8 +521,8 @@ export default function GuidePage() {
             </p>
             <p>
               They put their real numbers in public, and that&rsquo;s how the
-              rest of us learn. Here are five of them, and what I took from each
-              one.
+              rest of us learn. Here are five numbers people have shared, and
+              what I took from each one.
             </p>
           </div>
 
@@ -547,10 +557,10 @@ export default function GuidePage() {
             <div className="sd-sheet gd-sheet font-read">
               <h3 className="gd-h4">Same causes, different bill</h3>
               <p>
-                Their stories and my receipt have the same causes. Most of the
-                cost is Claude rereading a long conversation. The rest comes
-                from helper agents, from leaving Claude running, and from using
-                the biggest version of Claude.
+                Most of these stories, and my receipt, have the same causes.
+                Most of the cost is Claude rereading a long conversation. The
+                rest comes from helper agents, from leaving Claude running, and
+                from using the biggest version of Claude.
               </p>
               <p>
                 The difference is who pays for it. When you pay per use, every
@@ -569,24 +579,25 @@ export default function GuidePage() {
               <h3 className="gd-h4">Habits I picked up from them</h3>
               <ul className="gd-habits">
                 <li>
-                  <strong>Start a new conversation for each job.</strong> The
-                  longer a conversation gets, the more Claude has to reread
-                  every step.
+                  <strong>Start a new conversation for each job.</strong>
+                  &#32;The longer a conversation gets, the more Claude has to
+                  reread every step.
                 </li>
                 <li>
-                  <strong>Use helper agents only when they really help.</strong>{' '}
-                  My one day with 10 of them cost about ${RECEIPT.bigDay}
+                  <strong>Use helper agents only when they really help.</strong>
+                  &#32; My one day with 10 of them cost about ${RECEIPT.bigDay}
                   &#32;of my ${total}.
                 </li>
                 <li>
                   <strong>
                     Don&rsquo;t leave Claude working when you&rsquo;re not
                     watching.
-                  </strong>{' '}
-                  Running it around the clock is what weekly limits are for.
+                  </strong>
+                  &#32; Running it around the clock is what weekly limits are
+                  for.
                 </li>
                 <li>
-                  <strong>Check which account is paying.</strong> In Claude
+                  <strong>Check which account is paying.</strong>&#32;In Claude
                   Code, type /status and press Enter. It shows whether
                   you&rsquo;re on your plan.
                 </li>
@@ -653,8 +664,8 @@ export default function GuidePage() {
             </div>
           </div>
           <p className="gd-cases-note font-read">
-            Almost every game in <Link href="/games">my arcade</Link> is in the
-            first column.
+            Almost every game I&rsquo;ve built is in the &ldquo;Works on its
+            own&rdquo; list.
           </p>
 
           <div className="gd-split gd-split-even">
@@ -681,8 +692,9 @@ export default function GuidePage() {
               </p>
               <p>
                 In plain words: don&rsquo;t let other people use Claude through
-                your personal plan. Building something you sell, or a website
-                for a client, on your plan is fine.
+                your personal plan, including the free version. Building
+                something you sell, or a website for a client, on your plan is
+                fine.
               </p>
               <p className="gd-sheet-small">
                 I read Anthropic&rsquo;s rules in October 2026. This isn&rsquo;t
@@ -714,8 +726,9 @@ export default function GuidePage() {
           <LevelHead n={6}>Your turn: sort these</LevelHead>
           <p className="gd-lede font-read">
             Here are eight situations. For each one, pick who pays: your monthly
-            plan, or paying per use (the API). There&rsquo;s no score that
-            counts. We&rsquo;re learning this together.
+            plan, or paying per use (the API). You&rsquo;ll see a score at the
+            end, but it&rsquo;s only for you. We&rsquo;re learning this
+            together.
           </p>
 
           <SortGame items={SORT} />
@@ -749,7 +762,8 @@ export default function GuidePage() {
           <div className="gd-lede font-read">
             <p>
               Now try my real numbers on a month of your own. Move the two
-              sliders to pick how many days you&rsquo;d build.
+              sliders to pick how many days you&rsquo;d build. Together they go
+              up to 30 days, one month.
             </p>
             <p>
               The calculator shows what that month would cost if you paid per
@@ -777,13 +791,13 @@ export default function GuidePage() {
             </p>
             <ul>
               <li>
-                <strong>A big day costs about ${RECEIPT.bigDay}.</strong> On
+                <strong>A big day costs about ${RECEIPT.bigDay}.</strong>&#32;On
                 October 3, 10 helper agents built levels at the same time. That
                 one day came to about ${RECEIPT.bigDay} if paid per use.
               </li>
               <li>
-                <strong>A normal day costs about ${RECEIPT.normalDay}.</strong>{' '}
-                The other 3 days shared the rest: ${total} minus $
+                <strong>A normal day costs about ${RECEIPT.normalDay}.</strong>
+                &#32; The other 3 days shared the rest: ${total} minus $
                 {RECEIPT.bigDay} is ${total - RECEIPT.bigDay}, and $
                 {total - RECEIPT.bigDay} split over 3 days is about $
                 {RECEIPT.normalDay} a day.
@@ -792,10 +806,12 @@ export default function GuidePage() {
                 <strong>
                   My plan&rsquo;s weekly limit is worth about $
                   {RECEIPT.weekAllowance.toLocaleString('en-US')}.
-                </strong>{' '}
-                Those 4 days used about {RECEIPT.planShare}% of my weekly limit.
-                If {RECEIPT.planShare}% is ${total}, then 100% is about $
-                {RECEIPT.weekAllowance.toLocaleString('en-US')}.
+                </strong>
+                &#32; Those 4 days used about {RECEIPT.planShare}% of my weekly
+                limit. If {RECEIPT.planShare}% is ${total}, then 100% is about $
+                {RECEIPT.weekAllowance.toLocaleString('en-US')}. Because the 15%
+                also counts my other work that week, the real weekly limit is
+                probably a little higher.
               </li>
             </ul>
             <p>
@@ -842,7 +858,7 @@ export default function GuidePage() {
             <li>
               <h3>Prices change</h3>
               <p className="font-read">
-                Every price here is what Anthropic listed on October 5, 2026.
+                Every price here is what Anthropic listed on October 6, 2026.
                 When they change, I&rsquo;ll update this page.
               </p>
             </li>
