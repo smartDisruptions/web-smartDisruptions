@@ -7,8 +7,9 @@ import { useEffect } from 'react';
  * otherwise each need their own listener:
  *
  *  1. Liveness — every <Kiru> idles only while on screen. An
- *     IntersectionObserver sets `data-live` and pauses his SMIL tails when he
- *     scrolls away, so a page full of ninjas costs nothing per frame.
+ *     IntersectionObserver sets `data-live`, which is what his CSS loops (the
+ *     headband's included) run on, so a page full of ninjas costs nothing per
+ *     frame.
  *  2. Gaze — visible ninjas look at the pointer (or the last touch). One
  *     rAF-throttled listener writes --lx/--ly on each; CSS moves the pupils.
  *  3. Tilt — `.sd-tilt` cards lean toward a fine pointer, via --rx/--ry.
@@ -36,7 +37,6 @@ export default function SiteFX() {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const visible = new Set<SVGSVGElement>();
-    const begun = new WeakSet<SVGSVGElement>();
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -44,15 +44,9 @@ export default function SiteFX() {
           const svg = e.target as SVGSVGElement;
           if (e.isIntersecting && !reduce.matches && svg.dataset.kiru !== 'still') {
             svg.setAttribute('data-live', '');
-            if (!begun.has(svg)) {
-              begun.add(svg);
-              svg.querySelectorAll<SVGAnimationElement>('animate').forEach((a) => a.beginElement?.());
-            }
-            svg.unpauseAnimations?.();
             visible.add(svg);
           } else {
             svg.removeAttribute('data-live');
-            svg.pauseAnimations?.();
             visible.delete(svg);
           }
         }
@@ -65,7 +59,6 @@ export default function SiteFX() {
       document.querySelectorAll<SVGSVGElement>('svg[data-kiru]').forEach((svg) => {
         if (seen.has(svg)) return;
         seen.add(svg);
-        svg.pauseAnimations?.();
         io.observe(svg);
       });
     };
