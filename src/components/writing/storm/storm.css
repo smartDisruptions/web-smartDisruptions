@@ -1,0 +1,1147 @@
+/*
+  THE STORM ROOM — Market Storm on the Writing page. Every class is wms-.
+
+  The paper page tears open onto a night storm: StormSky's WebGL sky behind,
+  嵐 brushing itself in, Kiru under his wagasa, the lead report's finding
+  drawn as two bars, the archive on a paper ticker tape. An object region —
+  the same night in both themes; only the torn paper follows the theme,
+  because it IS the page.
+
+  Motion is transform, translate and opacity, on the compositor. Each loop runs only while its own part is on screen
+  (`data-on`, set by the tape button's island; `scripting: none` runs them
+  without it), holds still while the page scrolls (`data-hold`), and stops
+  under reduced motion. One-shot reveals are armed by that island only for
+  what is still below the fold, so without a script everything is finished.
+
+  This page does not load src/app/market-storm/market-storm.css, so the few
+  StormSky rules it needs are restated here, scoped to .wms — they win over
+  that file if a visit to /market-storm left it on the page.
+*/
+
+/* ── The section: a tear in the page ───────────────────────────────────── */
+.wms {
+  /* The page's own paper, captured here BEFORE the room re-declares the
+     tokens for night: the torn edges are the page, in whichever light. */
+  --wms-page: var(--sd-bg);
+  --wms-page-noise: var(--sd-noise);
+  --wms-fiber: #fffaf0;
+  --wms-shade: rgba(4, 6, 18, 0.5);
+  --wms-tear-h: 56px;
+  --wms-tear-w: 747px;
+
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  /* Full-bleed from any column it is mounted in: centred on its parent, as
+     wide as the viewport. html and body clip the overhang (globals.css). */
+  margin-inline: calc(50% - 50vw);
+  scroll-margin-top: 4rem;
+  /* Deliberately NOT content-visibility: auto. Measured on a phone at 4×
+     CPU: skipping the room until it nears the screen moved its first style,
+     layout and paint (~280ms throttled) into a single frame mid-scroll — a
+     visible hitch. Rendered with the page it costs about a quarter of that,
+     at load, where nobody is scrolling. */
+}
+:root[data-theme='dark'] .wms {
+  /* By night the page is lacquer, and its torn rim catches the moon. */
+  --wms-fiber: rgba(155, 176, 255, 0.26);
+  --wms-shade: rgba(0, 0, 0, 0.6);
+}
+@media (min-width: 64rem) {
+  .wms {
+    --wms-tear-h: 72px;
+    --wms-tear-w: 960px;
+  }
+}
+
+/* ── The room: night tokens, the same in both lights ──────────────────────
+   Values mirror globals.css [data-theme=dark], as .ms-night does on the
+   Market Storm pages, so shared parts (Button, Kiru, the tone classes) stay
+   on-token and AA without knowing they are in a room. */
+.wms-room {
+  color-scheme: dark;
+  --sd-bg: #090b16;
+  --sd-bg-2: #0e1122;
+  --sd-surface: #11152a;
+  --sd-surface-elevated: #1a1f3a;
+  --sd-fill: rgba(236, 238, 250, 0.07);
+  --sd-accent: #9bb0ff;
+  --sd-accent-hover: #c3d0ff;
+  --sd-accent-secondary: #ff8166;
+  --sd-text-primary: #eceefa;
+  --sd-text-secondary: #a6abc8;
+  --sd-border: rgba(236, 238, 250, 0.12);
+  --sd-border-strong: rgba(236, 238, 250, 0.24);
+  --sd-pen: #ff5b3d;
+  --sd-pen-ink: #ff8166;
+  --sd-gold: #ffcf70;
+  --sd-gold-ink: #ffcf70;
+  --sd-hl: rgba(255, 196, 64, 0.2);
+  --sd-card-shadow: rgba(0, 0, 0, 0.75);
+  --sd-bull: #4ade80;
+  --sd-bull-soft: rgba(74, 222, 128, 0.14);
+  --sd-bear: #f87171;
+  --sd-bear-soft: rgba(248, 113, 113, 0.14);
+  --sd-warn: #f2b483;
+  --sd-warn-soft: rgba(242, 180, 131, 0.14);
+  --sd-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.92 0 0 0 0 1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+
+  position: relative;
+  color: var(--sd-text-primary);
+  /* Under the sky: where its canvas dissolves at the foot of the band. */
+  background: linear-gradient(to bottom, #11163b, #0c1029 55%, #0d1130);
+  padding: calc(var(--wms-tear-h) + 3.75rem) 0 calc(var(--wms-tear-h) + 2.5rem);
+}
+@media (min-width: 64rem) {
+  .wms-room {
+    padding: calc(var(--wms-tear-h) + 3.5rem) 0 calc(var(--wms-tear-h) + 2.5rem);
+  }
+}
+
+/* ── The sky (StormSky's own box, restated for this page) ─────────────── */
+.wms .ms-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  --ms-fade: 110px;
+}
+.wms .ms-sky::before,
+.wms .ms-sky::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+/* First paint, and the whole sky wherever WebGL is missing or software-
+   rendered: the same storm as a painting. Cloud banks heaviest at the top,
+   a moon behind them to the right, a still slant of rain. */
+.wms .ms-sky::before {
+  background:
+    radial-gradient(
+      8% 11% at 81% 15%,
+      rgba(255, 243, 214, 0.2),
+      transparent 70%
+    ),
+    radial-gradient(
+      34% 30% at 81% 12%,
+      rgba(155, 176, 255, 0.16),
+      transparent 70%
+    ),
+    radial-gradient(70% 34% at 18% 3%, rgba(44, 54, 112, 0.9), transparent 70%),
+    radial-gradient(55% 26% at 62% 9%, rgba(36, 45, 98, 0.75), transparent 72%),
+    radial-gradient(48% 22% at 96% 30%, rgba(30, 38, 84, 0.6), transparent 72%),
+    radial-gradient(60% 30% at 8% 52%, rgba(26, 33, 74, 0.55), transparent 72%),
+    repeating-linear-gradient(
+      104deg,
+      transparent 0 15px,
+      rgba(170, 190, 255, 0.05) 15px 16px
+    ),
+    linear-gradient(to bottom, #151c48, #0e1331 52%, #0c1029);
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+.wms .ms-sky::after {
+  z-index: 1;
+  background: var(--sd-noise);
+  background-size: 180px 180px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - var(--ms-fade)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - var(--ms-fade)),
+    transparent
+  );
+}
+.wms .ms-sky[data-state='live']::before {
+  opacity: 0;
+}
+.wms .ms-sky-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.wms .ms-sky[data-state='live'] .ms-sky-canvas {
+  opacity: 1;
+}
+
+/* ── 嵐, brushed in on arrival, lit by every strike ───────────────────────── */
+.wms-kanji {
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--wms-tear-h) + 0.5rem);
+  right: -3.5rem;
+  width: 17rem;
+  aspect-ratio: 1;
+  pointer-events: none;
+  color: #c3d0ff;
+  opacity: 0.1;
+  transition: opacity 1.4s ease;
+}
+.wms-kanji-glyph {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.wms-room[data-flash] .wms-kanji {
+  opacity: 0.3;
+  transition-duration: 0.06s;
+}
+/* On a wide screen the whole character stands behind Kiru, clear of the
+   panel below — cropped, a brush kanji reads as blocks. */
+@media (min-width: 64rem) {
+  .wms-kanji {
+    top: calc(var(--wms-tear-h) + 0.5rem);
+    right: max(0.5rem, calc(50% - 36.75rem));
+    width: 24rem;
+  }
+}
+
+/* <Kanji draw> inks itself on page load, long before anyone scrolls this
+   far. Here it rests drawn, and the island replays the brush once 嵐 is on
+   screen and the page has stopped scrolling (data-ink: wait → go) — the
+   brush repaints every frame, so it waits for a still page. Reduced motion
+   never draws it at all. */
+@media (prefers-reduced-motion: no-preference) {
+  .wms .kanji-draw path {
+    animation: none;
+    stroke-dashoffset: 0;
+    stroke-width: 0;
+    fill-opacity: 1;
+  }
+  .wms[data-ink] .kanji-draw path {
+    stroke-dashoffset: 1;
+    stroke-width: 7;
+    fill-opacity: 0;
+  }
+  .wms[data-ink='go'] .kanji-draw path {
+    animation:
+      kanji-ink 1.9s cubic-bezier(0.6, 0.05, 0.3, 1) 0.2s both,
+      kanji-fill 0.9s ease 1.35s both;
+  }
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+.wms-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 40rem) {
+  .wms-inner {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* ── Header: the room's name, and Kiru in the rain ──────────────────────── */
+.wms-head {
+  position: relative;
+}
+.wms-head-text {
+  position: relative;
+  max-width: 44rem;
+}
+/* The words get a clearing in the storm: the night thickening behind them,
+   a gradient — no blur, no filter — so the lede holds AA mid-flash. */
+.wms-head-text::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -4rem -5rem;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    rgba(9, 11, 22, 0.66),
+    rgba(9, 11, 22, 0.54) 48%,
+    rgba(9, 11, 22, 0.24) 76%,
+    transparent
+  );
+}
+/* The name lights up with every strike: a white-hot copy of it (drawn from
+   data-text, empty alt text, so it is read once) fades in over it while the
+   sky is lit. Opacity only; its glow is painted once. */
+.wms .wms-title::before {
+  content: attr(data-text) / '';
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  color: #fff;
+  text-shadow:
+    0 0 1.1rem rgba(195, 208, 255, 0.85),
+    0 0 2.6rem rgba(155, 176, 255, 0.55);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.3s ease;
+}
+.wms-room[data-flash] .wms-title::before {
+  opacity: 0.6;
+  transition-duration: 0.06s;
+}
+.wms .wms-title::after {
+  width: 7rem;
+  height: 0.65rem;
+  margin-top: 0.85rem;
+}
+.wms .wms-kicker {
+  color: #c3c8e6;
+  padding-right: 7rem;
+}
+.wms .wms-title {
+  position: relative;
+  margin-top: 0.85rem;
+  padding-right: 6.5rem;
+  font-size: 3.05rem;
+  line-height: 0.98;
+  letter-spacing: -0.012em;
+  color: #f3f4ff;
+}
+.wms-lede {
+  margin-top: 1.15rem;
+  max-width: 40rem;
+  font-size: 1.04rem;
+  line-height: 1.72;
+  color: #c3c8e6;
+}
+@media (min-width: 40rem) {
+  .wms .wms-title {
+    font-size: 4rem;
+  }
+  .wms-lede {
+    font-size: 1.125rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wms .wms-kicker,
+  .wms .wms-title {
+    padding-right: 0;
+  }
+  .wms .wms-title {
+    font-size: 5.25rem;
+  }
+}
+
+/* Kiru: beside the name on a phone, standing in the storm on a wide screen,
+   a puddle at his feet that rings with rain while it is on screen. */
+.wms-kiru {
+  position: absolute;
+  z-index: 2;
+  top: -0.6rem;
+  right: -0.25rem;
+  width: 6.4rem;
+  pointer-events: none;
+}
+.wms-kiru > .kiru {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@media (min-width: 40rem) {
+  .wms-kiru {
+    width: 8.5rem;
+    right: 0.5rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wms-kiru {
+    top: auto;
+    bottom: -0.5rem;
+    right: 4.5rem;
+    width: 13.5rem;
+  }
+}
+.wms-puddle {
+  position: absolute;
+  left: 2%;
+  right: -6%;
+  bottom: -5%;
+  height: 16%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(155, 176, 255, 0.2),
+    rgba(155, 176, 255, 0.09) 70%,
+    transparent
+  );
+}
+.wms-ripple {
+  position: absolute;
+  width: var(--w);
+  aspect-ratio: 4.5;
+  left: var(--x);
+  top: var(--y);
+  border: 1.5px solid rgba(166, 171, 200, 0.7);
+  border-radius: 50%;
+  opacity: 0.35;
+  scale: 0.7;
+}
+
+/* ── The lead report ────────────────────────────────────────────────────── */
+/* One grid, two shapes. A phone reads it in source order — the claim, the
+   evidence, then the way in; a wide screen puts the evidence in its own
+   column and pins the button to the foot of the words. */
+.wms-lead {
+  position: relative;
+  margin-top: 2.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'kicker'
+    'title'
+    'excerpt'
+    'finding'
+    'method'
+    'cta';
+  padding: 1.6rem 1.25rem 1.6rem;
+  border: 1px solid rgba(155, 176, 255, 0.2);
+  border-radius: var(--radius-2xl);
+  /* Lacquer, nearly opaque: whatever the sky does behind it — a strike
+     included — every line on it stays well past AA. */
+  background:
+    radial-gradient(
+      90% 70% at 100% 0%,
+      rgba(43, 58, 150, 0.32),
+      transparent 65%
+    ),
+    linear-gradient(
+      165deg,
+      rgba(20, 25, 58, 0.95),
+      rgba(11, 14, 32, 0.96) 55%,
+      rgba(8, 10, 20, 0.97)
+    );
+}
+/* A rim of lightning along the top edge, only while the sky is lit. */
+.wms-lead::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border-top: 1.5px solid rgba(214, 224, 255, 0.85);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.wms-room[data-flash] .wms-lead::before {
+  opacity: 1;
+  transition-duration: 0.06s;
+}
+@media (min-width: 40rem) {
+  .wms-lead {
+    padding: 2rem 2rem 1.9rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wms-lead {
+    margin-top: 2.5rem;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas:
+      'kicker finding'
+      'title finding'
+      'excerpt finding'
+      'method finding'
+      'cta finding';
+    column-gap: 3.25rem;
+    padding: 2.6rem 2.75rem 2.5rem;
+  }
+}
+.wms-seal {
+  position: absolute;
+  z-index: 3;
+  top: -1rem;
+  right: 1.25rem;
+  width: 2.6rem;
+  rotate: 7deg;
+}
+.wms-lead-kicker {
+  grid-area: kicker;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.wms .wms-lead-title {
+  grid-area: title;
+  margin-top: 0.8rem;
+  font-size: 1.62rem;
+  line-height: 1.1;
+  color: var(--sd-text-primary);
+}
+.wms-lead-title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.wms-lead-title a:hover {
+  color: var(--sd-accent-hover);
+}
+@media (min-width: 64rem) {
+  .wms .wms-lead-title {
+    font-size: 2.3rem;
+  }
+}
+.wms-excerpt {
+  grid-area: excerpt;
+  margin-top: 1rem;
+  max-width: 60ch;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--sd-text-secondary);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+@media (min-width: 64rem) {
+  .wms-excerpt {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+}
+
+/* A row of facts with a dot between each; the dot belongs to the item after
+   it, so a wrapped line never starts with one (the wr-meta pattern). */
+.wms-method {
+  grid-area: method;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.05em;
+  row-gap: 0.15rem;
+  overflow: hidden;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--sd-text-secondary);
+}
+.wms-method > li {
+  position: relative;
+}
+.wms-method > li + li::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -0.525em;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: var(--sd-pen);
+}
+.wms-cta-row {
+  grid-area: cta;
+  margin-top: 1.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+@media (min-width: 64rem) {
+  .wms-cta-row {
+    align-self: end;
+    margin-top: 1.75rem;
+  }
+}
+.wms-advice {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sd-text-secondary);
+}
+
+/* ── The finding ────────────────────────────────────────────────────────── */
+.wms-finding {
+  grid-area: finding;
+  min-width: 0;
+  margin-top: 1.9rem;
+}
+@media (min-width: 64rem) {
+  .wms-finding {
+    margin-top: 0.25rem;
+  }
+}
+.wms-stat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.35rem 1rem;
+}
+.wms .wms-stat-num {
+  font-size: 5.4rem;
+  line-height: 0.8;
+  letter-spacing: -0.035em;
+}
+.wms-stat-text {
+  /* Beside the figure when the column has room for both, under it when not. */
+  flex: 1 1 11.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 15rem;
+  padding-bottom: 0.15rem;
+}
+.wms-stat-label {
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.3;
+  color: var(--sd-text-primary);
+}
+.wms-stat-delta {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.wms-glyph {
+  display: inline-block;
+  margin-right: 0.3em;
+  font-size: 0.68em;
+  line-height: 1;
+  translate: 0 -0.1em;
+}
+@media (min-width: 64rem) {
+  .wms .wms-stat-num {
+    font-size: 6.4rem;
+  }
+}
+
+/* The bars: one scale, profit is the whole of it. */
+.wms-bars {
+  margin-top: 1.6rem;
+  display: grid;
+  gap: 1.05rem;
+}
+.wms-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.wms-bar-num {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-primary);
+}
+.wms-bar-num-cash {
+  color: var(--sd-bear);
+}
+.wms-track {
+  position: relative;
+  height: 0.95rem;
+  margin-top: 0.5rem;
+}
+.wms-bar,
+.wms-ghost {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+}
+.wms-bar {
+  transform-origin: 0 50%;
+}
+.wms-bar-profit {
+  background: linear-gradient(90deg, #c9d0f2, #eceefa);
+}
+.wms-bar-cash {
+  background: var(--sd-bear);
+  transform: scaleX(var(--share));
+}
+/* Where the cash stood three months earlier: a dashed outline the bar has
+   fallen out of. */
+.wms-ghost {
+  right: auto;
+  width: calc(var(--before) * 100%);
+  border: 1.5px dashed rgba(236, 238, 250, 0.42);
+}
+.wms-then {
+  margin-top: 0.4rem;
+  padding-right: calc((1 - var(--before)) * 100%);
+  text-align: right;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--sd-text-secondary);
+}
+
+/* The next two figures: the price-strip pattern, one ground, 1px rules. */
+.wms-figs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 1.6rem 0 0;
+  overflow: hidden;
+  border: 1px solid var(--sd-border);
+  border-radius: 12px;
+  background: var(--sd-border);
+}
+.wms-figs > div {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.85rem 0.8rem;
+  background: #10142b;
+}
+.wms-fig-label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.wms-fig-value {
+  margin: auto 0 0;
+  padding-top: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.wms-fig-delta {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--sd-text-secondary);
+}
+
+/* ── The archive ────────────────────────────────────────────────────────── */
+/* Title, pause, browse on one line over the tape on a wide screen; on a
+   phone the browse button drops under the tape, where the thumb is. */
+.wms-archive {
+  margin-top: 2.75rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'title toggle'
+    'tape tape'
+    'browse browse';
+  align-items: center;
+  column-gap: 0.75rem;
+}
+.wms .wms-archive-title {
+  grid-area: title;
+  color: #c3c8e6;
+}
+.wms .wms-browse {
+  grid-area: browse;
+  margin-top: 1.6rem;
+  /* Near-solid: a strike can land right behind it. */
+  background: rgba(17, 21, 42, 0.9);
+}
+@media (min-width: 40rem) {
+  .wms-archive {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'title toggle browse'
+      'tape tape tape';
+  }
+  .wms .wms-browse {
+    margin-top: 0;
+  }
+}
+.wms-tape-btn {
+  grid-area: toggle;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border-strong);
+  background: rgba(17, 21, 42, 0.9);
+  color: var(--sd-text-primary);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    scale 0.2s ease;
+}
+.wms-tape-btn:hover {
+  border-color: var(--sd-text-primary);
+  background: #1a1f3a;
+}
+.wms-tape-btn:active {
+  scale: 0.94;
+}
+.wms-tape-btn svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: currentColor;
+}
+
+/* The tape: cream paper — the ofuda material, a day island in the night
+   room, so its inks are washi inks — tilted a degree into the wind and
+   running past both edges of the screen. */
+.wms-tape {
+  grid-area: tape;
+  --sd-text-primary: #1f1a14;
+  --sd-text-secondary: #5b544a;
+  --sd-accent: #2b3a96;
+  --sd-accent-hover: #1e2a75;
+  --sd-pen: #e2412a;
+  --sd-bull: #166534;
+  --sd-bear: #b91c1c;
+  --sd-warn: #92400e;
+  color-scheme: light;
+  position: relative;
+  margin: 1.2rem calc(50% - 50vw - 2rem) 0;
+  overflow: clip;
+  rotate: -1.1deg;
+  color: var(--sd-text-primary);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.09 0 0 0 0 0.17 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E")
+      0 0 / 180px 180px,
+    #f6ecd2;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 12px 22px -14px rgba(0, 0, 0, 0.75);
+}
+.wms-tape-track {
+  display: flex;
+  width: max-content;
+}
+.wms-tape-set {
+  display: flex;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wms-tick {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3.5rem;
+  padding: 0 1.45rem;
+  white-space: nowrap;
+  color: var(--sd-text-primary);
+  text-decoration: none;
+}
+/* The vermilion diamond that ends every item — so both copies are alike. */
+.wms-tick::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -3px;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  rotate: 45deg;
+  border-radius: 1px;
+  background: var(--sd-pen);
+}
+.wms-tick:focus-visible {
+  outline-offset: -5px;
+}
+.wms .wms-tick-sym {
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
+}
+.wms-tick:hover .wms-tick-sym {
+  color: var(--sd-accent);
+}
+.wms-tick-date {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--sd-text-secondary);
+}
+.wms-tick-fig {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.wms-tick-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+
+/* ── The torn page ───────────────────────────────────────────────────────── */
+.wms-tear {
+  /* One 960×72 tile, generated (seeded) so the edge is the same on every
+     build: the sheet's torn edge, its fibre rim reaching a little further,
+     and the sheet's silhouette blurred inside the SVG for the shadow —
+     rasterised once, never per frame. */
+  --wms-m-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 72' preserveAspectRatio='none'%3E%3Cpath d='M0 0H960V34.6L955 36.3L950 35.7L945 38L940 33.9L935 34.6L930 36.5L925 33.2L920 33.9L915 28.6L910 32L905 29.7L900 28.4L895 30L890 34.5L885 36.6L880 35.1L875 40.1L870 41.6L865 38.3L860 43.8L855 42.1L850 43.5L845 43.3L840 45.2L835 46.4L830 44.9L825 47.5L820 47.1L815 45.9L810 48.4L805 48.8L800 51.1L795 47.8L790 46.3L785 48.6L780 44L775 42L770 41.7L765 43.3L760 40.1L755 41.6L750 38.3L745 40L740 41.4L735 41.4L730 44.9L725 45.5L720 44.3L715 44L710 43L705 40.8L700 43.5L695 38.6L690 39.2L685 41.6L680 39.9L675 36.4L670 36.2L665 37.2L660 35.5L655 35.7L650 35.4L645 33.8L640 33.1L635 30.3L630 32.9L625 30.2L620 27L615 25.5L610 30.4L605 28.2L600 28.8L595 30.6L590 33.2L585 35.3L580 36.3L575 37.4L570 39.3L565 36.5L560 36.6L555 37.2L550 37.2L545 38.9L540 35.5L535 38.8L530 39.6L525 35.3L520 38.1L515 38.2L510 36.7L505 39.5L500 38.4L495 36L490 35.7L485 38.8L480 37.7L475 34.8L470 34.8L465 32.8L460 38.4L455 37.6L450 35.3L445 37.3L440 42L435 39.7L430 41.9L425 44.1L420 41.2L415 39.9L410 41.1L405 38.7L400 34.1L395 35.9L390 31.5L385 30.9L380 31.3L375 31.8L370 31.9L365 29.1L360 28.9L355 28.6L350 27.2L345 28.1L340 24.9L335 24.6L330 23.3L325 20.9L320 24.7L315 23L310 24.1L305 26.9L300 28.6L295 29L290 29.6L285 32L280 33.9L275 33.5L270 31L265 32.7L260 30.5L255 27.1L250 30.9L245 25.7L240 28.2L235 25.6L230 30L225 30.5L220 30.9L215 31.8L210 30.5L205 32.1L200 30.8L195 34.7L190 34.4L185 34.9L180 34.7L175 36.9L170 38.1L165 38.5L160 38.2L155 40.7L150 42L145 42.8L140 41.6L135 42L130 45.3L125 42.4L120 42.8L115 40.4L110 41.1L105 37L100 38.6L95 33.4L90 36.9L85 36.4L80 31.5L75 32.9L70 36.4L65 36.7L60 32.8L55 35.6L50 33.3L45 34.2L40 31.6L35 32.2L30 35.4L25 35.2L20 35.5L15 32.9L10 33.2L5 37.8L0 34.6Z'/%3E%3C/svg%3E");
+  --wms-m-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 72' preserveAspectRatio='none'%3E%3Cpath d='M0 0H960V40.8L955 38.9L950 39.4L945 40.2L940 36.9L935 36.7L930 42.3L925 38.2L920 39.6L915 34.2L910 36L905 32.3L900 32.4L895 35.1L890 38L885 41.2L880 39.3L875 44.1L870 46.8L865 42.6L860 47.4L855 45.8L850 47.8L845 46.7L840 47.3L835 51L830 49.8L825 52.7L820 50.8L815 48.3L810 51.4L805 54.3L800 55.9L795 52.6L790 50.3L785 52.3L780 47.2L775 46.8L770 47.5L765 45.7L760 44.8L755 46.3L750 41.4L745 42.5L740 46.8L735 44.9L730 50.8L725 50.4L720 48.3L715 49.1L710 47L705 44L700 46.1L695 44.3L690 44L685 46.5L680 44.4L675 42.1L670 38.4L665 41.9L660 39.2L655 41.1L650 38.8L645 39.8L640 38.1L635 36.1L630 34.9L625 35.3L620 29.7L615 28.2L610 34.6L605 33.1L600 34.1L595 35.4L590 38.4L585 37.5L580 39.8L575 41.4L570 42.4L565 39.7L560 40.2L555 42.8L550 42.3L545 41.4L540 40.7L535 44.8L530 42.5L525 39.5L520 43.3L515 43.3L510 42.5L505 42.3L500 40.5L495 39L490 39L485 40.8L480 41.3L475 39.6L470 38.7L465 35.1L460 41.2L455 40.2L450 37.7L445 43.5L440 44.2L435 43.6L430 46.4L425 48.1L420 43.6L415 42.2L410 43.5L405 43L400 39L395 39.4L390 34.2L385 34.2L380 36.9L375 35.1L370 36L365 35.2L360 33.2L355 31.1L350 32.1L345 33.3L340 28.1L335 27.4L330 28.6L325 24.8L320 26.9L315 28.1L310 26.2L305 30L300 33.9L295 34.7L290 33.2L285 34.8L280 36.4L275 39.6L270 35.4L265 34.8L260 35.2L255 30.3L250 34.5L245 30.7L240 31.1L235 30.8L230 32.7L225 36L220 33.4L215 35.2L210 34.1L205 37.1L200 36.3L195 38.6L190 37.1L185 36.9L180 40.8L175 41.6L170 41.8L165 43.8L160 42.4L155 45.9L150 47L145 48.9L140 45.7L135 45.6L130 50.3L125 48.3L120 47.3L115 44.7L110 46.7L105 42.6L100 42L95 37.4L90 43L85 38.6L80 34.5L75 37L70 41.7L65 40.9L60 36.9L55 38.3L50 36L45 40.2L40 35.2L35 37L30 39L25 41.2L20 39.3L15 38.5L10 38.5L5 42.3L0 40.8Z'/%3E%3C/svg%3E");
+  --wms-m-blur: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 72' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='b' x='-10%' y='-20%' width='120%' height='160%'%3E%3CfeGaussianBlur stdDeviation='5'/%3E%3C/filter%3E%3Cpath id='p' d='M0 0H960V34.6L955 36.3L950 35.7L945 38L940 33.9L935 34.6L930 36.5L925 33.2L920 33.9L915 28.6L910 32L905 29.7L900 28.4L895 30L890 34.5L885 36.6L880 35.1L875 40.1L870 41.6L865 38.3L860 43.8L855 42.1L850 43.5L845 43.3L840 45.2L835 46.4L830 44.9L825 47.5L820 47.1L815 45.9L810 48.4L805 48.8L800 51.1L795 47.8L790 46.3L785 48.6L780 44L775 42L770 41.7L765 43.3L760 40.1L755 41.6L750 38.3L745 40L740 41.4L735 41.4L730 44.9L725 45.5L720 44.3L715 44L710 43L705 40.8L700 43.5L695 38.6L690 39.2L685 41.6L680 39.9L675 36.4L670 36.2L665 37.2L660 35.5L655 35.7L650 35.4L645 33.8L640 33.1L635 30.3L630 32.9L625 30.2L620 27L615 25.5L610 30.4L605 28.2L600 28.8L595 30.6L590 33.2L585 35.3L580 36.3L575 37.4L570 39.3L565 36.5L560 36.6L555 37.2L550 37.2L545 38.9L540 35.5L535 38.8L530 39.6L525 35.3L520 38.1L515 38.2L510 36.7L505 39.5L500 38.4L495 36L490 35.7L485 38.8L480 37.7L475 34.8L470 34.8L465 32.8L460 38.4L455 37.6L450 35.3L445 37.3L440 42L435 39.7L430 41.9L425 44.1L420 41.2L415 39.9L410 41.1L405 38.7L400 34.1L395 35.9L390 31.5L385 30.9L380 31.3L375 31.8L370 31.9L365 29.1L360 28.9L355 28.6L350 27.2L345 28.1L340 24.9L335 24.6L330 23.3L325 20.9L320 24.7L315 23L310 24.1L305 26.9L300 28.6L295 29L290 29.6L285 32L280 33.9L275 33.5L270 31L265 32.7L260 30.5L255 27.1L250 30.9L245 25.7L240 28.2L235 25.6L230 30L225 30.5L220 30.9L215 31.8L210 30.5L205 32.1L200 30.8L195 34.7L190 34.4L185 34.9L180 34.7L175 36.9L170 38.1L165 38.5L160 38.2L155 40.7L150 42L145 42.8L140 41.6L135 42L130 45.3L125 42.4L120 42.8L115 40.4L110 41.1L105 37L100 38.6L95 33.4L90 36.9L85 36.4L80 31.5L75 32.9L70 36.4L65 36.7L60 32.8L55 35.6L50 33.3L45 34.2L40 31.6L35 32.2L30 35.4L25 35.2L20 35.5L15 32.9L10 33.2L5 37.8L0 34.6Z'/%3E%3C/defs%3E%3Cg filter='url(%23b)'%3E%3Cuse href='%23p' y='7'/%3E%3Cuse href='%23p' x='-960' y='7'/%3E%3Cuse href='%23p' x='960' y='7'/%3E%3C/g%3E%3C/svg%3E");
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  height: var(--wms-tear-h);
+  pointer-events: none;
+}
+.wms-tear-top {
+  top: 0;
+}
+/* The same tear, upside down and further along the roll, so the two edges
+   don't mirror each other. */
+.wms-tear-bottom {
+  bottom: 0;
+  scale: 1 -1;
+  --wms-tear-x: 41%;
+}
+.wms-tear-shade,
+.wms-tear-paper,
+.wms-tear-paper::after {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: var(--wms-tear-w) 100%;
+  mask-size: var(--wms-tear-w) 100%;
+  -webkit-mask-position: var(--wms-tear-x, 0) 0;
+  mask-position: var(--wms-tear-x, 0) 0;
+}
+.wms-tear-shade {
+  background: var(--wms-shade);
+  -webkit-mask-image: var(--wms-m-blur);
+  mask-image: var(--wms-m-blur);
+}
+/* The torn rim, then the sheet inside it (the rim's mask contains the
+   sheet's, so nesting costs nothing). */
+.wms-tear-paper {
+  background: var(--wms-fiber);
+  -webkit-mask-image: var(--wms-m-fiber);
+  mask-image: var(--wms-m-fiber);
+}
+.wms-tear-paper::after {
+  content: '';
+  background:
+    var(--wms-page-noise) 0 0 / 180px 180px,
+    var(--wms-page);
+  -webkit-mask-image: var(--wms-m-paper);
+  mask-image: var(--wms-m-paper);
+}
+
+/* ── Motion: only with no reduced-motion preference ─────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Loops: each runs only while its own part is on screen. */
+  .wms-tape-track {
+    animation: wms-crawl calc(var(--wms-n, 10) * 6.5s) linear infinite;
+    animation-play-state: paused;
+  }
+  .wms-tape[data-on] .wms-tape-track {
+    animation-play-state: running;
+  }
+  .wms-kiru[data-on] .wms-ripple {
+    animation: wms-ripple 1.9s ease-out var(--d, 0s) infinite;
+  }
+  @media (scripting: none) {
+    .wms .wms-tape-track {
+      animation-play-state: running;
+    }
+    .wms .wms-ripple {
+      animation: wms-ripple 1.9s ease-out var(--d, 0s) infinite;
+    }
+  }
+  .wms .wms-tape:hover .wms-tape-track,
+  .wms .wms-tape[data-paused] .wms-tape-track {
+    animation-play-state: paused;
+  }
+  /* While the page scrolls, every loop in the room holds still (the island
+     sets data-hold from the first scroll event to scrollend): a running
+     loop costs a style pass on every scrolling frame. And Kiru idles only
+     while the island counts him on screen — clear of the frosted header,
+     where his motion would make the glass re-blur every frame (SiteFX's
+     data-live alone would keep him going under it). Named parts, not
+     `.kiru *`, so a toggle restyles a dozen elements, not the room. The
+     !important outranks Kiru's own `animation` shorthands. */
+  .wms[data-hold]
+    :is(
+      .wms-tape-track,
+      .wms-ripple,
+      .k-body,
+      .k-head,
+      .k-eyes,
+      .k-zap,
+      .kt-hi,
+      .kt-lo,
+      .kt-tip
+    ),
+  .wms-kiru:not([data-on])
+    :is(.k-body, .k-head, .k-eyes, .k-zap, .kt-hi, .kt-lo, .kt-tip) {
+    animation-play-state: paused !important;
+  }
+
+  /* The bars, armed below the fold, fill once when seen: profit runs out to
+     its full length; cash climbs to where it stood three months earlier,
+     holds, and falls to where it is now, leaving its dashed ghost. */
+  .wms-bars[data-armed] .wms-bar {
+    transform: scaleX(0);
+  }
+  .wms-bars[data-armed] .wms-ghost,
+  .wms-bars[data-armed] .wms-then,
+  .wms-bars[data-armed] .wms-bar-num {
+    opacity: 0;
+  }
+  .wms-bars[data-seen] .wms-bar-profit {
+    animation: wms-grow 1s var(--ease-out-expo) both;
+  }
+  .wms-bars[data-seen] .wms-bar-num:not(.wms-bar-num-cash) {
+    animation: wms-show 0.45s ease 0.55s both;
+  }
+  .wms-bars[data-seen] .wms-bar-cash {
+    animation: wms-fall 2.1s 0.3s both;
+  }
+  .wms-bars[data-seen] .wms-ghost,
+  .wms-bars[data-seen] .wms-then {
+    animation: wms-show 0.6s ease 1.45s both;
+  }
+  .wms-bars[data-seen] .wms-bar-num-cash {
+    animation: wms-show 0.5s ease 2.2s both;
+  }
+}
+/* No preference for less motion, but no script either: the tape button
+   cannot work, so it is not offered. */
+@media (scripting: none) {
+  .wms-tape-btn {
+    display: none;
+  }
+}
+
+@keyframes wms-crawl {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes wms-ripple {
+  from {
+    scale: 0.1;
+    opacity: 0.9;
+  }
+  to {
+    scale: 1;
+    opacity: 0;
+  }
+}
+@keyframes wms-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes wms-show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes wms-fall {
+  0% {
+    transform: scaleX(0);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  40%,
+  56% {
+    transform: scaleX(var(--before));
+    animation-timing-function: cubic-bezier(0.55, 0, 0.25, 1);
+  }
+  100% {
+    transform: scaleX(var(--share));
+  }
+}
+
+/* ── A keyboard in the tape ─────────────────────────────────────────────────
+   A link crawling past is a poor thing to Tab to, and the strip runs off
+   both edges of the screen. So when a key brings focus into it, the tape
+   stops and lays itself out as a still paper slip inside the column —
+   every link on screen, no scrolling. A pointer press is not
+   :focus-visible, so a click never rearranges it. */
+.wms-tape:has(:focus-visible) {
+  rotate: none;
+  margin-inline: 0;
+  border-radius: 12px;
+}
+.wms-tape:has(:focus-visible) .wms-tape-track {
+  animation: none;
+  width: auto;
+}
+.wms-tape:has(:focus-visible) .wms-tape-set {
+  flex: 1;
+  flex-wrap: wrap;
+  padding: 0.35rem 0.5rem;
+}
+.wms-tape:has(:focus-visible) .wms-tape-set[aria-hidden] {
+  display: none;
+}
+
+/* ── Reduced motion: everything still, everything there ─────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .wms-tape {
+    rotate: none;
+    margin-inline: 0;
+    border-radius: 12px;
+  }
+  .wms-tape-track {
+    width: auto;
+  }
+  .wms-tape-set {
+    flex: 1;
+    flex-wrap: wrap;
+    padding: 0.35rem 0.5rem;
+  }
+  .wms-tape-set[aria-hidden] {
+    display: none;
+  }
+  .wms-tape-btn {
+    display: none;
+  }
+}
+/* On a phone ten wrapped rows is a column, not a strip: keep one row and
+   let the reader swipe it (their own motion, not the page's). */
+@media (prefers-reduced-motion: reduce) and (max-width: 39.99rem) {
+  .wms-tape {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .wms-tape-track {
+    width: max-content;
+  }
+  .wms-tape-set {
+    flex-wrap: nowrap;
+    padding: 0 0.25rem;
+  }
+  .wms-tick {
+    scroll-snap-align: start;
+  }
+}

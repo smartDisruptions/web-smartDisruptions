@@ -176,9 +176,17 @@ const NONE = { flash: 0, boltA: 0, grow: 0 };
 export default function StormSky({
   variant = 'hero',
   className = '',
+  night = false,
 }: {
   variant?: Variant;
   className?: string;
+  /**
+   * Draw the moonlit night sky whatever the page theme. For a band that is an
+   * always-night object region (light text in both themes, like the footer):
+   * the washi-day sky under that text would fail contrast. Off by default, so
+   * the Market Storm pages keep following the theme.
+   */
+  night?: boolean;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -233,7 +241,7 @@ export default function StormSky({
       }
     };
 
-    const isNight = () => (document.documentElement.dataset.theme === 'dark' ? 1 : 0);
+    const isNight = () => (night || document.documentElement.dataset.theme === 'dark' ? 1 : 0);
 
     function setup(): boolean {
       const ctx = canvas.getContext('webgl', {
@@ -547,7 +555,7 @@ export default function StormSky({
       canvas.remove();
       delete wrap.dataset.state;
     };
-  }, [variant]);
+  }, [variant, night]);
 
   return (
     <div
