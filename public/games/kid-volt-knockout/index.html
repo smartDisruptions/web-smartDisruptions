@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kid Volt Knockout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Kid Volt vs Disco Danny on a rooftop dance floor. He punches on the beat and a sparkle marks his opening. Counter, charge your super, and put him down three times for a TKO.">
+<link rel="canonical" href="https://smartdisruptions.com/games/kid-volt-knockout">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Smart Disruptions">
+<meta property="og:title" content="Kid Volt Knockout">
+<meta property="og:description" content="A boxing game for phones: Kid Volt against Disco Danny under a neon skyline. Read the sparkle, counter on the beat, save up a Supernova, and beat the clock. From the Broom &amp; Blade Arcade.">
+<meta property="og:url" content="https://smartdisruptions.com/games/kid-volt-knockout">
+<meta property="og:image" content="https://smartdisruptions.com/images/apps/kid-volt-knockout-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kid Volt Knockout: the pixel-art boxer Kid Volt, seen from behind with blue spiky hair and yellow gloves, squaring up to Disco Danny on a neon rooftop dance floor">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#07061a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Silkscreen:wght@400;700&display=swap">
+<style>
+  :root {
+    --ink: #07061a; --panel: #120e2c; --line: #2c2360; --text: #f3ecff; --mute: #a79bd8;
+    --pink: #ff4fa3; --cyan: #5ef2ff; --volt: #ffd21f; --violet: #8e62ff;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; margin: 0; background: var(--ink); color: var(--text); overflow: hidden; overscroll-behavior: none; }
+  body {
+    font-family: "Silkscreen", ui-monospace, "Courier New", monospace;
+    touch-action: none; -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+  }
+  button { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  #app {
+    position: fixed; inset: 0; box-sizing: border-box;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) calc(10px + env(safe-area-inset-bottom, 0px)) env(safe-area-inset-left, 0px);
+    display: grid; gap: 8px;
+    grid-template-columns: 1fr 0.86fr 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: "stage stage stage" "l m r";
+  }
+  #center { display: contents; }
+  #stage { grid-area: stage; position: relative; min-height: 0; min-width: 0; background: #05040f; }
+  #screen { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+
+  .pad { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  #padL { grid-area: l; margin-left: 10px; }
+  #padR { grid-area: r; margin-right: 10px; }
+  #padM { grid-area: m; }
+
+  .btn {
+    position: relative; flex: 1 1 0; min-height: 56px; box-sizing: border-box;
+    border-radius: 14px; border: 2px solid var(--c, var(--line));
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,0) 60%), var(--panel);
+    box-shadow: 0 4px 0 #04030c, inset 0 0 14px rgba(0,0,0,.45);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font-size: 15px; font-weight: 700; letter-spacing: .06em; line-height: 1;
+    color: var(--c, var(--text)); touch-action: none; cursor: pointer; padding: 0;
+  }
+  .btn small { font-size: 9px; font-weight: 400; letter-spacing: .12em; color: var(--mute); }
+  .btn.on { transform: translateY(3px); box-shadow: 0 1px 0 #04030c, inset 0 0 18px var(--c, #fff); }
+  .btn:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  .hi   { --c: var(--cyan); }
+  .lo   { --c: var(--pink); }
+  .mv   { --c: var(--violet); }
+  .blk  { --c: #d9d2ff; }
+  .sup  { --c: var(--volt); }
+  .sup .pips { display: flex; gap: 4px; margin-top: 3px; }
+  .sup .pip { width: 14px; height: 6px; border-radius: 2px; background: #2a2208; overflow: hidden; border: 1px solid #5a4a10; }
+  .sup .pip i { display: block; height: 100%; width: 0; background: var(--volt); }
+  .sup.ready { animation: charged .5s steps(2) infinite; }
+  @keyframes charged { 50% { box-shadow: 0 4px 0 #04030c, 0 0 16px var(--volt), inset 0 0 12px rgba(255,210,31,.5); } }
+
+  #tip {
+    position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; width: min(92%, 380px);
+    box-sizing: border-box; padding: 8px 10px; border-radius: 10px;
+    background: rgba(7,6,26,.9); border: 2px solid var(--volt); color: var(--text);
+    font-size: 11px; line-height: 1.35; letter-spacing: .03em; text-align: center; pointer-events: none;
+  }
+  #tip b { color: var(--volt); font-weight: 700; }
+  #pauseBtn {
+    position: absolute; top: 8px; right: 8px; width: 34px; height: 30px; border-radius: 8px;
+    border: 2px solid var(--line); background: rgba(18,14,44,.85); color: var(--mute);
+    font-size: 12px; display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+
+  .ov {
+    position: fixed; inset: 0; z-index: 10; box-sizing: border-box; overflow-y: auto; touch-action: pan-y;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(20px + env(safe-area-inset-bottom, 0px));
+    background: radial-gradient(120% 70% at 50% 0%, rgba(142,98,255,.28), rgba(7,6,26,0) 60%), rgba(7,6,26,.93);
+    display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+  }
+  .ov > * { max-width: 420px; width: 100%; }
+  .kicker { font-size: 11px; letter-spacing: .24em; color: var(--cyan); margin-top: auto; }
+  .logo {
+    font-family: "Monoton", "Silkscreen", cursive; font-weight: 400; margin: 0;
+    font-size: clamp(48px, 17vw, 76px); line-height: .95; color: var(--volt);
+    text-shadow: 0 0 10px rgba(255,210,31,.8), 0 0 28px rgba(255,79,163,.55);
+  }
+  .vs { font-size: 12px; letter-spacing: .3em; color: var(--mute); }
+  .card { border: 2px solid var(--pink); border-radius: 14px; padding: 12px 14px; background: rgba(255,79,163,.07); box-sizing: border-box; }
+  .card .name { font-size: 22px; font-weight: 700; color: var(--pink); letter-spacing: .06em; }
+  .card .meta { font-size: 10px; letter-spacing: .12em; color: var(--mute); margin-top: 6px; }
+  .card p { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; line-height: 1.45; margin: 8px 0 0; color: var(--text); }
+  .how { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; text-align: left;
+         font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; line-height: 1.4; color: #d9d2ff; }
+  .how li { padding-left: 16px; position: relative; }
+  .how li::before { content: ""; position: absolute; left: 2px; top: 6px; width: 6px; height: 6px; background: var(--volt); }
+  .how b { color: var(--text); }
+  .go {
+    font-size: 22px; font-weight: 700; letter-spacing: .14em; padding: 14px 0; border-radius: 14px; cursor: pointer;
+    border: 3px solid var(--volt); background: var(--volt); color: var(--ink); box-shadow: 0 5px 0 #7a6200;
+  }
+  .go:active { transform: translateY(3px); box-shadow: 0 2px 0 #7a6200; }
+  .ghost { font-size: 13px; letter-spacing: .12em; padding: 10px 0; border-radius: 12px; border: 2px solid var(--line); background: transparent; color: var(--mute); cursor: pointer; }
+  .fine { font-size: 10px; letter-spacing: .08em; color: var(--mute); margin-bottom: auto; line-height: 1.6; }
+  #rTitle { font-family: "Monoton", "Silkscreen", cursive; font-weight: 400; font-size: clamp(56px, 22vw, 96px); margin: 0; line-height: 1; }
+  #rTitle.win { color: var(--volt); text-shadow: 0 0 12px rgba(255,210,31,.8), 0 0 30px rgba(94,242,255,.5); }
+  #rTitle.lose { color: var(--pink); text-shadow: 0 0 12px rgba(255,79,163,.8); }
+  #rLine { font-size: 13px; letter-spacing: .06em; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stats div { border: 2px solid var(--line); border-radius: 12px; padding: 10px 4px; }
+  .stats span { display: block; font-size: 9px; letter-spacing: .16em; color: var(--mute); }
+  .stats strong { display: block; font-size: 15px; margin-top: 6px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .next { font-size: 10px; letter-spacing: .1em; color: var(--mute); line-height: 1.6; margin-bottom: auto; }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  @media (orientation: landscape) and (min-aspect-ratio: 5/4) {
+    #app {
+      grid-template-columns: minmax(120px, 1fr) minmax(0, calc((100dvh - 96px) * 0.857)) minmax(120px, 1fr);
+      grid-template-areas: "l stage r" "l m r";
+      padding-top: calc(8px + env(safe-area-inset-top, 0px));
+    }
+    #padL { margin-left: calc(10px + env(safe-area-inset-left, 0px)); }
+    #padR { margin-right: calc(10px + env(safe-area-inset-right, 0px)); }
+    #padM { flex-direction: row; height: 64px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .sup.ready { animation: none; } }
+
+  /* the way back to the arcade on smartdisruptions.com: a small neon sign of its own */
+  .home {
+    align-self: center; width: auto !important; box-sizing: border-box; min-height: 44px; padding: 7px 14px 7px 12px;
+    display: inline-flex; align-items: center; gap: 10px; text-decoration: none; text-align: left;
+    border: 2px solid var(--line); border-radius: 12px; background: rgba(18,14,44,.72);
+    font-size: 10px; line-height: 1.35; letter-spacing: .14em; color: var(--mute); -webkit-tap-highlight-color: transparent;
+  }
+  .home .arw { color: var(--cyan); font-size: 12px; }
+  .home b { display: block; color: var(--cyan); font-weight: 700; text-shadow: 0 0 8px rgba(94,242,255,.45); }
+  .home:hover, .home:focus-visible { border-color: var(--cyan); color: var(--text); box-shadow: 0 0 14px rgba(94,242,255,.3), inset 0 0 10px rgba(94,242,255,.12); outline: none; }
+  .home:active { transform: translateY(2px); }
+  a.ghost { display: block; box-sizing: border-box; text-align: center; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+  a.ghost:hover, a.ghost:focus-visible { border-color: var(--cyan); color: var(--cyan); outline: none; }
+  .keys { display: none; }
+
+  /* Desktop (wide, mouse and keyboard): the controls drop to a deck at the bottom with their keys,
+     and the rooftop carries on past the ring behind them (#sides: baked once per resize, static). */
+  #sides { display: none; }
+  @media (orientation: landscape) and (min-aspect-ratio: 5/4) and (hover: hover) and (pointer: fine) {
+    #sides { display: block; position: fixed; left: 0; top: 0; image-rendering: pixelated; image-rendering: crisp-edges; pointer-events: none; }
+    #app { z-index: 1; }
+    #stage { border-radius: 6px; box-shadow: 0 0 0 2px var(--line), 0 0 0 5px #07061a, 0 0 34px rgba(142,98,255,.28); }
+    #padL, #padR { justify-content: flex-end; }
+    #padL .btn, #padR .btn { flex: 0 0 auto; height: clamp(58px, 10.2vh, 96px); }
+    .btn { box-shadow: 0 4px 0 #04030c, inset 0 0 14px rgba(0,0,0,.45), 0 0 18px rgba(7,6,26,.9); }
+    .btn[data-key]::after {
+      content: attr(data-key); display: block; margin-top: 5px; padding: 2px 6px 1px; border: 1px solid currentColor; border-radius: 4px;
+      font-size: 9px; font-weight: 400; letter-spacing: .1em; line-height: 1.2; opacity: .7;
+    }
+  }
+  @media (hover: hover) and (pointer: fine) { .keys { display: block; margin-top: -4px; margin-bottom: 0; } }
+</style>
+</head>
+<body>
+<canvas id="sides" aria-hidden="true"></canvas>
+<div id="app">
+  <div class="pad" id="padL">
+    <button class="btn hi" data-act="jabL" data-key="J" aria-label="Left jab">JAB<small>LEFT · HIGH</small></button>
+    <button class="btn lo" data-act="bodyL" data-key="N" aria-label="Left body blow">BODY<small>LEFT · LOW</small></button>
+    <button class="btn mv" data-act="dodgeL" data-key="A" aria-label="Dodge left">&#9664; DODGE</button>
+  </div>
+  <div id="center">
+    <div id="stage">
+      <canvas id="screen"></canvas>
+      <div id="tip" hidden></div>
+      <button id="pauseBtn" aria-label="Pause">II</button>
+    </div>
+    <div class="pad" id="padM">
+      <button class="btn sup" id="superBtn" data-act="super" data-key="SPACE" aria-label="Super punch">SUPER<span class="pips"><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span></span></button>
+      <button class="btn blk" data-act="block" data-key="W" aria-label="Block (hold)">BLOCK<small>HOLD</small></button>
+      <button class="btn mv" data-act="duck" data-key="S" aria-label="Duck">DUCK &#9660;</button>
+    </div>
+  </div>
+  <div class="pad" id="padR">
+    <button class="btn hi" data-act="jabR" data-key="K" aria-label="Right jab">JAB<small>RIGHT · HIGH</small></button>
+    <button class="btn lo" data-act="bodyR" data-key="M" aria-label="Right body blow">BODY<small>RIGHT · LOW</small></button>
+    <button class="btn mv" data-act="dodgeR" data-key="D" aria-label="Dodge right">DODGE &#9654;</button>
+  </div>
+</div>
+
+<div id="title" class="ov">
+  <a class="home" href="/games#broom-blade-arcade"><span class="arw" aria-hidden="true">&#9664;</span><span>SMART DISRUPTIONS ·<b>BROOM &amp; BLADE ARCADE</b></span></a>
+  <div class="kicker">STAGE 1 · ROOFTOP RUMBLE</div>
+  <h1 class="logo">KID VOLT</h1>
+  <div class="vs">VS</div>
+  <div class="card">
+    <div class="name">DISCO DANNY</div>
+    <div class="meta">AGE 52 · LAS VEGAS · RECORD 3–47 (2 KO)</div>
+    <p>Forty years on the dance floor. He still throws every punch on the beat.</p>
+  </div>
+  <ul class="how">
+    <li>A <b>sparkle</b> marks where he's open. Punch that spot during his wind-up to <b>counter</b>.</li>
+    <li>He hits <b>on the beat</b>. Jabs: dodge, duck or block. Uppercuts: <b>dodge</b>. The Fever Hook: <b>duck</b>.</li>
+    <li>Counters charge <b>SUPER</b>. When he's dizzy, hit him as he sways back to center.</li>
+  </ul>
+  <button class="go" id="startBtn">FIGHT</button>
+  <div class="fine keys">Keyboard: A / D dodge · S duck · W block · J / K jab · N / M body · Space super</div>
+  <div class="fine" id="bestLine">3 knockdowns = TKO · beat the clock</div>
+</div>
+
+<div id="pause" class="ov" hidden>
+  <div class="kicker">PAUSED</div>
+  <h1 class="logo" style="font-size:52px">TIMEOUT</h1>
+  <button class="go" id="resumeBtn">RESUME</button>
+  <div class="row"><button class="ghost" id="soundBtn">SOUND: ON</button><button class="ghost" id="restartBtn">RESTART</button></div>
+  <div class="fine">Keyboard: A / D dodge · S duck · W block · J / K jab · N / M body · Space super</div>
+</div>
+
+<div id="result" class="ov" hidden>
+  <div class="kicker" id="rKicker">STAGE 1 CLEAR</div>
+  <h2 id="rTitle">KO!</h2>
+  <div id="rLine"></div>
+  <div class="stats">
+    <div><span>GRADE</span><strong id="rGrade">-</strong></div>
+    <div><span>SCORE</span><strong id="rScore">0</strong></div>
+    <div><span>BEST</span><strong id="rBest">-</strong></div>
+  </div>
+  <button class="go" id="againBtn">REMATCH</button>
+  <a class="ghost" href="/games#broom-blade-arcade"><span aria-hidden="true">&#9664;</span> BROOM &amp; BLADE ARCADE</a>
+  <div class="next">NEXT ON THE ROOFTOP: "IRON" IVAN BRASKO<br>STAGE 2 IS STILL IN THE GYM</div>
+</div>
+
+<script>
+"use strict";
+// Kid Volt Knockout: Stage 1. A boxer for phones, built from a study of the 16-bit classics.
+// Pixel engine from the vault's pixel-art skill (palette-index framebuffer, integer scale, fixed 60 Hz step).
+(function () {
+  // ================================================================ palette
+  var PAL = [
+    "#07061a", //  0 outline / void
+    "#110e2b", //  1 sky top
+    "#191440", //  2 sky mid
+    "#261a55", //  3 sky low haze
+    "#2f2266", //  4 far buildings
+    "#1a1438", //  5 near buildings
+    "#ffcf6a", //  6 warm window / chain
+    "#5ef2ff", //  7 neon cyan
+    "#ff4fa3", //  8 neon pink
+    "#ffd21f", //  9 volt yellow
+    "#ffffff", // 10 white
+    "#241b3f", // 11 mat dark
+    "#31265a", // 12 mat
+    "#463a78", // 13 mat edge
+    "#e8375a", // 14 rope red
+    "#7a1c38", // 15 rope dark
+    "#5c3120", // 16 danny skin dark
+    "#8e5230", // 17 danny skin
+    "#c27a48", // 18 danny skin light
+    "#1e130f", // 19 afro dark
+    "#3b2518", // 20 afro mid
+    "#761226", // 21 glove red dark
+    "#d4263a", // 22 glove red
+    "#ff7a7a", // 23 glove red light
+    "#3d1668", // 24 trunks dark
+    "#7434c0", // 25 trunks
+    "#b98cff", // 26 trunks light
+    "#8a4f2c", // 27 kid skin dark
+    "#d08a58", // 28 kid skin
+    "#f6c290", // 29 kid skin light
+    "#153a9c", // 30 kid hair dark
+    "#2f7cff", // 31 kid hair
+    "#9fd6ff", // 32 kid hair light
+    "#8a6a00", // 33 kid glove dark
+    "#ffd21f", // 34 kid glove
+    "#fff4a8", // 35 kid glove light
+    "#1b8a9a", // 36 cyan dim
+    "#9a2c66", // 37 pink dim
+    "#9a7a10", // 38 yellow dim
+    "#4d2a8a", // 39 purple dim
+    "#8e62ff", // 40 purple neon
+    "#2a2046", // 41 crowd dark
+    "#3a2d60", // 42 crowd mid
+    "#c9c1e6", // 43 silver
+    "#6f6796", // 44 silver dark
+    "#ff9a3c", // 45 orange
+    "#b0182e", // 46 deep red
+    "#0f0c24"  // 47 HUD panel
+  ];
+  var NC = PAL.length, W = 120, H = 140, DT = 1 / 60, EMPTY = 255;
+
+  function abgr(r, g, b) { return (0xff000000 | (b << 16) | (g << 8) | r) >>> 0; }
+  var lut = new Uint32Array(NC), lutFlash = new Uint32Array(NC), lutInv = new Uint32Array(NC);
+  for (var i = 0; i < NC; i++) {
+    var hx = parseInt(PAL[i].slice(1), 16), r = hx >> 16, g = (hx >> 8) & 255, b = hx & 255;
+    lut[i] = abgr(r, g, b);
+    lutFlash[i] = abgr((r + 255 * 1.2) / 2.2 | 0, (g + 255 * 1.2) / 2.2 | 0, (b + 255 * 1.2) / 2.2 | 0);
+    lutInv[i] = abgr(255 - r, 255 - g, 255 - b);
+  }
+  // Brighten map for hit flashes on sprites, and a lighten map for spotlights.
+  var BRIGHT = new Uint8Array(256), LIGHTEN = new Uint8Array(256);
+  for (i = 0; i < 256; i++) { BRIGHT[i] = i; LIGHTEN[i] = i; }
+  [[16, 17], [17, 18], [18, 29], [19, 20], [20, 17], [21, 22], [22, 23], [23, 10], [24, 25], [25, 26], [26, 10],
+   [27, 28], [28, 29], [29, 10], [30, 31], [31, 32], [32, 10], [33, 34], [34, 35], [35, 10], [43, 10], [44, 43]]
+    .forEach(function (m) { BRIGHT[m[0]] = m[1]; });
+  [[11, 13], [12, 13], [13, 44], [41, 42], [42, 44], [37, 8], [36, 7], [38, 9], [39, 40], [1, 3], [2, 3], [3, 4], [5, 4], [4, 13]]
+    .forEach(function (m) { LIGHTEN[m[0]] = m[1]; });
+
+  // ================================================================ buffers + scaling
+  var off = document.createElement("canvas"); off.width = W; off.height = H;
+  var octx = off.getContext("2d");
+  var img = octx.createImageData(W, H);
+  var pix = new Uint32Array(img.data.buffer);
+  var fb = new Uint8Array(W * H), bg = new Uint8Array(W * H);
+  var stage = document.getElementById("stage");
+  var screen = document.getElementById("screen");
+  var dctx = screen.getContext("2d", { alpha: false });
+  var tipEl = document.getElementById("tip"), pauseBtn = document.getElementById("pauseBtn");
+  var scale = 1, offX = 0, offY = 0, cw = 1, ch = 1, dprNow = 1;
+
+  function resize() {
+    var rc = stage.getBoundingClientRect();
+    dprNow = Math.min(3, window.devicePixelRatio || 1);
+    cw = Math.max(1, Math.round(rc.width * dprNow)); ch = Math.max(1, Math.round(rc.height * dprNow));
+    screen.width = cw; screen.height = ch;
+    scale = Math.max(1, Math.floor(Math.min(cw / W, ch / H)));
+    offX = (cw - W * scale) >> 1; offY = (ch - H * scale) >> 1;
+    dctx.imageSmoothingEnabled = false;
+    tipEl.style.bottom = Math.round((ch - offY - H * scale) / dprNow + 8) + "px";
+    pauseBtn.style.top = Math.round((offY + 20 * scale) / dprNow) + "px";
+    pauseBtn.style.right = Math.round((cw - offX - W * scale) / dprNow + 2 * scale / dprNow) + "px";
+    if (BAYER) bakeSides();   // the desktop rooftop (a no-op elsewhere); BAYER is set once the helpers below exist
+  }
+  addEventListener("resize", resize);
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
+  resize();
+
+  var BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  function bay(x, y) { return BAYER[(y & 3) * 4 + (x & 3)]; }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ease(t) { t = clamp(t, 0, 1); return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function easeOut(t) { t = clamp(t, 0, 1); return 1 - (1 - t) * (1 - t); }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function pset(x, y, c) { x |= 0; y |= 0; if (x >= 0 && y >= 0 && x < W && y < H) fb[y * W + x] = c; }
+  function rect(x, y, w, h, c) {
+    x |= 0; y |= 0;
+    var x0 = Math.max(0, x), y0 = Math.max(0, y), x1 = Math.min(W, x + w), y1 = Math.min(H, y + h);
+    for (var yy = y0; yy < y1; yy++) for (var xx = x0; xx < x1; xx++) fb[yy * W + xx] = c;
+  }
+
+  // ================================================================ pixel font (3x5)
+  var FONT_SRC = {
+    A: "010101111101101", B: "110101110101110", C: "011100100100011", D: "110101101101110", E: "111100110100111",
+    F: "111100110100100", G: "011100101101011", H: "101101111101101", I: "111010010010111", J: "001001001101010",
+    K: "101101110101101", L: "100100100100111", M: "101111111101101", N: "110101101101101", O: "010101101101010",
+    P: "110101110100100", Q: "010101101110011", R: "110101110101101", S: "011100010001110", T: "111010010010010",
+    U: "101101101101111", V: "101101101101010", W: "101101111111101", X: "101101010101101", Y: "101101010010010",
+    Z: "111001010100111", "0": "111101101101111", "1": "010110010010111", "2": "110001010100111", "3": "110001010001110",
+    "4": "101101111001001", "5": "111100110001110", "6": "011100110101010", "7": "111001010010010", "8": "010101010101010",
+    "9": "010101011001110", "!": "010010010000010", "?": "110001010000010", ":": "000010000010000", ".": "000000000000010",
+    "-": "000000111000000", "'": "010010000000000", "+": "000010111010000", "x": "000101010101000", "/": "001001010100100",
+    ",": "000000000010100", " ": "000000000000000"
+  };
+  var FONT = {};
+  Object.keys(FONT_SRC).forEach(function (k) {
+    var s = FONT_SRC[k], bits = [];
+    for (var n = 0; n < 15; n++) if (s[n] === "1") bits.push(n % 3, (n / 3) | 0);
+    FONT[k] = bits;
+  });
+  function textW(s, sc) { return s.length * 4 * sc - sc; }
+  function drawText(s, x, y, c, sc, oc) {
+    sc = sc || 1;
+    var pass, n, k, bits, gx;
+    for (pass = (oc >= 0 ? 0 : 1); pass < 2; pass++) {
+      for (n = 0; n < s.length; n++) {
+        bits = FONT[s[n]] || FONT["?"]; gx = x + n * 4 * sc;
+        for (k = 0; k < bits.length; k += 2) {
+          if (pass === 0) rect(gx + bits[k] * sc - 1, y + bits[k + 1] * sc - 1, sc + 2, sc + 2, oc);
+          else rect(gx + bits[k] * sc, y + bits[k + 1] * sc, sc, sc, c);
+        }
+      }
+    }
+  }
+  function drawTextC(s, cx, y, c, sc, oc) { drawText(s, Math.round(cx - textW(s, sc || 1) / 2), y, c, sc, oc); }
+
+  // ================================================================ sprite buffers + shaded primitives
+  var OW = 80, OH = 100, oppSpr = new Uint8Array(OW * OH);
+  var PW = W, PH = H, plSpr = new Uint8Array(PW * PH);
+  var cur = oppSpr, curW = OW, curH = OH;
+  function tgt(buf, w, h) { cur = buf; curW = w; curH = h; }
+  function sp(x, y, c) { x |= 0; y |= 0; if (x >= 0 && y >= 0 && x < curW && y < curH) cur[y * curW + x] = c; }
+  function sg(x, y) { return (x < 0 || y < 0 || x >= curW || y >= curH) ? EMPTY : cur[y * curW + x]; }
+  // Light from the upper left, toward the viewer. Dithered 3-step ramps.
+  function ramp3(I, x, y, r0, r1, r2) {
+    var t = I + (bay(x, y) / 16 - 0.47) * 0.16;
+    return t > 0.78 ? r2 : (t > 0.3 ? r1 : r0);
+  }
+  function ellipse(cx, cy, rx, ry, r0, r1, r2, rim) {
+    var x0 = Math.floor(cx - rx - 1), x1 = Math.ceil(cx + rx + 1), y0 = Math.floor(cy - ry - 1), y1 = Math.ceil(cy + ry + 1);
+    var rimT = rim >= 0 ? Math.pow(Math.max(0, 1 - 1.15 / Math.min(rx, ry)), 2) : 2;
+    for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) {
+      var nx = (x + 0.5 - cx) / rx, ny = (y + 0.5 - cy) / ry, d = nx * nx + ny * ny;
+      if (d > 1) continue;
+      if (d > rimT) { sp(x, y, rim); continue; }
+      var I = nx * -0.5 + ny * -0.6 + Math.sqrt(1 - d) * 0.62;
+      sp(x, y, ramp3(I, x, y, r0, r1, r2));
+    }
+  }
+  function capsule(x1, y1, x2, y2, rr, r0, r1, r2) {
+    var dx = x2 - x1, dy = y2 - y1, L2 = dx * dx + dy * dy || 1;
+    var bx0 = Math.floor(Math.min(x1, x2) - rr - 1), bx1 = Math.ceil(Math.max(x1, x2) + rr + 1);
+    var by0 = Math.floor(Math.min(y1, y2) - rr - 1), by1 = Math.ceil(Math.max(y1, y2) + rr + 1);
+    for (var y = by0; y <= by1; y++) for (var x = bx0; x <= bx1; x++) {
+      var px = x + 0.5, py = y + 0.5, t = clamp(((px - x1) * dx + (py - y1) * dy) / L2, 0, 1);
+      var ex = (px - (x1 + dx * t)) / rr, ey = (py - (y1 + dy * t)) / rr, d = ex * ex + ey * ey;
+      if (d > 1) continue;
+      var I = ex * -0.5 + ey * -0.6 + Math.sqrt(1 - d) * 0.62;
+      sp(x, y, ramp3(I, x, y, r0, r1, r2));
+    }
+  }
+  function tri(ax, ay, bx, by, cx, cy, c) {
+    var x0 = Math.floor(Math.min(ax, bx, cx)), x1 = Math.ceil(Math.max(ax, bx, cx));
+    var y0 = Math.floor(Math.min(ay, by, cy)), y1 = Math.ceil(Math.max(ay, by, cy));
+    var den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+    for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) {
+      var px = x + 0.5, py = y + 0.5;
+      var w1 = ((by - cy) * (px - cx) + (cx - bx) * (py - cy)) / den;
+      var w2 = ((cy - ay) * (px - cx) + (ax - cx) * (py - cy)) / den;
+      if (w1 >= 0 && w2 >= 0 && w1 + w2 <= 1) sp(x, y, c);
+    }
+  }
+  function glove(gx, gy, gr, sx, sy, r0, r1, r2, cuff) {
+    var dx = sx - gx, dy = sy - gy, L = Math.sqrt(dx * dx + dy * dy) || 1;
+    ellipse(gx + dx / L * gr * 0.82, gy + dy / L * gr * 0.82, gr * 0.52, gr * 0.52, cuff, 43, 10, -1);
+    ellipse(gx, gy, gr, gr * 0.94, r0, r1, r2, 0);
+    ellipse(gx - (dx < 0 ? -1 : 1) * gr * 0.62, gy + gr * 0.05, gr * 0.36, gr * 0.44, r0, r1, r2, 0);   // thumb
+    sp(gx - gr * 0.38, gy - gr * 0.45, 10);
+  }
+  // Composite a sprite: auto 1px outline, optional colour remap for hit flashes.
+  function composite(buf, w, h, ox, oy, remap) {
+    ox |= 0; oy |= 0;
+    for (var sy = 0; sy < h; sy++) {
+      var wy = oy + sy; if (wy < 0 || wy >= H) continue;
+      for (var sx = 0; sx < w; sx++) {
+        var wx = ox + sx; if (wx < 0 || wx >= W) continue;
+        var c = buf[sy * w + sx];
+        if (c !== EMPTY) { fb[wy * W + wx] = remap ? remap[c] : c; }
+        else if ((sx > 0 && buf[sy * w + sx - 1] !== EMPTY) || (sx < w - 1 && buf[sy * w + sx + 1] !== EMPTY) ||
+                 (sy > 0 && buf[(sy - 1) * w + sx] !== EMPTY) || (sy < h - 1 && buf[(sy + 1) * w + sx] !== EMPTY)) {
+          fb[wy * W + wx] = 0;
+        }
+      }
+    }
+  }
+
+  // ================================================================ scene (baked once)
+  var FLOOR_Y = 76, SIGN = [];
+  (function bake() {
+    var x, y, n;
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      var t = bay(x, y), c;
+      if (y < 26) c = 1;
+      else if (y < 34) c = ((y - 26) * 2 > t) ? 2 : 1;
+      else if (y < 44) c = 2;
+      else if (y < 52) c = ((y - 44) * 2 > t) ? 3 : 2;
+      else c = 3;
+      fb[y * W + x] = c;
+    }
+    var stars = [8, 22, 27, 20, 44, 27, 71, 21, 88, 25, 112, 20, 101, 30, 16, 31, 60, 24];
+    for (n = 0; n < stars.length; n += 2) pset(stars[n], stars[n + 1], 44);
+    // moon
+    for (y = -5; y <= 5; y++) for (x = -5; x <= 5; x++) if (x * x + y * y <= 26) pset(17 + x, 30 + y, (x - 2) * (x - 2) + (y + 1) * (y + 1) < 12 ? 43 : 44);
+    // far skyline
+    var fx = 0, seed = 7;
+    function srand() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    while (fx < W) {
+      var bw = 6 + (srand() * 9 | 0), top = 36 + (srand() * 12 | 0);
+      for (y = top; y < 60; y++) for (x = fx; x < fx + bw && x < W; x++) pset(x, y, 4);
+      for (y = top + 2; y < 58; y += 3) for (x = fx + 1; x < fx + bw - 1; x += 2) if (srand() < 0.25) pset(x, y, srand() < 0.8 ? 38 : 36);
+      fx += bw + (srand() * 3 | 0);
+    }
+    // near skyline with neon trim
+    fx = -3;
+    while (fx < W) {
+      var nbw = 10 + (srand() * 12 | 0), ntop = 44 + (srand() * 9 | 0);
+      for (y = ntop; y < 62; y++) for (x = fx; x < fx + nbw; x++) pset(x, y, 5);
+      for (x = fx; x < fx + nbw; x++) pset(x, ntop, srand() < 0.5 ? 37 : 39);
+      for (y = ntop + 3; y < 60; y += 3) for (x = fx + 2; x < fx + nbw - 2; x += 3) if (srand() < 0.4) pset(x, y, srand() < 0.75 ? 6 : 7);
+      fx += nbw + 2;
+    }
+    // rooftop neon sign "DISCO" on the left, remembered for the flicker
+    for (y = 37; y < 45; y++) for (x = 2; x < 25; x++) pset(x, y, 0);
+    drawText("DISCO", 4, 38, 8, 1, -1);
+    for (y = 37; y < 45; y++) for (x = 2; x < 25; x++) if (fb[y * W + x] === 8) SIGN.push(y * W + x);
+    for (x = 2; x < 25; x++) { pset(x, 36, 37); pset(x, 45, 37); }
+    // crowd behind the ropes
+    for (var row = 0; row < 3; row++) {
+      var cy = 58 + row * 6;
+      for (x = (row & 1) * 3 - 2; x < W + 4; x += 6) {
+        var head = row === 2 ? 42 : 41, shirt = [37, 36, 39, 42, 38][((x * 7 + row * 3) >> 1) % 5];
+        for (y = -3; y <= 3; y++) for (var xx = -3; xx <= 3; xx++) {
+          if (xx * xx + y * y <= 8) pset(x + xx, cy - 3 + y, head);
+          if (y >= 1 && Math.abs(xx) <= 3) pset(x + xx, cy + 1 + y, shirt);
+        }
+      }
+    }
+    // ring apron line
+    for (x = 0; x < W; x++) { pset(x, FLOOR_Y - 1, 13); pset(x, FLOOR_Y - 2, 0); }
+    // corner posts
+    [[8, 50], [108, 50]].forEach(function (pp) {
+      for (y = pp[1]; y < FLOOR_Y; y++) for (x = pp[0]; x < pp[0] + 4; x++) pset(x, y, x === pp[0] ? 36 : 7);
+      for (x = pp[0] - 1; x < pp[0] + 5; x++) pset(x, pp[1] - 1, 10);
+    });
+    // back ropes
+    [54, 61, 68].forEach(function (ry) {
+      for (x = 12; x < 108; x++) { pset(x, ry, 14); pset(x, ry + 1, 15); }
+      for (x = 0; x < 8; x++) { pset(x, ry + ((8 - x) >> 1), 14); pset(x, ry + 1 + ((8 - x) >> 1), 15); }
+      for (x = 112; x < W; x++) { pset(x, ry + ((x - 111) >> 1), 14); pset(x, ry + 1 + ((x - 111) >> 1), 15); }
+    });
+    bg.set(fb);
+  })();
+
+  // ================================================================ desktop sides (static)
+  // On a wide screen with a mouse and keyboard, the rooftop carries on past the ring: the same sky,
+  // skyline, crowd and dance floor, in the same palette and dither, at the ring's pixel scale, with
+  // the game's name in neon on the buildings. Baked once per resize into #sides; nothing runs per frame.
+  var sideCv = document.getElementById("sides");
+  var sideMQ = window.matchMedia ? matchMedia("(orientation: landscape) and (min-aspect-ratio: 5/4) and (hover: hover) and (pointer: fine)") : null;
+  function bakeSides() {
+    if (!sideCv || !sideMQ || !sideMQ.matches) { if (sideCv && sideCv.width) { sideCv.width = 0; sideCv.height = 0; } return; }
+    var s = scale, d = dprNow, rc = stage.getBoundingClientRect();
+    var gx = rc.left * d + offX, gy = rc.top * d + offY;                     // the ring's top-left, device px
+    var ox = ((gx % s) + s) % s, oy = ((gy % s) + s) % s;                     // keep both pixel grids in step
+    var fx = Math.round((gx - ox) / s) + 1, fy = Math.round((gy - oy) / s) + 1; // the ring's top-left, in side pixels
+    var PW = Math.ceil((innerWidth * d - ox + s) / s) + 1, PH = Math.ceil((innerHeight * d - oy + s) / s) + 1;
+    if (PW * PH > 600000) return;
+    var buf = new Uint8Array(PW * PH), sd = 5, x, y, n, r, c, t;
+    function rnd2() { sd = (sd * 16807) % 2147483647; return sd / 2147483647; }
+    function put(px, py, pc) { px |= 0; py |= 0; if (px >= 0 && py >= 0 && px < PW && py < PH) buf[py * PW + px] = pc; }
+    // the sky by the ring's rows (fading to the void above), and the dance floor below, lights resting
+    for (y = 0; y < PH; y++) {
+      r = y - fy;
+      for (x = 0; x < PW; x++) {
+        t = bay(x, y);
+        if (r < -16) c = ((-16 - r) * 2 > t) ? 0 : 1;
+        else if (r < 26) c = 1;
+        else if (r < 34) c = ((r - 26) * 2 > t) ? 2 : 1;
+        else if (r < 44) c = 2;
+        else if (r < 52) c = ((r - 44) * 2 > t) ? 3 : 2;
+        else if (r < 76) c = 3;
+        else {
+          var dy = r - 62, v = 240 / dy / 5, fv = v - Math.floor(v), vi = Math.floor(v);
+          var u = (x - fx - 60) / dy * 9 + 50, fu = u - Math.floor(u), ui = Math.floor(u);
+          if (fu < 0.07 || fv < 0.09) c = 11;
+          else { c = ((ui + vi) & 1) ? 12 : 11; if ((((ui * 7 + vi * 13) % 5) + 5) % 5 === 0) c = [37, 36, 38, 39][(ui * 3 + vi * 5) & 3]; }
+        }
+        buf[y * PW + x] = c;
+      }
+    }
+    for (n = 0; n < PW * 0.9; n++) { x = rnd2() * PW; y = fy - 40 + rnd2() * 70; if (y - fy < 30) put(x, y, rnd2() < 0.2 ? 43 : 44); }
+    // far skyline, then the near one with its neon trim and lit windows
+    var bx = -3, bw, top;
+    while (bx < PW) {
+      bw = 6 + (rnd2() * 9 | 0); top = fy + 30 + (rnd2() * 16 | 0);
+      for (y = top; y < fy + 60; y++) for (x = bx; x < bx + bw; x++) put(x, y, 4);
+      for (y = top + 2; y < fy + 58; y += 3) for (x = bx + 1; x < bx + bw - 1; x += 2) if (rnd2() < 0.25) put(x, y, rnd2() < 0.8 ? 38 : 36);
+      bx += bw + (rnd2() * 3 | 0);
+    }
+    bx = -5;
+    while (bx < PW) {
+      bw = 10 + (rnd2() * 14 | 0); top = fy + 42 + (rnd2() * 11 | 0);
+      for (y = top; y < fy + 62; y++) for (x = bx; x < bx + bw; x++) put(x, y, 5);
+      for (x = bx; x < bx + bw; x++) put(x, top, rnd2() < 0.5 ? 37 : 39);
+      for (y = top + 3; y < fy + 60; y += 3) for (x = bx + 2; x < bx + bw - 2; x += 3) if (rnd2() < 0.4) put(x, y, rnd2() < 0.75 ? 6 : 7);
+      bx += bw + 2;
+    }
+    // the game's name in neon on the rooftops either side of the ring
+    function sign(str, cx, y0, pc, rim) {
+      var w = str.length * 4 + 3, x0 = Math.round(cx - w / 2), xx, yy, i, k, bits;
+      for (yy = y0 - 2; yy < y0 + 7; yy++) for (xx = x0; xx < x0 + w; xx++) put(xx, yy, 0);
+      for (xx = x0; xx < x0 + w; xx++) { put(xx, y0 - 3, rim); put(xx, y0 + 7, rim); }
+      for (yy = y0 + 8; yy < y0 + 18; yy++) { put(x0 + 3, yy, 0); put(x0 + w - 4, yy, 0); }
+      for (i = 0; i < str.length; i++) { bits = FONT[str[i]] || FONT["?"]; for (k = 0; k < bits.length; k += 2) put(x0 + 2 + i * 4 + bits[k], y0 + bits[k + 1], pc); }
+    }
+    var lEdge = (rc.left * d - ox) / s + 1, rEdge = (rc.right * d - ox) / s + 1;
+    if (lEdge > 44) sign("KID VOLT", lEdge / 2, fy + 33, 7, 36);
+    if (PW - rEdge > 44) sign("KNOCKOUT", (rEdge + PW) / 2, fy + 33, 9, 38);
+    // the crowd, three rows deep, and the ring's apron line carried across
+    for (var row = 0; row < 3; row++) {
+      var cy = fy + 58 + row * 6;
+      for (x = (row & 1) * 3 - 2; x < PW + 4; x += 6) {
+        var head = row === 2 ? 42 : 41, shirt = [37, 36, 39, 42, 38][Math.abs((x * 7 + row * 3) >> 1) % 5];
+        for (y = -3; y <= 3; y++) for (var xx = -3; xx <= 3; xx++) {
+          if (xx * xx + y * y <= 8) put(x + xx, cy - 3 + y, head);
+          if (y >= 1 && Math.abs(xx) <= 3) put(x + xx, cy + 1 + y, shirt);
+        }
+      }
+    }
+    for (x = 0; x < PW; x++) { put(x, fy + 74, 0); put(x, fy + 75, 13); }
+    sideCv.width = PW; sideCv.height = PH;
+    var sx = sideCv.getContext("2d"), im = sx.createImageData(PW, PH), px32 = new Uint32Array(im.data.buffer);
+    for (n = 0; n < PW * PH; n++) px32[n] = lut[buf[n]];
+    sx.putImageData(im, 0, 0);
+    sideCv.style.width = (PW * s / d) + "px"; sideCv.style.height = (PH * s / d) + "px";
+    sideCv.style.left = ((ox - s) / d) + "px"; sideCv.style.top = ((oy - s) / d) + "px";
+  }
+  bakeSides();
+
+  // ================================================================ particles
+  var MAXP = 320;
+  var pOn = new Uint8Array(MAXP), pRamp = new Uint8Array(MAXP);
+  var pX = new Float32Array(MAXP), pY = new Float32Array(MAXP), pVX = new Float32Array(MAXP), pVY = new Float32Array(MAXP);
+  var pAge = new Float32Array(MAXP), pLife = new Float32Array(MAXP), pG = new Float32Array(MAXP);
+  // 0 sweat, 1 star, 2 pink, 3 fire, 4 violet, 5 silver
+  var RAMPS = new Uint8Array([10, 7, 7, 36, 36, 10, 9, 9, 38, 38, 10, 8, 8, 37, 37, 10, 9, 45, 14, 46, 10, 40, 40, 39, 39, 10, 43, 43, 44, 44]);
+  var pCur = 0;
+  function spawn(ramp, life, x, y, vx, vy, gr) {
+    for (var n = 0; n < MAXP; n++) {
+      var k = pCur; pCur = (pCur + 1) % MAXP;
+      if (!pOn[k]) { pOn[k] = 1; pRamp[k] = ramp; pAge[k] = 0; pLife[k] = life; pX[k] = x; pY[k] = y; pVX[k] = vx; pVY[k] = vy; pG[k] = gr; return; }
+    }
+  }
+  function burst(x, y, n, ramp, sMin, sMax, gr) {
+    for (var b = 0; b < n; b++) {
+      var a = rnd(0, Math.PI * 2), s = rnd(sMin, sMax);
+      spawn(ramp < 0 ? (b % 5) : ramp, rnd(0.35, 0.8), x, y, Math.cos(a) * s, Math.sin(a) * s * 0.85, gr);
+    }
+  }
+  function updateParticles(dt) {
+    for (var k = 0; k < MAXP; k++) {
+      if (!pOn[k]) continue;
+      pAge[k] += dt;
+      if (pAge[k] >= pLife[k]) { pOn[k] = 0; continue; }
+      pVX[k] *= 0.96; pVY[k] = pVY[k] * 0.96 + pG[k] * dt;
+      pX[k] += pVX[k] * dt; pY[k] += pVY[k] * dt;
+    }
+  }
+  function drawParticles() {
+    for (var k = 0; k < MAXP; k++) {
+      if (!pOn[k]) continue;
+      var step = Math.min(4, (pAge[k] / pLife[k] * 5) | 0), base = pRamp[k] * 5;
+      var sp2 = pVX[k] * pVX[k] + pVY[k] * pVY[k];
+      if (sp2 > 1600 && step < 4) {
+        var inv = 1.5 / Math.sqrt(sp2);
+        pset(Math.round(pX[k] - pVX[k] * inv), Math.round(pY[k] - pVY[k] * inv), RAMPS[base + step + 1]);
+      }
+      pset(Math.round(pX[k]), Math.round(pY[k]), RAMPS[base + step]);
+    }
+  }
+
+  // ================================================================ popups
+  var MAXPOP = 8, popOn = [], popS = [], popX = [], popY = [], popT = [], popC = [], popSc = [], popLife = [];
+  for (i = 0; i < MAXPOP; i++) { popOn.push(0); popS.push(""); popX.push(0); popY.push(0); popT.push(0); popC.push(10); popSc.push(1); popLife.push(1); }
+  function pop(s, x, y, c, sc, life) {
+    var k = 0, oldest = 0;
+    for (var n = 0; n < MAXPOP; n++) { if (!popOn[n]) { k = n; oldest = -1; break; } if (popT[n] > popT[oldest]) oldest = n; }
+    if (oldest >= 0) k = oldest;
+    for (n = 0; n < MAXPOP; n++) if (popOn[n] && n !== k && Math.abs(popY[n] - y) < 14) popOn[n] = 0;
+    popOn[k] = 1; popS[k] = s; popX[k] = x; popY[k] = y; popT[k] = 0; popC[k] = c; popSc[k] = sc || 1; popLife[k] = life || 0.9;
+  }
+
+  // ================================================================ audio (all synthesized)
+  var AC = null, master, musicGain, sfxGain, crowdGain, noiseBuf, muted = false;
+  function audioInit() {
+    if (AC) { if (AC.state === "suspended") AC.resume(); return; }
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; return; }
+    master = AC.createGain(); master.gain.value = 0.85;
+    var comp = AC.createDynamicsCompressor(); master.connect(comp); comp.connect(AC.destination);
+    musicGain = AC.createGain(); musicGain.gain.value = 0.34; musicGain.connect(master);
+    sfxGain = AC.createGain(); sfxGain.gain.value = 0.9; sfxGain.connect(master);
+    noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate);
+    var d = noiseBuf.getChannelData(0);
+    for (var n = 0; n < d.length; n++) d[n] = Math.random() * 2 - 1;
+    var src = AC.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    var bp = AC.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 650; bp.Q.value = 0.4;
+    crowdGain = AC.createGain(); crowdGain.gain.value = 0.03;
+    src.connect(bp); bp.connect(crowdGain); crowdGain.connect(master); src.start();
+  }
+  function mtof(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+  function env(gn, t0, a, peak, d) {
+    gn.gain.setValueAtTime(0.0001, t0);
+    gn.gain.exponentialRampToValueAtTime(peak, t0 + a);
+    gn.gain.exponentialRampToValueAtTime(0.0001, t0 + a + d);
+  }
+  function tone(type, f0, f1, t0, dur, vol, dest) {
+    var o = AC.createOscillator(), gn = AC.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t0);
+    if (f1) o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    env(gn, t0, 0.005, vol, dur); o.connect(gn); gn.connect(dest || sfxGain);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  function noise(t0, dur, vol, ftype, freq, q, dest) {
+    var s = AC.createBufferSource(); s.buffer = noiseBuf;
+    var f = AC.createBiquadFilter(); f.type = ftype; f.frequency.value = freq; f.Q.value = q || 1;
+    var gn = AC.createGain(); env(gn, t0, 0.004, vol, dur);
+    s.connect(f); f.connect(gn); gn.connect(dest || sfxGain);
+    s.start(t0, Math.random() * 0.5); s.stop(t0 + dur + 0.05);
+  }
+  var PROG = [33, 33, 38, 40];   // A, A, D, E: the disco loop
+  function musicBeat(n) {
+    if (!AC || muted || AC.state !== "running") return;
+    var t = AC.currentTime + 0.03, bl = beatLen, root = PROG[(n >> 2) & 3];
+    var k = AC.createOscillator(), kg = AC.createGain();
+    k.type = "sine"; k.frequency.setValueAtTime(140, t); k.frequency.exponentialRampToValueAtTime(42, t + 0.13);
+    kg.gain.setValueAtTime(0.9, t); kg.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    k.connect(kg); kg.connect(musicGain); k.start(t); k.stop(t + 0.22);
+    if (n & 1) { noise(t, 0.12, 0.3, "bandpass", 1400, 0.9, musicGain); noise(t + 0.012, 0.1, 0.2, "bandpass", 1100, 0.9, musicGain); }
+    noise(t + bl * 0.5, 0.05, 0.16, "highpass", 7500, 0.7, musicGain);
+    if (opp.phase >= 2) { noise(t + bl * 0.25, 0.03, 0.06, "highpass", 8000, 0.7, musicGain); noise(t + bl * 0.75, 0.03, 0.06, "highpass", 8000, 0.7, musicGain); }
+    bass(t, root, bl * 0.45); bass(t + bl * 0.5, root + 12, bl * 0.45);
+    if ((n & 3) === 1) { tone("square", mtof(root + 24), 0, t + bl * 0.5, 0.14, 0.04, musicGain); tone("square", mtof(root + 27), 0, t + bl * 0.5, 0.14, 0.035, musicGain); tone("square", mtof(root + 31), 0, t + bl * 0.5, 0.14, 0.035, musicGain); }
+    if (opp.phase >= 3 && (n & 1) === 0) tone("square", mtof(root + 36 + ((n >> 1) & 1) * 7), 0, t, 0.08, 0.03, musicGain);
+  }
+  function bass(t, m, dur) {
+    var o = AC.createOscillator(), f = AC.createBiquadFilter(), gn = AC.createGain();
+    o.type = "sawtooth"; o.frequency.value = mtof(m);
+    f.type = "lowpass"; f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(260, t + dur); f.Q.value = 6;
+    gn.gain.setValueAtTime(0.0001, t); gn.gain.exponentialRampToValueAtTime(0.3, t + 0.01); gn.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(f); f.connect(gn); gn.connect(musicGain); o.start(t); o.stop(t + dur + 0.02);
+  }
+  function cheer(v, dur) {
+    if (!AC || muted) return;
+    var t = AC.currentTime;
+    crowdGain.gain.cancelScheduledValues(t);
+    crowdGain.gain.setValueAtTime(crowdGain.gain.value, t);
+    crowdGain.gain.linearRampToValueAtTime(v, t + 0.08);
+    crowdGain.gain.linearRampToValueAtTime(0.03 + G.flow * 0.006, t + dur);
+  }
+  function sfx(name, a) {
+    if (!AC || muted || AC.state !== "running") return;
+    var t = AC.currentTime + 0.005, n;
+    switch (name) {
+      case "hit": noise(t, 0.09, 0.55, "lowpass", 1800, 0.8); tone("sine", 160, 55, t, 0.12, 0.7); break;
+      case "counter": noise(t, 0.12, 0.7, "lowpass", 2600, 0.8); tone("sine", 180, 50, t, 0.16, 0.8);
+        tone("square", 1320, 1980, t, 0.09, 0.1); tone("square", 1760, 2640, t + 0.05, 0.1, 0.08); break;
+      case "block": noise(t, 0.05, 0.35, "bandpass", 900, 2); tone("triangle", 220, 180, t, 0.05, 0.25); break;
+      case "whiff": noise(t, 0.14, 0.22, "bandpass", 2200, 0.6); break;
+      case "phit": noise(t, 0.16, 0.8, "lowpass", 900, 0.8); tone("sine", 110, 40, t, 0.2, 0.9); tone("sawtooth", 90, 60, t, 0.12, 0.12); break;
+      case "slip": tone("sine", 600, 1400, t, 0.12, 0.16); noise(t, 0.1, 0.12, "highpass", 3000, 0.7); break;
+      case "charge": tone("sawtooth", 180, 180 * Math.pow(2, a), t, 0.22, 0.1); break;
+      case "super": noise(t, 0.3, 0.9, "lowpass", 1400, 0.8); tone("sine", 120, 30, t, 0.35, 1); tone("square", 880, 1760, t, 0.2, 0.08); break;
+      case "nova": noise(t, 0.8, 1, "lowpass", 1000, 0.8); tone("sine", 90, 25, t, 0.8, 1); tone("sawtooth", 440, 1760, t, 0.4, 0.12); break;
+      case "bell": for (n = 0; n < a; n++) { tone("sine", 740, 0, t + n * 0.22, 1.1, 0.22); tone("sine", 2040, 0, t + n * 0.22, 0.7, 0.08); tone("sine", 3990, 0, t + n * 0.22, 0.4, 0.04); } break;
+      case "count": tone("square", 520, 0, t, 0.12, 0.1); break;
+      case "tell": tone("triangle", 300, 620, t, 0.08, 0.07); break;
+      case "voice": for (n = 0; n < a; n++) tone("square", 170 + Math.random() * 120, 0, t + n * 0.075, 0.06, 0.06); break;
+      case "fanfare": [69, 73, 76, 81].forEach(function (m, j) { tone("square", mtof(m), 0, t + j * 0.12, 0.2, 0.1); }); break;
+      case "sad": [64, 60, 57].forEach(function (m, j) { tone("sawtooth", mtof(m), 0, t + j * 0.22, 0.3, 0.08); }); break;
+      case "dizzy": tone("sine", 900, 400, t, 0.35, 0.1); tone("sine", 700, 300, t + 0.1, 0.35, 0.08); break;
+      case "nope": tone("square", 160, 120, t, 0.1, 0.08); break;
+      case "mash": tone("square", 400 + Math.random() * 200, 0, t, 0.04, 0.05); break;
+    }
+  }
+  function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* not supported */ } }
+
+  // ================================================================ game state
+  var G = {
+    mode: "title", t: 0, clock: 180, hitstop: 0, slow: 0, shake: 0, flash: 0, invert: 0, hurtFlash: 0,
+    flow: 0, score: 0, count: 0, countT: 0, plan: null, introT: 0, resT: 0, outcome: null,
+    ballY: 24, tipT: 0, paused: false, fightTime: 0
+  };
+  var CLOCK_RATE = 1.5;                 // the fight clock runs faster than real time, like the 16-bit classics
+  var bpm = 104, beatLen = 60 / bpm, beatT = 0, beatN = 0, beatPhase = 0;
+  var PHASE_BPM = [104, 104, 116, 128];
+
+  var p = { st: "idle", t: 0, side: 0, zone: "high", wind: 0, dur: 0, fired: false, blocked: false,
+            health: 100, ghost: 100, superG: 0, lvl: 0, kd: 0, mash: 0, need: 0, lastHitT: -9, hurtBy: 0, aside: 0 };
+  var opp = { st: "intro", t: 0, dur: 0, mv: null, feint: false, fs: 0, health: 100, ghost: 100, dizzy: 0,
+              guard: "high", guardBeats: 0, bodyHits: 0, blocks: 0, flinches: 0, comboHits: 0, stunLeft: 0,
+              x: 0, kd: 0, phase: 1, queue: [], idleBeats: 2, specialCD: 10, lastGetUp: -99, say: "", sayT: 0,
+              flash: 0, hitSide: 0, quick: false, armorSaid: false };
+  var blockHeld = 0, bufAct = null, bufT = 0, tipsShown = {};
+
+  // Opponent moves. tell is in beats; cz/cs = which of your punches counters it (zone, side; 0 = either).
+  var MOVES = {
+    jabA:  { kind: "jab",   side: -1, tell: 1,   dmg: 10, dodge: 1, duck: 1, block: 1, low: 0, cz: "high", cs: -1, rec: 0.62 },
+    jabB:  { kind: "jab",   side: 1,  tell: 1,   dmg: 10, dodge: 1, duck: 1, block: 1, low: 0, cz: "high", cs: 1,  rec: 0.62 },
+    qjabA: { kind: "jab",   side: -1, tell: 0.6, dmg: 8,  dodge: 1, duck: 1, block: 1, low: 0, cz: "high", cs: -1, rec: 0.5 },
+    qjabB: { kind: "jab",   side: 1,  tell: 0.6, dmg: 8,  dodge: 1, duck: 1, block: 1, low: 0, cz: "high", cs: 1,  rec: 0.5 },
+    hookA: { kind: "hook",  side: -1, tell: 1,   dmg: 9,  dodge: 1, duck: 0, block: 1, low: 1, cz: "low",  cs: -1, rec: 0.6 },
+    hookB: { kind: "hook",  side: 1,  tell: 1,   dmg: 9,  dodge: 1, duck: 0, block: 1, low: 1, cz: "low",  cs: 1,  rec: 0.6 },
+    upA:   { kind: "upper", side: -1, tell: 1.5, dmg: 18, dodge: 1, duck: 0, block: 0, low: 0, cz: "high", cs: 0,  rec: 0.85 },
+    upB:   { kind: "upper", side: 1,  tell: 1.5, dmg: 18, dodge: 1, duck: 0, block: 0, low: 0, cz: "high", cs: 0,  rec: 0.85 },
+    fever: { kind: "fever", side: 1,  tell: 0,   dmg: 34, dodge: 0, duck: 1, block: 0, low: 0, kd: 1, rec: 1.1 }
+  };
+  var OPENER = ["jabA", "jabB", "hookB", "taunt", "upA"];
+
+  function say(s, sylls) { opp.say = s; opp.sayT = 1.1; sfx("voice", sylls || 2); }
+  function showTip(key, html, force) {
+    if (tipsShown[key] && !force) return;
+    tipsShown[key] = 1; tipEl.innerHTML = html; tipEl.hidden = false; G.tipT = 3.2;
+  }
+  function setBpm(v) { bpm = v; beatLen = 60 / bpm; }
+  function setOpp(st, dur) { opp.st = st; opp.t = 0; opp.dur = dur || 0; dirty = true; }
+  function setP(st) { p.st = st; p.t = 0; p.fired = false; p.blocked = false; dirty = true; }
+
+  function resetMatch() {
+    G.t = 0; G.clock = 180; G.hitstop = 0; G.slow = 0; G.shake = 0; G.flash = 0; G.invert = 0; G.hurtFlash = 0;
+    G.flow = 0; G.score = 0; G.count = 0; G.plan = null; G.introT = 0; G.resT = 0; G.outcome = null; G.fightTime = 0;
+    p.health = p.ghost = 100; p.superG = 0; p.kd = 0; p.aside = 0; p.lastHitT = -9; setP("idle");
+    opp.health = opp.ghost = 100; opp.dizzy = 0; opp.guard = "high"; opp.guardBeats = 0; opp.bodyHits = 0; opp.blocks = 0;
+    opp.flinches = 0; opp.x = 0; opp.kd = 0; opp.phase = 1; opp.queue = OPENER.slice(); opp.idleBeats = 2; opp.specialCD = 16;
+    opp.lastGetUp = -99; opp.sayT = 0; opp.flash = 0; opp.armorSaid = false;
+    setBpm(PHASE_BPM[1]);
+    for (var k = 0; k < MAXP; k++) pOn[k] = 0;
+    for (k = 0; k < MAXPOP; k++) popOn[k] = 0;
+    bufAct = null; tipEl.hidden = true;
+    G.mode = "intro"; setOpp("intro", 0);
+  }
+
+  // ================================================================ beat clock
+  function updateBeat(dt) {
+    beatT += dt;
+    while (beatT >= beatLen) { beatT -= beatLen; beatN++; onBeat(); }
+    beatPhase = beatT / beatLen;
+  }
+  function onBeat() {
+    musicBeat(beatN);
+    if (G.mode !== "fight") return;
+    if (opp.specialCD > 0) opp.specialCD--;
+    if (opp.st === "idle") {
+      if (opp.guard === "low" && --opp.guardBeats <= 0) { opp.guard = "high"; dirty = true; }
+      if (--opp.idleBeats <= 0) startNextMove();
+    } else if (opp.st === "fever" && opp.fs <= 3) {
+      opp.fs++; opp.t = 0; dirty = true;
+      if (opp.fs === 1) { say("OW!", 1); showTip("fever", "<b>Fever time!</b> Body shot while he points, or <b>DUCK</b> the big hook."); }
+      if (opp.fs === 2) say("BOOGIE!", 3);
+      if (opp.fs === 4) { opp.dur = beatLen * 0.5; sfx("tell"); }
+    }
+  }
+
+  // ================================================================ opponent brain
+  function pickMove() {
+    var ph = opp.phase, r = Math.random() * 100, side = Math.random() < 0.5 ? "A" : "B";
+    var feverOk = opp.specialCD <= 0;
+    var table = ph === 1 ? [["jab", 42], ["hook", 22], ["up", 14], ["taunt", 9], ["fever", 13]]
+              : ph === 2 ? [["jab", 28], ["jabjab", 16], ["hook", 18], ["up", 18], ["taunt", 5], ["fever", 15]]
+              :            [["jab", 20], ["jabjab", 12], ["hook", 14], ["up", 16], ["feint", 18], ["taunt", 4], ["fever", 16]];
+    for (var n = 0; n < table.length; n++) {
+      r -= table[n][1];
+      if (r < 0) {
+        var k = table[n][0];
+        if (k === "fever" && !feverOk) return "jab" + side;
+        if (k === "jabjab") { opp.queue.push("qjab" + (side === "A" ? "B" : "A")); return "jab" + side; }
+        if (k === "feint") return "feint" + side;
+        if (k === "jab" || k === "hook" || k === "up") return k + side;
+        return k;
+      }
+    }
+    return "jab" + side;
+  }
+  function startNextMove() {
+    var name = opp.queue.length ? opp.queue.shift() : pickMove();
+    opp.flinches = 0;
+    if (name === "taunt") { setOpp("taunt", 1.5); say(Math.random() < 0.5 ? "SHOW ME WHATCHA GOT" : "FEEL THE GROOVE", 4); return; }
+    if (name === "fever") { setOpp("fever", 0); opp.fs = 0; opp.mv = MOVES.fever; opp.specialCD = 18; opp.armorSaid = false; say("C'MON!", 2); return; }
+    var feint = false;
+    if (name.indexOf("feint") === 0) { feint = true; name = "jab" + name.slice(5); }
+    startMove(MOVES[name], feint);
+  }
+  function startMove(mv, feint) {
+    opp.mv = mv; opp.feint = feint;
+    setOpp("tell", Math.max(0.2, mv.tell * beatLen - 0.09));
+    if (mv.kind === "upper") { sfx("tell"); say("HUP!", 1); }
+  }
+  function afterMove() {
+    setOpp("idle");
+    opp.idleBeats = opp.phase === 1 ? 2 + (Math.random() < 0.4 ? 1 : 0) : opp.phase === 2 ? 1 + (Math.random() < 0.5 ? 1 : 0) : 1;
+  }
+
+  function updOpp(dt) {
+    opp.t += dt;
+    if (opp.flash > 0) opp.flash -= dt;
+    switch (opp.st) {
+      case "tell":
+        if (opp.t >= opp.dur) {
+          if (opp.feint) { say("PSYCH!", 2); afterMove(); opp.idleBeats = 1; }
+          else setOpp("strike", 0.09);
+        }
+        break;
+      case "strike":
+        if (opp.t >= opp.dur) finishAttack(opp.mv);
+        break;
+      case "recover": case "taunt":
+        if (opp.t >= opp.dur) afterMove();
+        break;
+      case "stunned":
+        opp.stunLeft -= dt;
+        if (opp.stunLeft <= 0) afterMove();
+        break;
+      case "flinch":
+        if (opp.t >= opp.dur) { setOpp("idle"); if (opp.idleBeats < 1) opp.idleBeats = 1; }
+        break;
+      case "block":
+        if (opp.t >= opp.dur) {
+          if (opp.quick) { opp.quick = false; startMove(Math.random() < 0.5 ? MOVES.qjabA : MOVES.qjabB, false); }
+          else { setOpp("idle"); if (opp.idleBeats < 1) opp.idleBeats = 1; }
+        }
+        break;
+      case "fever":
+        if (opp.fs === 4 && opp.t >= opp.dur) { opp.fs = 5; opp.t = 0; dirty = true; }
+        else if (opp.fs === 5 && opp.t >= 0.1) finishAttack(MOVES.fever);
+        else if (opp.fs === 6 && opp.t >= opp.dur) afterMove();
+        break;
+      case "dizzy":
+        opp.x = Math.sin(opp.t / 1.3 * Math.PI * 2) * 24;
+        if ((beatN & 1) === 0 && Math.random() < 0.08) spawn(1, 0.6, 60 + opp.x + rnd(-10, 10), 32, rnd(-8, 8), -10, 0);
+        if (opp.t >= opp.dur) { opp.dizzy = 0; opp.x = 0; afterMove(); opp.idleBeats = 1; }
+        break;
+    }
+  }
+
+  // The opponent's punch arrives. Did Kid Volt avoid it?
+  function finishAttack(mv) {
+    var res = "hit", perfect = false;
+    if (mv.duck && p.st === "duck" && p.t > 0.02 && p.t < 0.4) { res = "avoid"; perfect = p.t < 0.2; }
+    else if (mv.dodge && p.st === "dodge" && p.t > 0.02 && p.t < 0.36) { res = "avoid"; perfect = p.t < 0.18; }
+    else if (mv.block && (p.st === "idle" && (blockHeld > 0 || mv.low))) res = "block";
+
+    if (res === "avoid") {
+      var rec = mv.rec * (opp.phase === 1 ? 1 : opp.phase === 2 ? 0.88 : 0.76) * (perfect ? 1.45 : 1);
+      if (mv.kind === "fever") { opp.fs = 6; opp.t = 0; opp.dur = rec; dirty = true; say("WHOA!", 2); }
+      else setOpp("recover", rec);
+      sfx(perfect ? "slip" : "whiff");
+      if (perfect) {
+        G.slow = 0.28; addFlow(1); addSuper(0.25); score(30);
+        pop("SLIP!", 60 + (p.st === "dodge" ? -p.side * 22 : 0), 92, 7, 2, 0.8);
+      }
+      return;
+    }
+    if (res === "block") {
+      p.health = Math.max(1, p.health - 1); sfx("block"); dirty = true;
+      pop("BLOCK", 60, 92, 43, 1, 0.6);
+      afterMove(); opp.idleBeats = 1;
+      return;
+    }
+    // Hit.
+    var mult = opp.phase === 1 ? 1 : opp.phase === 2 ? 1.15 : 1.3;
+    p.health -= mv.dmg * mult; p.lastHitT = G.t; p.hurtBy = mv.side;
+    G.flow = 0; p.superG = Math.max(0, p.superG - 1);
+    G.shake = 8; G.hurtFlash = 0.35; sfx("phit"); buzz(45);
+    burst(60, 100, 10, 0, 30, 70, 60);
+    if (mv.kind === "upper") showTip("upperHit", "Uppercuts smash through blocks. <b>DODGE</b> them.");
+    else if (mv.kind === "hook") showTip("hookHit", "Body hooks: stand still to <b>auto-block</b>, or <b>DODGE</b>.");
+    else if (mv.kind === "jab") showTip("jabHit", "Jabs: <b>DODGE</b>, <b>DUCK</b> or hold <b>BLOCK</b>.");
+    else if (mv.kind === "fever") showTip("feverHit", "<b>DUCK</b> the Fever Hook. Dodging won't save you.");
+    if (mv.kind === "fever") { opp.fs = 7; }
+    if (p.health <= 0 || mv.kd) { p.health = Math.max(0, p.health); knockdownPlayer(); return; }
+    setP("hurt");
+    afterMove();
+    if (Math.random() < 0.35) say(["WHOO!", "HA HA!", "GROOVY!"][Math.random() * 3 | 0], 2);
+  }
+
+  // ================================================================ Kid Volt's punches
+  function addFlow(n) {
+    var before = G.flow;
+    G.flow = Math.min(5, G.flow + n);
+    if (G.flow >= 3 && before < 3) showTip("flow", "<b>FLOW x3!</b> Keep reading him without getting hit to go <b>ON FIRE</b>.");
+    if (G.flow === 5 && before < 5) { pop("ON FIRE!", 60, 26, 45, 2, 1.2); cheer(0.2, 1.2); }
+  }
+  function addSuper(v) {
+    var before = Math.floor(p.superG);
+    p.superG = Math.min(3, p.superG + v * (G.flow >= 5 ? 1.5 : 1));
+    if (Math.floor(p.superG) > before) {
+      sfx("charge", Math.floor(p.superG));
+      if (before === 0) showTip("super", "<b>SUPER charged.</b> Tap SUPER for a Volt Hook. Save three for a <b>Supernova</b>.");
+    }
+  }
+  function score(n) { G.score += Math.round(n * (1 + G.flow * 0.5)); }
+  function hurtOpp(dmg, side) {
+    opp.health -= dmg; opp.flash = 0.1; opp.hitSide = side; dirty = true;
+    if (opp.health <= 0) { opp.health = 0; knockdownOpp("hp"); return true; }
+    return false;
+  }
+  function checkDizzy() {
+    if (opp.dizzy >= 100 && G.mode === "fight" && (opp.st === "stunned" || opp.st === "flinch" || opp.st === "recover")) {
+      setOpp("dizzy", 2.6); opp.x = 0; sfx("dizzy"); pop("DIZZY!", 60, 22, 9, 2, 1.1);
+      showTip("dizzy", "He's <b>dizzy!</b> Punch when he sways back to <b>CENTER</b>.");
+    }
+  }
+  function landFx(side, zone, big) {
+    var x = 60 + opp.x + side * (zone === "high" ? 4 : 9), y = zone === "high" ? FACE_Y : BODY_Y;
+    burst(x, y, big ? 16 : 7, big ? 1 : 0, 25, big ? 90 : 55, 40);
+  }
+
+  function resolvePunch(side, zone, isSuper, lvl) {
+    var o = opp, dmgSuper = [0, 12, 22, 36][lvl] || 0;
+    if (o.st === "dizzy") {
+      if ((Math.abs(o.x) <= 6 && o.t > 0.4) || isSuper) { landFx(side, zone, true); sfx(isSuper ? "super" : "counter"); knockdownOpp(isSuper && lvl === 3 ? "supernova" : "dizzy"); }
+      else { sfx("whiff"); pop("MISS", 60, 60, 44, 1, 0.5); }
+      return;
+    }
+    if (o.st === "tell") {
+      var mv = o.mv;
+      if (!o.feint && (isSuper || (zone === mv.cz && (mv.cs === 0 || mv.cs === side)))) {
+        var perfect = o.t < o.dur * 0.45;
+        setOpp("stunned", 0); o.stunLeft = [0, 1.0, 0.85, 0.75][o.phase]; o.comboHits = 0;
+        o.dizzy += 28 + (isSuper ? 25 : 0) + (perfect ? 6 : 0);
+        G.hitstop = isSuper ? 10 : 5; G.flash = 2; G.shake = 4;
+        sfx(isSuper ? "super" : "counter"); buzz(30);
+        pop(perfect ? "PERFECT READ" : "COUNTER!", 60, 24, perfect ? 9 : 7, 2, 0.9);
+        addFlow(perfect ? 2 : 1); addSuper(isSuper ? 0 : 0.5); score(perfect ? 100 : 50); cheer(0.12, 0.8);
+        landFx(side, zone, true);
+        if (hurtOpp(7 + dmgSuper, side)) return;
+        if (isSuper) superFx(lvl);
+        checkDizzy();
+        return;
+      }
+      blockedByOpp(o.feint);
+      return;
+    }
+    if (o.st === "fever") {
+      if (o.fs === 1 && (zone === "low" || isSuper)) {
+        landFx(side, "low", true); sfx("counter"); pop("FEVER BREAK!", 60, 24, 8, 2, 1.1);
+        addFlow(2); score(300); o.health = Math.max(1, o.health - 20); knockdownOpp("fever");
+        return;
+      }
+      if (o.fs === 0) { sfx("whiff"); return; }
+      if (o.fs >= 6) { cleanHit(side, zone, isSuper, lvl); return; }
+      // Mid-routine: he takes the hit but can't stop the boogie.
+      sfx("hit"); landFx(side, zone, false); addSuper(0.08); score(10);
+      if (!o.armorSaid) { o.armorSaid = true; say("CAN'T STOP!", 2); }
+      hurtOpp(isSuper ? dmgSuper : 3, side);
+      return;
+    }
+    if (o.st === "recover" || o.st === "stunned" || o.st === "taunt" || o.st === "flinch") { cleanHit(side, zone, isSuper, lvl); return; }
+    if (o.st === "idle") {
+      if (isSuper) { cleanHit(side, zone, true, lvl); return; }
+      if ((zone === "high" && o.guard === "high") || (zone === "low" && o.guard === "low")) { blockedByOpp(false); return; }
+      cleanHit(side, zone, false, 0);
+      if (zone === "low") {
+        if (++o.bodyHits >= 3) { o.bodyHits = 0; o.guard = "low"; o.guardBeats = 3; say("HEY!", 1); dirty = true; }
+      } else { o.guard = "high"; o.bodyHits = 0; }
+      return;
+    }
+    blockedByOpp(false);
+  }
+  function cleanHit(side, zone, isSuper, lvl) {
+    var o = opp, dmg;
+    if (o.st === "stunned") {
+      if (!isSuper && ++o.comboHits > [0, 5, 4, 4][o.phase]) { blockedByOpp(false); say("ENOUGH!", 2); return; }
+      o.stunLeft = Math.min(o.stunLeft + 0.16, 0.9);
+      dmg = isSuper ? [0, 12, 22, 36][lvl] : 3;
+      o.dizzy += isSuper ? 25 * lvl : 3;
+      if (o.comboHits >= 2) pop(o.comboHits + " HITS", 60 + side * 20, 70, 43, 1, 0.5);
+    } else if (o.st === "idle") {
+      dmg = isSuper ? [0, 12, 22, 36][lvl] : (zone === "low" ? 2.5 : 4);
+      o.dizzy += isSuper ? 25 * lvl : 2;
+      if (++o.flinches >= 3) { o.flinches = 0; o.quick = Math.random() < 0.5; setOpp("block", 0.25); }
+      else setOpp("flinch", 0.22);
+    } else {
+      dmg = isSuper ? [0, 12, 22, 36][lvl] : (o.st === "taunt" ? 6 : 4.5);
+      o.dizzy += isSuper ? 25 * lvl : 5;
+      if (o.st === "recover") { o.stunLeft = 0.5; o.comboHits = 1; setOpp("stunned", 0); }
+      else if (o.st === "taunt") { o.stunLeft = 0.6; o.comboHits = 1; setOpp("stunned", 0); say("OOF!", 1); }
+    }
+    sfx(isSuper ? "super" : "hit"); landFx(side, zone, isSuper);
+    addSuper(0.12); score(isSuper ? 100 * lvl : 10);
+    if (hurtOpp(dmg, side)) return;
+    if (isSuper) superFx(lvl);
+    checkDizzy();
+  }
+  function superFx(lvl) {
+    G.hitstop = lvl === 3 ? 18 : 8; G.shake = 6 + lvl * 3; G.flash = 3;
+    if (lvl === 3) { G.invert = 3; sfx("nova"); cheer(0.25, 1.5); }
+    pop(["", "VOLT HOOK!", "THUNDER UPPER!", "SUPERNOVA!"][lvl], 60, 24, lvl === 3 ? 10 : 9, 2, 1.1);
+    burst(60 + opp.x, 50, 20 + lvl * 12, 1, 40, 120, 30);
+  }
+  function blockedByOpp(feint) {
+    sfx("block"); dirty = true;
+    p.blocked = true; p.dur += 0.1;
+    burst(60 + opp.x, 52, 4, 5, 20, 40, 30);
+    if (opp.st === "idle" || opp.st === "block") {
+      opp.blocks++;
+      if (opp.blocks >= 2) showTip("blocked", "He guards his face. Go to the <b>BODY</b>, or wait for a <b>sparkle</b>.");
+      if (feint || Math.random() < 0.3) { opp.quick = true; setOpp("block", 0.12); }
+      else setOpp("block", 0.18);
+    } else if (feint) {
+      showTip("feint", "No sparkle means it's a <b>fake</b>. Wait for the shine.");
+      opp.quick = true; setOpp("block", 0.1);
+    }
+  }
+
+  // ================================================================ knockdowns + results
+  function knockdownOpp(type) {
+    opp.kd++; opp.dizzy = 0; opp.x = 0; opp.guard = "high";
+    setOpp("fall", 0.9); G.mode = "oppDown"; G.count = 0; G.countT = -1.2;
+    G.hitstop = Math.max(G.hitstop, 10); G.shake = 10; G.flash = 3; buzz(80);
+    pop("DOWN!", 60, 24, 8, 3, 1.3); cheer(0.3, 2.5); score(1000);
+    burst(60, 60, 26, -1, 40, 110, 50);
+    var quick = type !== "fever" && opp.lastGetUp > 0 && (G.t - opp.lastGetUp) < 4;
+    if (opp.kd >= 3) G.plan = { end: "TKO" };
+    else if (quick || (type === "supernova" && opp.kd >= 2)) G.plan = { end: "KO" };
+    else G.plan = { getUp: (opp.kd === 1 ? 4 : 6) + (type === "dizzy" || type === "fever" ? 2 : 0) + (Math.random() < 0.5 ? 1 : 0), hp: opp.kd === 1 ? 80 : 60 };
+    setP("idle"); bufAct = null;
+    showTip("oppDown", "He's down! <b>Mash any button</b> to pump yourself back up.");
+  }
+  function knockdownPlayer() {
+    p.kd++; setP("down"); G.mode = "playerDown"; G.count = 0; G.countT = -1.0;
+    p.mash = 0; p.need = 10 + p.kd * 6; bufAct = null;
+    G.shake = 12; G.hurtFlash = 0.6; buzz([60, 40, 90]);
+    pop("DOWN!", 60, 24, 14, 3, 1.3); cheer(0.2, 1.5);
+    setOpp("celebrate", 0); say("WHOO!", 2);
+    showTip("playerDown", "<b>Mash buttons</b> to get up before ten!", true);
+  }
+  function endFight(kind) {
+    var win = kind === "KO" || kind === "TKO";
+    G.mode = "result"; G.resT = 0;
+    G.outcome = { win: win, kind: kind, time: 180 - G.clock };
+    if (win) {
+      setP("victory"); sfx("bell", 3); sfx("fanfare"); cheer(0.35, 3);
+      score(Math.max(0, Math.round(G.clock)) * 20 + 2000);
+      for (var n = 0; n < 60; n++) spawn(n % 5, rnd(1.2, 2.2), rnd(10, 110), rnd(-10, 10), rnd(-20, 20), rnd(10, 40), 30);
+    } else {
+      setOpp("celebrate", 0); say("STAYIN' ALIVE!", 4); sfx("bell", 3); sfx("sad");
+    }
+    tipEl.hidden = true;
+  }
+  function showResult() {
+    var o = G.outcome, tm = fmtClock(o.time);
+    var rt = document.getElementById("rTitle");
+    rt.textContent = o.win ? o.kind + "!" : (o.kind === "TIME" ? "TIME!" : "DOWN");
+    rt.className = o.win ? "win" : "lose";
+    document.getElementById("rKicker").textContent = o.win ? "STAGE 1 CLEAR" : "DANNY KEEPS DANCING";
+    document.getElementById("rLine").textContent = o.win
+      ? "Kid Volt def. Disco Danny by " + o.kind + " in " + tm
+      : (o.kind === "TIME" ? "Time ran out. Danny wins on the judges' cards." : "Disco Danny wins by " + (o.kind === "TKO_LOSS" ? "TKO" : "KO") + " at " + tm);
+    var grade = !o.win ? "-" : o.time < 50 ? "SUPERB" : o.time < 80 ? "V.GOOD" : o.time < 115 ? "GOOD" : "OK";
+    document.getElementById("rGrade").textContent = grade;
+    document.getElementById("rScore").textContent = G.score.toLocaleString();
+    var best = loadBest();
+    if (o.win && (best === null || o.time < best)) { best = o.time; saveBest(best); }
+    document.getElementById("rBest").textContent = best === null ? "-" : fmtClock(best);
+    document.getElementById("againBtn").textContent = o.win ? "FIGHT AGAIN" : "REMATCH";
+    document.getElementById("result").hidden = false;
+  }
+  function fmtClock(s) { s = Math.max(0, Math.ceil(s)); return (s / 60 | 0) + ":" + ("0" + (s % 60)).slice(-2); }
+  function loadBest() { try { var v = localStorage.getItem("kidvolt.best"); return v === null ? null : +v; } catch (e) { return null; } }
+  function saveBest(v) { try { localStorage.setItem("kidvolt.best", String(v)); } catch (e) { /* storage blocked */ } }
+
+  // ================================================================ input
+  function press(act) {
+    audioInit();
+    if (G.mode === "oppDown") { p.health = Math.min(100, p.health + 1.6); p.mash++; sfx("mash"); return; }
+    if (G.mode === "playerDown") { if (p.st === "down") { p.mash++; sfx("mash"); burst(60, 128, 2, 1, 20, 40, 60); } return; }
+    if (G.mode !== "fight" || act === "block") return;
+    if (p.st !== "idle") { bufAct = act; bufT = G.t; return; }
+    startAct(act);
+  }
+  function startAct(a) {
+    var f = G.flow >= 5 ? 0.78 : 1;
+    if (a === "jabL" || a === "jabR" || a === "bodyL" || a === "bodyR") {
+      setP("punch"); p.side = (a === "jabL" || a === "bodyL") ? -1 : 1; p.zone = a.indexOf("jab") === 0 ? "high" : "low";
+      p.wind = 0.065 * f; p.dur = 0.23 * f;
+    } else if (a === "dodgeL" || a === "dodgeR") { setP("dodge"); p.side = a === "dodgeL" ? -1 : 1; }
+    else if (a === "duck") setP("duck");
+    else if (a === "super") {
+      if (p.superG < 1) { sfx("nope"); pop("NO POWER", 60, 110, 44, 1, 0.6); return; }
+      p.lvl = Math.floor(p.superG); p.superG = 0;
+      setP("super"); p.side = 1; p.zone = "high"; p.wind = p.lvl === 3 ? 0.3 : 0.2; p.dur = p.wind + 0.3;
+      sfx("charge", p.lvl);
+    }
+  }
+  function updPlayer(dt) {
+    p.t += dt;
+    switch (p.st) {
+      case "idle":
+        if (bufAct && G.t - bufT < 0.2) { var a = bufAct; bufAct = null; startAct(a); } else bufAct = null;
+        break;
+      case "punch":
+        if (!p.fired && p.t >= p.wind) { p.fired = true; dirty = true; resolvePunch(p.side, p.zone, false, 0); }
+        if (p.t >= p.dur && p.st === "punch") setP("idle");
+        break;
+      case "super":
+        if (!p.fired && p.t >= p.wind) { p.fired = true; dirty = true; resolvePunch(p.side, "high", true, p.lvl); }
+        if (p.t >= p.dur && p.st === "super") setP("idle");
+        break;
+      case "dodge": if (p.t >= 0.42) setP("idle"); break;
+      case "duck": if (p.t >= 0.46) setP("idle"); break;
+      case "hurt": if (p.t >= 0.38) setP("idle"); break;
+    }
+  }
+
+  var btns = document.querySelectorAll("[data-act]");
+  Array.prototype.forEach.call(btns, function (btn) {
+    var act = btn.getAttribute("data-act"), held = {};
+    btn.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      try { btn.setPointerCapture(e.pointerId); } catch (err) { /* synthetic events */ }
+      btn.classList.add("on");
+      if (act === "block") { if (!held[e.pointerId]) { held[e.pointerId] = 1; blockHeld++; } audioInit(); if (G.mode !== "fight") press(act); }
+      else press(act);
+    });
+    function up(e) {
+      btn.classList.remove("on");
+      if (act === "block" && held[e.pointerId]) { delete held[e.pointerId]; blockHeld = Math.max(0, blockHeld - 1); }
+    }
+    btn.addEventListener("pointerup", up);
+    btn.addEventListener("pointercancel", up);
+    btn.addEventListener("lostpointercapture", up);
+    btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  });
+  stage.addEventListener("pointerdown", function (e) {
+    if (e.target === screen && (G.mode === "oppDown" || G.mode === "playerDown")) { e.preventDefault(); press("mash"); }
+  });
+  var KEYS = { a: "dodgeL", arrowleft: "dodgeL", d: "dodgeR", arrowright: "dodgeR", s: "duck", arrowdown: "duck",
+               j: "jabL", k: "jabR", n: "bodyL", m: "bodyR", " ": "super", w: "block", arrowup: "block" };
+  var keyHeld = false;
+  addEventListener("keydown", function (e) {
+    var act = KEYS[e.key.toLowerCase()];
+    if (e.key === "Escape" || e.key === "p") { togglePause(); return; }
+    if (!act) return;
+    e.preventDefault();
+    if (e.repeat) return;
+    if (act === "block") { if (!keyHeld) { keyHeld = true; blockHeld++; } return; }
+    press(act);
+  });
+  addEventListener("keyup", function (e) {
+    if (KEYS[e.key.toLowerCase()] === "block" && keyHeld) { keyHeld = false; blockHeld = Math.max(0, blockHeld - 1); }
+  });
+  document.addEventListener("touchmove", function (e) { if (!e.target.closest || !e.target.closest(".ov")) e.preventDefault(); }, { passive: false });
+  document.addEventListener("dblclick", function (e) { e.preventDefault(); });
+
+  // ================================================================ opponent drawing
+  var dirty = true, lastBuild = 0;
+  var CURLS = [];
+  (function () { var s = 11; for (var n = 0; n < 40; n++) { s = (s * 16807) % 2147483647; var a = s / 2147483647 * 6.283; s = (s * 16807) % 2147483647; var rr = Math.sqrt(s / 2147483647); CURLS.push(Math.cos(a) * rr, Math.sin(a) * rr); } })();
+  var P = { bx: 0, by: 0, hx: 0, hy: 0, ax: 33, ay: 41, ar: 8, bxg: 47, byg: 41, br: 8, exp: "norm" };
+  function G2(ax, ay, ar, bx2, by2, br) { P.ax = ax; P.ay = ay; P.ar = ar; P.bxg = bx2; P.byg = by2; P.br = br; }
+
+  function oppPose() {
+    var o = opp, k, w;
+    P.bx = 0; P.by = 0; P.hx = 0; P.hy = 0; P.exp = "norm";
+    var dance = (beatN & 1) ? 1 : -1, dip = beatPhase < 0.2 ? 1 : 0;
+    switch (o.st) {
+      case "intro":
+        k = clamp(G.introT / 1.2, 0, 1);
+        P.by = Math.round(-10 * (1 - k)) + ((G.introT * 6 | 0) & 1); P.bx = dance;
+        if (G.introT < 2.4) { G2(20, 14 + ((G.introT * 5 | 0) & 1) * 3, 7, 60, 14 + (((G.introT * 5 | 0) + 1) & 1) * 3, 7); P.exp = "grin"; }
+        else G2(33, 41, 8, 47, 41, 8);
+        break;
+      case "idle":
+        P.bx = dance; P.by = dip;
+        if (o.guard === "high") G2(33, 41, 8, 47, 41, 8);
+        else { G2(31, 62, 8, 49, 62, 8); P.exp = "smug"; }
+        break;
+      case "tell":
+        k = ease(o.t / Math.max(0.05, o.dur * 0.55));
+        P.exp = "grin";
+        var s = o.mv.side, kind = o.mv.kind;
+        if (kind === "jab") {
+          P.bx = -s; P.hx = -s;
+          if (s < 0) G2(lerp(33, 25, k), lerp(41, 35, k), lerp(8, 7, k), 47, 41, 8);
+          else G2(33, 41, 8, lerp(47, 55, k), lerp(41, 35, k), lerp(8, 7, k));
+        } else if (kind === "hook") {
+          P.bx = s; P.hx = s;
+          if (s < 0) G2(lerp(33, 18, k), lerp(41, 60, k), 8, 47, 43, 8);
+          else G2(33, 43, 8, lerp(47, 62, k), lerp(41, 60, k), 8);
+        } else {
+          P.by = Math.round(5 * k); P.hy = 1;
+          if (s < 0) G2(lerp(33, 31, k), lerp(41, 74, k), lerp(8, 9, k), 47, 48, 8);
+          else G2(33, 48, 8, lerp(47, 49, k), lerp(41, 74, k), lerp(8, 9, k));
+        }
+        break;
+      case "strike":
+        P.exp = "shout"; k = easeOut(o.t / 0.09);
+        var ms = o.mv.side, mk = o.mv.kind;
+        if (mk === "jab") { P.bx = ms; if (ms < 0) G2(lerp(25, 37, k), lerp(35, 58, k), lerp(7, 15, k), 47, 41, 8); else G2(33, 41, 8, lerp(55, 43, k), lerp(35, 58, k), lerp(7, 15, k)); }
+        else if (mk === "hook") { P.bx = -ms * 2; if (ms < 0) G2(lerp(18, 42, k), lerp(60, 76, k), lerp(8, 14, k), 47, 43, 8); else G2(33, 43, 8, lerp(62, 38, k), lerp(60, 76, k), lerp(8, 14, k)); }
+        else { P.by = -3; if (ms < 0) G2(lerp(31, 38, k), lerp(74, 42, k), lerp(9, 15, k), 47, 48, 8); else G2(33, 48, 8, lerp(49, 42, k), lerp(74, 42, k), lerp(9, 15, k)); }
+        break;
+      case "recover":
+        P.exp = "oops"; P.bx = -(o.mv ? o.mv.side : 0) * 3; P.by = 1; P.hx = P.bx > 0 ? 1 : -1;
+        G2(26, 60, 8, 54, 60, 8);
+        break;
+      case "stunned": case "flinch":
+        P.exp = "hurt"; P.hx = -o.hitSide * 2 + (o.flash > 0 ? (Math.random() < 0.5 ? -1 : 1) : 0); P.hy = -1; P.by = 1;
+        G2(24, 58, 8, 56, 58, 8);
+        break;
+      case "block":
+        P.exp = "grin"; P.bx = dance;
+        G2(35, 39, 9, 45, 39, 9);
+        break;
+      case "taunt": case "celebrate":
+        w = o.t * 12; P.exp = "wink"; P.bx = Math.round(Math.sin(o.t * 6) * 3); P.by = dip;
+        G2(40 + Math.cos(w) * 7, 58 + Math.sin(w) * 4, 8, 40 - Math.cos(w) * 7, 58 - Math.sin(w) * 4, 8);
+        break;
+      case "fever":
+        switch (o.fs) {
+          case 0: P.by = -7; P.exp = "shout"; G2(33, 41, 8, 47, 41, 8); break;
+          case 1: P.by = -3; P.exp = "shout"; P.bx = 2; G2(24, 10, 7, 54, 64, 8); break;
+          case 2: P.bx = -10; P.by = dip - 2; P.exp = "grin"; G2(26, 58 + dip * 2, 8, 44, 64 - dip * 2, 8); break;
+          case 3: P.bx = 10; P.by = dip - 2; P.exp = "grin"; G2(36, 64 - dip * 2, 8, 54, 58 + dip * 2, 8); break;
+          case 4: P.bx = 6; P.exp = "grin"; k = ease(o.t / Math.max(0.05, o.dur)); G2(33, 42, 8, lerp(54, 66, k), lerp(50, 36, k), lerp(8, 7, k)); break;
+          case 5: P.bx = -3; P.exp = "shout"; k = easeOut(o.t / 0.1); G2(33, 42, 8, lerp(66, 30, k), lerp(36, 56, k), lerp(7, 20, k)); break;
+          default: P.bx = -4; P.by = 2; P.exp = "oops"; G2(24, 62, 8, 52, 64, 8); break;
+        }
+        break;
+      case "dizzy":
+        P.exp = "dazed"; P.hx = Math.round(Math.sin(o.t * 9) * 2); P.by = 2;
+        G2(30, 68, 8, 50, 68, 8);
+        break;
+      case "fall":
+        k = ease(o.t / 0.9); P.by = Math.round(22 * k); P.hy = -2; P.exp = "dazed";
+        G2(22, 20 + k * 10, 8, 58, 24 + k * 10, 8);
+        break;
+      case "getup":
+        k = ease(o.t / 1.0); P.by = Math.round(22 * (1 - k)); P.exp = "grin";
+        G2(lerp(24, 33, k), lerp(64, 41, k), 8, lerp(56, 47, k), lerp(64, 41, k), 8);
+        break;
+      default:
+        G2(33, 41, 8, 47, 41, 8);
+    }
+  }
+
+  function drawFace(hx, hy, exp) {
+    var L = hx - 4, R = hx + 3;
+    // sideburns
+    for (var y = hy - 3; y <= hy + 2; y++) { sp(hx - 8, y, 19); sp(hx + 7, y, 19); }
+    // brows
+    if (exp === "grin" || exp === "shout") { sp(L - 1, hy - 4, 19); sp(L, hy - 3, 19); sp(L + 1, hy - 3, 19); sp(R + 2, hy - 4, 19); sp(R + 1, hy - 3, 19); sp(R, hy - 3, 19); }
+    else if (exp === "oops" || exp === "hurt") { sp(L - 1, hy - 3, 19); sp(L, hy - 4, 19); sp(L + 1, hy - 4, 19); sp(R, hy - 4, 19); sp(R + 1, hy - 4, 19); sp(R + 2, hy - 3, 19); }
+    else { sp(L - 1, hy - 3, 19); sp(L, hy - 3, 19); sp(L + 1, hy - 3, 19); sp(R, hy - 3, 19); sp(R + 1, hy - 3, 19); sp(R + 2, hy - 3, 19); }
+    // eyes
+    if (exp === "dazed") {
+      sp(L - 1, hy - 2, 0); sp(L + 1, hy - 2, 0); sp(L, hy - 1, 0); sp(L - 1, hy, 0); sp(L + 1, hy, 0);
+      sp(R, hy - 2, 0); sp(R + 2, hy - 2, 0); sp(R + 1, hy - 1, 0); sp(R, hy, 0); sp(R + 2, hy, 0);
+    } else if (exp === "hurt") {
+      sp(L - 1, hy - 2, 0); sp(L, hy - 1, 0); sp(L - 1, hy, 0); sp(R + 2, hy - 2, 0); sp(R + 1, hy - 1, 0); sp(R + 2, hy, 0);
+    } else if (exp === "grin" || exp === "smug") {
+      sp(L - 1, hy - 1, 0); sp(L, hy - 1, 0); sp(L + 1, hy - 1, 0); sp(R, hy - 1, 0); sp(R + 1, hy - 1, 0); sp(R + 2, hy - 1, 0);
+    } else if (exp === "wink") {
+      sp(L - 1, hy - 1, 10); sp(L, hy - 1, 0); sp(L, hy - 2, 0); sp(R, hy - 1, 0); sp(R + 1, hy - 1, 0); sp(R + 2, hy - 1, 0);
+    } else {
+      sp(L - 1, hy - 1, 10); sp(L, hy - 1, 0); sp(L, hy - 2, 0); sp(R + 1, hy - 1, 10); sp(R, hy - 1, 0); sp(R, hy - 2, 0);
+    }
+    // nose
+    sp(hx - 1, hy + 1, 16); sp(hx, hy + 1, 16); sp(hx - 1, hy, 18);
+    // mouth under the moustache
+    if (exp === "shout" || exp === "oops") { for (var mx = hx - 2; mx <= hx + 1; mx++) { sp(mx, hy + 4, 0); sp(mx, hy + 5, 0); sp(mx, hy + 6, mx < hx ? 0 : 8); } }
+    else if (exp === "grin" || exp === "wink" || exp === "smug") { for (mx = hx - 3; mx <= hx + 2; mx++) { sp(mx, hy + 4, 10); sp(mx, hy + 5, 0); } sp(hx - 4, hy + 3, 0); sp(hx + 3, hy + 3, 0); }
+    else if (exp === "hurt" || exp === "dazed") { sp(hx - 1, hy + 4, 0); sp(hx, hy + 4, 0); sp(hx - 2, hy + 5, 0); sp(hx + 1, hy + 5, 0); sp(hx - 1, hy + 6, 0); sp(hx, hy + 6, 0); if (exp === "dazed") sp(hx, hy + 7, 8); }
+    else { sp(hx - 2, hy + 5, 0); sp(hx - 1, hy + 5, 0); sp(hx, hy + 5, 0); sp(hx + 1, hy + 5, 0); }
+    // disco moustache
+    for (mx = hx - 4; mx <= hx + 3; mx++) sp(mx, hy + 3, 19);
+    sp(hx - 4, hy + 4, 19); sp(hx + 3, hy + 4, 19); sp(hx - 3, hy + 2, 19); sp(hx + 2, hy + 2, 19);
+  }
+
+  function drawOpp() {
+    tgt(oppSpr, OW, OH); oppSpr.fill(EMPTY);
+    if (opp.st === "down" || opp.st === "ko") { drawOppLying(); return; }
+    oppPose();
+    var bx = P.bx, by = P.by, cx = 40 + bx, hx = cx + P.hx, hy = 30 + by + P.hy, x, y;
+    // afro
+    ellipse(hx, hy - 7, 14, 12, 19, 20, 20, -1);
+    for (var n = 0; n < CURLS.length; n += 2) sp(hx + CURLS[n] * 12, hy - 7 + CURLS[n + 1] * 10, (n & 2) ? 19 : 17);
+    // neck, torso, belly
+    capsule(cx, hy + 6, cx, 48 + by, 4.5, 16, 17, 18);
+    ellipse(cx, 64 + by, 15, 17, 16, 17, 18, -1);
+    ellipse(cx, 74 + by, 12.5, 9, 16, 17, 18, -1);
+    // pecs + navel + chest hair
+    for (x = 3; x <= 9; x++) { sp(cx - x, 60 + by + (x > 7 ? 1 : 0), 16); sp(cx + x - 1, 60 + by + (x > 7 ? 1 : 0), 16); }
+    sp(cx, 74 + by, 16); sp(cx - 1, 55 + by, 19); sp(cx + 1, 57 + by, 19); sp(cx, 59 + by, 19);
+    // sequined trunks
+    for (y = 80 + by; y < 100; y++) {
+      var row = y - (80 + by), half = 15 + row * 0.15;
+      for (x = Math.floor(cx - half); x <= Math.ceil(cx + half); x++) {
+        var nx = (x + 0.5 - cx) / half; if (nx < -1 || nx > 1) continue;
+        var c = row < 3 ? (row === 1 ? 9 : 43) : ramp3(-0.5 * nx + 0.62 * Math.sqrt(1 - nx * nx), x, y, 24, 25, 26);
+        if (row >= 3 && ((x * 7 + y * 13 + beatN * 5) % 29) === 0) c = 10;
+        if (row > 12 && Math.abs(x - cx) < 1) c = 24;
+        sp(x, y, c);
+      }
+    }
+    // shoulders
+    ellipse(cx - 14, 50 + by, 6.5, 6, 16, 17, 18, -1);
+    ellipse(cx + 14, 50 + by, 6.5, 6, 16, 17, 18, -1);
+    // gold chain + medallion
+    for (x = 0; x <= 6; x++) { sp(cx - 7 + x, 52 + by + x, (x & 1) ? 6 : 9); sp(cx + 7 - x, 52 + by + x, (x & 1) ? 6 : 9); }
+    sp(cx - 1, 59 + by, 9); sp(cx, 59 + by, 9); sp(cx - 1, 60 + by, 6); sp(cx, 60 + by, 10);
+    // head
+    ellipse(hx - 8, hy + 1, 2, 2.5, 16, 17, 18, -1); ellipse(hx + 8, hy + 1, 2, 2.5, 16, 17, 18, -1);
+    ellipse(hx, hy, 8, 9, 16, 17, 18, -1);
+    // afro fringe over the forehead
+    for (x = -7; x <= 7; x++) { sp(hx + x, hy - 7, 19); if (Math.abs(x) > 3 || (x & 1)) sp(hx + x, hy - 6, 20); }
+    drawFace(hx, hy, P.exp);
+    // arms: fixed-length bones. A punch thrown at the camera foreshortens the arm (it points at us),
+    // it never stretches. The punching shoulder cocks back on the tell and drives forward on the strike.
+    var twA = 0, twB = 0, ms = opp.mv ? opp.mv.side : 0;
+    if (opp.st === "tell" && !opp.feint) { if (ms < 0) twA = -1; else twB = -1; }
+    if (opp.st === "strike") { if (ms < 0) twA = 1; else twB = 1; }
+    if (opp.st === "fever" && opp.fs === 4) twB = -1.5;
+    if (opp.st === "fever" && opp.fs === 5) twB = 1.5;
+    var sAx = cx - 14 + twA * 3, sAy = 50 + by - twA * 2 + (twA > 0 ? 4 : 0), sBx = cx + 14 - twB * 3, sBy = 50 + by - twB * 2 + (twB > 0 ? 4 : 0);
+    var gAx = P.ax + bx, gAy = P.ay + by, gBx = P.bxg + bx, gBy = P.byg + by;
+    if (P.ar > P.br) { armB(); armA(); } else { armA(); armB(); }
+    function arm(sx2, sy2, gx, gy, gr) {
+      var dx = gx - sx2, dy = gy - sy2, d = Math.sqrt(dx * dx + dy * dy), l1 = 13, l2 = 12;
+      if (gr > 10) { var f = clamp((d + 1) / (l1 + l2), 0.3, 1); l1 *= f; l2 *= f; }
+      solveArm(sx2, sy2, gx, gy, l1, l2, cx);
+      capsule(sx2, sy2, IK.ex, IK.ey, 4, 16, 17, 18); capsule(IK.ex, IK.ey, IK.hx, IK.hy, 3.4, 16, 17, 18);
+      glove(IK.hx, IK.hy, gr, IK.ex, IK.ey, 21, 22, 23, 44);
+    }
+    function armA() { arm(sAx, sAy, gAx, gAy, P.ar); }
+    function armB() { arm(sBx, sBy, gBx, gBy, P.br); }
+  }
+  function drawOppLying() {
+    // Flat on the canvas: torso across, afro to the right, gloves up.
+    var by = 70;
+    capsule(18, by + 12, 30, by + 14, 5, 24, 25, 26);
+    ellipse(40, by + 10, 18, 7, 16, 17, 18, -1);
+    ellipse(64, by + 4, 11, 9, 19, 20, 20, -1);
+    ellipse(60, by + 7, 7, 6, 16, 17, 18, -1);
+    sp(58, by + 5, 0); sp(60, by + 5, 0); sp(59, by + 6, 0); sp(58, by + 7, 0); sp(60, by + 7, 0);
+    for (var x = 55; x <= 61; x++) sp(x, by + 9, 19);
+    capsule(30, by + 6, 26, by - 6, 3.4, 16, 17, 18); glove(26, by - 8, 7, 30, by + 6, 21, 22, 23, 44);
+    capsule(48, by + 6, 52, by - 4, 3.4, 16, 17, 18); glove(52, by - 6, 7, 48, by + 6, 21, 22, 23, 44);
+  }
+
+  // ================================================================ Kid Volt rig (seen from behind)
+  // Arms are two bones of fixed length. A glove can never travel further than the arm reaches,
+  // so to land a punch the whole body has to lunge in: forward reads as up the screen and a
+  // touch smaller, with the torso leaning and the shoulders turning into the shot.
+  var UA = 18, FA = 17;                          // upper arm, forearm (pixels at scale 1)
+  var FACE_Y = 50, BODY_Y = 84;                  // Danny's face and ribs on screen (world y)
+  var REST_X = 60, REST_Y = 114;                 // Kid's neck base at rest
+  var K = { nx: 60, ny: 114, hipX: 60, s: 1, tw: 0, roll: 0, hx: 0, hy: 0, lx: 0, ly: 0, rx: 0, ry: 0, gr: 7.5, front: 0, torso: 44 };
+  var IK = { ex: 0, ey: 0, hx: 0, hy: 0 };
+  // Two-bone IK: elbow bends away from the body's centre line. Out-of-reach targets are clamped.
+  function solveArm(sx, sy, tx, ty, l1, l2, centreX) {
+    var dx = tx - sx, dy = ty - sy, d = Math.sqrt(dx * dx + dy * dy) || 0.001, maxd = l1 + l2 - 0.01, mind = Math.abs(l1 - l2) + 2;
+    if (d > maxd) { tx = sx + dx / d * maxd; ty = sy + dy / d * maxd; d = maxd; }
+    if (d < mind) { tx = sx + dx / d * mind; ty = sy + dy / d * mind; d = mind; }
+    var a = Math.acos(clamp((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d), -1, 1)), base = Math.atan2(dy, dx);
+    var e1x = sx + Math.cos(base + a) * l1, e1y = sy + Math.sin(base + a) * l1;
+    var e2x = sx + Math.cos(base - a) * l1, e2y = sy + Math.sin(base - a) * l1;
+    var pick1 = Math.abs(e1x - centreX) * 0.4 + e1y > Math.abs(e2x - centreX) * 0.4 + e2y;
+    IK.ex = pick1 ? e1x : e2x; IK.ey = pick1 ? e1y : e2y; IK.hx = tx; IK.hy = ty;
+  }
+  function kidRest(nx, ny) { K.nx = nx; K.ny = ny; K.hipX = 60; K.s = 1; K.tw = 0; K.roll = 0; K.hx = 0; K.hy = 0; K.gr = 7.5; K.front = 0; K.torso = 44;
+    K.lx = nx - 13; K.ly = ny - 16; K.rx = nx + 13; K.ry = ny - 16; }
+  // Blend two key poses (a -> b) by k; used between the held keys so moves snap, not slide.
+  var KA = {}, KB = {}, KR = {};
+  function keyCopy(dst) { for (var n in K) dst[n] = K[n]; }
+  function keyMix(a, b, k) { for (var n in K) K[n] = a[n] + (b[n] - a[n]) * k; }
+
+  // Key poses for a punch. side -1 = left glove, zone high/low.
+  function punchKey(which, side, zone) {
+    var sx = REST_X, tgtX = 60 + side * (zone === "high" ? 4 : 9);
+    if (which === 0) {                           // anticipation: dip and cock the shoulder back
+      kidRest(sx - side * 2, REST_Y + 3); K.tw = -side * 0.6; K.hx = -side;
+      if (side < 0) { K.lx = K.nx - 16; K.ly = K.ny - 8; } else { K.rx = K.nx + 16; K.ry = K.ny - 8; }
+      return;
+    }
+    if (zone === "high") {                       // lunge up and in to the face
+      kidRest(sx - side * 4, FACE_Y + 28); K.s = 0.8; K.tw = side; K.hx = -side * 6; K.hy = 2; K.hipX = 60 - side * 2; K.torso = 50;
+      if (side < 0) { K.lx = tgtX; K.ly = FACE_Y; K.rx = K.nx + 9; K.ry = K.ny - 15; }
+      else { K.rx = tgtX; K.ry = FACE_Y; K.lx = K.nx - 9; K.ly = K.ny - 15; }
+    } else {                                     // shift in low and dig to the ribs
+      kidRest(sx - side * 3, BODY_Y + 24); K.torso = 47; K.s = 0.9; K.tw = side; K.roll = side * 2; K.hx = -side * 4; K.hy = 2; K.hipX = 60 - side * 2;
+      if (side < 0) { K.lx = tgtX; K.ly = BODY_Y; K.rx = K.nx + 10; K.ry = K.ny - 15; }
+      else { K.rx = tgtX; K.ry = BODY_Y; K.lx = K.nx - 10; K.ly = K.ny - 15; }
+    }
+  }
+  function superKey(which) {
+    if (which === 0) { kidRest(REST_X - 3, REST_Y + 8); K.tw = -1; K.hx = -2; K.hy = 1; K.rx = K.nx + 20; K.ry = K.ny + 6; K.lx = K.nx - 8; K.ly = K.ny - 16; }
+    else { kidRest(REST_X - 8, FACE_Y + 24); K.s = 0.8; K.tw = 1; K.hx = -6; K.torso = 50; K.rx = 60; K.ry = FACE_Y - 2; K.lx = K.nx - 9; K.ly = K.ny - 14; K.hipX = 63; }
+  }
+
+  function kidPose() {
+    var t = p.t, k, bob = beatPhase < 0.2 ? 1 : 0;
+    kidRest(REST_X, REST_Y);
+    switch (p.st) {
+      case "idle":
+        if (blockHeld > 0 && G.mode === "fight") { K.ny += 1; K.lx = K.nx - 9; K.ly = K.ny - 25; K.rx = K.nx + 9; K.ry = K.ny - 25; K.hy = 2; K.gr = 8.5; }
+        else { K.nx += (beatN & 1) ? 1 : -1; K.ny += bob; K.lx = K.nx - 13; K.ly = K.ny - 16; K.rx = K.nx + 13; K.ry = K.ny - 16; }
+        break;
+      case "punch": case "super":
+        var isSup = p.st === "super", w = p.wind, hold = isSup ? 0.12 : 0.08;
+        if (isSup) superKey(0); else punchKey(0, p.side, p.zone); keyCopy(KA);
+        if (isSup) superKey(1); else punchKey(1, p.side, p.zone); keyCopy(KB);
+        if (p.blocked) { KB.ny += 5; KB.s = (KB.s + 1) / 2; }
+        if (t < w * 0.55) { keyMix(KA, KA, 0); }                               // hold the wind-up
+        else if (t < w) keyMix(KA, KB, easeOut((t - w * 0.55) / (w * 0.45)));   // snap in
+        else if (t < w + hold) keyMix(KA, KB, 1);                              // hold the contact
+        else { kidRest(REST_X, REST_Y); keyCopy(KR); keyMix(KB, KR, ease((t - w - hold) / Math.max(0.05, p.dur - w - hold))); }
+        K.front = t >= w * 0.55 && t < w + hold ? (isSup ? 2 : 1) : 0;
+        break;
+      case "dodge":
+        k = t < 0.07 ? easeOut(t / 0.07) : t < 0.3 ? 1 : 1 - ease((t - 0.3) / 0.12);
+        K.nx = REST_X + p.side * 30 * k; K.ny = REST_Y + 4 * k; K.hipX = 60 + p.side * 11 * k;
+        K.roll = p.side * 5 * k; K.hx = p.side * 4 * k; K.hy = 2 * k; K.tw = -p.side * 0.3 * k;
+        K.lx = K.nx - 10; K.ly = K.ny - 13; K.rx = K.nx + 10; K.ry = K.ny - 15;
+        break;
+      case "duck":
+        k = t < 0.07 ? easeOut(t / 0.07) : t < 0.34 ? 1 : 1 - ease((t - 0.34) / 0.12);
+        K.ny = REST_Y + 18 * k; K.hy = 3 * k; K.lx = K.nx - 9; K.ly = K.ny - 13; K.rx = K.nx + 9; K.ry = K.ny - 13;
+        break;
+      case "hurt":
+        k = t < 0.08 ? t / 0.08 : 1 - ease((t - 0.08) / 0.3);
+        K.nx = REST_X - p.hurtBy * 4 * k; K.ny = REST_Y + 6 * k; K.hx = -p.hurtBy * 3 * k; K.hy = 4 * k; K.tw = p.hurtBy * 0.6 * k; K.roll = -p.hurtBy * 3 * k;
+        K.lx = K.nx - 13 - 6 * k; K.ly = K.ny - 16 + 12 * k; K.rx = K.nx + 13 + 6 * k; K.ry = K.ny - 16 + 12 * k;
+        break;
+      case "victory":
+        var pump = ((G.resT * 4 | 0) & 1) * 4;
+        K.ny = REST_Y - 4; K.lx = K.nx - 12; K.ly = K.ny - 44 + pump; K.rx = K.nx + 12; K.ry = K.ny - 48 + (4 - pump); K.hy = -1;
+        break;
+      case "down": case "getup":
+        k = p.st === "down" ? ease(t / 0.5) : 1 - ease(t / 0.8);
+        K.ny = REST_Y + 70 * k; K.hy = 3; K.lx = K.nx - 18; K.ly = K.ny - 4; K.rx = K.nx + 18; K.ry = K.ny - 4;
+        break;
+    }
+    // world offsets: stepping aside while he counts, the little shudder when hit
+    K.nx += p.aside; K.lx += p.aside; K.rx += p.aside; K.hipX += p.aside;
+    if (G.mode === "oppDown") { K.ny += 12; K.ly += 12; K.ry += 12; }
+  }
+
+  function drawPlayer() {
+    tgt(plSpr, PW, PH); plSpr.fill(EMPTY);
+    kidPose();
+    var s = K.s, nx = K.nx, ny = K.ny, sw = 18 * s;
+    // shoulders turn with the punch: the punching shoulder goes forward (up) and in
+    var sLx = nx - sw + (K.tw < 0 ? -K.tw * 3 * s : 0), sLy = ny + 2 * s + K.tw * 5 * s - K.roll;
+    var sRx = nx + sw - (K.tw > 0 ? K.tw * 3 * s : 0), sRy = ny + 2 * s - K.tw * 5 * s + K.roll;
+    var l1 = UA * s, l2 = FA * s, gr = K.gr * (K.front ? 0.86 : 1) * s;
+    // arms + gloves first: when he reaches, the gloves are further from the camera than his back
+    solveArm(sLx, sLy, K.lx, K.ly, l1, l2, nx);
+    capsule(sLx, sLy, IK.ex, IK.ey, 4.6 * s, 27, 28, 29); capsule(IK.ex, IK.ey, IK.hx, IK.hy, 3.9 * s, 27, 28, 29);
+    glove(IK.hx, IK.hy, gr, IK.ex, IK.ey, 33, 34, 35, 0);
+    var leftFist = IK.hx;
+    solveArm(sRx, sRy, K.rx, K.ry, l1, l2, nx);
+    capsule(sRx, sRy, IK.ex, IK.ey, 4.6 * s, 27, 28, 29); capsule(IK.ex, IK.ey, IK.hx, IK.hy, 3.9 * s, 27, 28, 29);
+    glove(IK.hx, IK.hy, gr, IK.ex, IK.ey, 33, 34, 35, 0);
+    // back: a tapered capsule from the shoulders down to the hips, so it leans with the body
+    var hipY = ny + K.torso * s, lx0 = K.hipX - 8 * s, rx0 = K.hipX + 8 * s;
+    if (hipY < H + 4) {
+      capsule(lx0, hipY + 8 * s, lx0 - 2 * s, H + 20, 7.5 * s, 27, 28, 29);
+      capsule(rx0, hipY + 8 * s, rx0 + 2 * s, H + 20, 7.5 * s, 27, 28, 29);
+      ellipse(K.hipX, hipY + 6 * s, 17 * s, 10 * s, 0, 0, 41, -1);                       // trunks
+      for (var tx2 = Math.round(K.hipX - 16 * s); tx2 < K.hipX + 16 * s; tx2++) sp(tx2, hipY + 8 * s, 9);   // volt stripe
+    }
+    capsule(nx, ny + 9 * s, K.hipX, hipY, 16 * s, 27, 28, 29);
+    ellipse(sLx, sLy + 2 * s, 7.5 * s, 6.5 * s, 27, 28, 29, -1);
+    ellipse(sRx, sRy + 2 * s, 7.5 * s, 6.5 * s, 27, 28, 29, -1);
+    // spine + shoulder blades follow the lean
+    for (var i = 0; i < 16; i++) { var f = i / 15; if (i & 1) sp(lerp(nx, K.hipX, f), ny + 8 * s + (hipY - ny - 8 * s) * f * 0.7, 27); }
+    for (i = 0; i < 5; i++) { sp(lerp(sLx, nx, 0.35) + i, sLy + 7 * s - (i >> 1), 27); sp(lerp(sRx, nx, 0.35) - i, sRy + 7 * s - (i >> 1), 27); }
+    // neck + head
+    capsule(nx, ny - 2 * s, nx, ny + 6 * s, 4.5 * s, 27, 28, 29);
+    var hx = nx + K.hx, hy = ny - 12 * s + K.hy, hr = 8 * s;
+    ellipse(hx - 8 * s, hy + 1, 2 * s, 2.5 * s, 27, 28, 29, -1); ellipse(hx + 8 * s, hy + 1, 2 * s, 2.5 * s, 27, 28, 29, -1);
+    ellipse(hx, hy, hr, 9 * s, 27, 28, 29, -1);
+    // electric-blue spikes with a lightning streak
+    tri(hx - 9 * s, hy - 2 * s, hx - 3 * s, hy - 6 * s, hx - 11 * s, hy - 12 * s, 31);
+    tri(hx - 4 * s, hy - 7 * s, hx + 3 * s, hy - 7 * s, hx - 1 * s, hy - 16 * s, 31);
+    tri(hx + 2 * s, hy - 6 * s, hx + 9 * s, hy - 2 * s, hx + 11 * s, hy - 12 * s, 31);
+    tri(hx - 3 * s, hy - 6 * s, hx + 4 * s, hy - 6 * s, hx + 5 * s, hy - 13 * s, 30);
+    ellipse(hx, hy - 2 * s, 9 * s, 8 * s, 30, 31, 32, -1);
+    var bx = Math.round(hx), by = Math.round(hy);
+    sp(bx + 2, by - 8, 9); sp(bx + 1, by - 7, 9); sp(bx + 2, by - 6, 9); sp(bx + 1, by - 5, 9); sp(bx, by - 4, 9); sp(bx + 1, by - 3, 9);
+    // trunks waistband at the hips
+    for (var x = Math.round(K.hipX - 16 * s); x < K.hipX + 16 * s; x++) { sp(x, hipY + 1, 0); sp(x, hipY + 2, (x >> 2) & 1 ? 9 : 0); }
+  }
+
+  // ================================================================ scene drawing (per frame)
+  var flashes = [];
+  function drawFloor() {
+    var pulse = 1 - beatPhase, feverOn = opp.st === "fever" && opp.fs >= 1 && opp.fs <= 5;
+    for (var y = FLOOR_Y; y < H; y++) {
+      var dy = y - 62, z = 240 / dy, v = z / 5, fv = v - Math.floor(v), vi = Math.floor(v);
+      for (var x = 0; x < W; x++) {
+        var u = (x - 60) / dy * 9 + 50, fu = u - Math.floor(u), ui = Math.floor(u), c;
+        if (fu < 0.07 || fv < 0.09) c = 11;
+        else {
+          c = ((ui + vi) & 1) ? 12 : 11;
+          var lit = ((ui * 7 + vi * 13 + beatN * 5) % (feverOn ? 3 : 5)) === 0;
+          if (lit) {
+            var hue = (ui * 3 + vi * 5 + beatN) & 3, t = pulse + (bay(x, y) / 16 - 0.5) * 0.3;
+            if (t > 0.6) c = [8, 7, 9, 40][hue]; else if (t > 0.25) c = [37, 36, 38, 39][hue];
+          }
+        }
+        fb[y * W + x] = c;
+      }
+    }
+  }
+  function drawSpotlights() {
+    if (!(opp.st === "fever" && opp.fs >= 1 && opp.fs <= 5)) return;
+    var bxp = 96, byp = G.ballY;
+    for (var s = 0; s < 3; s++) {
+      var ang = Math.PI / 2 + Math.sin(G.t * 2.2 + s * 2.1) * 0.9, ca = Math.cos(ang), sa = Math.sin(ang);
+      for (var y = byp + 4; y < H; y++) for (var x = 0; x < W; x++) {
+        var dx = x - bxp, dy = y - byp, along = dx * ca + dy * sa;
+        if (along <= 0) continue;
+        var across = -dx * sa + dy * ca;
+        if (Math.abs(across) < along * 0.12 && bay(x, y) < 8) fb[y * W + x] = LIGHTEN[fb[y * W + x]];
+      }
+    }
+  }
+  function drawBall() {
+    var bxp = 96, byp = Math.round(G.ballY);
+    for (var y = 18; y < byp - 4; y++) pset(bxp, y, 44);
+    for (var yy = -4; yy <= 4; yy++) for (var xx = -4; xx <= 4; xx++) {
+      if (xx * xx + yy * yy > 18) continue;
+      var tile = ((xx + 8 + ((G.t * 8) | 0)) >> 1) + ((yy + 8) >> 1);
+      pset(bxp + xx, byp + yy, (xx - yy < -3) ? 10 : (tile & 1) ? 43 : 44);
+    }
+    if (((G.t * 10) | 0) % 3 === 0) { pset(bxp - 2, byp - 2, 10); pset(bxp - 3, byp - 2, 10); pset(bxp - 2, byp - 3, 10); }
+  }
+  function drawDynamicScene() {
+    // neon sign flicker
+    if (Math.random() < 0.03 || ((G.t * 3 | 0) % 17 === 0 && (G.t * 30 | 0) & 1)) for (var n = 0; n < SIGN.length; n++) fb[SIGN[n]] = 37;
+    // camera flashes in the crowd, more when he's in trouble
+    var rate = G.mode === "oppDown" ? 0.5 : 0.05 + G.flow * 0.03;
+    if (Math.random() < rate) flashes.push(rnd(4, 116) | 0, rnd(54, 72) | 0, 3);
+    for (n = flashes.length - 3; n >= 0; n -= 3) {
+      var fx = flashes[n], fy = flashes[n + 1];
+      pset(fx, fy, 10); pset(fx - 1, fy, 43); pset(fx + 1, fy, 43); pset(fx, fy - 1, 43); pset(fx, fy + 1, 43);
+      if (--flashes[n + 2] <= 0) flashes.splice(n, 3);
+    }
+  }
+  function drawGlint(x, y) {
+    var s = 2 + ((G.t * 14 | 0) & 1);
+    for (var k = -s; k <= s; k++) { pset(x + k, y, k === 0 ? 10 : 9); pset(x, y + k, k === 0 ? 10 : 9); }
+    pset(x - s - 1, y, 10); pset(x + s + 1, y, 10); pset(x, y - s - 1, 10); pset(x, y + s + 1, 10);
+    pset(x - 1, y - 1, 7); pset(x + 1, y + 1, 7); pset(x + 1, y - 1, 7); pset(x - 1, y + 1, 7);
+  }
+  function drawBar(x, y, w, v, ghost, c, rightAlign) {
+    rect(x - 1, y - 1, w + 2, 6, 0); rect(x, y, w, 4, 11);
+    var fw = Math.round(w * clamp(v, 0, 100) / 100), gw = Math.round(w * clamp(ghost, 0, 100) / 100);
+    if (rightAlign) { rect(x + w - gw, y, gw, 4, 10); rect(x + w - fw, y, fw, 4, c); rect(x + w - fw, y, fw, 1, 10); }
+    else { rect(x, y, gw, 4, 10); rect(x, y, fw, 4, c); rect(x, y, fw, 1, 10); }
+  }
+  function drawHUD() {
+    rect(0, 0, W, 17, 47); for (var x = 0; x < W; x++) pset(x, 17, 13);
+    drawText("KID VOLT", 2, 2, 7, 1, -1);
+    drawText("DANNY", W - 2 - textW("DANNY", 1), 2, 8, 1, -1);
+    drawBar(2, 9, 44, p.health, p.ghost, 9, false);
+    drawBar(W - 46, 9, 44, opp.health, opp.ghost, 8, true);
+    var clk = fmtClock(G.clock);
+    drawTextC(clk, 60, 3, (G.clock < 30 && (G.t * 4 | 0) & 1) ? 8 : 10, 1, -1);
+    // beat light
+    rect(57, 11, 6, 3, beatPhase < 0.25 ? 9 : 38);
+    // opponent knockdown pips
+    for (var k = 0; k < 3; k++) rect(W - 46 + k * 5, 15, 3, 1, k < opp.kd ? 9 : 44);
+    for (k = 0; k < 3; k++) rect(2 + k * 5, 15, 3, 1, k < p.kd ? 8 : 44);
+    // super pips
+    for (k = 0; k < 3; k++) {
+      var f = clamp(p.superG - k, 0, 1), px = 24 + k * 8;
+      rect(px, 15, 6, 1, 38); rect(px, 15, Math.round(6 * f), 1, f >= 1 ? 9 : 6);
+    }
+    var bandBusy = false;
+    for (var q = 0; q < MAXPOP; q++) if (popOn[q] && popY[q] < 40) bandBusy = true;
+    if (G.flow > 0 && G.mode === "fight" && !bandBusy) {
+      var fc = G.flow >= 5 ? ((G.t * 10 | 0) & 1 ? 45 : 9) : G.flow >= 3 ? 7 : 43;
+      drawText("FLOW x" + G.flow, 2, 20, fc, 1, 0);
+    }
+  }
+  function drawVignette() {
+    for (var y = 0; y < H; y++) for (var x = 0; x < W; x++) {
+      var d = Math.min(x, y - 18, W - 1 - x, H - 1 - y);
+      if (d < 0) continue;
+      if ((d < 2 && bay(x, y) < 10) || (d < 5 && bay(x, y) < 4)) fb[y * W + x] = 46;
+    }
+  }
+
+  // ================================================================ update
+  function update() {
+    var dt = DT;
+    updateBeat(dt);
+    if (G.tipT > 0) { G.tipT -= dt; if (G.tipT <= 0) tipEl.hidden = true; }
+    if (G.hitstop > 0) { G.hitstop--; return; }
+    if (G.slow > 0) { G.slow -= dt; dt *= 0.35; }
+    G.t += dt;
+    p.ghost = p.ghost > p.health ? Math.max(p.health, p.ghost - 30 * dt) : p.health;
+    opp.ghost = opp.ghost > opp.health ? Math.max(opp.health, opp.ghost - 30 * dt) : opp.health;
+    if (opp.sayT > 0) opp.sayT -= dt;
+    if (G.hurtFlash > 0) G.hurtFlash -= dt;
+    var ballTarget = opp.st === "fever" && opp.fs >= 1 && opp.fs <= 5 ? 36 : 24;
+    G.ballY += (ballTarget - G.ballY) * Math.min(1, dt * 5);
+
+    switch (G.mode) {
+      case "intro":
+        G.introT += dt;
+        if (G.introT >= 1.2 && G.introT - dt < 1.2) say("LET'S DANCE!", 3);
+        if (G.introT >= 3.4 && G.introT - dt < 3.4) { sfx("bell", 1); pop("FIGHT!", 60, 44, 9, 3, 0.9); }
+        if (G.introT >= 3.6) {
+          G.mode = "fight"; setOpp("idle"); opp.idleBeats = 2;
+          showTip("start", "Watch for the <b>sparkle</b>. Punch that spot during his wind-up to <b>COUNTER</b>.");
+        }
+        break;
+      case "fight":
+        G.clock -= (opp.st === "dizzy" ? 0 : dt * CLOCK_RATE);
+        if (G.clock <= 0) { G.clock = 0; endFight("TIME"); break; }
+        updPlayer(dt);
+        if (G.mode === "fight") updOpp(dt);
+        if (G.t - p.lastHitT > 2 && p.health < 100 && p.health > 0) p.health = Math.min(100, p.health + 1.2 * dt);
+        if (opp.st !== "dizzy") opp.dizzy = Math.max(0, opp.dizzy - 9 * dt);
+        if (G.flow >= 5 && Math.random() < 0.5) spawn(3, 0.4, 60 + p.aside + rnd(-22, 22), 116, rnd(-5, 5), -30, -20);
+        break;
+      case "oppDown":
+        opp.t += dt; p.aside += (30 - p.aside) * Math.min(1, dt * 4);
+        if (opp.st === "fall" && opp.t >= opp.dur) { setOpp("down"); burst(40, 84, 12, 5, 10, 40, 30); G.shake = 5; }
+        if (opp.st === "down") {
+          G.countT += dt;
+          if (G.plan.end === "TKO" && G.countT > 0.2) { endFight("TKO"); break; }
+          if (G.countT >= 0.9) {
+            G.countT -= 0.9; G.count++; sfx("count");
+            if (G.plan.getUp && G.count >= G.plan.getUp) { setOpp("getup", 1.0); opp.health = G.plan.hp; opp.ghost = opp.health; }
+            else if (G.count >= 10) { endFight("KO"); break; }
+          }
+        }
+        if (opp.st === "getup" && opp.t >= opp.dur) {
+          G.mode = "fight"; opp.phase = Math.min(3, opp.kd + 1); setBpm(PHASE_BPM[opp.phase]);
+          opp.lastGetUp = G.t; setOpp("idle"); opp.idleBeats = 2; G.count = 0;
+          opp.queue = opp.phase === 2 ? ["jabB", "hookA", "fever"] : ["jabA", "upB", "fever"];
+          say(opp.phase === 2 ? "NOW IT'S A PARTY!" : "FEVER TIME!", 4);
+          if (opp.phase === 2) showTip("phase2", "He's back up, and the <b>tempo is faster</b>.");
+          if (opp.phase === 3) showTip("phase3", "Last dance. Watch out for <b>fakes</b>: no sparkle, no punch.");
+        }
+        break;
+      case "playerDown":
+        opp.t += dt; p.t += dt;
+        if (p.st === "down") {
+          G.countT += dt;
+          if (p.kd >= 3 && G.countT > 0) { endFight("TKO_LOSS"); break; }
+          if (G.countT >= 0.85) {
+            G.countT -= 0.85; G.count++; sfx("count");
+            if (p.mash >= p.need) { setP("getup"); p.health = [0, 60, 42, 30][p.kd]; p.ghost = p.health; }
+            else if (G.count >= 10) { endFight("KO_LOSS"); break; }
+          }
+        } else if (p.st === "getup" && p.t >= 0.8) {
+          G.mode = "fight"; setP("idle"); G.count = 0; afterMove(); opp.idleBeats = 2; say("STILL GOT IT?", 3);
+        }
+        break;
+      case "result":
+        G.resT += dt; opp.t += dt; p.t += dt;
+        if (G.resT >= 1.8 && G.resT - dt < 1.8) showResult();
+        break;
+    }
+    if (G.mode === "fight" || G.mode === "intro") p.aside += (0 - p.aside) * Math.min(1, dt * 6);
+    updateParticles(dt);
+    for (var k = 0; k < MAXPOP; k++) if (popOn[k]) { popT[k] += dt; if (popT[k] > popLife[k]) popOn[k] = 0; }
+    if (G.shake > 0) G.shake--;
+    if (G.flash > 0) G.flash--;
+    if (G.invert > 0) G.invert--;
+  }
+
+  // ================================================================ render
+  var superBtn = document.getElementById("superBtn"), pipEls = superBtn.querySelectorAll(".pip i"), lastSuper = -1;
+  var lastOppSt = "", lastPSt = "", lastFs = -1, lastGuard = "", builtPlayer = false;
+  function render() {
+    fb.set(bg);
+    drawDynamicScene();
+    drawFloor();
+    drawSpotlights();
+    drawBall();
+
+    // Sprites rebuild at 15 fps, or immediately when a state changes.
+    var tick = (G.t * 15) | 0;
+    if (opp.st !== lastOppSt || p.st !== lastPSt || opp.fs !== lastFs || opp.guard !== lastGuard) dirty = true;
+    if (dirty || tick !== lastBuild) {
+      drawOpp(); drawPlayer(); dirty = false; lastBuild = tick; builtPlayer = true;
+      lastOppSt = opp.st; lastPSt = p.st; lastFs = opp.fs; lastGuard = opp.guard;
+    }
+    if (!builtPlayer && p.st !== "idle") drawPlayer();
+    builtPlayer = false;
+    var ox = 20 + Math.round(opp.x), oy = 20;
+    if (G.mode !== "title") composite(oppSpr, OW, OH, ox, oy, opp.flash > 0 ? BRIGHT : null);
+
+    // the sparkle: where he's open during a real wind-up
+    if (opp.st === "tell" && !opp.feint && G.mode === "fight") {
+      var mv = opp.mv, hxw = ox + 40 + P.bx + P.hx, hyw = oy + 30 + P.by + P.hy;
+      if (mv.kind === "jab") drawGlint(hxw + mv.side * 5, hyw - 1);
+      else if (mv.kind === "hook") drawGlint(ox + 40 + P.bx + mv.side * 9, oy + 64 + P.by);
+      else drawGlint(hxw, hyw + 7);
+    }
+    if (opp.st === "fever" && opp.fs === 1) drawGlint(ox + 40 + P.bx, oy + 70 + P.by);
+    if (opp.st === "fever" && opp.fs === 4) drawTextC("!", ox + 40 + P.bx, 20, 9, 3, 0);
+    if (opp.st === "dizzy") {
+      var hdx = ox + 40 + P.bx + P.hx, hdy = oy + 18 + P.by;
+      for (var s = 0; s < 3; s++) { var a = G.t * 5 + s * 2.09; pset(hdx + Math.cos(a) * 12, hdy + Math.sin(a) * 3, s === 0 ? 10 : 9); }
+      if (Math.abs(opp.x) <= 6 && opp.t > 0.4) drawTextC("NOW!", 60, 104, 9, 2, 0);
+    }
+
+    // Kid Volt (the rig places himself; only the hit shudder is added here)
+    var shud = (p.st === "hurt" && p.t < 0.2 && ((G.t * 30 | 0) & 1)) ? -p.hurtBy : 0;
+    if (G.mode !== "title") composite(plSpr, PW, PH, shud, 0, (p.st === "hurt" && p.t < 0.12) ? BRIGHT : null);
+
+    drawParticles();
+
+    // speech bubble
+    if (opp.sayT > 0 && G.mode !== "title") {
+      var sy = opp.st === "down" ? 66 : 20;
+      drawTextC(opp.say, clamp(60 + opp.x + P.bx, 4 + textW(opp.say, 1) / 2, W - 4 - textW(opp.say, 1) / 2), sy, 10, 1, 0);
+    }
+
+    drawHUD();
+
+    // intro card
+    if (G.mode === "intro") {
+      if (G.introT > 0.4 && G.introT < 2.8) { drawTextC("DISCO DANNY", 60, 88, 8, 2, 0); drawTextC("52 - LAS VEGAS - 3-47", 60, 100, 43, 1, 0); }
+      if (G.introT >= 2.8 && G.introT < 3.4) drawTextC("READY?", 60, 44, 10, 3, 0);
+    }
+    // count
+    if ((G.mode === "oppDown" || G.mode === "playerDown") && G.count > 0) {
+      drawTextC(String(G.count), 60, 30, G.mode === "oppDown" ? 9 : 8, 5, 0);
+    }
+    if (G.mode === "playerDown" && p.st === "down") {
+      drawTextC("MASH!", 60, 64, (G.t * 8 | 0) & 1 ? 10 : 9, 3, 0);
+      rect(30, 84, 60, 6, 0); rect(31, 85, Math.round(58 * clamp(p.mash / p.need, 0, 1)), 4, 9);
+    }
+    if (G.mode === "oppDown" && opp.st === "down" && (G.t * 3 | 0) & 1) drawTextC("MASH TO PUMP UP", 60, 62, 7, 1, 0);
+
+    // popups
+    for (var k = 0; k < MAXPOP; k++) {
+      if (!popOn[k]) continue;
+      var rise = Math.round(popT[k] * 10);
+      if (popT[k] > popLife[k] * 0.7 && ((popT[k] * 20 | 0) & 1)) continue;
+      drawTextC(popS[k], popX[k], popY[k] - rise, popC[k], popSc[k], 0);
+    }
+    if (G.hurtFlash > 0) drawVignette();
+
+    var L = G.invert > 0 ? lutInv : G.flash > 0 ? lutFlash : lut;
+    for (var n = 0; n < W * H; n++) pix[n] = L[fb[n]];
+    octx.putImageData(img, 0, 0);
+    dctx.fillStyle = "#05040f"; dctx.fillRect(0, 0, cw, ch);
+    var sx = 0, syy = 0;
+    if (G.shake > 0) { var amp = G.shake > 6 ? 2 : 1; sx = Math.round(rnd(-amp, amp)); syy = Math.round(rnd(-amp, amp)); }
+    dctx.drawImage(off, offX + sx * scale, offY + syy * scale, W * scale, H * scale);
+
+    // mirror the super gauge onto the HTML button
+    var sg2 = Math.round(p.superG * 20);
+    if (sg2 !== lastSuper) {
+      lastSuper = sg2;
+      for (k = 0; k < 3; k++) pipEls[k].style.width = Math.round(clamp(p.superG - k, 0, 1) * 100) + "%";
+      superBtn.classList.toggle("ready", p.superG >= 1);
+    }
+  }
+
+  // ================================================================ loop + screens
+  var last = -1, acc = 0;
+  function frame(now) {
+    if (last < 0) last = now;
+    acc += Math.min(0.25, (now - last) / 1000); last = now;
+    if (!G.paused && G.mode !== "title") { while (acc >= DT) { update(); acc -= DT; } } else acc = 0;
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  var titleEl = document.getElementById("title"), pauseEl = document.getElementById("pause"), resultEl = document.getElementById("result");
+  function refreshBest() {
+    var b = loadBest();
+    document.getElementById("bestLine").textContent = (b === null ? "3 knockdowns = TKO · beat the clock" : "BEST KO TIME " + fmtClock(b)) ;
+  }
+  function start() {
+    audioInit();
+    titleEl.hidden = true; resultEl.hidden = true; pauseEl.hidden = true; G.paused = false;
+    resetMatch();
+    try { if (navigator.wakeLock) navigator.wakeLock.request("screen").catch(function () {}); } catch (e) { /* optional */ }
+  }
+  function togglePause(force) {
+    if (G.mode === "title" || G.mode === "result") return;
+    G.paused = force === undefined ? !G.paused : force;
+    pauseEl.hidden = !G.paused;
+    if (AC) { if (G.paused) AC.suspend(); else AC.resume(); }
+  }
+  document.getElementById("startBtn").addEventListener("click", start);
+  document.getElementById("againBtn").addEventListener("click", start);
+  document.getElementById("restartBtn").addEventListener("click", start);
+  document.getElementById("resumeBtn").addEventListener("click", function () { togglePause(false); });
+  document.getElementById("pauseBtn").addEventListener("click", function () { togglePause(true); });
+  document.getElementById("soundBtn").addEventListener("click", function () {
+    muted = !muted; this.textContent = "SOUND: " + (muted ? "OFF" : "ON");
+    if (master) master.gain.value = muted ? 0 : 0.85;
+  });
+  document.addEventListener("visibilitychange", function () { if (document.hidden && (G.mode === "fight" || G.mode === "intro")) togglePause(true); });
+  refreshBest();
+
+  // Title backdrop: Danny dancing behind the card.
+  opp.st = "celebrate";
+  window.__KV = { G: G, p: p, opp: opp, MOVES: MOVES, press: press, setBlock: function (v) { blockHeld = v ? 1 : 0; }, beat: function () { return beatPhase; } };
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

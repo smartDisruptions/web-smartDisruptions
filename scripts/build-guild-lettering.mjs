@@ -1,0 +1,152 @@
+#!/usr/bin/env node
+/**
+ * Bakes the Broom & Blade Arcade's signboard lettering into SVG path data, so
+ * /games can paint the games' own face (Alegreya) without a webfont request.
+ *
+ *   node scripts/build-guild-lettering.mjs
+ *
+ * Writes src/app/games/guild/lettering.ts. Re-run it only when the words
+ * below change; the output is committed.
+ *
+ * Why Alegreya SC: the five games set their titles in Alegreya, and Broom &
+ * Blade's own display face is Alegreya too (its blackletter went 2026-09-09).
+ * The small-caps cut, heavy, reads as a carved tavern sign. The sign's real
+ * text is an <h2>; these paths are its gilded picture (aria-hidden).
+ *
+ * Alegreya SC is SIL Open Font License 1.1 (Google Fonts). The TTFs are
+ * fetched into node_modules/.cache on first run and never committed.
+ */
+import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import opentype from 'opentype.js';
+
+const ROOT = process.cwd();
+const CACHE = path.join(ROOT, 'node_modules/.cache/gh-lettering');
+const OUT = path.join(ROOT, 'src/app/games/guild/lettering.ts');
+const RAW = 'https://raw.githubusercontent.com/google/fonts/main/ofl/alegreyasc/';
+
+// Font size in path units: every line is laid out at 100 units to the em, on
+// a baseline at y = 0, starting at x = 0.
+const SIZE = 100;
+
+const LINES = {
+  // The big line: "Broom & Blade". The ampersand is cut out on its own so the
+  // sign can paint it ember, the way Broom & Blade's own title does.
+  broom: { face: 'AlegreyaSC-Black.ttf', text: 'Broom & Blade', split: true },
+  // The ribbon under it, and the little word over it.
+  arcade: { face: 'AlegreyaSC-Black.ttf', text: 'ARCADE', track: 6 },
+  the: { face: 'AlegreyaSC-ExtraBold.ttf', text: 'The', track: 4 },
+};
+
+async function loadFace(file) {
+  mkdirSync(CACHE, { recursive: true });
+  const local = path.join(CACHE, file);
+  if (!existsSync(local)) {
+    const res = await fetch(RAW + file);
+    if (!res.ok) throw new Error(`fetch ${file}: ${res.status}`);
+    writeFileSync(local, Buffer.from(await res.arrayBuffer()));
+  }
+  const buf = readFileSync(local);
+  return opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
+}
+
+const r1 = (n) => {
+  const v = Math.round(n * 10) / 10;
+  return Object.is(v, -0) ? '0' : String(v);
+};
+
+function pathData(p) {
+  // TrueType outlines repeat a point as a zero-length line before each curve
+  // run; dropping those saves about a fifth of the bytes.
+  let cx = NaN;
+  let cy = NaN;
+  return p.commands
+    .filter((c) => {
+      const same = c.type === 'L' && r1(c.x) === r1(cx) && r1(c.y) === r1(cy);
+      if (c.type !== 'Z') {
+        cx = c.x;
+        cy = c.y;
+      }
+      return !same;
+    })
+    .map((c) => {
+      switch (c.type) {
+        case 'M':
+        case 'L':
+          return `${c.type}${r1(c.x)} ${r1(c.y)}`;
+        case 'Q':
+          return `Q${r1(c.x1)} ${r1(c.y1)} ${r1(c.x)} ${r1(c.y)}`;
+        case 'C':
+          return `C${r1(c.x1)} ${r1(c.y1)} ${r1(c.x2)} ${r1(c.y2)} ${r1(c.x)} ${r1(c.y)}`;
+        case 'Z':
+          return 'Z';
+        default:
+          throw new Error(`unknown command ${c.type}`);
+      }
+    })
+    .join('');
+}
+
+/** Lays a line out glyph by glyph (kerning + optional tracking, in units). */
+function layout(font, text, track = 0) {
+  const scale = SIZE / font.unitsPerEm;
+  const glyphs = font.stringToGlyphs(text);
+  let x = 0;
+  const placed = [];
+  glyphs.forEach((g, i) => {
+    placed.push({ g, x, ch: text[i] });
+    x += g.advanceWidth * scale + track;
+    if (i < glyphs.length - 1) x += font.getKerningValue(g, glyphs[i + 1]) * scale;
+  });
+  return { placed, width: x - track };
+}
+
+function segment(font, placed) {
+  const p = new opentype.Path();
+  let yMin = Infinity;
+  let yMax = -Infinity;
+  let xMin = Infinity;
+  let xMax = -Infinity;
+  for (const { g, x } of placed) {
+    const gp = g.getPath(x, 0, SIZE);
+    p.extend(gp);
+    const bb = gp.getBoundingBox();
+    if (bb.isEmpty()) continue;
+    yMin = Math.min(yMin, bb.y1);
+    yMax = Math.max(yMax, bb.y2);
+    xMin = Math.min(xMin, bb.x1);
+    xMax = Math.max(xMax, bb.x2);
+  }
+  return { d: pathData(p), box: [xMin, yMin, xMax, yMax].map((n) => Math.round(n * 10) / 10) };
+}
+
+const out = {};
+for (const [key, line] of Object.entries(LINES)) {
+  const font = await loadFace(line.face);
+  const { placed, width } = layout(font, line.text, line.track ?? 0);
+  if (line.split) {
+    const amp = placed.findIndex((p) => p.ch === '&');
+    const words = segment(
+      font,
+      placed.filter((_, i) => i !== amp),
+    );
+    const and = segment(font, [placed[amp]]);
+    out[key] = { d: words.d, amp: and.d, width: Math.round(width * 10) / 10, box: words.box, ampBox: and.box };
+  } else {
+    const s = segment(font, placed);
+    out[key] = { d: s.d, width: Math.round(width * 10) / 10, box: s.box };
+  }
+}
+
+const banner = `/**
+ * GENERATED by scripts/build-guild-lettering.mjs — do not edit by hand.
+ *
+ * The Broom & Blade Arcade's signboard lettering in Alegreya SC (SIL OFL 1.1),
+ * as SVG path data: ${SIZE} units to the em, baseline at y = 0, starting at
+ * x = 0. \`box\` is [xMin, yMin, xMax, yMax] of the ink (y is down, so yMin is
+ * the top of the tallest letter).
+ */
+`;
+const body = `export const LETTERING = ${JSON.stringify(out, null, 2)} as const;\n`;
+writeFileSync(OUT, banner + body);
+console.log(`wrote ${path.relative(ROOT, OUT)} (${(Buffer.byteLength(body) / 1024).toFixed(1)} KB)`);

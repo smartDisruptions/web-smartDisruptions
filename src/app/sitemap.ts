@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPosts } from '@/lib/posts';
-import { apps } from '@/data/apps';
+import { apps, BROOM_BLADE_ARCADE_SLUGS } from '@/data/apps';
 import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
 import { marketStormReports } from '@/data/marketStorm';
 
@@ -39,6 +39,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.4,
     },
+    // The Broom & Blade Arcade's five machines.
+    ...BROOM_BLADE_ARCADE_SLUGS.map((slug) => ({
+      url: `${BASE}/games/${slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.4,
+    })),
     { url: `${BASE}/games/archive`, changeFrequency: 'monthly', priority: 0.3 },
     { url: `${BASE}/kiru`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE}/privacy`, changeFrequency: 'yearly', priority: 0.1 },

@@ -82,6 +82,7 @@ export const projects: Project[] = [
           'Finish every chore for the day and a merchant offers three boxes to choose from. One holds a reward, one a gift, and one a curse.',
           'Every fifth day with a clean board you get a choice: a bag of gold, or a box holding one of thirty items that can never be bought.',
           'It is free, needs no account, and installs on a phone like any other app. Every sound is made by the app itself, so there is nothing extra to download.',
+          'Its carnival games play on their own too, free, in the Broom & Blade Arcade at the bottom of my Arcade page, where Pip the guild mouse runs the room.',
         ],
         receipts: [
           {

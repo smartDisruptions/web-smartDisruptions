@@ -46,8 +46,8 @@ export default function ArcadeArchive() {
             </span>
           </h1>
           <p className="arc-lead font-read">
-            The Arcade&apos;s older cabinets. Kiru, the Neo Dojo and a duel still in pre-alpha have the front room now, but every one of these
-            still plays, including Pebble Kart, the kart racer my son Gabe built himself.
+            The Arcade&apos;s older cabinets. Kiru, the Neo Dojo, a duel still in pre-alpha and Pip&apos;s Broom &amp; Blade Arcade have the
+            front room now, but every one of these still plays, including Pebble Kart, the kart racer my son Gabe built himself.
           </p>
           <Link href="/games" className="arc-back">
             <BackArrow />

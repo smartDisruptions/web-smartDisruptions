@@ -337,8 +337,8 @@ export const skillGroups: SkillGroup[] = [
         name: 'Physics, canvas and real-time rendering',
         plain:
           'Maths that has to hold up sixty times a second — orbital mechanics, cloth, collisions.',
-        used: 'A Mars transfer simulation that models a real launch window, and a cloth simulator where every thread stretches, folds and tears. Both are hand-written with no game engine underneath, which is the only way I would have learned what the maths actually does. The newest rep is a 3D drink can rendered live in the browser, spun by scroll or by hand.',
-        apps: ['spacex-mars', 'cloth-simulator'],
+        used: 'A Mars transfer simulation that models a real launch window, and a cloth simulator where every thread stretches, folds and tears. Both are hand-written with no game engine underneath, which is the only way I would have learned what the maths actually does. The newest rep is a 3D drink can rendered live in the browser, spun by scroll or by hand. Smaller, and in the Arcade: in Milk Bottle Knockdown every bottle on the shelf has its own position, speed and spin, and knows which bottle it stands on.',
+        apps: ['spacex-mars', 'cloth-simulator', 'milk-bottle-knockdown'],
         links: [
           {
             kind: 'site',
@@ -353,14 +353,14 @@ export const skillGroups: SkillGroup[] = [
         name: 'Game development',
         plain:
           'Game loops, collision, input, audio and the feel work that separates a demo from something worth playing.',
-        used: "The arcade's front room is Kiru's games, Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward, and Path Not Taken, a rhythm duel in pre-alpha whose every tile sits on a measured hit in its song. The older cabinets are in its archive. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
-        apps: ['neo-dojo-survivors', 'path-not-taken', 'field-office', 'broom-blade', 'aureum-snake', 'grove'],
+        used: "The arcade's front room is Kiru's games, Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward, and Path Not Taken, a rhythm duel in pre-alpha whose every tile sits on a measured hit in its song. Downstairs is the Broom & Blade Arcade, Pip the guild mouse's room: five carnival games from the chore game I built for my family, where a finished chore earns the ticket for a round. The older cabinets are in its archive. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
+        apps: ['neo-dojo-survivors', 'path-not-taken', 'hoop-quest', 'whack-a-dust-bunny', 'field-office', 'broom-blade', 'aureum-snake', 'grove'],
         links: [
           {
             kind: 'site',
             label: 'The arcade',
             href: '/games',
-            detail: 'Kiru’s games up front, the older cabinets in the archive',
+            detail: 'Kiru’s games up front, Pip’s Broom & Blade Arcade downstairs, the older cabinets in the archive',
           },
         ],
       },
