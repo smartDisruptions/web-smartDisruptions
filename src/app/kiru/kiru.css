@@ -544,6 +544,53 @@ button.kp-card {
   color: var(--sd-accent-hover);
 }
 
+/* ── The cast ──────────────────────────────────────────────────────────── */
+
+/* The cast card is night art on any theme: Kiru and his crew are objects,
+   like stickers, and keep their colours. */
+.kp-cast {
+  display: block;
+  margin-top: 2rem;
+  color: inherit;
+  background-color: #0c0f22;
+}
+.kp-cast-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* The pill sits on night art in both themes, so it keeps the day theme's
+   indigo press colour rather than following --sd-accent. */
+.kp-cast-cta {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #fff;
+  background: #2b3a96;
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.7);
+}
+.kp-cast:hover .kp-cast-cta,
+.kp-cast:focus-visible .kp-cast-cta {
+  background: #3d4c95;
+}
+@media (min-width: 40rem) {
+  .kp-cast-cta {
+    left: 1.5rem;
+    bottom: 1.5rem;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+  }
+}
+
 /* ── Motion ────────────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: no-preference) {

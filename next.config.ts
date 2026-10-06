@@ -64,6 +64,13 @@ const nextConfig: NextConfig = {
           source: '/games/tokaido-run',
           destination: '/games/tokaido-run/index.html',
         },
+        // The Neo Dojo Cast: Kiru's crew and his rogues, one static character
+        // sheet in public/kiru/cast (its source is Tools/neo-dojo-cast in
+        // josh-ai-builder-brain). Linked from /kiru.
+        {
+          source: '/kiru/cast',
+          destination: '/kiru/cast/index.html',
+        },
         // Neo Dojo Survivors: the same, one file in public/games.
         {
           source: '/games/neo-dojo-survivors',

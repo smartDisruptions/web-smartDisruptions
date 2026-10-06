@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neo Dojo Cast</title>
+<meta name="description" content="Kiru's crew and his rogues: eight futuristic heroes in three squads and six villains, all drawn on Kiru's own rig. A character sheet from Smart Disruptions.">
+<link rel="canonical" href="https://smartdisruptions.com/kiru/cast">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Smart Disruptions">
+<meta property="og:title" content="Neo Dojo Cast">
+<meta property="og:description" content="Kiru's crew and his rogues: eight futuristic heroes in three squads and six villains, all drawn on Kiru's own rig.">
+<meta property="og:url" content="https://smartdisruptions.com/kiru/cast">
+<meta property="og:image" content="https://smartdisruptions.com/images/kiru/neo-dojo-cast-og.webp">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kiru the ninja leading the Neo Dojo Cast: Kage-X, Hakka, Patch, Nova, Captain Takotsubo, Tengu-9, Benri and Hovr, with the rogue Emperor Kemuri behind them">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0c0f22">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a moonlit model sheet. Hero with Kiru for scale, the shared rules, 12 cards, then a height lineup on one ground line. */
+:root {
+  color-scheme: dark;
+  --night: #0c0f22;
+  --panel: #151a35;
+  --panel-2: #1b2145;
+  --line: #3d4c95;
+  --ink: #e9ecff;
+  --muted: #9aa3cf;
+  --moon: #a9bcff;
+  --vermilion: #e8432a;
+  --display: "Dela Gothic One", "Arial Black", Impact, sans-serif;
+  --body: "Zen Kaku Gothic New", "Hiragino Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--night); }
+body {
+  margin: 0; background: var(--night); color: var(--ink); font: 16px/1.55 var(--body);
+  padding-inline: clamp(16px, 4vw, 48px); padding-block: 0 64px;
+  background-image:
+    radial-gradient(circle at 82% -10%, rgba(169,188,255,.16), transparent 42%),
+    radial-gradient(1px 1px at 12% 18%, #fff8, transparent 2px),
+    radial-gradient(1px 1px at 64% 9%, #fff6, transparent 2px),
+    radial-gradient(1.5px 1.5px at 38% 30%, #fff5, transparent 2px),
+    radial-gradient(1px 1px at 90% 34%, #fff7, transparent 2px);
+}
+.wrap { max-width: 1240px; margin: 0 auto; }
+svg.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* hero */
+header.hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: end; padding-top: 28px; }
+.topnav { display: flex; justify-content: space-between; gap: 16px; padding-top: 20px; font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.topnav a { color: var(--muted); text-decoration: none; padding: 6px 0; }
+.topnav a:hover, .topnav a:focus-visible { color: var(--ink); }
+.topnav a:first-child { color: var(--moon); }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--moon); }
+h1 { font: 400 clamp(44px, 7.5vw, 92px)/.95 var(--display); margin: 14px 0 10px; letter-spacing: -.01em; text-wrap: balance; }
+h1 .kana { display: block; font-size: .36em; color: var(--muted); letter-spacing: .3em; margin-top: 12px; }
+.lede { max-width: 58ch; color: #c8cdee; margin: 0; }
+.hero-kiru { display: flex; align-items: end; justify-content: center; gap: 4px; }
+.hero-kiru svg { width: min(100%, 300px); height: auto; }
+.hero-kiru .tag { font: 500 11px/1.4 var(--mono); color: var(--muted); writing-mode: vertical-rl; letter-spacing: .12em; text-transform: uppercase; padding-bottom: 20px; }
+
+/* rules */
+.rules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 40px 0 48px; background: #262d58; border: 1px solid #262d58; border-radius: 14px; overflow: hidden; }
+.rule { background: var(--panel); padding: 18px 18px 20px; min-width: 0; }
+.rule b { display: block; font: 400 16px/1.2 var(--display); margin-bottom: 6px; }
+.rule p { margin: 0; color: var(--muted); font-size: 14px; }
+.rule code { font: 500 12px var(--mono); color: var(--moon); }
+
+h2 { font: 400 clamp(26px, 3.4vw, 38px)/1.1 var(--display); margin: 0 0 6px; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0 0 22px; max-width: 70ch; }
+
+/* cards */
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid #252c56; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; transition: transform .25s ease, border-color .25s ease; }
+.card:hover { transform: translateY(-3px); border-color: var(--sig); }
+.stage { position: relative; aspect-ratio: 1 / 1; background:
+  radial-gradient(ellipse 60% 14% at 50% 90%, color-mix(in srgb, var(--sig) 28%, transparent), transparent 70%),
+  radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--sig) 14%, transparent), transparent 62%),
+  linear-gradient(#171d3d, #11152d); }
+.stage svg { position: absolute; inset: 4% 4% 2%; width: 92%; height: 94%; }
+.code { position: absolute; top: 12px; left: 12px; font: 500 11px/1 var(--mono); letter-spacing: .12em; color: var(--muted); }
+.cls { position: absolute; top: 9px; right: 10px; font: 500 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sig); border: 1px solid color-mix(in srgb, var(--sig) 55%, transparent); padding: 5px 7px; border-radius: 99px; background: #0c0f22b0; }
+.info { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.name { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.name h3 { margin: 0; font: 400 22px/1 var(--display); letter-spacing: .01em; }
+.name span { font-size: 13px; color: var(--sig); white-space: nowrap; }
+.bio { margin: 0; font-size: 14px; color: #c4c9ea; line-height: 1.5; flex: 1; }
+.meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px dashed #2d3566; padding-top: 10px; }
+.sw { display: flex; gap: 5px; }
+.sw i { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--line); display: block; }
+.ht { font: 500 11px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* rogues */
+.rogues-sec { margin-top: 56px; padding-top: 40px; border-top: 1px dashed #3a2a4a; }
+.rg-eyebrow { color: #ff6b7f; margin-bottom: 10px; }
+.card.rogue { background: #1a1428; border-color: #3a2340; }
+.card.rogue .stage { background:
+  radial-gradient(ellipse 60% 14% at 50% 90%, color-mix(in srgb, var(--sig) 30%, transparent), transparent 70%),
+  radial-gradient(circle at 50% 80%, color-mix(in srgb, var(--sig) 16%, transparent), transparent 60%),
+  linear-gradient(#1a1024, #0e0914); }
+.card.rogue .cls { color: #ff6b7f; border-color: #ff6b7f88; }
+.card.rogue .name span { color: #ff6b7f; }
+.lu.rg small { color: #ff6b7f; }
+#rogues, .squad-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.squads { display: flex; flex-direction: column; gap: 28px; }
+.squad-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #262d58; flex-wrap: wrap; }
+.squad-n { font: 400 20px/1 var(--display); }
+.squad-who { font: 500 12px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.squad:first-child .squad-n { color: var(--vermilion); }
+
+/* lineup */
+.lineup-sec { margin-top: 56px; }
+.lineup-scroll { overflow-x: auto; border: 1px solid #252c56; border-radius: 16px; background: linear-gradient(#141936, #0f1330); }
+.lineup { position: relative; display: flex; align-items: flex-end; gap: 0; padding: 28px 20px 0; min-width: 1600px; }
+.lineup::before { content: ""; position: absolute; left: 0; right: 0; bottom: 34px; border-top: 2px solid var(--line); }
+.lineup::after { content: ""; position: absolute; left: 0; right: 0; top: 28px; bottom: 34px; background: repeating-linear-gradient(to top, transparent 0 39px, #ffffff0c 39px 40px); pointer-events: none; }
+.lu { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; min-width: 0; position: relative; z-index: 1; }
+.lu svg { width: 100%; height: auto; display: block; margin-bottom: -2px; }
+.lu small { font: 500 10px/34px var(--mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.lu.kiru small { color: var(--vermilion); }
+
+footer { margin-top: 36px; color: var(--muted); font-size: 13px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+footer code { font: 500 12px var(--mono); color: var(--moon); }
+footer a { color: var(--moon); }
+
+/* motion: breathing, blinking, a few machine parts */
+.char { animation: bob 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+.blink { animation: blink 5.5s infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+.pulse { animation: pulse 1.8s ease-in-out infinite; }
+.rotor { animation: rotor .18s linear infinite alternate; transform-box: fill-box; transform-origin: 50% 50%; }
+.scan { animation: scan 2.6s ease-in-out infinite alternate; }
+.float { animation: float 3.6s ease-in-out infinite; }
+@keyframes bob { 0%,100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(0) scaleY(.985); } }
+@keyframes blink { 0%,93%,100% { transform: scaleY(1); } 95% { transform: scaleY(.08); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+@keyframes rotor { from { transform: scaleX(1); } to { transform: scaleX(.25); } }
+@keyframes scan { from { transform: translateX(-22px); } to { transform: translateX(22px); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .char, .blink, .pulse, .rotor, .scan, .float { animation: none; } .card { transition: none; } }
+
+@media (max-width: 1040px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .grid, #rogues, .squad-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } header.hero { grid-template-columns: 1fr; } .hero-kiru svg { width: 220px; } }
+@media (max-width: 480px) { .grid, #rogues, .squad-grid { grid-template-columns: 1fr; } .rules { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<svg class="defs" aria-hidden="true" id="defs"></svg>
+<div class="wrap">
+  <nav class="topnav" aria-label="Smart Disruptions"><a href="https://smartdisruptions.com/kiru">&larr; Kiru</a><a href="https://smartdisruptions.com/">Smart Disruptions</a></nav>
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Smart Disruptions · Character model sheet · Vol. 01</div>
+      <h1>Neo Dojo Cast<span class="kana">ネオ道場の仲間たち</span></h1>
+      <p class="lede">Kiru and eight futuristic heroes in three squads, plus six rogues, all drawn on Kiru's rig: AI robots, a test pilot, a hacker, a mech samurai, a few visitors from further out, and the villains Kiru was made to cut through. Same sticker outline, same moonlight, same big-head proportions. Each one gets a single neon of its own.</p>
+    </div>
+    <div class="hero-kiru"><span class="tag">Kiru 切る · for scale</span><div id="hero-kiru" style="display:contents"></div></div>
+  </header>
+
+  <section class="rules" aria-label="Shared style rules">
+    <div class="rule"><b>Head is the hero</b><p>Every head fills the top 55% of a <code>240</code> rig box, feet planted at <code>y 232</code>. The body stays small and stubby.</p></div>
+    <div class="rule"><b>One sticker outline</b><p>Moonlit indigo <code>#3d4c95</code>, drawn under the fill so it reads as a die-cut sticker. Limbs are two strokes: outline, then colour.</p></div>
+    <div class="rule"><b>Light from the moon</b><p>A pale rim on the upper left, a soft shade on the lower right, one faint gloss on the crown. Nothing else.</p></div>
+    <div class="rule"><b>One neon each</b><p>Every character owns a signature glow and nothing else on them shares it. Vermilion stays Kiru's.</p></div>
+  </section>
+
+  <h2>The cast</h2>
+  <p class="sub">Three squads, in billing order. Each squad can carry games of its own, and for a bigger crossover they team up. Codes run in the order the characters were drawn; heights are in Kiru units (Kiru standing is 1.00).</p>
+  <div id="grid" class="squads"></div>
+
+  <section class="rogues-sec">
+    <div class="eyebrow rg-eyebrow">Rogues' gallery · 悪役</div>
+    <h2>The rogues</h2>
+    <p class="sub">Kiru cuts through hype, so his villains are the things he cuts through. They keep the same rig and outline, but the moon turns on them: their own neon lights them from below, their brows slant in, and every one of them has crimson eyes.</p>
+    <div class="grid" id="rogues"></div>
+  </section>
+
+  <section class="lineup-sec">
+    <h2>Height lineup</h2>
+    <p class="sub">Everyone on one ground line, at the same scale: the three squads in order, then the rogues, boss last. Scroll sideways.</p>
+    <div class="lineup-scroll"><div class="lineup" id="lineup"></div></div>
+  </section>
+
+  <footer>
+    <span>Drawn on Kiru's own path data (hood, face, torso, shoe) from <code>Kiru.tsx</code>. Vector, so every character scales to a billboard.</span>
+    <span>Neo Dojo Cast · <a href="https://smartdisruptions.com/kiru">Kiru</a> · <a href="https://smartdisruptions.com/games">Arcade</a></span>
+  </footer>
+</div>
+
+<script>
+// ── the rig's shared vocabulary (Kiru's own numbers) ──
+const L = '#3d4c95', INK = '#13152a', RIM = '#a9bcff', SKIN = '#f6d0a8', SKIN_S = '#e2b083', BLUSH = '#f08a78';
+const RED = '#e8432a', RED_D = '#bd3019', STEEL = '#cfd5e2', STEEL_E = '#8d95ab', WRAP = '#e4e7f0', WRAP_S = '#b6bccf', GOLD = '#dcae4e';
+const HOOD = 'M26 90a74 66 0 1 0 148 0a74 66 0 1 0 -148 0Z';
+const FACE = 'M44 80 C70 68 130 68 156 80 C168 85 168 104 156 109 C130 121 70 121 44 109 C32 104 32 85 44 80 Z';
+const FACE_SH = 'M44 80 C70 68 130 68 156 80 C160 82 162 85 163 88 C130 77 70 77 37 88 C38 85 40 82 44 80 Z';
+const FULL = 'M44 80 C70 68 130 68 156 80 C168 86 168 112 152 130 C134 148 66 148 48 130 C32 112 32 86 44 80 Z';
+const SMILE = (c = INK) => ln('M92 128 Q100 134 108 128', c, 3.5);
+const TORSO = 'M64 158 Q66 146 82 143 L118 143 Q134 146 136 158 L133 199 Q100 205 67 199 Z';
+const TORSO_SH = 'M112 144 L118 143 Q134 146 136 158 L133 199 Q123 202 112 203 Z';
+const SHOE = 'M-14 8 q0 -10 12 -10 h8 q6 0 6 6 v4 z';
+const RIMP = 'M47 50 Q33 68 31 95';
+
+const sp = (d, f, w = 6, x = '') => `<path d="${d}" fill="${f}" stroke="${L}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke" ${x}/>`;
+const se = (cx, cy, rx, ry, f, w = 6, x = '') => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${f}" stroke="${L}" stroke-width="${w}" paint-order="stroke" ${x}/>`;
+const sr = (x, y, w, h, r, f, sw = 6, ex = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${f}" stroke="${L}" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke" ${ex}/>`;
+const ln = (d, c, w, x = '') => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${x}/>`;
+const fl = (d, f, x = '') => `<path d="${d}" fill="${f}" ${x}/>`;
+const el = (cx, cy, rx, ry, f, x = '') => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${f}" ${x}/>`;
+const ci = (cx, cy, r, f, x = '') => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}" ${x}/>`;
+const G = (id) => `url(#${id})`;
+const glow = (c) => `filter="url(#glow)" style="color:${c}"`;
+const rot = (deg, x, y) => `transform="rotate(${deg} ${x} ${y})"`;
+
+// An arm: Kiru's two-stroke capsule, bent by `bend`.
+function limb(sx, sy, hx, hy, bend, col, w = 15) {
+  const dx = hx - sx, dy = hy - sy, d = Math.hypot(dx, dy) || 1;
+  const mx = (sx + hx) / 2 - dy / d * bend, my = (sy + hy) / 2 + dx / d * bend;
+  const p = `M${sx} ${sy}Q${mx.toFixed(1)} ${my.toFixed(1)} ${hx} ${hy}`;
+  return ln(p, L, w + 7) + ln(p, col, w);
+}
+// A leg: hip → knee (bent forward, which is −x) → ankle.
+function leg(hx, hy, ax, ay, col, w = 18, knee = 3) {
+  const p = `M${hx} ${hy}L${(hx + ax) / 2 - knee} ${(hy + ay) / 2}L${ax} ${ay}`;
+  return ln(p, L, w + 6) + ln(p, col, w);
+}
+const shoe = (x, y, col = INK, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})">${sp(SHOE, col, 5)}</g>`;
+const fist = (x, y, col = WRAP, sh = WRAP_S, r = 9.5) => se(x, y, r, r, col, 4) + ln(`M${x - 6} ${y - 2.5}Q${x} ${y + 0.5} ${x + 6} ${y - 2.5}`, sh, 2);
+// shade + gloss, clipped to a head shape
+const shade = (clip, col = '#0f1430', op = 0.5) => `<g clip-path="url(#${clip})">${el(132, 128, 82, 62, col, `opacity="${op}"`)}${el(66, 40, 38, 15, '#fff', `opacity=".1" ${rot(-24, 66, 40)}`)}</g>`;
+const rim = (op = 0.75, c = RIM) => ln(RIMP, c, 3.2, `opacity="${op}"`);
+const cheeks = (op = 0.5, c = BLUSH, y = 107) => el(57, y, 7, 3.4, c, `opacity="${op}"`) + el(143, y, 7, 3.4, c, `opacity="${op}"`);
+const brows = (bo = 78, bi = 84, c = INK, w = 5, curve = 0) => { const bm = (bo + bi) / 2 + curve; return ln(`M61 ${bo}Q74 ${bm} 87 ${bi}M139 ${bo}Q126 ${bm} 113 ${bi}`, c, w); };
+// Kiru's eyes: white ovals, ink pupils looking a touch left and down, one catch-light each
+function eyes(o = {}) {
+  const { lx = -2, ly = 1.5, iris = INK, y = 95.5, rx = 12.5, ry = 14, pr = 8, a = 76, b = 124, ring = '', s = 1 } = o;
+  const one = (cx) => `<g transform="translate(${cx} ${y}) scale(${s}) translate(${-cx} ${-y})">${el(cx, y, rx, ry, '#fff')}${ci(cx + lx, y + ly, pr, iris)}${ring ? ci(cx + lx, y + ly, pr * 0.5, INK) : ''}${ci(cx + lx + 3, y + ly - 4, pr * 0.37, '#fff')}${ci(cx + lx - 3, y + ly + 4, pr * 0.16, '#fff', 'opacity=".8"')}</g>`;
+  return `<g class="blink">${one(a)}${one(b)}</g>`;
+}
+function grad(id, stops, x1 = 48, y1 = 24, x2 = 152, y2 = 156) {
+  return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops.map((c, i) => `<stop offset="${i / (stops.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+}
+const clip = (id, d) => `<clipPath id="${id}"><path d="${d}"/></clipPath>`;
+const TG = (id, stops) => grad(id, stops, 64, 143, 136, 200); // torso gradients
+
+// ───────────────────────── Kiru, as the reference ─────────────────────────
+const KIRU_DEFS = grad('k-hood', ['#34417c', '#252d56', '#181d3b']) + TG('k-gi', ['#2e3970', '#252d56', '#1b2146']) + clip('k-clip', HOOD);
+function kiru() {
+  return `
+  ${sp('M166 74 Q192 78 206 94 Q218 108 238 108 L234 117 Q212 120 199 103 Q188 89 166 83 Z', RED_D, 4)}
+  ${sp('M166 61 Q194 50 213 63 Q229 75 248 68 L247 79 Q227 90 208 77 Q193 67 167 71 Z', RED, 4)}
+  ${ln('M134 188 L157 224', L, 13)}${ln('M134 188 L157 224', '#3a1f2a', 8)}
+  ${ln('M33 116 L57 150', L, 15)}${ln('M33 116 L57 150', INK, 9.5)}${ln('M31 120 L38 117 M35 126 L42 123 M39 132 L46 129 M43 138 L50 135', RED, 2.6)}
+  ${se(57, 150, 11, 4.2, GOLD, 3, rot(-55, 57, 150))}
+  ${limb(127, 156, 151, 193, -9, '#1a2044')}${fist(151, 193)}
+  ${leg(110, 196, 115, 223.5, '#1a2044')}${leg(90, 196, 85, 223.5, '#252d56')}${shoe(115, 223.5)}${shoe(85, 223.5)}
+  ${sp(TORSO, G('k-gi'))}${fl(TORSO_SH, '#1a2044', 'opacity=".55"')}${fl('M88 145 L100 166 L112 145 Z', '#c9cfe3')}${ln('M84 145 L100 170 L116 145', '#2e3970', 4.5)}
+  ${fl('M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z', RED)}${sp('M81 193 l-6 15 l8 -3 z M86 193 l2 15 l5 -5 z', RED_D, 2)}${se(84, 192, 5, 5, RED_D, 2.5)}
+  ${sp(HOOD, G('k-hood'))}
+  <g clip-path="url(#k-clip)">${el(132, 128, 82, 62, '#1a2044', 'opacity=".55"')}${el(66, 40, 38, 15, '#fff', `opacity=".08" ${rot(-24, 66, 40)}`)}${ln('M14 78 Q100 34 186 78', RED, 18)}${ln('M14 87 Q100 43 186 87', RED_D, 2.5, 'opacity=".9"')}</g>
+  ${se(171, 64, 7.5, 5, RED_D, 3, rot(-32, 171, 64))}${se(172, 79, 6.5, 5, RED_D, 3, rot(30, 172, 79))}${se(166, 71, 6, 6, RED, 3)}
+  ${sr(81, 43, 38, 20, 4.5, STEEL, 3.5)}<rect x="83.5" y="45.5" width="33" height="15" rx="3" fill="none" stroke="${STEEL_E}" stroke-width="1.2"/>
+  ${fl('M103.5 46.5 L94 55.5 L100.5 55.5 L96.5 60.5 L107 51.5 L100.5 51.5 Z', RED)}
+  ${fl(FACE, SKIN)}${fl(FACE_SH, SKIN_S, 'opacity=".75"')}
+  ${rim()}${cheeks()}${eyes()}${brows()}
+  ${limb(73, 156, 50, 184, 10, '#2e3970')}${fist(50, 184)}`;
+}
+
+// ───────────────────────── the cast ─────────────────────────
+const CAST = [];
+
+// 01 BENRI: a pocket AI helper with a screen for a face
+CAST.push({
+  code: 'ND-01', name: 'Benri', kana: '便利', cls: 'AI robot', sig: '#4fe3ff', h: 1.02,
+  bio: 'A pocket-sized AI assistant who answers in emoji on its face screen and gets very proud when a build passes.',
+  sw: ['#eef2ff', '#9aa6c4', '#0d1230', '#4fe3ff'],
+  defs: grad('b-head', ['#ffffff', '#dfe5f4', '#a3aecb']) + TG('b-body', ['#ffffff', '#dfe5f4', '#a3aecb']) + clip('b-clip', 'M74 26 H126 A44 44 0 0 1 170 70 V106 A44 44 0 0 1 126 150 H74 A44 44 0 0 1 30 106 V70 A44 44 0 0 1 74 26 Z'),
+  draw: () => `
+  ${ln('M100 30 L100 4', L, 8)}${ln('M100 30 L100 4', '#c9d2e8', 4)}${ci(100, 0, 10, '#0c0f22')}${ci(100, 0, 8, '#4fe3ff', 'class="pulse" filter="url(#glow)"')}${ci(97, -3, 2.5, '#fff')}
+  ${limb(126, 158, 148, 190, -8, '#8d95ab', 11)}${se(148, 190, 7.5, 7.5, '#c9d2e8', 4)}
+  ${leg(110, 198, 113, 222, '#8d95ab', 12, 0)}${leg(90, 198, 87, 222, '#a3aecb', 12, 0)}
+  ${sr(100, 216, 26, 14, 7, '#eef2ff', 5)}${sr(74, 216, 26, 14, 7, '#eef2ff', 5)}${ln('M78 228 H96 M104 228 H122', '#4fe3ff', 2.5)}
+  ${sp('M70 158 Q70 146 84 146 L116 146 Q130 146 130 158 L128 198 Q100 205 72 198 Z', G('b-body'))}
+  ${fl('M112 147 L116 146 Q130 146 130 158 L128 198 Q121 201 112 202 Z', '#7f8bb0', 'opacity=".45"')}
+  ${se(100, 174, 11, 11, '#0d1230', 4)}${ci(100, 174, 7, '#4fe3ff', 'class="pulse" filter="url(#glow)"')}${ln('M75 188 Q100 194 125 188', '#4fe3ff', 2.5, 'opacity=".7"')}
+  ${se(28, 90, 12, 16, '#c9d2e8', 5)}${se(172, 90, 12, 16, '#c9d2e8', 5)}${ci(28, 90, 4.5, '#4fe3ff', 'filter="url(#glow)"')}${ci(172, 90, 4.5, '#4fe3ff', 'filter="url(#glow)"')}
+  ${sp('M74 26 H126 A44 44 0 0 1 170 70 V106 A44 44 0 0 1 126 150 H74 A44 44 0 0 1 30 106 V70 A44 44 0 0 1 74 26 Z', G('b-head'))}
+  ${shade('b-clip', '#5a6790', .35)}
+  ${sr(46, 56, 108, 76, 28, '#0d1230', 4)}
+  ${fl('M58 66 Q100 58 142 66 Q100 64 58 72 Z', '#ffffff', 'opacity=".12"')}
+  <g class="blink">${sr(64, 76, 20, 30, 10, '#4fe3ff', 0, 'filter="url(#glow)"')}${sr(116, 76, 20, 30, 10, '#4fe3ff', 0, 'filter="url(#glow)"')}${ci(78, 83, 3.5, '#fff')}${ci(130, 83, 3.5, '#fff')}</g>
+  ${ln('M90 114 Q100 122 110 114', '#4fe3ff', 4, 'filter="url(#glow)"')}
+  ${sr(52, 110, 9, 5, 2.5, '#ff7bb0', 0, 'opacity=".75"')}${sr(139, 110, 9, 5, 2.5, '#ff7bb0', 0, 'opacity=".75"')}
+  ${rim(.7)}
+  ${limb(74, 158, 44, 176, 6, '#a3aecb', 11)}${se(44, 176, 7.5, 7.5, '#c9d2e8', 4)}${ln('M38 170 L34 164 M44 168 L44 161', L, 4)}`
+});
+
+// 02 NOVA: a test pilot in a white flight suit
+CAST.push({
+  code: 'ND-02', name: 'Nova', kana: 'ノヴァ', cls: 'Suited pilot', sig: '#ff8a3d', h: 1.08,
+  bio: 'Test pilot for anything that flies itself. Trusts the autopilot, keeps one hand on the stick anyway.',
+  sw: ['#ffffff', '#aab4cc', '#3a2a4a', '#ff8a3d'],
+  defs: grad('n-helm', ['#ffffff', '#e2e7f3', '#a9b3cc']) + TG('n-body', ['#ffffff', '#e2e7f3', '#a9b3cc']) + clip('n-clip', HOOD),
+  draw: () => `
+  ${sp('M92 30 Q96 -6 126 -14 Q112 8 114 30 Z', '#ff8a3d', 5)}${ln('M100 26 Q104 4 118 -6', '#ffd2ae', 2.5)}
+  ${limb(127, 156, 150, 192, -9, '#cfd5e2', 17)}${ln('M141 184 L156 188', '#ff8a3d', 5)}${fist(152, 194, '#3a3f5c', '#252a44', 10.5)}
+  ${leg(110, 196, 115, 221, '#cfd5e2', 19)}${leg(90, 196, 85, 221, '#eef1f8', 19)}
+  ${shoe(115, 222, '#3a3f5c', 1.15)}${shoe(85, 222, '#3a3f5c', 1.15)}${ln('M70 231 H92 M100 231 H122', '#ff8a3d', 2.5)}
+  ${sp(TORSO, G('n-body'))}${fl(TORSO_SH, '#7f8bb0', 'opacity=".4"')}
+  ${sp('M80 152 L120 152 L116 182 Q100 188 84 182 Z', '#dfe4f0', 3)}${se(100, 166, 9, 9, '#3a2a1a', 3)}${ci(100, 166, 6, '#ff8a3d', 'class="pulse" filter="url(#glow)"')}
+  ${fl('M66 186 Q100 193 134 186 L133 196 Q100 203 67 196 Z', '#3a3f5c')}${sr(92, 186, 16, 11, 3, '#ff8a3d', 2.5)}
+  ${se(68, 154, 19, 13, '#ffffff', 5)}${se(132, 154, 19, 13, '#e2e7f3', 5)}${ln('M54 152 Q68 146 82 152', '#ff8a3d', 3)}
+  ${se(24, 96, 11, 20, '#cfd5e2', 5)}${se(176, 96, 11, 20, '#cfd5e2', 5)}${el(24, 96, 4, 9, '#ff8a3d', 'filter="url(#glow)"')}
+  ${sp(HOOD, G('n-helm'))}${shade('n-clip', '#5f6b95', .35)}
+  <g clip-path="url(#n-clip)">${ln('M86 20 Q84 48 86 70', '#ff8a3d', 7)}${ln('M114 20 Q116 48 114 70', '#ff8a3d', 7)}</g>
+  ${ln(FULL, '#8d95ab', 9)}${ln(FULL, L, 3)}
+  ${fl(FULL, SKIN)}${fl(FACE_SH, SKIN_S, 'opacity=".75"')}
+  ${fl('M44 82 C70 70 130 70 156 82 C150 84 138 80 128 86 Q122 78 112 86 Q102 76 92 86 Q80 78 70 86 Q58 80 44 82 Z', '#3a2a4a')}
+  ${rim()}${cheeks(.5, BLUSH, 113)}${eyes({ lx: -1 })}${brows(81, 85, '#3a2a4a', 4.5)}${SMILE()}
+  ${ln('M176 108 Q172 132 140 134', '#8d95ab', 3)}${ci(139, 134, 3.5, '#ff8a3d')}
+  ${limb(73, 156, 46, 182, 10, '#eef1f8', 17)}${ln('M41 172 L54 178', '#ff8a3d', 5)}${fist(45, 184, '#3a3f5c', '#252a44', 10.5)}`
+});
+
+// 03 HAKKA: a visitor from a three-mooned planet
+CAST.push({
+  code: 'ND-03', name: 'Hakka', kana: 'ハッカ', cls: 'Alien', sig: '#ff6bb5', h: 1.1,
+  bio: 'Landed to study Earth tech and stayed for the snacks. The third eye reads Wi-Fi. The antennae pick up gossip.',
+  sw: ['#8ff0c0', '#4fbf93', '#dfe5f2', '#ff6bb5'],
+  defs: grad('z-head', ['#c6ffe2', '#8ff0c0', '#46b386']) + TG('z-body', ['#ffffff', '#dfe5f2', '#9aa6c4']) + clip('z-clip', 'M100 16 C160 16 186 60 180 98 C174 134 140 154 100 154 C60 154 26 134 20 98 C14 60 40 16 100 16 Z'),
+  draw: () => `
+  ${ln('M72 28 Q62 6 46 -2', L, 8)}${ln('M72 28 Q62 6 46 -2', '#8ff0c0', 4)}${ln('M128 28 Q138 6 154 -2', L, 8)}${ln('M128 28 Q138 6 154 -2', '#6fd6a6', 4)}
+  ${se(44, -4, 8, 8, '#ff6bb5', 4, 'class="pulse"')}${se(156, -4, 8, 8, '#ff6bb5', 4, 'class="pulse"')}${ci(41, -7, 2.5, '#fff')}${ci(153, -7, 2.5, '#fff')}
+  ${limb(127, 160, 150, 192, -9, '#b6bfd8', 13)}${se(150, 193, 8, 8, '#6fd6a6', 4)}
+  ${leg(110, 198, 115, 222, '#b6bfd8', 15)}${leg(90, 198, 85, 222, '#dfe5f2', 15)}${shoe(115, 223, '#ff6bb5')}${shoe(85, 223, '#ff6bb5')}
+  ${sp('M68 160 Q70 150 84 148 L116 148 Q130 150 132 160 L130 199 Q100 205 70 199 Z', G('z-body'))}
+  ${fl('M112 149 L116 148 Q130 150 132 160 L130 199 Q121 202 112 203 Z', '#6d7aa3', 'opacity=".45"')}
+  ${ln('M100 152 V198', '#9aa6c4', 2)}${fl('M69 186 Q100 192 131 186 L130 195 Q100 201 70 195 Z', '#ff6bb5')}${sr(93, 185, 14, 11, 3, '#ffd23d', 2.5)}
+  ${se(100, 151, 28, 7, '#c9d2e8', 4)}
+  ${sp('M100 16 C160 16 186 60 180 98 C174 134 140 154 100 154 C60 154 26 134 20 98 C14 60 40 16 100 16 Z', G('z-head'))}
+  ${shade('z-clip', '#1f7a5a', .35)}
+  ${el(66, 42, 6, 4, '#46b386', 'opacity=".6"')}${el(140, 34, 4, 3, '#46b386', 'opacity=".6"')}${el(154, 62, 5, 3.5, '#46b386', 'opacity=".6"')}
+  ${se(100, 54, 9, 11, INK, 3, 'class="blink"')}${ci(103, 50, 3, '#fff')}
+  <g class="blink">${fl('M48 98 Q54 70 92 82 Q94 108 72 114 Q48 116 48 98 Z', INK)}${fl('M152 98 Q146 70 108 82 Q106 108 128 114 Q152 116 152 98 Z', INK)}
+  ${ci(78, 90, 5.5, '#fff')}${ci(64, 103, 2.5, '#fff')}${ci(122, 90, 5.5, '#fff')}${ci(136, 103, 2.5, '#fff')}
+  ${ln('M56 100 Q66 108 82 102', '#ff6bb5', 2, 'opacity=".55"')}${ln('M144 100 Q134 108 118 102', '#ff6bb5', 2, 'opacity=".55"')}</g>
+  ${ln('M92 130 Q100 137 108 130', INK, 4)}
+  ${cheeks(.55, '#ff6bb5', 122)}
+  ${rim(.7)}
+  ${limb(73, 160, 46, 184, 9, '#dfe5f2', 13)}${se(46, 185, 8, 8, '#8ff0c0', 4)}${ln('M40 178 L33 172 M46 177 L45 169 M52 178 L56 171', L, 4.5)}${ln('M40 178 L33 172 M46 177 L45 169 M52 178 L56 171', '#8ff0c0', 2)}`
+});
+
+// 04 KAGE-X: Kiru's rival from the year 2099, same hood, all light
+CAST.push({
+  code: 'ND-04', name: 'Kage-X', kana: '影X', cls: 'Cyber ninja', sig: '#e93dff', h: 1.0,
+  bio: "Kiru's rival from 2099. Same hood, same stance, but the headband is light and the katana hums. Cuts through firewalls, not hype.",
+  sw: ['#0e1020', '#4a4f6e', '#c9d2e8', '#e93dff'],
+  defs: grad('x-hood', ['#555b7e', '#262a42', '#0e1020']) + TG('x-gi', ['#3a3f5c', '#22253a', '#121427']) + clip('x-clip', HOOD),
+  draw: () => `
+  <g filter="url(#glow)" style="color:#e93dff">${ln('M166 66 Q196 56 214 70 Q230 82 250 74', '#e93dff', 5)}${ln('M166 76 Q190 82 204 98 Q216 112 236 112', '#b52bd1', 4)}</g>
+  ${ln('M168 66 Q196 56 214 70 Q230 82 250 74', '#fff', 1.5, 'stroke-dasharray="4 7" opacity=".9"')}
+  ${ln('M134 188 L157 224', L, 13)}${ln('M134 188 L157 224', '#2a2e48', 8)}${ln('M136 191 L155 221', '#e93dff', 2, 'filter="url(#glow)"')}
+  ${ln('M33 116 L57 150', L, 15)}${ln('M33 116 L57 150', '#c9d2e8', 9.5)}${ln('M31 120 L38 117 M35 126 L42 123 M39 132 L46 129 M43 138 L50 135', '#e93dff', 2.6)}
+  ${se(57, 150, 11, 4.2, '#8d95ab', 3, rot(-55, 57, 150))}
+  ${limb(127, 156, 151, 193, -9, '#121427')}${fist(151, 193, '#8d95ab', '#5a6280')}
+  ${leg(110, 196, 115, 223.5, '#121427')}${leg(90, 196, 85, 223.5, '#22253a')}${shoe(115, 223.5)}${shoe(85, 223.5)}${ln('M72 231 H90 M102 231 H120', '#e93dff', 2)}
+  ${sp(TORSO, G('x-gi'))}${fl(TORSO_SH, '#0a0b18', 'opacity=".55"')}${fl('M88 145 L100 166 L112 145 Z', '#8d95ab')}${ln('M84 145 L100 170 L116 145', '#4a4f6e', 4.5)}
+  ${ln('M82 160 L94 172 L94 182 M118 160 L106 172 L106 182', '#e93dff', 1.6, 'opacity=".7"')}
+  ${fl('M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z', '#e93dff', 'filter="url(#glow)"')}${fl('M68 188 Q100 194 132 188 L132 191 Q100 197 68 191 Z', '#fff', 'opacity=".6"')}
+  ${sp(HOOD, G('x-hood'))}
+  <g clip-path="url(#x-clip)">${el(132, 128, 82, 62, '#05060f', 'opacity=".5"')}${el(66, 40, 38, 15, '#fff', `opacity=".14" ${rot(-24, 66, 40)}`)}${ln('M14 78 Q100 34 186 78', '#2a0a33', 14)}${ln('M14 78 Q100 34 186 78', '#e93dff', 5, 'filter="url(#glow)"')}${ln('M30 70 Q100 44 172 70', '#fff', 1.4, 'stroke-dasharray="3 9" opacity=".8"')}</g>
+  ${se(170, 68, 7, 7, '#e93dff', 3, 'filter="url(#glow)"')}
+  ${sr(81, 43, 38, 20, 4.5, '#2a2e48', 3.5)}<rect x="83.5" y="45.5" width="33" height="15" rx="3" fill="none" stroke="#5a6280" stroke-width="1.2"/>
+  ${ln('M92 48 L108 58 M108 48 L92 58', '#e93dff', 3, 'filter="url(#glow)"')}
+  ${fl(FACE, '#0a0c1c')}${fl('M48 84 C74 74 126 74 152 84 C126 79 74 79 48 90 Z', '#fff', 'opacity=".16"')}
+  <g class="blink" filter="url(#glow)" style="color:#e93dff">${fl('M62 94 L90 90 L88 101 L64 102 Z', '#e93dff')}${fl('M138 94 L110 90 L112 101 L136 102 Z', '#e93dff')}</g>
+  ${fl('M64 95 L88 92 L87 95 L65 97 Z', '#fff', 'opacity=".85"')}${fl('M136 95 L112 92 L113 95 L135 97 Z', '#fff', 'opacity=".85"')}
+  ${rim(.8)}
+  ${limb(73, 156, 50, 184, 10, '#3a3f5c')}${fist(50, 184, '#8d95ab', '#5a6280')}`
+});
+
+// 05 HOVR: a flying camera drone
+CAST.push({
+  code: 'ND-05', name: 'Hovr', kana: 'ホヴァー', cls: 'Drone bot', sig: '#b4ff4f', h: 0.92,
+  bio: 'A camera drone with opinions. Films every launch, zooms in on every typo, and never touches the ground if it can help it.',
+  sw: ['#f2f5ff', '#9aa6c4', '#0d1230', '#b4ff4f'],
+  defs: grad('h-body', ['#ffffff', '#dfe5f4', '#98a4c4'], 40, 40, 160, 170) + clip('h-clip', 'M30 106a70 70 0 1 0 140 0a70 70 0 1 0 -140 0Z'),
+  draw: () => `
+  ${el(100, 230, 40, 6, '#000', 'opacity=".35"')}
+  <g class="float">
+  ${el(100, 196, 14, 18, '#b4ff4f', 'opacity=".55" filter="url(#glow)" class="pulse"')}
+  ${sr(86, 166, 28, 16, 5, '#8d95ab', 5)}
+  ${ln('M56 58 L22 30', L, 11)}${ln('M56 58 L22 30', '#c9d2e8', 6)}${ln('M144 58 L178 30', L, 11)}${ln('M144 58 L178 30', '#aab2c8', 6)}
+  ${se(22, 26, 30, 4.5, '#c9d2e8', 3, 'class="rotor" opacity=".9"')}${se(178, 26, 30, 4.5, '#c9d2e8', 3, 'class="rotor" opacity=".9"')}
+  ${se(22, 30, 7, 7, '#6d7591', 4)}${se(178, 30, 7, 7, '#6d7591', 4)}
+  ${limb(126, 160, 140, 186, -6, '#8d95ab', 9)}${ln('M140 186 L134 196 M140 186 L148 195', L, 6)}${ln('M140 186 L134 196 M140 186 L148 195', '#c9d2e8', 3)}
+  ${sp('M30 106a70 70 0 1 0 140 0a70 70 0 1 0 -140 0Z', G('h-body'))}
+  <g clip-path="url(#h-clip)">${el(140, 150, 80, 58, '#3d4a78', 'opacity=".35"')}${el(68, 54, 32, 12, '#fff', `opacity=".5" ${rot(-28, 68, 54)}`)}</g>
+  ${ln('M34 126 Q100 152 166 126', '#9aa6c4', 3)}${ln('M100 36 V58', '#9aa6c4', 3)}
+  ${ci(48, 134, 4, '#b4ff4f', 'class="pulse"')}${ci(152, 134, 4, '#b4ff4f', 'class="pulse"')}
+  ${se(100, 100, 36, 36, '#0d1230', 6)}
+  <g class="blink">${ci(100, 100, 27, 'none', 'stroke="#b4ff4f" stroke-width="4" filter="url(#glow)"')}${ci(100, 100, 13, '#b4ff4f', 'filter="url(#glow)"')}${ci(100, 100, 6, '#0d1230')}${ci(90, 90, 6, '#fff', 'opacity=".9"')}${ci(110, 110, 2.5, '#fff', 'opacity=".7"')}</g>
+  ${cheeks(.5, '#ff7bb0', 128)}
+  ${rim(.6)}
+  ${limb(74, 160, 60, 186, 6, '#a3aecb', 9)}${ln('M60 186 L52 194 M60 186 L66 196', L, 6)}${ln('M60 186 L52 194 M60 186 L66 196', '#dfe5f4', 3)}
+  </g>`
+});
+
+// 06 PATCH: a hacker with holo-glasses, headphones over her afro
+const AFRO = (() => {
+  // the scalloped crown of her afro, from jaw level on the left, over the top, to jaw level on the right
+  const N = 22, cx = 100, cy = 80, rx = 86, ry = 80, a0 = Math.PI * 0.8, a1 = Math.PI * 2.2;
+  const at = (a, k) => `${(cx + Math.cos(a) * rx * k).toFixed(1)} ${(cy + Math.sin(a) * ry * k).toFixed(1)}`;
+  let d = `M${at(a0, 1)}`;
+  for (let i = 0; i < N; i++) { const b0 = a0 + (a1 - a0) * i / N, b1 = a0 + (a1 - a0) * (i + 1) / N; d += `Q${at((b0 + b1) / 2, 1.12)} ${at(b1, 1)}`; }
+  return d + `Q${cx} ${cy + 30} ${at(a0, 1)}Z`;
+})();
+const P_SKIN = '#8a5634', P_SKIN_S = '#6b3d22', P_HAIR = '#24160f';
+CAST.push({
+  code: 'ND-06', name: 'Patch', kana: 'パッチ', cls: 'Hacker', sig: '#3dffc2', h: 1.0,
+  bio: 'She ships hotfixes from a hoodie. Her glasses show three terminals at once, and her headphones play lo-fi and nothing else, ever.',
+  sw: ['#3b4058', '#8a5634', '#24160f', '#3dffc2'],
+  defs: TG('p-body', ['#565e7c', '#3b4058', '#262a3d']) + grad('p-hair', ['#4a3024', '#24160f', '#120a06']) + clip('p-clip', AFRO),
+  draw: () => `
+  <g class="float">${sr(178, 112, 52, 36, 6, '#3dffc2', 2, 'fill-opacity=".14" stroke="#3dffc2" filter="url(#glow)" style="color:#3dffc2"')}${ln('M186 122 H208 M186 130 H220 M186 138 H202', '#3dffc2', 2.5, 'opacity=".8"')}</g>
+  ${limb(127, 156, 140, 192, -6, '#262a3d', 16)}${se(140, 194, 8.5, 8.5, P_SKIN, 4)}
+  ${leg(110, 196, 115, 222, '#2c4478', 18)}${leg(90, 196, 85, 222, '#3b5a9a', 18)}
+  ${shoe(115, 223, '#eef1f8')}${shoe(85, 223, '#eef1f8')}${ln('M72 231 H90 M102 231 H120', '#3dffc2', 2.2)}
+  ${sp(TORSO, G('p-body'))}${fl(TORSO_SH, '#161927', 'opacity=".5"')}
+  ${sp('M76 178 Q100 172 124 178 L126 196 Q100 201 74 196 Z', '#2f3449', 3)}
+  <text x="100" y="168" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#3dffc2">&lt;/&gt;</text>
+  ${ln('M92 150 L90 170 M108 150 L110 170', '#c9d2e8', 2.2)}${ci(90, 172, 2.6, '#3dffc2')}${ci(110, 172, 2.6, '#3dffc2')}
+  ${sp('M58 152 Q62 138 100 136 Q138 138 142 152 Q132 160 100 160 Q68 160 58 152 Z', '#4a5170', 4)}${ln('M70 150 Q100 142 130 150', '#2f3449', 3)}
+  ${sp(AFRO, G('p-hair'))}
+  <g clip-path="url(#p-clip)">${el(132, 128, 82, 62, '#050302', 'opacity=".45"')}${el(64, 38, 36, 14, '#fff', `opacity=".09" ${rot(-24, 64, 38)}`)}
+  ${[[48, 44], [80, 26], [118, 24], [150, 42], [36, 74], [166, 70], [60, 60], [140, 58], [100, 40]].map(([x, y]) => ln(`M${x - 5} ${y + 2} Q${x} ${y - 4} ${x + 5} ${y + 2}`, '#5a3a2a', 2, 'opacity=".55"')).join('')}</g>
+  ${ln('M24 100 Q20 2 100 -2 Q180 2 176 100', L, 11)}${ln('M24 100 Q20 2 100 -2 Q180 2 176 100', '#262a3d', 6)}
+  ${se(24, 106, 13, 20, '#262a3d', 5)}${se(176, 106, 13, 20, '#1d2030', 5)}${el(24, 106, 5, 10, '#3dffc2', 'filter="url(#glow)"')}
+  ${ci(30, 134, 5.5, 'none', `stroke="${L}" stroke-width="4.5"`)}${ci(30, 134, 5.5, 'none', 'stroke="#f5c542" stroke-width="2.2"')}${ci(170, 134, 5.5, 'none', `stroke="${L}" stroke-width="4.5"`)}${ci(170, 134, 5.5, 'none', 'stroke="#d9a72e" stroke-width="2.2"')}
+  ${fl(FULL, P_SKIN)}${fl(FACE_SH, P_SKIN_S, 'opacity=".8"')}
+  ${fl('M44 80 C66 66 134 66 156 80 C146 74 128 72 100 74 C72 72 54 74 44 80 Z', P_HAIR)}
+  ${rim(.6)}${cheeks(.35, '#c0584a', 116)}${eyes({ lx: 1, ly: 2 })}
+  ${ln('M91 128 Q100 134 109 128', '#2a120a', 3.5)}${el(100, 132, 6, 2, '#a3504a', 'opacity=".45"')}
+  <g filter="url(#glow)" style="color:#3dffc2">${sr(56, 80, 40, 30, 9, '#3dffc2', 0, 'fill-opacity=".22" stroke="#3dffc2" stroke-width="3"')}${sr(104, 80, 40, 30, 9, '#3dffc2', 0, 'fill-opacity=".22" stroke="#3dffc2" stroke-width="3"')}</g>
+  ${ln('M96 92 Q100 88 104 92', '#3dffc2', 3)}${ln('M62 86 L72 86 M110 86 L116 86', '#fff', 2, 'opacity=".75"')}
+  ${brows(75, 77, '#1d0f0a', 4.5, -1.5)}
+  ${fl('M30 198 L86 198 L78 212 L20 212 Z', '#3dffc2', 'opacity=".18"')}${ln('M30 198 L86 198 L78 212 L20 212 Z', '#3dffc2', 1.5, 'filter="url(#glow)"')}${ln('M34 205 H76', '#3dffc2', 1.2, 'stroke-dasharray="3 3"')}
+  ${limb(73, 156, 52, 190, 8, '#3b4058', 16)}${se(52, 192, 8.5, 8.5, P_SKIN, 4)}`
+});
+
+// 07 TENGU-9: a mech samurai with a plasma blade
+CAST.push({
+  code: 'ND-07', name: 'Tengu-9', kana: '天狗九', cls: 'Mech samurai', sig: '#f5c542', h: 1.14,
+  bio: 'Ninth-generation guardian armour, still lacquered by hand. Bows before every duel and apologises after every win.',
+  sw: ['#2a3466', '#0f1430', '#f5c542', '#8fe0ff'],
+  defs: grad('t-helm', ['#3d4a8a', '#222b5c', '#0f1430']) + TG('t-body', ['#3d4a8a', '#222b5c', '#121838']) + clip('t-clip', 'M28 96 Q26 22 100 18 Q174 22 172 96 Z'),
+  draw: () => `
+  ${limb(127, 158, 150, 192, -9, '#121838', 15)}${fist(150, 193, '#2a3466', '#121838')}
+  ${leg(110, 198, 115, 222, '#121838', 18)}${leg(90, 198, 85, 222, '#222b5c', 18)}${shoe(115, 223, INK, 1.1)}${shoe(85, 223, INK, 1.1)}
+  ${sp(TORSO, G('t-body'))}${fl(TORSO_SH, '#080b1e', 'opacity=".5"')}
+  ${ln('M68 162 H132 M67 172 H133 M67 182 H133', '#f5c542', 2, 'opacity=".75"')}${se(100, 156, 7, 7, '#8fe0ff', 3, 'filter="url(#glow)" class="pulse"')}
+  ${sp('M66 192 L82 194 L80 214 L64 210 Z M86 195 L100 196 L114 195 L113 216 L87 216 Z M118 194 L134 192 L136 210 L120 214 Z', '#222b5c', 3)}${ln('M66 200 L81 202 M87 204 H113 M119 202 L134 200', '#f5c542', 1.6)}
+  ${sp('M48 148 L80 144 L80 176 L50 180 Z', '#2a3466', 4)}${sp('M152 148 L120 144 L120 176 L150 180 Z', '#1b2350', 4)}${ln('M50 158 L79 155 M51 168 L79 165 M150 158 L121 155 M149 168 L121 165', '#f5c542', 1.6)}
+  ${sp('M16 84 L184 84 L194 122 Q100 108 6 122 Z', '#1b2350', 5)}${ln('M14 96 Q100 86 186 96 M10 110 Q100 98 190 110', '#f5c542', 1.8)}
+  ${sp('M28 96 Q26 22 100 18 Q174 22 172 96 Z', G('t-helm'))}${shade('t-clip', '#05081a', .4)}
+  ${ln('M44 40 Q100 30 156 40 M34 62 Q100 50 166 62', '#f5c542', 1.6, 'opacity=".6"')}
+  ${sp('M22 66 L44 72 L42 102 L18 96 Z', '#2a3466', 4)}${sp('M178 66 L156 72 L158 102 L182 96 Z', '#1b2350', 4)}
+  <g filter="url(#glow)" style="color:#f5c542">${sp('M40 -14 Q100 64 160 -14 Q100 34 40 -14 Z', '#f5c542', 4)}</g>${ci(100, 32, 9, '#f5c542', 'stroke="#3d4c95" stroke-width="4" paint-order="stroke"')}${ci(100, 32, 4, '#8fe0ff')}
+  ${sp('M44 92 Q100 82 156 92 L150 132 Q100 150 50 132 Z', '#2c3354', 4)}
+  ${sp('M44 92 Q100 82 156 92 L152 104 Q100 96 48 104 Z', '#0f1430', 0)}
+  <g class="blink" filter="url(#glow)" style="color:#8fe0ff">${fl('M60 104 L90 108 L88 115 L62 112 Z', '#8fe0ff')}${fl('M140 104 L110 108 L112 115 L138 112 Z', '#8fe0ff')}</g>
+  ${ln('M84 126 H116 M88 133 H112 M92 140 H108', '#f5c542', 2.4)}${ln('M58 120 Q66 128 76 124 M142 120 Q134 128 124 124', '#8d95ab', 2)}
+  ${rim(.7)}
+  <g filter="url(#glow)" style="color:#8fe0ff">${ln('M40 194 L-4 236', '#8fe0ff', 8, 'opacity=".55"')}${ln('M40 194 L-4 236', '#ffffff', 2.5)}</g>
+  ${limb(73, 158, 48, 186, 9, '#222b5c', 15)}${ln('M54 182 L36 200', L, 11)}${ln('M54 182 L36 200', INK, 6.5)}${se(42, 194, 10, 4, '#f5c542', 3, rot(-44, 42, 194))}${fist(50, 186, '#2a3466', '#121838')}`
+});
+
+// 08 CAPTAIN TAKOTSUBO: an octopus piloting a walker from a fishbowl
+CAST.push({
+  code: 'ND-08', name: 'Capt. Takotsubo', kana: '蛸壺艦長', cls: 'Alien pilot', sig: '#b06bff', h: 1.08,
+  bio: 'Named for the pot an octopus hides in. Commands a walker from a fishbowl. Eight arms, eight opinions about your architecture diagram, all of them right.',
+  sw: ['#b06bff', '#7a3fd0', '#8d95ab', '#7fe8ff'],
+  defs: grad('o-head', ['#d3a8ff', '#b06bff', '#6f35c4'], 60, 46, 140, 124) + TG('o-body', ['#b7bfd6', '#8d95ab', '#5c6482']) + grad('o-water', ['#b8f2ff', '#5fc8ea', '#2a7ab8'], 40, 20, 160, 150) + clip('o-clip', 'M38 86a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z'),
+  draw: () => `
+  ${limb(132, 162, 152, 194, -8, '#5c6482', 12)}${ln('M152 194 Q166 194 164 206 M152 194 Q144 206 154 212', L, 8)}${ln('M152 194 Q166 194 164 206 M152 194 Q144 206 154 212', '#aab2c8', 4)}
+  ${leg(112, 198, 120, 222, '#5c6482', 12, 6)}${leg(88, 198, 80, 222, '#8d95ab', 12, 6)}${se(92, 210, 6, 6, '#b7bfd6', 3)}${se(116, 210, 6, 6, '#8d95ab', 3)}
+  ${sr(66, 220, 30, 11, 5, '#3a3f5c', 5)}${sr(106, 220, 30, 11, 5, '#2a2e48', 5)}
+  ${sp('M62 162 Q64 150 80 148 L120 148 Q136 150 138 162 L134 200 Q100 206 66 200 Z', G('o-body'))}
+  ${ci(84, 174, 7, '#2a2e48', 'stroke="#3d4c95" stroke-width="3"')}${ln('M84 174 L88 170', '#7fe8ff', 2)}${sr(98, 166, 30, 16, 4, '#0d1230', 3)}${ln('M102 176 L108 170 L114 176 L120 170', '#7fe8ff', 2, 'filter="url(#glow)"')}
+  ${sr(76, 186, 48, 6, 3, '#b06bff', 0)}
+  ${se(100, 148, 58, 13, '#aab2c8', 5)}${ci(68, 150, 3.5, '#b06bff', 'class="pulse"')}${ci(100, 154, 3.5, '#7fe8ff', 'class="pulse"')}${ci(132, 150, 3.5, '#b06bff', 'class="pulse"')}
+  ${ci(100, 86, 62, G('o-water'), 'opacity=".45"')}
+  <g clip-path="url(#o-clip)">
+    ${ln('M74 104 Q60 122 70 136 Q78 142 82 132', L, 13)}${ln('M126 104 Q140 122 130 136 Q122 142 118 132', L, 13)}${ln('M90 110 Q86 132 96 144', L, 12)}${ln('M110 110 Q116 130 106 144', L, 12)}
+    ${ln('M74 104 Q60 122 70 136 Q78 142 82 132', '#9152e6', 8)}${ln('M126 104 Q140 122 130 136 Q122 142 118 132', '#9152e6', 8)}${ln('M90 110 Q86 132 96 144', '#b06bff', 7)}${ln('M110 110 Q116 130 106 144', '#b06bff', 7)}
+    ${sp('M100 46 C128 46 142 66 140 88 C138 106 122 114 100 114 C78 114 62 106 60 88 C58 66 72 46 100 46 Z', G('o-head'), 5)}
+    ${el(80, 60, 5, 4, '#e5c9ff', 'opacity=".7"')}${el(118, 56, 4, 3, '#e5c9ff', 'opacity=".7"')}${el(126, 70, 3, 2.5, '#e5c9ff', 'opacity=".7"')}
+    ${eyes({ y: 88, a: 86, b: 114, s: 0.62, lx: -1 })}
+    ${el(74, 100, 5, 2.6, '#ff8fc7', 'opacity=".6"')}${el(126, 100, 5, 2.6, '#ff8fc7', 'opacity=".6"')}${ln('M95 104 Q100 108 105 104', INK, 3)}
+    <g class="float">${ci(60, 70, 3, 'none', 'stroke="#e6fbff" stroke-width="1.5"')}${ci(146, 92, 4, 'none', 'stroke="#e6fbff" stroke-width="1.5"')}${ci(140, 60, 2, 'none', 'stroke="#e6fbff" stroke-width="1.5"')}</g>
+  </g>
+  ${ci(100, 86, 62, 'none', `stroke="${L}" stroke-width="6"`)}${ln('M54 52 Q72 28 104 24', '#fff', 6, 'opacity=".7"')}${ln('M48 70 Q49 64 52 59', '#fff', 4, 'opacity=".5"')}
+  ${ln('M100 24 V8', L, 7)}${ln('M100 24 V8', '#aab2c8', 3.5)}${ci(100, 4, 6, '#7fe8ff', 'class="pulse" filter="url(#glow)" style="color:#7fe8ff"')}
+  ${limb(68, 162, 46, 192, 8, '#8d95ab', 12)}${ln('M46 192 Q32 192 34 204 M46 192 Q54 204 44 210', L, 8)}${ln('M46 192 Q32 192 34 204 M46 192 Q54 204 44 210', '#c9d2e8', 4)}`
+});
+
+// ───────────────────────── the rogues ─────────────────────────
+// Villains keep the rig and the outline, but the moon turns on them: their own neon lights them from
+// below, brows slant in, and every one of them has crimson eyes.
+const CR = '#ff2340';
+const vrim = (c, d = 'M48 140 Q100 164 152 140') => ln(d, c, 3.4, 'opacity=".85" filter="url(#glow)"');
+const ROGUES = [];
+
+// RG-01 BAZU: hype, in a suit
+ROGUES.push({
+  code: 'RG-01', name: 'Bazu', kana: 'バズ', cls: 'Hype merchant', sig: '#e6ff3d', h: 1.06,
+  bio: 'Sells the future by the slide deck. Every product is 10x, every launch is a revolution, and nothing has shipped since 2024.',
+  sw: ['#e8c24a', '#2e1b44', '#13152a', '#e6ff3d'],
+  defs: grad('bz-head', ['#fff4b0', '#e8c24a', '#9a7414']) + TG('bz-body', ['#4a2f66', '#2e1b44', '#1a0f2a']) + clip('bz-clip', HOOD),
+  draw: () => `
+  ${sp('M124 36 L150 8 Q163 10 167 23 L142 46 Z', '#e6ff3d', 5)}${ln('M170 0 Q180 10 177 22 M180 -10 Q196 8 190 32', '#e6ff3d', 3, 'filter="url(#glow)" class="pulse"')}
+  <g class="float">${sr(170, 52, 70, 20, 5, '#e6ff3d', 0, 'fill-opacity=".14"')}${ln('M170 52 h70 v20 h-70 z', '#e6ff3d', 1.5, 'filter="url(#glow)"')}<text x="205" y="66" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#e6ff3d">AGI SOON</text></g>
+  ${limb(127, 156, 150, 190, -9, '#2e1b44')}${fist(150, 191, '#e8c24a', '#9a7414')}
+  ${leg(110, 196, 115, 223.5, '#1a0f2a')}${leg(90, 196, 85, 223.5, '#2e1b44')}${shoe(115, 223.5, '#e8c24a')}${shoe(85, 223.5, '#e8c24a')}
+  ${sp(TORSO, G('bz-body'))}${fl(TORSO_SH, '#0d0716', 'opacity=".5"')}
+  ${fl('M86 145 L100 170 L114 145 Z', '#e6ff3d')}${sp('M82 144 L100 174 L90 186 L72 152 Z', '#3d2658', 2.5)}${sp('M118 144 L100 174 L110 186 L128 152 Z', '#33204c', 2.5)}
+  ${ln('M80 150 Q100 184 120 150', '#e8c24a', 3, 'stroke-dasharray="3 2"')}${sp('M100 176 l5 8 l-2 6 h-6 l-2 -6 z', '#e6ff3d', 2)}
+  ${sp(HOOD, G('bz-head'))}${shade('bz-clip', '#6a4a00', .35)}
+  ${sp('M38 80 Q100 64 162 80 L158 100 Q134 114 110 102 L100 94 L90 102 Q66 114 42 100 Z', INK, 4)}
+  <g class="blink" filter="url(#glow)" style="color:${CR}">${fl('M58 92 L84 88 L82 95 L60 98 Z', CR)}${fl('M142 92 L116 88 L118 95 L140 98 Z', CR)}</g>
+  ${fl('M48 84 Q70 76 92 80 L88 86 Q68 82 52 91 Z', '#fff', 'opacity=".3"')}
+  ${ln('M50 70 L88 79 M150 70 L112 79', INK, 6)}
+  ${sp('M64 116 Q100 112 136 116 Q130 141 100 143 Q70 141 64 116 Z', '#1a0f2a', 4)}${ln('M72 122 H128 M76 129 H124 M84 136 H116', '#e6ff3d', 2.5, 'filter="url(#glow)"')}
+  ${rim(.5)}${vrim('#e6ff3d')}
+  ${ln('M28 126 L18 100', L, 7)}${ln('M28 126 L18 100', '#9a7414', 3.5)}
+  <g filter="url(#glow)" style="color:#e6ff3d">${sr(-20, 74, 54, 30, 6, '#e6ff3d', 0, 'fill-opacity=".16"')}${ln('M-20 74 h54 v30 h-54 z', '#e6ff3d', 2)}</g>
+  <text x="7" y="96" text-anchor="middle" font-family="Dela Gothic One, Arial Black, sans-serif" font-size="18" fill="#e6ff3d">10×</text>
+  ${limb(73, 156, 30, 128, -6, '#4a2f66')}${fist(30, 128, '#e8c24a', '#9a7414')}`
+});
+
+// RG-02 FUKUSEI: the deepfake, wearing a borrowed face
+ROGUES.push({
+  code: 'RG-02', name: 'Fukusei', kana: '複製', cls: 'Deepfake', sig: '#e8f4ff', h: 1.08,
+  bio: "Wears whoever you trust. Has your boss's voice, your bank's logo and your mum's smile, and gives itself away by blinking wrong.",
+  sw: ['#f4f1ea', '#1e1830', '#5ff6ff', '#ff2340'],
+  defs: grad('fk-cloak', ['#3a3150', '#1e1830', '#0c0916'], 60, 140, 140, 232) + grad('fk-hood', ['#3a3150', '#1e1830', '#0c0916']) + clip('fk-clip', HOOD),
+  draw: () => `
+  ${sp('M62 150 Q66 140 82 140 L118 140 Q134 140 138 150 L156 222 L144 216 L134 228 L122 218 L110 230 L100 220 L90 230 L78 218 L66 228 L56 216 L44 222 Z', G('fk-cloak'))}
+  ${fl('M112 141 L118 140 Q134 140 138 150 L156 222 L144 216 L134 228 L122 218 L112 228 Z', '#05040a', 'opacity=".45"')}
+  ${sp(HOOD, G('fk-hood'))}${shade('fk-clip', '#05040a', .5)}
+  ${el(95, 100, 51, 51, 'none', 'stroke="#5ff6ff" stroke-width="3" opacity=".55"')}${el(105, 100, 51, 51, 'none', `stroke="${CR}" stroke-width="3" opacity=".55"`)}
+  ${sp('M100 50 C134 50 150 74 150 100 C150 130 128 150 100 150 C72 150 50 130 50 100 C50 74 66 50 100 50 Z', '#f4f1ea', 5)}
+  ${fl('M100 50 C134 50 150 74 150 100 C150 130 128 150 100 150 Z', '#c9c4dc', 'opacity=".55"')}
+  ${ln('M100 52 L94 70 L104 82 L98 100', '#6d6680', 2)}
+  <g class="blink">${el(77, 97, 11, 12, '#fff', `stroke="${L}" stroke-width="2"`)}${ci(75, 99, 7, INK)}${ci(78, 95, 2.6, '#fff')}</g>
+  ${ln('M64 82 Q77 77 90 82', INK, 4)}
+  <g filter="url(#glow)" style="color:${CR}">${fl('M110 98 L138 90 L136 99 L112 104 Z', CR)}</g>${ln('M108 86 L138 76', INK, 4.5)}
+  ${ln('M68 122 Q100 142 132 122', INK, 3.5)}${ln('M68 122 L63 117 M132 122 L137 117', INK, 3)}
+  <rect x="146" y="90" width="18" height="4" fill="#5ff6ff"/><rect x="140" y="110" width="22" height="3" fill="${CR}"/><rect x="34" y="118" width="14" height="3" fill="#5ff6ff"/><rect x="40" y="76" width="10" height="3" fill="${CR}"/>
+  ${rim(.5)}${vrim('#5ff6ff', 'M58 146 Q100 166 142 146')}
+  ${limb(78, 156, 46, 184, 8, '#2a2340', 14)}${se(46, 186, 8, 8, '#f4f1ea', 4)}
+  <g transform="rotate(-16 26 200)">${se(26, 200, 15, 17, '#f4f1ea', 4)}${ci(20, 196, 2.6, INK)}${ci(32, 196, 2.6, INK)}${ln('M18 205 Q26 212 34 205', INK, 2.5)}${el(16, 203, 3, 1.6, BLUSH, 'opacity=".7"')}${el(36, 203, 3, 1.6, BLUSH, 'opacity=".7"')}</g>`
+});
+
+// RG-03 BAGU: the bug in production
+const BUGLET = (x, y) => `<g class="float">${el(x - 4, y - 5, 5, 3, '#fff', 'opacity=".55"')}${el(x + 4, y - 5, 5, 3, '#fff', 'opacity=".55"')}${se(x, y, 6, 5, '#24503a', 2.5)}${ci(x - 3, y - 1, 1.6, CR, 'filter="url(#glow)"')}</g>`;
+ROGUES.push({
+  code: 'RG-03', name: 'Bagu', kana: 'バグ', cls: 'Prod bug', sig: '#7dff3a', h: 1.08,
+  bio: 'Hatches at 4:59 on a Friday, splits in two every time someone patches it, and can only be beaten by a test somebody actually wrote.',
+  sw: ['#4f8a5c', '#0d2418', '#e8dcb8', '#7dff3a'],
+  defs: grad('bg-shell', ['#5c9a68', '#24503a', '#0d2418']) + TG('bg-body', ['#3d6e4c', '#24503a', '#0d2418']) + clip('bg-clip', HOOD),
+  draw: () => `
+  ${ln('M72 30 Q58 4 32 -4 Q22 -6 18 4', L, 8)}${ln('M72 30 Q58 4 32 -4 Q22 -6 18 4', '#24503a', 4)}${ln('M128 30 Q142 4 168 -4 Q178 -6 182 4', L, 8)}${ln('M128 30 Q142 4 168 -4 Q178 -6 182 4', '#183424', 4)}
+  ${ci(18, 6, 5, '#7dff3a', 'filter="url(#glow)" class="pulse"')}${ci(182, 6, 5, '#7dff3a', 'filter="url(#glow)" class="pulse"')}
+  ${BUGLET(196, 70)}${BUGLET(212, 128)}${BUGLET(-6, 150)}
+  ${['M132 170 L158 176 L168 194', 'M130 186 L152 198 L158 216'].map(d => ln(d, L, 9) + ln(d, '#183424', 4.5)).join('')}
+  ${limb(127, 158, 150, 188, -8, '#183424', 11)}${ln('M150 188 L160 184 M150 188 L156 198', L, 7)}${ln('M150 188 L160 184 M150 188 L156 198', '#e8dcb8', 3)}
+  ${leg(110, 198, 116, 224, '#183424', 10, 4)}${leg(90, 198, 84, 224, '#24503a', 10, 4)}${shoe(116, 224, INK, .9)}${shoe(84, 224, INK, .9)}
+  ${sp('M70 158 Q72 146 86 144 L114 144 Q128 146 130 158 L128 200 Q100 206 72 200 Z', G('bg-body'))}
+  ${ln('M72 168 Q100 175 128 168 M71 183 Q100 190 129 183', '#7dff3a', 1.8, 'opacity=".55"')}${ci(100, 158, 5, CR, 'filter="url(#glow)" class="pulse"')}
+  ${['M68 170 L42 176 L32 194', 'M70 186 L48 198 L42 216'].map(d => ln(d, L, 9) + ln(d, '#24503a', 4.5)).join('')}
+  ${sp(HOOD, G('bg-shell'))}${shade('bg-clip', '#04100a', .45)}
+  ${ln('M100 24 V72', L, 3)}${el(70, 46, 7, 4, '#7ab884', 'opacity=".5"')}${el(134, 42, 5, 3, '#7ab884', 'opacity=".5"')}
+  ${fl(FACE, '#081410')}
+  <g class="blink" filter="url(#glow)" style="color:${CR}">${[[66, 94], [77, 88], [76, 101], [87, 95], [134, 94], [123, 88], [124, 101], [113, 95]].map(([x, y]) => ci(x, y, 5.6, CR)).join('')}</g>
+  ${[[64, 92], [75, 86], [121, 86], [132, 92]].map(([x, y]) => ci(x, y, 1.6, '#fff')).join('')}
+  ${ln('M58 76 L90 86 M142 76 L110 86', '#7dff3a', 3, 'opacity=".8"')}
+  ${sp('M80 110 Q68 132 84 142 Q82 128 91 117 Z', '#e8dcb8', 3)}${sp('M120 110 Q132 132 116 142 Q118 128 109 117 Z', '#d4c79f', 3)}
+  ${rim(.5)}${vrim('#7dff3a')}
+  ${limb(73, 158, 44, 182, 8, '#24503a', 11)}${ln('M44 182 L32 178 M44 182 L36 194', L, 7)}${ln('M44 182 L32 178 M44 182 L36 194', '#e8dcb8', 3)}`
+});
+
+// RG-04 KUSARIGUMO: the cloud that never lets go
+const CLOUD = 'M46 132 Q14 130 16 100 Q18 74 44 70 Q44 36 78 32 Q96 8 124 22 Q154 14 164 44 Q192 50 188 80 Q204 102 184 122 Q176 134 154 132 Z';
+function chain(x1, y1, x2, y2, n) {
+  let s = ''; const a = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1), x = x1 + (x2 - x1) * t, y = y1 + (y2 - y1) * t, r = a + (i % 2 ? 0 : 90);
+    s += el(x.toFixed(1), y.toFixed(1), 6, 3.6, 'none', `stroke="${L}" stroke-width="5" ${rot(r.toFixed(0), x.toFixed(1), y.toFixed(1))}`) + el(x.toFixed(1), y.toFixed(1), 6, 3.6, 'none', `stroke="#c9d2e8" stroke-width="2.4" ${rot(r.toFixed(0), x.toFixed(1), y.toFixed(1))}`);
+  }
+  return s;
+}
+ROGUES.push({
+  code: 'RG-04', name: 'Kusarigumo', kana: '鎖雲', cls: 'Lock-in lord', sig: '#3d7bff', h: 1.1,
+  bio: 'The cloud that never lets go. Free to get in, priced per breath, and the exit costs extra. Its handshake is a three-year contract.',
+  sw: ['#8a93b8', '#232a4a', '#c9d2e8', '#3d7bff'],
+  defs: grad('kg-cloud', ['#9aa3c8', '#4c557d', '#232a4a'], 30, 20, 170, 136) + TG('kg-body', ['#3a4268', '#252c4c', '#141a33']) + clip('kg-clip', CLOUD),
+  draw: () => `
+  ${limb(127, 158, 150, 190, -9, '#141a33')}${fist(150, 191, '#8a93b8', '#4c557d')}
+  ${leg(110, 196, 115, 223.5, '#141a33')}${leg(90, 196, 85, 223.5, '#252c4c')}${shoe(115, 223.5)}${shoe(85, 223.5)}
+  ${sp(TORSO, G('kg-body'))}${fl(TORSO_SH, '#0a0d1e', 'opacity=".5"')}
+  ${fl('M86 145 L100 162 L114 145 Z', '#e4e7f0')}${sp('M96 148 L104 148 L106 172 L100 180 L94 172 Z', '#3d7bff', 2)}
+  ${chain(66, 146, 134, 198, 10)}
+  ${sp(CLOUD, G('kg-cloud'))}
+  <g clip-path="url(#kg-clip)">${el(140, 130, 80, 44, '#0f1430', 'opacity=".45"')}${el(70, 44, 30, 11, '#fff', `opacity=".14" ${rot(-20, 70, 44)}`)}</g>
+  <g filter="url(#glow)" style="color:#3d7bff">${sp('M72 32 L78 6 L91 24 L100 2 L109 24 L122 6 L128 32 Z', '#3d7bff', 4)}</g>${ci(100, 22, 3.5, '#fff')}
+  ${el(78, 92, 12.5, 12.5, '#fff')}${el(122, 92, 12.5, 12.5, '#fff')}
+  <g filter="url(#glow)" style="color:${CR}">${ci(81, 96, 6.5, CR)}${ci(119, 96, 6.5, CR)}</g>${ci(83, 94, 2, '#fff')}${ci(121, 94, 2, '#fff')}
+  ${fl('M63 76 L93 76 L93 95 L63 88 Z', '#626b94')}${fl('M107 76 L137 76 L137 88 L107 95 Z', '#56608a')}${ln('M63 88 L93 95 M137 88 L107 95', INK, 3.5)}
+  ${ln('M60 74 L92 82 M140 74 L108 82', INK, 5)}
+  ${ln('M82 116 Q102 124 120 108', INK, 4)}${fl('M103 119 l3 7 l3 -7 z', '#fff')}
+  ${rim(.5)}${vrim('#3d7bff', 'M50 128 Q100 142 150 128')}
+  ${limb(73, 158, 44, 180, 8, '#252c4c')}
+  ${ln('M32 198 V188 Q32 176 44 176 Q56 176 56 188 V198', L, 9)}${ln('M32 198 V188 Q32 176 44 176 Q56 176 56 188 V198', '#c9d2e8', 4.5)}
+  ${sr(24, 194, 40, 32, 7, '#3d7bff', 4)}${fl('M28 200 Q44 196 60 200', 'none')}${ci(44, 207, 4.5, INK)}${fl('M41.5 209 h5 l1.5 9 h-8 z', INK)}
+  ${fist(44, 178, '#8a93b8', '#4c557d')}`
+});
+
+// RG-05 ZATSU: a monster made of AI slop
+const BLOB = 'M100 30 C150 30 174 66 172 104 C170 138 160 164 166 192 C170 208 188 214 192 226 L8 226 C12 214 30 208 34 192 C40 164 30 138 28 104 C26 66 50 30 100 30 Z';
+const STAR = 'M0 -7 Q1.1 -1.1 7 0 Q1.1 1.1 0 7 Q-1.1 1.1 -7 0 Q-1.1 -1.1 0 -7 Z';
+function sixFingers(x, y) {
+  let d = ''; for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 - 0.95 + i * 0.38; d += `M${x} ${y}L${(x + Math.cos(a) * 17).toFixed(1)} ${(y + Math.sin(a) * 17).toFixed(1)}`; }
+  return ln(d, L, 8) + ln(d, '#e8b0c4', 4) + se(x, y, 9, 9, '#e8b0c4', 4);
+}
+ROGUES.push({
+  code: 'RG-05', name: 'Zatsu', kana: '雑', cls: 'Slop monster', sig: '#ff3d9a', h: 1.02,
+  bio: 'Grown from a million generated posts nobody read. Says "delve" a lot and loves an em dash. Count the fingers before you trust it.',
+  sw: ['#f0c3d0', '#c98aa6', '#7a4566', '#ff3d9a'],
+  defs: grad('zt-blob', ['#f6d0dc', '#c98aa6', '#7a4566'], 40, 30, 170, 230) + clip('zt-clip', BLOB),
+  draw: () => `
+  ${se(100, 228, 98, 8, '#a8668a', 4)}
+  <g class="float">${sr(-22, 18, 78, 20, 4, '#ffffff', 0, 'fill-opacity=".08"')}${ln('M-22 18 h78 v20 h-78 z', '#ff3d9a', 1.4, 'opacity=".8"')}<text x="17" y="31" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#ffc2dd">10 Ways to Delv…</text></g>
+  <g class="pulse" filter="url(#glow)" style="color:#ff3d9a"><g transform="translate(184 40) scale(1.4)">${fl(STAR, '#ff3d9a')}</g><g transform="translate(200 66) scale(.8)">${fl(STAR, '#ff9ccb')}</g><g transform="translate(176 72) scale(.6)">${fl(STAR, '#ff3d9a')}</g></g>
+  ${limb(150, 150, 178, 180, -10, '#b77796', 14)}${se(178, 182, 9, 9, '#b77796', 4)}
+  ${sp(BLOB, G('zt-blob'))}
+  <g clip-path="url(#zt-clip)">${el(150, 170, 70, 80, '#4a2040', 'opacity=".35"')}${el(64, 56, 30, 12, '#fff', `opacity=".35" ${rot(-26, 64, 56)}`)}${el(60, 170, 26, 40, '#7fe8ff', 'opacity=".12"')}${el(130, 120, 20, 30, '#ffe066', 'opacity=".1"')}
+  ${fl('M56 150 q4 14 0 26 q-4 -12 0 -26 z M138 168 q5 16 0 30 q-5 -14 0 -30 z M98 190 q4 12 0 22 q-4 -10 0 -22 z', '#7a4566', 'opacity=".5"')}</g>
+  <g class="blink">${ci(72, 88, 16, '#fff', `stroke="${L}" stroke-width="3"`)}${ci(128, 80, 9.5, '#fff', `stroke="${L}" stroke-width="3"`)}${ci(116, 110, 6, '#fff', `stroke="${L}" stroke-width="2.5"`)}
+  <g filter="url(#glow)" style="color:${CR}">${ci(75, 91, 8, CR)}${ci(126, 82, 4.6, CR)}${ci(119, 112, 3, CR)}</g>${ci(78, 86, 3, '#fff')}${ci(128, 79, 1.6, '#fff')}</g>
+  ${ln('M52 64 L90 72', INK, 5)}${ln('M118 66 L142 60', INK, 4)}
+  ${sp('M52 124 Q100 156 152 118 Q100 138 52 124 Z', '#3a1030', 3)}${ln('M60 128 Q100 146 144 123', '#fff', 4, 'stroke-dasharray="4 2.5"')}
+  ${rim(.5)}${vrim('#ff3d9a', 'M40 196 Q100 214 160 196')}
+  ${limb(46, 142, 14, 112, -10, '#e8b0c4', 14)}${sixFingers(12, 108)}`
+});
+
+// RG-06 EMPEROR KEMURI: the final boss, lord of vapourware
+const HELM = 'M32 98 Q30 44 62 28 L100 16 L138 28 Q170 44 168 98 L154 138 Q100 154 46 138 Z';
+ROGUES.push({
+  code: 'RG-06', name: 'Emperor Kemuri', kana: '煙帝', cls: 'Final boss', sig: '#ff2340', h: 1.32,
+  bio: 'Rules an empire of vapourware. Nothing in it works, everything in it is "coming soon", and nobody has ever seen him ship.',
+  sw: ['#25122c', '#7a1426', '#d9b26a', '#ff2340'],
+  defs: grad('ek-helm', ['#4e2c58', '#25122c', '#0c0510']) + TG('ek-body', ['#3a2040', '#1f0f26', '#0c0510']) + grad('ek-cape', ['#8a1a2e', '#3e0812', '#1a0207'], 40, 140, 160, 236) + clip('ek-clip', HELM),
+  draw: () => `
+  <g class="float">${ln('M-8 212 Q8 196 -2 182 Q-10 170 4 158 M206 206 Q190 190 200 176 Q208 164 196 150 M30 236 Q20 222 34 214', '#9a8ab4', 7, 'opacity=".3"')}</g>
+  ${sp('M50 150 Q22 196 2 234 L198 234 Q178 196 150 150 Z', G('ek-cape'))}${ln('M6 231 L194 231', CR, 2.2, 'filter="url(#glow)"')}
+  ${sp('M46 54 Q10 42 2 -14 Q30 16 62 34 Z', '#d9b26a', 5)}${sp('M154 54 Q190 42 198 -14 Q170 16 138 34 Z', '#b8913f', 5)}
+  ${limb(130, 158, 152, 194, -9, '#1f0f26', 16)}${fist(152, 195, '#3a2040', '#1f0f26', 10.5)}
+  ${leg(110, 198, 115, 222, '#1f0f26', 19)}${leg(90, 198, 85, 222, '#2e1736', 19)}${shoe(115, 223, INK, 1.2)}${shoe(85, 223, INK, 1.2)}
+  ${sp('M60 160 Q62 146 80 142 L120 142 Q138 146 140 160 L136 202 Q100 210 64 202 Z', G('ek-body'))}${fl('M114 143 L120 142 Q138 146 140 160 L136 202 Q126 206 114 207 Z', '#05020a', 'opacity=".5"')}
+  ${ln('M64 192 Q100 200 136 192', '#d9b26a', 3)}${ln('M80 146 L84 186 M120 146 L116 186', '#d9b26a', 1.6, 'opacity=".7"')}
+  ${se(100, 170, 12, 12, '#1a0207', 4)}<g filter="url(#glow)" style="color:${CR}">${ci(100, 170, 8, 'none', `stroke="${CR}" stroke-width="3"`)}${ln('M93 177 L107 163', CR, 3)}</g>
+  ${sp('M40 158 L60 140 L86 148 L80 168 L50 170 Z', '#2e1736', 4)}${sp('M48 148 L32 126 L60 142 Z', '#d9b26a', 3)}${sp('M160 158 L140 140 L114 148 L120 168 L150 170 Z', '#25122c', 4)}${sp('M152 148 L168 126 L140 142 Z', '#b8913f', 3)}
+  ${sp(HELM, G('ek-helm'))}${shade('ek-clip', '#05020a', .45)}
+  ${ln('M44 62 Q100 40 156 62', '#d9b26a', 2)}
+  <g filter="url(#glow)" style="color:${CR}">${sp('M100 26 L108 40 L100 54 L92 40 Z', CR, 3)}</g>${ci(98, 36, 2, '#fff')}
+  ${sp('M48 82 Q100 72 152 82 L146 128 Q100 144 54 128 Z', '#160a1a', 4)}
+  <g class="pulse" filter="url(#glow)" style="color:${CR}">${fl('M54 94 L146 94 L138 107 L62 107 Z', CR)}</g>${ln('M64 98 H136', '#fff', 1.5, 'opacity=".7"')}
+  ${ln('M56 90 L90 96 M144 90 L110 96', '#d9b26a', 2.5)}${ln('M86 120 H114 M90 127 H110', '#d9b26a', 2.4)}
+  ${rim(.45)}${vrim(CR, 'M50 138 Q100 158 150 138')}
+  ${ln('M36 238 L20 98', L, 10)}${ln('M36 238 L20 98', '#d9b26a', 5)}
+  ${ln('M8 100 Q0 84 10 70 M30 98 Q38 84 30 70', L, 7)}${ln('M8 100 Q0 84 10 70 M30 98 Q38 84 30 70', '#d9b26a', 3)}
+  ${se(19, 84, 12, 12, '#1a0207', 4)}<g class="pulse" filter="url(#glow)" style="color:${CR}">${ci(19, 84, 7.5, 'none', `stroke="${CR}" stroke-width="3"`)}${ln('M13 90 L25 78', CR, 3)}</g>
+  ${limb(70, 158, 30, 182, 8, '#3a2040', 16)}${fist(30, 182, '#3a2040', '#1f0f26', 10.5)}`
+});
+
+// ───────────────────────── the squads ─────────────────────────
+// Josh's line-up (2026-10-05): each squad can carry games of its own, and for a bigger crossover game
+// the squads team up. Codes stay as drawn; the squad is the billing order.
+const KIRU_CARD = {
+  code: 'ND-00', name: 'Kiru', kana: '切る', cls: 'Ninja', sig: '#e8432a', h: 1.0,
+  bio: 'The Smart Disruptions ninja, and the one the whole cast answers to. His name means "to cut", and hype is what he cuts.',
+  sw: ['#252d56', '#f6d0a8', '#cfd5e2', '#e8432a'], defs: '', draw: () => kiru(),
+};
+const SQUADS = [
+  { n: 1, members: ['Kiru', 'Kage-X', 'Hakka'] },
+  { n: 2, members: ['Patch', 'Nova', 'Capt. Takotsubo'] },
+  { n: 3, members: ['Tengu-9', 'Benri', 'Hovr'] },
+];
+
+// ───────────────────────── render ─────────────────────────
+const VB = '-24 -26 288 264';
+document.getElementById('defs').innerHTML =
+  '<defs><filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+  + KIRU_DEFS + CAST.concat(ROGUES).map(c => c.defs).join('') + '</defs>';
+const svg = (inner, label) => `<svg viewBox="${VB}" role="img" aria-label="${label}"><g class="char">${inner}</g></svg>`;
+const KIRU_SVG = kiru();
+document.getElementById('hero-kiru').innerHTML = svg(KIRU_SVG, 'Kiru, the Smart Disruptions ninja');
+CAST.concat(ROGUES, [KIRU_CARD]).forEach(c => { c.svg = c.draw(); });
+const who = (name) => name === 'Kiru' ? KIRU_CARD : CAST.find(c => c.name === name);
+const card = (c, i, rogue) => `
+  <article class="card${rogue ? ' rogue' : ''}" style="--sig:${c.sig}">
+    <div class="stage"><span class="code">${c.code}</span><span class="cls">${c.cls}</span>${svg(c.svg, c.name).replace('class="char"', `class="char" style="animation-delay:-${(i * 0.37).toFixed(2)}s"`)}</div>
+    <div class="info">
+      <div class="name"><h3>${c.name}</h3><span lang="ja">${c.kana}</span></div>
+      <p class="bio">${c.bio}</p>
+      <div class="meta"><div class="sw">${c.sw.map(h => `<i style="background:${h}" title="${h}"></i>`).join('')}</div><span class="ht">H ${c.h.toFixed(2)} Kiru</span></div>
+    </div>
+  </article>`;
+let k = 0;
+document.getElementById('grid').innerHTML = SQUADS.map(q => `
+  <section class="squad" aria-label="Squad ${q.n}">
+    <div class="squad-head"><span class="squad-n">Squad ${q.n}</span><span class="squad-who">${q.members.join(' · ')}</span></div>
+    <div class="grid squad-grid">${q.members.map(m => card(who(m), k++, false)).join('')}</div>
+  </section>`).join('');
+document.getElementById('rogues').innerHTML = ROGUES.map((c, i) => card(c, i + 3, true)).join('');
+// lineup: the squads in billing order, Kiru first, then the rogues with their boss last
+const order = SQUADS.flatMap(q => q.members.map(m => m === 'Kiru' ? { name: 'Kiru', svg: KIRU_SVG, h: 1, kiru: true } : who(m))).concat(ROGUES.map(r => Object.assign({ rogue: true }, r)));
+document.getElementById('lineup').innerHTML = order.map(c =>
+  `<div class="lu${c.kiru ? ' kiru' : ''}${c.rogue ? ' rg' : ''}"><div style="width:${(c.h * 100).toFixed(0)}%">${svg(c.svg, c.name)}</div><small>${c.name}</small></div>`).join('');
+</script>
+</body>
+</html>
