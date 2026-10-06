@@ -1271,6 +1271,20 @@ a.wr-pager-arrow:active {
   }
 }
 
+/* ── Index: Market Storm (page 1) ────────────────────────────────────────── */
+
+/* The storm section (src/components/writing/storm) is full-bleed and carries
+   no outer margin of its own; its torn edges are painted in the page colour,
+   so plain page ground has to sit right above it. This is that ground. */
+.wr-storm-slot {
+  margin-top: 3.5rem;
+}
+@media (min-width: 40rem) {
+  .wr-storm-slot {
+    margin-top: 4.5rem;
+  }
+}
+
 /* ── Index: learn together (page 1) ──────────────────────────────────────── */
 
 /* The way out of page 1, in /learn's own words and calm. Kiru stands on the

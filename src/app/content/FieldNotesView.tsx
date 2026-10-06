@@ -14,6 +14,7 @@ import {
   NOTES_PER_PAGE,
   type FieldNote,
 } from '@/lib/fieldNotes';
+import WritingStorm from '@/components/writing/storm/WritingStorm';
 import LevelSweep from './LevelSweep';
 import ScrollHold from './ScrollHold';
 import './writing.css';
@@ -609,7 +610,12 @@ export default function FieldNotesView({ page }: { page: number }) {
           <Pager page={1} total={total} count={all.length} />
         </section>
 
-        {/* MOUNT: <WritingStorm /> (page 1 only) */}
+        {/* Market Storm, the Writing page's second room. Page 1 only: pages
+            2+ are for paging back through notes. It runs full-bleed on its
+            own; this wrapper only owns the gap above it. */}
+        <div className="wr-storm-slot">
+          <WritingStorm />
+        </div>
 
         <LearnBand />
       </div>
