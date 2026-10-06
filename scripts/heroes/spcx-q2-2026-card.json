@@ -2,10 +2,6 @@
  "title": "SpaceX — Market Storm",
  "category": "Market Storm",
  "out": "spcx-q2-2026-card",
- "logo": {
-  "file": "spcx.svg",
-  "scale": 0.52
- },
  "before": {
   "label": "Company",
   "text": "SpaceX"
@@ -14,5 +10,11 @@
   "label": "Section",
   "text": "Market Storm"
  },
- "alt": "SpaceX logo"
+ "alt": "SpaceX — Market Storm: 6 claims confirmed, 4 partly true, 3 corrected. $2.35 of capital for every dollar of revenue, and one new customer behind most of the AI.",
+ "ledger": {
+  "confirmed": 6,
+  "partlyTrue": 4,
+  "corrected": 3,
+  "finding": "$2.35 of capital for every dollar of revenue, and one new customer behind most of the AI."
+ }
 }

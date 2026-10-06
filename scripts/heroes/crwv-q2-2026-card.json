@@ -2,8 +2,19 @@
  "title": "CoreWeave — Market Storm",
  "category": "Market Storm",
  "out": "crwv-q2-2026-card",
- "logo": { "file": "crwv.svg", "scale": 0.58 },
- "before": { "label": "Company", "text": "CoreWeave" },
- "after": { "label": "Section", "text": "Market Storm" },
- "alt": "CoreWeave logo"
+ "before": {
+  "label": "Company",
+  "text": "CoreWeave"
+ },
+ "after": {
+  "label": "Section",
+  "text": "Market Storm"
+ },
+ "alt": "CoreWeave — Market Storm: 5 claims confirmed, 5 partly true, 2 corrected. Revenue doubled and profit fell. The chips wear out faster than they earn.",
+ "ledger": {
+  "confirmed": 5,
+  "partlyTrue": 5,
+  "corrected": 2,
+  "finding": "Revenue doubled and profit fell. The chips wear out faster than they earn."
+ }
 }
