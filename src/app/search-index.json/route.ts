@@ -63,6 +63,13 @@ export function GET() {
       d: 'Most games never need the API',
       x: 'pricing plan pro max api tokens cost subscription guide',
     },
+    {
+      t: 'Learn to build, together',
+      u: '/learn',
+      k: 'Page',
+      d: 'Websites, apps and games, in plain words',
+      x: 'learn newsletter email subscribe beginner course',
+    },
   ];
 
   for (const p of getPublishedPosts()) {

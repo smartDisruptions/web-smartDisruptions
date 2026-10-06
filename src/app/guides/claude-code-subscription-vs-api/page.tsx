@@ -944,32 +944,22 @@ export default function GuidePage() {
             </li>
           </ul>
 
-          <div className="gd-try">
-            <Kiru pose="game" className="gd-try-kiru" />
+          <Link href="/learn" className="gd-try gd-learn">
+            <Kiru pose="wave" className="gd-try-kiru" />
             <div>
-              <p className="sd-kicker">Try this today</p>
-              <h3 className="font-display gd-h3">Build one tiny game</h3>
-              <ol className="gd-try-steps font-read">
-                <li>
-                  Pick something small. A button that plays a sound and counts
-                  how many times you&rsquo;ve pressed it is perfect.
-                </li>
-                <li>
-                  Open Claude Code. It&rsquo;s in the Claude app for your
-                  computer, and on the web at claude.ai/code. It comes with the
-                  $20 Pro plan.
-                </li>
-                <li>
-                  Describe your game in plain words, the way you&rsquo;d explain
-                  it to a friend, and let Claude build it.
-                </li>
-                <li>
-                  Ask for one change. Then another. On a plan, trying again
-                  doesn&rsquo;t cost anything extra.
-                </li>
-              </ol>
+              <p className="sd-kicker">Keep learning</p>
+              <h3 className="font-display gd-h3">
+                Learn to build websites, apps and games, together
+              </h3>
+              <p className="gd-learn-text font-read">
+                I write up what I learn while building with Claude, in plain
+                words like this page. No hype. Just learning together.
+              </p>
+              <span className="gd-learn-go">
+                Learn with me <span aria-hidden>&rarr;</span>
+              </span>
             </div>
-          </div>
+          </Link>
 
           <div className="sd-sheet gd-sheet gd-close font-read">
             <p>

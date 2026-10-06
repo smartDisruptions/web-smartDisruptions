@@ -1972,34 +1972,37 @@
     height: 96px;
   }
 }
-.gd-try-steps {
-  counter-reset: gd-step;
-  display: grid;
-  gap: 0.7rem;
-  margin-top: 1rem;
+/* The finish card links on to /learn: the whole sticky note is the link. */
+.gd-learn {
+  text-decoration: none;
+  transition:
+    translate 0.45s var(--ease-out-expo),
+    rotate 0.45s var(--ease-out-expo);
 }
-.gd-try-steps li {
-  counter-increment: gd-step;
-  position: relative;
-  padding-left: 2.4rem;
+@media (hover: hover) {
+  .gd-learn:hover {
+    translate: 0 -3px;
+    rotate: 0deg;
+  }
+}
+.gd-learn-text {
+  margin-top: 0.6rem;
   font-size: 1.02rem;
   line-height: 1.55;
-  max-width: 58ch;
+  max-width: 52ch;
 }
-.gd-try-steps li::before {
-  content: counter(gd-step);
-  position: absolute;
-  left: 0;
-  top: 0.05rem;
-  display: grid;
-  place-items: center;
-  width: 1.65rem;
-  height: 1.65rem;
-  border-radius: 50%;
-  background: #1f1a14;
-  color: #f6ecd2;
-  font-family: var(--font-display);
-  font-size: 0.8rem;
+.gd-learn-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  background: #d63a22;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .gd-close {
