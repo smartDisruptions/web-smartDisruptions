@@ -1,0 +1,23 @@
+{
+  "title": "Claude Code: monthly plan or pay per use? Most games only need the plan",
+  "category": "Field Guide",
+  "out": "claude-code-subscription-vs-api",
+  "tone": "info",
+  "before": {
+    "label": "If paid per use",
+    "text": "$536 for my 4-day build"
+  },
+  "after": {
+    "label": "What I actually paid",
+    "text": "My usual $200 a month, no extra",
+    "detail": "about 15% of one week's limit · about $7 of the $200"
+  },
+  "headline": [
+    { "t": "If paid per use: " },
+    { "t": "$536", "tone": "warn" },
+    { "t": ". On my plan: " },
+    { "t": "nothing extra", "tone": "info" },
+    { "t": "." }
+  ],
+  "alt": "Split card: priced per use, my 4-day build came to $536, which I never paid, against what I actually paid, my usual $200 a month with nothing extra."
+}

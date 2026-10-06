@@ -6,6 +6,10 @@
 export const TITLE =
   'Claude Code: monthly plan or pay per use? Most games only need the plan';
 
+// The publish date, in one place: the guide's byline, its metadata and its
+// card on the Writing page (src/lib/fieldNotes.ts) all read it from here.
+export const PUBLISHED = '2026-10-06';
+
 export const EXCERPT =
   'Claude Code subscription vs API credits, in plain words. A flat monthly plan covers building your game, website or app with Claude. Paying per use only comes in if your finished app needs Claude to talk to other people.';
 

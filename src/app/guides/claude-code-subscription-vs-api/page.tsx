@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import SubscribeForm from '@/components/SubscribeForm';
+import { formatDate } from '@/lib/format';
 import LevelRail from '@/components/guide/LevelRail';
 import WordCards from '@/components/guide/WordCards';
 import BuildDay from '@/components/guide/BuildDay';
@@ -16,6 +17,7 @@ import {
   EXCERPT,
   LEVELS,
   PRICES,
+  PUBLISHED,
   RECEIPT,
   SORT,
   TITLE,
@@ -41,7 +43,6 @@ import './guide.css';
 
 const SLUG = 'claude-code-subscription-vs-api';
 const PATH = `/guides/${SLUG}`;
-const PUBLISHED = '2026-10-06';
 
 export const metadata: Metadata = {
   title: `${TITLE} — SmartDisruptions`,
@@ -128,7 +129,7 @@ export default function GuidePage() {
             <p className="gd-byline">
               <span>Josh Escusa</span>
               <span aria-hidden>·</span>
-              <time dateTime={PUBLISHED}>October 6, 2026</time>
+              <time dateTime={PUBLISHED}>{formatDate(PUBLISHED)}</time>
               <span aria-hidden>·</span>
               <span>10-minute read, plus a mini-game</span>
             </p>
