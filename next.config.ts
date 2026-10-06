@@ -69,8 +69,9 @@ const nextConfig: NextConfig = {
           source: '/games/neo-dojo-survivors',
           destination: '/games/neo-dojo-survivors/index.html',
         },
-        // Path Not Taken (pre-alpha): the same. Its three songs are inlined, so
-        // the one file is 7.6 MB and loads nothing beside it.
+        // Path Not Taken (pre-alpha): the same page, and its six songs are MP3s
+        // beside it in songs/, each fetched when its level is picked. Real files
+        // are served before this rewrite runs, so they need no rule of their own.
         {
           source: '/games/path-not-taken',
           destination: '/games/path-not-taken/index.html',

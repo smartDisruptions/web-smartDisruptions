@@ -457,9 +457,9 @@ export const apps: App[] = [
     slug: 'path-not-taken',
     name: 'Path Not Taken (Pre Alpha)',
     description:
-      'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on three film-score battles, and one miss is death.',
+      'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on six film-score battles, and one miss is death.',
     longDescription:
-      'A first-person rhythm duel, and a pre-alpha: what is here are the first gameplay tests, with a greybox attacker standing in for the real one. Every glowing line that falls down the three lanes is a hit in the music. Dodge left, down or right as it touches its pad, hold a blue line for bullet time while one slow blow crawls in, dodge a burst of quick blows after an orange one, and strike when the red button comes up. One miss is death, and a death skips the intro, so you are straight back in. The three songs are short film-score battle cues I made with ElevenLabs Music: about ten seconds of intro, a minute of fighting and ten seconds to close. The story comes later.',
+      'A first-person rhythm duel, and a pre-alpha: what is here are the first gameplay tests, with a greybox attacker standing in for the real one. Every glowing line that falls down the three lanes is a hit in the music. Dodge left, down or right as it touches its pad, hold a blue line for bullet time while one slow blow crawls in, dodge a burst of quick blows after an orange one, and strike when the red button comes up. One miss is death, and a death skips the intro, so you are straight back in. The six songs are short battle cues I made with ElevenLabs Music: three film-score fights, and three darker ones with Japanese instruments, each with a quiet stretch you play in bullet time. Every one has about ten seconds of intro, a minute or more of fighting and ten seconds to close. The story comes later.',
     thumbnailUrl: '/images/apps/path-not-taken-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/path-not-taken-1.webp',
@@ -471,7 +471,8 @@ export const apps: App[] = [
     status: 'development',
     outcomes: [
       'Every tile sits on a hit in the recording. I measured each song\u2019s tempo to a thousandth of a beat and its hits slot by slot, and the chart refuses a tile where the music has nothing to hit.',
-      'Three songs at 140, 150 and 162 BPM, each shaped as about ten seconds of intro, a minute of play and ten seconds of exit. A death restarts the song two seconds before the first tile.',
+      'Six songs from 140 to 184 BPM, each shaped as about ten seconds of intro, a minute or more of play and ten seconds of exit. A death restarts the song two seconds before the first tile.',
+      'The page is about half a megabyte. Each song is downloaded the first time you pick its level, so playing one battle costs one song, about 2 MB.',
       'One miss is death, judged within 200 ms on the forgiving setting, with a tap-along calibration for Bluetooth headphones and slow screens.',
       'Pre-alpha, and it says so: the attacker is a greybox stand-in, and the game is still being built.',
     ],
