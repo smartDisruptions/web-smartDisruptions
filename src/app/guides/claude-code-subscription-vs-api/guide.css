@@ -875,113 +875,53 @@
   }
 }
 
-/* Flip cards. 3D only where motion is welcome; otherwise a crossfade. */
+/* The word list: every definition in full view. */
 .gd-words {
   display: grid;
   gap: 0.8rem;
   grid-template-columns: 1fr;
 }
-@media (min-width: 540px) {
+@media (min-width: 620px) {
   .gd-words {
     grid-template-columns: 1fr 1fr;
   }
 }
-@media (min-width: 980px) {
+@media (min-width: 1000px) {
   .gd-words {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 .gd-word {
-  display: block;
-  width: 100%;
-  height: 11.5rem;
-  perspective: 900px;
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  padding: 1rem 1.1rem 1.1rem;
   border-radius: var(--radius-xl);
-  text-align: left;
-  cursor: pointer;
-}
-.gd-word-inner {
-  position: relative;
-  display: block;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.65s var(--ease-out-expo);
-}
-.gd-word-face {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 1.1rem 1.15rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--sd-border);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-.gd-word-front {
   background: var(--sd-surface);
-  box-shadow: 0 16px 34px -28px var(--sd-card-shadow);
+  border: 1px solid var(--sd-border);
+  min-width: 0;
 }
-.gd-word-back {
-  background: var(--sd-surface-elevated);
-  transform: rotateY(180deg);
-}
-.gd-word[data-flipped='true'] .gd-word-inner {
-  transform: rotateY(180deg);
+.gd-word-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
 }
 .gd-word-ico {
+  flex: none;
   color: var(--sd-pen);
 }
 .gd-word-term {
-  margin-top: auto;
   font-family: var(--font-display);
-  font-size: 1.35rem;
-  line-height: 1.1;
+  font-size: 1.15rem;
+  line-height: 1.15;
   color: var(--sd-text-primary);
-}
-.gd-word-hint {
-  margin-top: 0.35rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--sd-accent);
-}
-.gd-word-term-sm {
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--sd-pen-ink);
-  margin-bottom: 0.45rem;
 }
 .gd-word-plain {
+  margin: 0;
   font-family: var(--font-read);
   font-size: 0.98rem;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--sd-text-primary);
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .gd-word:hover .gd-word-inner {
-    transform: rotateY(-8deg) translateY(-3px);
-  }
-  .gd-word[data-flipped='true']:hover .gd-word-inner {
-    transform: rotateY(172deg) translateY(-3px);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .gd-word-inner,
-  .gd-word[data-flipped='true'] .gd-word-inner {
-    transform: none;
-  }
-  .gd-word-back {
-    transform: none;
-    opacity: 0;
-  }
-  .gd-word[data-flipped='true'] .gd-word-back {
-    opacity: 1;
-  }
-  .gd-word[data-flipped='true'] .gd-word-front {
-    opacity: 0;
-  }
 }
 
 /* ── Level 3: a day on two meters ──────────────────────────────────────── */
@@ -2132,11 +2072,6 @@
   font-size: 0.98rem;
   color: var(--sd-text-secondary);
 }
-@media (max-width: 539px) {
-  .gd-word {
-    height: 9.75rem;
-  }
-}
 
 /* ── Phone: the title screen's two objects sit side by side, small enough
    to land above the tab bar on the first screen, instead of a tilted
@@ -2380,7 +2315,7 @@
   .gd-lane,
   .gd-task,
   .gd-meter,
-  .gd-word-front,
+  .gd-word,
   .gd-flow,
   .gd-sort-card,
   .gd-calc,
@@ -2644,4 +2579,83 @@
       animation-range: entry 0% cover 20%;
     }
   }
+}
+
+/* ── Plain-language pass: supporting styles ──────────────────────────── */
+div.gd-lede p + p,
+.gd-aside .font-read p + p {
+  margin-top: 0.75em;
+}
+.gd-aside .font-read p {
+  font-size: 1.02rem;
+  line-height: 1.6;
+  max-width: 62ch;
+}
+/* Per-use prices read as sentences, one per row. */
+.gd-plans-rows {
+  flex-direction: column;
+}
+.gd-plans-rows li {
+  flex: none;
+  gap: 0.3rem;
+}
+.gd-plans-rows span {
+  font-size: 0.85rem;
+}
+.gd-plans-rows b {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1.02rem;
+  line-height: 1.35;
+}
+.gd-rules {
+  display: grid;
+  gap: 0.9rem;
+  margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+}
+.gd-rules .gd-rule {
+  margin-bottom: 0;
+}
+.gd-receipt-lines dt small {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  opacity: 0.75;
+}
+.gd-receipt-lines > div {
+  align-items: flex-end;
+}
+.gd-receipt-note ol {
+  margin: 0.35rem 0 0.45rem;
+  padding-left: 1.2rem;
+  list-style: decimal;
+  display: grid;
+  gap: 0.15rem;
+}
+.gd-receipt-note p {
+  margin: 0;
+}
+.gd-how ul {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0 1.1rem 0.9rem 2.2rem;
+  list-style: disc;
+  max-width: 64ch;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+/* Receipt totals: the label wraps, the amount never leaves the paper. */
+.gd-receipt-lines dt {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.gd-receipt-lines dd {
+  flex: none;
+  white-space: nowrap;
+}
+.gd-receipt-total dt {
+  flex: 1 1 auto;
+}
+.gd-receipt-total::before {
+  display: none;
 }

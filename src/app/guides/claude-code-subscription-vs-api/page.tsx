@@ -27,13 +27,17 @@ import './guide.css';
 // things you use (a meter, a switch, a card game, a calculator) rather than
 // markdown, and a post body can't hold that many islands.
 //
-// The page is a level-select map: six levels, a finish line. 岐 (a fork in
-// the road) is the page kanji, because the whole guide is about where one
-// path splits into two bills. Styles: ./guide.css (gd-*).
+// Written for someone who has never coded or used AI: the word list comes
+// before anything uses those words, every number says what it counts, and
+// every sum is shown. The page is a level-select map: seven levels and a
+// finish line. 岐 (a fork in the road) is the page kanji. Styles:
+// ./guide.css (gd-*).
 //
-// Every price on this page is Anthropic's list price as of the publish date.
-// If a price changes, change PRICES in copy.ts and the dated note in "The
-// fine print"; nothing else hard-codes one.
+// Every price is Anthropic's posted price as of the publish date. If one
+// changes, change PRICES in copy.ts and the dated note in the fine print.
+//
+// JSX drops a leading space after an element or expression in some places
+// in this build, so a few spaces are written as &#32; on purpose.
 
 const SLUG = 'claude-code-subscription-vs-api';
 const PATH = `/guides/${SLUG}`;
@@ -66,7 +70,8 @@ const jsonLd = {
 };
 
 const usd = (n: number) => `$${n}`;
-const dayTotal = DAY.reduce((s, t) => s + t.cost, 0);
+const total = Math.round(RECEIPT.apiTotal);
+const codeShare = DAY[DAY.length - 1].cost;
 
 function LevelHead({ n, children }: { n: number; children: ReactNode }) {
   const level = LEVELS[n - 1];
@@ -113,23 +118,23 @@ export default function GuidePage() {
               </span>
             </h1>
             <p className="gd-dek font-read">
-              Same Claude, two different bills. Your plan pays while Claude
-              builds your game, your website or your app. Most of what you make
-              never touches the second bill. Here&rsquo;s how to tell if yours
-              will.
+              Claude is an AI that can build games, websites and apps for you.
+              There are two ways to pay for it: a flat monthly plan, or paying
+              each time it&rsquo;s used. Here&rsquo;s which one you need, in
+              plain words, with my real numbers.
             </p>
             <p className="gd-byline">
               <span>Josh Escusa</span>
               <span aria-hidden>·</span>
               <time dateTime={PUBLISHED}>October 5, 2026</time>
               <span aria-hidden>·</span>
-              <span>8 min, plus a mini-game</span>
+              <span>10-minute read, plus a mini-game</span>
             </p>
           </div>
 
           <div className="gd-hero-art" aria-hidden>
             <div className="gd-ticket">
-              <span className="gd-ticket-top">Monthly pass</span>
+              <span className="gd-ticket-top">Monthly plan</span>
               <span className="gd-ticket-plans">
                 <span>
                   <b>{usd(PRICES.pro)}</b> Pro
@@ -145,10 +150,10 @@ export default function GuidePage() {
               <Seal char="作" className="gd-ticket-seal" />
             </div>
             <div className="gd-odo">
-              <span className="gd-odo-top">Per-use meter</span>
+              <span className="gd-odo-top">Pay per use</span>
               <span className="gd-odo-digits">
                 <span className="gd-odo-sign">$</span>
-                {String(Math.round(RECEIPT.apiTotal))
+                {String(total)
                   .split('')
                   .map((d, i) => (
                     <span
@@ -170,7 +175,7 @@ export default function GuidePage() {
                   ))}
               </span>
               <span className="gd-odo-foot">
-                one real 4-day build, at API prices
+                my 4 days of building, if paid per use
               </span>
             </div>
             <Kiru pose="build" className="gd-hero-kiru" />
@@ -187,12 +192,15 @@ export default function GuidePage() {
               <Seal char="作" className="gd-lane-seal" />
               <p className="gd-lane-tag">Almost always</p>
               <p className="gd-lane-when">
-                Claude helps <em>you</em> build a game, a website or an app
+                Claude helps <em>you</em> build a game, a website or an app.
               </p>
-              <p className="gd-lane-then font-display">Your plan pays</p>
+              <p className="gd-lane-then font-display">
+                A monthly plan covers it
+              </p>
               <p className="gd-lane-note">
-                {usd(PRICES.pro)} to {usd(PRICES.maxHigh)} a month, flat, up to
-                its limits
+                {usd(PRICES.pro)} to {usd(PRICES.maxHigh)}&#32;a month. The
+                price stays the same no matter how much you build, up to the
+                plan&rsquo;s limit.
               </p>
             </div>
             <span className="gd-fork" aria-hidden>
@@ -202,12 +210,13 @@ export default function GuidePage() {
               <Seal char="遊" className="gd-lane-seal" />
               <p className="gd-lane-tag">Only sometimes</p>
               <p className="gd-lane-when">
-                The finished thing has <em>Claude inside it</em>, like a
-                character that talks back
+                The finished game or app has <em>Claude inside it</em>, like a
+                character that talks back to players.
               </p>
-              <p className="gd-lane-then font-display">The API pays</p>
+              <p className="gd-lane-then font-display">You pay per use</p>
               <p className="gd-lane-note">
-                a small charge each time it&rsquo;s used
+                This is called the API. You pay a small amount every time your
+                app uses Claude.
               </p>
             </div>
           </section>
@@ -215,6 +224,14 @@ export default function GuidePage() {
           {/* Level select: a map of the page. Every stop is a link. */}
           <nav className="gd-map" aria-label="Level select">
             <ol>
+              <li>
+                <a href="#words" className="gd-map-stop">
+                  <span className="gd-map-node" aria-hidden>
+                    0
+                  </span>
+                  <span className="gd-map-label">Words to know</span>
+                </a>
+              </li>
               {LEVELS.map((l) => (
                 <li key={l.id}>
                   <a href={`#${l.id}`} className="gd-map-stop">
@@ -239,26 +256,49 @@ export default function GuidePage() {
       </header>
 
       <div className="gd-wrap gd-levels">
+        {/* ── Words first, so nothing later is a mystery ───────────────── */}
+        <section id="words" className="gd-level" aria-labelledby="words-h">
+          <header className="gd-level-head">
+            <span className="gd-level-badge" aria-hidden>
+              <span className="gd-level-badge-k">
+                <Kanji char="書" />
+              </span>
+              <span className="gd-level-badge-n">START</span>
+            </span>
+            <div>
+              <p className="sd-kicker">Before you start</p>
+              <h2 id="words-h" className="font-display gd-h2 sd-brush-under">
+                Words you&rsquo;ll see
+              </h2>
+            </div>
+          </header>
+          <p className="gd-lede font-read">
+            You don&rsquo;t need to know anything about coding or AI to read
+            this. Here are the words that come up, in plain English. Come back
+            here any time one stops making sense.
+          </p>
+          <WordCards words={WORDS} />
+        </section>
+
         {/* ── Level 1 ─────────────────────────────────────────────────── */}
         <section id="why" className="gd-level" aria-labelledby="why-h">
           <LevelHead n={1}>Why I asked</LevelHead>
           <div className="gd-split">
             <div className="sd-sheet gd-sheet font-read">
               <p>
-                When I started building games with Claude, I kept seeing numbers
-                like &ldquo;$37 to finish one coding test&rdquo; go by in videos
-                and posts.
+                When I started building games with Claude, I kept seeing big
+                numbers in videos and posts, like &ldquo;$37 to finish one
+                coding test.&rdquo;
               </p>
               <p>
-                My first thought was: wait. Is that what I&rsquo;m going to pay
-                every time Claude writes code for me?
+                My first thought was: wait. Am I going to pay that every time
+                Claude writes code for me?
               </p>
               <p>
-                It isn&rsquo;t. And for most of what I build, the API never
-                comes into it at all. Working out why turned out to be one of
-                the most useful things I&rsquo;ve learned about building on a
-                small budget. So let&rsquo;s walk through it together, the way I
-                wish someone had walked me through it.
+                No. For most of what I build, I never pay per use at all. I pay
+                one flat monthly price. Working out why was one of the most
+                useful things I&rsquo;ve learned about building on a small
+                budget, so let&rsquo;s walk through it together.
               </p>
             </div>
             <figure className="gd-quote">
@@ -268,8 +308,9 @@ export default function GuidePage() {
                 finish one coding test.&rdquo;
               </blockquote>
               <figcaption>
-                Real number. Useful number. We&rsquo;ll come back to it in Level
-                5, because it belongs to a different bill.
+                That&rsquo;s a real number, and a useful one. It&rsquo;s just
+                for a different kind of bill. We&rsquo;ll come back to it in
+                Level 5.
               </figcaption>
             </figure>
           </div>
@@ -279,105 +320,116 @@ export default function GuidePage() {
         <section id="pay" className="gd-level" aria-labelledby="pay-h">
           <LevelHead n={2}>Two ways to pay for the same Claude</LevelHead>
           <p className="gd-lede font-read">
-            From far away they look alike. Up close, they&rsquo;re built for
+            Both ways give you the same Claude. They&rsquo;re just built for
             different jobs.
           </p>
 
           <div className="gd-ways">
             <article className="gd-way" data-tone="plan">
               <p className="gd-way-tag">Way 1</p>
-              <h3 className="font-display gd-h3">The monthly plan</h3>
+              <h3 className="font-display gd-h3">A monthly plan</h3>
               <ul className="gd-plans" role="list">
                 <li>
                   <b className="tabular-nums">{usd(PRICES.pro)}</b>
-                  <span>Pro</span>
+                  <span>a month for Pro</span>
                 </li>
                 <li>
                   <b className="tabular-nums">{usd(PRICES.maxLow)}</b>
-                  <span>Max</span>
+                  <span>a month for Max</span>
                 </li>
                 <li>
                   <b className="tabular-nums">{usd(PRICES.maxHigh)}</b>
-                  <span>Max, more room</span>
+                  <span>a month for Max with more room</span>
                 </li>
               </ul>
               <p className="font-read">
-                Claude Code comes included. You pay the same price whether you
-                build for one hour this month or forty. Max gives you a lot more
-                room than Pro before you reach your limit. I build on the $200
-                Max plan.
+                Claude Code is included in every plan. You pay the same price
+                whether you build for one hour this month or forty.
+              </p>
+              <p className="font-read">
+                The bigger plans let you do more before you reach your usage
+                limit. I&rsquo;m on the $200 Max plan.
               </p>
               <p className="gd-way-like">
-                <span>Feels like</span>&#32;a phone plan. One price, up to your
-                plan&rsquo;s limit, and then it resets.
+                <span>Feels like</span>&#32;a phone plan. One price each month,
+                and if you use it all up, it resets.
               </p>
             </article>
 
             <article className="gd-way" data-tone="api">
               <p className="gd-way-tag">Way 2</p>
-              <h3 className="font-display gd-h3">API credits</h3>
-              <ul className="gd-plans" role="list">
+              <h3 className="font-display gd-h3">Paying per use (the API)</h3>
+              <ul className="gd-plans gd-plans-rows" role="list">
                 <li>
+                  <span>Sonnet 5.5, the middle-size Claude I mostly use</span>
                   <b className="tabular-nums">
-                    {usd(PRICES.sonnetIn)} · {usd(PRICES.sonnetOut)}
+                    {usd(PRICES.sonnetIn)} to read a million tokens,{' '}
+                    {usd(PRICES.sonnetOut)} to write a million
                   </b>
-                  <span>
-                    Sonnet 5.5, per million tokens (chunks of words) read ·
-                    written. Most of my session ran on this one.
-                  </span>
                 </li>
                 <li>
+                  <span>Opus 5.5, the biggest Claude</span>
                   <b className="tabular-nums">
-                    {usd(PRICES.apiIn)} · {usd(PRICES.apiOut)}
+                    {usd(PRICES.apiIn)} to read a million tokens,{' '}
+                    {usd(PRICES.apiOut)} to write a million
                   </b>
-                  <span>Opus 5.5, the bigger model, read · written</span>
                 </li>
               </ul>
               <p className="font-read">
-                The API is how an app talks to Claude on its own, with no person
-                typing. You only need it if your finished app has Claude inside
-                it. You pay for what goes in and what comes out, and the bigger
-                the model, the higher the price.
+                This is how a finished app talks to Claude on its own, with no
+                person typing. You&rsquo;re charged for everything Claude reads
+                and everything it writes. Bigger versions of Claude cost more.
+              </p>
+              <p className="font-read">
+                You only need this if your finished app has Claude inside it.
               </p>
               <p className="gd-way-like">
-                <span>Feels like</span> a taxi meter. Every trip costs a little,
-                and it all adds up.
+                <span>Feels like</span>&#32;a taxi meter. Every trip costs a
+                little, and it all adds up.
               </p>
             </article>
           </div>
 
           <div className="gd-aside">
             <Kiru pose="read" className="gd-aside-kiru" />
-            <p className="font-read">
-              Those prices look tiny, and a million tokens is a lot of words.
-              But when Claude is building, it rereads your project again and
-              again to keep track of what it&rsquo;s doing. So the tokens pile
-              up much faster than you&rsquo;d guess. In my real session, that
-              rereading was {RECEIPT.rereadShare}% of the cost.
-            </p>
+            <div className="font-read">
+              <p>
+                A million tokens is about 750,000 words, so those prices sound
+                tiny.
+              </p>
+              <p>
+                But while Claude builds, it rereads your whole project and
+                conversation again and again to keep track of what it&rsquo;s
+                doing. That adds up fast. In my real 4 days of building,
+                rereading was {RECEIPT.rereadShare}% of the cost.
+              </p>
+            </div>
           </div>
-
-          <h3 className="gd-h4">Words you&rsquo;ll see</h3>
-          <WordCards words={WORDS} />
         </section>
 
         {/* ── Level 3 ─────────────────────────────────────────────────── */}
         <section id="day" className="gd-level" aria-labelledby="day-h">
-          <LevelHead n={3}>Where my $536 actually went</LevelHead>
-          <p className="gd-lede font-read">
-            This is where it clicked for me. Here&rsquo;s my real session, the
-            four days I spent building levels for my rhythm game, split into
-            what Claude was actually doing. Scroll through it and watch both
-            meters.
-          </p>
+          <LevelHead n={3}>Where my ${total} actually went</LevelHead>
+          <div className="gd-lede font-read">
+            <p>
+              This is where it clicked for me. In October I spent 4 days
+              building levels for my rhythm game with Claude Code.
+            </p>
+            <p>
+              Claude Code keeps a running total of what that work would have
+              cost if I had paid per use. It came to ${total}. Below, that total
+              is split into the four things Claude was actually doing. Scroll
+              down and watch both meters.
+            </p>
+          </div>
 
           <BuildDay tasks={DAY} />
 
           <div className="gd-result">
             <p className="gd-result-line font-read">
-              That&rsquo;s the whole ${dayTotal}, and only about $
-              {DAY[DAY.length - 1].cost}&#32;of it was Claude writing the code.
-              Here&rsquo;s the receipt it came from.
+              That&rsquo;s the whole ${total}. Only about ${codeShare}&#32;of it
+              was Claude writing the code. Here&rsquo;s the receipt it came
+              from.
             </p>
 
             <figure className="gd-receipt">
@@ -386,46 +438,64 @@ export default function GuidePage() {
                 <span>{RECEIPT.dates}</span>
               </figcaption>
               <p className="gd-receipt-what">
-                {RECEIPT.days} days building the levels for my rhythm game, with{' '}
-                {RECEIPT.helpers} helper agents working at once, then a long
-                review of my site.
+                {RECEIPT.days} days building levels for my rhythm game. For part
+                of it, {RECEIPT.helpers} helper agents (extra copies of Claude)
+                worked at the same time. At the end, Claude reviewed my website.
               </p>
               <dl className="gd-receipt-lines">
                 {RECEIPT.lines.map((l) => (
                   <div key={l.model}>
-                    <dt>{l.model}</dt>
+                    <dt>
+                      {l.model}
+                      <small>{l.note}</small>
+                    </dt>
                     <dd className="tabular-nums">${l.cost.toFixed(2)}</dd>
                   </div>
                 ))}
                 <div className="gd-receipt-total" data-tone="api">
-                  <dt>At API prices</dt>
+                  <dt>If I had paid per use</dt>
                   <dd className="tabular-nums">
                     ${RECEIPT.apiTotal.toFixed(2)}
                   </dd>
                 </div>
                 <div className="gd-receipt-total" data-tone="plan">
-                  <dt>On my ${PRICES.maxHigh} Max plan</dt>
+                  <dt>What it used of my ${PRICES.maxHigh} plan</dt>
                   <dd className="tabular-nums">about ${RECEIPT.planCost}</dd>
                 </div>
               </dl>
-              <p className="gd-receipt-note">
-                Claude Code keeps its own count of what a session would cost at
-                API prices. The same session used about {RECEIPT.planShare}% of
-                my plan&rsquo;s week, which is about ${RECEIPT.planCost} of the
-                ${PRICES.maxHigh}. That {RECEIPT.planShare}% is my best reading:
-                it also counts my other sessions that week.
-              </p>
+              <div className="gd-receipt-note">
+                <p>How I got about ${RECEIPT.planCost}:</p>
+                <ol>
+                  <li>
+                    My plan costs ${PRICES.maxHigh}&#32;a month. That&rsquo;s
+                    about ${RECEIPT.planWeek} a week.
+                  </li>
+                  <li>
+                    These 4 days used about {RECEIPT.planShare}% of what my plan
+                    allows in a week.
+                  </li>
+                  <li>
+                    {RECEIPT.planShare}% of ${RECEIPT.planWeek} is about $
+                    {RECEIPT.planCost}.
+                  </li>
+                </ol>
+                <p>
+                  The {RECEIPT.planShare}% is my best reading. It also counts my
+                  other work that week.
+                </p>
+              </div>
             </figure>
 
             <p className="gd-result-big font-display">
-              About {RECEIPT.times} times less.
+              ${total} versus about ${RECEIPT.planCost}.
             </p>
             <p className="gd-result-line font-read">
+              Paying per use would have cost about {RECEIPT.times} times more.
               For one person building on their own, that gap is a big deal.
             </p>
             <p className="gd-result-line gd-result-catch font-read">
-              That $0 extra has one catch: plans have usage limits. I&rsquo;ll
-              come back to that at the end.
+              The catch: plans have usage limits. If you use too much in a week,
+              you wait for it to reset. More on that at the end.
             </p>
           </div>
         </section>
@@ -433,12 +503,18 @@ export default function GuidePage() {
         {/* ── Level 4: other people's bills ─────────────────────────────── */}
         <section id="others" className="gd-level" aria-labelledby="others-h">
           <LevelHead n={4}>Other people&rsquo;s bills</LevelHead>
-          <p className="gd-lede font-read">
-            When I started reading about this, I kept finding people who had
-            shared what AI coding cost them. Sometimes it was hundreds of
-            dollars, sometimes thousands. They put real numbers in public, which
-            is how the rest of us learn. Here&rsquo;s what I took from them.
-          </p>
+          <div className="gd-lede font-read">
+            <p>
+              While I was learning this, I found people who had shared what
+              building with AI cost them. Sometimes it was hundreds of dollars,
+              sometimes thousands.
+            </p>
+            <p>
+              They put their real numbers in public, and that&rsquo;s how the
+              rest of us learn. Here are five of them, and what I took from each
+              one.
+            </p>
+          </div>
 
           <ul className="gd-bills" role="list">
             {BILLS.map((b) => (
@@ -461,7 +537,7 @@ export default function GuidePage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {b.source}
+                  Source: {b.source}
                 </a>
               </li>
             ))}
@@ -469,44 +545,50 @@ export default function GuidePage() {
 
           <div className="gd-split gd-split-even">
             <div className="sd-sheet gd-sheet font-read">
-              <h3 className="gd-h4">Same shape, different bill</h3>
+              <h3 className="gd-h4">Same causes, different bill</h3>
               <p>
-                Their stories and my receipt have the same shape. Most of the
-                cost is Claude rereading a long conversation, and the rest comes
-                from agents left running, extra helpers and big models.
+                Their stories and my receipt have the same causes. Most of the
+                cost is Claude rereading a long conversation. The rest comes
+                from helper agents, from leaving Claude running, and from using
+                the biggest version of Claude.
               </p>
               <p>
-                The difference is who carries it. On the API, every reread is a
-                charge. On my plan, it comes out of a weekly allowance I already
-                paid for. My ${Math.round(RECEIPT.apiTotal)} session came to
-                about ${RECEIPT.planCost} of my plan.
+                The difference is who pays for it. When you pay per use, every
+                reread is a charge. On a monthly plan, it comes out of a weekly
+                allowance you&rsquo;ve already paid for. My ${total} of work
+                used about ${RECEIPT.planCost} of my plan.
               </p>
               <p>
-                Paying per use is the right choice for plenty of people:
-                companies, teams, and anyone who needs more than a plan allows.
-                Nobody here did anything wrong. They shared what they learned,
-                and that&rsquo;s how I learned it.
+                Paying per use is the right choice for plenty of people, like
+                companies and anyone who needs more than a plan allows. Nobody
+                here did anything wrong. They shared what they learned, and
+                that&rsquo;s how I learned it.
               </p>
             </div>
             <div className="sd-sheet gd-sheet font-read">
-              <h3 className="gd-h4">The habits I kept from them</h3>
+              <h3 className="gd-h4">Habits I picked up from them</h3>
               <ul className="gd-habits">
                 <li>
-                  <strong>Start a fresh session for each job.</strong> Long
-                  conversations are where most of the cost hides.
+                  <strong>Start a new conversation for each job.</strong> The
+                  longer a conversation gets, the more Claude has to reread
+                  every step.
                 </li>
                 <li>
-                  <strong>Use helpers only when it pays.</strong> My one day
-                  with ten helpers was about ${RECEIPT.bigDay} of my $
-                  {Math.round(RECEIPT.apiTotal)}.
+                  <strong>Use helper agents only when they really help.</strong>{' '}
+                  My one day with 10 of them cost about ${RECEIPT.bigDay}
+                  &#32;of my ${total}.
                 </li>
                 <li>
-                  <strong>Don&rsquo;t leave agents running unattended.</strong>{' '}
-                  Round-the-clock agents are what the weekly limits are for.
+                  <strong>
+                    Don&rsquo;t leave Claude working when you&rsquo;re not
+                    watching.
+                  </strong>{' '}
+                  Running it around the clock is what weekly limits are for.
                 </li>
                 <li>
-                  <strong>Check which account is paying.</strong> Type /status
-                  in Claude Code. It shows whether you&rsquo;re on your plan.
+                  <strong>Check which account is paying.</strong> In Claude
+                  Code, type /status and press Enter. It shows whether
+                  you&rsquo;re on your plan.
                 </li>
               </ul>
             </div>
@@ -515,53 +597,63 @@ export default function GuidePage() {
 
         {/* ── Level 5 ─────────────────────────────────────────────────── */}
         <section id="line" className="gd-level" aria-labelledby="line-h">
-          <LevelHead n={5}>Do you ever need the API?</LevelHead>
+          <LevelHead n={5}>Do you ever need to pay per use?</LevelHead>
           <p className="gd-lede font-read">
             For most of what I build, no. Here&rsquo;s the rule I use:
           </p>
-          <p className="gd-rule font-display">
-            If Claude is helping you <span data-tone="plan">make</span>&#32;the
-            thing, your plan covers it. Most games run on their own once
-            they&rsquo;re made. You only need the API if you want{' '}
-            <span data-tone="api">Claude inside</span> the finished game,
-            answering players while they play.
+          <div className="gd-rules">
+            <p className="gd-rule font-display">
+              If Claude is helping you <span data-tone="plan">make</span>
+              &#32;the thing, your monthly plan covers it.
+            </p>
+            <p className="gd-rule font-display">
+              If the finished thing needs{' '}
+              <span data-tone="api">Claude inside it</span>, talking to other
+              people, you pay per use.
+            </p>
+          </div>
+          <p className="gd-lede font-read">
+            Most games don&rsquo;t need Claude once they&rsquo;re finished. Use
+            the two buttons below to see the difference.
           </p>
 
           <LineSwitch />
 
           <div className="gd-cases">
             <div className="gd-case" data-tone="plan">
-              <h3 className="gd-case-h">Runs on its own</h3>
-              <p className="gd-case-sub">Your plan built it. No API needed.</p>
+              <h3 className="gd-case-h">Works on its own</h3>
+              <p className="gd-case-sub">
+                Your plan pays to build it. Nothing to pay per use.
+              </p>
               <ul className="font-read">
-                <li>Platformers, puzzle games, rhythm games, runners</li>
+                <li>Most games: jumping games, puzzles, rhythm games</li>
                 <li>
                   A game full of story, as long as the lines were written while
                   you built it
                 </li>
-                <li>Your portfolio, a business site, a menu or booking page</li>
-                <li>A habit tracker, a to-do app, a tool for your own work</li>
+                <li>A website about you or your business</li>
+                <li>A menu, a booking page, a habit tracker or a to-do list</li>
               </ul>
             </div>
             <div className="gd-case" data-tone="api">
               <h3 className="gd-case-h">Has Claude inside</h3>
-              <p className="gd-case-sub">These need the API.</p>
+              <p className="gd-case-sub">These are paid per use.</p>
               <ul className="font-read">
                 <li>
-                  A character who makes up new lines based on what the player
-                  types
+                  A character who makes up new things to say, based on what the
+                  player types
                 </li>
-                <li>A helper you can chat with inside your app or website</li>
+                <li>A helper you can chat with inside an app or website</li>
                 <li>
                   An app that writes something new for each person, like a
                   custom study guide
                 </li>
-                <li>A game master that invents quests while you play</li>
+                <li>A storyteller that invents new quests while you play</li>
               </ul>
             </div>
           </div>
           <p className="gd-cases-note font-read">
-            Almost everything in <Link href="/games">my arcade</Link> is in the
+            Almost every game in <Link href="/games">my arcade</Link> is in the
             first column.
           </p>
 
@@ -569,56 +661,61 @@ export default function GuidePage() {
             <div className="sd-sheet gd-sheet font-read">
               <h3 className="gd-h4">If you do put Claude inside</h3>
               <p>
-                A personal plan is made for one person at the keyboard. It
-                isn&rsquo;t meant to be the engine behind your players.
+                A monthly plan is for one person, you, using Claude yourself. It
+                isn&rsquo;t meant to power an app that thousands of other people
+                use.
               </p>
               <p>
-                So when your game or app asks Claude something for someone else,
-                that goes through the API, and you pay a little for each use. It
-                can be a great feature. It&rsquo;s worth choosing on purpose,
+                So when your app asks Claude something for someone else, you pay
+                per use. It can be a great feature. Just choose it on purpose,
                 because it&rsquo;s the one part of a project that costs more as
                 more people use it.
               </p>
               <p>
-                Anthropic&rsquo;s terms draw the same line. They say developers
-                may not{' '}
+                Anthropic&rsquo;s rules say the same thing. In their words,
+                developers may not{' '}
                 <q>
                   route requests through Free, Pro, or Max plan credentials on
                   behalf of their users.
-                </q>{' '}
-                Building something to sell, or a site for a client, on your plan
-                is fine. What matters is who is using Claude: you building, or
-                your product answering someone else.
+                </q>
+              </p>
+              <p>
+                In plain words: don&rsquo;t let other people use Claude through
+                your personal plan. Building something you sell, or a website
+                for a client, on your plan is fine.
               </p>
               <p className="gd-sheet-small">
-                I read the terms in October 2026. This isn&rsquo;t legal advice.
+                I read Anthropic&rsquo;s rules in October 2026. This isn&rsquo;t
+                legal advice.
               </p>
             </div>
             <div className="sd-sheet gd-sheet gd-callback font-read">
               <p className="gd-callback-tag">Back to that $37</p>
               <p>
-                That number is real, and it&rsquo;s useful. It&rsquo;s what that
-                test cost at API prices. That makes it a fair way to compare
-                versions of Claude, and it&rsquo;s the number that matters once
-                your app runs Claude for other people.
+                That number is real, and it&rsquo;s useful. It&rsquo;s what one
+                coding test cost when paid per use, so it&rsquo;s a fair way to
+                compare versions of Claude.
               </p>
               <p>
-                It belongs to a different bill from the one I get when I sit
-                down with Claude Code and say,{' '}
-                <q>let&rsquo;s build the combat system today.</q> For that day,
-                the extra cost on top of my plan is <strong>$0</strong>.
+                It&rsquo;s also the kind of number that matters once your app
+                uses Claude for other people.
+              </p>
+              <p>
+                But it&rsquo;s not my bill when I sit down with Claude Code and
+                say, <q>let&rsquo;s build the combat for my game today.</q> That
+                day costs me nothing extra on top of my plan.
               </p>
             </div>
           </div>
         </section>
 
-        {/* ── Level 5 ─────────────────────────────────────────────────── */}
+        {/* ── Level 6 ─────────────────────────────────────────────────── */}
         <section id="sort" className="gd-level" aria-labelledby="sort-h">
           <LevelHead n={6}>Your turn: sort these</LevelHead>
           <p className="gd-lede font-read">
-            Eight situations. For each one, call which bill it lands on. No
-            pressure, and no score that counts. We&rsquo;re learning this
-            together.
+            Here are eight situations. For each one, pick who pays: your monthly
+            plan, or paying per use (the API). There&rsquo;s no score that
+            counts. We&rsquo;re learning this together.
           </p>
 
           <SortGame items={SORT} />
@@ -629,7 +726,7 @@ export default function GuidePage() {
               <thead>
                 <tr>
                   <th scope="col">What&rsquo;s happening</th>
-                  <th scope="col">Which bill</th>
+                  <th scope="col">Who pays</th>
                 </tr>
               </thead>
               <tbody>
@@ -637,7 +734,7 @@ export default function GuidePage() {
                   <tr key={s.text}>
                     <td>{s.text}</td>
                     <td data-tone={s.answer}>
-                      {s.answer === 'plan' ? 'Your plan' : 'The API'}
+                      {s.answer === 'plan' ? 'Your plan' : 'Pay per use'}
                     </td>
                   </tr>
                 ))}
@@ -646,46 +743,65 @@ export default function GuidePage() {
           </details>
         </section>
 
-        {/* ── Level 6 ─────────────────────────────────────────────────── */}
+        {/* ── Level 7 ─────────────────────────────────────────────────── */}
         <section id="month" className="gd-level" aria-labelledby="month-h">
           <LevelHead n={7}>Your month, with my numbers</LevelHead>
-          <p className="gd-lede font-read">
-            Now try my real day rates on a month of your own. Set how many
-            normal days and big days you&rsquo;d have. It&rsquo;s a feel for
-            scale, not a quote.
-          </p>
+          <div className="gd-lede font-read">
+            <p>
+              Now try my real numbers on a month of your own. Move the two
+              sliders to pick how many days you&rsquo;d build.
+            </p>
+            <p>
+              The calculator shows what that month would cost if you paid per
+              use, next to the three monthly plan prices. It&rsquo;s a feel for
+              the size of things, not a price quote.
+            </p>
+          </div>
 
           <MonthCalc
             normalDay={RECEIPT.normalDay}
             bigDay={RECEIPT.bigDay}
             weekAllowance={RECEIPT.weekAllowance}
             plans={[
-              { label: 'Pro', price: PRICES.pro },
-              { label: 'Max', price: PRICES.maxLow },
-              { label: 'Max, more room', price: PRICES.maxHigh },
+              { label: 'Pro plan', price: PRICES.pro },
+              { label: 'Max plan', price: PRICES.maxLow },
+              { label: 'Max plan, more room', price: PRICES.maxHigh },
             ]}
           />
 
           <details className="gd-how font-read">
             <summary>How I got these numbers</summary>
             <p>
-              They all come from the one receipt in Level 3. The big day is
-              October 3, when ten helper agents built levels at once: about $
-              {RECEIPT.bigDay} at API prices. The other three days shared the
-              rest, about ${Math.round(RECEIPT.apiTotal) - RECEIPT.bigDay}, so a
-              normal day is about ${RECEIPT.normalDay}.
+              All of them come from my one receipt in Level 3, which covered 4
+              days and ${total}.
             </p>
+            <ul>
+              <li>
+                <strong>A big day costs about ${RECEIPT.bigDay}.</strong> On
+                October 3, 10 helper agents built levels at the same time. That
+                one day came to about ${RECEIPT.bigDay} if paid per use.
+              </li>
+              <li>
+                <strong>A normal day costs about ${RECEIPT.normalDay}.</strong>{' '}
+                The other 3 days shared the rest: ${total} minus $
+                {RECEIPT.bigDay} is ${total - RECEIPT.bigDay}, and $
+                {total - RECEIPT.bigDay} split over 3 days is about $
+                {RECEIPT.normalDay} a day.
+              </li>
+              <li>
+                <strong>
+                  My plan&rsquo;s weekly limit is worth about $
+                  {RECEIPT.weekAllowance.toLocaleString('en-US')}.
+                </strong>{' '}
+                Those 4 days used about {RECEIPT.planShare}% of my weekly limit.
+                If {RECEIPT.planShare}% is ${total}, then 100% is about $
+                {RECEIPT.weekAllowance.toLocaleString('en-US')}.
+              </li>
+            </ul>
             <p>
-              The weekly line works backwards from my plan&rsquo;s usage screen:
-              if {RECEIPT.planShare}% of a week was $
-              {RECEIPT.apiTotal.toFixed(2)} at API prices, a full week is worth
-              about ${RECEIPT.weekAllowance.toLocaleString('en-US')}. That
-              reading is rough, because it also counted my other sessions that
-              week.
-            </p>
-            <p>
-              This is one person&rsquo;s numbers from one project. A small game
-              will cost less. A long session on a big project will cost more.
+              These are one person&rsquo;s numbers from one project. A small
+              game will cost less. A long project with lots of helpers will cost
+              more.
             </p>
           </details>
         </section>
@@ -696,38 +812,38 @@ export default function GuidePage() {
             <span>Stage clear</span>
           </div>
           <h2 id="finish-h" className="font-display gd-h2 sd-brush-under">
-            The fine print I keep in mind
+            Good to know before you start
           </h2>
 
           <ul className="gd-fine" role="list">
             <li>
               <h3>Plans have limits</h3>
               <p className="font-read">
-                Your plan&rsquo;s usage resets on a schedule. If you hit the
-                limit, you wait for the reset or move up a plan. The price
-                doesn&rsquo;t jump on you.
+                Your plan&rsquo;s usage resets on a schedule, including a weekly
+                limit. If you hit the limit, you wait for it to reset or move to
+                a bigger plan. The price never jumps on you.
               </p>
             </li>
             <li>
-              <h3>Going past them is your call</h3>
+              <h3>Going past the limit is your choice</h3>
               <p className="font-read">
-                Some plans let you switch on extra usage, billed per use, so you
-                can keep going past a limit. It&rsquo;s a setting you choose,
-                not a surprise.
+                Some plans let you turn on extra usage, which charges per use
+                once you pass your limit. It&rsquo;s a setting you choose, so it
+                won&rsquo;t surprise you.
               </p>
             </li>
             <li>
               <h3>A plan is for you</h3>
               <p className="font-read">
-                Your subscription is for you at the keyboard. When customers
-                need Claude inside your product, that&rsquo;s API work.
+                Your monthly plan is for you, building. If customers need Claude
+                inside your app, that part is paid per use.
               </p>
             </li>
             <li>
-              <h3>Prices move</h3>
+              <h3>Prices change</h3>
               <p className="font-read">
-                Everything here is the price Anthropic posted on October 5,
-                2026. When it changes, I&rsquo;ll update this page.
+                Every price here is what Anthropic listed on October 5, 2026.
+                When they change, I&rsquo;ll update this page.
               </p>
             </li>
           </ul>
@@ -743,13 +859,17 @@ export default function GuidePage() {
                   how many times you&rsquo;ve pressed it is perfect.
                 </li>
                 <li>
-                  Open Claude Code. It&rsquo;s in the Claude desktop app and on
-                  the web at claude.ai/code, and it comes with Pro.
+                  Open Claude Code. It&rsquo;s in the Claude app for your
+                  computer, and on the web at claude.ai/code. It comes with the
+                  $20 Pro plan.
                 </li>
-                <li>Describe your game in plain words, and let it build.</li>
                 <li>
-                  Ask for one change. Then another. Notice how it feels when
-                  trying again costs nothing extra.
+                  Describe your game in plain words, the way you&rsquo;d explain
+                  it to a friend, and let Claude build it.
+                </li>
+                <li>
+                  Ask for one change. Then another. Notice that trying again
+                  doesn&rsquo;t cost anything extra.
                 </li>
               </ol>
             </div>
@@ -758,15 +878,18 @@ export default function GuidePage() {
           <div className="sd-sheet gd-sheet gd-close font-read">
             <p>
               We&rsquo;re all figuring this out while the tools keep changing.
-              This is where I&rsquo;ve landed for now. If I learn something that
-              changes it, I&rsquo;ll update it here.
+              This is where I&rsquo;ve landed for now, and I&rsquo;ll update
+              this page if I learn something new.
             </p>
             <p>
-              What I&rsquo;d pay attention to, if you&rsquo;re building games,
-              websites or apps on your own: how much you get done each month for
-              $20, $100 or $200. That matters more than what each token costs.
+              If you&rsquo;re building games, websites or apps on your own,
+              here&rsquo;s what I&rsquo;d pay attention to: how much you can get
+              done each month for $20, $100 or $200. That matters more than the
+              price of a single token.
+            </p>
+            <p>
               That steady, predictable price is a big part of why building on
-              your own is getting so interesting right now.
+              your own is getting so exciting right now.
             </p>
             <Kiru pose="bow" className="gd-close-kiru" />
           </div>

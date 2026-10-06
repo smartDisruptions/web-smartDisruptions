@@ -5,8 +5,11 @@ import type { SortItem } from './copy';
 
 type Pick = 'plan' | 'api';
 
-const LABEL: Record<Pick, string> = { plan: 'Your plan', api: 'The API' };
-const GOES: Record<Pick, string> = { plan: 'your plan', api: 'the API' };
+const LABEL: Record<Pick, string> = { plan: 'Your plan', api: 'Pay per use' };
+const GOES: Record<Pick, string> = {
+  plan: 'covered by your plan',
+  api: 'paid per use',
+};
 
 /**
  * A tiny card game: eight situations, one at a time, and you call which bill
@@ -58,7 +61,7 @@ export default function SortGame({ items }: { items: SortItem[] }) {
           </p>
           <p className="gd-sort-why font-read">
             {score === items.length
-              ? "Every one right. That's the whole line, and you've got it."
+              ? "Every one right. You've got the idea."
               : score >= items.length - 2
                 ? 'Nearly all of them. The list below has the reason behind each one.'
                 : 'This line takes a minute to see. The list below has every answer and the reason for it.'}
@@ -107,7 +110,7 @@ export default function SortGame({ items }: { items: SortItem[] }) {
                 <p className="gd-sort-verdict">
                   {picked === item.answer
                     ? 'Right.'
-                    : `This one goes on ${GOES[item.answer]}.`}
+                    : `Not quite. This one is ${GOES[item.answer]}.`}
                 </p>
                 <p className="gd-sort-why font-read">{item.why}</p>
                 <button type="button" className="gd-btn" onClick={next}>

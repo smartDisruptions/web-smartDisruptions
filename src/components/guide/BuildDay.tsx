@@ -96,8 +96,8 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
           </span>
           <span className="gd-meter-note">
             {active < 0
-              ? 'My real session, at API prices'
-              : `${active + 1} of ${tasks.length} parts counted`}
+              ? 'My real 4 days of building'
+              : `${active + 1} of ${tasks.length} costs added`}
           </span>
         </div>
         <div className="gd-meter gd-meter-plan">
@@ -111,8 +111,8 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
           </span>
           <span className="gd-meter-note">
             {done
-              ? 'Still $0 extra. It used about 15% of one week'
-              : 'Already paid for'}
+              ? "Still $0 extra. It used about 15% of my plan's weekly limit."
+              : 'Covered by my $200 monthly plan'}
           </span>
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
       <p className="sr-only" aria-live="polite">
         {active < 0
           ? ''
-          : `Part ${active + 1} (${tasks[active].title}): ${money(target)} so far at API prices, $0 extra on my plan.`}
+          : `${tasks[active].title}: ${money(target)} so far if paid per use, $0 extra on my plan.`}
       </p>
 
       <ol className="gd-day-list" ref={listRef}>
@@ -138,7 +138,7 @@ export default function BuildDay({ tasks }: { tasks: Task[] }) {
             <p className="gd-task-plain font-read">{t.plain}</p>
             <p className="gd-task-chips">
               <span className="gd-chip gd-chip-api">
-                about {money(t.cost)} at API prices
+                about {money(t.cost)} if paid per use
               </span>
               <span className="gd-chip gd-chip-plan">+$0 on my plan</span>
             </p>

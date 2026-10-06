@@ -129,13 +129,13 @@ export default function Image() {
       </div>
       <div style={{ display: 'flex', gap: 22 }}>
         <Lane
-          when="Almost always: Claude builds your game"
-          then="Your plan pays"
+          when="Almost always: Claude helps you build"
+          then="A monthly plan covers it"
           color={PLAN}
         />
         <Lane
           when="Only if Claude is inside the game"
-          then="The API pays"
+          then="You pay per use"
           color={API}
         />
       </div>

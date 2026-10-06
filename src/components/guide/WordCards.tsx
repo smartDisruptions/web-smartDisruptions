@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { Word } from './copy';
 
 const ICONS: Record<Word['icon'], ReactNode> = {
@@ -31,61 +29,63 @@ const ICONS: Record<Word['icon'], ReactNode> = {
       <path d="M12 7.5V12l3 2" />
     </>
   ),
+  spark: (
+    <>
+      <path d="M12 3.5 13.9 10 20.5 12l-6.6 2L12 20.5 10.1 14 3.5 12l6.6-2z" />
+    </>
+  ),
+  stack: (
+    <>
+      <rect x="4" y="13" width="5" height="7" rx="1.2" />
+      <rect x="9.5" y="9" width="5" height="11" rx="1.2" />
+      <rect x="15" y="4.5" width="5" height="15.5" rx="1.2" />
+    </>
+  ),
+  people: (
+    <>
+      <circle cx="8" cy="9" r="2.6" />
+      <circle cx="16" cy="9" r="2.6" />
+      <path d="M3.5 19c.6-3 2.4-4.6 4.5-4.6s3.9 1.6 4.5 4.6" />
+      <path d="M11.5 19c.6-3 2.4-4.6 4.5-4.6s3.9 1.6 4.5 4.6" />
+    </>
+  ),
+  chat: (
+    <>
+      <path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4 3.5v-3.5h0a2 2 0 0 1-2-2z" />
+    </>
+  ),
 };
 
 /**
- * Four words that come up whenever people talk about paying for AI. Each card
- * flips to its plain meaning. Both faces are in the DOM, so a screen reader
- * hears the term and its meaning together; the flip is only for eyes.
+ * The words this page uses, each with its plain meaning in full view. No
+ * flipping: a reader who doesn't know a word shouldn't have to find it.
  */
 export default function WordCards({ words }: { words: Word[] }) {
-  const [open, setOpen] = useState<Record<number, boolean>>({});
-
   return (
-    <ul className="gd-words" role="list">
-      {words.map((w, i) => {
-        const flipped = !!open[i];
-        return (
-          <li key={w.term}>
-            <button
-              type="button"
-              className="gd-word"
-              data-flipped={flipped}
-              aria-pressed={flipped}
-              onClick={() => setOpen((o) => ({ ...o, [i]: !o[i] }))}
+    <dl className="gd-words">
+      {words.map((w) => (
+        <div key={w.term} className="gd-word">
+          <dt className="gd-word-head">
+            <svg
+              className="gd-word-ico"
+              viewBox="0 0 24 24"
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              focusable="false"
             >
-              <span className="gd-word-inner">
-                <span className="gd-word-face gd-word-front">
-                  <svg
-                    className="gd-word-ico"
-                    viewBox="0 0 24 24"
-                    width="26"
-                    height="26"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
-                    focusable="false"
-                  >
-                    {ICONS[w.icon]}
-                  </svg>
-                  <span className="gd-word-term">{w.term}</span>
-                  <span className="gd-word-hint" aria-hidden>
-                    <span className="gd-only-touch">Tap to flip</span>
-                    <span className="gd-only-mouse">Click to flip</span>
-                  </span>
-                </span>
-                <span className="gd-word-face gd-word-back">
-                  <span className="gd-word-term-sm">{w.term}</span>
-                  <span className="gd-word-plain">{w.plain}</span>
-                </span>
-              </span>
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+              {ICONS[w.icon]}
+            </svg>
+            <span className="gd-word-term">{w.term}</span>
+          </dt>
+          <dd className="gd-word-plain">{w.plain}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

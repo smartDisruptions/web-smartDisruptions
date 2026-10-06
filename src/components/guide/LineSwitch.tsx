@@ -13,12 +13,12 @@ const SCENES: Record<
   build: {
     nodes: [
       { title: 'You', sub: 'at your keyboard' },
-      { title: 'Claude Code', sub: 'on your monthly plan', tone: 'plan' },
-      { title: 'Your game', sub: 'built, tested, released' },
-      { title: 'Players', sub: 'play it. No Claude needed.' },
+      { title: 'Claude Code', sub: 'paid by your monthly plan', tone: 'plan' },
+      { title: 'Your game', sub: 'built, tested and put online' },
+      { title: 'Players', sub: 'play it. Claude is not involved.' },
     ],
     hot: 0,
-    bill: 'Who pays: your plan, one flat price',
+    bill: 'Who pays: your monthly plan, one flat price',
     caption:
       "This is most games. Claude helped you make it, and your plan paid for that. Once it's out, players are only playing a game. Nothing they do calls Claude.",
   },
@@ -26,15 +26,15 @@ const SCENES: Record<
     nodes: [
       { title: 'A player', sub: 'talks to a character' },
       { title: 'Your game', sub: 'asks Claude what to say back' },
-      { title: 'Claude', sub: 'answers through the API', tone: 'api' },
+      { title: 'Claude', sub: 'writes a reply, paid per use', tone: 'api' },
       {
-        title: 'Your API bill',
+        title: 'Your bill',
         sub: 'goes up a little each time',
         tone: 'api',
       },
     ],
     hot: 2,
-    bill: 'Who pays: you, for every request',
+    bill: 'Who pays: you, a little for every reply',
     caption:
       'Here the game asks Claude for something new while people play. Every time a player starts that conversation, the meter ticks. A thousand players means a thousand trips.',
   },
@@ -81,7 +81,7 @@ export default function LineSwitch() {
               setCount(0);
             }}
           >
-            {m === 'build' ? 'A normal game' : 'Claude inside'}
+            {m === 'build' ? 'A normal game' : 'With Claude inside'}
           </button>
         ))}
         <span className="gd-switch-thumb" aria-hidden />
@@ -95,7 +95,7 @@ export default function LineSwitch() {
               <span className="gd-flow-sub">{n.sub}</span>
               {mode === 'run' && i === 3 && (
                 <span className="gd-flow-count tabular-nums" aria-live="off">
-                  {count} {count === 1 ? 'request' : 'requests'}
+                  {count} {count === 1 ? 'reply' : 'replies'} paid
                 </span>
               )}
             </div>

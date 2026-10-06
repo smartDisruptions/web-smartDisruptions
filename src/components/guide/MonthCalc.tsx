@@ -38,7 +38,7 @@ export default function MonthCalc({
   const weekShare = Math.round((api / WEEKS_PER_MONTH / weekAllowance) * 100);
 
   const rows = [
-    { label: 'At API prices', value: api, tone: 'api' },
+    { label: 'Paid per use', value: api, tone: 'api' },
     ...plans.map((p) => ({ label: p.label, value: p.price, tone: 'plan' })),
   ];
 
@@ -47,13 +47,13 @@ export default function MonthCalc({
       <div className="gd-calc-inputs">
         <label className="gd-slider" htmlFor={nId}>
           <span className="gd-slider-top">
-            <span>Normal build days a month</span>
+            <span>Normal days of building</span>
             <output className="tabular-nums" htmlFor={nId}>
               {normal}
             </output>
           </span>
           <span className="gd-slider-note">
-            One session, no helpers. About {money(normalDay)} each.
+            Just me and Claude. About {money(normalDay)} a day if paid per use.
           </span>
           <input
             id={nId}
@@ -67,13 +67,13 @@ export default function MonthCalc({
         </label>
         <label className="gd-slider" htmlFor={bId}>
           <span className="gd-slider-top">
-            <span>Big days with 10 helpers</span>
+            <span>Big days with 10 helper agents</span>
             <output className="tabular-nums" htmlFor={bId}>
               {big}
             </output>
           </span>
           <span className="gd-slider-note">
-            Like my level build. About {money(bigDay)} each.
+            Like my busiest day. About {money(bigDay)} a day if paid per use.
           </span>
           <input
             id={bId}
@@ -92,7 +92,8 @@ export default function MonthCalc({
           {money(api)}
         </span>
         <span className="gd-calc-sub">
-          is what that month would cost at API prices, using my real numbers.
+          is what that month of building would cost if you paid per use, based
+          on my real numbers.
         </span>
       </p>
 
@@ -116,8 +117,8 @@ export default function MonthCalc({
 
       <p className="gd-calc-week" data-over={weekShare > 100}>
         {weekShare > 100
-          ? `On my $200 Max plan, that's more than a full week's allowance every week (about ${weekShare}%). I'd hit the limit and wait for it to reset.`
-          : `On my $200 Max plan, that's about ${weekShare}% of a week's allowance in an average week.`}
+          ? `On my $200 Max plan, that would be more than the plan allows each week (about ${weekShare}% of the weekly limit). I'd have to wait for it to reset.`
+          : `On my $200 Max plan, that much building would use about ${weekShare}% of what the plan allows in a week.`}
       </p>
     </div>
   );

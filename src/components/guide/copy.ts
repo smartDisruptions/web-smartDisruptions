@@ -1,11 +1,13 @@
 // All the words on the page live here, so the components only arrange them.
-// Prices are Anthropic's list prices as of October 2026.
+// Written for someone who has never coded or used AI: every term is defined
+// before it is used, every number says what it counts, and nothing leans on
+// jargon. Prices are Anthropic's posted prices as of October 2026.
 
 export const TITLE =
   'Claude Code subscription vs API credits: most games never need the API';
 
 export const EXCERPT =
-  "Your Claude plan covers building your game, website or app. Once it's made, most of them run on their own. The API only comes in when you want Claude inside the finished thing, like a character that talks back.";
+  'A plain-language guide to paying for Claude, the AI that can build games, websites and apps for you. A flat monthly plan covers the building. Paying per use only comes in if your finished app needs Claude to talk to other people.';
 
 export const PRICES = {
   pro: 20,
@@ -20,69 +22,108 @@ export const PRICES = {
 export type Word = {
   term: string;
   plain: string;
-  icon: 'code' | 'door' | 'chunk' | 'clock';
+  icon:
+    | 'code'
+    | 'door'
+    | 'chunk'
+    | 'clock'
+    | 'spark'
+    | 'stack'
+    | 'people'
+    | 'chat';
 };
 
+// The words a reader meets on this page, in the order they meet them.
 export const WORDS: Word[] = [
+  {
+    term: 'Claude',
+    icon: 'spark',
+    plain:
+      'An AI made by a company called Anthropic. You talk to it in plain English, and it can answer questions, write, and build things.',
+  },
   {
     term: 'Claude Code',
     icon: 'code',
     plain:
-      'Claude working inside your project folder. It can read your files, write code, try it out, and fix what breaks.',
+      'A version of Claude that builds software for you. You describe what you want, and it writes the code, tries it out and fixes what breaks.',
   },
   {
-    term: 'API',
-    icon: 'door',
+    term: 'Plan (subscription)',
+    icon: 'clock',
     plain:
-      'A doorway that lets one program talk to another. Your app knocks, Claude answers, and a meter ticks each time.',
-  },
-  {
-    term: 'Token',
-    icon: 'chunk',
-    plain:
-      'The small chunks Claude reads and writes in. One token is about three quarters of a word. A million tokens is roughly ten novels.',
+      'A flat monthly price for using Claude yourself: Pro is $20 a month, and Max is $100 or $200. Claude Code is included.',
   },
   {
     term: 'Usage limit',
     icon: 'clock',
     plain:
-      "How much your plan lets you use before it resets. If you hit it, you wait for the reset or move up to a bigger plan. You won't get a surprise bill.",
+      'How much your plan lets you use before it resets, including a weekly limit. If you hit it, you wait for the reset or move to a bigger plan. The price never jumps on you.',
+  },
+  {
+    term: 'API (paying per use)',
+    icon: 'door',
+    plain:
+      'The way an app talks to Claude by itself, with no person typing. It is billed per use, like a taxi meter: every bit of reading and writing costs a little.',
+  },
+  {
+    term: 'Token',
+    icon: 'chunk',
+    plain:
+      'The small pieces Claude reads and writes in. One token is about three quarters of a word, so a million tokens is about 750,000 words.',
+  },
+  {
+    term: 'Sonnet, Opus and Haiku',
+    icon: 'stack',
+    plain:
+      'Different sizes of Claude. Opus is the biggest and costs the most, Sonnet is the middle one, and Haiku is the smallest and cheapest.',
+  },
+  {
+    term: 'Session',
+    icon: 'chat',
+    plain:
+      'One conversation with Claude Code, from the first message to the last. A session can last minutes or days.',
+  },
+  {
+    term: 'Helper agents',
+    icon: 'people',
+    plain:
+      'Extra copies of Claude that work on different parts of a job at the same time, like a small team. Faster, but every copy costs.',
   },
 ];
 
 export type Task = {
   title: string;
   plain: string;
-  cost: number; // dollars at API prices, from my real receipt
+  cost: number; // dollars if paid per use, from my real receipt
 };
 
 // Where my real $535.94 went (vault, AI Builder Skill Tree, "My plan vs the
-// API"). The tracker splits it 61% rereading, 17% saving to the cache, 22%
+// API"). The tracker splits it 61% rereading, 17% saving to memory, 22%
 // output; the output is split here by tokens (6.4M of 9.7M were thinking),
 // so those two are close estimates. Rounded to whole dollars, they sum to $536.
 export const DAY: Task[] = [
   {
     title: 'Rereading the whole conversation',
     plain:
-      "Before every step, Claude reads everything so far again so it doesn't lose track. Mine was about 440,000 tokens a step, over and over. Most of it came from a cheap short-term memory, but it added up.",
+      "Claude doesn't remember the way you do. Before every step, it reads the whole conversation again from the start so it doesn't lose track. Mine grew to about 440,000 tokens, about four novels long, and Claude reread it thousands of times. Each reread is cheap, but thousands of them made this the biggest part of the bill.",
     cost: 327,
   },
   {
     title: 'Saving new work to memory',
     plain:
-      'Every new message and every file Claude opens gets saved to that short-term memory, so the next step can reread it cheaply.',
+      'Every time something new came in, like a message from me or a file Claude opened, it was saved to a short-term memory so it could be reread cheaply later. Saving costs a little more than rereading.',
     cost: 91,
   },
   {
     title: 'Thinking before acting',
     plain:
-      'Claude works a problem through before it writes anything. 6.4 million of the 9.7 million tokens it wrote were thinking.',
+      'Before Claude writes anything, it thinks the problem through, like working out a math problem on scrap paper. You never see this thinking, but it is paid for. About two thirds of everything Claude produced was thinking.',
     cost: 78,
   },
   {
-    title: 'Writing the code and the words',
+    title: 'Writing the code and the replies',
     plain:
-      'The part you actually see: the code for the levels, the files, and the replies to me. It was the smallest slice.',
+      'This is the part you actually see: the code that makes the game work, and the messages Claude wrote back to me. It was the smallest part of the bill.',
     cost: 40,
   },
 ];
@@ -102,37 +143,37 @@ export const SORT: SortItem[] = [
   {
     text: 'Claude fixes a bug in your game',
     answer: 'plan',
-    why: 'Still you, still building. Fixing is part of making.',
+    why: 'You are still building. Fixing mistakes is part of making something.',
   },
   {
     text: 'Claude builds your website',
     answer: 'plan',
-    why: "The website is the thing you're making. Once it's live, it doesn't need Claude to load.",
+    why: "The website is the thing you're making. Once it's online, it doesn't need Claude to load.",
   },
   {
     text: 'Claude builds an app you plan to sell',
     answer: 'plan',
-    why: "Selling it later doesn't change who's building it now: you, with Claude.",
+    why: "Selling it later doesn't change who is building it now: you, with Claude.",
   },
   {
     text: 'Claude helps you update and tidy your project',
     answer: 'plan',
-    why: 'Updates, cleanups and new features are all building work.',
+    why: 'Updates, cleanups and new features are all part of building.',
   },
   {
-    text: 'Your finished app asks Claude a question by itself',
+    text: 'Your finished app asks Claude a question by itself, with nobody typing',
     answer: 'api',
-    why: "Now your app is talking to Claude without you. That's what the API is for.",
+    why: "Now your app is talking to Claude without you. That's what paying per use is for.",
   },
   {
-    text: 'Your players chat with a character Claude is voicing',
+    text: 'Players chat with a character in your game, and Claude writes its replies live',
     answer: 'api',
-    why: 'Every player conversation is a request to Claude, so each one runs on the meter.',
+    why: 'Every player conversation is a new request to Claude, so each one is paid per use.',
   },
   {
-    text: "Claude writes all the dialogue for your game's characters",
+    text: "Claude writes all the dialogue for your game's characters while you build",
     answer: 'plan',
-    why: "Claude writes it once while you build, and it's saved into the game. Players read it. Nothing calls Claude while they play.",
+    why: "Claude writes it once, and it's saved into the game. Players read it. Nothing calls Claude while they play.",
   },
 ];
 
@@ -145,26 +186,27 @@ export const LEVELS: Level[] = [
   { id: 'pay', n: 2, label: 'Two ways to pay', kanji: '道' },
   { id: 'day', n: 3, label: 'Where my $536 went', kanji: '作' },
   { id: 'others', n: 4, label: "Other people's bills", kanji: '学' },
-  { id: 'line', n: 5, label: 'Do you need the API?', kanji: '岐' },
+  { id: 'line', n: 5, label: 'Do you need to pay per use?', kanji: '岐' },
   { id: 'sort', n: 6, label: 'Your turn', kanji: '遊' },
   { id: 'month', n: 7, label: 'Your month', kanji: '月' },
 ];
 
 // My real receipt, from the vault (AI Builder Skill Tree, "My plan vs the
-// API", checked 2026-10-06). API figures are Claude Code's own cost tracker;
-// the plan share is a reading of Settings → Usage, which also counts other
-// sessions that week, so it is approximate.
+// API", checked 2026-10-06). Per-use figures are Claude Code's own cost
+// tracker; the plan share is a reading of the plan's usage screen, which also
+// counts other work that week, so it is approximate.
 export const RECEIPT = {
   dates: 'Oct 2–6, 2026',
   days: 4,
   helpers: 10,
   lines: [
-    { model: 'Sonnet 5.5', cost: 408.67 },
-    { model: 'Opus 5.5', cost: 126.98 },
-    { model: 'Haiku', cost: 0.29 },
+    { model: 'Sonnet 5.5', note: 'middle-size Claude', cost: 408.67 },
+    { model: 'Opus 5.5', note: 'biggest Claude', cost: 126.98 },
+    { model: 'Haiku', note: 'smallest Claude', cost: 0.29 },
   ],
   apiTotal: 535.94,
   planShare: 15,
+  planWeek: 46,
   planCost: 7,
   times: 75,
   rereadShare: 61,
@@ -173,14 +215,14 @@ export const RECEIPT = {
   // agents) was about $400; the other three days shared the remaining ~$136.
   bigDay: 400,
   normalDay: 45,
-  // If 15% of a week's allowance was $535.94 at API prices, a full week is
+  // If 15% of a week's allowance was $535.94 at per-use prices, a full week is
   // worth about $3,573. A rough reading, and the calculator says so.
   weekAllowance: 3573,
 };
 
 export type Bill = {
   amount: string;
-  kind: 'Bill' | 'At API prices' | 'Average';
+  kind: 'Real bill' | 'If paid per use' | 'Average cost';
   who: string;
   what: string;
   lesson: string;
@@ -189,57 +231,58 @@ export type Bill = {
 };
 
 // People who shared what AI coding cost them, checked 2026-10-06. Each one
-// links to the source; nothing here is from a secondary rumour. The tone is
-// thanks: they put real numbers in public, which is how the rest of us learn.
+// links to its source. The tone is thanks: they put real numbers in public,
+// which is how the rest of us learn. People are "they" unless they are named
+// on their own byline.
 export const BILLS: Bill[] = [
   {
     amount: '$13 a day',
-    kind: 'Average',
-    who: "Anthropic's own numbers",
-    what: 'Across companies using Claude Code on the API, the average developer costs about $13 per active day, or $150 to $250 a month. 90% stay under $30 a day.',
+    kind: 'Average cost',
+    who: 'Anthropic, the company that makes Claude',
+    what: 'Anthropic says that for companies paying per use, one programmer using Claude Code costs about $13 for each day they use it, or $150 to $250 a month. Nine out of ten stay under $30 a day.',
     lesson:
-      'Anthropic says big bills usually come from long sessions that were never cleared, or from the biggest model left on all the time.',
-    source: 'Claude Code docs, Manage costs effectively',
+      'Anthropic says the big bills usually come from conversations that kept growing and were never restarted, or from always using the biggest, most expensive version of Claude.',
+    source: 'Claude Code help pages: Manage costs effectively',
     url: 'https://code.claude.com/docs/en/costs',
   },
   {
     amount: '$15,000+',
-    kind: 'At API prices',
-    who: 'A developer who writes as ksred',
-    what: 'They tracked eight months of Claude Code with a free tool called ccusage. By their count it would have cost over $15,000 at API prices. On the Max plan they paid about $800.',
+    kind: 'If paid per use',
+    who: 'A programmer who writes online as ksred',
+    what: 'They used a free tracking tool to add up eight months of their Claude Code use. Paid per use, it would have cost over $15,000. They were on a monthly plan instead and paid about $800 in total.',
     lesson:
-      'Over 90% of their tokens were Claude rereading earlier work. Same pattern as my receipt.',
-    source: 'ksred.com, Claude Code Pricing Guide',
+      'More than 90% of their usage was Claude rereading earlier work. That is the same pattern as my own receipt.',
+    source: 'ksred.com: Claude Code Pricing Guide',
     url: 'https://www.ksred.com/claude-code-pricing-guide-which-plan-actually-saves-you-money/',
   },
   {
     amount: 'Tens of thousands',
-    kind: 'At API prices',
-    who: 'One subscriber, in an Anthropic announcement',
-    what: 'In July 2025 Anthropic said one person had used tens of thousands of dollars of Claude on a $200 plan, mostly by running Claude Code around the clock.',
+    kind: 'If paid per use',
+    who: 'One person on the $200 plan',
+    what: 'In July 2025, Anthropic said one person on the $200 plan had used tens of thousands of dollars worth of Claude, mostly by leaving it running day and night.',
     lesson:
-      "That's part of why plans now have weekly limits. Plans can be generous because most of us aren't running agents 24/7.",
-    source: 'Anthropic on X, July 28, 2025',
+      "This is part of why plans now have weekly limits. A flat price works because most of us don't run Claude around the clock.",
+    source: 'Anthropic on X (formerly Twitter), July 28, 2025',
     url: 'https://x.com/AnthropicAI/status/1949898511287226425',
   },
   {
     amount: '$1,800 in 2 days',
-    kind: 'Bill',
-    who: 'A Max subscriber on GitHub',
-    what: 'Scheduled scripts were running Claude in a loop. A leftover API key in their setup sent the charges to a pay-per-use account instead of their plan.',
+    kind: 'Real bill',
+    who: 'Someone on the $200 plan',
+    what: 'They had set up small programs to run Claude automatically, over and over. An old API key (a kind of password that tells Anthropic to bill you per use) was still saved on their computer, so the charges went to a pay-per-use account instead of their plan.',
     lesson:
-      'Know which account is paying. Typing /status in Claude Code shows it. An old API key can quietly switch the bill.',
-    source: 'GitHub issue #37686, March 2026',
+      'Check which account is paying. In Claude Code you can type /status and press Enter to see it.',
+    source: 'GitHub (a site where people report software problems), March 2026',
     url: 'https://github.com/anthropics/claude-code/issues/37686',
   },
   {
     amount: '$8,000 a month',
-    kind: 'Bill',
-    who: 'Jason Lemkin, founder of SaaStr',
-    what: "Lemkin wrote that they expected to spend about $8,000 in one month building an app with Replit's AI agent, which charges per use.",
+    kind: 'Real bill',
+    who: 'Jason Lemkin, founder of the business community SaaStr',
+    what: 'Lemkin wrote that they expected to spend about $8,000 in one month building an app with Replit, a different AI building tool that charges per use.',
     lesson:
-      'Their view was that it was still far cheaper than paying a team to build it. Paying per use can be the right call when the work is worth it.',
-    source: "SaaStr, Why I'll Likely Spend $8,000 on Replit This Month Alone",
+      'Lemkin felt it was still far cheaper than hiring a team to build the same app. Paying per use can be worth it when the work is worth it.',
+    source: "SaaStr: Why I'll Likely Spend $8,000 on Replit This Month Alone",
     url: 'https://www.saastr.com/why-ill-likely-spend-8000-on-replit-this-month-alone-and-why-thats-ok/',
   },
 ];
