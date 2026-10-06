@@ -2,10 +2,6 @@
  "title": "Amazon — Market Storm",
  "category": "Market Storm",
  "out": "amzn-q2-2026-card",
- "logo": {
-  "file": "amzn.svg",
-  "scale": 0.52
- },
  "before": {
   "label": "Company",
   "text": "Amazon"
@@ -14,5 +10,11 @@
   "label": "Section",
   "text": "Market Storm"
  },
- "alt": "Amazon logo"
+ "alt": "Amazon — Market Storm: 5 claims confirmed, 3 partly true, 1 corrected. AWS had its best quarter in four years. Amazon burned more cash than it earned.",
+ "ledger": {
+  "confirmed": 5,
+  "partlyTrue": 3,
+  "corrected": 1,
+  "finding": "AWS had its best quarter in four years. Amazon burned more cash than it earned."
+ }
 }

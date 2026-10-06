@@ -27,7 +27,9 @@
  *   annotated      annotated   a passage with its problems marked
  *
  * MARKET STORM (see #54 — a different content type, and not mine to prune)
- *   ledger · quote · scorecard · logo
+ *   ledger · quote · scorecard
+ *   (`logo` was retired in October 2026: company marks are trademarks, and a
+ *   ledger card says more than a logo does)
  *
  * THE BAR, AND WHY SIX TEMPLATES WERE RETIRED
  * -------------------------------------------
@@ -141,10 +143,6 @@ const FONT_DIR = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   'fonts'
 );
-const LOGO_DIR = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  'logos'
-);
 const W = 1200;
 const H = 630;
 
@@ -210,8 +208,7 @@ const STORM = {
  * The ground, as a background shorthand so a template can keep setting
  * `background:` in one place: the theme's colour with the light falling on it
  * from the top right, as `body` paints it in globals.css — the card and the
- * site have to be the same place. The light stays off the centre of the
- * frame, where a knockout logo fills its letters with the flat `bg`.
+ * site have to be the same place.
  */
 const ground = (t) =>
   `radial-gradient(760px 470px at 92% -150px, ${t.glow}, transparent 72%), ${t.bg}`;
@@ -670,17 +667,6 @@ const REGISTRY = [
           ? 'ledger.finding is required — the counts are the texture, the finding is the point'
           : null,
   },
-  {
-    name: 'logo',
-    key: 'logo',
-    render: (k) => logoCard(k),
-    check: (l) =>
-      !l.file
-        ? 'logo.file is required — the mark to render'
-        : !existsSync(path.join(LOGO_DIR, l.file))
-          ? `logo.file "${l.file}" is not in scripts/logos/`
-          : null,
-  },
   { name: 'split', key: null, render: (k) => split(k) },
 ];
 
@@ -738,72 +724,6 @@ function chooseTemplate() {
     return REGISTRY.find((t) => t.name === 'split');
   }
   return picked;
-}
-
-/* LOGO — the company's mark, centred on the ground, and nothing else.
-   The plainest card here by an order of magnitude, which is the point: it is
-   for an index where the reader is scanning for a company, not reading a
-   finding.
-
-   It renders as a MASK rather than an <img>, so the mark takes the theme's
-   text colour instead of its own. Two of the four are otherwise unreadable —
-   SpaceX's wordmark is #005288 and Palantir's is black, and both vanish on
-   charcoal. Reversing to a single colour is the standard permitted treatment
-   on a dark ground, it keeps four different marks reading as one set, and it
-   stops the index turning into four competing brand palettes. Microsoft's
-   coloured squares go grey with everything else; that is the price.
-
-   The mark is capped at 46% of the frame's width. A logo that fills its card
-   reads as an advert for that company rather than as a label on ours. */
-/**
- * A company mark, reversed to the theme.
- *
- * TWO WAYS TO DRAW ONE, AND WHY
- * -----------------------------
- * The default is a CSS mask filled with the theme's text colour. That is the
- * right treatment for a mark whose shapes ARE the logo — a wordmark, or a
- * device with real gaps in it — and it is what every mark here used until IREN.
- *
- * A mask cannot draw a KNOCKOUT logo: one where the wordmark is a hole punched
- * through a solid device and only reads because of colour contrast. Mask the
- * whole file and the letters union with the block they sit on, and the card
- * renders a solid slab. IREN is exactly this — a green parallelogram with the
- * letters set in navy on top of it.
- *
- * So `logo.knockout` lists the source fills that should come back as the
- * BACKGROUND colour instead of the text colour. The SVG is then inlined and
- * recoloured rather than masked, which keeps the mark monochrome — two theme
- * tokens, no brand palette — while preserving the shape that makes it legible.
- */
-function logoCard(k) {
-  const t = STORM[k];
-  const l = spec.logo;
-  const file = path.join(LOGO_DIR, l.file);
-  const w = Math.round(W * (l.scale ?? 0.46));
-  const h = Math.round(H * 0.42);
-
-  if (l.knockout?.length) {
-    const svg = readFileSync(file, 'utf8')
-      // Drop any full-bleed background plate; the card supplies its own ground.
-      .replace(/<rect\b[^>]*\/>/g, '')
-      .replace(/fill="([^"]+)"/g, (m, c) =>
-        c === 'none' ? m : `fill="${l.knockout.includes(c) ? t.bg : t.text}"`
-      )
-      .replace(/<svg\b/, `<svg style="width:${w}px;height:${h}px"`);
-    return doc(
-      `body{background:${ground(t)};display:flex;align-items:center;justify-content:center}
-       svg{width:${w}px;height:${h}px}`,
-      svg
-    );
-  }
-
-  return doc(
-    `body{background:${ground(t)};display:flex;align-items:center;justify-content:center}
-     .m{width:${w}px;height:${h}px;background:${t.text};
-       -webkit-mask:url('file://${file}') center/contain no-repeat;
-       mask:url('file://${file}') center/contain no-repeat}`,
-    `<div class="m"></div>`
-  );
 }
 
 /* QUOTE — the ticker board. The symbol at display size over a rule of

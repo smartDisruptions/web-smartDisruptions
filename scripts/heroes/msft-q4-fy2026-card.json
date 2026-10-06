@@ -2,10 +2,6 @@
  "title": "Microsoft — Market Storm",
  "category": "Market Storm",
  "out": "msft-q4-fy2026-card",
- "logo": {
-  "file": "msft.svg",
-  "scale": 0.46
- },
  "before": {
   "label": "Company",
   "text": "Microsoft"
@@ -14,5 +10,11 @@
   "label": "Section",
   "text": "Market Storm"
  },
- "alt": "Microsoft logo"
+ "alt": "Microsoft — Market Storm: 3 claims confirmed, 5 partly true, 1 corrected. Azure crossed $100 billion a year. Three accounting choices all flattered the headline.",
+ "ledger": {
+  "confirmed": 3,
+  "partlyTrue": 5,
+  "corrected": 1,
+  "finding": "Azure crossed $100 billion a year. Three accounting choices all flattered the headline."
+ }
 }

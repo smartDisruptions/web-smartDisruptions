@@ -2,10 +2,6 @@
  "title": "Palantir — Market Storm",
  "category": "Market Storm",
  "out": "pltr-q2-2026-card",
- "logo": {
-  "file": "pltr.svg",
-  "scale": 0.52
- },
  "before": {
   "label": "Company",
   "text": "Palantir"
@@ -14,5 +10,11 @@
   "label": "Section",
   "text": "Market Storm"
  },
- "alt": "Palantir Technologies logo"
+ "alt": "Palantir — Market Storm: 6 claims confirmed, 3 partly true, 4 corrected. The 93% growth is real. A 1.4% tax rate flatters the earnings everyone quotes.",
+ "ledger": {
+  "confirmed": 6,
+  "partlyTrue": 3,
+  "corrected": 4,
+  "finding": "The 93% growth is real. A 1.4% tax rate flatters the earnings everyone quotes."
+ }
 }

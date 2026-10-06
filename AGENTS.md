@@ -167,27 +167,13 @@ margin: six of the ten field notes are splits.
 refuses to run: a post has one central piece of evidence, and if two look right
 then the spec hasn't decided what the article is about yet.
 
-Market Storm's `logo` template takes an optional `logo.knockout`: a list of
-fills in the source SVG that should come back as the card's BACKGROUND colour
-rather than its text colour.
-
-```json
-"logo": { "file": "iren.svg", "scale": 0.50, "knockout": ["#0B344F"] }
-```
-
-Reach for it when a mark is a **knockout** — a wordmark punched through a solid
-device, legible only by colour contrast. The default CSS mask cannot draw one:
-mask the whole file and the letters union with the block they sit on, and the
-card renders a solid slab. With `knockout` the SVG is inlined and recoloured
-instead, which keeps the mark on two theme tokens while preserving the shape.
-IREN is the worked example; a first pass mistook "does not mask" for "cannot be
-reversed" and shipped a text card, which was wrong.
-
 There were ten of these. `console`, `receipt`, `versus`, `checklist`, `file` and
 `field` were retired in August 2026 because each one turned out to be a split
 wearing a costume — see the header of `scripts/make-hero.mjs` for the reasoning
-and the bar that replaced the old one. Market Storm's four (`ledger`, `quote`,
-`scorecard`, `logo`) are a different content type and are not affected.
+and the bar that replaced the old one. Market Storm's three (`ledger`, `quote`,
+`scorecard`) are a different content type and are not affected. Its fourth,
+`logo`, was retired in October 2026: company logos are trademarks, so Market
+Storm cards carry the ledger and the finding instead.
 
 A `count.of` above 12 stops being countable at a glance, so it renders `split`
 and says so. Don't shrink the number to fit.

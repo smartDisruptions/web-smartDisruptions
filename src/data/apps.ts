@@ -86,7 +86,7 @@ export const apps: App[] = [
   },
   {
     slug: 'spacex-mars',
-    name: 'SpaceX Mars Transfer Simulation',
+    name: 'Earth–Mars Transfer Simulation',
     description:
       'Shows the path a spacecraft takes from Earth to Mars. You can change the settings and watch the trip play out.',
     longDescription:

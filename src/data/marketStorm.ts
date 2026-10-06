@@ -617,7 +617,7 @@ The practical read: if you build on top of this infrastructure, your costs are c
   },
   cardImage: '/images/content/amzn-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/amzn-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'Amazon logo',
+  cardImageAlt: 'Amazon — Market Storm: 5 claims confirmed, 3 partly true, 1 corrected. AWS had its best quarter in four years. Amazon burned more cash than it earned.',
   sources: [
     {
       n: 1,
@@ -1135,7 +1135,7 @@ None of that is fraud; it is all disclosed, and mostly defensible. But three sep
   },
   cardImage: '/images/content/msft-q4-fy2026-card-hero.webp',
   cardImageLight: '/images/content/msft-q4-fy2026-card-hero-light.webp',
-  cardImageAlt: 'Microsoft logo',
+  cardImageAlt: 'Microsoft — Market Storm: 3 claims confirmed, 5 partly true, 1 corrected. Azure crossed $100 billion a year. Three accounting choices all flattered the headline.',
   sources: [
     {
       n: 1,
@@ -1796,7 +1796,7 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
   },
   cardImage: '/images/content/pltr-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/pltr-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'Palantir Technologies logo',
+  cardImageAlt: 'Palantir — Market Storm: 6 claims confirmed, 3 partly true, 4 corrected. The 93% growth is real. A 1.4% tax rate flatters the earnings everyone quotes.',
   sources: [
     {
       n: 1,
@@ -2632,7 +2632,7 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
   },
   cardImage: '/images/content/spcx-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/spcx-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'SpaceX logo',
+  cardImageAlt: 'SpaceX — Market Storm: 6 claims confirmed, 4 partly true, 3 corrected. $2.35 of capital for every dollar of revenue, and one new customer behind most of the AI.',
   sources: [
     {
       n: 1,
@@ -3405,7 +3405,7 @@ The same pattern keeps recurring across four very different balance sheets: **th
   },
   cardImage: '/images/content/amd-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/amd-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'AMD logo',
+  cardImageAlt: 'AMD — Market Storm: 5 claims confirmed, 4 partly true, 2 corrected. A record quarter, and a fifth of the pre-tax profit came from investment gains.',
   sources: [
     {
       n: 1,
@@ -4212,7 +4212,7 @@ What makes CoreWeave the clarifying case is that it has none of the others\u2019
   },
   cardImage: '/images/content/crwv-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/crwv-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'CoreWeave logo',
+  cardImageAlt: 'CoreWeave — Market Storm: 5 claims confirmed, 5 partly true, 2 corrected. Revenue doubled and profit fell. The chips wear out faster than they earn.',
   sources: [
     {
       n: 1,
@@ -4982,7 +4982,7 @@ Ranked by capital spending against revenue, the picture is consistent: Palantir 
   },
   cardImage: '/images/content/nbis-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/nbis-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'Nebius logo',
+  cardImageAlt: 'Nebius — Market Storm: 7 claims confirmed, 2 partly true, 1 corrected. Revenue up 454%, and its past profits came from re-valuing a stake in ClickHouse.',
   sources: [
     {
       n: 1,
@@ -5737,7 +5737,7 @@ Ranked by capital spending against revenue: Palantir at 0.75%, Microsoft around 
   },
   cardImage: '/images/content/goog-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/goog-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'Google logo',
+  cardImageAlt: 'Alphabet — Market Storm: 0 claims confirmed, 4 partly true, 2 corrected. The biggest profit quarter ever reported, and $99 billion of it was a paper gain.',
   sources: [
     {
       n: 1,
@@ -7393,7 +7393,7 @@ On capital spending against revenue: Palantir at 0.75%, Microsoft around 32%, Al
   },
   cardImage: '/images/content/iren-q3-fy2026-card-hero.webp',
   cardImageLight: '/images/content/iren-q3-fy2026-card-hero-light.webp',
-  cardImageAlt: 'IREN logo',
+  cardImageAlt: 'IREN — Market Storm: 2 claims confirmed, 17 partly true, 3 corrected. The AI cloud grew, bitcoin fell by the same amount, and revenue stood still.',
   sources: [
     {
       n: 1,
@@ -8341,7 +8341,7 @@ And it is the clearest read yet on how the capex cycle reaches ground. Alphabet 
   },
   cardImage: '/images/content/eroc-q2-2026-card-hero.webp',
   cardImageLight: '/images/content/eroc-q2-2026-card-hero-light.webp',
-  cardImageAlt: 'ERock logo',
+  cardImageAlt: 'ERock — Market Storm: 0 claims confirmed, 5 partly true, 3 corrected. This report took the bear side three times, and lost each time.',
   sources: [
     {
       n: 1,

@@ -2,8 +2,19 @@
  "title": "Alphabet — Market Storm",
  "category": "Market Storm",
  "out": "goog-q2-2026-card",
- "logo": { "file": "goog.svg", "scale": 0.50 },
- "before": { "label": "Company", "text": "Alphabet" },
- "after": { "label": "Section", "text": "Market Storm" },
- "alt": "Google logo"
+ "before": {
+  "label": "Company",
+  "text": "Alphabet"
+ },
+ "after": {
+  "label": "Section",
+  "text": "Market Storm"
+ },
+ "alt": "Alphabet — Market Storm: 0 claims confirmed, 4 partly true, 2 corrected. The biggest profit quarter ever reported, and $99 billion of it was a paper gain.",
+ "ledger": {
+  "confirmed": 0,
+  "partlyTrue": 4,
+  "corrected": 2,
+  "finding": "The biggest profit quarter ever reported, and $99 billion of it was a paper gain."
+ }
 }
