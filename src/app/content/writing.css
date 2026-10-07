@@ -260,9 +260,14 @@
 }
 /* Held while the page scrolls (ScrollHold): frozen mid-breath, resumed
    after. !important because each of his loops is an `animation` shorthand,
-   which resets the play state. */
-.wr-head[data-hold] .kiru,
-.wr-head[data-hold] .kiru * {
+   which resets the play state.
+   Named parts only, never `.kiru *`. Chrome files attribute invalidations
+   under the attribute's name alone, so one `[data-hold] … *` rule made every
+   data-hold toggle on the page (this header's, the storm room's, Pip's)
+   restyle the holder's whole subtree: ~410 elements in the storm room, at
+   the start and the end of every scroll, 25–70ms a time on a phone at 4×
+   CPU. With the parts named, a toggle restyles ~15 elements: a few ms. */
+.wr-head[data-hold] :is(.k-body, .k-head, .k-eyes, .kt-hi, .kt-lo, .kt-tip) {
   animation-play-state: paused !important;
 }
 @media (min-width: 40rem) {
