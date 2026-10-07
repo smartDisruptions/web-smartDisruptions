@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import FieldNotesView from '../../FieldNotesView';
 import { totalNotePages } from '@/lib/fieldNotes';
+import { shareMeta } from '@/lib/shareCard';
 
 /**
  * Pages 2..N of the Writing page.
@@ -36,15 +37,18 @@ export async function generateMetadata({
   const n = parsePage(page);
   if (!n) return {};
 
+  const title = `Field notes — page ${n} of ${totalNotePages} · SmartDisruptions`;
+  const description = `Older field notes, page ${n} of ${totalNotePages}: plain-language guides from things I’ve actually built with AI.`;
   return {
-    title: `Field notes — page ${n} of ${totalNotePages} · SmartDisruptions`,
-    description: `Older field notes, page ${n} of ${totalNotePages}: plain-language guides from things I’ve actually built with AI.`,
+    title,
+    description,
     alternates: { canonical: `/content/page/${n}` },
     // Not indexed: every card here also lives at its own URL, so in an index
     // these pages could only compete with the notes they link to. `follow`
     // keeps the crawler walking through to them.
     robots: { index: false, follow: true },
-    // No `openGraph`: it would replace the root one, share image included.
+    // Its own share address, with the site card named explicitly.
+    ...shareMeta({ title, description, path: `/content/page/${n}` }),
   };
 }
 

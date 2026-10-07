@@ -3,13 +3,20 @@ import Link from 'next/link';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import SubscribeForm from '@/components/SubscribeForm';
+import { shareMeta } from '@/lib/shareCard';
 import './learn.css';
 
+const TITLE = 'Learn to build, together — SmartDisruptions';
+const DESCRIPTION =
+  'Learn how to build websites, apps and games with AI, in plain words. No hype. Just learning together.';
+
 export const metadata: Metadata = {
-  title: 'Learn to build, together — SmartDisruptions',
-  description:
-    'Learn how to build websites, apps and games with AI, in plain words. No hype. Just learning together.',
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: '/learn' },
+  // Its own share address and words, with the site card named explicitly:
+  // left to the root's, a shared /learn opened the home page.
+  ...shareMeta({ title: TITLE, description: DESCRIPTION, path: '/learn' }),
 };
 
 // /learn — the email splash. 学 ("learn") is the page kanji and Kiru waves you

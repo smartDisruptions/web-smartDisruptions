@@ -1,16 +1,18 @@
 import type { Metadata } from 'next';
+import { shareMeta } from '@/lib/shareCard';
 import FieldNotesView from './FieldNotesView';
 
+const TITLE = 'Field notes — SmartDisruptions';
 const DESCRIPTION =
   'Plain-language guides from things I’ve actually built with AI: what mattered, and why.';
 
 export const metadata: Metadata = {
-  title: 'Field notes — SmartDisruptions',
+  title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: '/content' },
-  // No `openGraph` here on purpose: a page-level openGraph object replaces
-  // the root one wholesale, share image included, so setting it without an
-  // image would leave the link with no card. The root's card carries over.
+  // Its own share address and words, with the site card named explicitly:
+  // left to the root's, a shared /content pointed at the home page.
+  ...shareMeta({ title: TITLE, description: DESCRIPTION, path: '/content' }),
 };
 
 /**

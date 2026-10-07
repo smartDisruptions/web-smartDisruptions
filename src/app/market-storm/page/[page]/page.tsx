@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import MarketStormIndexView, {
   totalReportPages,
 } from '@/components/market-storm/IndexView';
+import { shareMeta } from '@/lib/shareCard';
 
 /**
  * Pages 2..N only.
@@ -47,13 +48,13 @@ export async function generateMetadata({
     // do in an index is compete with the reports they link to. `follow`
     // keeps the crawler walking through to those reports.
     robots: { index: false, follow: true },
-    openGraph: {
+    // shareMeta names the site card: an openGraph without one dropped it.
+    ...shareMeta({
       title: `Market Storm — page ${n}`,
       description:
         'A multi-agent AI research method pointed at AI-market catalysts. Research, not advice.',
-      url: `/market-storm/page/${n}`,
-      type: 'website',
-    },
+      path: `/market-storm/page/${n}`,
+    }),
   };
 }
 
