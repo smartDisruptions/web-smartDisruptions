@@ -71,6 +71,14 @@ const nextConfig: NextConfig = {
           source: '/kiru/cast',
           destination: '/kiru/cast/index.html',
         },
+        // Kiru: Path Not Taken Cast: his story's cast, introduced without
+        // spoilers, one static page in public/kiru/path-not-taken-cast (its
+        // source is Tools/path-not-taken-cast in josh-ai-builder-brain, built
+        // with --public). Linked from /kiru.
+        {
+          source: '/kiru/path-not-taken-cast',
+          destination: '/kiru/path-not-taken-cast/index.html',
+        },
         // Neo Dojo Survivors: the same, one file in public/games.
         {
           source: '/games/neo-dojo-survivors',
