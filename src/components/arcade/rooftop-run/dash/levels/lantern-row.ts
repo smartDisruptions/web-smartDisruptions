@@ -38,7 +38,7 @@ function onTheAnd(
   bar: number,
   beat: number,
   top: number,
-  c: OrbColor = 'yellow'
+  c: OrbColor = 'jump'
 ) {
   const y = arc(top, JUMP_V, T8);
   k.orb(at(bar, beat + 0.5), y, c);
@@ -94,7 +94,7 @@ k.roof(r2, e2 - r2, 3, 'tiles');
 k.jumpSpikes(at(7), 3, 2);
 // Bar 8: a long gap. Two lanterns on the eighths, each one higher.
 const y8 = onTheAnd(8, 0, 3);
-k.orb(at(8, 1), y8 + RISE8, 'yellow');
+k.orb(at(8, 1), y8 + RISE8, 'jump');
 const r3 = at(8, 1) + 4;
 const e3 = at(10) + 0.4;
 k.roof(r3, e3 - r3, 3, 'flat');
@@ -104,7 +104,7 @@ k.jumpSpikes(at(9, 2), 3);
 onTheAnd(10, 0, 3);
 const r4 = at(10) + 6.3;
 const deep = jumpAt(10, 0, 3, 0.43);
-k.orb(deep.x, deep.y, 'red');
+k.orb(deep.x, deep.y, 'leap');
 const s0 = jumpAt(10, 0, 3, 0.39);
 k.scroll(s0.x, s0.y, 0);
 // The fill: one jump on beat 4, landing just before the gate.
@@ -167,11 +167,11 @@ const tall = at(21) + 5;
 k.roof(r5, tall - r5, 3, 'tiles');
 k.block(beam, 6.4, 8, 1, { style: 'beam' });
 k.spike(beam + 1, 6.4, 6, { dir: 'down' });
-k.orb(at(20, 2), 3.7, 'pink');
+k.orb(at(20, 2), 3.7, 'hop');
 const pinkTop = (k.vAt(at(20, 2)) * 0.7 * JUMP_V) / G; // the hop's top
 k.spike(at(20, 2) + pinkTop - 0.5, 3, 1, { small: true });
 // Bar 21: the red lantern, up onto a tall house.
-onTheAnd(21, 0, 3, 'red');
+onTheAnd(21, 0, 3, 'leap');
 const tallEnd = at(22, 2);
 k.roof(tall, tallEnd - tall, 7.5, 'shrine');
 k.jumpSpikes(at(21, 2), 7.5);
@@ -180,14 +180,14 @@ k.jumpSpikes(at(22), 7.5, 2);
 // and, over a gap the drum alone falls short of.
 const drum23 = at(23) + 0.3;
 k.roof(tallEnd, drum23 + 1.2 - tallEnd, 3, 'flat');
-k.pad(drum23, 3, 'yellow');
-k.orb(at(23, 0.5), arc(3, YELLOW_DRUM, T8), 'yellow');
+k.pad(drum23, 3, 'jump');
+k.orb(at(23, 0.5), arc(3, YELLOW_DRUM, T8), 'jump');
 // Bar 24, the crash: a ladder of lanterns up the face of a tower, one on
 // each eighth.
 const r6 = drum23 + 7;
 const l1 = onTheAnd(24, 0, 3);
-k.orb(at(24, 1), l1 + RISE8, 'yellow');
-k.orb(at(24, 1.5), l1 + 2 * RISE8, 'yellow');
+k.orb(at(24, 1), l1 + RISE8, 'jump');
+k.orb(at(24, 1.5), l1 + 2 * RISE8, 'jump');
 const tower = at(24, 1.5) + 2;
 const towerEnd = at(25, 2) + 0.4;
 k.roof(r6, tower - r6, 3, 'tiles');
@@ -228,7 +228,7 @@ k.jumpSpikes(at(30, 2), 3, 2);
 const dip = 3.6;
 k.roof(e8, dip, 2, 'shrine');
 const red = e8 + 1.9;
-k.pad(red, 2, 'red');
+k.pad(red, 2, 'leap');
 const rt = RED_DRUM / G; // seconds to the top of the red drum's arc
 k.scroll(red - 0.3 + k.vAt(red) * rt, arc(2, RED_DRUM, rt) + 0.2, 2);
 // Bar 32, the crash: a drum on the downbeat, then two lanterns on the
@@ -236,13 +236,13 @@ k.scroll(red - 0.3 + k.vAt(red) * rt, arc(2, RED_DRUM, rt) + 0.2, 2);
 const r9 = e8 + dip;
 const drum32 = at(32) + 0.3;
 k.roof(r9, drum32 + 1.2 - r9, 3, 'flat');
-k.pad(drum32, 3, 'yellow');
+k.pad(drum32, 3, 'jump');
 const d1 = arc(3, YELLOW_DRUM, T8);
-k.orb(at(32, 0.5), d1, 'yellow');
+k.orb(at(32, 0.5), d1, 'jump');
 // The second sits at the top of the first one's arc, about beat 2, where
 // every timing of the first passes slowly.
 const l2x = at(32, 0.5) + (k.vAt(at(32)) * JUMP_V) / G;
-k.orb(l2x, d1 + 2, 'yellow');
+k.orb(l2x, d1 + 2, 'jump');
 const hall = l2x + 2.5;
 const hallEnd = at(34) + 0.4;
 k.roof(drum32 + 1.2, hall - drum32 - 1.2, 3, 'tiles');

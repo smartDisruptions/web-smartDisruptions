@@ -26,7 +26,7 @@ import type {
   VentObj,
 } from './types';
 
-// ── Run: Geometry Dash's cube ─────────────────────────────────────────────
+// ── Run: the one-button jump ──────────────────────────────────────────────
 //
 // A fixed arc: no variable height, so a jump is a jump and the level can be
 // learned. Two numbers decide it. The peak sets which steps he can climb (2
@@ -93,22 +93,22 @@ export const DRAGON_SLOPE = 1;
 
 /**
  * How high each drum throws him, blocks above the drum, in every mode that
- * falls (Run, Roll, Shadow Step, Parasol). Blue flips gravity instead.
+ * falls (Run, Roll, Shadow Step, Parasol). The flip drum turns gravity over instead.
  */
-export const PAD_PEAK: Record<Exclude<PadColor, 'blue'>, number> = {
-  yellow: 4.5,
-  pink: 3.2,
-  red: 6.5,
+export const PAD_PEAK: Record<Exclude<PadColor, 'flip'>, number> = {
+  jump: 4.5,
+  hop: 3.2,
+  leap: 6.5,
 };
 /**
  * Spirit lanterns, as multiples of a full jump's take-off SPEED (height goes
- * with the square: pink reaches 0.49 of a jump's height, red 1.82).
+ * with the square: a hop reaches 0.49 of a jump's height, a leap 1.82).
  */
-export const ORB_KICK: Record<'yellow' | 'pink' | 'red' | 'green', number> = {
-  yellow: 1,
-  pink: 0.7,
-  red: 1.35,
-  green: 1,
+export const ORB_KICK: Record<'jump' | 'hop' | 'leap' | 'spin', number> = {
+  jump: 1,
+  hop: 0.7,
+  leap: 1.35,
+  spin: 1,
 };
 /** The black lantern's push toward the ground, blocks/s (capped by the mode's fall cap). */
 export const BLACK_V = 1.2 * JUMP_V;
@@ -118,7 +118,7 @@ export const BLACK_V = 1.2 * JUMP_V;
  * rather than a slow drift off the surface.
  */
 export const FLIP_PUSH = 0.35 * JUMP_V;
-/** A mode gate keeps this fraction of his vertical speed (Geometry Dash halves it). */
+/** A mode gate keeps this fraction of his vertical speed. */
 export const MODE_VY_KEEP = 0.5;
 /** A gravity gate keeps this fraction of his vertical speed. */
 export const GRAV_VY_KEEP = 0.5;
@@ -177,7 +177,7 @@ export const LANTERN_SWING = 0.6;
 export const LANTERN_PERIOD = 4;
 /** Vents: the deadly column is this much narrower on each side than drawn. */
 export const VENT_INSET = 0.1;
-/** Spirit lantern (orb): reach radius, blocks, tested against the solid box. Generous, as in GD. */
+/** Spirit lantern (orb): reach radius, blocks, tested against the solid box. Generous, so a near touch counts. */
 export const ORB_R = 0.6;
 /** Secret scroll: pick-up radius, blocks. */
 export const SCROLL_R = 0.6;
@@ -250,7 +250,7 @@ export function launchSpeed(height: number, g: number): number {
  * when the drum does nothing in that mode. Blue is handled as a flip.
  */
 export function padSpeed(
-  c: Exclude<PadColor, 'blue'>,
+  c: Exclude<PadColor, 'flip'>,
   mode: ModeId,
   speed: number
 ): number {
@@ -264,9 +264,9 @@ export function padSpeed(
  * nothing in that mode. Blue only flips; green flips and then uses this.
  */
 export function orbSpeed(c: OrbColor, mode: ModeId, speed: number): number {
-  if (c === 'blue') return 0;
-  if (mode === 'dragon') return c === 'green' ? 0 : NaN;
-  if (c === 'black') return -Math.min(BLACK_V, maxFallOf(mode, speed));
+  if (c === 'flip') return 0;
+  if (mode === 'dragon') return c === 'spin' ? 0 : NaN;
+  if (c === 'slam') return -Math.min(BLACK_V, maxFallOf(mode, speed));
   const k = ORB_KICK[c];
   if (mode === 'kite') return Math.min(1, k) * kiteCap(speed);
   return k * launchSpeed(JUMP_PEAK, gravityOf(mode));

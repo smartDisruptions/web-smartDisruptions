@@ -629,10 +629,10 @@ export function createSim(level: LevelDef, opts: SimOptions = {}): DashSim {
       consumePress();
       jumps++;
       jumpF = frame;
-      if (col === 'blue') {
+      if (col === 'flip') {
         flipGravity();
         vy = mode === DRAGON ? vy : grav * -Math.min(FLIP_PUSH, flyCap());
-      } else if (col === 'green') {
+      } else if (col === 'spin') {
         flipGravity();
         if (mode !== DRAGON) vy = grav * v;
       } else {
@@ -1008,7 +1008,7 @@ export function createSim(level: LevelDef, opts: SimOptions = {}): DashSim {
         if (Rr <= X0[i] || L >= X1[i] || y + hh <= Y0[i] || y - hh >= Y1[i])
           continue;
         const col = (objs[i] as { c: PadColor }).c;
-        if (col === 'blue') {
+        if (col === 'flip') {
           used[i] = 1;
           consumeLaunch();
           flipGravity();

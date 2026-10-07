@@ -93,16 +93,16 @@ hang(k.at(5, 2), E);
 hang(k.at(6, 2), E);
 // The drum takes him home; jump it to stay up and find the scroll.
 eave(k.at(7) - 6, k.at(8) + 4, E, 'bridge');
-k.pad(drumAt(7), E, 'blue', true);
+k.pad(drumAt(7), E, 'flip', true);
 k.scroll(k.at(7, 2), 7.3, 0);
 // The roof ends at a drum: the only way on is up, over the void.
-k.pad(drumAt(8), 3, 'blue');
+k.pad(drumAt(8), 3, 'flip');
 const gapL = k.at(10) + 0.6;
 eave(k.at(8) + 4, gapL, E);
 hang(k.at(8, 2), E);
 hang(k.at(9), E, 2);
 eave(gapL + 3, k.at(11) + 4, E);
-k.pad(drumAt(11), E, 'blue', true);
+k.pad(drumAt(11), E, 'flip', true);
 const r2 = k.at(10, 2);
 k.roof(r2, k.at(14) + 3 - r2, 3, 'tiles');
 k.deco(r2 + 3, 3, 'banner');
@@ -147,31 +147,31 @@ k.theme(k.at(20) - 6, 'sakura', 10);
 k.gate(k.at(20), 5.75, { mode: 'run', grav: 1, h: 5.5 });
 k.jumpSpikes(k.at(20, 2.5), 3, 2);
 // Over a pit too wide to jump: a blue lantern at the top of the jump.
-k.orb(apex(21) + 0.4, 5.9, 'blue');
+k.orb(apex(21) + 0.4, 5.9, 'flip');
 eave(k.at(20, 3), k.at(22) + 0.6, E);
 hang(k.at(21, 2.5), E);
 // The eave ends: dive, and a green lantern floats him over the pit.
-k.orb(apex(22) + 0.4, 5.1, 'green');
+k.orb(apex(22) + 0.4, 5.1, 'spin');
 const c2 = k.at(22) + 4.5;
 k.roof(c2, k.at(24) + 0.6 - c2, 3, 'pagoda');
 k.deco(c2 + 2, 3, 'sakura');
 k.jumpSpikes(k.at(23), 3, 2);
 // A red lantern you could skip: up onto the ledge, where the scroll waits.
-k.orb(apex(23) + 0.2, 5.9, 'red');
+k.orb(apex(23) + 0.2, 5.9, 'leap');
 k.block(k.at(23) + 5, 6.5, 7, 1, { style: 'tiles' });
 k.scroll(k.at(23) + 9.5, 8.3, 1);
 // A green lantern swoops him down into the pit's mouth and up to the eaves.
-k.orb(apex(24) + 0.4, 5.9, 'green');
+k.orb(apex(24) + 0.4, 5.9, 'spin');
 eave(k.at(24) + 4, k.at(25) + 0.6, E, 'bridge');
 hang(k.at(24, 3), E, 2);
 // Flip, flip: down with a blue lantern, up with another.
-k.orb(apex(25) + 0.4, 5.1, 'blue');
+k.orb(apex(25) + 0.4, 5.1, 'flip');
 const c3 = k.at(25) + 1.5;
 k.roof(c3, k.at(25, 2.5) + 0.6 - c3, 3, 'shrine');
-k.orb(apex(25, 2.5) + 0.4, 5.9, 'blue');
+k.orb(apex(25, 2.5) + 0.4, 5.9, 'flip');
 eave(k.at(25, 2.5), k.at(26, 2.5) + 0.6, E);
 hang(k.at(26), E);
-k.orb(apex(26, 2.5) + 0.4, 5.1, 'green');
+k.orb(apex(26, 2.5) + 0.4, 5.1, 'spin');
 const c4 = k.at(26, 2.5) + 4.5;
 k.roof(c4, k.at(30) - c4, 3, 'flat');
 k.deco(c4 + 3, 3, 'sakura', { flip: true });

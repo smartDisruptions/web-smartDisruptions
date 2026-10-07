@@ -94,7 +94,7 @@ k.jumpSpikes(at(1, 2), 3, 2);
 k.deco(22, 3, 'banner');
 k.deco(30.6, 3, 'banner', { flip: true });
 k.roof(36.69, 8.31, 4, 'shrine');
-k.pad(at(2, 2) + 0.3, 4, 'yellow');
+k.pad(at(2, 2) + 0.3, 4, 'jump');
 k.roof(45, 18, 6.5, 'pagoda');
 k.deco(47, 6.5, 'cat');
 k.jumpSpikes(at(3), 6.5);
@@ -215,7 +215,7 @@ k.text(at(11, 3) + 0.5, 8.0, 'through', 0.7);
   k.deco(278, 10.5, 'lanterns', { s: 10 });
   k.deco(304, 10.5, 'lanterns', { s: 10 });
   // Bar 19 is the fill: a drum on beat 4 throws him into section c.
-  k.pad(at(19, 3) + 0.3, 3, 'yellow');
+  k.pad(at(19, 3) + 0.3, 3, 'jump');
   k.deco(at(19, 1) - 1, 3, 'stone-lantern');
 }
 
@@ -227,16 +227,16 @@ k.gate(at(20), 6, { mode: 'run', grav: 1, h: 8 });
   k.roof(at(20) - 9, 31.4, 3, 'tiles');
   k.deco(at(20) + 2, 3, 'sakura');
   k.jumpSpikes(at(20, 2), 3, 3);
-  k.pad(at(21) + 0.3, 3, 'yellow');
+  k.pad(at(21) + 0.3, 3, 'jump');
   // The pink lantern at the top of the drum's arc is optional: tap it for
   // a higher hop and the scroll.
-  k.orb(at(21) + 3.75, 8.2, 'pink');
+  k.orb(at(21) + 3.75, 8.2, 'hop');
   k.scroll(at(21) + 5.6, 9.9, 2);
   k.roof(at(21) + 4.6, 15, 5, 'pagoda');
   k.jumpSpikes(at(21, 2), 5, 2);
   // A pink drum on the and of 4 lifts him to a lantern on every beat of
   // bar 22.
-  k.pad(at(21, 3.5) + 0.3, 5, 'pink');
+  k.pad(at(21, 3.5) + 0.3, 5, 'hop');
   const last = k.orbChain(at(22) + 0.6, 8.9, 4);
   k.deco(at(22) - 1, 3.6, 'lanterns', { s: 18 });
   const r3 = last + 3.4;
@@ -244,28 +244,28 @@ k.gate(at(20), 6, { mode: 'run', grav: 1, h: 8 });
   // A quad on beat 3: the hardest single jump in the level.
   k.jumpSpikes(at(23, 2), 5, 4);
   // Bar 24 (a crash): red up to the pagoda.
-  k.orb(at(24), 6.1, 'red');
+  k.orb(at(24), 6.1, 'leap');
   k.roof(at(24) + 3.6, 16.4, 8, 'pagoda');
   k.jumpSpikes(at(24, 2), 8, 3);
   // Black down under the lantern string.
-  k.orb(at(25), 8.7, 'black');
+  k.orb(at(25), 8.7, 'slam');
   k.roof(at(25) + 1.5, 30, 3, 'warehouse');
   k.spike(at(25) + 2.5, 6.4, 6, { dir: 'down' });
   k.block(at(25) + 2.5, 6.4, 6, 0.6, { style: 'beam' });
   k.deco(at(25) + 2.5, 8.6, 'lanterns', { s: 6 });
   k.jumpSpikes(at(25, 2), 3, 3);
   // Blue drum to the eaves, a jump upside down, green to come home.
-  k.pad(at(26) + 0.3, 3, 'blue');
+  k.pad(at(26) + 0.3, 3, 'flip');
   k.block(at(26) - 2, 7.5, at(27) - at(26) + 2.4, 1, { style: 'tiles' });
   k.spike(jumpX(at(26, 2), 2), 7.5, 2, { dir: 'down' });
-  k.orb(at(27) + 0.8, 6.8, 'green');
+  k.orb(at(27) + 0.8, 6.8, 'spin');
   k.roof(at(25) + 31.5, 36, 3, 'tiles');
   // The breath before the drop: a red drum on beat 4 into the dragon,
   // under a lantern string so it cannot be jumped.
   const red = at(27, 3);
   k.block(red - 5.3, 5.4, 4.9, 0.5, { style: 'beam' });
   k.spike(red - 5.3, 5.4, 4, { dir: 'down' });
-  k.pad(red + 0.3, 3, 'red');
+  k.pad(red + 0.3, 3, 'leap');
 }
 
 // ── d (bars 28-36): Dragon, fast: the climax ──

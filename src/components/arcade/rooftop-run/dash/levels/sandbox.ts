@@ -49,15 +49,15 @@ k.roof(73.5, 64, 3, 'flat');
 k.stairs(82, 3, { steps: 2, rise: 1, run: 5, style: 'crate' });
 
 // B. Drums
-k.pad(100, 3, 'yellow');
+k.pad(100, 3, 'jump');
 k.block(104, 3, 8, 3.5, { style: 'tank' });
 k.scroll(108, 9.6, 0);
-k.pad(118, 3, 'pink');
+k.pad(118, 3, 'hop');
 k.spike(119.4, 3, 2);
-k.pad(134, 3, 'red');
+k.pad(134, 3, 'leap');
 k.roof(137.5, 22, 8, 'pagoda');
 k.roof(163, 60, 3, 'warehouse');
-k.pad(170, 3, 'blue');
+k.pad(170, 3, 'flip');
 k.block(166, 8.5, 22, 1, { style: 'beam' });
 k.spike(178, 8.5, 1, { dir: 'down' });
 k.gate(186, 6.5, { grav: 1, h: 5 });
@@ -68,17 +68,17 @@ k.deco(200, 8, 'lanterns', { s: 12 });
 k.orbChain(225.1, 5.9, 2, { dy: 1.5 });
 k.roof(232, 31, 3, 'tiles');
 k.spike(245, 3, 4);
-k.orb(246.1, 5.9, 'pink');
+k.orb(246.1, 5.9, 'hop');
 k.deco(240, 3, 'banner');
-k.orb(260.1, 5.9, 'red');
+k.orb(260.1, 5.9, 'leap');
 k.roof(263, 22, 8, 'pagoda');
-k.orb(285.5, 8.7, 'black');
+k.orb(285.5, 8.7, 'slam');
 k.scroll(286.6, 4.6, 2);
 k.roof(285, 45, 3, 'flat');
-k.orb(299.1, 5.9, 'blue');
+k.orb(299.1, 5.9, 'flip');
 k.block(299, 9.5, 19, 1, { style: 'beam' });
 k.spike(308, 9.5, 1, { dir: 'down' });
-k.orb(319.2, 9.2, 'green');
+k.orb(319.2, 9.2, 'spin');
 
 // D. Gravity gates
 k.theme(325, 'moon');

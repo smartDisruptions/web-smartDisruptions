@@ -1,7 +1,7 @@
 /**
  * The in-canvas HUD: the progress bar at the top centre (green in
  * practice) with a tick at the best, "Attempt N" written in the world near
- * where the attempt began (as Geometry Dash does), the "NEW BEST" flourish
+ * where the attempt began, the "NEW BEST" flourish
  * and "LEVEL COMPLETE".
  *
  * Screen text is laid out in CSS pixels, so it is the same size on every

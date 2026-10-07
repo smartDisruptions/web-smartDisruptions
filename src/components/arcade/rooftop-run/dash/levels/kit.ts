@@ -484,7 +484,7 @@ export function kit(id: LevelId, opts: KitOptions = {}): Kit {
     },
 
     orbChain(x, y, n, o = {}) {
-      const c = o.c ?? 'yellow';
+      const c = o.c ?? 'jump';
       const dy = o.dy ?? 0;
       let cx = x;
       for (let i = 0; i < n; i++) {
