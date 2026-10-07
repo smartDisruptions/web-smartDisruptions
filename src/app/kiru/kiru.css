@@ -581,6 +581,17 @@ button.kp-card {
 .kp-cast:focus-visible .kp-cast-cta {
   background: #3d4c95;
 }
+/* On the narrowest phones the card is under 300px wide and a full-size pill
+   reaches the front row of figures, so it shrinks to keep them uncovered. */
+@media (max-width: 22.5rem) {
+  .kp-cast-cta {
+    left: 0.45rem;
+    bottom: 0.45rem;
+    gap: 0.22rem;
+    padding: 0.26rem 0.5rem;
+    font-size: 0.68rem;
+  }
+}
 @media (min-width: 40rem) {
   .kp-cast-cta {
     left: 1.5rem;
