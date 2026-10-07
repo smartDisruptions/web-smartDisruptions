@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Neo Dojo Cast</title>
-<meta name="description" content="Kiru's crew and his rogues: eight futuristic heroes in three squads and six villains, all drawn on Kiru's own rig. A character sheet from Smart Disruptions.">
+<meta name="description" content="Kiru's crew and his rogues: seven futuristic heroes in three squads and six villains, all drawn on Kiru's own rig. A character sheet from Smart Disruptions.">
 <link rel="canonical" href="https://smartdisruptions.com/kiru/cast">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Smart Disruptions">
 <meta property="og:title" content="Neo Dojo Cast">
-<meta property="og:description" content="Kiru's crew and his rogues: eight futuristic heroes in three squads and six villains, all drawn on Kiru's own rig.">
+<meta property="og:description" content="Kiru's crew and his rogues: seven futuristic heroes in three squads and six villains, all drawn on Kiru's own rig.">
 <meta property="og:url" content="https://smartdisruptions.com/kiru/cast">
 <meta property="og:image" content="https://smartdisruptions.com/images/kiru/neo-dojo-cast-og.webp">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Kiru the ninja leading the Neo Dojo Cast: Kage-X, Hakka, Patch, Nova, Captain Takotsubo, Tengu-9, Benri and Hovr, with the rogue Emperor Kemuri behind them">
+<meta property="og:image:alt" content="Kiru the ninja leading the Neo Dojo Cast: Kage-X, Patch, Nova, Captain Takotsubo, Tengu-9, Benri and Hovr, with the rogue Emperor Kemuri behind them">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0c0f22">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -156,7 +156,7 @@ footer a { color: var(--moon); }
     <div>
       <div class="eyebrow">Smart Disruptions · Character model sheet · Vol. 01</div>
       <h1>Neo Dojo Cast<span class="kana">ネオ道場の仲間たち</span></h1>
-      <p class="lede">Kiru and eight futuristic heroes in three squads, plus six rogues, all drawn on Kiru's rig: AI robots, a test pilot, a hacker, a mech samurai, a few visitors from further out, and the villains Kiru was made to cut through. Same sticker outline, same moonlight, same big-head proportions. Each one gets a single neon of its own.</p>
+      <p class="lede">Kiru and seven futuristic heroes in three squads, plus six rogues, all drawn on Kiru's rig: AI robots, a test pilot, a hacker, a mech samurai, a visitor from further out, and the villains Kiru was made to cut through. Same sticker outline, same moonlight, same big-head proportions. Each one gets a single neon of its own.</p>
     </div>
     <div class="hero-kiru"><span class="tag">Kiru 切る · for scale</span><div id="hero-kiru" style="display:contents"></div></div>
   </header>
@@ -325,37 +325,9 @@ CAST.push({
   ${limb(73, 156, 46, 182, 10, '#eef1f8', 17)}${ln('M41 172 L54 178', '#ff8a3d', 5)}${fist(45, 184, '#3a3f5c', '#252a44', 10.5)}`
 });
 
-// 03 HAKKA: a visitor from a three-mooned planet
+// 03 KAGE-X: Kiru's rival from the year 2099, same hood, all light
 CAST.push({
-  code: 'ND-03', name: 'Hakka', kana: 'ハッカ', cls: 'Alien', sig: '#ff6bb5', h: 1.1,
-  bio: 'Landed to study Earth tech and stayed for the snacks. The third eye reads Wi-Fi. The antennae pick up gossip.',
-  sw: ['#8ff0c0', '#4fbf93', '#dfe5f2', '#ff6bb5'],
-  defs: grad('z-head', ['#c6ffe2', '#8ff0c0', '#46b386']) + TG('z-body', ['#ffffff', '#dfe5f2', '#9aa6c4']) + clip('z-clip', 'M100 16 C160 16 186 60 180 98 C174 134 140 154 100 154 C60 154 26 134 20 98 C14 60 40 16 100 16 Z'),
-  draw: () => `
-  ${ln('M72 28 Q62 6 46 -2', L, 8)}${ln('M72 28 Q62 6 46 -2', '#8ff0c0', 4)}${ln('M128 28 Q138 6 154 -2', L, 8)}${ln('M128 28 Q138 6 154 -2', '#6fd6a6', 4)}
-  ${se(44, -4, 8, 8, '#ff6bb5', 4, 'class="pulse"')}${se(156, -4, 8, 8, '#ff6bb5', 4, 'class="pulse"')}${ci(41, -7, 2.5, '#fff')}${ci(153, -7, 2.5, '#fff')}
-  ${limb(127, 160, 150, 192, -9, '#b6bfd8', 13)}${se(150, 193, 8, 8, '#6fd6a6', 4)}
-  ${leg(110, 198, 115, 222, '#b6bfd8', 15)}${leg(90, 198, 85, 222, '#dfe5f2', 15)}${shoe(115, 223, '#ff6bb5')}${shoe(85, 223, '#ff6bb5')}
-  ${sp('M68 160 Q70 150 84 148 L116 148 Q130 150 132 160 L130 199 Q100 205 70 199 Z', G('z-body'))}
-  ${fl('M112 149 L116 148 Q130 150 132 160 L130 199 Q121 202 112 203 Z', '#6d7aa3', 'opacity=".45"')}
-  ${ln('M100 152 V198', '#9aa6c4', 2)}${fl('M69 186 Q100 192 131 186 L130 195 Q100 201 70 195 Z', '#ff6bb5')}${sr(93, 185, 14, 11, 3, '#ffd23d', 2.5)}
-  ${se(100, 151, 28, 7, '#c9d2e8', 4)}
-  ${sp('M100 16 C160 16 186 60 180 98 C174 134 140 154 100 154 C60 154 26 134 20 98 C14 60 40 16 100 16 Z', G('z-head'))}
-  ${shade('z-clip', '#1f7a5a', .35)}
-  ${el(66, 42, 6, 4, '#46b386', 'opacity=".6"')}${el(140, 34, 4, 3, '#46b386', 'opacity=".6"')}${el(154, 62, 5, 3.5, '#46b386', 'opacity=".6"')}
-  ${se(100, 54, 9, 11, INK, 3, 'class="blink"')}${ci(103, 50, 3, '#fff')}
-  <g class="blink">${fl('M48 98 Q54 70 92 82 Q94 108 72 114 Q48 116 48 98 Z', INK)}${fl('M152 98 Q146 70 108 82 Q106 108 128 114 Q152 116 152 98 Z', INK)}
-  ${ci(78, 90, 5.5, '#fff')}${ci(64, 103, 2.5, '#fff')}${ci(122, 90, 5.5, '#fff')}${ci(136, 103, 2.5, '#fff')}
-  ${ln('M56 100 Q66 108 82 102', '#ff6bb5', 2, 'opacity=".55"')}${ln('M144 100 Q134 108 118 102', '#ff6bb5', 2, 'opacity=".55"')}</g>
-  ${ln('M92 130 Q100 137 108 130', INK, 4)}
-  ${cheeks(.55, '#ff6bb5', 122)}
-  ${rim(.7)}
-  ${limb(73, 160, 46, 184, 9, '#dfe5f2', 13)}${se(46, 185, 8, 8, '#8ff0c0', 4)}${ln('M40 178 L33 172 M46 177 L45 169 M52 178 L56 171', L, 4.5)}${ln('M40 178 L33 172 M46 177 L45 169 M52 178 L56 171', '#8ff0c0', 2)}`
-});
-
-// 04 KAGE-X: Kiru's rival from the year 2099, same hood, all light
-CAST.push({
-  code: 'ND-04', name: 'Kage-X', kana: '影X', cls: 'Cyber ninja', sig: '#e93dff', h: 1.0,
+  code: 'ND-03', name: 'Kage-X', kana: '影X', cls: 'Cyber ninja', sig: '#e93dff', h: 1.0,
   bio: "Kiru's rival from 2099. Same hood, same stance, but the headband is light and the katana hums. Cuts through firewalls, not hype.",
   sw: ['#0e1020', '#4a4f6e', '#c9d2e8', '#e93dff'],
   defs: grad('x-hood', ['#555b7e', '#262a42', '#0e1020']) + TG('x-gi', ['#3a3f5c', '#22253a', '#121427']) + clip('x-clip', HOOD),
@@ -382,9 +354,9 @@ CAST.push({
   ${limb(73, 156, 50, 184, 10, '#3a3f5c')}${fist(50, 184, '#8d95ab', '#5a6280')}`
 });
 
-// 05 HOVR: a flying camera drone
+// 04 HOVR: a flying camera drone
 CAST.push({
-  code: 'ND-05', name: 'Hovr', kana: 'ホヴァー', cls: 'Drone bot', sig: '#b4ff4f', h: 0.92,
+  code: 'ND-04', name: 'Hovr', kana: 'ホヴァー', cls: 'Drone bot', sig: '#b4ff4f', h: 0.92,
   bio: 'A camera drone with opinions. Films every launch, zooms in on every typo, and never touches the ground if it can help it.',
   sw: ['#f2f5ff', '#9aa6c4', '#0d1230', '#b4ff4f'],
   defs: grad('h-body', ['#ffffff', '#dfe5f4', '#98a4c4'], 40, 40, 160, 170) + clip('h-clip', 'M30 106a70 70 0 1 0 140 0a70 70 0 1 0 -140 0Z'),
@@ -409,7 +381,7 @@ CAST.push({
   </g>`
 });
 
-// 06 PATCH: a hacker with holo-glasses, headphones over her afro
+// 05 PATCH: a hacker with holo-glasses, headphones over her afro
 const AFRO = (() => {
   // the scalloped crown of her afro, from jaw level on the left, over the top, to jaw level on the right
   const N = 22, cx = 100, cy = 80, rx = 86, ry = 80, a0 = Math.PI * 0.8, a1 = Math.PI * 2.2;
@@ -420,7 +392,7 @@ const AFRO = (() => {
 })();
 const P_SKIN = '#8a5634', P_SKIN_S = '#6b3d22', P_HAIR = '#24160f';
 CAST.push({
-  code: 'ND-06', name: 'Patch', kana: 'パッチ', cls: 'Hacker', sig: '#3dffc2', h: 1.0,
+  code: 'ND-05', name: 'Patch', kana: 'パッチ', cls: 'Hacker', sig: '#3dffc2', h: 1.0,
   bio: 'She ships hotfixes from a hoodie. Her glasses show three terminals at once, and her headphones play lo-fi and nothing else, ever.',
   sw: ['#3b4058', '#8a5634', '#24160f', '#3dffc2'],
   defs: TG('p-body', ['#565e7c', '#3b4058', '#262a3d']) + grad('p-hair', ['#4a3024', '#24160f', '#120a06']) + clip('p-clip', AFRO),
@@ -451,9 +423,9 @@ CAST.push({
   ${limb(73, 156, 52, 190, 8, '#3b4058', 16)}${se(52, 192, 8.5, 8.5, P_SKIN, 4)}`
 });
 
-// 07 TENGU-9: a mech samurai with a plasma blade
+// 06 TENGU-9: a mech samurai with a plasma blade
 CAST.push({
-  code: 'ND-07', name: 'Tengu-9', kana: '天狗九', cls: 'Mech samurai', sig: '#f5c542', h: 1.14,
+  code: 'ND-06', name: 'Tengu-9', kana: '天狗九', cls: 'Mech samurai', sig: '#f5c542', h: 1.14,
   bio: 'Ninth-generation guardian armour, still lacquered by hand. Bows before every duel and apologises after every win.',
   sw: ['#2a3466', '#0f1430', '#f5c542', '#8fe0ff'],
   defs: grad('t-helm', ['#3d4a8a', '#222b5c', '#0f1430']) + TG('t-body', ['#3d4a8a', '#222b5c', '#121838']) + clip('t-clip', 'M28 96 Q26 22 100 18 Q174 22 172 96 Z'),
@@ -478,9 +450,9 @@ CAST.push({
   ${limb(73, 158, 48, 186, 9, '#222b5c', 15)}${ln('M54 182 L36 200', L, 11)}${ln('M54 182 L36 200', INK, 6.5)}${se(42, 194, 10, 4, '#f5c542', 3, rot(-44, 42, 194))}${fist(50, 186, '#2a3466', '#121838')}`
 });
 
-// 08 CAPTAIN TAKOTSUBO: an octopus piloting a walker from a fishbowl
+// 07 CAPTAIN TAKOTSUBO: an octopus piloting a walker from a fishbowl
 CAST.push({
-  code: 'ND-08', name: 'Capt. Takotsubo', kana: '蛸壺艦長', cls: 'Alien pilot', sig: '#b06bff', h: 1.08,
+  code: 'ND-07', name: 'Capt. Takotsubo', kana: '蛸壺艦長', cls: 'Alien pilot', sig: '#b06bff', h: 1.08,
   bio: 'Named for the pot an octopus hides in. Commands a walker from a fishbowl. Eight arms, eight opinions about your architecture diagram, all of them right.',
   sw: ['#b06bff', '#7a3fd0', '#8d95ab', '#7fe8ff'],
   defs: grad('o-head', ['#d3a8ff', '#b06bff', '#6f35c4'], 60, 46, 140, 124) + TG('o-body', ['#b7bfd6', '#8d95ab', '#5c6482']) + grad('o-water', ['#b8f2ff', '#5fc8ea', '#2a7ab8'], 40, 20, 160, 150) + clip('o-clip', 'M38 86a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z'),
@@ -696,7 +668,7 @@ const KIRU_CARD = {
   sw: ['#252d56', '#f6d0a8', '#cfd5e2', '#e8432a'], defs: '', draw: () => kiru(),
 };
 const SQUADS = [
-  { n: 1, members: ['Kiru', 'Kage-X', 'Hakka'] },
+  { n: 1, members: ['Kiru', 'Kage-X'] },
   { n: 2, members: ['Patch', 'Nova', 'Capt. Takotsubo'] },
   { n: 3, members: ['Tengu-9', 'Benri', 'Hovr'] },
 ];
