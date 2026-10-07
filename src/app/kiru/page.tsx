@@ -343,7 +343,7 @@ export default function KiruPage() {
           {/* eslint-disable-next-line @next/next/no-img-element -- a fixed-size static card, nothing for next/image to do */}
           <img
             src="/images/kiru/path-not-taken-cast-og.webp"
-            alt="Kiru the ninja between Daichi of House Sagara, in a white silk coat lined with violet and gold, and the general Kuroda in a rust coat and iron mask, with Koji, Master Hideo, Lord Noboru, Captain Arai, Genji and Toma behind them"
+            alt="Kiru the ninja between Daichi of House Sagara, in a white silk coat lined with violet and gold, and his oldest friend Koji, with Master Hideo, Lord Noboru, Captain Arai, Genji, Toma and Nami behind them, and the general Kuroda in his iron mask watching from the shadows"
             width={1200}
             height={630}
             loading="lazy"
