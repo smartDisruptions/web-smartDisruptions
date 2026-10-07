@@ -136,12 +136,31 @@ export default function SiteFX() {
     });
     mo.observe(document.body, { childList: true, subtree: true });
 
+    // Where the gaze is written: the element that reads it. A ninja's pupils
+    // are the only part of him that use --lx/--ly, and the custom properties
+    // inherit, so writing them on his <svg> restyled all ~90 parts of him on
+    // every touch and every mouse frame (~10ms a ninja at 4× CPU); on his
+    // pupils it is one small group. A ninja with no pupils (eyes shut or
+    // smiling) has nothing to aim. Pip reads it in two places, so his stays
+    // on the <svg>.
+    const gazeOf = new WeakMap<SVGSVGElement, SVGElement | null>();
+    const gazeTarget = (svg: SVGSVGElement) => {
+      let el = gazeOf.get(svg);
+      if (el === undefined) {
+        el = svg.dataset.pip !== undefined ? svg : svg.querySelector<SVGElement>('.k-pupils');
+        gazeOf.set(svg, el);
+      }
+      return el;
+    };
+
     let px = innerWidth / 2;
     let py = innerHeight / 3;
     let frame = 0;
     const look = () => {
       frame = 0;
       for (const svg of visible) {
+        const eye = gazeTarget(svg);
+        if (!eye) continue;
         const r = svg.getBoundingClientRect();
         // His eyes sit about 40% down the box (Pip says where, per pose).
         const ex = r.left + r.width / 2;
@@ -151,8 +170,8 @@ export default function SiteFX() {
         const d = Math.hypot(dx, dy) || 1;
         const k = Math.min(1, d / 260);
         const flip = svg.style.scale.startsWith('-1') ? -1 : 1;
-        svg.style.setProperty('--lx', ((dx / d) * k * flip).toFixed(3));
-        svg.style.setProperty('--ly', ((dy / d) * k).toFixed(3));
+        eye.style.setProperty('--lx', ((dx / d) * k * flip).toFixed(3));
+        eye.style.setProperty('--ly', ((dy / d) * k).toFixed(3));
       }
     };
     const onPointer = (e: PointerEvent) => {
@@ -174,6 +193,10 @@ export default function SiteFX() {
       }
     };
     const onLeaveCard = (e: PointerEvent) => {
+      // Only a fine pointer ever tilts a card (onPointer). Without this, every
+      // touch that starts on a card rewrote its tilt on the way out, which
+      // restyles the whole card.
+      if (!finePointer.matches) return;
       const card = (e.target as Element | null)?.closest?.<HTMLElement>('.sd-tilt');
       if (card && !card.contains(e.relatedTarget as Node | null)) {
         card.style.setProperty('--rx', '0deg');
