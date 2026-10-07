@@ -353,8 +353,8 @@ export const skillGroups: SkillGroup[] = [
         name: 'Game development',
         plain:
           'Game loops, collision, input, audio and the feel work that separates a demo from something worth playing.',
-        used: "The arcade's front room is Kiru's games, Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward, and Path Not Taken, a rhythm duel in pre-alpha whose every tile sits on a measured hit in its song. Downstairs is the Broom & Blade Arcade, Pip the guild mouse's room: five carnival games from the chore game I built for my family, where a finished chore earns the ticket for a round. The older cabinets are in its archive. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
-        apps: ['neo-dojo-survivors', 'path-not-taken', 'hoop-quest', 'whack-a-dust-bunny', 'field-office', 'broom-blade', 'aureum-snake', 'grove'],
+        used: "The arcade's front room is Kiru's games, Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward, and Path Not Taken, a rhythm duel in pre-alpha whose every tile sits on a measured hit in its song. Downstairs is the Broom & Blade Arcade, Pip the guild mouse's room: five carnival games from the chore game I built for my family, where a finished chore earns the ticket for a round. The older cabinets are in its archive. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear.",
+        apps: ['neo-dojo-survivors', 'path-not-taken', 'hoop-quest', 'whack-a-dust-bunny', 'broom-blade', 'aureum-snake'],
         links: [
           {
             kind: 'site',
@@ -481,14 +481,6 @@ export const skillGroups: SkillGroup[] = [
         plain:
           'Handing over the method rather than the finished thing — the test being whether they can do it again without you.',
         used: 'My son wanted to make a game. I could have built it for him, and instead I taught him the loop: describe it, get something playable, look at it, ask for the next thing. He built a kart racer — his features, drive-over powerups and coins that make you faster — and then a second game on his own, which is the part that shows it transferred. The hard bit is not taking the keyboard.',
-        apps: ['pebble-kart', 'grove'],
-        links: [
-          {
-            kind: 'site',
-            label: 'His cabinets, in the arcade’s archive',
-            href: '/games/archive',
-          },
-        ],
       },
     ],
   },

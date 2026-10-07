@@ -110,17 +110,12 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
-      // The Pembroke File's app slug does not match its project slug.
-      {
-        source: '/apps/field-office',
-        destination: '/built/pembroke-file',
-        permanent: true,
-      },
-      {
-        source: '/built/field-office',
-        destination: '/built/pembroke-file',
-        permanent: true,
-      },
+      // Pages taken off the site on 2026-10-07 (Josh's call): their old
+      // addresses land on What I Built instead of a 404.
+      ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling'].flatMap((slug) => [
+        { source: `/built/${slug}`, destination: '/built', permanent: true },
+        { source: `/apps/${slug}`, destination: '/built', permanent: true },
+      ]),
       { source: '/apps', destination: '/built', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/built', permanent: true },
