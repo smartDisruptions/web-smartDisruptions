@@ -181,6 +181,16 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
+/* Wherever the tab bar shows (below lg), keyboard focus and anything else
+   the browser scrolls into view stop clear of it: the bar is fixed over the
+   bottom 65px, and without this a Tab onto a link low on the page (each
+   link on the storm room's ticker, say) scrolled it to the very bottom
+   edge, under the bar and out of sight. */
+@media (max-width: 63.99rem) {
+  html {
+    scroll-padding-bottom: calc(64px + 1rem + env(safe-area-inset-bottom));
+  }
+}
 
 body {
   background-color: var(--sd-bg);
