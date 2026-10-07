@@ -99,8 +99,21 @@ function StormHero({ page }: { page: number }) {
       </div>
 
       <div className="ms-hero-inner mx-auto max-w-6xl px-5 pb-14 pt-[11.5rem] sm:px-6 sm:pt-[13.5rem] lg:pb-32 lg:pt-28">
+        {/* Market Storm is a section of the Writing page now, and this is
+            its archive. The way back is to that section, not the top of
+            Writing. It sits in the open sky above the words, the way a
+            report's back link does, so the clearing and Kiru keep their
+            places — and it carries no data-storm-avoid: StormSky reads the
+            first one it finds, which has to stay the words. */}
+        <Link
+          href="/content#market-storm"
+          transitionTypes={['nav-back']}
+          className="ms-back absolute left-5 top-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold text-text-secondary transition-[color,border-color,scale] hover:border-accent/40 hover:text-accent active:scale-[0.97] sm:left-6 sm:top-7 lg:top-8"
+        >
+          &larr; Writing
+        </Link>
         <div className="ms-clear max-w-[41rem]" data-storm-avoid>
-          <p className="sd-kicker">Market Storm</p>
+          <p className="sd-kicker">Market Storm · the archive</p>
           <h1
             id="ms-hero-title"
             className="ms-quake font-display mt-4 text-[2.45rem] leading-[1.03] text-text-primary sm:text-[3.5rem] lg:text-[4.25rem]"

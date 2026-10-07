@@ -14,9 +14,12 @@ import { useState } from 'react';
 export default function SubscribeForm({
   source = 'site',
   className = '',
+  cta = 'Get the next build',
 }: {
   source?: 'site' | 'post' | 'home' | 'market-storm';
   className?: string;
+  /** The button's words. Defaults to the site-wide ask. */
+  cta?: string;
 }) {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState(''); // honeypot — hidden from humans
@@ -102,11 +105,14 @@ export default function SubscribeForm({
           disabled={status === 'sending'}
           className="sd-btn-primary relative inline-flex min-h-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#d63a22] px-6 text-[0.95rem] font-bold tracking-[0.01em] text-white shadow-[0_10px_24px_-10px_rgba(214,58,34,.7)] transition-[background-color,box-shadow,scale] duration-300 hover:bg-[#c2311b] hover:shadow-[0_16px_34px_-12px_rgba(214,58,34,.8)] focus-visible:!rounded-full active:scale-[0.97] disabled:pointer-events-none disabled:opacity-60 @sm:min-h-11"
         >
-          {status === 'sending' ? 'Adding…' : 'Get the next build'}
+          {status === 'sending' ? 'Adding…' : cta}
         </button>
       </div>
       {status === 'error' && (
-        <p className="mt-2.5 px-1 text-sm font-medium text-accent-secondary" role="alert">
+        <p
+          className="mt-2.5 px-1 text-sm font-medium text-accent-secondary"
+          role="alert"
+        >
           {error}
         </p>
       )}

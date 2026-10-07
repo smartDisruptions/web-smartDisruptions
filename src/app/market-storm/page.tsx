@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import MarketStormIndexView from '@/components/market-storm/IndexView';
+import { shareMeta } from '@/lib/shareCard';
 
 export const metadata: Metadata = {
   title:
@@ -7,13 +8,14 @@ export const metadata: Metadata = {
   description:
     'STORM — a multi-agent AI research method — pointed at AI-market catalysts: earnings, big deals, industry moves. Four AI agents take opposing stakes, interview each other grounded in live web search, and a skeptic pass tries to refute every load-bearing claim. Research, not advice.',
   alternates: { canonical: '/market-storm' },
-  openGraph: {
+  // Its own openGraph used to carry no image, which dropped the site card:
+  // a shared /market-storm link had no picture. shareMeta names it.
+  ...shareMeta({
     title: 'Market Storm — the AI market, read by a research method',
     description:
       'A multi-agent AI research method pointed at AI-market catalysts. Research, not advice.',
-    url: '/market-storm',
-    type: 'website',
-  },
+    path: '/market-storm',
+  }),
 };
 
 /**

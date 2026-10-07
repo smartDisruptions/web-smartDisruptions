@@ -2,13 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
-import { IconHome, IconWriting, IconStorm, IconBuilt, IconArcade } from '@/components/icons';
+import {
+  IconHome,
+  IconWriting,
+  IconLearn,
+  IconBuilt,
+  IconArcade,
+} from '@/components/icons';
 import { NAV, isActive, direction, sectionOf } from './nav';
 
 const ICONS: Record<string, (p: { size?: number }) => React.ReactElement> = {
   '/': IconHome,
   '/content': IconWriting,
-  '/market-storm': IconStorm,
+  '/learn': IconLearn,
   '/built': IconBuilt,
   '/games': IconArcade,
 };
@@ -26,9 +32,15 @@ export default function TabBar() {
     <nav
       aria-label="Sections"
       className="sd-glass sd-glass-dense fixed inset-x-0 bottom-0 z-50 border-t border-border lg:hidden"
-      style={{ viewTransitionName: 'sd-tabbar', paddingBottom: 'env(safe-area-inset-bottom)' }}
+      style={{
+        viewTransitionName: 'sd-tabbar',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}
     >
-      <ul className="mx-auto grid h-[64px] max-w-lg grid-cols-5 px-1.5" role="list">
+      <ul
+        className="mx-auto grid h-[64px] max-w-lg grid-cols-5 px-1.5"
+        role="list"
+      >
         {NAV.filter((n) => n.tab).map((item) => {
           const active = isActive(section, item.href);
           const Icon = ICONS[item.href];

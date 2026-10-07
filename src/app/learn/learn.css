@@ -1,0 +1,177 @@
+/*
+  /learn — 学, "learn". A calm splash: one headline, one promise, one form.
+  The page says "no hype", so it doesn't shout either. The kanji inks itself
+  once behind the words, Kiru waves, and nothing else moves. Prefix: ln-
+*/
+
+.ln-page {
+  position: relative;
+  overflow-x: clip;
+  padding-bottom: 3rem;
+}
+
+/* ── The splash ─────────────────────────────────────────────────────────── */
+.ln-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  min-height: calc(100svh - var(--sd-header-h, 65px) - 4rem);
+  max-width: 42rem;
+  margin-inline: auto;
+  padding: 2rem 1rem 2.5rem;
+  text-align: center;
+}
+@media (min-width: 40rem) {
+  .ln-hero {
+    padding: 3rem 1.5rem;
+    gap: 1.1rem;
+  }
+}
+.ln-mark {
+  z-index: -1;
+  top: 0.5rem;
+  right: -9rem;
+  width: clamp(16rem, 70vw, 30rem);
+  height: auto;
+  opacity: 0.06;
+}
+:root[data-theme='dark'] .ln-mark {
+  opacity: 0.08;
+}
+@media (min-width: 64rem) {
+  .ln-mark {
+    right: calc(50% - 34rem);
+    top: 1.5rem;
+  }
+}
+.ln-kiru {
+  width: clamp(5.5rem, 24vw, 7.5rem);
+  margin-bottom: 0.25rem;
+}
+.ln-kiru svg {
+  width: 100%;
+  height: auto;
+}
+.ln-h1 {
+  font-size: clamp(2.05rem, 8.4vw, 3.9rem);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  color: var(--sd-text-primary);
+  text-wrap: balance;
+}
+.ln-calm {
+  word-spacing: 0.14em;
+  font-size: clamp(1.15rem, 4.4vw, 1.55rem);
+  line-height: 1.25;
+  color: var(--sd-text-secondary);
+}
+.ln-calm span {
+  /* Vermilion as text is --sd-pen-ink (AA); --sd-pen is for marks. */
+  color: var(--sd-pen-ink);
+}
+.ln-lede {
+  max-width: 34rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+  text-wrap: pretty;
+}
+.ln-form {
+  margin-top: 0.6rem;
+  text-align: left;
+}
+
+/* ── What you get ───────────────────────────────────────────────────────── */
+.ln-gets {
+  max-width: 60rem;
+  margin-inline: auto;
+  padding: 0 1rem;
+}
+.ln-list {
+  counter-reset: ln;
+  display: grid;
+  gap: 0.85rem;
+}
+@media (min-width: 48rem) {
+  .ln-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+.ln-item {
+  counter-increment: ln;
+  position: relative;
+  padding: 1.25rem 1.25rem 1.3rem 3.6rem;
+  border: 1px solid var(--sd-border);
+  border-radius: var(--radius-xl);
+  background: var(--sd-surface);
+}
+.ln-item::before {
+  content: counter(ln);
+  position: absolute;
+  left: 1.2rem;
+  top: 1.2rem;
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sd-pen) 14%, transparent);
+  color: var(--sd-pen-ink);
+  font: 800 0.85rem/1 var(--font-sans);
+}
+.ln-item h2 {
+  word-spacing: 0.12em;
+  font-size: 1.12rem;
+  line-height: 1.25;
+  color: var(--sd-text-primary);
+}
+.ln-item p {
+  margin-top: 0.35rem;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+
+/* ── Start here ─────────────────────────────────────────────────────────── */
+.ln-start {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  max-width: 36rem;
+  margin: 2.75rem auto 0;
+  padding: 0 1rem;
+}
+.ln-card {
+  display: grid;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 1.2rem 1.35rem;
+  color: var(--sd-text-primary);
+}
+@media (hover: hover) {
+  .ln-card:hover {
+    translate: 0 -2px;
+    border-color: var(--sd-border-strong);
+  }
+}
+.ln-card-tag {
+  font: 750 0.68rem/1 var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-accent);
+}
+.ln-card-title {
+  word-spacing: 0.1em;
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+.ln-card-go {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--sd-pen-ink);
+}

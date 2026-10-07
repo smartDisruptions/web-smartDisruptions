@@ -12,6 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/content`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE}/market-storm`, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE}/about`, changeFrequency: 'monthly', priority: 0.7 },
+    {
+      url: `${BASE}/guides/claude-code-subscription-vs-api`,
+      lastModified: '2026-10-05',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    { url: `${BASE}/learn`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/built`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/games`, changeFrequency: 'monthly', priority: 0.4 },
     {

@@ -185,6 +185,11 @@ all.
   and every loop he has runs on it, the headband's included. A page of ninjas
   costs nothing per frame off screen, and on screen his loops are transforms
   the compositor runs.
+- He **holds still while the page scrolls**: `SiteFX` sets `data-hold` from
+  the first scroll event to `scrollend`, which pauses his loops mid-pose
+  (never resets them). Every hold rule names the parts it pauses. A `*` under
+  any `[data-hold]` makes every hold on the page restyle whole subtrees,
+  because Chrome tracks attribute changes by the attribute's name alone.
 - His **eyes follow the pointer** (or the last touch) through `--lx/--ly`.
 - He is **decorative** (`aria-hidden`) unless given a `title`.
 - Every page has him, doing that page's job. He never covers text and never
@@ -216,9 +221,13 @@ animation of layout properties, nothing that animates while off screen.
 
 ## Native on a phone
 
-- A **tab bar** (Home, Writing, Storm, Built, Arcade) where a thumb reaches;
+- A **tab bar** (Home, Writing, Learn, Built, Arcade) where a thumb reaches;
   About is the avatar in the top bar. The top bar tucks away while you scroll
   down and returns when you scroll up.
+- **Market Storm lives inside Writing** (since October 2026): a section of
+  the Writing page, with `/market-storm` as its archive. The archive, its
+  pages and every report light the Writing tab, and so do the guides, which
+  Writing lists among its field notes (`sectionOf()` in `nav/nav.ts`).
 - `viewport-fit=cover` with safe-area padding on the header and the tab bar.
 - Every tappable thing is ≥44px and **presses in** (`active:scale`).
 - The browser chrome takes the theme colour (`theme-color`), and the site

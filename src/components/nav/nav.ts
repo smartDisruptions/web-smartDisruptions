@@ -13,11 +13,22 @@ export type NavItem = {
 export const NAV: NavItem[] = [
   { href: '/', label: 'Home', short: 'Home', tab: true },
   { href: '/content', label: 'Writing', short: 'Writing', tab: true },
-  { href: '/market-storm', label: 'Market Storm', short: 'Storm', tab: true },
+  { href: '/learn', label: 'Learn', short: 'Learn', tab: true },
   { href: '/built', label: 'What I Built', short: 'Built', tab: true },
   { href: '/games', label: 'Arcade', short: 'Arcade', tab: true },
   { href: '/about', label: 'About', short: 'About', tab: false },
 ];
+
+/**
+ * Top-level segments that belong to another section's tab. Market Storm left
+ * the nav in October 2026 and became a section of the Writing page, so its
+ * archive (/market-storm, its pages and every report) lights Writing. The
+ * guides are listed among Writing's field notes, so they light it too.
+ */
+const PARENT: Record<string, string> = {
+  'market-storm': '/content',
+  guides: '/content',
+};
 
 /**
  * The section a page belongs to ('/' for home), from the root layout's
@@ -27,7 +38,8 @@ export const NAV: NavItem[] = [
  * hydrate without a mismatch.
  */
 export function sectionOf(segment: string | null): string {
-  return segment === null ? '/' : `/${segment}`;
+  if (segment === null) return '/';
+  return PARENT[segment] ?? `/${segment}`;
 }
 
 export function isActive(pathname: string, href: string): boolean {
@@ -35,9 +47,14 @@ export function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Which way a tab change moves, so the page can slide the matching way. */
+/**
+ * Which way a tab change moves, so the page can slide the matching way. The
+ * page you leave counts as its section, so a Market Storm report sits where
+ * Writing does: Learn is forward from it, Home is back.
+ */
 export function direction(pathname: string, href: string): string[] {
-  const from = NAV.findIndex((n) => isActive(pathname, n.href));
+  const here = sectionOf(pathname.split('/')[1] || null);
+  const from = NAV.findIndex((n) => isActive(here, n.href));
   const to = NAV.findIndex((n) => n.href === href);
   if (from < 0 || to < 0 || from === to) return [];
   return [to > from ? 'nav-forward' : 'nav-back'];

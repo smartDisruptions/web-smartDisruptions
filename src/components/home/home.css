@@ -111,6 +111,12 @@
   letter-spacing: 0.04em;
   color: var(--sd-text-secondary);
 }
+/* A phone's half-width tile holds "16 notes" on one line, not the rest. */
+@media (max-width: 30rem) {
+  .hm-room-count-more {
+    display: none;
+  }
+}
 .hm-room-kiru {
   position: relative;
   z-index: 1;
@@ -147,6 +153,13 @@
   line-height: 1.4;
   color: var(--sd-text-secondary);
 }
+/* The corner arrow sits level with the last line. A spacer at the end of the
+   text keeps that line clear of it without re-wrapping any line above. */
+.hm-room-line::after {
+  content: '';
+  display: inline-block;
+  width: 1.5rem;
+}
 @media (max-width: 30rem) {
   .hm-room-line {
     display: none;
@@ -176,29 +189,117 @@
     var(--sd-rule) 27px 28px
   );
 }
-.hm-room-storm {
-  background: linear-gradient(160deg, #1b2350, #0b0e22 70%);
-  color: #eef0ff;
-  border-color: rgba(255, 255, 255, 0.1);
+/* Learn — a study by lamplight. Night in both lights, like the arcade: an
+   object, so it re-declares the night tokens it is made of (the theme-island
+   pattern, see market-storm.css) and everything inside reads those. A lamp
+   pools gold at its foot, 学 glows over Kiru, and fireflies blink (蛍雪,
+   "fireflies and snow", the old saying for studying by whatever light there
+   is) only while he is on screen: they run on his data-live, so off screen
+   they cost nothing. */
+.hm-room-learn {
+  color-scheme: dark;
+  --sd-bg: #090b16;
+  --sd-surface-elevated: #1a1f3a;
+  --sd-fill: rgba(236, 238, 250, 0.07);
+  --sd-accent: #9bb0ff;
+  --sd-text-primary: #eceefa;
+  --sd-text-secondary: #a6abc8;
+  --sd-border: rgba(236, 238, 250, 0.12);
+  --sd-border-strong: rgba(236, 238, 250, 0.24);
+  --sd-pen: #ff5b3d;
+  --sd-pen-ink: #ff8166;
+  --sd-gold: #ffcf70;
+  --sd-moon: #fff3d6;
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+  background:
+    radial-gradient(
+      85% 55% at 22% 108%,
+      color-mix(in srgb, var(--sd-gold) 26%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      70% 50% at 92% -6%,
+      color-mix(in srgb, var(--sd-accent) 14%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(170deg, var(--sd-surface-elevated), var(--sd-bg) 74%);
+  border-color: color-mix(in srgb, var(--sd-gold) 24%, transparent);
 }
-.hm-room-storm .hm-room-line,
-.hm-room-storm .hm-room-count {
-  color: #b9bfdf;
+.hm-room-learn .hm-room-title {
+  text-shadow: 0 0 18px color-mix(in srgb, var(--sd-gold) 38%, transparent);
 }
-.hm-room-storm .hm-room-count {
-  background: rgba(255, 255, 255, 0.08);
+.hm-room-learn .hm-room-count {
+  background: color-mix(in srgb, var(--sd-gold) 14%, transparent);
+  color: var(--sd-gold);
 }
-.hm-room-storm .hm-room-arrow {
-  color: #ff9f86;
+.hm-room-learn .hm-room-arrow {
+  color: var(--sd-gold);
 }
-.hm-room-storm .hm-room-kanji {
-  color: #9bb0ff;
+.hm-room-learn .hm-room-kanji {
+  color: var(--sd-gold);
+  opacity: 0.13;
+}
+.hm-room-learn:hover .hm-room-kanji {
+  opacity: 0.2;
+}
+.hm-fireflies {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hm-fireflies > i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--sd-moon);
+  box-shadow:
+    0 0 4px 1px var(--sd-gold),
+    0 0 14px 4px color-mix(in srgb, var(--sd-gold) 45%, transparent);
+  opacity: 0.55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hm-room-kiru[data-live] ~ .hm-fireflies > i {
+    animation: hm-firefly var(--t, 7s) ease-in-out var(--d, 0s) infinite;
+  }
+}
+@keyframes hm-firefly {
+  0%,
+  100% {
+    opacity: 0.12;
+    translate: 0 0;
+  }
+  22% {
+    opacity: 0.95;
+  }
+  46% {
+    opacity: 0.3;
+    translate: 5px -9px;
+  }
+  66% {
+    opacity: 0.85;
+  }
+  84% {
+    opacity: 0.2;
+    translate: -4px -4px;
+  }
 }
 .hm-room-built {
   background-color: var(--sd-surface);
   background-image:
-    linear-gradient(color-mix(in srgb, var(--sd-accent) 10%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--sd-accent) 10%, transparent) 1px, transparent 1px);
+    linear-gradient(
+      color-mix(in srgb, var(--sd-accent) 10%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--sd-accent) 10%, transparent) 1px,
+      transparent 1px
+    );
   background-size: 22px 22px;
 }
 .hm-room-built .hm-room-kanji {
@@ -206,7 +307,11 @@
 }
 .hm-room-arcade {
   background:
-    radial-gradient(120% 80% at 50% 120%, rgba(255, 64, 160, 0.28), transparent 60%),
+    radial-gradient(
+      120% 80% at 50% 120%,
+      rgba(255, 64, 160, 0.28),
+      transparent 60%
+    ),
     linear-gradient(170deg, #160b2b, #07040f);
   color: #fff;
   border-color: rgba(255, 90, 200, 0.35);
@@ -411,8 +516,16 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(70% 60% at 75% 0%, rgba(120, 140, 255, 0.28), transparent 70%),
-    radial-gradient(60% 50% at 20% 10%, rgba(64, 80, 170, 0.35), transparent 70%),
+    radial-gradient(
+      70% 60% at 75% 0%,
+      rgba(120, 140, 255, 0.28),
+      transparent 70%
+    ),
+    radial-gradient(
+      60% 50% at 20% 10%,
+      rgba(64, 80, 170, 0.35),
+      transparent 70%
+    ),
     linear-gradient(180deg, #121a42, #070a1a 75%);
 }
 .hm-storm-rain {

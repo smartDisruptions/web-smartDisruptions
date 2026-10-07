@@ -1,11 +1,15 @@
 /*
-  Writing — /content and /content/[slug]. Prefix wr-.
+  Writing — /content, /content/page/[n] and /content/[slug]. Prefix wr-.
 
-  The index is a cover story over a grid of prints; a post is a headline on
-  the ground, a hero, and the article on a sheet. Kiru reads in the header,
-  runs along the top while you read, bows at the end and sits on the
-  subscribe card. Everything here is CSS: the only scripts on these pages are
-  the filter (a View Transition) and the subscribe form.
+  The index is a notebook of field notes, three to a page: on page 1 the
+  pinned field guide leads, its seven levels on a strip, over the two newest
+  posts; later pages stamp their number beside the title. A post is a
+  headline on the ground, a hero, and the article on a sheet. Kiru reads in
+  the header, runs along the top while you read, bows at the end, sits on the
+  subscribe card and waves from the learn band. Everything here is CSS: the
+  only scripts on these pages are LevelSweep (one IntersectionObserver) and
+  the subscribe form. (Holding the ninjas still while the page scrolls is
+  SiteFX's job, site-wide.)
 */
 
 /* ── Shared bits ─────────────────────────────────────────────────────────── */
@@ -254,6 +258,8 @@
   width: 100%;
   height: auto;
 }
+/* He holds still while the page scrolls, like every ninja on the site
+   (SiteFX, and `.kiru[data-hold]` in globals.css). */
 @media (min-width: 40rem) {
   .wr-head-kiru {
     width: 9.5rem;
@@ -266,192 +272,488 @@
   }
 }
 
-/* ── Index: the filter, a native segmented control ──────────────────────── */
+/* ── Index: pages 2+, the compact header ─────────────────────────────────── */
 
-.wr-list {
-  max-width: 72rem;
-  margin-inline: auto;
+/* The same header, smaller: the title rests as plain type and the page
+   number is stamped beside it like a hanko. */
+.wr-head-compact {
+  padding-bottom: 1.25rem;
 }
-
-.wr-tabs-wrap {
-  padding: 0.5rem 1.25rem 0.75rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: 1.25rem;
-  scrollbar-width: none;
+@media (min-width: 64rem) {
+  .wr-head-compact {
+    padding-top: 3.25rem;
+    grid-template-columns: minmax(0, 1fr) 11rem;
+  }
+  .wr-head-compact .wr-head-kiru {
+    width: 10.5rem;
+  }
 }
-.wr-tabs-wrap::-webkit-scrollbar {
-  display: none;
+.wr-head-compact .wr-head-mark {
+  width: 12rem;
+  height: 12rem;
 }
 @media (min-width: 40rem) {
-  .wr-tabs-wrap {
-    padding-inline: 1.5rem;
-    scroll-padding-inline: 1.5rem;
+  .wr-head-compact .wr-head-mark {
+    width: 16rem;
+    height: 16rem;
   }
 }
-
-.wr-tabs {
-  display: inline-flex;
-  gap: 0.2rem;
-  padding: 0.3rem;
-  border-radius: 999px;
-  background: var(--sd-fill);
-  border: 1px solid var(--sd-border);
-  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--sd-text-primary) 6%, transparent);
-}
-
-.wr-tab {
-  position: relative;
-  flex: none;
-  display: inline-flex;
+.wr-head-compact .wr-head-title {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 44px;
-  padding: 0 0.75rem 0 1.05rem;
-  border-radius: 999px;
-  scroll-snap-align: start;
-  font-size: 0.9rem;
-  font-weight: 650;
-  white-space: nowrap;
-  color: var(--sd-text-secondary);
-  cursor: pointer;
-  transition:
-    color 0.25s ease,
-    scale 0.15s ease;
+  gap: 0.15em 0.3em;
+  font-size: clamp(2rem, 1.2rem + 3.6vw, 4.25rem);
 }
-.wr-tab:hover {
-  color: var(--sd-text-primary);
+/* On a phone the reading ninja steps back a little, so the title and its
+   stamp keep one line beside him. */
+@media (max-width: 39.99rem) {
+  .wr-head-compact .wr-head-kiru {
+    width: 5.5rem;
+  }
 }
-.wr-tab:active {
-  scale: 0.96;
+.wr-head-compact .wr-head-count {
+  margin-top: 0.9rem;
 }
-.wr-tab[data-on] {
-  color: var(--sd-bg);
-}
-/* The pill behind the current tab. It carries a view-transition name, so
-   when the filter changes the browser slides it to its new tab. */
-.wr-tab-thumb {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  background: var(--sd-accent);
+
+/* The page, stamped. The primary button's vermilion, white type (4.7:1),
+   the same object in both lights — like the current page in the pager. */
+.wr-stamp {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  border-radius: 22%;
+  background: #d63a22;
+  color: #fff;
+  font-size: 0.78em;
+  line-height: 1;
+  rotate: -6deg;
   box-shadow:
-    0 1px 2px color-mix(in srgb, var(--sd-accent) 35%, transparent),
-    0 8px 18px -10px color-mix(in srgb, var(--sd-accent) 80%, transparent);
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 10px 22px -10px rgba(214, 58, 34, 0.75);
 }
-.wr-tab-label,
-.wr-tab-count {
-  position: relative;
-  z-index: 1;
-}
-.wr-tab-count {
-  min-width: 1.6rem;
-  padding: 0.12rem 0.45rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--sd-text-primary) 8%, transparent);
-  font-size: 0.72rem;
-  font-weight: 750;
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-}
-.wr-tab[data-on] .wr-tab-count {
-  background: color-mix(in srgb, var(--sd-bg) 22%, transparent);
-}
-
-/* A phone fits the three tabs with a little scroll; tighten them so it's
-   only a little. */
-@media (max-width: 30rem) {
-  .wr-tab {
-    gap: 0.4rem;
-    padding: 0 0.6rem 0 0.9rem;
-    font-size: 0.86rem;
+@media (prefers-reduced-motion: no-preference) {
+  .wr-stamp {
+    animation: wr-stamp-in 0.55s cubic-bezier(0.2, 1.35, 0.4, 1) 0.3s backwards;
   }
-  .wr-tab-count {
-    min-width: 1.4rem;
-    font-size: 0.68rem;
+}
+@keyframes wr-stamp-in {
+  from {
+    opacity: 0;
+    scale: 1.9;
+    rotate: -22deg;
   }
 }
 
-/* When the row does scroll, its edges fade where there is more to see — and
-   only there, driven by the row's own scroll position. A row that fits has
-   no scroll timeline, so no fade. */
-@property --wr-fade-l {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0px;
-}
-@property --wr-fade-r {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0px;
-}
-@supports (animation-timeline: scroll()) {
-  .wr-tabs-wrap {
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      transparent,
-      #000 var(--wr-fade-l),
-      #000 calc(100% - var(--wr-fade-r)),
-      transparent
-    );
-    mask-image: linear-gradient(
-      90deg,
-      transparent,
-      #000 var(--wr-fade-l),
-      #000 calc(100% - var(--wr-fade-r)),
-      transparent
-    );
-    animation: wr-tabs-edge linear both;
-    animation-timeline: scroll(self inline);
-  }
-}
-@keyframes wr-tabs-edge {
-  0% {
-    --wr-fade-l: 0px;
-    --wr-fade-r: 32px;
-  }
-  12%,
-  88% {
-    --wr-fade-l: 32px;
-    --wr-fade-r: 32px;
-  }
-  100% {
-    --wr-fade-l: 32px;
-    --wr-fade-r: 0px;
-  }
-}
+/* ── Index: the notes ────────────────────────────────────────────────────── */
 
-/* The global focus ring squares every corner to 6px; keep pills and cards
-   their own shape while the ring is on. */
-.wr-tab:focus-visible,
-.wr-back:focus-visible,
-.wr-out-btn:focus-visible {
-  border-radius: 999px;
-}
-.wr-card:focus-visible,
-.wr-more-card:focus-visible {
-  border-radius: var(--radius-xl);
-}
-.wr-feature:focus-visible {
-  border-radius: var(--radius-2xl);
-}
-
-/* ── Index: cover story + grid ───────────────────────────────────────────── */
-
-.wr-stack {
+.wr-notes {
   display: grid;
   gap: 1.25rem;
-  margin-top: 1rem;
+  max-width: 72rem;
+  margin: 1rem auto 0;
   padding-inline: 1.25rem;
 }
 @media (min-width: 40rem) {
-  .wr-stack {
+  .wr-notes {
     gap: 1.75rem;
     padding-inline: 1.5rem;
   }
 }
+
+/* A notebook's entry number: No. 16 is the sixteenth note. */
+.wr-no {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.22em;
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-secondary);
+}
+.wr-no-l {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* 新, "new" — stamped on whichever note is newest. */
+.wr-seal {
+  flex: none;
+  width: 1.9rem;
+  rotate: -6deg;
+}
+.wr-seal-sm {
+  width: 1.45rem;
+}
+
+/* The label row over a lead: seal, kind, and the entry number at the end. */
+.wr-lead-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.wr-lead-kicker .wr-no {
+  margin-left: auto;
+}
+
+.wr-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--sd-accent);
+}
+.wr-cta-arrow {
+  display: inline-block;
+  transition: translate 0.45s var(--ease-out-expo);
+}
+@media (hover: hover) {
+  .group:hover .wr-cta-arrow {
+    translate: 0.3rem 0;
+  }
+}
+
+/* ── Index: the field guide, as the lead ─────────────────────────────────── */
+
+/* A phone reads it top to bottom: the card art, the words, the level strip,
+   then when and how long. A wide screen sets the art and its level strip
+   beside the words: the title screen over its level select. */
+.wr-guide {
+  display: grid;
+  grid-template-areas:
+    'media'
+    'head'
+    'levels'
+    'foot';
+  border-radius: var(--radius-2xl);
+  color: inherit;
+  text-decoration: none;
+}
+/* The pinned one carries the vermilion band — still there when sd-card's
+   hover recolours the rest of the border. */
+.wr-guide.sd-card,
+.wr-guide.sd-card:hover {
+  border-top: 4px solid var(--sd-pen);
+}
+.wr-guide-media {
+  grid-area: media;
+  padding: 0.6rem 0.6rem 0;
+}
+.wr-guide-media .wr-frame,
+.wr-feature-media .wr-frame {
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px var(--sd-border);
+}
+.wr-guide-head {
+  grid-area: head;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1.15rem 1.25rem 0;
+}
+.wr-guide-levels {
+  grid-area: levels;
+  padding: 1.5rem 1.25rem 0;
+}
+.wr-guide-foot {
+  grid-area: foot;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.85rem 1.25rem 0.9rem;
+}
+@media (min-width: 52rem) {
+  .wr-guide {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas:
+      'media head'
+      'levels foot';
+    align-items: center;
+  }
+  .wr-guide-media {
+    padding: 0.75rem 0.75rem 0;
+  }
+  .wr-guide-head {
+    padding: 1.25rem 2.25rem 0 1rem;
+  }
+  .wr-guide-levels {
+    padding: 1.35rem 1.5rem 1.35rem;
+  }
+  .wr-guide-foot {
+    padding: 0.5rem 2.25rem 0.75rem 1rem;
+  }
+}
+/* As the lead scrolls away its art drifts and swells a touch inside the
+   frame — the same depth the article hero has, driven by the scroll on the
+   compositor. The frame clips (so it is the image's scroll container): the
+   frame measures itself against the page and drives the image from that. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wr-guide-media .wr-frame,
+    .wr-feature-media .wr-frame {
+      view-timeline: --wr-lead block;
+    }
+    .wr-guide-media .wr-frame-img,
+    .wr-feature-media .wr-frame-img {
+      transform-origin: 50% 100%;
+      animation: wr-drift linear both;
+      animation-timeline: --wr-lead;
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+/* 新 presses in like a stamp the first time the lead comes up the screen. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wr-lead-kicker .wr-seal {
+      animation: wr-seal-press linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 100%;
+    }
+  }
+}
+@keyframes wr-seal-press {
+  from {
+    opacity: 0;
+    scale: 1.8;
+    rotate: -24deg;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    rotate: -6deg;
+  }
+}
+
+.wr-guide-title {
+  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.05rem);
+  line-height: 1.14;
+  color: var(--sd-text-primary);
+}
+.wr-guide-excerpt,
+.wr-feature-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--sd-text-secondary);
+}
+
+/* ── The level strip ─────────────────────────────────────────────────────── */
+
+/* The guide's seven levels as cartridges on a path — the same cartridge its
+   own level headers wear. At rest every level is lit. LevelSweep turns them
+   on one after another the first time the strip is seen; hovering or
+   focusing the card ripples them and runs the vermilion along the path.
+   Opacity and transforms only. */
+.wr-lv {
+  --cart: 2.3rem;
+  position: relative;
+}
+@media (min-width: 26rem) {
+  .wr-lv {
+    --cart: 2.6rem;
+  }
+}
+@media (min-width: 52rem) {
+  .wr-lv {
+    --cart: 2.85rem;
+  }
+}
+.wr-lv-track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wr-lv-stop {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+}
+.wr-lv-cart {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--cart);
+  height: var(--cart);
+  border-radius: 11px;
+  background: var(--sd-surface-elevated);
+  border: 1px solid var(--sd-border-strong);
+  box-shadow: 0 4px 0 -1px var(--sd-border-strong);
+  color: var(--sd-pen);
+}
+.wr-lv-k {
+  width: 64%;
+  height: 64%;
+}
+/* The ring a level wears for the moment it lights. */
+.wr-lv-cart::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 15px;
+  border: 2px solid var(--sd-pen);
+  opacity: 0;
+}
+.wr-lv-n {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  line-height: 1;
+  color: var(--sd-text-secondary);
+}
+/* The path between the levels, through their middles, and the vermilion
+   that runs along it. */
+.wr-lv-path,
+.wr-lv-fill {
+  position: absolute;
+  top: calc(var(--cart) / 2 - 1px);
+  left: calc(var(--cart) / 2);
+  right: calc(var(--cart) / 2);
+  height: 2px;
+}
+.wr-lv-path {
+  border-top: 2px dashed var(--sd-border-strong);
+}
+.wr-lv-fill {
+  background: var(--sd-pen);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  opacity: 0;
+}
+.wr-lv-cap {
+  margin-top: 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--sd-text-secondary);
+}
+
+/* Not seen yet: the levels wait, dimmed. Only while scripts run (they are
+   what will light them) and only when motion is welcome. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .wr-lv[data-lv='wait'] .wr-lv-k {
+    opacity: 0.26;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wr-lv[data-lv='go'] .wr-lv-k {
+    animation: wr-lv-on 0.4s ease-out calc(0.12s + var(--i) * 0.11s) backwards;
+  }
+  .wr-lv[data-lv='go'] .wr-lv-cart {
+    animation: wr-lv-hop 0.6s cubic-bezier(0.3, 1.45, 0.5, 1)
+      calc(0.12s + var(--i) * 0.11s) backwards;
+  }
+  .wr-lv[data-lv='go'] .wr-lv-cart::after {
+    animation: wr-lv-ring 0.7s ease-out calc(0.12s + var(--i) * 0.11s) backwards;
+  }
+  .wr-lv[data-lv='go'] .wr-lv-fill {
+    animation: wr-lv-run 1.25s cubic-bezier(0.45, 0, 0.55, 1) 0.12s backwards;
+  }
+}
+/* Hover (a mouse) or keyboard focus: the levels ripple up left to right and
+   the vermilion runs the path. Transitions, so leaving settles them back. */
+@media (prefers-reduced-motion: no-preference) {
+  .wr-lv-stop {
+    transition: translate 0.45s var(--ease-out-expo) calc(var(--i) * 45ms);
+  }
+  .wr-lv-fill {
+    transition:
+      transform 0.7s var(--ease-out-expo),
+      opacity 0.3s ease;
+  }
+  .wr-guide:focus-visible .wr-lv-stop {
+    translate: 0 -5px;
+  }
+  .wr-guide:focus-visible .wr-lv-fill {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .wr-guide:hover .wr-lv-stop {
+    translate: 0 -5px;
+  }
+  .wr-guide:hover .wr-lv-fill {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+@keyframes wr-lv-on {
+  from {
+    opacity: 0.26;
+  }
+}
+@keyframes wr-lv-hop {
+  0% {
+    transform: none;
+  }
+  38% {
+    transform: translateY(-9px) scale(1.12);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes wr-lv-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+@keyframes wr-lv-run {
+  0% {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+  70% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+/* ── Index: a post as the lead (when nothing is pinned) ──────────────────── */
 
 .wr-feature {
   display: grid;
@@ -474,27 +776,6 @@
     padding: 0.75rem;
   }
 }
-.wr-feature-media .wr-frame {
-  border-radius: 14px;
-  box-shadow: 0 0 0 1px var(--sd-border);
-}
-/* 新, "new", stamped beside the cover story's label — off the image, which
-   carries its own seal. */
-.wr-feature-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--sd-text-secondary);
-}
-.wr-feature-seal {
-  width: 1.9rem;
-  rotate: -6deg;
-  flex: none;
-}
 .wr-feature-body {
   display: flex;
   flex-direction: column;
@@ -512,35 +793,8 @@
   line-height: 1.12;
   color: var(--sd-text-primary);
 }
-.wr-feature-excerpt {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  overflow: hidden;
-  font-size: 1.02rem;
-  line-height: 1.65;
-  color: var(--sd-text-secondary);
-}
-.wr-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 44px;
-  margin-top: -0.25rem;
-  font-size: 0.92rem;
-  font-weight: 750;
-  color: var(--sd-accent);
-}
-.wr-cta-arrow {
-  display: inline-block;
-  transition: translate 0.45s var(--ease-out-expo);
-}
-@media (hover: hover) {
-  .group:hover .wr-cta-arrow {
-    translate: 0.3rem 0;
-  }
-}
+
+/* ── Index: the grid ─────────────────────────────────────────────────────── */
 
 .wr-grid {
   display: grid;
@@ -556,8 +810,16 @@
     gap: 1.5rem;
   }
 }
+/* Three a page. On a tablet the first lies across the row (see the card's
+   container query) and the other two sit under it; on a wide screen, three
+   across. */
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .wr-grid-three > li:first-child {
+    grid-column: 1 / -1;
+  }
+}
 @media (min-width: 64rem) {
-  .wr-grid {
+  .wr-grid-three {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.75rem 1.5rem;
   }
@@ -565,14 +827,15 @@
 .wr-grid > li {
   display: flex;
   min-width: 0;
+  container-type: inline-size;
 }
-/* Three across, a row rises left to right rather than all at once. */
-@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+/* Side by side, a row rises left to right rather than all at once. */
+@media (min-width: 40rem) and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .wr-grid > li.sd-reveal:nth-child(3n + 2) {
+    .wr-grid > li.sd-reveal:nth-child(2) {
       animation-range: entry 6% cover 28%;
     }
-    .wr-grid > li.sd-reveal:nth-child(3n) {
+    .wr-grid > li.sd-reveal:nth-child(3) {
       animation-range: entry 12% cover 34%;
     }
   }
@@ -599,7 +862,17 @@
   gap: 0.55rem;
   padding: 1rem 1.15rem 1.1rem;
 }
+.wr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 1.6rem;
+}
 .wr-card-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.14em;
@@ -661,6 +934,26 @@
   }
 }
 
+/* A card given a whole row (the first of three on a tablet) lies on its
+   side: the print inset on the left, the words beside it. */
+@container (min-width: 36rem) {
+  .wr-card {
+    flex-direction: row;
+    align-items: center;
+  }
+  .wr-card > .wr-frame {
+    flex: 0 0 52%;
+    margin: 0.7rem;
+    border-radius: 12px;
+    border-bottom: 0;
+    box-shadow: 0 0 0 1px var(--sd-border);
+  }
+  .wr-card-body {
+    align-self: stretch;
+    padding: 1.3rem 1.5rem 1.2rem 0.6rem;
+  }
+}
+
 /* Tilt is for a fine pointer only. Elsewhere drop its (resting) transform,
    so a phone doesn't keep a 3D layer per card for nothing. */
 @media not ((hover: hover) and (pointer: fine)) {
@@ -681,98 +974,491 @@
     border-color 0.3s ease;
 }
 
-/* The newsletter tile closes the grid and fills whatever the last row
-   leaves: the rest of the row, or a full row of its own. */
+/* The global focus ring squares every corner to 6px; keep pills and cards
+   their own shape while the ring is on. */
+.wr-back:focus-visible,
+.wr-out-btn:focus-visible,
+.wr-pill:focus-visible,
+.wr-pager-arrow:focus-visible,
+.wr-pager-num:focus-visible,
+.wr-learn-btn:focus-visible {
+  border-radius: 999px;
+}
+.wr-card:focus-visible,
+.wr-more-card:focus-visible {
+  border-radius: var(--radius-xl);
+}
+.wr-feature:focus-visible,
+.wr-guide:focus-visible {
+  border-radius: var(--radius-2xl);
+}
+
+/* ── Index: the end of the notes (last page) ─────────────────────────────── */
+
+/* Fills whatever the last row leaves open: the rest of the row, or a row of
+   its own. */
 .wr-grid > .wr-grid-end {
   grid-column: 1 / -1;
 }
-@media (min-width: 40rem) {
-  .wr-grid > .wr-grid-end:nth-child(2n) {
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .wr-grid-three > .wr-grid-end[data-span='1'] {
     grid-column: auto;
   }
 }
 @media (min-width: 64rem) {
-  .wr-grid > .wr-grid-end:nth-child(2n) {
-    grid-column: 1 / -1;
-  }
-  .wr-grid > .wr-grid-end:nth-child(3n + 2) {
-    grid-column: span 2;
-  }
-  .wr-grid > .wr-grid-end:nth-child(3n) {
+  .wr-grid-three > .wr-grid-end[data-span='1'] {
     grid-column: auto;
   }
+  .wr-grid-three > .wr-grid-end[data-span='2'] {
+    grid-column: span 2;
+  }
 }
-.wr-end {
+.wr-fin-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 2rem 1.5rem 1.85rem;
+  border-radius: var(--radius-xl);
+  border: 1.5px dashed var(--sd-border-strong);
+  text-align: center;
+}
+.wr-fin-tile-kiru {
+  flex: none;
+  width: 6.25rem;
+  height: auto;
+}
+.wr-fin-tile-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.wr-fin-tile-copy {
+  margin-top: 0.7rem;
+  max-width: 34ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+}
+.wr-fin-tile-go {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.15rem;
+}
+@container (min-width: 30rem) {
+  .wr-fin-tile {
+    flex-direction: row;
+    gap: 1.75rem;
+    padding: 2rem 2.25rem;
+    text-align: left;
+  }
+  .wr-fin-tile-body {
+    align-items: flex-start;
+  }
+  .wr-fin-tile-go {
+    justify-content: flex-start;
+  }
+}
+
+.wr-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1.15rem;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border-strong);
+  background: color-mix(in srgb, var(--sd-surface) 60%, transparent);
+  color: var(--sd-text-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    scale 0.15s ease;
+}
+.wr-pill:hover {
+  border-color: var(--sd-text-primary);
+  background: var(--sd-surface);
+}
+.wr-pill:active {
+  scale: 0.97;
+}
+/* The primary button: solid vermilion, white type, both themes (4.7:1). */
+.wr-pill-primary,
+.wr-pill-primary:hover {
+  border-color: transparent;
+  color: #fff;
+}
+.wr-pill-primary {
+  background: #d63a22;
+  box-shadow: 0 10px 24px -10px rgba(214, 58, 34, 0.7);
+}
+.wr-pill-primary:hover {
+  background: #c2311b;
+}
+
+/* ── Index: page numbers ─────────────────────────────────────────────────── */
+
+/* A phone gets the numbers in a row and Newer / Older as two thumb-sized
+   buttons under them; from a tablet up it is one pill. */
+.wr-pager {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+}
+.wr-pager-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    'nums nums'
+    'prev next';
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 24rem;
+}
+.wr-pager-nums {
+  grid-area: nums;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border);
+  background: color-mix(in srgb, var(--sd-surface) 70%, transparent);
+}
+.wr-pager-prev {
+  grid-area: prev;
+}
+.wr-pager-next {
+  grid-area: next;
+}
+.wr-pager-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1.15rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--sd-accent) 40%, transparent);
+  background: var(--sd-surface);
+  color: var(--sd-accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    scale 0.15s ease;
+}
+a.wr-pager-arrow:hover {
+  border-color: var(--sd-accent);
+  background: color-mix(in srgb, var(--sd-accent) 8%, var(--sd-surface));
+}
+a.wr-pager-arrow:active {
+  scale: 0.97;
+}
+/* Nowhere to go: a label, not a button (aria-hidden, so it may recede). */
+.wr-pager-arrow.is-dead {
+  border-color: transparent;
+  background: none;
+  color: color-mix(in srgb, var(--sd-text-secondary) 55%, transparent);
+}
+.wr-pager-num,
+.wr-pager-now {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.wr-pager-num {
+  border-radius: 999px;
+  color: var(--sd-text-secondary);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    scale 0.15s ease;
+}
+.wr-pager-num:hover {
+  background: var(--sd-fill);
+  color: var(--sd-text-primary);
+}
+.wr-pager-num:active {
+  scale: 0.94;
+}
+/* The current page, stamped: a hanko in the primary button's vermilion. */
+.wr-pager-now {
+  border-radius: 22%;
+  background: #d63a22;
+  color: #fff;
+  rotate: -5deg;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 8px 18px -8px rgba(214, 58, 34, 0.7);
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wr-pager-now {
+      animation: wr-press linear both;
+      animation-timeline: view();
+      animation-range: entry 25% entry 100%;
+    }
+  }
+}
+@keyframes wr-press {
+  from {
+    opacity: 0;
+    scale: 1.7;
+    rotate: -20deg;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    rotate: -5deg;
+  }
+}
+.wr-pager-gap {
+  padding-inline: 0.2rem;
+  color: var(--sd-text-secondary);
+}
+.wr-pager-count {
+  font-size: 0.78rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-secondary);
+}
+@media (min-width: 40rem) {
+  .wr-pager {
+    margin-top: 2.25rem;
+  }
+  .wr-pager-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: auto;
+    max-width: none;
+    padding: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid var(--sd-border);
+    background: color-mix(in srgb, var(--sd-surface) 70%, transparent);
+    box-shadow: 0 18px 40px -30px var(--sd-card-shadow);
+  }
+  .wr-pager-nums {
+    padding: 0 0.25rem;
+    border: 0;
+    background: none;
+  }
+}
+
+/* ── Index: Market Storm (page 1) ────────────────────────────────────────── */
+
+/* The storm section (src/components/writing/storm) is full-bleed and carries
+   no outer margin of its own; its torn edges are painted in the page colour,
+   so plain page ground has to sit right above it. This is that ground. */
+.wr-storm-slot {
+  margin-top: 3.5rem;
+}
+@media (min-width: 40rem) {
+  .wr-storm-slot {
+    margin-top: 4.5rem;
+  }
+}
+
+/* ── Index: learn together (page 1) ──────────────────────────────────────── */
+
+/* The way out of page 1, in /learn's own words and calm. Kiru stands on the
+   band's top edge and waves you in; 学 ("learn") is brushed in behind as
+   the band scrolls up. */
+.wr-learn {
+  max-width: 72rem;
+  margin: 7.5rem auto 0;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 40rem) {
+  .wr-learn {
+    margin-top: 8.5rem;
+    padding-inline: 1.5rem;
+  }
+}
+.wr-learn-card {
   position: relative;
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  min-height: 100%;
-  padding: 1.6rem 1.35rem 1.4rem;
-  border-radius: var(--radius-xl);
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 48rem;
+  margin-inline: auto;
+  padding: 2.4rem 1.35rem 2.25rem;
+  border-radius: var(--radius-2xl);
   border: 1px solid var(--sd-border);
   border-top: 4px solid var(--sd-pen);
   background: var(--sd-surface);
-  box-shadow: 0 18px 40px -30px var(--sd-card-shadow);
+  box-shadow: 0 30px 60px -38px var(--sd-card-shadow);
+  text-align: center;
 }
 @media (min-width: 40rem) {
-  .wr-end {
-    padding: 2rem 2rem 1.75rem;
+  .wr-learn-card {
+    padding: 3rem 3rem 2.75rem;
   }
 }
-.wr-end-clip {
+.wr-learn-clip {
   position: absolute;
   inset: 0;
   z-index: -1;
-  overflow: hidden;
+  /* clip, not hidden: hidden would make this a scroll container, and the
+     brush-in below measures the page's scroll, not this box's */
+  overflow: clip;
   border-radius: inherit;
   pointer-events: none;
 }
-.wr-end-mark {
+.wr-learn-mark {
   position: absolute;
-  right: -1.75rem;
-  bottom: -2.75rem;
-  width: 11rem;
-  height: 11rem;
+  right: -2.5rem;
+  bottom: -3.5rem;
+  width: 15rem;
+  height: 15rem;
   color: var(--sd-pen);
-  opacity: 0.06;
+  opacity: 0.07;
   rotate: -8deg;
 }
-:root[data-theme='dark'] .wr-end-mark {
-  opacity: 0.08;
+:root[data-theme='dark'] .wr-learn-mark {
+  opacity: 0.1;
 }
-.wr-end-kiru {
+@media (min-width: 40rem) {
+  .wr-learn-mark {
+    right: -1.5rem;
+    width: 19rem;
+    height: 19rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wr-learn-mark {
+      animation: wr-brush-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 50%;
+    }
+  }
+}
+@keyframes wr-brush-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* He stands on the band's vermilion edge. The clip ends at that edge (with
+   room above and beside him), so as the band scrolls up he climbs into view
+   from behind it — a transform on an HTML box, which the compositor runs. */
+.wr-learn-kiru {
   position: absolute;
-  top: 0.5rem;
-  right: 0.6rem;
-  width: 5.25rem;
-  height: auto;
+  bottom: 100%;
+  left: 50%;
+  width: 5.75rem;
+  translate: -50% 0;
+  clip-path: inset(-60% -80% -4px -80%);
   pointer-events: none;
 }
-.wr-end-title {
-  margin-top: 0.7rem;
-  padding-right: 4.5rem;
-  font-size: clamp(1.45rem, 1.2rem + 0.9vw, 1.9rem);
+@media (min-width: 40rem) {
+  .wr-learn-kiru {
+    width: 6.75rem;
+  }
+}
+.wr-learn-kiru-rise {
+  display: block;
+  /* his feet are at the foot of his box: sink them onto the band */
+  translate: 0 3%;
+}
+.wr-learn-kiru svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wr-learn-card {
+      view-timeline: --wr-band block;
+    }
+    .wr-learn-kiru-rise {
+      animation: wr-climb linear both;
+      animation-timeline: --wr-band;
+      animation-range: entry 5% entry 55%;
+    }
+  }
+}
+@keyframes wr-climb {
+  from {
+    translate: 0 104%;
+  }
+  to {
+    translate: 0 3%;
+  }
+}
+.wr-learn-title {
+  max-width: 20ch;
+  margin-top: 0.15rem;
+  font-size: clamp(1.75rem, 1.2rem + 2.4vw, 2.75rem);
+  line-height: 1.08;
   color: var(--sd-text-primary);
+  text-wrap: balance;
 }
-.wr-end-copy {
-  margin-top: 0.55rem;
-  max-width: 34rem;
-  font-size: 0.92rem;
-  line-height: 1.6;
+.wr-learn-calm {
+  word-spacing: 0.12em;
+  font-size: clamp(1.1rem, 0.95rem + 0.8vw, 1.4rem);
+  line-height: 1.25;
   color: var(--sd-text-secondary);
 }
-.wr-end-form {
-  margin-top: 1.1rem;
+.wr-learn-calm span {
+  /* "Just learning together." wraps as one phrase */
+  display: inline-block;
+  color: var(--sd-pen-ink);
 }
-
-.wr-empty {
-  padding: 4rem 1.25rem;
-  text-align: center;
-  font-size: 1.1rem;
-  color: var(--sd-text-secondary);
+.wr-learn-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 52px;
+  margin-top: 0.65rem;
+  padding: 0 1.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #d63a22;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 24px -10px rgba(214, 58, 34, 0.7);
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    scale 0.2s ease;
+}
+.wr-learn-btn:hover {
+  background: #c2311b;
+  box-shadow: 0 16px 34px -12px rgba(214, 58, 34, 0.8);
+}
+.wr-learn-btn:active {
+  scale: 0.97;
 }
 
 /* ── Post: header ────────────────────────────────────────────────────────── */
@@ -1377,7 +2063,7 @@
   .wr-grid > li {
     view-timeline: --wr-card block;
   }
-  .wr-list .wr-frame,
+  .wr-notes .wr-frame,
   .wr-hero {
     animation:
       wr-unname linear backwards,
@@ -1390,17 +2076,20 @@
   .wr-hero {
     animation-timeline: view(), view();
   }
-  /* While a filter change runs, every card keeps its name: a card arriving
-     from below the fold should visibly fly up into its new place. */
-  html.wr-filtering .wr-list .wr-frame {
-    animation: none;
-  }
 }
 @keyframes wr-unname {
   from,
   to {
     view-transition-name: none;
   }
+}
+
+/* Paging between notes pages (`wr-page`, set on the pager's links): no card
+   on one page has a partner on the other, so the cards drop their names and
+   travel with the page instead of fading in place. !important because the
+   name is set inline. */
+:root:active-view-transition-type(wr-page) .wr-frame {
+  view-transition-name: none !important;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1421,16 +2110,27 @@
     animation: wr-vt-in 0.45s var(--ease-out-expo) both;
   }
 
-  /* Filtering: the list cross-fades (the browser's own plus-lighter fade,
-     so what doesn't change doesn't dim) while the pill and the card images
-     glide to their new places. */
-  html.wr-filtering::view-transition-group(wr-tab-thumb) {
-    animation-duration: 0.5s;
-    animation-timing-function: cubic-bezier(0.3, 1.3, 0.5, 1);
+  /* Paging turns the page. The pager sits at the foot of the page and the
+     new one opens at its top, so the browser's default would sweep the old
+     page down the screen while the new one arrived. Instead the old page is
+     lifted away at once, nothing sweeps, and the new page swings in from the
+     side it comes from, hinged at its top corner: going older it lies down
+     from the right, going newer from the left. Transforms and opacity on one
+     snapshot, so the compositor runs all of it. */
+  :root:active-view-transition-type(wr-page)::view-transition-group(.sd-page) {
+    animation: none;
   }
-  html.wr-filtering::view-transition-group(*.wr-hero) {
-    animation-duration: 0.55s;
-    animation-timing-function: var(--ease-out-expo);
+  :root:active-view-transition-type(wr-page)::view-transition-old(.sd-page) {
+    animation: none;
+    opacity: 0;
+  }
+  :root:active-view-transition-type(wr-page)::view-transition-new(.sd-fwd) {
+    transform-origin: 100% 0;
+    animation: wr-turn-in-r 0.6s var(--ease-out-expo) both;
+  }
+  :root:active-view-transition-type(wr-page)::view-transition-new(.sd-back) {
+    transform-origin: 0 0;
+    animation: wr-turn-in-l 0.6s var(--ease-out-expo) both;
   }
 }
 @keyframes wr-vt-out {
@@ -1443,5 +2143,17 @@
   from {
     opacity: 0;
     scale: 0.97;
+  }
+}
+@keyframes wr-turn-in-r {
+  from {
+    opacity: 0;
+    transform: perspective(1800px) translateX(4%) rotateY(-9deg);
+  }
+}
+@keyframes wr-turn-in-l {
+  from {
+    opacity: 0;
+    transform: perspective(1800px) translateX(-4%) rotateY(9deg);
   }
 }
