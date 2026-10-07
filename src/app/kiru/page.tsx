@@ -327,6 +327,34 @@ export default function KiruPage() {
         </ul>
       </section>
 
+      <section className="kp-sec" aria-labelledby="kp-cast-title">
+        <p className="sd-kicker">His crew, and his rogues</p>
+        <h2 id="kp-cast-title" className="kp-sec-title font-display">
+          The Neo Dojo Cast
+        </h2>
+        <p className="kp-sec-sub">
+          Eight heroes in three squads, all drawn on his rig, and the six rogues
+          he cuts through: hype, deepfakes, bugs in production, cloud lock-in,
+          AI slop and vapourware.
+        </p>
+        {/* A static page in public/kiru/cast, so a plain link, not <Link>. */}
+        <a href="/kiru/cast" className="kp-cast sd-card sd-tilt">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a fixed-size static card, nothing for next/image to do */}
+          <img
+            src="/images/kiru/neo-dojo-cast-og.webp"
+            alt="Kiru leading the Neo Dojo Cast: Kage-X and Hakka beside him, Patch, Nova, Captain Takotsubo, Tengu-9, Benri and Hovr behind, and the rogue Emperor Kemuri in the shadows"
+            width={1200}
+            height={630}
+            loading="lazy"
+            decoding="async"
+            className="kp-cast-img"
+          />
+          <span className="kp-cast-cta">
+            Meet the cast <Arrow />
+          </span>
+        </a>
+      </section>
+
       <section className="kp-sec" aria-labelledby="kp-made-title">
         <p className="sd-kicker">Under the hood</p>
         <h2 id="kp-made-title" className="kp-sec-title font-display">
