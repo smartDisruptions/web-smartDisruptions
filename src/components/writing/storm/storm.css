@@ -972,26 +972,16 @@
   .wms .wms-tape[data-paused] .wms-tape-track {
     animation-play-state: paused;
   }
-  /* While the page scrolls, every loop in the room holds still (the island
-     sets data-hold from the first scroll event to scrollend): a running
-     loop costs a style pass on every scrolling frame. And Kiru idles only
-     while the island counts him on screen — clear of the frosted header,
-     where his motion would make the glass re-blur every frame (SiteFX's
-     data-live alone would keep him going under it). Named parts, not
-     `.kiru *`, so a toggle restyles a dozen elements, not the room. The
-     !important outranks Kiru's own `animation` shorthands. */
-  .wms[data-hold]
-    :is(
-      .wms-tape-track,
-      .wms-ripple,
-      .k-body,
-      .k-head,
-      .k-eyes,
-      .k-zap,
-      .kt-hi,
-      .kt-lo,
-      .kt-tip
-    ),
+  /* While the page scrolls, the room's loops hold still (the island sets
+     data-hold from the first scroll event to scrollend): a running loop
+     costs a style pass on every scrolling frame. Kiru is held the same way
+     by SiteFX, like every ninja on the site. And he idles only while the
+     island counts him on screen — clear of the frosted header, where his
+     motion would make the glass re-blur every frame (SiteFX's data-live
+     alone would keep him going under it). Named parts, never `*`: a toggle
+     restyles a handful of elements, not the room. The !important outranks
+     the `animation` shorthands. */
+  .wms[data-hold] :is(.wms-tape-track, .wms-ripple),
   .wms-kiru:not([data-on])
     :is(.k-body, .k-head, .k-eyes, .k-zap, .kt-hi, .kt-lo, .kt-tip) {
     animation-play-state: paused !important;

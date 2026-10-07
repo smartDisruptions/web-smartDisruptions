@@ -16,7 +16,6 @@ import {
 } from '@/lib/fieldNotes';
 import WritingStorm from '@/components/writing/storm/WritingStorm';
 import LevelSweep from './LevelSweep';
-import ScrollHold from './ScrollHold';
 import './writing.css';
 
 /*
@@ -29,9 +28,10 @@ import './writing.css';
   and the way into /learn. Pages 2+: a compact header with the page stamped
   beside the title, three notes, the page numbers.
 
-  Everything here is rendered on the server. The only scripts are two small
-  islands: LevelSweep lights the guide's level strip once when it comes into
-  view, and ScrollHold holds the header's ninja still while the page scrolls.
+  Everything here is rendered on the server. The only script is one small
+  island: LevelSweep lights the guide's level strip once when it comes into
+  view. (The header's ninja holds still while the page scrolls, like every
+  ninja on the site: SiteFX does that.)
 */
 
 /* ── Small parts ───────────────────────────────────────────────────────── */
@@ -441,7 +441,6 @@ function Pager({
 function IndexHead({ count, newest }: { count: number; newest?: FieldNote }) {
   return (
     <header className="wr-head">
-      <ScrollHold />
       {/* 書, "to write" — inks itself in on arrival, then rests behind the
           reading ninja as a watermark. */}
       <Kanji char="書" draw className="sd-watermark wr-head-mark" />
@@ -504,7 +503,6 @@ function PageHead({
   const span = daySpan(notes);
   return (
     <header className="wr-head wr-head-compact">
-      <ScrollHold />
       <Kanji char="書" draw className="sd-watermark wr-head-mark" />
       <div className="wr-head-titles">
         <p className="sd-kicker">Writing</p>

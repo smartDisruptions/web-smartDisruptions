@@ -893,6 +893,38 @@ p {
   .kiru[data-live] .k-float {
     animation: kiru-float 4s ease-in-out infinite;
   }
+  /* Held while the page scrolls (SiteFX sets data-hold from the first scroll
+     event to scrollend): paused mid-pose, never reset, so he carries on from
+     where he was. Every looping part is named (the tails' loops are in
+     tails.css), never `.kiru *`: Chrome files an attribute's invalidations
+     under its name alone, so a universal rule under any [data-hold] makes
+     every hold on the page restyle whole subtrees. !important because each
+     loop is an `animation` shorthand, which resets the play state. */
+  .kiru[data-hold]
+    :is(
+      .k-body,
+      .k-head,
+      .k-eyes,
+      .k-wave,
+      .k-swing,
+      .k-spin,
+      .k-aura,
+      .k-dangle-l,
+      .k-dangle-r,
+      .k-thumbs,
+      .k-zap,
+      .k-run-a,
+      .k-run-b,
+      .k-bob,
+      .k-float,
+      .kt-hi,
+      .kt-lo,
+      .kt-tip,
+      .kt-hi-run,
+      .kt-lo-run
+    ) {
+    animation-play-state: paused !important;
+  }
 }
 @keyframes kiru-breathe {
   0%,

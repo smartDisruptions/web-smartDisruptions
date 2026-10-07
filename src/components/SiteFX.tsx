@@ -17,11 +17,15 @@ import { useEffect } from 'react';
  *
  * Reduced motion turns 1 and 3 off and leaves the eyes looking ahead.
  *
- * Pip also holds still while the page scrolls (`data-hold`). Any running CSS
- * loop costs Chrome a style pass on every scrolling frame, even one the
- * compositor draws, and inside an SVG a layout too; a paused loop costs
- * nothing. So a page that shows Pip catches the start of a scroll, pauses
- * the mice on screen, and lets them go at scrollend. Kiru is untouched.
+ * Every ninja and mouse on screen also holds still while the page scrolls
+ * (`data-hold`). Any running CSS loop costs Chrome a style pass on every
+ * scrolling frame, even one the compositor draws, and inside an SVG a layout
+ * too; a paused loop costs nothing. So the first scroll event of a gesture
+ * pauses them (mid-pose: the loops are paused, never reset) and scrollend
+ * lets them go. Measured on a phone at 4× CPU, it took scrolling /learn from
+ * ~58fps to 60 and /market-storm from ~57 to ~58, with ~40% fewer slow frames.
+ * The hold rules name each looping part (globals.css, pip.css): a `*` under
+ * a `[data-hold]` anywhere would make every toggle restyle whole subtrees.
  *
  * It also backs up the inline theme script: when Next has to render a page
  * in the browser (its error shell), that script never runs, so the theme is
@@ -45,13 +49,15 @@ export default function SiteFX() {
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const visible = new Set<SVGSVGElement>();
 
-    // Pip's scroll hold. A passive listener catches the first scroll event
+    // The scroll hold. A passive listener catches the first scroll event
     // (just the first, where scrollend exists, so nothing runs per scrolling
     // frame); scrollend, or a quiet spell where it's missing, lets them go.
     // A mouse that scrolls into or out of view mid-scroll could not move
     // anyway, so his liveness change waits for the release too: no Pip
-    // restyles during a scroll at all.
-    const pips = new Set<SVGSVGElement>();
+    // restyles during a scroll at all. A ninja's doesn't wait: he goes live
+    // 80px before he shows (already held, at his first keyframe), because
+    // some poses' loops don't start at rest and going live on screen at
+    // scrollend would make him jump.
     const pending = new Map<SVGSVGElement, boolean>();
     const hasScrollEnd = 'onscrollend' in window;
     let holding = false;
@@ -62,7 +68,7 @@ export default function SiteFX() {
     const onScroll = () => {
       if (!holding) {
         holding = true;
-        for (const svg of pips) hold(svg, true);
+        for (const svg of visible) hold(svg, true);
       }
       window.clearTimeout(quiet);
       quiet = window.setTimeout(release, hasScrollEnd ? 3000 : 160);
@@ -72,7 +78,7 @@ export default function SiteFX() {
       window.clearTimeout(quiet);
       if (holding) {
         holding = false;
-        for (const svg of pips) hold(svg, false);
+        for (const svg of visible) hold(svg, false);
         for (const [svg, on] of pending) live(svg, on);
         pending.clear();
       }
@@ -80,18 +86,14 @@ export default function SiteFX() {
     }
 
     function live(svg: SVGSVGElement, on: boolean) {
-      const isPip = svg.dataset.pip !== undefined;
       if (on) {
         svg.setAttribute('data-live', '');
         visible.add(svg);
-        if (isPip) pips.add(svg);
+        if (holding) hold(svg, true);
       } else {
         svg.removeAttribute('data-live');
         visible.delete(svg);
-        if (isPip) {
-          pips.delete(svg);
-          hold(svg, false);
-        }
+        hold(svg, false);
       }
     }
 
@@ -113,8 +115,8 @@ export default function SiteFX() {
         if (seen.has(svg)) return;
         seen.add(svg);
         io.observe(svg);
-        // The scroll hold is armed only on a page that shows Pip.
-        if (!armed && svg.dataset.pip !== undefined) {
+        // The scroll hold is armed once a page shows anyone who can move.
+        if (!armed && svg.dataset.kiru !== 'still' && svg.dataset.pip !== 'still') {
           armed = true;
           listen();
           if (hasScrollEnd) window.addEventListener('scrollend', release, { passive: true });

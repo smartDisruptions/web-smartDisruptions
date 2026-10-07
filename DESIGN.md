@@ -185,6 +185,11 @@ all.
   and every loop he has runs on it, the headband's included. A page of ninjas
   costs nothing per frame off screen, and on screen his loops are transforms
   the compositor runs.
+- He **holds still while the page scrolls**: `SiteFX` sets `data-hold` from
+  the first scroll event to `scrollend`, which pauses his loops mid-pose
+  (never resets them). Every hold rule names the parts it pauses. A `*` under
+  any `[data-hold]` makes every hold on the page restyle whole subtrees,
+  because Chrome tracks attribute changes by the attribute's name alone.
 - His **eyes follow the pointer** (or the last touch) through `--lx/--ly`.
 - He is **decorative** (`aria-hidden`) unless given a `title`.
 - Every page has him, doing that page's job. He never covers text and never

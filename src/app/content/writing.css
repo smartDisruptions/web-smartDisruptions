@@ -7,9 +7,9 @@
   headline on the ground, a hero, and the article on a sheet. Kiru reads in
   the header, runs along the top while you read, bows at the end, sits on the
   subscribe card and waves from the learn band. Everything here is CSS: the
-  only scripts on these pages are LevelSweep (one IntersectionObserver),
-  ScrollHold (pauses the header ninja during a scroll) and the subscribe
-  form.
+  only scripts on these pages are LevelSweep (one IntersectionObserver) and
+  the subscribe form. (Holding the ninjas still while the page scrolls is
+  SiteFX's job, site-wide.)
 */
 
 /* ── Shared bits ─────────────────────────────────────────────────────────── */
@@ -258,18 +258,8 @@
   width: 100%;
   height: auto;
 }
-/* Held while the page scrolls (ScrollHold): frozen mid-breath, resumed
-   after. !important because each of his loops is an `animation` shorthand,
-   which resets the play state.
-   Named parts only, never `.kiru *`. Chrome files attribute invalidations
-   under the attribute's name alone, so one `[data-hold] … *` rule made every
-   data-hold toggle on the page (this header's, the storm room's, Pip's)
-   restyle the holder's whole subtree: ~410 elements in the storm room, at
-   the start and the end of every scroll, 25–70ms a time on a phone at 4×
-   CPU. With the parts named, a toggle restyles ~15 elements: a few ms. */
-.wr-head[data-hold] :is(.k-body, .k-head, .k-eyes, .kt-hi, .kt-lo, .kt-tip) {
-  animation-play-state: paused !important;
-}
+/* He holds still while the page scrolls, like every ninja on the site
+   (SiteFX, and `.kiru[data-hold]` in globals.css). */
 @media (min-width: 40rem) {
   .wr-head-kiru {
     width: 9.5rem;

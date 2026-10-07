@@ -20,7 +20,8 @@ import { useEffect, useRef, useState } from 'react';
  *     4× CPU, the room's loops took scrolling through it from ~56fps to
  *     ~48. So the first scroll event of a gesture sets `data-hold` — one
  *     passive listener, `once`, no layout read — and `scrollend` lifts it:
- *     the tape, the rain rings and Kiru pause mid-motion and carry on.
+ *     the tape and the rain rings pause mid-motion and carry on. (Kiru is
+ *     held by SiteFX, like every ninja on the site.)
  *  3. The kanji. If the room is still below the fold when this mounts, 嵐 is
  *     held un-inked (`data-ink="wait"`) and brushed in (`"go"`) once it is
  *     on screen and the reader has stopped scrolling — the brush is a
