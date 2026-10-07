@@ -327,6 +327,35 @@ export default function KiruPage() {
         </ul>
       </section>
 
+      <section className="kp-sec" aria-labelledby="kp-story-title">
+        <p className="sd-kicker">His story&rsquo;s cast</p>
+        <h2 id="kp-story-title" className="kp-sec-title font-display">
+          Kiru: Path Not Taken Cast
+        </h2>
+        <p className="kp-sec-sub">
+          The people of his story, drawn as ninja on his rig: the master who
+          raised him, his oldest friend, the rich house that took him in, and
+          the people of an old war. Twenty-four of them, introduced without
+          spoilers.
+        </p>
+        {/* A static page in public/kiru/path-not-taken-cast, so a plain link, not <Link>. */}
+        <a href="/kiru/path-not-taken-cast" className="kp-cast sd-card sd-tilt">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a fixed-size static card, nothing for next/image to do */}
+          <img
+            src="/images/kiru/path-not-taken-cast-og.webp"
+            alt="Kiru the ninja between Daichi of House Sagara, in a white silk coat lined with violet and gold, and his oldest friend Koji, with Master Hideo, Lord Noboru, Captain Arai, Genji, Toma and Nami behind them, and the general Kuroda in his iron mask watching from the shadows"
+            width={1200}
+            height={630}
+            loading="lazy"
+            decoding="async"
+            className="kp-cast-img"
+          />
+          <span className="kp-cast-cta">
+            Meet the cast <Arrow />
+          </span>
+        </a>
+      </section>
+
       <section className="kp-sec" aria-labelledby="kp-cast-title">
         <p className="sd-kicker">His crew, and his rogues</p>
         <h2 id="kp-cast-title" className="kp-sec-title font-display">
