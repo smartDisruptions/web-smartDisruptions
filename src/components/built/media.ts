@@ -45,18 +45,6 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/cloth-simulator-2.png': [1280, 800],
   '/images/apps/cloth-simulator-3.png': [390, 844],
   '/images/apps/cloth-simulator-thumbnail.webp': [800, 500],
-  '/images/apps/field-office-1.png': [1440, 1000],
-  '/images/apps/field-office-2.png': [1440, 1600],
-  '/images/apps/field-office-3.png': [1440, 800],
-  '/images/apps/field-office-thumbnail.webp': [800, 420],
-  '/images/apps/going-traveling-1.webp': [1200, 760],
-  '/images/apps/going-traveling-2.webp': [1200, 760],
-  '/images/apps/going-traveling-3.webp': [1200, 760],
-  '/images/apps/going-traveling-thumbnail.webp': [800, 420],
-  '/images/apps/grove-1.png': [490, 644],
-  '/images/apps/grove-2.png': [490, 644],
-  '/images/apps/grove-3.png': [490, 644],
-  '/images/apps/grove-thumbnail.webp': [800, 420],
   '/images/apps/lantern-night-1.webp': [1600, 900],
   '/images/apps/lantern-night-2.webp': [1600, 900],
   '/images/apps/lantern-night-3.webp': [780, 1688],
@@ -73,10 +61,6 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/night-parade-2.webp': [1600, 900],
   '/images/apps/night-parade-3.webp': [780, 1688],
   '/images/apps/night-parade-thumbnail.webp': [1200, 630],
-  '/images/apps/pebble-kart-1.png': [1600, 813],
-  '/images/apps/pebble-kart-2.png': [1600, 813],
-  '/images/apps/pebble-kart-3.png': [1600, 813],
-  '/images/apps/pebble-kart-thumbnail.webp': [800, 406],
   '/images/apps/pomodoro-1.png': [1440, 900],
   '/images/apps/pomodoro-2.png': [1280, 800],
   '/images/apps/pomodoro-3.png': [1440, 900],
@@ -96,7 +80,6 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/websites/broom-blade.webp': [1200, 750],
   '/images/websites/kitsune-kitchen.webp': [1200, 750],
   '/images/websites/notebook.webp': [1200, 750],
-  '/images/websites/pembroke-file.png': [1200, 630],
   '/images/websites/samurai-kitchen.webp': [1200, 750],
   '/images/websites/voltic.webp': [1200, 750],
 };
@@ -154,7 +137,6 @@ export function hostOf(url?: string): string | undefined {
  */
 const MARKS: Record<string, string> = {
   'broom-blade': '遊', // play: chores turned into a game
-  'pembroke-file': '秘', // secret: a locked file
   'samurai-kitchen': '侍', // samurai
   voltic: '雷', // thunder: "liquid lightning"
   notebook: '書', // writing: the notebook this site used to be
@@ -163,9 +145,6 @@ const MARKS: Record<string, string> = {
   'cloth-simulator': '風', // wind
   'ai-diary': '心', // heart, mind
   'aureum-snake': '遊', // play
-  'pebble-kart': '速', // speed
-  grove: '桜', // a tree that grows
-  'going-traveling': '道', // the road
   'kitsune-kitchen': '作', // made
   'lantern-night': '光', // light: "Light the night"
   'night-parade': '斬', // cut: Kiru cuts each yokai in two

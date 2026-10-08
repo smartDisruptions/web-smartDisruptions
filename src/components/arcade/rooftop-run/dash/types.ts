@@ -2,8 +2,7 @@
  * Kiru's Rooftop Run — DASH: the shared contract.
  *
  * Dash is the level game: hand-built levels set to original music, one
- * button, six ways to move (torii gates switch between them), Geometry Dash
- * style. Every Dash module codes against the types in this file:
+ * button, six ways to move (torii gates switch between them). Every Dash module codes against the types in this file:
  *
  *   sim.ts / physics.ts / solver.ts   the simulation (pure, no DOM)
  *   levels/                           the six levels and the authoring kit
@@ -44,7 +43,7 @@ export const VIEW_W_MAX = 26.5;
 
 /**
  * How Kiru moves. Internal ids, with the display names the UI uses:
- *  run      "Run"          tap or hold to jump (Geometry Dash's cube)
+ *  run      "Run"          tap or hold to jump
  *  kite     "Kite"         hold to climb, let go to dive (ship)
  *  roll     "Roll"         tap to switch gravity while rolling (ball)
  *  parasol  "Parasol"      each tap is a hop, the parasol slows the fall (UFO)
@@ -64,7 +63,7 @@ export const MODE_NAMES: Record<ModeId, string> = {
 
 export type SpeedId = 'slow' | 'normal' | 'fast' | 'faster' | 'fastest';
 
-/** Run speed in blocks per second (Geometry Dash's ratios). */
+/** Run speed in blocks per second. */
 export const SPEEDS: Record<SpeedId, number> = {
   slow: 8.4,
   normal: 10.4,
@@ -128,8 +127,8 @@ export type BlockStyle =
   | 'stone'
   | 'chimney'
   | 'bridge';
-export type PadColor = 'yellow' | 'pink' | 'red' | 'blue';
-export type OrbColor = 'yellow' | 'pink' | 'red' | 'blue' | 'green' | 'black';
+export type PadColor = 'jump' | 'hop' | 'leap' | 'flip';
+export type OrbColor = 'jump' | 'hop' | 'leap' | 'flip' | 'spin' | 'slam';
 export type DecoKind =
   | 'lanterns' // a string of paper lanterns between two points (x..x+s blocks)
   | 'banner' // a tall nobori flag
@@ -263,7 +262,7 @@ export interface SpeedObj {
   h?: number;
   speed: SpeedId;
 }
-/** A secret scroll (Geometry Dash's coin). Three per level, ids 0, 1, 2. Centre (x, y). */
+/** A secret scroll. Three per level, ids 0, 1, 2. Centre (x, y). */
 export interface ScrollObj {
   k: 'scroll';
   x: number;
@@ -643,8 +642,8 @@ export interface DashRunInfo {
   levelId: LevelId;
   practice: boolean;
   /**
-   * This attempt's number on this level, counted over every visit as in
-   * Geometry Dash (the saved attempts + 1 when the level starts): the
+   * This attempt's number on this level, counted over every visit
+   * (the saved attempts + 1 when the level starts): the
    * canvas's "Attempt N".
    */
   attempt: number;

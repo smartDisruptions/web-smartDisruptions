@@ -43,7 +43,7 @@ const byslug = (slugs: string[]) =>
 const games = byslug(ARCADE_SLUGS);
 const guild = byslug(BROOM_BLADE_ARCADE_SLUGS);
 const archived = byslug(ARCADE_ARCHIVE_SLUGS);
-// "The Pembroke File, Cloth Simulator … and AUREUM Snake", written out, so the
+// "Cloth Simulator, Broom & Blade and AUREUM Snake", written out, so the
 // door says what is behind it.
 const ARCHIVE_NAMES = new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(archived.map((g) => g.name));
 

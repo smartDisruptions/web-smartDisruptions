@@ -36,46 +36,56 @@ import {
 
 // ── Colours that mean something (never used for scenery) ──────────────────
 
+// Kiru's own colour code (2026-10-07): each lantern and drum is named for
+// what it does, and coloured from the town's palette.
 export const ORB_COL: Record<OrbColor, string> = {
-  yellow: '#ffd23f',
-  pink: '#ff6fbf',
-  red: '#ff4a3a',
-  blue: '#3db4ff',
-  green: '#46f08a',
-  black: '#2b2238',
+  jump: '#ff6a3d', // vermilion
+  hop: '#3fd6a6', // jade
+  leap: '#ffc53d', // gold
+  flip: '#a77bff', // wisteria
+  spin: '#ff8fc8', // sakura
+  slam: '#2a2f5e', // night indigo
 };
 export const PAD_COL: Record<PadColor, string> = {
-  yellow: '#ffd23f',
-  pink: '#ff6fbf',
-  red: '#ff4a3a',
-  blue: '#3db4ff',
+  jump: '#ff6a3d',
+  hop: '#3fd6a6',
+  leap: '#ffc53d',
+  flip: '#a77bff',
 };
+// Speed runs cool to hot: indigo, paper, gold, ember, crimson.
 export const SPEED_COL: Record<SpeedId, string> = {
-  slow: '#ffad3d',
-  normal: '#43d2ff',
-  fast: '#5cf27e',
-  faster: '#ff5ad6',
-  fastest: '#ff4040',
+  slow: '#8fa3ff',
+  normal: '#f4efe2',
+  fast: '#ffd166',
+  faster: '#ff8a3d',
+  fastest: '#ff2f6d',
 };
+// One chevron per step of speed, so the count reads as the speed.
 export const SPEED_N: Record<SpeedId, number> = {
   slow: 1,
-  normal: 1,
-  fast: 2,
-  faster: 3,
-  fastest: 4,
+  normal: 2,
+  fast: 3,
+  faster: 4,
+  fastest: 5,
 };
-export const GATE_COL = { mode: '#ff4a2a', blue: '#3d9bff', yellow: '#ffd23f' };
+// `finish` is the gold veil over the finish line; no gate uses it.
+export const GATE_COL = {
+  mode: '#ff4a2a',
+  flip: '#a77bff',
+  upright: '#3fd6a6',
+  finish: '#ffd23f',
+};
 export type GateTint = keyof typeof GATE_COL;
 
 /** Colour-blind-safe marks: each orb and drum colour has its own shape. */
 type Glyph = 'up1' | 'up0' | 'up2' | 'flip' | 'spin' | 'down';
 const ORB_GLYPH: Record<OrbColor, Glyph> = {
-  yellow: 'up1',
-  pink: 'up0',
-  red: 'up2',
-  blue: 'flip',
-  green: 'spin',
-  black: 'down',
+  jump: 'up1',
+  hop: 'up0',
+  leap: 'up2',
+  flip: 'flip',
+  spin: 'spin',
+  slam: 'down',
 };
 
 /** Draw a glyph centred on (cx, cy), about `s` across, as strokes. */
@@ -1571,7 +1581,7 @@ export interface CommonArt {
 
 function bakeOrb(c: OrbColor, ppu: number): Sprite {
   const col = ORB_COL[c];
-  const black = c === 'black';
+  const black = c === 'slam';
   const S = 1.2;
   return bakeSprite(S * ppu, S * ppu, (S / 2) * ppu, (S / 2) * ppu, (g) => {
     g.scale(ppu, ppu);
@@ -1605,15 +1615,15 @@ function bakeOrb(c: OrbColor, ppu: number): Sprite {
     g.fillStyle = '#1a1424';
     g.fillRect(-0.2, -0.44, 0.4, 0.09);
     g.fillRect(-0.2, 0.35, 0.4, 0.09);
-    g.fillStyle = shade(ORB_COL.yellow, -0.3);
+    g.fillStyle = shade(ORB_COL.jump, -0.3);
     g.fillRect(-0.2, -0.44, 0.4, 0.025);
     g.fillRect(-0.2, 0.415, 0.4, 0.025);
     // The glyph, painted on in ink (white on the black lantern).
-    g.strokeStyle = black ? '#f4eaff' : '#1d1226';
+    g.strokeStyle = black ? '#eef1ff' : '#1d1226';
     g.lineWidth = 0.075;
     glyph(g, ORB_GLYPH[c], 0, 0, 0.42);
     if (black) {
-      g.strokeStyle = '#c9a8ff';
+      g.strokeStyle = '#9fb0ff';
       g.lineWidth = 0.045;
       g.beginPath();
       g.ellipse(0, 0, 0.36, 0.4, 0, 0, TAU);
@@ -1623,7 +1633,7 @@ function bakeOrb(c: OrbColor, ppu: number): Sprite {
 }
 
 function bakeRing(c: OrbColor, ppu: number): Sprite {
-  const col = c === 'black' ? '#c9a8ff' : ORB_COL[c];
+  const col = c === 'slam' ? '#9fb0ff' : ORB_COL[c];
   const S = 1.5;
   return bakeSprite(S * ppu, S * ppu, (S / 2) * ppu, (S / 2) * ppu, (g) => {
     g.scale(ppu, ppu);
@@ -1686,7 +1696,7 @@ function bakePad(c: PadColor, ppu: number): Sprite {
 }
 
 function gateTint(o: { grav?: number }): GateTint {
-  return o.grav === -1 ? 'blue' : o.grav === 1 ? 'yellow' : 'mode';
+  return o.grav === -1 ? 'flip' : o.grav === 1 ? 'upright' : 'mode';
 }
 export { gateTint };
 
@@ -1747,7 +1757,7 @@ function bakeGate(tint: GateTint, h: number, ppu: number): Sprite {
     if (tint !== 'mode') {
       g.strokeStyle = '#16121c';
       g.lineWidth = 0.07;
-      const up = tint === 'blue';
+      const up = tint === 'flip';
       for (const x of [-pil, pil]) {
         for (let k = 0; k < 2; k++) {
           const y = -0.35 + k * 0.5;
@@ -1882,7 +1892,7 @@ function bakeEmblem(m: ModeId, ppu: number): Sprite {
 
 /**
  * Wind chevrons: a tall lens of swept air with the chevrons inside, one to
- * four of them, pointing back for slow.
+ * five of them, pointing back for slow.
  */
 function bakeSpeed(sp: SpeedId, h: number, ppu: number): Sprite {
   const col = SPEED_COL[sp];
@@ -2201,7 +2211,7 @@ export function newCommonArt(ppu: number): CommonArt {
     orb[c] = bakeOrb(c, ppu);
     orbGlow[c] = glowSprite(
       ppu * 2.2,
-      c === 'black' ? '#9a6aff' : ORB_COL[c],
+      c === 'slam' ? '#6f86ff' : ORB_COL[c],
       0.12
     );
     ring[c] = bakeRing(c, ppu);

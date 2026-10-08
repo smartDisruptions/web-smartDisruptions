@@ -8,7 +8,7 @@ import '../arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade archive',
   description:
-    "The Arcade's older cabinets, all still free to play: a kart racer my son Gabe built, a mystery in a locked filing cabinet, a cloth simulator, chores turned into a game, a honeycomb puzzle and Snake in gold.",
+    "The Arcade's older cabinets, all still free to play: a cloth simulator, chores turned into a game, and Snake in gold.",
   alternates: { canonical: '/games/archive' },
 };
 
@@ -47,7 +47,7 @@ export default function ArcadeArchive() {
           </h1>
           <p className="arc-lead font-read">
             The Arcade&apos;s older cabinets. Kiru, the Neo Dojo, a duel still in pre-alpha and Pip&apos;s Broom &amp; Blade Arcade have the
-            front room now, but every one of these still plays, including Pebble Kart, the kart racer my son Gabe built himself.
+            front room now, but every one of these still plays.
           </p>
           <Link href="/games" className="arc-back">
             <BackArrow />

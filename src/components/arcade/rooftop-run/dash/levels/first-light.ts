@@ -75,13 +75,13 @@ k.deco(r3 + 3, 3, 'bonsai');
 // The first drum, alone on the downbeat of bar 12: up and back down.
 k.text(at(12) - 1, 9.1, 'Yellow drums', 0.85);
 k.text(at(12) - 1, 8.2, 'launch you', 0.85);
-k.pad(at(12) + 0.3, 3, 'yellow');
+k.pad(at(12) + 0.3, 3, 'jump');
 k.jumpSpikes(at(12, 2), 3);
 // The second drum throws him up onto a warehouse three blocks higher.
 const drum2 = at(13) + 0.3;
 const wh = drum2 + 2.8;
 k.roof(r3, wh - r3, 3, 'tiles');
-k.pad(drum2, 3, 'yellow');
+k.pad(drum2, 3, 'jump');
 const whEnd = at(15) + 1;
 k.roof(wh, whEnd - wh, 6, 'warehouse');
 k.jumpSpikes(at(14), 6, 2);
@@ -116,7 +116,7 @@ k.spike(ledge, 3, 1, { small: true });
 // The caltrop sits a little late so an on-beat jump clears the drum easily.
 const last = at(18, 2) + apex(at(18, 2)) + 0.7 - 0.5;
 k.spike(last, 3, 1, { small: true });
-k.pad(last - 1, 3, 'yellow');
+k.pad(last - 1, 3, 'jump');
 k.scroll(last + 1.75, 8.5, 1);
 // The fill: one jump on beat 4, landing just before the gate.
 k.jumpSpikes(at(19, 3), 3);

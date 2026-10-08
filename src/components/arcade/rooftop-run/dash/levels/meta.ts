@@ -8,7 +8,7 @@ import type { LevelId, LevelMeta } from '../types';
  * · Moon Gate 72.7 s · Storm Roofs 75.4 s · Dragon Festival 76.8 s · Shadow
  * Dojo 84.0 s.
  *
- * One new way to move per level, Geometry Dash style: Run and Kite, then
+ * One new way to move per level: Run and Kite, then
  * spirit lanterns, then gravity and Roll, then Parasol and speed, then Dragon
  * and Shadow Step, then everything.
  */
@@ -19,7 +19,7 @@ export const LEVEL_METAS: LevelMeta[] = [
     name: 'First Light',
     tagline: 'Dawn on the rooftops. Learn to jump, then to fly.',
     difficulty: 'easy',
-    stars: 2,
+    stars: 1,
     bpm: 112,
     theme: 'dawn',
     startMode: 'run',
@@ -74,7 +74,7 @@ export const LEVEL_METAS: LevelMeta[] = [
     name: 'Lantern Row',
     tagline: 'Kick off the spirit lanterns down festival street.',
     difficulty: 'normal',
-    stars: 3,
+    stars: 2,
     bpm: 124,
     theme: 'lanterns',
     startMode: 'run',
@@ -137,7 +137,7 @@ export const LEVEL_METAS: LevelMeta[] = [
     name: 'Moon Gate',
     tagline: 'Through the blue gate, the town turns upside down.',
     difficulty: 'hard',
-    stars: 5,
+    stars: 4,
     bpm: 132,
     theme: 'moon',
     startMode: 'run',
@@ -200,7 +200,7 @@ export const LEVEL_METAS: LevelMeta[] = [
     name: 'Storm Roofs',
     tagline: 'Open the parasol. The storm is on the beat.',
     difficulty: 'harder',
-    stars: 7,
+    stars: 6,
     bpm: 140,
     theme: 'storm',
     startMode: 'run',
@@ -334,7 +334,7 @@ export const LEVEL_METAS: LevelMeta[] = [
     name: 'Shadow Dojo',
     tagline: 'Every way to move, at the speed of a blade.',
     difficulty: 'demon',
-    stars: 10,
+    stars: 12,
     bpm: 160,
     theme: 'dojo',
     startMode: 'run',

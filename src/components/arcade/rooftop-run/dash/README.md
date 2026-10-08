@@ -1,6 +1,6 @@
 # Kiru's Rooftop Run: Dash
 
-The level game, Geometry Dash style, in Kiru's town. One button, six ways to
+The rhythm level game in Kiru's town. One button, six ways to
 move, six hand-built levels set to original music. The original endless run
 stays too, as **Classic** (`../engine.ts`, unchanged).
 
@@ -56,8 +56,8 @@ fastest 19.2. Wind-chevron objects (`speed`) change the speed instantly.
 | `dragon`  | Dragon      | Hold to fly up at 45°, release to fly down at 45°.               | Tiny hitbox. Slides along floors and ceilings. A wall or hazard kills.                                                                                                                                    |
 | `shadow`  | Shadow Step | Tap (on a surface): vanish and reappear on the opposite surface. | Instant. If no surface lies opposite, he leaves the level and dies (`sky`/`pit`).                                                                                                                         |
 
-**Gravity.** A blue gate (`grav: -1`) turns him upside down; a yellow one
-(`grav: 1`) turns him back. Blue drums and blue or green lanterns flip him too.
+**Gravity.** A wisteria gate (`grav: -1`) turns him upside down; a jade one
+(`grav: 1`) turns him back. Flip drums and flip or spin lanterns turn him over too.
 Upside down, everything mirrors: he stands on ceilings, and a "jump" goes down.
 
 **Hitboxes.** Kiru is drawn about 1.6 blocks tall in Run. The hitboxes are:
@@ -94,26 +94,28 @@ designers should leave 2.
 - **lantern**: a heavy lantern swinging on a rope. Only the body kills.
 - **vent**: steam or fire, deadly for `on` beats and quiet for `off` beats.
   It always warns a beat ahead.
-- **pad** (taiko-drum springs): yellow is a high bounce (about 4.5 blocks),
-  pink low (about 3.2), red very high (about 6.5), blue flips gravity with a
-  push. Triggered by touch.
+- **pad** (taiko-drum springs), named for what they do and coloured from
+  Kiru's palette (`render/sprites.ts` `PAD_COL`): `jump` (vermilion) is a high
+  bounce (about 4.5 blocks), `hop` (jade) low (about 3.2), `leap` (gold) very
+  high (about 6.5), `flip` (wisteria) turns gravity over with a push.
+  Triggered by touch.
 - **orb** (spirit lanterns): press while touching one.
-  - yellow: a full jump.
-  - pink: 0.7×.
-  - red: 1.35×.
-  - blue: flips gravity with a small push.
-  - green: flips gravity and jumps.
-  - black: a hard push toward the ground.
+  - `jump` (vermilion): a full jump.
+  - `hop` (jade): 0.7×.
+  - `leap` (gold): 1.35×.
+  - `flip` (wisteria): turns gravity over with a small push.
+  - `spin` (sakura): turns gravity over and jumps.
+  - `slam` (night indigo): a hard push toward the ground.
 
   Each works once per attempt. There is a 0.1 s buffer: a press just before
   the overlap still counts if the button is still held.
 
 - **gate** (torii): switches mode and/or gravity and sets the corridor. Flying
   modes with no bounds get a 10-block corridor centred on the gate.
-- **speed** (wind chevrons): one, two, three or four chevrons, and slow
-  points back.
+- **speed** (wind chevrons): one chevron per step, one to five, running cool
+  to hot (indigo, paper, gold, ember, crimson), and slow points back.
 - **scroll**: secret scrolls, three per level, placed off the obvious path.
-  They count only on a completed normal-mode run, as in Geometry Dash.
+  They count only on a completed normal-mode run, not in practice.
 - **text**: signs in the world, mostly First Light's tutorial.
 - **deco**: pure art (cats, banners, lanterns, bonsai, laundry, neon, sakura…).
 - **theme**: a palette crossfade from x on.
@@ -183,7 +185,7 @@ designers should leave 2.
   - storm: teal-grey, rain, soft lightning.
   - sakura: pink night, fireworks.
   - dojo: black and vermilion, ink.
-- **Geometry Dash's clarity.** Strong silhouettes, glowing rims on anything
+- **Clarity.** Strong silhouettes, glowing rims on anything
   interactive, a beat pulse on glows and outlines, a ground line that reads.
   Parallax in three depths.
 - **Effects.** Particles on jumps, landings, orbs, pads, gates and scrolls;

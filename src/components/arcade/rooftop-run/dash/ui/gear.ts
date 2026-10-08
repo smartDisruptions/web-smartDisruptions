@@ -23,12 +23,12 @@ export interface TrailGear {
 export const BANDS: BandGear[] = [
   { id: 'vermilion', name: 'Vermilion', color: '#e8432a', stars: 0 },
   { id: 'indigo', name: 'Indigo', color: '#4f5bd5', stars: 3 },
-  { id: 'jade', name: 'Jade', color: '#2fb38a', stars: 6 },
-  { id: 'gold', name: 'Gold', color: '#f2b33d', stars: 10 },
-  { id: 'sakura', name: 'Sakura', color: '#ff8fb8', stars: 15 },
-  { id: 'white', name: 'White', color: '#f4f5ff', stars: 21 },
+  { id: 'jade', name: 'Jade', color: '#2fb38a', stars: 5 },
+  { id: 'gold', name: 'Gold', color: '#f2b33d', stars: 7 },
+  { id: 'sakura', name: 'Sakura', color: '#ff8fb8', stars: 13 },
+  { id: 'white', name: 'White', color: '#f4f5ff', stars: 22 },
   { id: 'violet', name: 'Violet', color: '#9b5de5', stars: 28 },
-  { id: 'black', name: 'Black', color: '#15161f', stars: 36 },
+  { id: 'black', name: 'Black', color: '#15161f', stars: 34 },
 ];
 
 export const TRAILS: TrailGear[] = [

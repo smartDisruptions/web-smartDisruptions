@@ -382,8 +382,8 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
 
   function buttonDown() {
     if (liveHeld) {
-      // Already down (a second finger, a second key): still a new press, as
-      // in Geometry Dash, so a finger can take a spirit lantern while
+      // Already down (a second finger, a second key): still a new press,
+      // so a finger can take a spirit lantern while
       // another holds. It is a real press, so a held resume button now
       // counts as held too (its release is no longer swallowed).
       if (phase === 'playing') {
@@ -452,7 +452,7 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
     attemptBest = practice ? bestPractice : bestNormal;
     passedBest = percentOf(st) > attemptBest;
     clearQueue();
-    // Holding the button through a respawn counts, as in Geometry Dash.
+    // Holding the button through a respawn counts.
     simHeld = liveHeld && !swallow;
     songOn = false;
     playedFor = 0;
@@ -483,7 +483,7 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
 
   /**
    * An attempt given up part-way (a restart, a practice switch, back to the
-   * menus, another level) still counts, as in Geometry Dash, if any of it
+   * menus, another level) still counts if any of it
    * was played: reported with `abandoned`, it adds an attempt and its jumps
    * but sets no best and keeps no scrolls.
    */
@@ -1095,7 +1095,7 @@ export function createDashEngine(opts: DashEngineOptions): DashEngine {
     bestNormal = progress.best;
     bestPractice = progress.practiceBest;
     practice = prac;
-    // Attempts are the level's, over every visit, as in Geometry Dash: this
+    // Attempts are the level's, over every visit: this
     // one is the next after those saved.
     attempt = progress.attempts;
     attemptOpen = false;
