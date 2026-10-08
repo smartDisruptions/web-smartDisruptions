@@ -1,7 +1,7 @@
 import { getPublishedPosts } from '@/lib/posts';
 import { marketStormReports } from '@/data/marketStorm';
-import { apps, GAME_SLUGS } from '@/data/apps';
-import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
+import { GAME_SLUGS } from '@/data/apps';
+import { THINGS_BUILT } from '@/data/built';
 
 /**
  * A vermilion band of receipts under the hero: counts read straight from the
@@ -9,12 +9,10 @@ import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
  * they describe. CSS marquee; stopped (and wrapped) under reduced motion.
  */
 export default function ReceiptsBand() {
-  const builds =
-    projects.length + apps.filter((a) => !(a.slug in PROJECT_APP_SLUGS) && !(GAME_SLUGS as readonly string[]).includes(a.slug)).length;
   const items = [
     `${getPublishedPosts().length} notes from the bench`,
     `${marketStormReports.length} Market Storm reports`,
-    `${builds} things built`,
+    `${THINGS_BUILT} things built`,
     `${GAME_SLUGS.length} games in the arcade`,
     'Mistakes included. Always.',
     'Receipts over claims',

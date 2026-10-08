@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NOREN, REST, panelLeft } from './noren';
 
 /**
@@ -50,8 +50,19 @@ const HELD = 0.3; // what's left of a push on a panel Kiru is holding
 
 export default function NorenFX() {
   const anchor = useRef<HTMLSpanElement>(null);
+  // The motion preference, live: switching reduced motion on mid-visit tears
+  // the moving cloth down and sets up the still picture (and back).
+  const [reduce, setReduce] = useState<boolean | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => setReduce(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   useEffect(() => {
+    if (reduce === null) return;
     const found = anchor.current?.closest<HTMLElement>('.au-door');
     const hitEl = found?.querySelector<HTMLButtonElement>('.au-hit');
     const clothEl = found?.querySelector<HTMLElement>('.au-noren');
@@ -63,9 +74,6 @@ export default function NorenFX() {
     const lowers = [...door.querySelectorAll<HTMLElement>('.au-d')];
     if (uppers.length !== N || lowers.length !== N) return;
 
-    const reduce = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
     // The CSS arrival sway starts when the doorway is inserted: at the first
     // paint, or on a client navigation, about now.
     const mountedAt = performance.now();
@@ -101,6 +109,8 @@ export default function NorenFX() {
     let peeking = true;
     let mood = 0;
     let backTimer = 0;
+    door.dataset.kiru = 'peek';
+    door.dataset.mood = '0';
     const setRest = (rest: readonly (readonly [number, number])[]) => {
       for (let i = 0; i < N; i++) {
         restS[i] = rest[i][0];
@@ -114,6 +124,7 @@ export default function NorenFX() {
       shownB[i] = b[i];
     };
     const held = (i: number) => (peeking && (i === 1 || i === 2) ? HELD : 1);
+    for (let i = 0; i < N; i++) write(i);
 
     // ── Kiru: let go, then peek again ─────────────────────────────────────
     function duck() {
@@ -421,7 +432,7 @@ export default function NorenFX() {
       cancelAnimationFrame(raf);
       cleanups.forEach((c) => c());
     };
-  }, []);
+  }, [reduce]);
 
   return <span ref={anchor} hidden />;
 }

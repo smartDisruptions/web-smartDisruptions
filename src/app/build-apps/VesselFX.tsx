@@ -104,9 +104,8 @@ export default function VesselFX() {
     const slipList = q<HTMLElement>('.ba-slips');
     const gearEls = qa<HTMLElement>('.ba-gear');
 
-    const reduce = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
+    const rm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let reduce = rm.matches;
     const cleanups: (() => void)[] = [];
     const on = (
       t: EventTarget,
@@ -302,6 +301,20 @@ export default function VesselFX() {
         raf = requestAnimationFrame(frame);
       }
     }
+
+    // Reduced motion switched on mid-visit: the gears stop where they are,
+    // the explode spring snaps to the slider, and the next tap updates at
+    // once (a trip already under way finishes).
+    const onMotion = () => {
+      reduce = rm.matches;
+      if (!reduce) return;
+      for (const g of gears) g.pause();
+      gearRate = 0;
+      queued = 0;
+      wake();
+    };
+    rm.addEventListener('change', onMotion);
+    cleanups.push(() => rm.removeEventListener('change', onMotion));
 
     // ── Writing: only what changed ─────────────────────────────────────────
     const lastWrite = new Map<HTMLElement, string>();
@@ -799,6 +812,16 @@ export default function VesselFX() {
     });
     if (reduce) range.value = '100';
     syncRange();
+    // Under reduced motion the phone doesn't turn (no drag, no arrow keys
+    // below), so it isn't a stop on the tab order and its name says what it
+    // shows instead.
+    if (reduce) {
+      stage.removeAttribute('tabindex');
+      stage.setAttribute(
+        'aria-label',
+        'A tiny stamp-card app on a phone, shown taken apart into its four parts.'
+      );
+    }
 
     // ── Turn it ───────────────────────────────────────────────────────────
     let pid = -1;
@@ -885,8 +908,11 @@ export default function VesselFX() {
           dragX = ((((dragX + 180) % 360) + 360) % 360) - 180;
         wake();
       };
-      on(stage, 'pointerup', release);
-      on(stage, 'pointercancel', release);
+      // On the window: a press that leaves the stage before it becomes a
+      // drag has no capture yet, so its pointerup never reaches the stage,
+      // and the next plain hover would turn the phone.
+      on(window, 'pointerup', release);
+      on(window, 'pointercancel', release);
       on(
         stage,
         'touchmove',

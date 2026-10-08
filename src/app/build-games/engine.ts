@@ -1963,6 +1963,13 @@ export function createGame(
     }
   }
   function onMove(e: PointerEvent) {
+    // A press that ended off the canvas before it was captured never sent
+    // its pointerup here; with no button down, it's over. Without this, a
+    // mouse hovering afterwards kept painting roofs.
+    if (downId >= 0 && e.buttons === 0) {
+      downId = -1;
+      painting = false;
+    }
     if (mode === 'build' && downId < 0 && e.pointerType === 'mouse') {
       const [c, r] = cellAt(e.clientX, e.clientY);
       if (c !== curC || r !== curR || !curOn) {
@@ -2015,7 +2022,12 @@ export function createGame(
     }
     const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
     if (moved > 12 || performance.now() - downAt > 700) return;
-    if (mode === 'attract') return takeOver();
+    if (mode === 'attract') {
+      takeOver();
+      // The finger is already up, so this was a tap: a short hop, not the
+      // held jump takeOver's press would otherwise become.
+      return jumpUp();
+    }
     const [c, r] = cellAt(e.clientX, e.clientY);
     // A finger's cursor is feedback while it is down; a mouse keeps hovering.
     if (e.pointerType !== 'mouse') curOn = false;

@@ -360,10 +360,30 @@ export default function ShojiBrowser({
       })
       .catch(() => {});
 
+    // Ends the demo where it stands: the window snaps back to its widest.
+    const endDemo = () => {
+      clearTimers();
+      stopTween();
+      toy.removeAttribute('data-demo');
+      setV(max.current);
+      io?.disconnect();
+      io = null;
+    };
+    // A hidden tab runs no frames, so the demo would come back frozen
+    // half-narrowed: end it instead. An ordinary tween can stay, because its
+    // clock is the wall clock: it lands on its end value when the tab returns.
     const onHide = () => {
-      if (document.hidden) stopTween();
+      if (document.hidden && toy.hasAttribute('data-demo')) endDemo();
     };
     document.addEventListener('visibilitychange', onHide);
+    // Reduced motion switched on mid-visit: the demo ends, and from here on
+    // presets jump and mode changes swap without the wipe (both read
+    // reduce.current when they run).
+    const onMotion = () => {
+      reduce.current = rm.matches;
+      if (rm.matches && toy.hasAttribute('data-demo')) endDemo();
+    };
+    rm.addEventListener('change', onMotion);
 
     return () => {
       alive = false;
@@ -372,6 +392,7 @@ export default function ShojiBrowser({
       clearTimers();
       stopTween();
       document.removeEventListener('visibilitychange', onHide);
+      rm.removeEventListener('change', onMotion);
     };
   }, [setV, stopTween, tween]);
 

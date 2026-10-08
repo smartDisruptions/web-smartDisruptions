@@ -31,6 +31,7 @@ export default function SwitchFX() {
     // motion: at once.
     let settle = 0;
     let frame = 0;
+    let fallback = 0;
     if (root.hasAttribute('data-au-door')) {
       settle = window.setTimeout(release, 3000);
       frame = requestAnimationFrame(() => {
@@ -67,13 +68,19 @@ export default function SwitchFX() {
         return;
       nav.dataset.on = tab.dataset.id;
       root.setAttribute('data-au-door', '');
-      // If the navigation never lands, don't leave the names on.
-      window.setTimeout(release, 4000);
+      // If the navigation never lands, don't leave the names on. One timer
+      // at a time: a stale one from an earlier tap would pull the names in
+      // the middle of a later glide.
+      window.clearTimeout(fallback);
+      fallback = window.setTimeout(release, 4000);
     };
     nav.addEventListener('click', onClick);
     return () => {
       nav.removeEventListener('click', onClick);
       window.clearTimeout(settle);
+      // Landed (this page is leaving): the next page's SwitchFX owns the
+      // names now.
+      window.clearTimeout(fallback);
       cancelAnimationFrame(frame);
     };
   }, []);
