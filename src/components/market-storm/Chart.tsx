@@ -29,13 +29,16 @@ import type { ReportChart } from '@/data/marketStorm';
 function fmt(
   v: number,
   unit: ReportChart['unit'],
-  format?: ReportChart['valueFormat']
+  format?: ReportChart['valueFormat'],
+  decimals?: number
 ) {
-  if (format === 'percent') return `${v}%`;
+  // `decimals` keeps a column of figures aligned (6.0 beside 6.9, not 6).
+  const n = decimals === undefined ? String(v) : v.toFixed(decimals);
+  if (format === 'percent') return `${n}%`;
   if (format === 'currency-bn')
     return v >= 1000 ? `$${(v / 1000).toFixed(2)}T` : `$${v}B`;
-  if (format === 'x') return `${v}×`;
-  return `${v}${unit && unit.length <= 2 ? unit : ''}`;
+  if (format === 'x') return `${n}×`;
+  return `${n}${unit && unit.length <= 2 ? unit : ''}`;
 }
 
 /**
@@ -56,13 +59,19 @@ function DataTable({ chart }: { chart: ReportChart }) {
         <thead>
           <tr>
             <th scope="col">Label</th>
-            <th scope="col">{chart.unit}</th>
+            {chart.kind === 'quadrant' && (
+              <th scope="col">{chart.xLabel ?? 'x'}</th>
+            )}
+            <th scope="col">
+              {chart.kind === 'quadrant' ? (chart.yLabel ?? chart.unit) : chart.unit}
+            </th>
           </tr>
         </thead>
         <tbody>
           {chart.points.map((p) => (
             <tr key={p.label}>
               <th scope="row">{p.label}</th>
+              {chart.kind === 'quadrant' && <td>{p.x}</td>}
               <td>{fmt(p.value, chart.unit, chart.valueFormat)}</td>
             </tr>
           ))}
@@ -77,44 +86,48 @@ function DataTable({ chart }: { chart: ReportChart }) {
    names and a vertical bar chart turns them into diagonal text nobody reads. */
 function Bars({ chart }: { chart: ReportChart }) {
   const max = Math.max(...chart.points.map((p) => Math.abs(p.value)), 0.0001);
+  // On a phone the old three-column row left the bar track 0px wide: an
+  // 11rem label and a 6rem value took the whole width, so every bar chart
+  // rendered as a list of numbers. Below `sm` the label and value now share a
+  // row with a thin full-width bar under them; from `sm` up the familiar
+  // label · bar · value row returns. Labels wrap instead of truncating — a
+  // label cut to "Phase 2 (does it work?) ·…" loses the word that matters.
   return (
-    <div className="space-y-3">
+    <div className="space-y-3.5 sm:space-y-3">
       {chart.points.map((p, i) => {
         const pct = (Math.abs(p.value) / max) * 100;
         return (
           <div
             key={p.label}
-            className="grid grid-cols-[minmax(0,11rem)_1fr] items-center gap-4"
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-1.5 sm:grid-cols-[minmax(0,11rem)_1fr_6rem] sm:items-center sm:gap-x-4"
           >
             <div className="min-w-0">
-              <div className="truncate text-sm text-text-primary">
+              <div className="text-sm leading-snug text-text-primary">
                 {p.label}
               </div>
               {p.note && (
-                <div className="truncate font-mono text-[0.62rem] uppercase tracking-[0.07em] text-text-secondary">
+                <div className="mt-0.5 font-mono text-[0.68rem] uppercase leading-snug tracking-[0.06em] text-text-secondary">
                   {p.note}
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-3">
-              <div className="h-7 flex-1 overflow-hidden rounded-md bg-fill">
-                <div
-                  className={`sd-bar h-full rounded-md ${
-                    p.highlight ? 'bg-accent' : 'bg-text-secondary/45'
-                  }`}
-                  style={{
-                    ['--w' as string]: `${pct}%`,
-                    animationDelay: `${i * 60}ms`,
-                  }}
-                />
-              </div>
+            <div
+              className={`text-right font-mono text-sm font-semibold [font-variant-numeric:tabular-nums] sm:order-3 ${
+                p.highlight ? 'text-accent' : 'text-text-primary'
+              }`}
+            >
+              {fmt(p.value, chart.unit, chart.valueFormat, chart.decimals)}
+            </div>
+            <div className="col-span-2 h-2.5 overflow-hidden rounded-full bg-fill sm:order-2 sm:col-span-1 sm:h-7 sm:rounded-md">
               <div
-                className={`w-24 shrink-0 text-right font-mono text-sm font-semibold [font-variant-numeric:tabular-nums] ${
-                  p.highlight ? 'text-accent' : 'text-text-primary'
+                className={`sd-bar h-full rounded-[inherit] ${
+                  p.highlight ? 'bg-accent' : 'bg-text-secondary/45'
                 }`}
-              >
-                {fmt(p.value, chart.unit, chart.valueFormat)}
-              </div>
+                style={{
+                  ['--w' as string]: `${pct}%`,
+                  animationDelay: `${i * 60}ms`,
+                }}
+              />
             </div>
           </div>
         );
@@ -277,6 +290,16 @@ function Comparison({ chart }: { chart: ReportChart }) {
    and the split is the detail — $830bn of leases, and who signed them. */
 function Stacked({ chart }: { chart: ReportChart }) {
   const total = chart.points.reduce((n, p) => n + p.value, 0) || 1;
+  // With a highlighted point, that segment takes the accent and the rest step
+  // down through greys — otherwise the accent ramp lightens left to right and
+  // the point the prose is about can end up the palest segment on the bar.
+  const lit = chart.points.some((p) => p.highlight);
+  const shade = (p: { highlight?: boolean }, i: number) =>
+    !lit
+      ? `color-mix(in oklab, var(--sd-accent) ${88 - i * 17}%, var(--sd-surface))`
+      : p.highlight
+        ? 'var(--sd-accent)'
+        : `color-mix(in oklab, var(--sd-text-secondary) ${45 - i * 10}%, var(--sd-surface))`;
   return (
     <div>
       <div className="flex h-12 w-full overflow-hidden rounded-lg border border-border">
@@ -291,7 +314,7 @@ function Stacked({ chart }: { chart: ReportChart }) {
               // full width — which flex then divided evenly, so a $329bn share
               // and an $85bn share drew identically.
               ['--w' as string]: `${(p.value / total) * 100}%`,
-              background: `color-mix(in oklab, var(--sd-accent) ${88 - i * 17}%, var(--sd-surface))`,
+              background: shade(p, i),
               animationDelay: `${i * 70}ms`,
             }}
             title={`${p.label}: ${fmt(p.value, chart.unit, chart.valueFormat)}`}
@@ -306,9 +329,7 @@ function Stacked({ chart }: { chart: ReportChart }) {
           <li key={p.label} className="flex items-baseline gap-2.5 text-sm">
             <span
               className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-[2px]"
-              style={{
-                background: `color-mix(in oklab, var(--sd-accent) ${88 - i * 17}%, var(--sd-surface))`,
-              }}
+              style={{ background: shade(p, i) }}
               aria-hidden="true"
             />
             <span className="text-text-primary">{p.label}</span>
@@ -322,6 +343,69 @@ function Stacked({ chart }: { chart: ReportChart }) {
   );
 }
 
+/* ── QUADRANT ────────────────────────────────────────────────────────────────
+   Two scores per company, sorted into four named boxes. Drawn as boxes of
+   chips rather than a scatter plot on purpose: scores out of ten land on the
+   same few grid points, so a scatter stacks five companies on one dot and
+   labels them over each other — on a phone, unreadably. The box a company
+   lands in is the finding; its exact coordinates are in the hidden table.
+
+   The grid stays two-by-two at every width. Stacked into one column it is
+   four lists, and the point of the figure is that "uses AI" and "gains from
+   AI" are different directions. */
+function Quadrant({ chart }: { chart: ReportChart }) {
+  const xs = chart.xSplit ?? 5;
+  const ys = chart.ySplit ?? 5;
+  const labels = chart.quadrantLabels ?? { tl: '', tr: '', bl: '', br: '' };
+  const byScore = (a: { value: number; x?: number }, b: { value: number; x?: number }) =>
+    b.value + (b.x ?? 0) - (a.value + (a.x ?? 0));
+  const cell = (top: boolean, right: boolean) =>
+    chart.points
+      .filter((p) => (p.value >= ys) === top && ((p.x ?? 0) >= xs) === right)
+      .sort(byScore);
+  const boxes = [
+    { key: 'tl', top: true, right: false, label: labels.tl },
+    { key: 'tr', top: true, right: true, label: labels.tr },
+    { key: 'bl', top: false, right: false, label: labels.bl },
+    { key: 'br', top: false, right: true, label: labels.br },
+  ];
+  return (
+    <div className="ms-quad">
+      <p className="ms-quad-axis ms-quad-axis-y">
+        <span aria-hidden="true">↑</span> {chart.yLabel}
+      </p>
+      <div className="ms-quad-grid">
+        {boxes.map((b) => {
+          const pts = cell(b.top, b.right);
+          const lit = b.top && b.right;
+          return (
+            <div key={b.key} className={`ms-quad-box${lit ? ' is-lit' : ''}`}>
+              <div className="ms-quad-label">{b.label}</div>
+              <ul className="ms-quad-chips" role="list">
+                {pts.map((p) => (
+                  <li
+                    key={p.label}
+                    className={`ms-quad-chip${p.highlight ? ' is-hl' : ''}`}
+                    title={`${p.label}: ${chart.xLabel ?? 'x'} ${p.x}/10, ${chart.yLabel ?? 'y'} ${p.value}/10`}
+                  >
+                    {p.label}
+                  </li>
+                ))}
+                {pts.length === 0 && (
+                  <li className="ms-quad-empty">None</li>
+                )}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+      <p className="ms-quad-axis ms-quad-axis-x">
+        {chart.xLabel} <span aria-hidden="true">→</span>
+      </p>
+    </div>
+  );
+}
+
 const RENDER: Record<
   ReportChart['kind'],
   (p: { chart: ReportChart }) => React.ReactNode
@@ -330,6 +414,7 @@ const RENDER: Record<
   line: Line,
   comparison: Comparison,
   stacked: Stacked,
+  quadrant: Quadrant,
 };
 
 export default function Figure({ chart }: { chart: ReportChart }) {

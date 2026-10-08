@@ -353,9 +353,13 @@ piece; this section says what a finished report has.
    chart**, and the report's central finding is a chart, not just a number.
    `whyItMatters` is mandatory on each: if the chart cannot be justified in one
    plain sentence it is decoration. Kinds: `line`, `bar`, `stacked`,
-   `comparison`. They are hand-drawn SVG — no charting library, ever (the page
-   is server-rendered, the palette is the site's tokens, both themes without
-   JS). Caption and hidden data table come free from `Chart.tsx`.
+   `comparison`, and `quadrant` — two scores per company (`x` and `value`)
+   sorted into four named boxes, for findings shaped like "doing X is not the
+   same as winning at Y". Drawn as boxes of chips, not a scatter, because
+   scores out of ten pile onto the same few points. They are hand-drawn SVG
+   or plain markup — no charting library, ever (the page is server-rendered,
+   the palette is the site's tokens, both themes without JS). Caption and
+   hidden data table come free from `Chart.tsx`.
 
 4. **`[[stat:value|caption]]`** for the one number that carries a point, set
    large against a rule, so a skimmer collects the figures without the prose.

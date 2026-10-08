@@ -600,3 +600,132 @@
   border-color: rgba(155, 176, 255, 0.2);
   box-shadow: 0 30px 60px -38px rgba(0, 0, 0, 0.55);
 }
+
+/* ── Quadrant chart ──────────────────────────────────────────────────────────
+   Four named boxes of company chips, drawn inside an L of axis rules so it
+   still reads as a chart. The top-right box is the one the report is about:
+   it takes the indigo wash, and a small vermilion lozenge marks it the way a
+   seal marks a page. Chips are tickers in the mono face; a highlighted chip
+   is pressed in solid indigo. Two columns at every width — see Chart.tsx. */
+.ms-quad {
+  display: grid;
+  gap: 0.6rem;
+}
+.ms-quad-axis {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.ms-quad-axis-x {
+  text-align: right;
+}
+.ms-quad-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 0 0 6px 6px;
+  border-left: 2px solid var(--sd-border-strong);
+  border-bottom: 2px solid var(--sd-border-strong);
+}
+.ms-quad-box {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 8rem;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 16px;
+  background: var(--sd-surface);
+}
+.ms-quad-box.is-lit {
+  border-color: color-mix(in oklab, var(--sd-accent) 55%, transparent);
+  background: color-mix(in oklab, var(--sd-accent) 13%, var(--sd-surface));
+}
+.ms-quad-box.is-lit::after {
+  content: '';
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--sd-pen);
+  transform: rotate(45deg);
+}
+.ms-quad-label {
+  padding-right: 1rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.3;
+  color: var(--sd-text-primary);
+  text-wrap: balance;
+}
+.ms-quad-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ms-quad-chip {
+  padding: 0.38rem 0.6rem;
+  border: 1px solid var(--sd-border-strong);
+  border-radius: 999px;
+  background: var(--sd-bg);
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1;
+  color: var(--sd-text-primary);
+}
+.ms-quad-box.is-lit .ms-quad-chip {
+  border-color: color-mix(in oklab, var(--sd-accent) 60%, transparent);
+}
+.ms-quad-chip.is-hl {
+  border-color: transparent;
+  background: var(--sd-accent);
+  color: var(--sd-bg);
+}
+@media (max-width: 420px) {
+  .ms-quad-grid {
+    gap: 5px;
+    padding: 0 0 5px 5px;
+  }
+  .ms-quad-box {
+    gap: 0.6rem;
+    padding: 0.75rem 0.55rem;
+  }
+  .ms-quad-chips {
+    gap: 5px;
+  }
+}
+.ms-quad-empty {
+  font-size: 0.8rem;
+  color: var(--sd-text-secondary);
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ms-quad-chip {
+      animation: ms-chip-in linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 70%;
+    }
+  }
+}
+@keyframes ms-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -151,6 +151,8 @@ export interface ChartPoint {
   value: number;
   note?: string;
   highlight?: boolean;
+  /** Second axis, used only by `quadrant` charts. `value` is the vertical. */
+  x?: number;
 }
 
 /**
@@ -168,11 +170,22 @@ export interface ReportChart {
   id: string;
   title: string;
   unit: string;
-  kind: 'line' | 'bar' | 'stacked' | 'comparison';
+  kind: 'line' | 'bar' | 'stacked' | 'comparison' | 'quadrant';
   points: ChartPoint[];
   whyItMatters: string;
   source?: string;
   valueFormat?: 'percent' | 'currency-bn' | 'x' | 'plain';
+  /** Fixed decimal places for the printed values, so a column lines up. */
+  decimals?: number;
+  /* Quadrant only. Two scores per company sort it into one of four boxes:
+     `x` against `xSplit` picks the column, `value` against `ySplit` the row.
+     The labels name what each box MEANS, because a reader should not have
+     to decode an axis to learn where a company landed. */
+  xLabel?: string;
+  yLabel?: string;
+  xSplit?: number;
+  ySplit?: number;
+  quadrantLabels?: { tl: string; tr: string; bl: string; br: string };
 }
 
 /**
@@ -8691,8 +8704,1429 @@ And it is the clearest read yet on how the capex cycle reaches ground. Alphabet 
   ],
 };
 
+const arkgAiTakeoff: MarketStormReport = {
+  slug: 'arkg-ai-takeoff',
+  ticker: 'ARKG',
+  company: 'ARK Genomic Revolution ETF',
+  title: 'In gene stocks, using the most AI isn’t the same as winning from it.',
+  excerpt: 'ARKG is one fund that holds shares in about 33 gene and biology companies. This report scored the main ones on two things: AI use today, and gain if AI takes off. The two scores often disagree, and the best positioned own what AI can’t make: patient data, lab work and proven medicines.',
+  catalyst: 'ARKG’s 96% rise by 5 October, its 8.8% fall the next day, and a month of new biology tools from the AI labs. Researched as of 7 October 2026.',
+  publishDate: '2026-10-08',
+  tags: [
+    'genomics',
+    'AI-in-biology',
+    'ARKG',
+    'drug-discovery',
+    'thesis',
+  ],
+  verdict: 'Eli Lilly and Tempus are best positioned if AI takes off, for different reasons. Lilly owns proven medicines and cash; Tempus owns patient data AI can’t copy. The companies using the most AI mostly still need proof in people.',
+  summary: `Two things are true at once.
+
+**AI is getting very good at the thinking part of biology.** On short, well-defined tasks it can read research, plan experiments and design proteins, the tiny working parts of cells, on a computer. In some tests it does about as well as experts.
+
+**But a medicine still has to work in a person.** That part runs at the speed of cells, patients and trials. AI can’t skip it.
+
+So when the thinking gets cheap, the value moves to what AI can’t make by itself. That means real patient data, the lab work that proves an idea, and medicines already proven in people.
+
+This report scored the main companies in ARKG, a fund of gene-technology companies, on exactly that. Below: what the fund owns, what AI can do, what is still unproven, and who is best positioned.`,
+  kpis: [
+    {
+      label: 'AI drugs: “does it work?”',
+      value: '4 of 10',
+      delta: 'vs ~29% typical',
+      note: 'Phase 2 is the stage that asks whether a drug works at all.',
+      tone: 'neutral',
+    },
+    {
+      label: 'AI drugs fully approved',
+      value: '0',
+      delta: 'in the US, as of mid-2026',
+      note: 'The first US decision on a drug designed with computer simulations and machine learning is due in early 2027.',
+      tone: 'neutral',
+    },
+    {
+      label: 'Lilly’s AI lab vs sales',
+      value: '≤0.2%',
+      delta: '≤$200M a year, shared with NVIDIA',
+      note: 'One drug, sold as Mounjaro and Zepbound, brings in about 65% of Lilly’s sales.',
+      tone: 'neutral',
+    },
+    {
+      label: 'Tempus data sales, Apr–Jun',
+      value: '$93.2M',
+      delta: '≈24% of sales',
+      note: 'A ~$200M figure seen elsewhere counts deals signed that pay out over several years.',
+      tone: 'warn',
+    },
+    {
+      label: 'Twist’s yearly AI orders',
+      value: '$50M+',
+      delta: 'from ~$25M',
+      note: 'At least about $50M in the year to September 2026, and about $100M the year after, per an analyst’s math that Twist’s managers confirmed. That is about a tenth of sales.',
+      tone: 'bull',
+    },
+    {
+      label: 'Twist: price per $1 sales',
+      value: '≈$24',
+      delta: 'Tempus ≈$8',
+      note: 'Total market value on 6 October divided by a year of sales.',
+      tone: 'warn',
+    },
+    {
+      label: 'ARKG so far in 2026',
+      value: '+79%',
+      delta: 'after −8.8% on 6 Oct',
+      note: 'It was up about 96% at the 5 October close. Twist and 10x had each risen about six-fold by early October.',
+      tone: 'neutral',
+    },
+    {
+      label: 'Odds AI takes off by 2030',
+      value: '35%',
+      delta: 'from 30%',
+      note: 'Steady 50%, stalls 15%. Set when a second team reviewed the work. A judgment, not a measurement.',
+      tone: 'neutral',
+    },
+  ],
+  theQuestion: `Many companies in this fund say AI is part of their story. The real question is who **gets paid** if AI keeps improving fast.
+
+The obvious answer is the companies that use the most AI. They have the supercomputers, their own AI models and a story built around AI. A model is the trained program that does the AI’s thinking.
+
+But the AI labs, the companies that build the most advanced AI, now offer similar models to everyone. Some good models are free. If anyone can rent the same brain, the brain stops being special.
+
+So who comes out ahead? The company with the most AI, or the one that owns what AI can’t make?`,
+  analysis: '',
+  invalidationIntro: `**The one number that would settle it: the next big count of AI-found drugs in Phase 2.**
+
+Today there are ten results. Suppose 30 or more AI drugs finish Phase 2, and at least half succeed.
+
+That would show AI picking drugs that work in people, not just designing them faster. The companies that design drugs with AI would move up.
+
+Until then, a few tests with known dates will settle parts of the view.`,
+  invalidation: {
+    bull: [
+      'Tempus’s cash flow, the money in minus the money out, is weak for July to September. Or its main AstraZeneca agreement, which its latest filing says runs to 31 December, isn’t renewed. Either one moves Tempus to Tier 2.',
+      'Tempus still spends more cash than it brings in at year-end. That alone also moves it to Tier 2.',
+      'The Fed raises rates again while the 10-year yield stays above 5%. That would squeeze every company spending more than it brings in, whatever the AI news. The yield is already above 5%.',
+      'More AI models get shelved for safety reasons. That would point to the “steady” future, not a takeoff.',
+    ],
+    bear: [
+      'A new industry count covers 30 or more AI-found drugs in Phase 2, and at least half succeed. Generate, Recursion, Absci and Schrödinger would move up.',
+      'Anthropic’s next update shows Claude leading more than half of Anthropic’s own research tasks. That would raise the odds of a takeoff.',
+      'Recursion’s next results in people, due on 2 November and in the first half of 2027, show a drug clearly working.',
+      'Twist’s forecast for next year, due in November, shows AI orders becoming a much bigger part of its sales.',
+    ],
+  },
+  verification: {
+    confirmed: 10,
+    partlyTrue: 6,
+    corrected: 4,
+    confirmedNote: 'A fact-checker tried to disprove the 16 claims the conclusion leaned on. Then a second team of six agents was told to prove the whole report wrong. It refreshed the prices, found two missed companies, rechecked the dates and redid the math, and it tested four more claims. Of all 20 claims, ten held up, six were partly true or out of date, and four were wrong. The fixes that changed the most are below, and every one has been applied.',
+    items: [
+      {
+        kind: 'corrected',
+        title: 'Natera was in the top tier for the wrong reasons',
+        text: `The first version said Natera brought in more cash than it spent and had little legal risk. Its own report to regulators shows a **$67 million loss** from April to June, under standard accounting rules.
+
+Natera is appealing a court ruling that it owes Guardant, another fund company, about **$290 million** over false advertising. Its market value had also climbed to about 20 times its yearly sales, and its share price sat above analysts’ average guess. It moved to Tier 2.`,
+      },
+      {
+        kind: 'corrected',
+        title: 'Tempus’s “$200 million in a quarter” was deals signed, not money in',
+        text: `The $200 million was **bookings**: deals signed that pay out over several years. Sales from Tempus’s data business that quarter were **$93.2 million**.
+
+The cash it burned in the first half of the year also grew, to $80.8 million from $61.5 million. Its main AstraZeneca agreement runs to 31 December, according to its latest filing, though its managers say the AstraZeneca work runs into 2027. It stays in Tier 1, on probation.`,
+      },
+      {
+        kind: 'corrected',
+        title: 'A typical drug passes Phase 2 about 29% of the time, not 40%',
+        text: `The first version compared AI drugs (4 of 10) with a typical rate of about 40%, and called them the same. The industry figure for 2011–2020 is about **29%**. So AI drugs look a little better, but ten results are still too few to tell.
+
+The “What would settle it” test was rewritten to match.`,
+      },
+      {
+        kind: 'partly',
+        title: 'Lilly is a weight-loss company with a big AI lab, not an AI company',
+        text: `Lilly’s AI work is real. It runs an AI lab with NVIDIA, budgeted at up to $1 billion over five years.
+
+But the prices it actually gets for its drugs fell about 13%. Early on, its new weight-loss pill, Foundayo, sold about one-fifth as much as its main rival’s pill. This report found no AI-found Lilly drug in human trials.
+
+It stays first, relabeled as the steady giant.`,
+      },
+      {
+        kind: 'corrected',
+        title: 'Rentosertib’s Phase 3 started in September, not July',
+        text: 'Insilico gave the first Phase 3 patient a dose of rentosertib on **9–10 September 2026**, in China. An earlier claim said July. Insilico says AI found both the drug and the target it aims at.',
+      },
+      {
+        kind: 'partly',
+        title: 'This year’s biggest gains were measured before a hard fall',
+        text: `The first version said Twist was up 495% and 10x up 473% for the year, each nearly six-fold. Those figures were from early October, before ARKG fell **8.8%** on 6 October, from $56.77 to $51.75.
+
+Twist fell about 19% that day. After the drop, Twist was still up more than 400% for the year, and ARKG about 79%.`,
+      },
+    ],
+  },
+  openQuestions: [
+    'Will AstraZeneca renew its main agreement with Tempus, which its latest filing says runs to 31 December? It is one of the tests Tempus has to pass to stay in Tier 1.',
+    'Does AI help pick drugs that work in people, or only design them faster? Ten Phase 2 results can’t tell yet.',
+    'Who keeps the money when AI labs go straight to drug companies? No AI lab has made public a paid deal with a data company in the fund yet.',
+    'How fast is AI really improving? The newest numbers come from the AI labs themselves, grading their own work. Outside checks lag behind.',
+  ],
+  soWhat: `Here are two habits this report teaches. Both work far beyond stocks.
+
+**When a new tool makes one step cheap, ask what becomes scarce.**
+
+AI is making the thinking part of biology cheap. So the thinking stops being the bottleneck, the step everything else waits on.
+
+The waiting moves to the parts AI can’t do alone. Data nobody else has. Lab work that proves the idea. Patients in trials.
+
+**Using a tool a lot is not the same as being paid for it.** A company can use more AI than anyone and still be waiting for proof.
+
+Another can use much less AI and still supply everyone who does. In a gold rush, the shop selling shovels gets paid whether or not anyone finds gold.
+
+The second habit is about stories and prices. **A good story and a high price are two separate questions.** Check them one at a time.`,
+  throughLine: {
+    text: `The main report in this section asks **who pays to build AI**. This report asks the next question: once the AI exists, **who gets paid when it is used?**
+
+In biology, the early answer looks the same. The headline is the AI. The money sits with whoever owns the part AI can’t make for itself.`,
+    links: [
+      {
+        label: 'The main report: who pays to build AI',
+        slug: 'ai-capex-abundance-or-bubble',
+      },
+    ],
+  },
+  takeawaysLead: '**As AI makes the thinking part of biology cheap, value moves to what AI can’t make: patient data, lab work and proven medicines.**',
+  keyTakeaways: [
+    'AI-found drugs, meaning drugs first spotted with AI’s help, pass the first stage of human trials **21 times out of 24**. That stage checks safety. A typical drug passes about 52% of the time.',
+    'On the harder test, whether a drug works at all, **4 of 10** AI-found drugs have passed. A typical drug passes about 29% of the time. Ten results are too few to tell skill from luck.',
+    'Twist scores **9 out of 10** for gaining if AI takes off, but only 5 for using AI itself. Every protein an AI designs needs real DNA made to order before it can be tested, and Twist is one of the biggest makers of that DNA.',
+    'Eli Lilly is a giant drug company. Its AI lab with NVIDIA, the chip maker, costs at most about **0.2%** of its sales. Lilly still ranks first here, because of its proven medicines and its cash.',
+    'Tempus, a cancer-test and patient-data company, made **$93.2 million** from its data business between April and June. That is about 24% of its sales. Its data puts it in this report’s top group, but on probation: it still spends more cash than it brings in.',
+    'Investors pay about **$24** for every $1 of Twist’s yearly sales, and about $8 for Tempus’s. A higher number means more future growth is already in the price.',
+  ],
+  sections: [
+    {
+      id: 'the-fund',
+      label: 'ARKG is one fund that owns many gene companies',
+      part: 'Start here',
+      body: `A stock, or share, is a small piece of a company. People buy and sell shares, and the price moves every day.
+
+ARKG is an ETF, short for exchange-traded fund. It holds shares in many companies at once, and people buy and sell it like a single share. ARK Invest runs it.
+
+It holds shares in about **33** companies that work with genes and biology.
+
+Some read DNA or make blood tests. Some use AI to design drugs. A few edit genes, rewriting DNA to treat disease.
+
+[[chart:arkg-holdings]]
+
+**Two lab-tool makers sit at the top.** On 5 October they made up about a fifth of the fund.
+
+10x Genomics makes machines that study single cells. Twist Bioscience prints DNA to order.
+
+**More than half the fund is in companies that make tests, lab tools and data.** The three AI drug-discovery companies among its 15 biggest holdings add up to about 11%.
+
+This report asks which of these companies are best positioned if AI takes off.
+
+“Takes off” here means AI that can run month-long research projects by 2028, and whole research programs by 2030. Later, this report puts rough odds on that.`,
+    },
+    {
+      id: 'ai-labs',
+      label: 'AI is getting good at the thinking part of biology',
+      part: 'The evidence',
+      body: `The big AI labs are pushing into biology. On short, well-defined tasks, their models now match experts in some tests.
+
+[[chart:science-bench]]
+
+The test measures AI agents: programs that work through a many-step task on their own. Among the four models shown, scores run from 29% for an older version of Claude, Anthropic’s AI, to 64.6% for OpenAI’s GPT-6 Astra.
+
+The numbers come from Anthropic’s launch page, using OpenAI’s own figure for GPT-6 Astra. The test itself is still an early version.
+
+**OpenAI** rated GPT-6 Astra “High” for biology skill on its own scale. It offers a biology model, GPT-Rosalind, only to labs it has checked and approved. In September it shelved a newer model after tests found it more deceptive.
+
+**Anthropic** says Claude now takes the lead on 26% of Anthropic’s own AI-research tasks. In February it was under 1%.
+
+In one project, 950 Claude agents found a new enzyme system in 21 hours. Enzymes are proteins that make chemical reactions happen.
+
+The new system looks like the ones used for gene editing. What it does isn’t known yet, and outside scientists haven’t checked the work.
+
+**xAI**, the maker of the Grok chatbot, has no biology product this report could find.
+
+**Google DeepMind** released AlphaGenome Atlas. It predicts what 9 billion possible DNA changes do, and it’s free for research.
+
+With these tools, designing a protein on a computer now costs about **$150** for each target in the body. **The thinking part of biology is getting cheap.**
+
+What none of them has done yet is get a drug approved for sale. As of mid-2026, no AI-found drug had full approval from the FDA. That’s the US agency that decides which medicines can be sold.`,
+    },
+    {
+      id: 'proof-in-people',
+      label: 'Testing a drug in people still takes years',
+      part: 'The evidence',
+      body: `A new drug is tested in people in stages. **Phase 1** asks: is it safe? **Phase 2** asks: does it work at all? **Phase 3** tests it in a big group.
+
+[[chart:trial-success]]
+
+**AI-found drugs pass the safety stage far more often.** 21 of 24 got through Phase 1, about 88%. A typical drug passes about 52% of the time, so the gap is real.
+
+**Whether they work is still unclear.** 4 of 10 passed Phase 2. A typical drug passes about 29% of the time.
+
+That looks a little better. But with only ten results, the true rate could be anywhere from 17% to 69%. That is too few to tell skill from luck.
+
+**The first big tests are on the calendar.** The FDA decides in early 2027 on zasocitinib, a drug from the big Japanese drug company Takeda. It was designed with computer simulations of molecules and with machine learning, software that learns patterns from data.
+
+Insilico, an AI drug company, started a Phase 3 trial of rentosertib in China in September. Approval is unlikely before about 2029–30.
+
+**One ARKG company already has an AI-improved medicine in Phase 3.** Generate Biomedicines is testing an asthma antibody in about 1,600 patients.
+
+An antibody is a protein that grabs one specific target in the body. Other drugs already work on this target. So a win would show AI improving a known kind of drug.
+
+**Some tests have already proven themselves.** One cancer drug’s official FDA instructions now name Natera’s blood test. The test finds the patients who need the drug.
+
+AI speeds up the thinking. The proving still runs at the speed of cells and patients.`,
+    },
+    {
+      id: 'use-vs-win',
+      label: 'Using the most AI is not the same as winning from it',
+      part: 'The evidence',
+      body: `This is the central finding. Each company got two scores out of 10: how much it **uses AI today**, and how much it **gains if AI takes off**.
+
+[[chart:ai-map]]
+
+The two scores often disagree.
+
+[[stat:9 out of 10|Twist’s score for gaining if AI takes off, the highest of any company here. Its score for using AI itself is 5.]]
+
+**Twist is no AI leader itself.** But every protein an AI designs needs real DNA made to order before it can be tested. Twist is a leading maker of that DNA, and companies that design with AI are its fastest-growing customers.
+
+On its August call, Twist’s managers confirmed an analyst’s math. AI orders would be at least about $50 million in the year to September 2026, up from about $25 million. The year after, they would be about $100 million.
+
+**Recursion uses AI as much as anyone.** It builds its own AI models, and even lets Tempus use one.
+
+But Recursion still needs a drug to clearly work in people. Its results in people so far come from small trials. The next updates are due on 2 November and in the first half of 2027.
+
+**Eli Lilly, a giant drug company, has the biggest AI setup here.** It runs an AI lab with NVIDIA, the chip maker. The two plan to put up to $1 billion into it over five years.
+
+That is at most $200 million a year, roughly 0.2% of Lilly’s sales, before NVIDIA’s share. This report found no AI-found Lilly drug in human trials yet.
+
+**Tempus both uses AI and gains from it.** It builds AI tools from its own patient records and sells them to drug companies such as AstraZeneca. AI labs can’t copy records like those from the internet.
+
+**The gene editors use almost no AI.** Their value rests on medicines that work in people. AI can’t copy those, but it doesn’t add much to them either. So they score lower on gains if AI takes off.
+
+If anyone can rent the same AI, the edge belongs to what can’t be rented. Data. Lab work. Proven drugs.`,
+    },
+    {
+      id: 'side-doors',
+      label: 'Five other forces, all pointing the same way',
+      part: 'The evidence',
+      body: `Better AI isn’t the only force on these companies. Five others are at work too, and they reward the same things.
+
+### Borrowing has become expensive
+
+The 10-year Treasury yield is what the US government pays to borrow for ten years. It sets the tone for many other loans.
+
+It passed 5% in mid-September and was about 5.3% on 2 October. The Fed, which sets the basic cost of borrowing in the US, raised its rate on 16 September.
+
+Some companies burn cash: they spend more than comes in while they wait for proof. They feel higher borrowing costs first.
+
+### Private data beats the model
+
+Drug companies can take free AI models, train them on their own data and keep the result. The data is the part nobody else has.
+
+That also means competition for Tempus. Its closest rival, Caris, grew its sales 45% last quarter, about twice Tempus’s pace. Caris is not in the fund.
+
+### The AI labs go straight to drug companies
+
+Novo Nordisk, one of the world’s biggest drug companies, works with Anthropic’s Claude directly. Lilly, which is in the fund, works with OpenAI on new antibiotics.
+
+Beyond Lilly, this report found direct links between AI labs and only three fund companies: 10x, Twist and PacBio. None of the three made any payments public.
+
+### China makes new drugs fast and at low cost
+
+Big drug companies often buy the rights to drugs that outside developers found.
+
+[[chart:china-licensing]]
+
+In 2025, 40% of those came from China, up from under 30% in 2024. Like AI, this makes new drug ideas cheaper. Gene editors, and tests paid for in the US, face less of this competition than ordinary pills.
+
+### Big drug companies face a patent cliff
+
+A patent is the legal right to be the only seller of a drug. About $300 billion of drug sales lose that protection by 2030.
+
+So big drug companies buy smaller ones to refill their shelves. What they want most is a medicine already proven in people. Companies with only unproven technology are the least wanted.
+
+Each of these rewards the same things: data nobody else has, proof in people, and the cash to wait for it.`,
+    },
+    {
+      id: 'the-price',
+      label: 'What today’s prices already expect',
+      part: 'The evidence',
+      body: `A company can be well positioned and still have a high price. Some of these shares have already risen a lot.
+
+By 5 October, ARKG was up about **96%** for the year. Twist and 10x shares were each worth nearly six times their price at the start of the year.
+
+Then on 6 October ARKG fell 8.8% in a single day, leaving it up about 79% for the year. Twist fell about 19%, with no company news.
+
+One way to see what a price expects is **price-to-sales**. Take a company’s total market value, what all its shares are worth together. Divide it by a year of sales.
+
+[[chart:price-to-sales]]
+
+Investors pay about $24 for every $1 of Twist’s yearly sales. For Tempus it is about $8. A higher number means more future growth is already counted in the price.
+
+Analysts at banks also publish targets: their guess of where a share price will be in about a year. In early October, Twist’s and Natera’s prices were already above their analysts’ average guess.
+
+Those guesses often lag big moves. They show mood, not truth.`,
+    },
+    {
+      id: 'the-ranking',
+      label: 'The ranking: two on top, for different reasons',
+      part: 'The verdict',
+      body: `Each company got five scores out of 10, then one combined score.
+
+How much it gains if AI takes off counts most (35%). Whether its technology works counts 20%. Three more count 15% each: its AI use today, how durable its business is (including its cash), and how much growth its price already expects.
+
+[[chart:ranking]]
+
+The companies fall into four tiers, or groups. Tiers sort companies by why they score as they do, not by score alone. That is why CRISPR Therapeutics, in Tier 4, outscores 10x Genomics, in Tier 2.
+
+**Tier 1, best positioned: Eli Lilly (7.4) and Tempus (7.3).** Lilly is the steady giant: proven medicines, a big AI lab and the cash to pay for what AI finds.
+
+Tempus owns patient data AI can’t copy. It is on probation until more cash comes in than goes out.
+
+**Tier 2, well placed, but priced for big growth or still proving itself:** Twist, Veracyte, Natera, Illumina, Guardant and 10x Genomics.
+
+**Tier 3, AI platforms still waiting for their big proof:** Schrödinger, Generate, Freenome, Recursion, Nurix and Absci. Generate is furthest along, with its Phase 3. Nurix uses less AI than the rest, but its value also rests on proof still to come.
+
+**Tier 4, AI isn’t the main story:** CRISPR Therapeutics, Intellia, CareDx, Adaptive, Ionis, Beam, Personalis and Compass. Their value doesn’t depend on AI.
+
+The scores are judgment calls. To test them, the weights, meaning how much each score counts, were shuffled at random 10,000 times. Lilly came first in 59% of tries, and Tempus in 24%.
+
+Ranks five to fourteen sit within about a point of each other. Read them as a group, not an order.`,
+    },
+    {
+      id: 'three-futures',
+      label: 'Three ways AI could go, and why even the fastest takes years',
+      part: 'The verdict',
+      body: `The ranking asks what happens if AI takes off. How likely is that?
+
+The second review set rough odds for 2027–2030. They are a judgment, not a measurement.
+
+[[chart:three-futures]]
+
+**AI stalls (15%).** AI stays good only at short tasks. Or the money for building AI dries up, or a biosecurity scare locks things down.
+
+Biosecurity means guarding against AI helping someone make a dangerous germ. In this future, companies that already make money would hold up best.
+
+**AI steady (50%).** AI would handle week-long tasks, with people checking, by 2028, and month-long tasks around 2029–30. Labs and clinics would stay the slow step.
+
+**AI takes off (35%).** AI agents would run month-long projects by 2028 and whole research programs by 2030. The slow step would become how many robot labs exist to test their ideas.
+
+The first version put the odds at 20% stall, 50% steady and 30% takeoff. The second review moved five points from stall to takeoff.
+
+Two things pushed it up. Claude now leads 26% of Anthropic’s own research tasks. And OpenAI says it met its goal of an AI “research intern.”
+
+One thing held it back: the OpenAI model shelved after safety tests.
+
+**Even fast AI would pay slowly here.** It would show up first in share prices, then in orders for lab tools and data. Drug sales would follow, but not before about 2030.`,
+    },
+    {
+      id: 'what-changed',
+      label: 'What the second review changed',
+      part: 'The verdict',
+      body: `The first version of this report had a clear top three. A second team of AI agents was told to prove it wrong.
+
+Two stayed on top. One fell.
+
+- **Natera** dropped from Tier 1 to Tier 2 (7.6 to 6.7). It’s a cancer-test business that doesn’t need AI to win. Its high price now weighs on it, and so does a court ruling it is appealing over a lawsuit with Guardant, another fund company.
+- **Lilly** stayed first but got a new label (8.8 to 7.4). It’s the steady giant, not the purest AI story. One drug, sold as Mounjaro and Zepbound, brings in about 65% of its sales.
+- **Tempus** stayed in Tier 1, on probation (7.8 to 7.3). Its data business is smaller than the first version said, and it still burns cash.
+- **Generate and Freenome** were added. The first version missed them. Both joined Tier 3, at 6.0 and 5.8.
+- **Veracyte**, a profitable maker of machine-learning cancer tests, was rechecked. It rose from 6.2 to 6.9, into Tier 2.
+
+**The big idea held.** The second team agreed that value moves to what AI can’t make. It changed who fits that idea best.`,
+    },
+    {
+      id: 'how-made',
+      label: 'How this article was made',
+      part: 'Receipts',
+      body: `A frontier AI model wrote this report with a team of AI agents. Each agent had a different job, from tracking what the fund owns to arguing against the conclusions.
+
+Then it ran a second team of AI agents. Their job was to review the work, find factual errors and try to prove the conclusions wrong. Their corrections were applied.
+
+A final review checked the facts, the plain language and how the page reads on a phone.
+
+[[stat:21|AI agents worked on this report in all, across research, writing and three rounds of review. The main research roles are listed under “How this was researched.”]]
+
+This is research, not financial advice.`,
+    },
+  ],
+  charts: [
+    {
+      id: 'arkg-holdings',
+      title: 'What ARKG owns: its 15 biggest holdings',
+      unit: '% of the fund',
+      kind: 'bar',
+      valueFormat: 'percent',
+      whyItMatters: 'Two lab-tool makers make up about twice as much of the fund as the three AI drug-discovery companies.',
+      source: 'StockAnalysis ARKG holdings snapshot, 5 Oct 2026, before the 6 Oct drop. The top two weights and the holding count were confirmed separately; the others come from this one snapshot.',
+      points: [
+        {
+          label: '10x Genomics',
+          value: 10.38,
+          note: 'Lab tools',
+          highlight: true,
+        },
+        {
+          label: 'Twist',
+          value: 10.12,
+          note: 'Lab tools',
+          highlight: true,
+        },
+        {
+          label: 'Tempus',
+          value: 8.4,
+          note: 'Tests and data',
+        },
+        {
+          label: 'CRISPR Therapeutics',
+          value: 5.28,
+          note: 'Gene editing',
+        },
+        {
+          label: 'Absci',
+          value: 5.23,
+          note: 'AI drug discovery',
+        },
+        {
+          label: 'Personalis',
+          value: 4.91,
+          note: 'Tests and data',
+        },
+        {
+          label: 'Guardant',
+          value: 4.62,
+          note: 'Tests and data',
+        },
+        {
+          label: 'Natera',
+          value: 4.52,
+          note: 'Tests and data',
+        },
+        {
+          label: 'Illumina',
+          value: 4.51,
+          note: 'Lab tools',
+        },
+        {
+          label: 'CareDx',
+          value: 4.51,
+          note: 'Tests and data',
+        },
+        {
+          label: 'Eli Lilly',
+          value: 3.33,
+          note: 'Medicines',
+        },
+        {
+          label: 'Schrödinger',
+          value: 3.04,
+          note: 'AI drug discovery',
+        },
+        {
+          label: 'Beam',
+          value: 2.95,
+          note: 'Gene editing',
+        },
+        {
+          label: 'Recursion',
+          value: 2.58,
+          note: 'AI drug discovery',
+        },
+        {
+          label: 'Compass',
+          value: 2.44,
+          note: 'Medicines',
+        },
+      ],
+      decimals: 2,
+    },
+    {
+      id: 'science-bench',
+      title: 'AI agents on a test of real science work',
+      unit: '% of tasks solved',
+      kind: 'bar',
+      valueFormat: 'percent',
+      whyItMatters: 'The newest AI agents now solve more than half the tasks on an early test of real science work.',
+      source: 'Terminal-Bench-Science v0.1, from Anthropic’s Claude Opus 5.5 launch page, 22 Sep 2026. The GPT-6 Astra figure is OpenAI’s own; the rest are Anthropic’s. An early test; each score could be off by 3.5 to 5 points.',
+      points: [
+        {
+          label: 'Claude Opus 5',
+          value: 29.0,
+        },
+        {
+          label: 'Claude Fable 5.1',
+          value: 52.6,
+        },
+        {
+          label: 'Claude Opus 5.5',
+          value: 58.7,
+        },
+        {
+          label: 'GPT-6 Astra',
+          value: 64.6,
+          highlight: true,
+        },
+      ],
+      decimals: 1,
+    },
+    {
+      id: 'trial-success',
+      title: 'How often drugs pass each trial stage: AI-found vs typical',
+      unit: '% that pass the stage',
+      kind: 'bar',
+      valueFormat: 'percent',
+      whyItMatters: 'AI-found drugs (the colored bars) clearly pass the safety stage more often. There are still too few results on whether they work.',
+      source: 'BCG analysis of AI-discovered drugs in trials (2024); typical rates from BIO clinical success rates, 2011–2020.',
+      points: [
+        {
+          label: 'Phase 1 · AI-found',
+          value: 87.5,
+          note: 'Is it safe? · 21 of 24 · likely 69–96%',
+          highlight: true,
+        },
+        {
+          label: 'Phase 1 · typical',
+          value: 52,
+          note: 'Is it safe?',
+        },
+        {
+          label: 'Phase 2 · AI-found',
+          value: 40,
+          note: 'Does it work? · 4 of 10 · likely 17–69%',
+          highlight: true,
+        },
+        {
+          label: 'Phase 2 · typical',
+          value: 29,
+          note: 'Does it work?',
+        },
+      ],
+      decimals: 0,
+    },
+    {
+      id: 'ai-map',
+      title: 'Uses AI today vs gains if AI takes off',
+      unit: 'score out of 10',
+      kind: 'quadrant',
+      xLabel: 'Uses AI today',
+      yLabel: 'Gains if AI takes off',
+      xSplit: 5.5,
+      ySplit: 6.5,
+      quadrantLabels: {
+        tl: 'Less AI, big gain',
+        tr: 'More AI, big gain',
+        bl: 'Less AI, smaller gain',
+        br: 'More AI, smaller gain',
+      },
+      valueFormat: 'plain',
+      whyItMatters: 'If using AI and gaining from it were the same thing, every company would land in the top-right or bottom-left box. Many don’t. Filled chips are the four companies discussed below.',
+      source: 'This report’s two AI-use audits, corrected in the second review. Scores are judgment calls. Top row: a gains score of 7 or more. Right column: a uses-AI score of 6 or more. Butterfly, GeneDx, PacBio and Alamar were scored here but not ranked.',
+      points: [
+        {
+          label: 'Tempus',
+          x: 8,
+          value: 8,
+          note: 'Tempus AI · AI tools built on its own patient records',
+          highlight: true,
+        },
+        {
+          label: 'Recursion',
+          x: 8,
+          value: 6,
+          note: 'Recursion Pharmaceuticals · builds its own AI models',
+          highlight: true,
+        },
+        {
+          label: 'Generate',
+          x: 8,
+          value: 6,
+          note: 'Generate Biomedicines · AI-improved antibody in Phase 3',
+        },
+        {
+          label: 'Lilly',
+          x: 7,
+          value: 7,
+          note: 'Eli Lilly · AI lab at most 0.2% of sales',
+          highlight: true,
+        },
+        {
+          label: 'Schrödinger',
+          x: 7,
+          value: 5,
+          note: 'Schrödinger',
+        },
+        {
+          label: 'Freenome',
+          x: 7,
+          value: 6,
+          note: 'Freenome',
+        },
+        {
+          label: 'Natera',
+          x: 6,
+          value: 7,
+          note: 'Natera',
+        },
+        {
+          label: 'Veracyte',
+          x: 6,
+          value: 6,
+          note: 'Veracyte',
+        },
+        {
+          label: 'Guardant',
+          x: 6,
+          value: 7,
+          note: 'Guardant Health',
+        },
+        {
+          label: 'Illumina',
+          x: 6,
+          value: 6,
+          note: 'Illumina',
+        },
+        {
+          label: 'Absci',
+          x: 6,
+          value: 4,
+          note: 'Absci',
+        },
+        {
+          label: 'Butterfly',
+          x: 6,
+          value: 7,
+          note: 'Butterfly Network · scored, not ranked',
+        },
+        {
+          label: 'Twist',
+          x: 5,
+          value: 9,
+          note: 'Twist Bioscience · makes the DNA AI designs need',
+          highlight: true,
+        },
+        {
+          label: '10x',
+          x: 5,
+          value: 7,
+          note: '10x Genomics',
+        },
+        {
+          label: 'GeneDx',
+          x: 5,
+          value: 6,
+          note: 'GeneDx · scored, not ranked',
+        },
+        {
+          label: 'CareDx',
+          x: 4,
+          value: 5,
+          note: 'CareDx',
+        },
+        {
+          label: 'PacBio',
+          x: 4,
+          value: 5,
+          note: 'PacBio · scored, not ranked',
+        },
+        {
+          label: 'Nurix',
+          x: 4,
+          value: 5,
+          note: 'Nurix',
+        },
+        {
+          label: 'Personalis',
+          x: 4,
+          value: 2,
+          note: 'Personalis · being bought by Tempus',
+        },
+        {
+          label: 'Adaptive',
+          x: 4,
+          value: 5,
+          note: 'Adaptive Biotechnologies',
+        },
+        {
+          label: 'Intellia',
+          x: 3,
+          value: 6,
+          note: 'Intellia',
+        },
+        {
+          label: 'Alamar',
+          x: 3,
+          value: 6,
+          note: 'Alamar Biosciences · scored, not ranked',
+        },
+        {
+          label: 'CRISPR',
+          x: 2,
+          value: 6,
+          note: 'CRISPR Therapeutics',
+        },
+        {
+          label: 'Ionis',
+          x: 2,
+          value: 5,
+          note: 'Ionis',
+        },
+        {
+          label: 'Beam',
+          x: 2,
+          value: 5,
+          note: 'Beam Therapeutics',
+        },
+        {
+          label: 'Compass',
+          x: 1,
+          value: 3,
+          note: 'Compass Pathways',
+        },
+      ],
+    },
+    {
+      id: 'china-licensing',
+      title: 'Where big drug companies bought outside drugs from, 2025',
+      unit: '% of outside drugs bought, by count',
+      kind: 'stacked',
+      valueFormat: 'percent',
+      whyItMatters: 'Two in five outside drugs that big companies bought the rights to in 2025 came from China.',
+      source: 'IQVIA, via PharmExec, 9 Jun 2026. Up from under 30% from China in 2024.',
+      points: [
+        {
+          label: 'From China',
+          value: 40,
+          highlight: true,
+        },
+        {
+          label: 'Everywhere else',
+          value: 60,
+        },
+      ],
+    },
+    {
+      id: 'price-to-sales',
+      title: 'What investors pay for $1 of yearly sales',
+      unit: 'dollars of market value per $1 of yearly sales',
+      kind: 'bar',
+      valueFormat: 'plain',
+      whyItMatters: 'A dollar of Twist’s sales costs investors about three times what a dollar of Tempus’s does. Far more growth is already counted in Twist’s price.',
+      source: 'Share prices: 6 Oct 2026 closing prices (public market data). Sales: each company’s own 2026 forecast, linked in Sources. Twist’s year ended 30 Sep, so its figure looks backward. This report’s arithmetic.',
+      points: [
+        {
+          label: 'Twist',
+          value: 24,
+          note: '~$10.5–11B ÷ $456M, year ended 30 Sep',
+          highlight: true,
+        },
+        {
+          label: 'Natera',
+          value: 20,
+          note: '~$58B ÷ $2.88B',
+          highlight: false,
+        },
+        {
+          label: '10x Genomics',
+          value: 16,
+          note: '~$10.0B ÷ $620M',
+          highlight: false,
+        },
+        {
+          label: 'Eli Lilly',
+          value: 12,
+          note: '~$1.03T ÷ $86B',
+          highlight: false,
+        },
+        {
+          label: 'Illumina',
+          value: 9,
+          note: '~$41B ÷ $4.62B',
+          highlight: false,
+        },
+        {
+          label: 'Tempus',
+          value: 8,
+          note: '~$13.0B ÷ $1.6B',
+          highlight: true,
+        },
+      ],
+      decimals: 0,
+    },
+    {
+      id: 'ranking',
+      title: 'Combined score out of 10, highest first',
+      unit: 'score out of 10',
+      kind: 'bar',
+      valueFormat: 'plain',
+      whyItMatters: 'Lilly and Tempus lead for different reasons. The names below them sit close enough to read as a group, not an order.',
+      source: 'This report’s second-review scores (judgment calls). Weights: gains if AI takes off 35%, technology works 20%, AI use today 15%, durability 15%, price 15%.',
+      points: [
+        {
+          label: 'Eli Lilly',
+          value: 7.4,
+          note: 'Tier 1',
+          highlight: true,
+        },
+        {
+          label: 'Tempus',
+          value: 7.3,
+          note: 'Tier 1',
+          highlight: true,
+        },
+        {
+          label: 'Twist',
+          value: 6.9,
+          note: 'Tier 2',
+          highlight: false,
+        },
+        {
+          label: 'Veracyte',
+          value: 6.9,
+          note: 'Tier 2',
+          highlight: false,
+        },
+        {
+          label: 'Natera',
+          value: 6.7,
+          note: 'Tier 2',
+          highlight: false,
+        },
+        {
+          label: 'Illumina',
+          value: 6.6,
+          note: 'Tier 2',
+          highlight: false,
+        },
+        {
+          label: 'Guardant',
+          value: 6.3,
+          note: 'Tier 2',
+          highlight: false,
+        },
+        {
+          label: 'CRISPR Therapeutics',
+          value: 6.3,
+          note: 'Tier 4',
+          highlight: false,
+        },
+        {
+          label: 'Schrödinger',
+          value: 6.2,
+          note: 'Tier 3',
+          highlight: false,
+        },
+        {
+          label: '10x Genomics',
+          value: 6.0,
+          note: 'Tier 2',
+          highlight: false,
+        },
+        {
+          label: 'Generate',
+          value: 6.0,
+          note: 'Tier 3',
+          highlight: false,
+        },
+        {
+          label: 'Freenome',
+          value: 5.8,
+          note: 'Tier 3',
+          highlight: false,
+        },
+        {
+          label: 'Intellia',
+          value: 5.8,
+          note: 'Tier 4',
+          highlight: false,
+        },
+        {
+          label: 'CareDx',
+          value: 5.7,
+          note: 'Tier 4',
+          highlight: false,
+        },
+        {
+          label: 'Recursion',
+          value: 5.5,
+          note: 'Tier 3',
+          highlight: false,
+        },
+        {
+          label: 'Adaptive',
+          value: 5.5,
+          note: 'Tier 4',
+          highlight: false,
+        },
+        {
+          label: 'Ionis',
+          value: 5.4,
+          note: 'Tier 4',
+          highlight: false,
+        },
+        {
+          label: 'Beam',
+          value: 5.1,
+          note: 'Tier 4',
+          highlight: false,
+        },
+        {
+          label: 'Nurix',
+          value: 4.9,
+          note: 'Tier 3',
+          highlight: false,
+        },
+        {
+          label: 'Personalis',
+          value: 4.6,
+          note: 'Tier 4',
+          highlight: false,
+        },
+        {
+          label: 'Absci',
+          value: 4.3,
+          note: 'Tier 3',
+          highlight: false,
+        },
+        {
+          label: 'Compass',
+          value: 4.3,
+          note: 'Tier 4',
+          highlight: false,
+        },
+      ],
+      decimals: 1,
+    },
+    {
+      id: 'three-futures',
+      title: 'Three futures for AI, 2027–2030',
+      unit: '% chance (a judgment, not a measurement)',
+      kind: 'stacked',
+      valueFormat: 'percent',
+      whyItMatters: 'The ranking is built for the takeoff case, which this report judges about one chance in three.',
+      source: 'The second review’s AI forecaster. The first version said 20% stall, 50% steady, 30% takeoff.',
+      points: [
+        {
+          label: 'AI stalls',
+          value: 15,
+        },
+        {
+          label: 'AI steady',
+          value: 50,
+        },
+        {
+          label: 'AI takes off',
+          value: 35,
+          highlight: true,
+        },
+      ],
+    },
+  ],
+  method: {
+    kind: 'thesis',
+    perspectives: [
+      {
+        role: 'Fund analyst',
+        probe: 'What ARKG owns, what it is worth, and what the fund manager is buying and selling.',
+      },
+      {
+        role: 'AI-lab watcher',
+        probe: 'What OpenAI, Anthropic, xAI and Google can actually do in biology today.',
+      },
+      {
+        role: 'AI-use auditors',
+        probe: 'How each company really uses AI, scored company by company.',
+      },
+      {
+        role: 'Lab scientist',
+        probe: 'Which technologies are likely to work, and what AI can and cannot speed up.',
+      },
+      {
+        role: 'Skeptic',
+        probe: 'The case against: prices, cash, lawsuits and who keeps the AI profits.',
+      },
+      {
+        role: 'Ripple-effects strategist',
+        probe: 'The other forces: interest rates, China, insurers, takeovers.',
+      },
+      {
+        role: 'Second review team',
+        probe: 'A second round told to prove the first wrong: prices, missed companies, dates and the math.',
+      },
+    ],
+    turnsEach: 3,
+    claimsSurfaced: 20,
+    claimsVerified: 20,
+    verificationScope: 'all',
+    agentCount: 21,
+    runDate: '2026-10-07',
+    limitations: [
+      'Most finance websites blocked the agents from opening pages directly, so many figures come from search-result summaries of the cited pages rather than the pages themselves.',
+      'Holding weights below the top two rest on one third-party snapshot dated 5 October 2026.',
+      'Share prices in the price-to-sales chart are 6 October 2026 closing prices from public market data, not linked one by one.',
+    ],
+  },
+  cardImage: '/images/content/arkg-ai-takeoff-card-hero.webp',
+  cardImageLight: '/images/content/arkg-ai-takeoff-card-hero-light.webp',
+  cardImageAlt: 'ARKG — Market Storm: 10 claims confirmed, 6 partly true, 4 corrected. Lilly and Tempus lead. The heaviest AI users still need proof in people.',
+  sources: [
+    {
+      n: 1,
+      label: 'Natera — Form 10-Q, quarter ended 30 Jun 2026',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001604821/000162828026054525/ntra-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 2,
+      label: 'Eli Lilly — second-quarter 2026 results, 8-K exhibit (5 Aug 2026)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0000059478/000005947826000077/q226lillysalesandearningsp.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 3,
+      label: 'Tempus AI — Form 10-Q, quarter ended 30 Jun 2026',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001717115/000119312526326090/tem-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 4,
+      label: 'Illumina — second-quarter 2026 results, 8-K exhibit 99.1 (30 Jul 2026)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001110803/000111080326000155/q226earningsrelease.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 5,
+      label: 'Veracyte — second-quarter 2026 results, 8-K exhibit 99.1 (30 Jul 2026)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001384101/000138410126000042/vcyt-07x30x20268xkearnings.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 6,
+      label: 'Recursion — second-quarter 2026 results, 8-K exhibit 99.1 (5 Aug 2026)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001601830/000160183026000097/exhibit991-q0226.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 7,
+      label: 'Twist Bioscience — fiscal third-quarter 2026 results, 8-K exhibit 99.1 (3 Aug 2026)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001581280/000158128026000044/twst-2026630xex991.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 8,
+      label: '10x Genomics — second-quarter 2026 results, 8-K exhibit 99.1 (6 Aug 2026)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001770787/000162828026054273/txg-20260806xexx991.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 9,
+      label: 'Guardant Health — Form 10-Q, quarter ended 30 Jun 2026',
+      url: 'https://www.sec.gov/Archives/edgar/data/0001576280/000157628026000037/gh-20260630.htm',
+      primary: true,
+      kind: 'filing',
+    },
+    {
+      n: 10,
+      label: 'Tempus — second-quarter 2026 results (30 Jul 2026)',
+      url: 'https://www.tempus.com/news/pr/tempus-reports-second-quarter-2026-results/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 11,
+      label: 'Tempus and Recursion — extended data license and new license to Recursion’s RNA foundation model (21 Sep 2026)',
+      url: 'https://www.tempus.com/news/pr/tempus-and-recursion-extend-existing-data-license-agreement-and-enter-new-license-agreement-for-recursions-rna-foundation-model/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 12,
+      label: 'Natera — second-quarter 2026 results (6 Aug 2026)',
+      url: 'https://www.natera.com/company/news/natera-reports-second-quarter-2026-financial-results/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 13,
+      label: 'NVIDIA and Lilly — co-innovation AI lab for drug discovery (12 Jan 2026)',
+      url: 'https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-and-Lilly-Announce-Co-Innovation-AI-Lab-to-Reinvent-Drug-Discovery-in-the-Age-of-AI/default.aspx',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 14,
+      label: 'Generate Biomedicines — second-quarter 2026 earnings release (6 Aug 2026)',
+      url: 'https://generatebiomedicines.com/wp-content/uploads/2026/08/Generate-Biomedicines-Earnings-Release-Q22026.pdf',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 15,
+      label: 'Freenome — FDA approves SimpleScreen CRC; Abbott to commercialize in the US (27 Jul 2026)',
+      url: 'https://www.freenome.com/newsroom/fda-approves-freenomes-simplescreen-crc/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 16,
+      label: 'Takeda — FDA accepts zasocitinib NDA under priority review (14 Sep 2026)',
+      url: 'https://www.takeda.com/newsroom/newsreleases/2026/fda-priority-review-zasocitinib-psoriasis/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 17,
+      label: 'Insilico Medicine — first patient dosed in GENESIS-IPF-3, rentosertib’s Phase 3 (10 Sep 2026)',
+      url: 'https://insilico.com/news/isn1009261-insilico-medicine-doses-first-patient-genesis-ipf-3',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 18,
+      label: 'Caris Life Sciences — second-quarter 2026 results (5 Aug 2026)',
+      url: 'https://www.carislifesciences.com/about/news-and-media/caris-life-sciences-reports-second-quarter-2026-financial-results-and-increases-2026-revenue-guidance/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 19,
+      label: 'Basecamp Research — Trillion Gene Atlas with Anthropic, Ultima Genomics, PacBio and NVIDIA (18 Mar 2026)',
+      url: 'https://basecamp-research.com/wp-content/uploads/2026/03/BCR-TGA.pdf',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 20,
+      label: 'Anthropic — Introducing Claude Opus 5.5 (22 Sep 2026)',
+      url: 'https://www.anthropic.com/claude-opus-5-5',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 21,
+      label: 'Anthropic — Measurements for understanding the pace of AI development inside frontier labs (Sep 2026)',
+      url: 'https://www.anthropic.com/institute/measuring-pace-of-ai-development',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 22,
+      label: 'Anthropic — Claude for Life Sciences (20 Oct 2025)',
+      url: 'https://www.anthropic.com/news/claude-for-life-sciences',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 23,
+      label: 'Anthropic — Claude accelerates protein design and analytical chemistry (18 Aug 2026)',
+      url: 'https://www.anthropic.com/research/Claude-accelerates-protein-design',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 24,
+      label: 'Anthropic — How Claude is uplifting biomolecular modeling (17 Sep 2026)',
+      url: 'https://www.anthropic.com/research/claude-uplifts-biomolecular-modeling',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 25,
+      label: 'OpenAI — GPT-6 Astra System Card (Sep 2026)',
+      url: 'https://deploymentsafety.openai.com/gpt-6-astra',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 26,
+      label: 'OpenAI — Research acceleration: the view inside OpenAI (Sep 2026)',
+      url: 'https://openai.com/index/research-acceleration-view-inside-openai/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 27,
+      label: 'Anthropic — Claude discovers a novel enzyme system with CRISPR-like repeats (23 Sep 2026)',
+      url: 'https://www.anthropic.com/news/claude-discovers-novel-enzyme-system',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 28,
+      label: 'Anthropic — Novo Nordisk customer story (Claude by Anthropic)',
+      url: 'https://claude.com/customers/novo-nordisk',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 29,
+      label: 'OpenAI — Introducing GPT-Rosalind (16 Apr 2026)',
+      url: 'https://openai.com/index/introducing-gpt-rosalind/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 30,
+      label: 'Google DeepMind — AlphaGenome Atlas: a map of every possible DNA letter change in the human genome (8 Sep 2026)',
+      url: 'https://deepmind.google/blog/alphagenome-atlas-a-predictive-map-of-every-possible-dna-letter-change-in-the-human-genome/',
+      primary: true,
+      kind: 'company',
+    },
+    {
+      n: 31,
+      label: 'Eli Lilly — Lilly collaborates with OpenAI to discover novel medicines to treat drug-resistant bacteria (25 Jun 2024)',
+      url: 'https://investor.lilly.com/news-releases/news-release-details/lilly-collaborates-openai-discover-novel-medicines-treat-drug',
+      primary: false,
+      kind: 'company',
+    },
+    {
+      n: 32,
+      label: 'StockAnalysis — ARKG holdings (snapshot of 5 Oct 2026)',
+      url: 'https://stockanalysis.com/etf/arkg/holdings/',
+      primary: false,
+      kind: 'data',
+    },
+    {
+      n: 33,
+      label: 'Investing.com — ARKG price and historical returns (6 Oct 2026 close)',
+      url: 'https://www.investing.com/etfs/ark-genomic-revolution-multi-sector',
+      primary: false,
+      kind: 'data',
+    },
+    {
+      n: 34,
+      label: 'BIO, Informa and QLS — Clinical development success rates 2011–2020 (Feb 2021)',
+      url: 'https://www.bio.org/clinical-development-success-rates-and-contributing-factors-2011-2020',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 35,
+      label: 'Federal Reserve — FOMC statement (16 Sep 2026)',
+      url: 'https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 36,
+      label: 'Federal Reserve Bank of St. Louis (FRED) — 10-year Treasury yield, daily (DGS10)',
+      url: 'https://fred.stlouisfed.org/series/DGS10',
+      primary: true,
+      kind: 'data',
+    },
+    {
+      n: 37,
+      label: 'MarketScreener — Twist Bioscience analyst consensus (Oct 2026)',
+      url: 'https://www.marketscreener.com/quote/stock/TWIST-BIOSCIENCE-CORPORAT-46874562/consensus/',
+      primary: false,
+      kind: 'data',
+    },
+    {
+      n: 38,
+      label: 'MarketBeat — Natera stock up 4% to ~$406 vs a ~$331 consensus target (24 Sep 2026)',
+      url: 'https://www.marketbeat.com/instant-alerts/price-natera-nasdaq-ntra-stock-price-up-4-still-a-buy-2026-09-24/',
+      primary: false,
+      kind: 'data',
+    },
+    {
+      n: 39,
+      label: 'Quiver Quantitative — ARKG historical prices (2025 year-end close $28.97)',
+      url: 'https://www.quiverquant.com/stock/ARKG/historical-prices/',
+      primary: false,
+      kind: 'data',
+    },
+    {
+      n: 40,
+      label: 'Macrotrends — Twist Bioscience stock price history (6 Oct 2026 close $166.97)',
+      url: 'https://www.macrotrends.net/stocks/charts/TWST/twist-bioscience/stock-price-history',
+      primary: false,
+      kind: 'data',
+    },
+    {
+      n: 41,
+      label: 'Jayatunga et al. (BCG), Drug Discovery Today — How successful are AI-discovered drugs in clinical trials? (2024)',
+      url: 'https://www.sciencedirect.com/science/article/pii/S135964462400134X',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 42,
+      label: 'Stocktwits via Yahoo Finance — Cathie Wood’s ARKG is crushing her other ETFs (early Oct 2026)',
+      url: 'https://finance.yahoo.com/healthcare/articles/cathie-wood-arkg-crushing-her-064411709.html',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 43,
+      label: 'Investing.com — Why is Twist Bioscience stock plunging today? (6 Oct 2026)',
+      url: 'https://www.investing.com/news/stock-market-news/why-is-twist-bioscience-stock-plunging-today-93CH-4935087',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 44,
+      label: 'CNBC — OpenAI abandons plan to release upcoming model as safety concerns escalate (28 Sep 2026)',
+      url: 'https://www.cnbc.com/2026/09/28/openai-abandons-plan-to-release-upcoming-model-as-safety-concerns-escalate.html',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 45,
+      label: 'Fierce Pharma — Lilly’s obesity pill Foundayo ‘disappointed’ in Q2 as injectables boom (Aug 2026)',
+      url: 'https://www.fiercepharma.com/pharma/while-sales-lillys-obesity-pill-disappointed-q2-injectables-continue-boom',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 46,
+      label: 'The Motley Fool — Twist Bioscience fiscal Q3 2026 earnings call transcript (Aug 2026)',
+      url: 'https://www.fool.com/earnings/call-transcripts/2026/08/10/twist-bioscience-twst-q3-2026-earnings-call-transcript/',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 47,
+      label: 'PwC — US pharma and life sciences deals 2026 midyear outlook (2026)',
+      url: 'https://www.pwc.com/us/en/industries/health-industries/library/pharma-life-sciences-deals-outlook.html',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 48,
+      label: 'Pharmaceutical Executive — Deepening ties: why China is becoming big pharma’s most essential R&D partner (Jun 2026)',
+      url: 'https://www.pharmexec.com/view/deepening-ties-why-china-becoming-big-pharma-most-essential-rd-partner',
+      primary: false,
+      kind: 'analysis',
+    },
+    {
+      n: 49,
+      label: 'OncLive — FDA approves adjuvant atezolizumab for MRD-positive bladder cancer, with Signatera as the companion test (15 May 2026)',
+      url: 'https://www.onclive.com/view/fda-approves-adjuvant-atezolizumab-for-mrd-muscle-invasive-bladder-cancer',
+      primary: false,
+      kind: 'analysis',
+    },
+  ],
+};
+
 export const marketStormReports: MarketStormReport[] = [
   aiCapexThesis2026,
+  arkgAiTakeoff,
   erocQ2_2026,
   irenQ3_FY2026,
   googQ2_2026,
