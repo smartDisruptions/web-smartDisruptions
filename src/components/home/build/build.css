@@ -20,7 +20,9 @@
 }
 .hb-grid {
   margin: 0 auto;
-  max-width: 72rem;
+  /* The rest of the home page is a 72rem column with 1.5rem gutters inside
+     it; this grid sits inside the section's gutters, so 72rem less two. */
+  max-width: 69rem;
   display: grid;
   grid-template-areas: 'copy' 'stage' 'cta';
   row-gap: 1.75rem;
@@ -43,6 +45,11 @@
   .hb-h {
     font-size: 3rem;
   }
+}
+/* A sentence of the headline (BuildSections): it breaks between sentences
+   first, and only inside one that is wider than the column. */
+.hb-h-s {
+  display: inline-block;
 }
 .hb-lede {
   margin-top: 1.1rem;

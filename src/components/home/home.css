@@ -226,6 +226,11 @@
   color: #ffb066;
   opacity: 0.1;
 }
+/* At night the chip sits on lamp-lit wood, where the theme's cool grey
+   measured 4.3:1. Warm washi instead (7:1), like the light behind it. */
+:root[data-theme='dark'] .hb-door-web .hm-room-count {
+  color: #ecd9bf;
+}
 .hb-door-bar {
   position: absolute;
   z-index: 1;
@@ -361,6 +366,9 @@
   opacity: 0.1;
 }
 .hb-door-game .hm-room-count {
+  /* Solid (the fill over the night sky, flattened), so a star behind the
+     chip doesn't show through between the words. */
+  background: #191f3d;
   color: #c9d3ff;
 }
 .hb-door-game .hm-room-arrow {

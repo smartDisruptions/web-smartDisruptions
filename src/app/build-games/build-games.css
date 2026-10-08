@@ -25,7 +25,8 @@
   display: grid;
   grid-template-areas: 'intro' 'game' 'optin';
   gap: 1.15rem;
-  max-width: 76rem;
+  /* The site's 72rem, like the trio and the header, so the edges line up. */
+  max-width: 72rem;
   margin-inline: auto;
   padding: 1.15rem 1rem 0;
 }
@@ -46,6 +47,14 @@
     row-gap: 1.75rem;
     align-items: start;
     padding-top: 3.25rem;
+  }
+}
+/* At the full 72rem the cabinet takes a little more of the row, so its
+   screen stays wide enough for the level's 4x pixel scale (engine.ts picks
+   the largest whole scale that fits). */
+@media (min-width: 72rem) {
+  .bg-hero {
+    grid-template-columns: minmax(0, 0.66fr) minmax(0, 1.34fr);
   }
 }
 .bg-intro {
@@ -78,7 +87,8 @@
 }
 .bg-h1 {
   margin-top: 0.7rem;
-  font-size: clamp(2.2rem, 9.4vw, 4.2rem);
+  /* Capped at its siblings' tablet size (Websites 3.7rem, Apps 3.6rem). */
+  font-size: clamp(2.2rem, 9.4vw, 3.7rem);
   line-height: 1.02;
   letter-spacing: -0.01em;
   color: var(--sd-text-primary);
@@ -484,7 +494,7 @@
 
 /* ── The shelf ──────────────────────────────────────────────────────────── */
 .bg-shelf {
-  max-width: 76rem;
+  max-width: 72rem;
   margin: 4.25rem auto 0;
   padding: 0 1rem;
   contain-intrinsic-size: auto 560px;

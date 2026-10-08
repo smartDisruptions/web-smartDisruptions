@@ -123,7 +123,7 @@ export default function BuildAppsPage() {
       <section className="ba-shelf" aria-labelledby="ba-shelf-title">
         <div className="ba-shelf-head">
           <div>
-            <p className="sd-kicker">The shelf</p>
+            <p className="sd-kicker">The guides</p>
             <h2 id="ba-shelf-title" className="ba-shelf-title font-display">
               App guides
             </h2>

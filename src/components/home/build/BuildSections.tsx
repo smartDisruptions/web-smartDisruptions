@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { buildRoom, type BuildRoom } from '@/components/build/rooms';
 import { Seal } from '@/components/brand/Kanji';
 import { Button } from '@/components/ui';
@@ -85,7 +85,14 @@ function BuildSection({
         <div className="hb-copy sd-reveal">
           <p className="sd-kicker">{room.title}</p>
           <h2 id={id} className="font-display sd-brush-under hb-h">
-            {headline}
+            {/* One unbreakable run per sentence, so a narrow column breaks
+                "Sketch it. / Ship it.", never "Sketch / it. Ship it." */}
+            {headline.split(/(?<=\.)\s+/).map((s, i) => (
+              <Fragment key={i}>
+                {i > 0 && ' '}
+                <span className="hb-h-s">{s}</span>
+              </Fragment>
+            ))}
           </h2>
           <p className="font-read hb-lede">
             {room.line} {more}

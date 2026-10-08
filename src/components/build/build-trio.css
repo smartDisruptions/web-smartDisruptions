@@ -1,70 +1,77 @@
-/* The Build trio strip (BuildTrio.tsx). Prefix bt-. */
-.bt-trio {
+/* The Build trio strip (BuildTrio.tsx). Prefix brt-. */
+.brt-trio {
   margin: 0 auto;
   max-width: 72rem;
-  padding: 4rem 1.25rem 1rem;
+  /* The Build pages' own gutter (1rem on a phone), so the strip lines up
+     with the sections above it. */
+  padding: 4rem 1rem 1rem;
 }
 @media (min-width: 40rem) {
-  .bt-trio {
+  .brt-trio {
     padding-inline: 1.5rem;
   }
 }
-.bt-list {
+.brt-list {
   margin-top: 1.25rem;
   display: grid;
   gap: 0.75rem;
 }
-@media (min-width: 48rem) {
-  .bt-list {
+/* Three across only from a desktop: on a tablet a third of the row leaves
+   each card ~105px of text, and "Build Apps" wraps beside "Build Games". */
+@media (min-width: 64rem) {
+  .brt-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
   }
 }
-.bt-card {
+.brt-card {
   position: relative;
   display: flex;
   align-items: center;
   gap: 0.9rem;
+  /* Fills its cell, so three across share one bottom edge however their
+     lines wrap. */
+  height: 100%;
   min-height: 5.25rem;
   padding: 0.9rem 1rem;
   border-radius: var(--radius-xl);
   overflow: hidden;
   color: var(--sd-text-primary);
 }
-.bt-here {
+.brt-here {
   border: 1.5px dashed var(--sd-border-strong);
   background: transparent;
 }
-.bt-kanji {
+.brt-kanji {
   width: 2.75rem;
   height: 2.75rem;
   flex: none;
   color: var(--sd-pen);
 }
-.bt-here .bt-kanji {
+.brt-here .brt-kanji {
   color: var(--sd-text-secondary);
   opacity: 0.6;
 }
-.bt-text {
+.brt-text {
   display: grid;
   gap: 0.15rem;
   min-width: 0;
 }
-.bt-title {
+.brt-title {
   font-size: 1.15rem;
   line-height: 1.15;
 }
-.bt-line {
+.brt-line {
   font-size: 0.88rem;
   line-height: 1.4;
   color: var(--sd-text-secondary);
 }
-.bt-go {
+.brt-go {
   margin-left: auto;
   flex: none;
   color: var(--sd-accent);
   transition: translate 0.3s var(--ease-out-expo);
 }
-.bt-card:hover .bt-go {
+.brt-card:hover .brt-go {
   translate: 4px 0;
 }

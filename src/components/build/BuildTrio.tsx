@@ -12,29 +12,29 @@ import './build-trio.css';
  */
 export default function BuildTrio({ current }: { current: BuildRoom['key'] }) {
   return (
-    <nav aria-label="The three Build pages" className="bt-trio">
+    <nav aria-label="The three Build pages" className="brt-trio">
       <p className="sd-kicker">Three rooms, one dojo</p>
-      <ul className="bt-list" role="list">
+      <ul className="brt-list" role="list">
         {BUILD_ROOMS.map((r) => {
           const here = r.key === current;
           return (
             <li key={r.key}>
               {here ? (
-                <span className="bt-card bt-here" aria-current="page">
-                  <Kanji char={r.kanji} className="bt-kanji" />
-                  <span className="bt-text">
-                    <span className="bt-title font-display">{r.title}</span>
-                    <span className="bt-line">You&rsquo;re here.</span>
+                <span className="brt-card brt-here" aria-current="page">
+                  <Kanji char={r.kanji} className="brt-kanji" />
+                  <span className="brt-text">
+                    <span className="brt-title font-display">{r.title}</span>
+                    <span className="brt-line">You&rsquo;re here.</span>
                   </span>
                 </span>
               ) : (
-                <Link href={r.href} className="sd-card bt-card">
-                  <Kanji char={r.kanji} className="bt-kanji" />
-                  <span className="bt-text">
-                    <span className="bt-title font-display">{r.title}</span>
-                    <span className="bt-line">{r.line}</span>
+                <Link href={r.href} className="sd-card brt-card">
+                  <Kanji char={r.kanji} className="brt-kanji" />
+                  <span className="brt-text">
+                    <span className="brt-title font-display">{r.title}</span>
+                    <span className="brt-line">{r.line}</span>
                   </span>
-                  <IconArrowRight size={20} className="bt-go" />
+                  <IconArrowRight size={20} className="brt-go" />
                 </Link>
               )}
             </li>

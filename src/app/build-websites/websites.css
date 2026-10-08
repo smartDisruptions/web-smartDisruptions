@@ -298,14 +298,19 @@
     --bw-maxn: 1024;
   }
 }
-/* The smallest phones: the three segments and the readout share 330px. */
+/* The smallest phones: the three segments and the readout share 330px.
+   At 320 wide, "Sketch" only fits its third with the padding pared back
+   (and "Desktop · 1024px" needs 107px of the readout's box). */
 @container bw-toy (width < 350px) {
+  .bw-seg {
+    flex: 1 1 auto;
+  }
   .bw-seg-opt {
-    padding: 0 0.62rem;
+    padding: 0 0.25rem;
     font-size: 0.8rem;
   }
   .bw-read {
-    width: 7.7rem;
+    width: 6.9rem;
     font-size: 0.76rem;
   }
 }
@@ -1284,7 +1289,9 @@
   right: 0;
   transform-origin: right center;
 }
-.bw-s-nav > .bw-tag {
+/* The nav's tag hangs below its bar: above it, the window's address bar
+   would clip it. As specific as the rule above, so it wins in Code. */
+.bw-toy[data-sk='code'] .bw-l-sketch .bw-s-nav > .bw-tag {
   transform: translateY(50%);
 }
 .bw-toy[data-sk='code'] .bw-l-sketch :has(> .bw-tag) {

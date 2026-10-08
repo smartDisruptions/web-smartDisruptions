@@ -9,8 +9,8 @@ import FeaturedAppsSection from '@/components/home/FeaturedAppsSection';
 import StormTeaser from '@/components/home/StormTeaser';
 import { getFieldNotes } from '@/lib/fieldNotes';
 import { marketStormReports } from '@/data/marketStorm';
-import { apps, GAME_SLUGS } from '@/data/apps';
-import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
+import { GAME_SLUGS } from '@/data/apps';
+import { THINGS_BUILT } from '@/data/built';
 import { shareMeta } from '@/lib/shareCard';
 import './work.css';
 
@@ -40,35 +40,26 @@ export const metadata: Metadata = {
  * The receipt counts are read from the site's own data at build time, so
  * they can't drift from the pages they open. Notes counts what /content
  * lists (posts plus the pinned guide), because the first card under it is
- * the guide. Styles: ./work.css (au-).
+ * the guide; Things built counts what /built shows (src/data/built.ts).
+ * Styles: ./work.css (au-).
  */
 export default function AboutPage() {
-  const builds =
-    projects.length +
-    apps.filter(
-      (a) =>
-        !(a.slug in PROJECT_APP_SLUGS) &&
-        !(GAME_SLUGS as readonly string[]).includes(a.slug)
-    ).length;
   const lines = [
     {
       href: '/content',
       label: 'Notes from the bench',
       n: getFieldNotes().length,
-      say: 'notes from the bench',
     },
     {
       href: '/market-storm',
       label: 'Market Storm reports',
       n: marketStormReports.length,
-      say: 'Market Storm reports',
     },
-    { href: '/built', label: 'Things built', n: builds, say: 'things built' },
+    { href: '/built', label: 'Things built', n: THINGS_BUILT },
     {
       href: '/games',
       label: 'Games in the arcade',
       n: GAME_SLUGS.length,
-      say: 'games in the arcade',
     },
   ];
 
@@ -116,11 +107,9 @@ export default function AboutPage() {
             <ul className="au-rc-lines" role="list">
               {lines.map((l) => (
                 <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="au-rc-line"
-                    aria-label={`${l.n} ${l.say}`}
-                  >
+                  {/* Named by what it shows ("Notes from the bench 14"), so
+                      the spoken name matches the printed one (WCAG 2.5.3). */}
+                  <Link href={l.href} className="au-rc-line">
                     <span>{l.label}</span>
                     <span className="au-rc-dots" aria-hidden />
                     <b>{l.n}</b>

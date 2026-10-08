@@ -96,7 +96,7 @@ export default function BuildGamesPage() {
       </section>
 
       <section className="bg-shelf sd-defer" aria-labelledby="bg-shelf-title">
-        <p className="sd-kicker">Guides</p>
+        <p className="sd-kicker">The guides</p>
         <h2 id="bg-shelf-title" className="bg-shelf-title font-display">
           The shelf
         </h2>

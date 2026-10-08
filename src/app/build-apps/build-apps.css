@@ -33,6 +33,12 @@
   margin-inline: auto;
   padding: 1.25rem 1rem 1.5rem;
 }
+/* From a tablet up, the same gutter as the shelf and the trio below it. */
+@media (min-width: 40rem) {
+  .ba-hero {
+    padding-inline: 1.5rem;
+  }
+}
 @media (min-width: 64rem) {
   .ba-hero {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
@@ -84,6 +90,13 @@
   font-size: clamp(2rem, 8.6vw, 3.6rem);
   line-height: 1.04;
   color: var(--sd-text-primary);
+}
+/* Beside the toy, the same scale as its two siblings (Build Websites sets
+   3.1rem here; Build Games sizes to its column, ~3.1rem). */
+@media (min-width: 64rem) {
+  .ba-h1 {
+    font-size: 3.1rem;
+  }
 }
 .ba-h1-mark {
   color: var(--sd-pen-ink);
@@ -919,6 +932,13 @@
   padding-left: 0.95rem;
   white-space: nowrap;
   transform: translate3d(-999px, 0, 0);
+  /* On the narrowest phones a label can run onto the black phone body; a
+     halo of the page's own colour keeps it readable there and vanishes on
+     the paper. Static on a composited layer: measured free at 4x. */
+  text-shadow:
+    0 0 2px var(--sd-bg),
+    0 0 5px var(--sd-bg),
+    0 0 9px var(--sd-bg);
 }
 .ba-label::before {
   content: '';
@@ -951,7 +971,13 @@
 }
 .ba-label-s {
   font: 500 0.74rem/1.2 var(--font-sans);
-  color: var(--sd-text-secondary);
+  /* A shade past secondary: by day these sit over the vermilion disc and
+     the watermark, where plain secondary measured 4.4:1. */
+  color: color-mix(
+    in srgb,
+    var(--sd-text-secondary) 80%,
+    var(--sd-text-primary)
+  );
 }
 .ba-label[data-on] .ba-label-t {
   color: var(--sd-pen-ink);
@@ -1171,6 +1197,9 @@
   margin-top: 1.25rem;
   padding: 1.35rem 1.2rem 1.25rem;
   border-radius: var(--radius-2xl);
+  /* The shelf's "Get it by email" jumps up to here, and the header comes
+     back on the way up: land below it, not under it. */
+  scroll-margin-top: calc(var(--sd-header-h) + 1rem);
 }
 @media (min-width: 64rem) {
   .ba-list {
