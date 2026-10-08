@@ -12,4 +12,6 @@ import type { ComponentType } from 'react';
 export const articlePages: Record<
   string,
   () => Promise<{ default: ComponentType }>
-> = {};
+> = {
+  'arkg-ai-takeoff': () => import('./arkg-ai-takeoff/Article'),
+};
