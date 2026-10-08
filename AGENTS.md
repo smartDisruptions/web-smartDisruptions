@@ -170,10 +170,9 @@ then the spec hasn't decided what the article is about yet.
 There were ten of these. `console`, `receipt`, `versus`, `checklist`, `file` and
 `field` were retired in August 2026 because each one turned out to be a split
 wearing a costume — see the header of `scripts/make-hero.mjs` for the reasoning
-and the bar that replaced the old one. Market Storm's three (`ledger`, `quote`,
-`scorecard`) are a different content type and are not affected. Its fourth,
-`logo`, was retired in October 2026: company logos are trademarks, so Market
-Storm cards carry the ledger and the finding instead.
+and the bar that replaced the old one. Market Storm images are not made here:
+each Market Storm article makes its own (October 2026). Company logos stay out
+of them all the same, because they are trademarks.
 
 A `count.of` above 12 stops being countable at a glance, so it renders `split`
 and says so. Don't shrink the number to fit.

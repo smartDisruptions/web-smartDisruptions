@@ -1,7 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { marketStormReports, getReportBySlug, isArticle } from '@/data/marketStorm';
+import {
+  marketStormReports,
+  getReportBySlug,
+  isArticle,
+  shareImageOf,
+} from '@/data/marketStorm';
 import { articlePages } from '@/content/market-storm';
 import { Badge, Button } from '@/components/ui';
 import ReportView from '@/components/market-storm/ReportView';
@@ -30,6 +35,17 @@ export async function generateMetadata({
   if (!report) return {};
 
   const ticker = report.ticker ? `${report.ticker} — ` : '';
+  const share = shareImageOf(report);
+  const images = share
+    ? [
+        {
+          url: share,
+          width: 1200,
+          height: 630,
+          alt: report.cardImageAlt ?? report.title,
+        },
+      ]
+    : undefined;
 
   return {
     title: `${ticker}${report.title} · Market Storm`,
@@ -43,12 +59,13 @@ export async function generateMetadata({
       publishedTime: new Date(report.publishDate).toISOString(),
       authors: ['Josh Escusa'],
       tags: report.tags,
-      // og:image is supplied by the co-located opengraph-image.tsx (generated).
+      images,
     },
     twitter: {
       card: 'summary_large_image',
       title: `Market Storm — ${report.ticker ?? report.title}`,
       description: report.excerpt,
+      images,
     },
   };
 }
@@ -135,7 +152,10 @@ export default async function MarketStormDetail({
             &larr; Back to Market Storm
           </Link>
 
-          <div className="ms-clear mt-7 max-w-[54rem] lg:max-w-[48rem]" data-storm-avoid>
+          <div
+            className="ms-clear mt-7 max-w-[54rem] lg:max-w-[48rem]"
+            data-storm-avoid
+          >
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant="accent">Market Storm</Badge>
               {/* "Published" is doing real work: the hero below carries the date
