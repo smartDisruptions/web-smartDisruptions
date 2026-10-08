@@ -8736,7 +8736,24 @@ export function methodOf(e: MarketStormEntry): ResearchMethod | undefined {
 }
 
 /** Free-form articles, newest first. */
-export const marketStormArticles: MarketStormArticle[] = [];
+export const marketStormArticles: MarketStormArticle[] = [
+  {
+    kind: 'article',
+    slug: 'arkg-ai-takeoff',
+    title: 'In gene stocks, using the most AI isn’t the same as winning from it.',
+    excerpt:
+      'ARKG holds about 33 gene and biology companies. Scored on AI use today and on gain if AI takes off, the two often disagree, and the best positioned own what AI can’t make: patient data, lab work and proven medicines.',
+    publishDate: '2026-10-08',
+    ticker: 'ARKG',
+    company: 'ARK Genomic Revolution ETF',
+    catalyst: 'ARKG’s 96% rise, an 8.8% fall, and a month of new AI biology tools',
+    tags: ['genomics', 'AI-in-biology', 'ARKG', 'drug-discovery'],
+    cardImage: '/images/content/arkg-ai-takeoff-card-hero.webp',
+    cardImageLight: '/images/content/arkg-ai-takeoff-card-hero-light.webp',
+    cardImageAlt:
+      'ARKG — Market Storm: 10 claims confirmed, 6 partly true, 4 corrected. Lilly and Tempus lead. The heaviest AI users still need proof in people.',
+  },
+];
 
 /** The reports published through the closed template, newest first. */
 export const templateReports: MarketStormReport[] = [
