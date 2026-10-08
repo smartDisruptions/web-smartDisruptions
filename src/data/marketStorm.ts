@@ -201,7 +201,13 @@ export interface ReportSection {
   part?: string;
 }
 
+/**
+ * The eleven reports published before October 2026 were all filled into one
+ * fixed page (ReportView). That template is closed: it renders those reports
+ * as they were published, and nothing new is written into it.
+ */
 export interface MarketStormReport {
+  kind?: 'report';
   slug: string;
   ticker: string;
   company: string;
@@ -8691,7 +8697,49 @@ And it is the clearest read yet on how the capex cycle reaches ground. Alphabet 
   ],
 };
 
-export const marketStormReports: MarketStormReport[] = [
+/**
+ * A Market Storm article: its own page, written and designed however the
+ * article wants. The section only needs enough to list it (cards, sitemap,
+ * search, share image); the page itself is a component in
+ * src/content/market-storm/, registered by slug in that folder's index.ts.
+ */
+export interface MarketStormArticle {
+  kind: 'article';
+  slug: string;
+  title: string;
+  excerpt: string;
+  publishDate: string; // ISO 'YYYY-MM-DD'
+  ticker?: string;
+  company?: string;
+  catalyst?: string;
+  tags?: string[];
+  featured?: boolean;
+  cardImage?: string;
+  cardImageLight?: string;
+  cardImageAlt?: string;
+}
+
+export type MarketStormEntry = MarketStormReport | MarketStormArticle;
+
+export function isArticle(e: MarketStormEntry): e is MarketStormArticle {
+  return e.kind === 'article';
+}
+
+/** Headline figures for a card. Articles don't have a figures block. */
+export function cardKpis(e: MarketStormEntry): Kpi[] {
+  return isArticle(e) ? [] : e.kpis;
+}
+
+/** The research-method record, which only the template reports carry. */
+export function methodOf(e: MarketStormEntry): ResearchMethod | undefined {
+  return isArticle(e) ? undefined : e.method;
+}
+
+/** Free-form articles, newest first. */
+export const marketStormArticles: MarketStormArticle[] = [];
+
+/** The reports published through the closed template, newest first. */
+export const templateReports: MarketStormReport[] = [
   aiCapexThesis2026,
   erocQ2_2026,
   irenQ3_FY2026,
@@ -8705,6 +8753,12 @@ export const marketStormReports: MarketStormReport[] = [
   amznQ2_2026,
 ];
 
+/** Everything in the section, newest first. */
+export const marketStormReports: MarketStormEntry[] = [
+  ...marketStormArticles,
+  ...templateReports,
+];
+
 /**
  * The pinned thesis piece, if there is one.
  *
@@ -8712,16 +8766,16 @@ export const marketStormReports: MarketStormReport[] = [
  * one, so a second flag left on an older report degrades into an ordinary card
  * instead of rendering two heroes.
  */
-export function featuredReport(): MarketStormReport | undefined {
+export function featuredReport(): MarketStormEntry | undefined {
   return marketStormReports.find((r) => r.featured);
 }
 
 /** Everything that is not the pinned piece, newest first — the normal grid. */
-export function unfeaturedReports(): MarketStormReport[] {
+export function unfeaturedReports(): MarketStormEntry[] {
   const f = featuredReport();
   return marketStormReports.filter((r) => r !== f);
 }
 
-export function getReportBySlug(slug: string): MarketStormReport | undefined {
+export function getReportBySlug(slug: string): MarketStormEntry | undefined {
   return marketStormReports.find((r) => r.slug === slug);
 }

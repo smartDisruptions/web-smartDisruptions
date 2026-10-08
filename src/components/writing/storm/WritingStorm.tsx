@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import {
+  cardKpis,
   featuredReport,
   marketStormReports,
+  methodOf,
   unfeaturedReports,
   type Kpi,
-  type MarketStormReport,
+  type MarketStormEntry,
   type ResearchMethod,
 } from '@/data/marketStorm';
 import StormSky from '@/components/market-storm/StormSky';
@@ -61,7 +63,7 @@ export default function WritingStorm() {
   const archive = unfeaturedReports()
     .filter((r) => r !== lead)
     .sort((a, b) => b.publishDate.localeCompare(a.publishDate));
-  const [stat, ...figs] = lead.kpis.slice(0, 3);
+  const [stat, ...figs] = cardKpis(lead).slice(0, 3);
   const finding = findingFor(lead);
   const href = `/market-storm/${lead.slug}`;
 
@@ -124,7 +126,7 @@ export default function WritingStorm() {
               {finding && <Bars finding={finding} />}
               {figs.length > 0 && <Figures kpis={figs} />}
             </div>
-            <MethodLine method={lead.method} />
+            <MethodLine method={methodOf(lead)} />
             <div className="wms-cta-row">
               <Button href={href} size="lg">
                 Read the report <span aria-hidden="true">&rarr;</span>
@@ -290,7 +292,7 @@ const shortDate = (iso: string) => {
  * a still paper slip, every link on screen. Under reduced motion it is that
  * slip from the start (one row to swipe, on a phone).
  */
-function Tape({ reports }: { reports: MarketStormReport[] }) {
+function Tape({ reports }: { reports: MarketStormEntry[] }) {
   const style = { '--wms-n': reports.length } as CSSProperties;
   return (
     <div className="wms-tape" style={style}>
@@ -306,7 +308,7 @@ function TapeSet({
   reports,
   copy = false,
 }: {
-  reports: MarketStormReport[];
+  reports: MarketStormEntry[];
   copy?: boolean;
 }) {
   return (
@@ -316,7 +318,7 @@ function TapeSet({
       aria-hidden={copy || undefined}
     >
       {reports.map((r) => {
-        const k = r.kpis[0];
+        const k = cardKpis(r)[0];
         const tone = k?.tone ?? 'neutral';
         return (
           <li key={r.slug}>
@@ -326,8 +328,8 @@ function TapeSet({
               tabIndex={copy ? -1 : undefined}
               prefetch={false}
             >
-              <span className="sr-only">{r.company},</span>{' '}
-              <span className="font-display wms-tick-sym">{r.ticker}</span>{' '}
+              <span className="sr-only">{r.company ?? r.title},</span>{' '}
+              <span className="font-display wms-tick-sym">{r.ticker ?? 'Storm'}</span>{' '}
               <span className="wms-tick-date">{shortDate(r.publishDate)}</span>{' '}
               {k && (
                 <>

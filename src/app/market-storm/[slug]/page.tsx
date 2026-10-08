@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { marketStormReports, getReportBySlug } from '@/data/marketStorm';
+import { marketStormReports, getReportBySlug, isArticle } from '@/data/marketStorm';
+import { articlePages } from '@/content/market-storm';
 import { Badge, Button } from '@/components/ui';
 import ReportView from '@/components/market-storm/ReportView';
 import StormSky from '@/components/market-storm/StormSky';
@@ -28,12 +29,14 @@ export async function generateMetadata({
   const report = getReportBySlug(slug);
   if (!report) return {};
 
+  const ticker = report.ticker ? `${report.ticker} — ` : '';
+
   return {
-    title: `${report.ticker} — ${report.title} · Market Storm`,
+    title: `${ticker}${report.title} · Market Storm`,
     description: report.excerpt,
     alternates: { canonical: `/market-storm/${report.slug}` },
     openGraph: {
-      title: `Market Storm — ${report.ticker}: ${report.title}`,
+      title: `Market Storm — ${report.ticker ? `${report.ticker}: ` : ''}${report.title}`,
       description: report.excerpt,
       type: 'article',
       url: `/market-storm/${report.slug}`,
@@ -44,7 +47,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Market Storm — ${report.ticker}`,
+      title: `Market Storm — ${report.ticker ?? report.title}`,
       description: report.excerpt,
     },
   };
@@ -77,16 +80,37 @@ export default async function MarketStormDetail({
     mainEntityOfPage: `https://smartdisruptions.com/market-storm/${report.slug}`,
   };
 
+  // Static local data, JSON-encoded; < escaped so content can never close the
+  // script tag.
+  const ld = (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+      }}
+    />
+  );
+
+  // An article is its own page: nothing of the old report template around it.
+  if (isArticle(report)) {
+    const page = articlePages[report.slug];
+    if (!page) {
+      throw new Error(
+        `Market Storm article "${report.slug}" is listed in src/data/marketStorm.ts but has no page in src/content/market-storm/index.ts`
+      );
+    }
+    const { default: Article } = await page();
+    return (
+      <>
+        {ld}
+        <Article />
+      </>
+    );
+  }
+
   return (
     <>
-      {/* Static local data, JSON-encoded; < escaped so content can never
-          close the script tag. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
-        }}
-      />
+      {ld}
 
       {/* The storm band: the same live sky as the index, slimmer and calmer.
           A report is a page somebody reads for twenty minutes, so the band

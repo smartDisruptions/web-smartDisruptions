@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { featuredReport, marketStormReports } from '@/data/marketStorm';
+import { cardKpis, featuredReport, marketStormReports } from '@/data/marketStorm';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import { formatDate } from '@/lib/format';
@@ -20,7 +20,7 @@ const TONE: Record<string, string> = {
 export default function StormTeaser() {
   const r = featuredReport() ?? marketStormReports[0];
   if (!r) return null;
-  const kpis = r.kpis.slice(0, 3);
+  const kpis = cardKpis(r).slice(0, 3);
 
   return (
     <section aria-labelledby="hm-storm" className="sd-defer mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32" style={{ containIntrinsicSize: 'auto 760px' }}>

@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { GLYPHS } from '@/components/brand/glyphs';
-import { getReportBySlug, type Kpi } from '@/data/marketStorm';
+import { cardKpis, getReportBySlug, type Kpi } from '@/data/marketStorm';
 import { CARD_FONTS, DISPLAY, SANS, NIGHT as N, display } from '@/fonts/card-fonts';
 
 // Per-report social card (Open Graph + Twitter), generated at build time via
@@ -241,7 +241,7 @@ export default async function Image({
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {report ? <Figures kpis={report.kpis} /> : null}
+        {report ? <Figures kpis={cardKpis(report)} /> : null}
         <div
           style={{
             display: 'flex',

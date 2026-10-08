@@ -20,7 +20,9 @@
  * reported, never fatal, because the page is fine in a browser and we cannot
  * tell the difference from here without one.
  */
-import { marketStormReports } from '../src/data/marketStorm.ts';
+// Articles carry their links in their own pages; only the template reports
+// have a sources list to walk.
+import { templateReports } from '../src/data/marketStorm.ts';
 
 const FILTER = process.argv[2];
 const UA =
@@ -88,7 +90,7 @@ async function pool(items, worker) {
   return out;
 }
 
-const reports = marketStormReports.filter(
+const reports = templateReports.filter(
   (r) => !FILTER || r.slug.includes(FILTER),
 );
 if (!reports.length) {

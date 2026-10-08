@@ -1,3 +1,7 @@
+// The closed Market Storm template. It renders the eleven reports published
+// through it before October 2026, exactly as they were published. New Market
+// Storm articles don't use it: each one is its own page in
+// src/content/market-storm/.
 import Link from 'next/link';
 import ArticleBody from '@/components/ArticleBody';
 import { Seal } from '@/components/brand/Kanji';
