@@ -1,0 +1,70 @@
+/* The Build trio strip (BuildTrio.tsx). Prefix bt-. */
+.bt-trio {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 4rem 1.25rem 1rem;
+}
+@media (min-width: 40rem) {
+  .bt-trio {
+    padding-inline: 1.5rem;
+  }
+}
+.bt-list {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 48rem) {
+  .bt-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+.bt-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 5.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  color: var(--sd-text-primary);
+}
+.bt-here {
+  border: 1.5px dashed var(--sd-border-strong);
+  background: transparent;
+}
+.bt-kanji {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  color: var(--sd-pen);
+}
+.bt-here .bt-kanji {
+  color: var(--sd-text-secondary);
+  opacity: 0.6;
+}
+.bt-text {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.bt-title {
+  font-size: 1.15rem;
+  line-height: 1.15;
+}
+.bt-line {
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--sd-text-secondary);
+}
+.bt-go {
+  margin-left: auto;
+  flex: none;
+  color: var(--sd-accent);
+  transition: translate 0.3s var(--ease-out-expo);
+}
+.bt-card:hover .bt-go {
+  translate: 4px 0;
+}
