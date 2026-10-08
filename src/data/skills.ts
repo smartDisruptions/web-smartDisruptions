@@ -475,13 +475,6 @@ export const skillGroups: SkillGroup[] = [
           ),
         ],
       },
-      {
-        id: 'teaching',
-        name: 'Teaching the loop to someone else',
-        plain:
-          'Handing over the method rather than the finished thing — the test being whether they can do it again without you.',
-        used: 'My son wanted to make a game. I could have built it for him, and instead I taught him the loop: describe it, get something playable, look at it, ask for the next thing. He built a kart racer — his features, drive-over powerups and coins that make you faster — and then a second game on his own, which is the part that shows it transferred. The hard bit is not taking the keyboard.',
-      },
     ],
   },
 ];
