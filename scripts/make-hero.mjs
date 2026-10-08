@@ -26,10 +26,8 @@
  *   sequence       sequence    ordered events on a rail
  *   annotated      annotated   a passage with its problems marked
  *
- * MARKET STORM (see #54 — a different content type, and not mine to prune)
- *   ledger · quote · scorecard
- *   (`logo` was retired in October 2026: company marks are trademarks, and a
- *   ledger card says more than a logo does)
+ * MARKET STORM images are not made here (October 2026): each article makes
+ * its own.
  *
  * THE BAR, AND WHY SIX TEMPLATES WERE RETIRED
  * -------------------------------------------
@@ -113,7 +111,6 @@
  * share cards are the same dojo"): night ground for the dark copy, washi for
  * the light one, Dela Gothic One for the lede, Inter standing in for the UI
  * face, and vermilion only for marks — the kicker diamond, the seal, the cut.
- * Market Storm's templates stand on the storm ground instead.
  *
  * USAGE
  *   node scripts/make-hero.mjs <slug> scripts/heroes/<slug>.json [--force]
@@ -189,22 +186,6 @@ const THEMES = {
 };
 
 /**
- * Market Storm's ground: the same dojo with the storm in it. Night pushes the
- * ground toward ai-iro and the moonlight harder; day keeps the washi and lets
- * an indigo storm-light gather in the corner. Same tokens otherwise, so the
- * two families still read as one site.
- */
-const STORM = {
-  dark: {
-    ...THEMES.dark,
-    bg: '#0b1029',
-    glow: 'rgba(155, 176, 255, 0.26)',
-    surface: '#121a3d',
-  },
-  light: { ...THEMES.light, glow: 'rgba(43, 58, 150, 0.2)' },
-};
-
-/**
  * The ground, as a background shorthand so a template can keep setting
  * `background:` in one place: the theme's colour with the light falling on it
  * from the top right, as `body` paints it in globals.css — the card and the
@@ -254,10 +235,10 @@ if (!existsSync(CHROME)) {
 /**
  * Standalone mode — for pages whose text is not a content post.
  *
- * Market Storm reports live in `src/data/marketStorm.ts`, not as markdown, so
- * there is no file to read a title from and nothing to write frontmatter back
- * into. A spec carrying its own `title` says "this is one of those": render the
- * images, skip the writeback, and leave wiring the path up to the caller.
+ * Some pages (a guide, say) are not markdown posts, so there is no file to read
+ * a title from and nothing to write frontmatter back into. A spec carrying its
+ * own `title` says "this is one of those": render the images, skip the
+ * writeback, and leave wiring the path up to the caller.
  * Everything between those two ends — templates, tones, both themes — is
  * identical, which is the point. A second renderer would drift within a month.
  */
@@ -289,7 +270,7 @@ function frontmatter(text) {
 const raw = standalone ? '' : readFileSync(postPath, 'utf8');
 const spec = specPreview;
 const fm = standalone
-  ? { title: spec.title, category: spec.category ?? 'Market Storm' }
+  ? { title: spec.title, category: spec.category ?? '' }
   : frontmatter(raw);
 
 const esc = (s) =>
@@ -530,13 +511,6 @@ function ledeSize(text) {
   return fitSize(text, TYPE.lede, LEDE_FLOOR, LEDE_BUDGET);
 }
 
-/**
- * Which dojo the post templates stand in. A Market Storm card that carries a
- * field-notes key (the AI-capex thesis is a split) still belongs to the storm,
- * so it takes the storm ground; everything else takes the site's own.
- */
-const GROUND = fm.category === 'Market Storm' ? STORM : THEMES;
-
 const before = spec.before ?? {
   label: (fm.category ?? 'Article').toUpperCase(),
   text: fm.title ?? slug,
@@ -608,84 +582,8 @@ const REGISTRY = [
           ? `annotated.spans has ${a.spans.length}; three flagged claims is the ceiling`
           : null,
   },
-  /* ---- Market Storm ----------------------------------------------------
-     Three templates for the research reports, and they are deliberately their
-     own family. Every template above carries ONE tone: a post has a finding
-     and the finding is good or bad. A financial report does not work that way
-     — AWS margin expanding and free cash flow going negative are the same
-     quarter, and DESIGN.md gives Market Storm a three-ink bull/bear/warn axis
-     for exactly that reason. These are the only templates that colour each
-     datum independently, which is what makes the section recognisable in the
-     grid without a badge saying so.
-
-     They still obey the one rule that matters: a lede at the standard size, in
-     the standard place, carrying the finding. */
-  {
-    name: 'quote',
-    key: 'quote',
-    render: (k) => quoteCard(k),
-    check: (q) =>
-      !q.ticker
-        ? 'quote.ticker is required — the ticker is the whole identity of the card'
-        : !q.cells?.length
-          ? 'quote.cells is empty'
-          : q.cells.length > 4
-            ? `quote.cells has ${q.cells.length}; above 4 the figures stop being legible at grid size`
-            : !q.verdict
-              ? 'quote.verdict is required — a row of figures has no natural lede'
-              : null,
-  },
-  {
-    name: 'scorecard',
-    key: 'scorecard',
-    render: (k) => scorecardCard(k),
-    check: (s) =>
-      !s.kpis?.length
-        ? 'scorecard.kpis is empty'
-        : s.kpis.length !== 4
-          ? `scorecard.kpis has ${s.kpis.length}; the grid is 2x2 and takes exactly 4`
-          : !s.verdict
-            ? 'scorecard.verdict is required — four tiles have no natural lede'
-            : null,
-  },
-  {
-    name: 'ledger',
-    key: 'ledger',
-    // 24, not the shared 20. The three tallies and their labels are what a
-    // verification ledger IS, and the Market Storm work (#54) already ran its
-    // own pass at cutting text that was unreadable at card size. Recording the
-    // number this template actually ships rather than re-cutting someone else's
-    // deliberate design inside a merge, or leaving a warning that cries wolf.
-    words: 24,
-    render: (k) => ledgerCard(k),
-    check: (l) =>
-      [l.confirmed, l.partlyTrue, l.corrected].some(
-        (n) => typeof n !== 'number'
-      )
-        ? 'ledger needs numeric confirmed, partlyTrue and corrected'
-        : !l.finding
-          ? 'ledger.finding is required — the counts are the texture, the finding is the point'
-          : null,
-  },
   { name: 'split', key: null, render: (k) => split(k) },
 ];
-
-/**
- * The data inks, for the Market Storm family only.
- *
- * `bull`/`bear`/`warn` are the semantic axis from DESIGN.md; they flip
- * dark-on-washi to bright-at-night exactly like the arcade inks, and both
- * halves are already AA-verified there (on the storm ground too — it is darker
- * than the night it replaces). `neutral` is deliberately the body colour rather
- * than a fourth hue — a figure that carries no polarity should not look like it
- * carries one.
- */
-const DATA_TONE = { bull: 'good', bear: 'bad', warn: 'warn' };
-const ink = (k, tone) => {
-  const mapped = DATA_TONE[tone];
-  if (!mapped) return STORM[k].text;
-  return k === 'dark' ? TONES[mapped].bright : TONES[mapped].field;
-};
 
 /**
  * Which template. Exactly one evidence key may be present.
@@ -726,142 +624,6 @@ function chooseTemplate() {
   return picked;
 }
 
-/* QUOTE — the ticker board. The symbol at display size over a rule of
-   figures, each inked by its own polarity. This is the most literal of the
-   three: it is the report's price strip, cropped. Tabular numerals throughout,
-   because a row of figures that shifts on the digit is a row nobody trusts.
-
-   The catalyst used to sit beside the ticker and was cut: at 341px it rendered
-   as texture rather than words, and the card underneath already prints it. A
-   hero that repeats the chrome around it is spending its scarcest resource —
-   room — on nothing. */
-function quoteCard(k) {
-  const t = STORM[k];
-  const q = spec.quote;
-  const cells = q.cells
-    .map(
-      (c) => `<div class="c">
-         <div class="ck">${esc(c.k)}</div>
-         <div class="cv" style="color:${ink(k, c.tone)}">${esc(c.v)}</div>
-       </div>`
-    )
-    .join('');
-  return doc(
-    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
-       justify-content:center;gap:40px;padding:0 74px}
-     .top{display:flex;align-items:baseline;gap:26px}
-     .tk{${DISPLAY_CSS};font-size:76px;letter-spacing:.02em;color:${t.accent};line-height:1}
-     .h{${DISPLAY_CSS};line-height:1.08;
-       color:${t.text};font-size:${ledeSize(q.verdict)}px;max-width:1000px}
-     .row{display:flex;gap:0;border-top:1px solid ${t.rule}}
-     .c{flex:1;padding:22px 26px 4px 0;display:flex;flex-direction:column;gap:10px;
-       border-right:1px solid ${t.rule}}
-     .c + .c{padding-left:26px}
-     .c:last-child{border-right:0}
-     .ck{font-family:${SANS};font-size:${TYPE.micro}px;font-weight:700;letter-spacing:.14em;
-       text-transform:uppercase;color:${t.dim}}
-     .cv{font-family:${SANS};font-weight:800;font-size:${TYPE.major}px;
-       font-variant-numeric:tabular-nums;letter-spacing:-.01em}`,
-    `<div class="top"><span class="tk">${esc(q.ticker)}</span></div>
-     <div class="h">${esc(q.verdict)}</div>
-     <div class="row">${cells}</div>`
-  );
-}
-
-/* SCORECARD — four tiles, 2x2, each with its own polarity dot. The report's own
-   KPI grid at card scale. The dot rather than a coloured card edge is
-   deliberate: a tinted rail down the side of a tile is the documented AI-UI
-   tell the house rejects, and ReportView refuses it on the page for the same
-   reason.
-
-   Each tile carried a third line — the delta, "down from 68%" — and it is gone.
-   Four tiles times a sub-label put this template at 13 text elements against
-   the 3-5 every other template carries, and at 341px that third line was below
-   reading size in every one of them. It was the only thing on any of these
-   cards that was purely noise: unreadable, and there to be unreadable. A
-   figure that needs context has a lede above it for exactly that. */
-function scorecardCard(k) {
-  const t = STORM[k];
-  const s = spec.scorecard;
-  const tiles = s.kpis
-    .map(
-      (kpi) => `<div class="t">
-         <div class="tl"><span class="dot" style="background:${ink(k, kpi.tone)}"></span>
-           <span>${esc(kpi.label)}</span></div>
-         <div class="tv" style="color:${ink(k, kpi.tone)}">${esc(kpi.value)}</div>
-       </div>`
-    )
-    .join('');
-  return doc(
-    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
-       justify-content:center;gap:34px;padding:0 74px}
-     .h{${DISPLAY_CSS};line-height:1.08;
-       color:${t.text};font-size:${ledeSize(s.verdict)}px;max-width:1000px}
-     .g{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-     .t{background:${t.surface};border:1px solid ${t.rule};border-radius:16px;
-       padding:24px 26px;display:flex;flex-direction:column;gap:12px}
-     .tl{display:flex;align-items:center;gap:10px;font-family:${SANS};font-weight:700;
-       font-size:${TYPE.label}px;letter-spacing:.12em;text-transform:uppercase;color:${t.dim}}
-     .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
-     .tv{font-family:${SANS};font-weight:800;font-size:${TYPE.major}px;
-       font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}`,
-    `<div class="h">${esc(s.verdict)}</div>
-     <div class="g">${tiles}</div>`
-  );
-}
-
-/* LEDGER — the verification pass, which is the thing this section has that a
-   sell-side note does not. Three chips carrying the counts, then the one
-   finding worth the space. The chips are outlined rather than filled so that
-   three of them side by side read as a tally and not as three warnings.
-
-   This was already the sparsest of the three and it survived card size best,
-   which is the argument for the cuts made to the other two. Its own eyebrow
-   went anyway: "EVERY LOAD-BEARING CLAIM, REFUTED ON PURPOSE" was texture at
-   341px, and three chips reading 6 / 3 / 4 already say a ledger is what this
-   is. */
-function ledgerCard(k) {
-  const t = STORM[k];
-  const l = spec.ledger;
-  /* `corrected` is neutral, not red, and that is a judgement rather than a
-     styling detail. Red says the finding is bad. A correction is the ledger
-     doing its job — often the most valuable line on the page, and twice now it
-     has been this report's own error. ReportView has always drawn it neutral;
-     the card matching it keeps the two from arguing.
-
-     Neutral takes the hairline for its border rather than full body colour, so
-     a chip carrying no polarity does not out-shout the two that do. */
-  const chip = (n, word, tone) => {
-    const c = ink(k, tone);
-    const border = tone ? c : t.hair;
-    return `<div class="chip" style="border-color:${border}">
-        <span class="n" style="color:${c}">${n}</span>
-        <span class="w" style="color:${c}">${esc(word)}</span>
-      </div>`;
-  };
-  return doc(
-    `body{background:${ground(t)};font-family:${SANS};display:flex;flex-direction:column;
-       justify-content:center;gap:34px;padding:0 74px}
-     .chips{display:flex;gap:18px}
-     .chip{display:flex;align-items:baseline;gap:12px;padding:15px 28px 16px;
-       border:2px solid;border-radius:999px}
-     .n{font-family:${SANS};font-weight:800;font-size:44px;
-       font-variant-numeric:tabular-nums;line-height:1}
-     .w{font-family:${SANS};font-weight:700;font-size:${TYPE.label}px;letter-spacing:.12em;
-       text-transform:uppercase}
-     .h{${DISPLAY_CSS};line-height:1.08;
-       color:${t.text};font-size:${ledeSize(l.finding)}px;max-width:1010px}
-     .n2{font-family:${SANS};font-weight:500;font-size:${TYPE.label}px;color:${t.dim};letter-spacing:.01em}`,
-    `<div class="chips">
-       ${chip(l.confirmed, 'confirmed', 'bull')}
-       ${chip(l.partlyTrue, 'partly-true', 'warn')}
-       ${chip(l.corrected, 'corrected', null)}
-     </div>
-     <div class="h">${esc(l.finding)}</div>
-     ${l.note ? `<div class="n2">${esc(l.note)}</div>` : ''}`
-  );
-}
-
 /* SPLIT — two full-bleed panels, the second a saturated field. No inner card:
    the article already frames the hero in a bordered figure, and a card inside a
    card is one border too many.
@@ -872,7 +634,7 @@ function ledgerCard(k) {
    That stroke is the whole picture, so it is the one flourish this gets. */
 const CUT = 44;
 function split(k) {
-  const t = GROUND[k];
+  const t = THEMES[k];
   const deg = ((Math.atan2(CUT, W) * 180) / Math.PI).toFixed(3);
   return doc(
     `body{display:flex;flex-direction:column;background:${ground(t)};font-family:${SANS}}
@@ -907,7 +669,7 @@ function split(k) {
    them on the dark ground; they are also the only element in any of the three
    templates that does not depend on type rendering to be read. */
 function countCard(k) {
-  const t = GROUND[k];
+  const t = THEMES[k];
   const c = spec.count;
   const fill = k === 'dark' ? T.bright : T.field;
   const blocks = Array.from({ length: c.of }, (_, i) =>
@@ -952,7 +714,7 @@ function countCard(k) {
    happened in an order: six prompts, four deploys, a migration. The numbers are
    the part that survives the shrink, so they are drawn, not set in type. */
 function sequenceCard(k) {
-  const t = GROUND[k];
+  const t = THEMES[k];
   const s = spec.sequence;
   const ink = k === 'dark' ? T.bright : T.field;
   const steps = s.steps
@@ -996,7 +758,7 @@ function sequenceCard(k) {
    what is wrong with it. The underline does the work a red pen would — a brush
    stroke in the tone's ink, the same stroke the site puts under a heading. */
 function annotatedCard(k) {
-  const t = GROUND[k];
+  const t = THEMES[k];
   const a = spec.annotated;
   const ink = k === 'dark' ? T.bright : T.field;
   const spans = a.spans

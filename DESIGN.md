@@ -297,7 +297,8 @@ Post bodies cap at `62ch` (~74 characters per line).
 ## The share cards are the same dojo
 
 Every image a link renders with — a post's hero, its social card, the site
-card, a Market Storm card — is drawn from these tokens in these faces. Two
+card — is drawn from these tokens in these faces. (Market Storm articles make
+their own images, since October 2026.) Two
 generators do it and both change together: `scripts/make-hero.mjs` (headless
 Chrome, writes the .webp files) and the `opengraph-image.tsx` routes (Satori,
 at build time). Satori cannot read woff2: it needs the .ttf copies in

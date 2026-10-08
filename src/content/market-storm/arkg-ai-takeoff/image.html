@@ -1,0 +1,94 @@
+<!doctype html>
+<!--
+  The ARKG article's image: index card, Writing page card and share card.
+  Freeform, drawn for this article only. Re-render with:
+    node scripts/render-image.mjs src/content/market-storm/arkg-ai-takeoff/image.html public/images/market-storm/arkg-ai-takeoff.png
+    node scripts/render-image.mjs src/content/market-storm/arkg-ai-takeoff/image.html public/images/market-storm/arkg-ai-takeoff.webp
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: 'Dela'; src: url('../../../../scripts/fonts/dela-gothic-one-400.woff2') format('woff2'); font-display: block; }
+@font-face { font-family: 'Inter'; font-weight: 500; src: url('../../../../scripts/fonts/inter-500.woff2') format('woff2'); font-display: block; }
+@font-face { font-family: 'Inter'; font-weight: 700; src: url('../../../../scripts/fonts/inter-700.woff2') format('woff2'); font-display: block; }
+@font-face { font-family: 'Inter'; font-weight: 800; src: url('../../../../scripts/fonts/inter-800.woff2') format('woff2'); font-display: block; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1200px; height: 630px; overflow: hidden; }
+body {
+  position: relative;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #eef0fb;
+  background:
+    radial-gradient(820px 520px at 92% -12%, rgba(98, 118, 240, 0.42), transparent 70%),
+    radial-gradient(640px 380px at -6% 118%, rgba(226, 65, 42, 0.18), transparent 72%),
+    #0a0e26;
+}
+.rain {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(104deg, rgba(220, 228, 255, 0.045) 0 1px, transparent 1px 26px);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.35) 70%, transparent 100%);
+}
+.wm { position: absolute; right: -70px; top: -40px; width: 560px; height: 560px; color: #ffffff; opacity: 0.055; }
+.wrap { position: absolute; inset: 86px 72px 78px; display: flex; flex-direction: column; }
+.kick { display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 19px; letter-spacing: 0.18em; color: #a9b0d4; text-transform: uppercase; }
+.kick::before { content: ''; width: 11px; height: 11px; background: #ff5b3d; transform: rotate(45deg); border-radius: 1px; }
+h1 {
+  margin-top: 22px;
+  font-family: 'Dela', 'Arial Black', sans-serif; font-weight: 400;
+  font-size: 62px; line-height: 1.08; letter-spacing: -0.01em;
+}
+h1 .m {
+  background: linear-gradient(transparent 64%, rgba(255, 91, 61, 0.85) 64% 88%, transparent 88%);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.duo { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.card {
+  padding: 20px 24px 22px;
+  border-radius: 22px;
+  background: rgba(15, 20, 48, 0.86);
+  border: 1px solid rgba(155, 176, 255, 0.22);
+}
+.card.win { border-color: rgba(255, 207, 112, 0.55); box-shadow: 0 0 0 1px rgba(255, 207, 112, 0.18), 0 18px 60px -30px rgba(255, 207, 112, 0.6); }
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.name { font-family: 'Dela', 'Arial Black', sans-serif; font-size: 34px; line-height: 1; }
+.tag { font-weight: 800; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: #ff8166; white-space: nowrap; }
+.card.win .tag { color: #ffcf70; }
+.row { margin-top: 14px; display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'lab lab' 'pips val'; align-items: center; column-gap: 14px; row-gap: 6px; }
+.row + .row { margin-top: 12px; }
+.lab { grid-area: lab; font-weight: 800; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: #a9b0d4; }
+.pips { grid-area: pips; }
+.pips { display: flex; gap: 5px; }
+.pips i { width: 30px; height: 26px; border-radius: 5px; background: rgba(236, 238, 250, 0.08); border: 1px solid rgba(236, 238, 250, 0.14); }
+.pips i.on.use { background: #9bb0ff; border-color: #9bb0ff; }
+.pips i.on.gain { background: #ffcf70; border-color: #ffcf70; }
+.val { grid-area: val; justify-self: end; font-family: 'Dela', 'Arial Black', sans-serif; font-size: 30px; line-height: 1; }
+.val small { font-family: 'Inter'; font-weight: 700; font-size: 15px; color: #8f96bd; }
+.foot { position: absolute; left: 72px; right: 72px; bottom: 34px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 17px; color: #8f96bd; }
+.foot b { color: #d7dbf2; font-weight: 800; letter-spacing: 0.02em; }
+.seal { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 12px; vertical-align: middle; border-radius: 6px; background: #e2412a; color: #fff; transform: rotate(-6deg); }
+.seal svg { width: 22px; height: 22px; }
+</style>
+</head>
+<body>
+  <div class="rain"></div>
+  <svg class="wm" viewBox="0 0 1000 1000" aria-hidden="true"><path fill="currentColor" d="M185 266L185 266Q172 263 151 256Q129 248 111 234Q93 219 90 194L90 194Q89 186 89 164Q89 142 89 117Q89 91 90 73Q90 54 90 54L90 54Q122 46 158 49Q194 52 219 65L219 65Q247 80 248 102L248 102Q250 148 272 163Q294 178 336 178L336 178Q357 178 374 174Q390 170 397 151L397 151Q401 142 402 123Q403 104 403 84Q403 64 403 50Q402 36 402 36L402 36Q402 36 418 36Q434 35 459 36Q483 37 510 41Q537 45 558 53L558 53Q575 60 586 70Q596 80 596 94L596 94Q596 103 597 115Q598 127 599 141L599 141Q600 160 622 169Q643 178 667 178L667 178Q691 178 718 172Q744 166 754 144L754 144Q757 139 758 125Q758 110 758 94Q758 77 758 66Q757 54 757 54L757 54Q767 52 790 54Q812 55 838 61Q863 66 882 78L882 78Q894 85 902 95Q910 105 911 118L911 118Q912 125 913 142Q914 159 913 177Q912 195 906 208L906 208Q894 237 866 249Q837 261 805 266L805 266Q793 268 756 269Q718 270 665 271Q611 272 550 273Q488 273 428 273Q367 272 315 272Q263 271 228 270Q193 268 185 266ZM978 779L978 779Q978 779 981 807Q983 835 975 868L975 868Q969 900 950 928Q930 955 887 958L887 958Q857 960 836 946Q814 931 801 908Q787 885 781 863L781 863Q771 828 763 783Q754 738 747 691Q740 643 735 601Q730 558 727 527Q723 496 721 484L721 484Q719 464 710 452Q700 440 688 433L688 433Q683 430 677 436L677 436Q671 442 676 448L676 448Q686 469 693 494Q700 519 689 531L689 531Q682 538 649 543Q616 547 572 549L572 549Q568 549 561 551Q554 553 554 559L554 559Q554 565 561 568Q568 570 572 570L572 570L717 570Q720 579 721 605Q722 631 722 658Q722 685 721 698L721 698Q720 714 709 729L709 729Q702 739 703 748Q704 757 721 777L721 777Q734 791 747 813Q760 835 769 859Q778 882 778 903L778 903Q778 914 766 926Q754 937 737 947Q720 957 705 962Q690 967 684 964L684 964Q683 959 681 952Q678 944 674 934L674 934Q672 928 661 918Q650 907 630 912L630 912Q627 912 602 915Q576 918 537 922Q497 925 453 929Q409 933 369 936Q328 939 300 940Q271 941 263 939L263 939Q246 933 236 912L236 912Q232 903 223 902Q214 900 209 908L209 908Q201 921 190 931Q178 941 164 948L164 948Q143 959 122 965Q101 970 87 972Q72 973 72 973L72 973L100 299L884 299Q884 299 885 318Q885 337 886 367Q886 396 888 430Q889 463 891 493L891 493Q894 532 896 578Q898 624 903 668Q908 712 919 745L919 745Q926 765 940 772Q954 779 966 779Q978 779 978 779ZM273 446L273 446Q268 451 272 460Q276 468 289 467L289 467Q293 467 315 464Q337 461 370 457Q402 453 439 449Q475 444 507 440Q539 436 560 433Q581 430 583 430L583 430Q588 428 593 425Q598 421 584 420L584 420Q571 419 543 420Q514 420 479 421Q443 421 409 423Q374 424 348 425Q321 426 310 428L310 428Q305 428 293 433Q281 438 273 446ZM392 831L392 831Q414 829 419 817Q424 805 424 795L424 795Q424 785 412 777Q400 768 392 767L392 767Q370 765 351 763Q331 761 317 757L317 757Q295 752 277 737Q259 722 254 698L254 698Q252 684 251 658Q250 632 252 606Q253 580 255 570L255 570L402 570Q402 570 413 569Q424 567 424 561L424 561Q424 554 417 554Q409 553 404 553L404 553Q382 553 363 553Q344 553 330 554L330 554Q314 555 297 540Q280 524 266 507L266 507Q262 501 254 506Q245 511 245 519L245 519Q244 536 242 570Q240 603 238 643Q235 683 233 721Q231 758 230 784Q228 809 228 813L228 813Q228 823 240 832Q251 840 262 840L262 840Q286 838 315 837Q343 835 365 833Q387 831 392 831ZM406 689L406 689Q426 689 426 663L426 663Q426 649 422 645Q417 641 405 641L405 641Q394 641 391 650Q387 658 387 667L387 667Q387 674 392 682Q397 689 406 689ZM574 641L574 641Q563 641 559 645Q554 649 554 663L554 663Q554 689 573 689L573 689Q582 689 587 682Q592 674 592 667L592 667Q593 658 589 650Q585 641 574 641ZM614 796L614 796Q613 790 607 781Q601 771 592 770L592 770Q580 767 570 769L570 769Q554 771 554 794L554 794Q554 804 559 812Q563 820 574 820L574 820Q580 820 588 819Q595 818 603 815L603 815Q606 813 611 809Q615 804 614 796Z"/></svg>
+  <div class="wrap">
+    <p class="kick">Market Storm · ARKG · 8 Oct 2026</p>
+    <h1>Using the most AI <span class="m">isn’t the same as</span> winning from it.</h1>
+    <div class="duo">
+      <div class="card">
+        <div class="head"><span class="name">Recursion</span><span class="tag">All in on AI</span></div>
+        <div class="row"><span class="lab">Uses AI today</span><span class="pips"><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class=""></i><i class=""></i></span><span class="val">8<small>/10</small></span></div>
+        <div class="row"><span class="lab">Gains if AI takes off</span><span class="pips"><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span><span class="val">6<small>/10</small></span></div>
+      </div>
+      <div class="card win">
+        <div class="head"><span class="name">Twist</span><span class="tag">Gains the most</span></div>
+        <div class="row"><span class="lab">Uses AI today</span><span class="pips"><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class="on use"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span><span class="val">5<small>/10</small></span></div>
+        <div class="row"><span class="lab">Gains if AI takes off</span><span class="pips"><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class="on gain"></i><i class=""></i></span><span class="val">9<small>/10</small></span></div>
+      </div>
+    </div>
+  </div>
+  <p class="foot"><span><span class="seal"><svg viewBox="0 0 1000 1000"><path fill="currentColor" d="M185 266L185 266Q172 263 151 256Q129 248 111 234Q93 219 90 194L90 194Q89 186 89 164Q89 142 89 117Q89 91 90 73Q90 54 90 54L90 54Q122 46 158 49Q194 52 219 65L219 65Q247 80 248 102L248 102Q250 148 272 163Q294 178 336 178L336 178Q357 178 374 174Q390 170 397 151L397 151Q401 142 402 123Q403 104 403 84Q403 64 403 50Q402 36 402 36L402 36Q402 36 418 36Q434 35 459 36Q483 37 510 41Q537 45 558 53L558 53Q575 60 586 70Q596 80 596 94L596 94Q596 103 597 115Q598 127 599 141L599 141Q600 160 622 169Q643 178 667 178L667 178Q691 178 718 172Q744 166 754 144L754 144Q757 139 758 125Q758 110 758 94Q758 77 758 66Q757 54 757 54L757 54Q767 52 790 54Q812 55 838 61Q863 66 882 78L882 78Q894 85 902 95Q910 105 911 118L911 118Q912 125 913 142Q914 159 913 177Q912 195 906 208L906 208Q894 237 866 249Q837 261 805 266L805 266Q793 268 756 269Q718 270 665 271Q611 272 550 273Q488 273 428 273Q367 272 315 272Q263 271 228 270Q193 268 185 266ZM978 779L978 779Q978 779 981 807Q983 835 975 868L975 868Q969 900 950 928Q930 955 887 958L887 958Q857 960 836 946Q814 931 801 908Q787 885 781 863L781 863Q771 828 763 783Q754 738 747 691Q740 643 735 601Q730 558 727 527Q723 496 721 484L721 484Q719 464 710 452Q700 440 688 433L688 433Q683 430 677 436L677 436Q671 442 676 448L676 448Q686 469 693 494Q700 519 689 531L689 531Q682 538 649 543Q616 547 572 549L572 549Q568 549 561 551Q554 553 554 559L554 559Q554 565 561 568Q568 570 572 570L572 570L717 570Q720 579 721 605Q722 631 722 658Q722 685 721 698L721 698Q720 714 709 729L709 729Q702 739 703 748Q704 757 721 777L721 777Q734 791 747 813Q760 835 769 859Q778 882 778 903L778 903Q778 914 766 926Q754 937 737 947Q720 957 705 962Q690 967 684 964L684 964Q683 959 681 952Q678 944 674 934L674 934Q672 928 661 918Q650 907 630 912L630 912Q627 912 602 915Q576 918 537 922Q497 925 453 929Q409 933 369 936Q328 939 300 940Q271 941 263 939L263 939Q246 933 236 912L236 912Q232 903 223 902Q214 900 209 908L209 908Q201 921 190 931Q178 941 164 948L164 948Q143 959 122 965Q101 970 87 972Q72 973 72 973L72 973L100 299L884 299Q884 299 885 318Q885 337 886 367Q886 396 888 430Q889 463 891 493L891 493Q894 532 896 578Q898 624 903 668Q908 712 919 745L919 745Q926 765 940 772Q954 779 966 779Q978 779 978 779ZM273 446L273 446Q268 451 272 460Q276 468 289 467L289 467Q293 467 315 464Q337 461 370 457Q402 453 439 449Q475 444 507 440Q539 436 560 433Q581 430 583 430L583 430Q588 428 593 425Q598 421 584 420L584 420Q571 419 543 420Q514 420 479 421Q443 421 409 423Q374 424 348 425Q321 426 310 428L310 428Q305 428 293 433Q281 438 273 446ZM392 831L392 831Q414 829 419 817Q424 805 424 795L424 795Q424 785 412 777Q400 768 392 767L392 767Q370 765 351 763Q331 761 317 757L317 757Q295 752 277 737Q259 722 254 698L254 698Q252 684 251 658Q250 632 252 606Q253 580 255 570L255 570L402 570Q402 570 413 569Q424 567 424 561L424 561Q424 554 417 554Q409 553 404 553L404 553Q382 553 363 553Q344 553 330 554L330 554Q314 555 297 540Q280 524 266 507L266 507Q262 501 254 506Q245 511 245 519L245 519Q244 536 242 570Q240 603 238 643Q235 683 233 721Q231 758 230 784Q228 809 228 813L228 813Q228 823 240 832Q251 840 262 840L262 840Q286 838 315 837Q343 835 365 833Q387 831 392 831ZM406 689L406 689Q426 689 426 663L426 663Q426 649 422 645Q417 641 405 641L405 641Q394 641 391 650Q387 658 387 667L387 667Q387 674 392 682Q397 689 406 689ZM574 641L574 641Q563 641 559 645Q554 649 554 663L554 663Q554 689 573 689L573 689Q582 689 587 682Q592 674 592 667L592 667Q593 658 589 650Q585 641 574 641ZM614 796L614 796Q613 790 607 781Q601 771 592 770L592 770Q580 767 570 769L570 769Q554 771 554 794L554 794Q554 804 559 812Q563 820 574 820L574 820Q580 820 588 819Q595 818 603 815L603 815Q606 813 611 809Q615 804 614 796Z"/></svg></span><b>smartdisruptions.com</b></span><span>Scores out of 10 from this report’s AI audits · research, not advice</span></p>
+</body>
+</html>
