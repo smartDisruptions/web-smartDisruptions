@@ -18,6 +18,7 @@ export default function SubscribeForm({
   source = 'site',
   className = '',
   cta = 'Get the next build',
+  done = 'You’re in. Next build, your inbox.',
 }: {
   source?:
     | 'site'
@@ -30,6 +31,8 @@ export default function SubscribeForm({
   className?: string;
   /** The button's words. Defaults to the site-wide ask. */
   cta?: string;
+  /** What it says once you're in. Defaults to the site-wide line. */
+  done?: string;
 }) {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState(''); // honeypot — hidden from humans
@@ -74,7 +77,7 @@ export default function SubscribeForm({
         >
           ✓
         </span>
-        You&rsquo;re in. Next build, your inbox.
+        {done}
       </p>
     );
   }
