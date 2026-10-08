@@ -116,6 +116,12 @@ const nextConfig: NextConfig = {
         { source: `/built/${slug}`, destination: '/built', permanent: true },
         { source: `/apps/${slug}`, destination: '/built', permanent: true },
       ]),
+      // The two Pembroke File articles went with the game (Josh, 2026-10-07).
+      ...['escape-room-ate-my-resume', 'escape-room-build-playbook'].map((slug) => ({
+        source: `/content/${slug}`,
+        destination: '/content',
+        permanent: true,
+      })),
       { source: '/apps', destination: '/built', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/built', permanent: true },

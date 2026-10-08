@@ -61,7 +61,6 @@ const ARCHIVES = {
     posts: [
       'food-truck-site-with-ai', // the first post, 2026-07-08
       'six-prompts-one-day',
-      'escape-room-ate-my-resume',
       'model-it-dont-prompt-it', // the newest when this design was retired
     ],
     reports: [
