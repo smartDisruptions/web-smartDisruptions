@@ -38,17 +38,17 @@ export const FX_COL = [
   '#d6d0ee', // 2 dust
   '#ff8a3d', // 3 ember
   '#ffe08a', // 4 spark
-  '#ffd23f', // 5 yellow
-  '#ff6fbf', // 6 pink
-  '#ff4a3a', // 7 red
-  '#3db4ff', // 8 blue
-  '#46f08a', // 9 green
-  '#9a6aff', // 10 violet (the black orb)
-  '#5cf27e', // 11 fast
-  '#43d2ff', // 12 normal
-  '#ff5ad6', // 13 faster
-  '#ffad3d', // 14 slow
-  '#ff4040', // 15 fastest
+  '#ff6a3d', // 5 jump (vermilion)
+  '#3fd6a6', // 6 hop (jade)
+  '#ffc53d', // 7 leap (gold)
+  '#a77bff', // 8 flip (wisteria)
+  '#ff8fc8', // 9 spin (sakura)
+  '#6f86ff', // 10 the slam lantern's glow
+  '#ffd166', // 11 fast
+  '#f4efe2', // 12 normal
+  '#ff8a3d', // 13 faster
+  '#8fa3ff', // 14 slow
+  '#ff2f6d', // 15 fastest
   '#ff4a2a', // 16 vermilion
   '#ffb7d4', // 17 petal
   '#4ade80', // 18 practice green

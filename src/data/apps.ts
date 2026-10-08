@@ -205,120 +205,6 @@ export const apps: App[] = [
     liveUrl: 'https://app-snake-smoky.vercel.app',
   },
   {
-    slug: 'pebble-kart',
-    name: 'Pebble Kart',
-    description:
-      'A kart racing game my son Gabe built himself, using the same AI tools I use.',
-    longDescription:
-      'This is the one thing on the site I did not build. My son Gabe did. I showed him how to ask an AI for a first working version of a game, and then how to keep asking for changes until it was the game he wanted. He did the rest himself. What he made is a kart race: you drive a kart around a track he designed, and it times your laps.',
-    thumbnailUrl: '/images/apps/pebble-kart-thumbnail.webp',
-    screenshotUrls: [
-      '/images/apps/pebble-kart-1.png',
-      '/images/apps/pebble-kart-2.png',
-      '/images/apps/pebble-kart-3.png',
-    ],
-    techStack: ['HTML5', 'TypeScript', 'Canvas', 'Web Audio API'],
-    category: 'Game',
-    status: 'live',
-    outcomes: [
-      'Gabe built it himself, from the first rough version to the finished one.',
-      'The first version that could be played came out of a single request to an AI. Everything after that came from asking for changes.',
-      'A kid ran the whole loop on his own: ask, try it, ask again.',
-      'You drive a kart around a track he designed, and it times your laps.',
-    ],
-    buildDate: '2026-05',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://pebble-kart-ten.vercel.app',
-  },
-  {
-    slug: 'field-office',
-    name: 'The Pembroke File',
-    description:
-      'A mystery game. You search a locked filing cabinet, solve five puzzles, and work out who took a diamond.',
-    longDescription:
-      'A noir mystery you solve by reading the case. The Pembroke Diamond — thirty-four carats — left the Ashford Museum in three minutes of dark, and the insurance investigator who worked the claim vanished, leaving his file locked in a cabinet: five drawers behind a brass dial, a letter lock, an alarm panel, a wire board, and a lever. Every answer is written somewhere in the documents you have already opened, and each drawer turns the case — an inside job, a rehearsed route, a canvass that came back empty, an appraisal that proves the stone was glass. Physical puzzles gate the locks: the museum’s shuffled night-reel plates, the investigator’s reconstruction torn to twelve pieces, a jammed card tray, a sabotaged lamp circuit — and a pencil rubbing that raises the one name he never dared file out of a blank desk pad. Verlet chain physics, synthesized Web Audio, keyboard paths for every puzzle, progress that survives reloads — all in a single HTML file with zero dependencies.',
-    thumbnailUrl: '/images/apps/field-office-thumbnail.webp',
-    screenshotUrls: [
-      '/images/apps/field-office-1.png',
-      '/images/apps/field-office-2.png',
-      '/images/apps/field-office-3.png',
-    ],
-    techStack: [
-      'HTML5',
-      'Canvas',
-      'Vanilla JavaScript',
-      'Web Audio API',
-      'CSS3',
-    ],
-    category: 'Game',
-    status: 'live',
-    outcomes: [
-      'A five-act mystery where every clue is diegetic — the puzzles are the case artifacts',
-      'Sliding-block and 8-puzzle boards generated and difficulty-verified by breadth-first search',
-      'A pencil-rubbing canvas where the final name is never drawn — only revealed by shading around it',
-      'Zero-dependency single-file build with keyboard access and reduced-motion support throughout',
-    ],
-    buildDate: '2026-08',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://app-field-office.vercel.app',
-  },
-  {
-    slug: 'grove',
-    name: 'Grove',
-    description:
-      'A quiet puzzle game. Put matching tiles together on a honeycomb board and watch them grow into something bigger.',
-    longDescription:
-      'A slow puzzle game on a honeycomb board. Put two matching tiles next to each other and they join into the next thing up. You start with a seed and work up through twelve stages to a forest and beyond, and the colours of the board change as you climb, from dark soil to late afternoon light to silver. Joining several in a row is worth more. It remembers your best score and the furthest you have reached. It plays on a phone, works with no internet, and is one file.',
-    thumbnailUrl: '/images/apps/grove-thumbnail.webp',
-    screenshotUrls: [
-      '/images/apps/grove-1.png',
-      '/images/apps/grove-2.png',
-      '/images/apps/grove-3.png',
-    ],
-    techStack: ['HTML5', 'SVG', 'Vanilla JavaScript', 'CSS3'],
-    category: 'Game',
-    status: 'live',
-    outcomes: [
-      'Twelve stages to climb, each with its own colours, so the board looks different the further you get.',
-      'Joining several tiles in a row is worth more than joining them one at a time.',
-      'It remembers your best score and the furthest stage you have reached.',
-      'It plays on a phone, works with no internet connection, and is a single file.',
-    ],
-    buildDate: '2026-04',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://app-grove.vercel.app',
-  },
-  {
-    slug: 'going-traveling',
-    name: 'Going Traveling',
-    description:
-      'A twelve day plan for a trip to Japan. Two versions of each day to choose between, a budget that changes with the size of your group, and an allergy list you set yourself.',
-    longDescription:
-      'A plan for twelve days across Tokyo, Hakone and Kyoto, built around a problem every travel plan has: the best thing to do next is usually the thing nearest to where you already are. So every day comes with two complete plans, and the stops in each were picked for being close together. If you want to swap something out, each alternative tells you how many extra minutes of travel it will cost from where that day already has you, before you pick it rather than after. There are 106 places in it, each with a map link and a review link that were checked rather than assumed. The allergy section is yours to set: pick from eleven things you cannot eat and the page rewrites itself around them, down to a card written in Japanese you can hand across a counter. The budget is kept in yen, converts at whatever rate you set, and changes with how many people are going, so travelling alone correctly costs more per person than travelling as a pair. It is one file with 91 photographs inside it, and it works with no internet.',
-    thumbnailUrl: '/images/apps/going-traveling-thumbnail.webp',
-    screenshotUrls: [
-      '/images/apps/going-traveling-1.webp',
-      '/images/apps/going-traveling-2.webp',
-      '/images/apps/going-traveling-3.webp',
-    ],
-    techStack: ['HTML5', 'Vanilla JavaScript', 'CSS3', 'SVG', 'Node.js'],
-    category: 'Travel',
-    status: 'live',
-    outcomes: [
-      'Pick from eleven things you cannot eat and the whole page rewrites itself around them, down to a card written in Japanese you can hand across a counter.',
-      'Every alternative shows how many extra minutes of travel it costs before you choose it, so a bad choice is visible in advance.',
-      'All 106 places carry a map link and a review link that were checked, not assumed.',
-      'It is one file with 91 photographs inside it, and it needs no internet once it has opened.',
-    ],
-    buildDate: '2026-08',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://going-traveling.vercel.app',
-  },
-  {
     slug: 'broom-blade',
     name: 'Broom & Blade',
     description:
@@ -405,7 +291,7 @@ export const apps: App[] = [
     description:
       'Kiru runs the old road from Edo to Ky\u014dto, from morning to night. Swipe to change lanes, jump and roll, and tap to cut whatever gets in his way.',
     longDescription:
-      'The T\u014dkaid\u014d was the great road of Edo Japan, from Nihonbashi to Ky\u014dto through 53 post stations, and Kiru runs all of it. Swipe left or right to change lanes, up to jump and down to roll, and tap to cut. Paper sh\u014dji walls, barrels and bamboo stakes split in two along the line of the blade, and so do lantern ghosts and diving tengu. A rival ninja leaves a log behind when cut, an oni bursts into beans and runs off crying, and fox fires fill the Ki meter for a Bolt Dash. Stumble once and an Edo constable and his shiba inu give chase; stumble again and he has you. The road runs from morning to night through five places: a post town, a hillside of a thousand vermilion torii, a bamboo grove, a mountain temple in autumn and a night festival, with rain and snow at the stations Hiroshige painted that way. Along it come a lucky cat that pulls in coins, a paper crane to ride over the rooftops and a daruma for double score. When the run ends, the game writes it up as a farewell haiku. It is drawn in 3D in the browser and makes all of its own music as you play, taiko and shamisen, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse, the keyboard or a game controller, and it is one file.',
+      'The T\u014dkaid\u014d was the great road of Edo Japan, from Nihonbashi to Ky\u014dto through 53 post stations, and Kiru runs all of it. Swipe left or right to change lanes, up to jump and down to roll, and tap to cut. Paper sh\u014dji walls, barrels and bamboo stakes split in two along the line of the blade, and so do lantern ghosts and diving tengu. A rival ninja leaves a log behind when cut, an oni bursts into beans and runs off crying, and fox fires fill the Ki meter for a Bolt Dash. Every stumble lights one of an Edo constable\u2019s three paper lanterns and puts him on your heels until it goes out; light the third and he has you. The road runs from morning to night through five places: a post town, a hillside of a thousand vermilion torii, a bamboo grove, a mountain temple in autumn and a night festival, with rain and snow at the stations Hiroshige painted that way. Along it come a lucky cat that pulls in coins, a paper crane to ride over the rooftops and a daruma for double score. When the run ends, the game writes it up as a farewell haiku. It is drawn in 3D in the browser and makes all of its own music as you play, taiko and shamisen, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse, the keyboard or a game controller, and it is one file.',
     thumbnailUrl: '/images/apps/tokaido-run-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/tokaido-run-1.webp',
@@ -649,7 +535,7 @@ export const BROOM_BLADE_ARCADE_SLUGS = [
 ];
 
 /** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
-export const ARCADE_ARCHIVE_SLUGS = ['field-office', 'cloth-simulator', 'broom-blade', 'grove', 'pebble-kart', 'aureum-snake'];
+export const ARCADE_ARCHIVE_SLUGS = ['cloth-simulator', 'broom-blade', 'aureum-snake'];
 
 /**
  * Every game on the site, the front room, the Broom & Blade Arcade and the

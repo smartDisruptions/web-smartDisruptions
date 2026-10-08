@@ -126,7 +126,7 @@ k.jumpSpikes(k.at(10, 2), 3);
 puff(10, 3);
 puff(11, 0, 1.5);
 // The fill: a drum on beat 4 throws him up, and the parasol opens at the top.
-k.pad(k.at(11, 3) + 0.3, 3, 'yellow');
+k.pad(k.at(11, 3) + 0.3, 3, 'jump');
 
 // ── b: Parasol through the storm ────────────────────────────────────────────
 const PF = 3;
@@ -168,13 +168,13 @@ sweep(21, 1);
 // drum throws him back up.
 k.roof(dive[0], dive[1] - dive[0], 1.2, 'warehouse');
 k.scroll(dive[0] + 2.1, 2.1, 0);
-k.pad(dive[0] + 3.1, 1.2, 'yellow');
+k.pad(dive[0] + 3.1, 1.2, 'jump');
 k.jumpSpikes(k.at(22, 1), 3, 3);
 sweep(22, 3);
 puff(23, 0, 1);
 puff(23, 1, 1);
 // The crash on bar 25: a drum throws him over a long pit.
-k.pad(k.at(24) + 0.3, 3, 'yellow');
+k.pad(k.at(24) + 0.3, 3, 'jump');
 k.jumpSpikes(k.at(24, 2), 3, 2);
 puff(25, 0, 1.2, 2);
 sweep(25, 2);
@@ -183,7 +183,7 @@ puff(27, 0, 1);
 puff(27, 1, 1);
 // The breath before the storm breaks: a red drum on beat 4 throws him up,
 // and the parasol opens on the drop.
-k.pad(k.at(27, 3) + 0.3, 3, 'red');
+k.pad(k.at(27, 3) + 0.3, 3, 'leap');
 
 // ── d: the storm breaks: Parasol and Kite at speed ──────────────────────────
 // Steam erupts on every thunder (bars 29, 33, 37), ahead of him; by the time

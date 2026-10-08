@@ -60,12 +60,12 @@ const COLORS = {
 } as const;
 
 const ORB: Record<string, string> = {
-  yellow: '#ffd23f',
-  pink: '#ff7ab8',
-  red: '#ff4b3e',
-  blue: '#4aa8ff',
-  green: '#4dff8a',
-  black: '#c9c9d6',
+  jump: '#ff6a3d',
+  hop: '#3fd6a6',
+  leap: '#ffc53d',
+  flip: '#a77bff',
+  spin: '#ff8fc8',
+  slam: '#c9c9d6',
 };
 
 export function createDebugRenderer(

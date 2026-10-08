@@ -273,30 +273,38 @@ function kiru() {
 // ───────────────────────── the cast ─────────────────────────
 const CAST = [];
 
-// 01 BENRI: a pocket AI helper with a screen for a face
+// 01 BENRI: a pocket AI helper built like a stacked lacquer lunchbox (jūbako), with an e-ink
+// screen for a face. Redesigned 2026-10-07 so he reads as nobody else's robot: no helmet, no
+// visor, no glowing eyes; lacquer tiers, a furoshiki knot on the lid, a pixel emoji face.
+const PX = (pts, c, u = 6) => pts.map(([x, y]) => `<rect x="${x}" y="${y}" width="${u}" height="${u}" fill="${c}"/>`).join('');
 CAST.push({
-  code: 'ND-01', name: 'Benri', kana: '便利', cls: 'AI robot', sig: '#4fe3ff', h: 1.02,
-  bio: 'A pocket-sized AI assistant who answers in emoji on its face screen and gets very proud when a build passes.',
-  sw: ['#eef2ff', '#9aa6c4', '#0d1230', '#4fe3ff'],
-  defs: grad('b-head', ['#ffffff', '#dfe5f4', '#a3aecb']) + TG('b-body', ['#ffffff', '#dfe5f4', '#a3aecb']) + clip('b-clip', 'M74 26 H126 A44 44 0 0 1 170 70 V106 A44 44 0 0 1 126 150 H74 A44 44 0 0 1 30 106 V70 A44 44 0 0 1 74 26 Z'),
+  code: 'ND-01', name: 'Benri', kana: '便利', cls: 'AI robot', sig: '#39c2b0', h: 1.02,
+  bio: 'A pocket-sized AI assistant built like a stacked lunchbox. Answers in emoji on its screen and gets very proud when a build passes.',
+  sw: ['#d23d2a', '#26203a', '#dcae4e', '#39c2b0'],
+  defs: grad('b-head', ['#f0603f', '#d23d2a', '#9c2a1e']) + TG('b-body', ['#ea5636', '#cc3a28', '#962719']) + grad('b-cloth', ['#5fdcc9', '#39c2b0', '#24897d'], 70, -6, 130, 36) + clip('b-clip', 'M52 46 H148 A16 16 0 0 1 164 62 V126 A16 16 0 0 1 148 142 H52 A16 16 0 0 1 36 126 V62 A16 16 0 0 1 52 46 Z'),
   draw: () => `
-  ${ln('M100 30 L100 4', L, 8)}${ln('M100 30 L100 4', '#c9d2e8', 4)}${ci(100, 0, 10, '#0c0f22')}${ci(100, 0, 8, '#4fe3ff', 'class="pulse" filter="url(#glow)"')}${ci(97, -3, 2.5, '#fff')}
-  ${limb(126, 158, 148, 190, -8, '#8d95ab', 11)}${se(148, 190, 7.5, 7.5, '#c9d2e8', 4)}
-  ${leg(110, 198, 113, 222, '#8d95ab', 12, 0)}${leg(90, 198, 87, 222, '#a3aecb', 12, 0)}
-  ${sr(100, 216, 26, 14, 7, '#eef2ff', 5)}${sr(74, 216, 26, 14, 7, '#eef2ff', 5)}${ln('M78 228 H96 M104 228 H122', '#4fe3ff', 2.5)}
-  ${sp('M70 158 Q70 146 84 146 L116 146 Q130 146 130 158 L128 198 Q100 205 72 198 Z', G('b-body'))}
-  ${fl('M112 147 L116 146 Q130 146 130 158 L128 198 Q121 201 112 202 Z', '#7f8bb0', 'opacity=".45"')}
-  ${se(100, 174, 11, 11, '#0d1230', 4)}${ci(100, 174, 7, '#4fe3ff', 'class="pulse" filter="url(#glow)"')}${ln('M75 188 Q100 194 125 188', '#4fe3ff', 2.5, 'opacity=".7"')}
-  ${se(28, 90, 12, 16, '#c9d2e8', 5)}${se(172, 90, 12, 16, '#c9d2e8', 5)}${ci(28, 90, 4.5, '#4fe3ff', 'filter="url(#glow)"')}${ci(172, 90, 4.5, '#4fe3ff', 'filter="url(#glow)"')}
-  ${sp('M74 26 H126 A44 44 0 0 1 170 70 V106 A44 44 0 0 1 126 150 H74 A44 44 0 0 1 30 106 V70 A44 44 0 0 1 74 26 Z', G('b-head'))}
-  ${shade('b-clip', '#5a6790', .35)}
-  ${sr(46, 56, 108, 76, 28, '#0d1230', 4)}
-  ${fl('M58 66 Q100 58 142 66 Q100 64 58 72 Z', '#ffffff', 'opacity=".12"')}
-  <g class="blink">${sr(64, 76, 20, 30, 10, '#4fe3ff', 0, 'filter="url(#glow)"')}${sr(116, 76, 20, 30, 10, '#4fe3ff', 0, 'filter="url(#glow)"')}${ci(78, 83, 3.5, '#fff')}${ci(130, 83, 3.5, '#fff')}</g>
-  ${ln('M90 114 Q100 122 110 114', '#4fe3ff', 4, 'filter="url(#glow)"')}
-  ${sr(52, 110, 9, 5, 2.5, '#ff7bb0', 0, 'opacity=".75"')}${sr(139, 110, 9, 5, 2.5, '#ff7bb0', 0, 'opacity=".75"')}
-  ${rim(.7)}
-  ${limb(74, 158, 44, 176, 6, '#a3aecb', 11)}${se(44, 176, 7.5, 7.5, '#c9d2e8', 4)}${ln('M38 170 L34 164 M44 168 L44 161', L, 4)}`
+  ${ln('M140 196 L176 112', L, 9)}${ln('M140 196 L176 112', '#c79a55', 4.5)}${ln('M148 198 L184 116', L, 9)}${ln('M148 198 L184 116', '#d9ad66', 4.5)}
+  ${limb(146, 160, 168, 188, -6, '#26203a', 10)}${se(168, 190, 8, 8, '#26203a', 4)}
+  ${leg(84, 200, 84, 220, '#26203a', 12, 0)}${leg(116, 200, 116, 220, '#26203a', 12, 0)}
+  ${sr(68, 214, 30, 13, 6, '#26203a', 5)}${sr(102, 214, 30, 13, 6, '#26203a', 5)}
+  ${sr(48, 176, 104, 28, 7, G('b-body'))}${sr(48, 146, 104, 32, 7, G('b-body'))}
+  ${ln('M52 177 H148', '#26203a', 4)}${fl('M128 148 H146 Q150 148 150 152 V200 Q150 202 146 202 H128 Z', '#7a1f16', 'opacity=".35"')}
+  ${ln('M52 156 V150 H58 M148 156 V150 H142 M52 197 V203 H58 M148 197 V203 H142', GOLD, 3.5)}
+  ${ci(100, 162, 5, GOLD)}${ci(100, 162, 2, '#26203a')}${ci(100, 190, 5, GOLD)}${ci(100, 190, 2, '#26203a')}
+  ${sr(36, 46, 128, 96, 16, G('b-head'))}
+  ${shade('b-clip', '#4a1410', .32)}
+  ${ln('M42 62 V52 H52 M158 62 V52 H148 M42 126 V136 H52 M158 126 V136 H148', GOLD, 4)}
+  ${sr(52, 62, 96, 66, 8, '#eceedf', 4)}
+  ${fl('M56 66 H144 V71 H56 Z', '#ffffff', 'opacity=".5"')}
+  <g class="blink">${PX([[68, 88], [74, 82], [80, 88], [114, 88], [120, 82], [126, 88]], '#2a2d3a')}</g>
+  ${PX([[76, 100], [124, 100], [82, 106], [88, 106], [94, 106], [100, 106], [106, 106], [112, 106], [118, 106], [88, 112], [94, 112], [100, 112], [106, 112]], '#2a2d3a')}
+  ${PX([[60, 98], [134, 98]], '#ff9db8', 5)}
+  ${sr(30, 34, 140, 17, 8, '#26203a', 6)}${ln('M40 47 H160', GOLD, 2.5)}
+  ${sp('M92 30 Q76 8 60 0 Q66 18 86 36 Z', G('b-cloth'), 5)}${sp('M108 30 Q124 6 142 -2 Q136 18 114 36 Z', G('b-cloth'), 5)}
+  ${se(100, 30, 15, 11, G('b-cloth'), 5)}${ln('M90 30 Q100 36 110 30', '#24897d', 2.5)}
+  ${ci(70, 10, 2.2, '#fff', 'opacity=".85"')}${ci(80, 22, 2.2, '#fff', 'opacity=".85"')}${ci(130, 8, 2.2, '#fff', 'opacity=".85"')}${ci(122, 22, 2.2, '#fff', 'opacity=".85"')}${ci(100, 26, 2.2, '#fff', 'opacity=".85"')}
+  ${ln('M44 64 Q40 92 42 120', '#ffb59e', 3, 'opacity=".45"')}
+  ${limb(56, 158, 34, 126, 6, '#26203a', 10)}${se(34, 122, 8.5, 8.5, '#26203a', 4)}${se(36, 112, 3.6, 5.5, '#26203a', 3)}`
 });
 
 // 02 NOVA: a test pilot in a white flight suit

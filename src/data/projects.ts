@@ -4,7 +4,8 @@
  * WHY THIS EXISTS: Josh's call, 2026-09-20. Broom & Blade is two separate
  * things — a game a family uses, and a website that explains it — and the
  * single highlight on /built was describing the game in its headline and the
- * website in its bullets. Same for The Pembroke File. So a project is now a
+ * website in its bullets. Same for The Pembroke File (taken off the site
+ * 2026-10-07). So a project is now a
  * list of PARTS, each with its own address, its own description and its own
  * evidence. /built lists the parts; /built/<slug> describes them.
  *
@@ -122,72 +123,6 @@ export const projects: Project[] = [
             label: 'Pictures to load. The artwork is part of the page',
           },
           { value: '6', label: 'Layers that move separately as you scroll' },
-        ],
-      },
-    ],
-  },
-  {
-    slug: 'pembroke-file',
-    name: 'The Pembroke File',
-    eyebrow: 'My own project · online now',
-    summary:
-      'A mystery game you play in a browser tab, and the website that sells it.',
-    image: '/images/websites/pembroke-file.png',
-    imageAlt:
-      'The Pembroke File website. A dark office lit by a single desk lamp.',
-    imageWidth: 1200,
-    imageHeight: 630,
-    parts: [
-      {
-        kind: 'Game',
-        heading: 'The game',
-        href: 'https://app-field-office.vercel.app',
-        linkLabel: 'Play the game',
-        image: '/images/apps/field-office-1.png',
-        imageAlt:
-          'The Pembroke File game. A filing cabinet on a desk under a lamp, with a brass dial on the first drawer.',
-        imageWidth: 1440,
-        imageHeight: 1000,
-        what: 'Five drawers, five puzzles, one stolen diamond.',
-        body: 'A thirty-four carat diamond left a museum during three minutes of darkness, and the investigator who worked the case disappeared. He left his files locked in a cabinet. You open the drawers one at a time and work out what happened.',
-        bullets: [
-          'Every answer is somewhere in the papers you have already read. Nothing needs a guess or outside knowledge.',
-          'The puzzles are things you handle rather than riddles. A lamp swings on its cable, a card tray jams, and one answer only appears when you shade a pencil over a blank notepad.',
-          'One puzzle cannot be solved in fewer than seventeen moves. I had a program work that out before I released the game, so the number is checked rather than guessed.',
-          'You can play the whole game using only a keyboard, and it remembers where you got to. A drawer you opened tonight is still open tomorrow.',
-          'There is nothing to install and no account to make. The whole game is one file, so once the page has opened it keeps working even if your internet drops.',
-        ],
-        receipts: [
-          { value: '0', label: 'Things to download, install or sign up for' },
-          { value: '130 KB', label: 'The size of the whole game' },
-          {
-            value: '5',
-            label: 'Drawers, each one a puzzle and a piece of the story',
-          },
-        ],
-      },
-      {
-        kind: 'Website',
-        heading: 'The website',
-        href: 'https://web-pembroke-file.vercel.app',
-        linkLabel: 'See the website',
-        image: '/images/websites/pembroke-file.png',
-        imageAlt:
-          'The Pembroke File website. A dark office lit by a single desk lamp.',
-        imageWidth: 1200,
-        imageHeight: 630,
-        what: 'The page that has to make someone want to play it.',
-        body: 'The game is free and takes a few minutes to start, so the website only has one job: show enough of the room to make you curious, and load fast enough that you do not leave first.',
-        bullets: [
-          'The office moves as you scroll and dust drifts through the lamplight, so the page feels like the game before you have played it.',
-          'All the artwork was cut down from 4.2 MB to 176 KB. It looks the same and opens far faster, which matters most on a phone.',
-        ],
-        receipts: [
-          {
-            value: '176 KB',
-            label: 'The size of all the artwork, cut from 4.2 MB',
-          },
-          { value: '0', label: 'Steps between seeing the page and playing' },
         ],
       },
     ],
@@ -336,7 +271,6 @@ export function getProjectBySlug(slug: string): Project | undefined {
  */
 export const PROJECT_APP_SLUGS: Record<string, string> = {
   'broom-blade': 'broom-blade',
-  'field-office': 'pembroke-file',
   'samurai-kitchen': 'samurai-kitchen',
 };
 

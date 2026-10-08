@@ -1049,7 +1049,7 @@ export function drawFinish(
   ctx.globalAlpha = 0.5 + 0.3 * cam.pulse + 0.2 * cam.accent;
   ctx.drawImage(g.c, x - g.w / 2, y - (FINISH_H + 0.3) * u - g.h / 2, g.w, g.h);
   ctx.globalAlpha = 0.35 + 0.15 * cam.pulse;
-  const v = art.veil.yellow;
+  const v = art.veil.finish;
   ctx.drawImage(v.c, x - v.w * 0.6, 0, v.w * 1.2, y);
   ctx.globalAlpha = 1;
   blit(ctx, art.finish, x, y);
@@ -1135,7 +1135,7 @@ function nearer(cur: number, y: number, feet: number, grav: number) {
   return y >= feet - 0.15 && y < cur ? y : cur;
 }
 
-/** Practice checkpoints, as Geometry Dash draws them: green diamonds. */
+/** Practice checkpoints: green diamonds. */
 export function drawCheckpoints(
   ctx: CanvasRenderingContext2D,
   pts: { x: number; y: number }[],

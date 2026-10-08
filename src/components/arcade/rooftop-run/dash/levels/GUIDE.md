@@ -104,23 +104,23 @@ an easy one. A quadruple at normal speed is impossible by design.
 
 ### Drums (pads) and spirit lanterns (orbs)
 
-|                | effect                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------------- |
-| yellow drum    | launches to **4.5** above the drum                                                          |
-| pink drum      | **3.2**                                                                                     |
-| red drum       | **6.5**                                                                                     |
-| blue drum      | flips gravity, with a push toward the new ground (7.6 blocks/s)                             |
-| yellow lantern | a full jump from where he is: **2.2** up                                                    |
-| pink lantern   | 0.7× the speed: **1.08** up                                                                 |
-| red lantern    | 1.35× the speed: **4.0** up                                                                 |
-| blue lantern   | flips gravity with the same push as the blue drum                                           |
-| green lantern  | flips gravity, then a full jump in the new gravity (first toward the old ground, then away) |
-| black lantern  | slams him toward the ground at 26 blocks/s                                                  |
+|              | effect                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------- |
+| jump drum    | launches to **4.5** above the drum                                                          |
+| hop drum     | **3.2**                                                                                     |
+| leap drum    | **6.5**                                                                                     |
+| flip drum    | flips gravity, with a push toward the new ground (7.6 blocks/s)                             |
+| jump lantern | a full jump from where he is: **2.2** up                                                    |
+| hop lantern  | 0.7× the speed: **1.08** up                                                                 |
+| leap lantern | 1.35× the speed: **4.0** up                                                                 |
+| flip lantern | flips gravity with the same push as the flip drum                                           |
+| spin lantern | flips gravity, then a full jump in the new gravity (first toward the old ground, then away) |
+| slam lantern | slams him toward the ground at 26 blocks/s                                                  |
 
 These heights hold in Run, Roll, Shadow Step and Parasol (the parasol's
 gentle gravity gets a gentler launch to the same height). In the kite,
 drums and lanterns push at the kite's full climb rate. The dragon ignores
-everything but blue and green (it flips).
+everything but flip and spin (it flips).
 
 Drums fire on touch, once per attempt. Lanterns fire on a press while he
 touches one (a reach of 0.6 around its centre), once per attempt; a press
@@ -194,7 +194,7 @@ const k = kit('lantern-row'); // starts from levelMeta('lantern-row')
 | `k.jumpSpikes(pressX, y, n = 1, { small })`                 | a caltrop row placed so a jump pressed with Kiru's centre at `pressX` sails over its middle; returns its left x. Put `pressX` on a beat: `k.jumpSpikes(k.at(6, 2), 3, 2)`                                 |
 | `k.stairs(x, y, { steps, rise = 1, run = 3, style })`       | a staircase of blocks, one jump per step (negative rise goes down); returns the x past it                                                                                                                 |
 | `k.roofs(x, [{ w, top, gap?, style? }, ...])`               | roofs in a row; every gap is checked against the jump at the speed in force (it throws if a gap is over 90% of the widest clearable); a gap left out is half the widest. Returns the x past the last roof |
-| `k.orbChain(x, y, n, { c = 'yellow', dy = 0 })`             | lanterns spaced so each arc meets the next one `dy` higher; returns the last x. A climbing chain (`dy` about 1.5) meets each lantern while he is slow, which is kinder than a level one                   |
+| `k.orbChain(x, y, n, { c = 'jump', dy = 0 })`               | lanterns spaced so each arc meets the next one `dy` higher; returns the last x. A climbing chain (`dy` about 1.5) meets each lantern while he is slow, which is kinder than a level one                   |
 | `k.fly(x0, x1, { mode, floor, ceil, back = 'run', grav? })` | a flying section: a gate into `mode` with the corridor [floor, ceil], a gate back out to `back`; both gates span the whole corridor. With `grav: -1` the way in flips him and the way out flips him back  |
 | `k.build()`                                                 | sorts the objects, checks the level, returns the LevelDef                                                                                                                                                 |
 
@@ -296,7 +296,8 @@ beat), y, n)`. A drum, a lantern or a gate on a downbeat lands with the
 - **Scrolls off the obvious path.** A detour that asks for a deliberate
   choice (a higher route, a lantern you would otherwise skip, a dive), never
   a frame-perfect press.
-- **Difficulty in GD terms.** Easy is single and double caltrops, wide gaps,
+- **Difficulty.** The ids are easy to demon; players see Calm, Brisk, Steep,
+  Fierce, Storm and Oni (`ui/faces.tsx`). Easy is single and double caltrops, wide gaps,
   slow corridors. Insane and demon are triples, tight corridors, fast
   speeds, mode switches every bar.
 

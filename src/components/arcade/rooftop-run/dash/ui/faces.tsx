@@ -1,8 +1,8 @@
 /**
- * Difficulty faces, Geometry Dash style, but Kiru's: the same hood, plate,
+ * Difficulty faces, all Kiru's: the same hood, plate,
  * headband and face opening as the mascot rig (components/kiru/Kiru.tsx),
  * in the rig's own coordinates, with the expression doing the work. Five
- * are Kiru, from a smile to fiery eyes; the sixth, demon, is an oni mask in
+ * are Kiru, from a smile to fiery eyes; the sixth, Oni (id demon), is an oni mask in
  * vermilion. The headband takes the player's chosen colour, so the Gear
  * screen uses the same head as its preview.
  *
@@ -319,7 +319,7 @@ export function KiruHead({
   );
 }
 
-/** Demon: an oni mask in vermilion, horns of bone, gold eyes, fangs. */
+/** Oni, the top of the ladder: an oni mask in vermilion, horns of bone, gold eyes, fangs. */
 export function OniMask({ className }: { className?: string }) {
   const brow = 'M42 63 L60 57 L74 64 L95 76 L90 85 L70 77 L48 75 Z';
   const eye = 'M54 89 Q73 75 93 91 Q74 101 54 89 Z';
@@ -429,13 +429,15 @@ const MOODS: Record<Exclude<Difficulty, 'demon'>, KiruMood> = {
   insane: 'fiery',
 };
 
+// Kiru's own ladder (2026-10-07). The ids underneath stay as they were so
+// saved progress still reads.
 export const DIFFICULTY_NAMES: Record<Difficulty, string> = {
-  easy: 'Easy',
-  normal: 'Normal',
-  hard: 'Hard',
-  harder: 'Harder',
-  insane: 'Insane',
-  demon: 'Demon',
+  easy: 'Calm',
+  normal: 'Brisk',
+  hard: 'Steep',
+  harder: 'Fierce',
+  insane: 'Storm',
+  demon: 'Oni',
 };
 
 /** The face in its round badge, ringed in the difficulty's tube colour. */

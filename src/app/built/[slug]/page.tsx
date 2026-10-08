@@ -29,7 +29,7 @@ import '../built.css';
 /**
  * One page per thing built. Two shapes behind one address:
  *
- * 1. A PROJECT (Broom & Blade, The Pembroke File, Samurai Kitchen, VOLTIC) —
+ * 1. A PROJECT (Broom & Blade, Samurai Kitchen, VOLTIC) —
  *    described part by part, because a project can be more than one thing.
  *    Broom & Blade is a game a family uses AND a website that explains it, and
  *    each half deserves its own description, its own link and its own evidence.
@@ -37,8 +37,9 @@ import '../built.css';
  * 2. An APP from src/data/apps.ts — the smaller things, and the arcade games.
  *    This is the old /apps/[slug] page, moved here when /apps was removed.
  *
- * Slugs that a project covers under a different name (field-office ->
- * pembroke-file) are redirected in next.config.ts rather than rendered twice.
+ * An app a project covers (PROJECT_APP_SLUGS in src/data/projects.ts) is
+ * rendered once, as the project. Pages taken off the site redirect to /built
+ * from next.config.ts.
  *
  * LOOK (Shadow Dojo): the hero is the thing itself, in a CSS device, with Kiru
  * peeking over the top of it. That device shares a view-transition name with

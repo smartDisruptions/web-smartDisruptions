@@ -142,15 +142,15 @@ k.jumpSpikes(at(3, 3), 4, 2);
   k.roof(r3, t(7, 3) + 0.4 - r3, 6.5, 'pagoda');
   k.jumpSpikes(t(7), 6.5, 3);
   k.deco(t(7, 2.4), 6.5, 'cat');
-  k.orb(t(7) + 2.62, 9.4, 'pink');
+  k.orb(t(7) + 2.62, 9.4, 'hop');
   k.scroll(t(7) + 5.2, 11.3, 0);
   // Bar 8 (a crash): drop to the blue drum, up to the eaves; a jump
   // upside down; a green lantern home.
   k.roof(t(7, 3) + 0.4, 46, 3, 'tiles');
-  k.pad(t(8) + 0.3, 3, 'blue');
+  k.pad(t(8) + 0.3, 3, 'flip');
   k.block(t(8) - 1, 8.5, t(9) - t(8) + 2, 1, { style: 'tiles' });
   k.spike(t(8, 2) + 2.62 - 1.5, 8.5, 3, { dir: 'down' });
-  k.orb(t(9) + 0.8, 7.8, 'green');
+  k.orb(t(9) + 0.8, 7.8, 'spin');
   // The street under the eaves is a caltrop bed: the drum is the way.
   k.spike(t(8) + 2.2, 3, 10);
   k.spike(t(8) + 13.2, 3, 9);
@@ -281,7 +281,7 @@ k.theme(at(28) - 4, 'dojo', 10);
   k.roof(s4[0] - 0.5, t(36) + 4 - (s4[0] - 0.5), 3, 'warehouse');
   k.gate(at(34), 5, { mode: 'roll', h: 4 });
   rollRun([t(34, 1), t(34, 2.5), t(34, 3), t(35, 0)], 3, E3);
-  k.pad(t(35, 3) + 0.3, 3, 'yellow');
+  k.pad(t(35, 3) + 0.3, 3, 'jump');
   k.deco(t(29, 1.5), 3, 'banner');
   k.deco(t(32, 0.5), 9.2, 'lanterns', { s: 8 });
 }
@@ -353,11 +353,11 @@ k.theme(at(44) - 4, 'dojo', 10);
   k.jumpSpikes(t(45, 3), 5, 6);
   // Bars 46-47: a climbing chain of spirit lanterns, a high roof, a black
   // lantern down under the eaves.
-  k.pad(t(46, 0.5) + 0.3, 5, 'pink');
+  k.pad(t(46, 0.5) + 0.3, 5, 'hop');
   k.orbChain(t(46, 1) + 1.1, 8.9, 3, { dy: 0.62 });
   const r8 = t(46, 3) + 5;
   k.roof(r8, t(47, 2) - 0.6 - r8, 8, 'pagoda');
-  k.orb(t(47, 2) + 1.2, 8.6, 'black');
+  k.orb(t(47, 2) + 1.2, 8.6, 'slam');
   k.roof(t(47, 2) + 1.5, t(52) + 4 - (t(47, 2) + 1.5), 3, 'shrine');
   k.block(t(47, 2) + 5.6, 4.9, 8, 6.1, { style: 'wall' });
   k.spike(t(47, 2) + 5.6, 4.9, 8, { dir: 'down', small: true });

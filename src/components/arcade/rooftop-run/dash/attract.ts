@@ -244,7 +244,7 @@ function calibrate(createSim: CreateSim): Calib | null {
     let launched = false;
     let up = false;
     let at = NaN;
-    trial(createSim, [{ k: 'pad', x: PAD, y: 3, c: 'yellow' }], [], (st) => {
+    trial(createSim, [{ k: 'pad', x: PAD, y: 3, c: 'jump' }], [], (st) => {
       const p = st.player;
       for (const ev of st.events) if (ev.e === 'pad') launched = true;
       if (!launched) return p.x > PAD + 4;
@@ -270,7 +270,7 @@ function calibrate(createSim: CreateSim): Calib | null {
     let before = 2;
     trial(
       createSim,
-      [{ k: 'orb', x: ORB_X, y: ORB_Y, c: 'yellow' }],
+      [{ k: 'orb', x: ORB_X, y: ORB_Y, c: 'jump' }],
       [TAKEOFF, ORB_X - 0.25],
       (st) => {
         const p = st.player;
@@ -444,7 +444,7 @@ function buildStrip(
       if (rnd() < 0.5) deco(edge + gap + r(0.5, 2));
     } else if (kind === 'drum') {
       const px = cur + r(2, 4);
-      objects.push({ k: 'pad', x: px, y: top, c: 'yellow' });
+      objects.push({ k: 'pad', x: px, y: top, c: 'jump' });
       // Half the time the drum throws him over a gap.
       const g1 = px + cal.padD * 0.55;
       if (rnd() < 0.5 && g1 - (px + 1.6) >= 1.2) {
@@ -458,7 +458,7 @@ function buildStrip(
       const takeoff = edge - 0.3;
       const ox = takeoff + cal.apexDx;
       const oy = top + cal.h / 2 + cal.rise;
-      objects.push({ k: 'orb', x: ox, y: oy, c: 'yellow' });
+      objects.push({ k: 'orb', x: ox, y: oy, c: 'jump' });
       presses.push(takeoff, ox - 0.25);
       const most = cal.orbD - half - 1.3;
       const gap = Math.max(1.4, Math.min(most, r(cal.jumpD - 0.2, most)));

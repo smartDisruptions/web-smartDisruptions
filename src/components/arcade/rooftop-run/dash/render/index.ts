@@ -81,7 +81,7 @@ const SHATTER_AT = 0.07;
 /** Start baking a theme this many blocks before its crossfade begins. */
 const LOOKAHEAD = 70;
 /** The finish's fireworks, as particle colours. */
-const FIREWORK = ['#ffd23f', '#ff6fbf', '#43d2ff', '#46f08a', '#ff4a2a'].map(
+const FIREWORK = ['#ffc53d', '#ff8fc8', '#a77bff', '#3fd6a6', '#ff4a2a'].map(
   fxCol
 );
 /**
@@ -512,7 +512,7 @@ export function createRenderer(
       blinkIn = 2 + rng() * 3.5;
     }
     blinkT = Math.max(0, blinkT - dt);
-    // A respawn is instant, as in Geometry Dash: no mode pop until the
+    // A respawn is instant: no mode pop until the
     // first real change of mode.
     if (spawnHold && pl.mode !== spawnMode) spawnHold = false;
     pose.t = now;
@@ -681,10 +681,10 @@ export function createRenderer(
         boosted = false;
         break;
       case 'orb':
-        boosted = ev.c !== 'blue' && ev.c !== 'black';
+        boosted = ev.c !== 'flip' && ev.c !== 'slam';
         break;
       case 'pad':
-        boosted = ev.c !== 'blue';
+        boosted = ev.c !== 'flip';
         break;
       default:
         break;
@@ -731,7 +731,7 @@ export function createRenderer(
         break;
       }
       case 'orb': {
-        const c = fxCol(ev.c === 'black' ? '#9a6aff' : ORB_COL[ev.c]);
+        const c = fxCol(ev.c === 'slam' ? '#6f86ff' : ORB_COL[ev.c]);
         if (plan) plan.hitAt[ev.i] = now;
         fx.spawn(K.Ring, ev.x, ev.y, 0, 0, 0.4, 1.4, c);
         fx.burst(ev.x, ev.y, reduced ? 8 : 16, 7, c, 0.45, 0.5);
@@ -764,13 +764,8 @@ export function createRenderer(
           const o = level.objects[ev.i];
           if (o && o.k === 'gate') col = GATE_COL[gateTint(o)];
         }
-        const c = fxCol(
-          col === GATE_COL.mode
-            ? '#ff4a2a'
-            : col === GATE_COL.blue
-              ? '#3db4ff'
-              : '#ffd23f'
-        );
+        // Every gate colour is in the fx palette, so it maps straight across.
+        const c = fxCol(col);
         fx.spawn(K.Ring, ev.x, ev.y, 0, 0, 0.5, 2.6, c);
         fx.burst(ev.x, ev.y, reduced ? 10 : 22, 8, c, 0.55, 0.55);
         trail.clear();
@@ -835,7 +830,7 @@ export function createRenderer(
         break;
       }
       case 'flip':
-        fx.spawn(K.Ring, ev.x, ev.y, 0, 0, 0.35, 1.3, fxCol('#3db4ff'));
+        fx.spawn(K.Ring, ev.x, ev.y, 0, 0, 0.35, 1.3, fxCol('#a77bff'));
         for (let k = 0; k < 8; k++)
           fx.spawn(
             K.Dot,
@@ -845,7 +840,7 @@ export function createRenderer(
             (r() - 0.5) * 9,
             0.4,
             0.4,
-            fxCol('#3db4ff'),
+            fxCol('#a77bff'),
             0,
             3
           );

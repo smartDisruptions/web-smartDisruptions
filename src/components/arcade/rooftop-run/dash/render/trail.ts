@@ -1,7 +1,7 @@
 /**
  * What Kiru leaves behind him.
  *
- *  - The dragon's ribbon: in Dragon mode (Geometry Dash's wave), a ring
+ *  - The dragon's ribbon: in Dragon mode (the diagonal zigzag flyer), a ring
  *    buffer of his recent positions drawn as a zigzag ribbon in the skin's
  *    headband colour, bright at his end and fading behind.
  *  - Skin trails (ink, petals, sparks, embers, stars): particles emitted

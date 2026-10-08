@@ -89,7 +89,7 @@ export default function DojoMap() {
     {
       href: '/games',
       title: 'Arcade',
-      line: 'Games you can play right now. One was built by my son.',
+      line: 'Games you can play right now.',
       count: `${GAME_SLUGS.length} games`,
       kanji: '遊',
       pose: 'game',
