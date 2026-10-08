@@ -1,0 +1,208 @@
+/* ── The card at the foot of each About page (AboutNext.tsx) ───────────────
+   Prefix au-next-.                                                       */
+
+.au-next {
+  max-width: 72rem;
+  margin: 6rem auto 0;
+  padding-inline: 1rem;
+}
+@media (min-width: 40rem) {
+  .au-next {
+    margin-top: 8rem;
+    padding-inline: 1.5rem;
+  }
+}
+.au-next-narrow {
+  max-width: 46rem;
+  margin-top: 3.5rem;
+  padding-inline: 0;
+}
+@media (min-width: 40rem) {
+  .au-next-narrow {
+    margin-top: 4rem;
+    padding-inline: 0;
+  }
+}
+
+.au-next-card {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  grid-template-areas:
+    'art head'
+    'body body';
+  align-items: center;
+  gap: 1.1rem 1.15rem;
+  padding: 1.2rem 1.15rem 1.35rem;
+  border-radius: var(--radius-2xl);
+  color: var(--sd-text-primary);
+}
+@media (min-width: 40rem) {
+  .au-next-card {
+    grid-template-columns: 11rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      'art head kiru'
+      'art body kiru';
+    gap: 0.6rem 2rem;
+    padding: 1.75rem 2rem 1.75rem 1.75rem;
+  }
+}
+.au-next-narrow .au-next-card {
+  grid-template-columns: 6.2rem minmax(0, 1fr);
+}
+@media (min-width: 40rem) {
+  .au-next-narrow .au-next-card {
+    grid-template-columns: 9rem minmax(0, 1fr);
+    grid-template-areas:
+      'art head'
+      'art body';
+  }
+}
+.au-next-art {
+  grid-area: art;
+}
+.au-next-head {
+  grid-area: head;
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+@media (min-width: 40rem) {
+  .au-next-head {
+    align-self: end;
+  }
+}
+.au-next-body {
+  grid-area: body;
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+@media (min-width: 40rem) {
+  .au-next-body {
+    align-self: start;
+  }
+}
+.au-next-h {
+  font-size: clamp(1.55rem, 6vw, 2.25rem);
+  line-height: 1.08;
+  color: var(--sd-text-primary);
+}
+.au-next-p {
+  max-width: 46ch;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--sd-text-secondary);
+}
+@media (min-width: 40rem) {
+  .au-next-p {
+    font-size: 1.06rem;
+  }
+}
+.au-next-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--sd-accent);
+}
+.au-next-go svg {
+  transition: translate 0.35s var(--ease-out-expo);
+}
+.au-next-card:hover .au-next-go svg {
+  translate: 4px 0;
+}
+
+/* The board: About Me's shikishi, small. */
+.au-next-board {
+  display: block;
+  padding: 0.3rem;
+}
+.au-next-shikishi {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.6rem;
+  gap: 0.4rem;
+  padding: 0.45rem;
+  border-radius: 7px;
+  background: var(--sd-surface);
+  rotate: 1.6deg;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--sd-gold) 75%, transparent),
+    0 0 0 3px var(--sd-surface),
+    0 0 0 4px color-mix(in srgb, var(--sd-gold) 50%, transparent),
+    0 18px 30px -18px var(--sd-card-shadow);
+  transition: rotate 0.6s var(--ease-out-expo);
+}
+@media (min-width: 40rem) {
+  .au-next-shikishi {
+    grid-template-columns: minmax(0, 1fr) 2.2rem;
+    gap: 0.55rem;
+    padding: 0.6rem;
+  }
+}
+.au-next-card:hover .au-next-shikishi {
+  rotate: -0.6deg;
+}
+.au-next-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.au-next-brush {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.au-next-brush-k {
+  width: 100%;
+  height: auto;
+  color: var(--sd-text-primary);
+}
+.au-next-brush-seal {
+  width: 1.1rem;
+  rotate: -5deg;
+}
+@media (min-width: 40rem) {
+  .au-next-brush-seal {
+    width: 1.5rem;
+  }
+}
+
+/* Kiru bows you out: the end of the page is the end of the lesson. */
+.au-next-kiru {
+  display: none;
+  grid-area: kiru;
+}
+@media (min-width: 40rem) {
+  .au-next-kiru {
+    display: block;
+    width: 7.5rem;
+    height: auto;
+    margin-right: 0.5rem;
+  }
+}
+
+/* The doorway, small: hover and the cloth parts wider, Kiru leans out. */
+.au-next-door {
+  display: block;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .au-next-card:hover .au-door-mini .au-pn[data-i='0'] .au-u {
+    transform: skewX(-4deg);
+  }
+  .au-next-card:hover .au-door-mini .au-pn[data-i='1'] .au-u,
+  .au-next-card:hover .au-door-mini .au-pn[data-i='2'] .au-u {
+    transform: skewX(calc(var(--s) * 1.9));
+  }
+  .au-next-card:hover .au-door-mini .au-pn[data-i='3'] .au-u {
+    transform: skewX(4deg);
+  }
+  .au-next-card:hover .au-door-mini .au-kiru {
+    translate: 0 -6%;
+  }
+}

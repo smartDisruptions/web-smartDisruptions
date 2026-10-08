@@ -1,0 +1,205 @@
+/* ── The fusuma (components/about/AboutSwitch.tsx) ──────────────────────────
+   About's two pages as sliding paper doors: a black-lacquer frame with a
+   gold line, and one washi door with gold flecks in the paper and a pull,
+   standing over the page you are on. An object, like Kiru: the same in both
+   lights. Prefix au-fsm-.                                                 */
+
+.au-fsm-wrap {
+  /* Above a page's watermark kanji, which can reach up behind it. */
+  position: relative;
+  z-index: 1;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 1rem 1rem 0;
+}
+@media (min-width: 40rem) {
+  .au-fsm-wrap {
+    padding: 1.5rem 1.5rem 0;
+  }
+}
+
+.au-fsm {
+  --au-fsm-pad: 5px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(100%, 22rem);
+  height: 3.25rem;
+  padding: var(--au-fsm-pad);
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 40%),
+    linear-gradient(180deg, #27222c, #141118);
+  box-shadow:
+    inset 0 0 0 1px rgba(214, 170, 82, 0.6),
+    inset 0 0 0 4px #17141b,
+    inset 0 0 0 5px rgba(214, 170, 82, 0.18),
+    0 14px 28px -18px var(--sd-card-shadow);
+}
+
+/* The door. The paper is washi with mica flecks (kirazuri); a hairline of
+   dark wood frames it. */
+.au-fsm-door {
+  position: absolute;
+  top: var(--au-fsm-pad);
+  bottom: var(--au-fsm-pad);
+  left: var(--au-fsm-pad);
+  width: calc(50% - var(--au-fsm-pad));
+  border-radius: 10px;
+  background:
+    radial-gradient(
+      circle at 14% 28%,
+      rgba(200, 150, 46, 0.55) 0 0.8px,
+      transparent 1.4px
+    ),
+    radial-gradient(
+      circle at 31% 74%,
+      rgba(200, 150, 46, 0.45) 0 0.7px,
+      transparent 1.3px
+    ),
+    radial-gradient(
+      circle at 52% 22%,
+      rgba(200, 150, 46, 0.4) 0 0.6px,
+      transparent 1.2px
+    ),
+    radial-gradient(
+      circle at 66% 66%,
+      rgba(200, 150, 46, 0.5) 0 0.8px,
+      transparent 1.4px
+    ),
+    radial-gradient(
+      circle at 84% 36%,
+      rgba(200, 150, 46, 0.45) 0 0.7px,
+      transparent 1.3px
+    ),
+    radial-gradient(
+      circle at 92% 80%,
+      rgba(200, 150, 46, 0.4) 0 0.6px,
+      transparent 1.2px
+    ),
+    linear-gradient(180deg, #fbf3df, #efe2c3);
+  box-shadow:
+    inset 0 0 0 1.5px #4a3524,
+    inset 0 0 0 3px rgba(255, 255, 255, 0.35),
+    0 6px 12px -6px rgba(0, 0, 0, 0.7);
+}
+.au-fsm[data-on='person'] .au-fsm-door {
+  translate: 100% 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .au-fsm-door {
+    transition: translate 0.55s var(--ease-out-expo);
+  }
+}
+
+/* The pull (hikite): a gold ring sunk into the paper, on the edge you would
+   slide it by. */
+.au-fsm-pull {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 13px;
+  margin-top: -6.5px;
+  border-radius: 999px;
+  background:
+    radial-gradient(60% 45% at 50% 50%, #2a1d12 0 55%, transparent 62%),
+    linear-gradient(180deg, #e6bf6a, #a8761f);
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.au-fsm-pull-l {
+  left: 7px;
+}
+.au-fsm-pull-r {
+  right: 7px;
+}
+.au-fsm[data-on='work'] .au-fsm-pull-r,
+.au-fsm[data-on='person'] .au-fsm-pull-l {
+  opacity: 1;
+}
+
+.au-fsm-tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  /* Washi-light on lacquer (13:1). */
+  color: #ebe1c9;
+  transition:
+    color 0.35s ease,
+    scale 0.2s ease;
+}
+.au-fsm-tab:active {
+  scale: 0.97;
+}
+.au-fsm-tab:focus-visible {
+  outline-offset: 1px;
+  border-radius: 10px;
+}
+.au-fsm-k {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  color: #e2412a;
+  transition: color 0.35s ease;
+}
+/* The side the door stands over: sumi on washi (15:1). */
+.au-fsm[data-on='work'] .au-fsm-tab[data-id='work'],
+.au-fsm[data-on='person'] .au-fsm-tab[data-id='person'] {
+  color: #1f1a14;
+}
+.au-fsm[data-on='work'] .au-fsm-tab[data-id='work'] .au-fsm-k,
+.au-fsm[data-on='person'] .au-fsm-tab[data-id='person'] .au-fsm-k {
+  color: #c8321c;
+}
+@media (hover: hover) {
+  .au-fsm-tab:not([aria-current]):hover {
+    color: #fff;
+  }
+  /* Hover the other side and the door leans toward it, ready to slide. */
+  .au-fsm[data-on='work']:has(.au-fsm-tab[data-id='person']:hover)
+    .au-fsm-door {
+    translate: 6px 0;
+  }
+  .au-fsm[data-on='person']:has(.au-fsm-tab[data-id='work']:hover)
+    .au-fsm-door {
+    translate: calc(100% - 6px) 0;
+  }
+}
+
+/* For a slide that starts on the switch (SwitchFX), its parts glide between
+   the two pages: the frame holds still, the door crosses, the labels trade
+   ink. Listed door-first, so the labels paint over it. */
+html[data-au-door] .au-fsm {
+  view-transition-name: au-fsm;
+}
+html[data-au-door] .au-fsm-door {
+  view-transition-name: au-fsm-door;
+}
+html[data-au-door] .au-fsm-tab[data-id='work'] {
+  view-transition-name: au-fsm-work;
+}
+html[data-au-door] .au-fsm-tab[data-id='person'] {
+  view-transition-name: au-fsm-person;
+}
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(au-fsm-door) {
+    animation-duration: 0.55s;
+    animation-timing-function: var(--ease-out-expo);
+  }
+  ::view-transition-old(au-fsm-work),
+  ::view-transition-new(au-fsm-work),
+  ::view-transition-old(au-fsm-person),
+  ::view-transition-new(au-fsm-person) {
+    animation-duration: 0.4s;
+  }
+}

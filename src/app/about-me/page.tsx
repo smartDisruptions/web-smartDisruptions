@@ -5,6 +5,8 @@ import Kanji, { Seal, Slash } from '@/components/brand/Kanji';
 import { IconArrowRight } from '@/components/icons';
 import Skills from '@/components/about/Skills';
 import ThePath, { type Milestone } from '@/components/about/ThePath';
+import AboutSwitch from '@/components/about/AboutSwitch';
+import AboutNext from '@/components/about/AboutNext';
 import { shareMeta } from '@/lib/shareCard';
 import './about.css';
 
@@ -104,6 +106,8 @@ const STOPS = [
 export default function AboutPage() {
   return (
     <div className="ab-page pb-4">
+      {/* The fusuma to /about, the work; the same switch heads both pages. */}
+      <AboutSwitch current="person" />
       <div className="ab-top">
         <header className="ab-hero">
           <Kanji char="道" draw className="sd-watermark ab-hero-mark" />
@@ -266,6 +270,9 @@ export default function AboutPage() {
             <IconArrowRight className="ab-meet-go" size={20} />
           </Link>
         </div>
+
+        {/* And back out through the noren, to the work. */}
+        <AboutNext to="work" />
       </div>
     </div>
   );
