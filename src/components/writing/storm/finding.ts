@@ -1,4 +1,4 @@
-import type { MarketStormReport } from '@/data/marketStorm';
+import { isArticle, type MarketStormEntry } from '@/data/marketStorm';
 
 /**
  * The lead report's central contrast, as numbers a picture can be drawn from.
@@ -57,9 +57,9 @@ export interface Finding {
 
 const money = (bn: number) => `$${bn}B`;
 
-export function findingFor(report: MarketStormReport): Finding | null {
+export function findingFor(report: MarketStormEntry): Finding | null {
   const f = FROM_PROSE[report.slug];
-  if (!f) return null;
+  if (!f || isArticle(report)) return null;
   const points = report.charts?.find((c) => c.id === f.chart)?.points ?? [];
   const at = points.findIndex((p) => p.highlight);
   const now = points[at];

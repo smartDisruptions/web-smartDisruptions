@@ -3,7 +3,9 @@ import { Fragment, type CSSProperties } from 'react';
 import {
   featuredReport,
   unfeaturedReports,
-  type MarketStormReport,
+  type MarketStormEntry,
+  cardKpis,
+  methodOf,
   type Kpi,
 } from '@/data/marketStorm';
 import { Button, SectionContainer } from '@/components/ui';
@@ -41,7 +43,7 @@ export const totalReportPages = Math.max(
 );
 
 /** Authored newest-first, so page 1 is the newest. */
-export function reportsOnPage(page: number): MarketStormReport[] {
+export function reportsOnPage(page: number): MarketStormEntry[] {
   const start = (page - 1) * REPORTS_PER_PAGE;
   return unfeaturedReports().slice(start, start + REPORTS_PER_PAGE);
 }
@@ -402,7 +404,7 @@ function CardFigures({
  * The scroll reveal sits on a wrapper, not on the card: an animation that
  * fills `translate` would pin the card and swallow its hover lift.
  */
-function ReportCard({ report }: { report: MarketStormReport }) {
+function ReportCard({ report }: { report: MarketStormEntry }) {
   return (
     <div className="sd-reveal h-full">
       <Link
@@ -412,7 +414,7 @@ function ReportCard({ report }: { report: MarketStormReport }) {
         <article className="flex h-full flex-col">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-5 py-3">
             <span className="font-display text-[1.1rem] tracking-[0.04em] text-accent">
-              {report.ticker}
+              {report.ticker ?? 'Market Storm'}
             </span>
             <span className="ml-auto font-mono text-xs text-text-secondary">
               {formatDate(report.publishDate)}
@@ -437,9 +439,11 @@ function ReportCard({ report }: { report: MarketStormReport }) {
           <div className="flex flex-1 flex-col p-5">
             {/* One line. It wrapped to two in small mono, next to a date that
                 already says half of it. */}
-            <p className="truncate font-mono text-[0.7rem] uppercase tracking-wide text-text-secondary">
-              {report.catalyst}
-            </p>
+            {report.catalyst && (
+              <p className="truncate font-mono text-[0.7rem] uppercase tracking-wide text-text-secondary">
+                {report.catalyst}
+              </p>
+            )}
             <h2 className="font-display mt-2.5 text-[1.05rem] leading-[1.26] text-text-primary transition-colors group-hover:text-accent">
               {report.title}
             </h2>
@@ -458,13 +462,13 @@ function ReportCard({ report }: { report: MarketStormReport }) {
                 card is a promise about the page it opens, so it should be
                 built out of that page's parts. */}
             <div className="mt-auto pt-5">
-              <CardFigures kpis={report.kpis} />
+              <CardFigures kpis={cardKpis(report)} />
               {/* How this one was researched, in one line. Agent count plus
                   refutation depth — deliberately not the four role names, which
                   are identical on every card and would read as chrome, the same
                   failure as the verification chips this card already dropped. */}
               <div className="mt-3.5 flex items-center justify-between gap-3">
-                <MethodBadge method={report.method} />
+                <MethodBadge method={methodOf(report)} />
                 <span className="shrink-0 text-sm font-semibold text-accent">
                   Read <span className="ms-cta-arrow inline-block">&rarr;</span>
                 </span>
@@ -491,8 +495,8 @@ function ReportCard({ report }: { report: MarketStormReport }) {
  * figures, and its roster named on the index, because the roster is precisely
  * what distinguishes it.
  */
-function FeaturedReport({ report }: { report: MarketStormReport }) {
-  const m = report.method;
+function FeaturedReport({ report }: { report: MarketStormEntry }) {
+  const m = methodOf(report);
   return (
     <section
       className="mx-auto mt-16 max-w-6xl sm:mt-20"
@@ -552,9 +556,11 @@ function FeaturedReport({ report }: { report: MarketStormReport }) {
 
           <div className="relative z-[1] grid grid-cols-1 gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-12">
             <div className="min-w-0">
-              <p className="font-mono text-[0.7rem] uppercase leading-relaxed tracking-wide text-text-secondary">
-                {report.catalyst}
-              </p>
+              {report.catalyst && (
+                <p className="font-mono text-[0.7rem] uppercase leading-relaxed tracking-wide text-text-secondary">
+                  {report.catalyst}
+                </p>
+              )}
               <h2
                 id="ms-thesis-title"
                 className="font-display mt-3 text-[1.8rem] leading-[1.1] text-text-primary transition-colors group-hover:text-accent-hover sm:text-[2.45rem] lg:text-[2.75rem]"
@@ -564,7 +570,7 @@ function FeaturedReport({ report }: { report: MarketStormReport }) {
               <p className="font-read mt-5 max-w-[60ch] text-[1.03rem] leading-[1.75] text-text-secondary">
                 {report.excerpt}
               </p>
-              <CardFigures kpis={report.kpis} className="mt-7" />
+              <CardFigures kpis={cardKpis(report)} className="mt-7" />
               <span className="ms-cta mt-7">
                 Read the thesis{' '}
                 <span className="ms-cta-arrow">

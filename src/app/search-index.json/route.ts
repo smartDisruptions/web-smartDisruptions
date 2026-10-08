@@ -96,7 +96,7 @@ export function GET() {
       u: `/market-storm/${r.slug}`,
       k: 'Market Storm',
       d: r.excerpt,
-      x: `${r.ticker} ${r.company} ${r.tags.join(' ')}`,
+      x: [r.ticker, r.company, ...(r.tags ?? [])].filter(Boolean).join(' '),
     });
   }
   for (const p of projects) {
