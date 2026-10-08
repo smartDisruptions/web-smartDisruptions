@@ -69,6 +69,28 @@ const ARCHIVES = {
       'msft-q4-fy2026',
       'goog-q2-2026',
     ],
+    // Taken off the site since this design (Josh, 2026-10-07): the archive
+    // drops them too, rather than keep showing what the live site no longer
+    // does. Apps and projects are filtered out of the old data, so no page
+    // is built for them and nothing lists them; `skills` are removed whole;
+    // `text` rewrites old copy that counted or named them.
+    drop: {
+      apps: ['field-office', 'grove', 'pebble-kart', 'going-traveling'],
+      projects: ['pembroke-file'],
+      skills: ['teaching'],
+      text: [
+        [
+          'src/data/skills.ts',
+          "The arcade is six cabinets. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. The newest cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
+          'The arcade is three cabinets. The newest is a chore-tracker my family actually uses, chores as quests with gold and gear.',
+        ],
+        [
+          'src/app/built/page.tsx',
+          'Six games. All of them free, and all of them play in your browser.',
+          'Three games. All of them free, and all of them play in your browser.',
+        ],
+      ],
+    },
   },
 };
 
@@ -203,6 +225,21 @@ patch(
   /(export const marketStormReports: MarketStormReport\[\] = \[[\s\S]*?\n)\];/,
   `$1].filter((r) => ${JSON.stringify(cfg.reports)}.includes(r.slug));`
 );
+
+// ── 4b. Drop what has since left the live site ─────────────────────────────
+if (cfg.drop) {
+  const { apps = [], projects = [], skills = [], text = [] } = cfg.drop;
+  const not = (list, key) => `.filter((x) => !${JSON.stringify(list)}.includes(${key}))`;
+  // `as` keeps the declared element type: a filtered literal loses it.
+  patch('src/data/apps.ts', /(export const apps: App\[\] = )(\[[\s\S]*?\n\]);/, `$1($2 as App[])${not(apps, 'x.slug')};`);
+  patch('src/data/apps.ts', /(export const ARCADE_SLUGS = \[[\s\S]*?\n)\];/, `$1]${not(apps, 'x')};`);
+  patch('src/data/projects.ts', /(export const projects: Project\[\] = )(\[[\s\S]*?\n\]);/, `$1($2 as Project[])${not(projects, 'x.slug')};`);
+  patch('src/data/skills.ts', /(const ARCADE = new Set\(\[[\s\S]*?\n)\]\);/, `$1]${not(apps, 'x')});`);
+  for (const id of skills)
+    patch('src/data/skills.ts', new RegExp(`\\n      \\{\\n        id: '${id}',[\\s\\S]*?\\n      \\},`), '');
+  for (const [p, from, to] of text) patch(p, from, to);
+  console.log(`dropped ${apps.length} apps, ${projects.length} projects and ${skills.length} skills from the old data`);
+}
 
 // Links written into the old code and posts that point at a post or report
 // the archive does not keep go to the live site instead.

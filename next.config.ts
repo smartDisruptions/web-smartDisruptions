@@ -115,6 +115,12 @@ const nextConfig: NextConfig = {
       ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling'].flatMap((slug) => [
         { source: `/built/${slug}`, destination: '/built', permanent: true },
         { source: `/apps/${slug}`, destination: '/built', permanent: true },
+        // the frozen Notebook archive dropped them too (scripts/archive-site.mjs)
+        {
+          source: `/archive/notebook/built/${slug}`,
+          destination: '/archive/notebook/built',
+          permanent: true,
+        },
       ]),
       // The two Pembroke File articles went with the game (Josh, 2026-10-07).
       ...['escape-room-ate-my-resume', 'escape-room-build-playbook'].map((slug) => ({
