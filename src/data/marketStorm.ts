@@ -8771,10 +8771,10 @@ export const marketStormArticles: MarketStormArticle[] = [
     catalyst:
       'ARKG’s 96% rise, an 8.8% fall, and a month of new AI biology tools',
     tags: ['genomics', 'AI-in-biology', 'ARKG', 'drug-discovery'],
-    cardImage: '/images/market-storm/arkg-ai-takeoff.webp',
+    cardImage: '/images/market-storm/arkg-ai-takeoff-fund.webp',
     cardImageAlt:
-      'Market Storm, ARKG: using the most AI isn’t the same as winning from it. Recursion scores 8 out of 10 for using AI but 6 for gains if AI takes off; Twist scores 5 for using AI and 9 for gains.',
-    ogImage: '/images/market-storm/arkg-ai-takeoff.png',
+      'ARKG – Analyzing Cathie Wood’s Genomics Fund. The fund drawn as 100 squares: tests and patient data 27, lab tools 25, AI drug discovery 11, gene editing 8, medicines 6, other holdings 23.',
+    ogImage: '/images/market-storm/arkg-ai-takeoff-fund.png',
   },
 ];
 
