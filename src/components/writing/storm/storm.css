@@ -734,6 +734,90 @@
 /* ── The archive ────────────────────────────────────────────────────────── */
 /* Title, pause, browse on one line over the tape on a wide screen; on a
    phone the browse button drops under the tape, where the thumb is. */
+/* ── The newest report: its own card between the lead and the tape ─────── */
+.wms-new {
+  position: relative;
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(155, 176, 255, 0.2);
+  border-radius: var(--radius-2xl);
+  /* The lead's lacquer: AA on every line whatever the sky does. */
+  background: linear-gradient(
+    165deg,
+    rgba(20, 25, 58, 0.95),
+    rgba(11, 14, 32, 0.96) 55%,
+    rgba(8, 10, 20, 0.97)
+  );
+}
+@media (min-width: 40rem) {
+  .wms-new {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    align-items: center;
+    gap: 1.75rem;
+    padding: 1.4rem;
+  }
+}
+.wms-new-img {
+  aspect-ratio: 1200 / 630;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(155, 176, 255, 0.18);
+}
+.wms-new-body {
+  /* Flex, not grid: the kicker shares the lead's class, which names a grid
+     area that would scatter a grid's children. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.wms-new-pill {
+  display: inline-block;
+  margin-right: 0.45rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: #d63a22;
+  color: #fff;
+  letter-spacing: 0.08em;
+}
+.wms .wms-new-title {
+  margin-top: 0.7rem;
+  font-size: 1.32rem;
+  line-height: 1.15;
+  color: var(--sd-text-primary);
+}
+.wms-new-title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.wms-new-title a:hover {
+  color: var(--sd-accent-hover);
+}
+@media (min-width: 64rem) {
+  .wms .wms-new-title {
+    font-size: 1.7rem;
+  }
+}
+.wms-new-excerpt {
+  margin-top: 0.75rem;
+  max-width: 56ch;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--sd-text-secondary);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.wms .wms-new-cta {
+  margin-top: 1.1rem;
+  /* Near-solid: a strike can land right behind it. */
+  background: rgba(17, 21, 42, 0.9);
+}
+
 .wms-archive {
   margin-top: 2.75rem;
   display: grid;

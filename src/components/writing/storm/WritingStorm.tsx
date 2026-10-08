@@ -14,6 +14,7 @@ import StormSky from '@/components/market-storm/StormSky';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import Kiru from '@/components/kiru/Kiru';
 import Button from '@/components/ui/Button';
+import HeroImage from '@/components/HeroImage';
 import { toneGlyph, toneText } from '@/components/market-storm/tone';
 import { formatDate } from '@/lib/format';
 import { cents, findingFor, type Finding } from './finding';
@@ -63,6 +64,9 @@ export default function WritingStorm() {
   const archive = unfeaturedReports()
     .filter((r) => r !== lead)
     .sort((a, b) => b.publishDate.localeCompare(a.publishDate));
+  // The newest report gets its own card under the lead; the tape carries the
+  // rest, so nothing is shown twice.
+  const [newest, ...earlier] = archive;
   const [stat, ...figs] = cardKpis(lead).slice(0, 3);
   const finding = findingFor(lead);
   const href = `/market-storm/${lead.slug}`;
@@ -135,11 +139,13 @@ export default function WritingStorm() {
             </div>
           </article>
 
-          {archive.length > 0 && (
+          {newest && <Newest report={newest} />}
+
+          {earlier.length > 0 && (
             <div className="wms-archive">
               <h3 className="sd-kicker wms-archive-title">Earlier reports</h3>
               <TapeToggle />
-              <Tape reports={archive} />
+              <Tape reports={earlier} />
               <Button
                 variant="secondary"
                 href="/market-storm#reports"
@@ -161,6 +167,43 @@ export default function WritingStorm() {
 /* ── The lead report's figures ─────────────────────────────────────────── */
 
 /** The figure the report turns on, set big, in its semantic ink. */
+/** The newest report, as a card of its own between the lead and the tape. */
+function Newest({ report }: { report: MarketStormEntry }) {
+  const href = `/market-storm/${report.slug}`;
+  return (
+    <article className="wms-new" aria-labelledby="wms-new-title">
+      {report.cardImage && (
+        <div className="wms-new-img">
+          {/* The room is always night, so only the night card. */}
+          <HeroImage
+            post={{
+              heroImage: report.cardImage,
+              heroImageAlt: report.cardImageAlt,
+              title: report.title,
+            }}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
+      <div className="wms-new-body">
+        <p className="wms-lead-kicker">
+          <span className="wms-new-pill">New</span> Newest report &middot;{' '}
+          <time dateTime={report.publishDate}>
+            {formatDate(report.publishDate)}
+          </time>
+        </p>
+        <h3 id="wms-new-title" className="font-display wms-new-title">
+          <Link href={href}>{report.title}</Link>
+        </h3>
+        <p className="font-read wms-new-excerpt">{report.excerpt}</p>
+        <Button href={href} variant="secondary" className="wms-new-cta">
+          Read it <span aria-hidden="true">&rarr;</span>
+        </Button>
+      </div>
+    </article>
+  );
+}
+
 function BigStat({ kpi }: { kpi: Kpi }) {
   const tone = kpi.tone ?? 'neutral';
   return (
@@ -329,7 +372,9 @@ function TapeSet({
               prefetch={false}
             >
               <span className="sr-only">{r.company ?? r.title},</span>{' '}
-              <span className="font-display wms-tick-sym">{r.ticker ?? 'Storm'}</span>{' '}
+              <span className="font-display wms-tick-sym">
+                {r.ticker ?? 'Storm'}
+              </span>{' '}
               <span className="wms-tick-date">{shortDate(r.publishDate)}</span>{' '}
               {k && (
                 <>
