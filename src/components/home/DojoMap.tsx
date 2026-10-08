@@ -2,90 +2,106 @@ import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 import Kiru, { type KiruPose } from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
-import { getFieldNotes } from '@/lib/fieldNotes';
-import { marketStormReports } from '@/data/marketStorm';
-import { apps, GAME_SLUGS } from '@/data/apps';
-import { projects, PROJECT_APP_SLUGS } from '@/data/projects';
+import StaticSvg from '@/components/brand/StaticSvg';
+import { BUILD_ROOMS, type BuildRoom } from '@/components/build/rooms';
+import { MOON, TILE_URI, pixelPaths } from '@/components/home/build/pixels';
+import { GAME_SLUGS } from '@/data/apps';
 import { IconArrowRight } from '@/components/icons';
 
-/**
- * The Learn room's fireflies: where each one hovers and its own rhythm, so
- * no two blink together. They keep clear of the count chip and the title.
- */
-const FIREFLIES = [
-  { '--x': '12%', '--y': '52%', '--t': '6.4s', '--d': '-1.1s' },
-  { '--x': '30%', '--y': '28%', '--t': '7.6s', '--d': '-4.3s' },
-  { '--x': '70%', '--y': '60%', '--t': '5.9s', '--d': '-2.6s' },
-  { '--x': '86%', '--y': '38%', '--t': '8.1s', '--d': '-5.4s' },
-  { '--x': '54%', '--y': '20%', '--t': '6.9s', '--d': '-0.4s' },
-] as unknown as CSSProperties[];
+type Room = {
+  href: string;
+  title: string;
+  line: string;
+  count: string;
+  /** More of the count, shown where the tile is wide enough to hold it
+      on one line (a phone's half-width tile is not). */
+  more?: string;
+  kanji: string;
+  pose: KiruPose;
+  tone: string;
+  /** Anything the room's ground draws above its kanji and behind Kiru. */
+  ground?: ReactNode;
+};
+
+/** The games room's moon, in pixels like the room it opens onto. */
+const MOON_PATHS = [...pixelPaths(MOON)];
 
 /**
- * The four rooms of the dojo as app tiles: each with its kanji, Kiru doing
- * that room's job, one line, and a live count. A 2×2 grid on a phone, a
- * bento row on a desktop. Each tile carries its own ground — ruled washi,
- * a lamplit study, a blueprint, a neon arcade — all CSS.
+ * What each Build room's door is made of. Websites: a shoji, paper in a
+ * wooden lattice, with a browser's three dots in its top rail; Kiru is
+ * building it. Apps: black urushi with a gold maki-e line and a phone made
+ * of light; Kiru throws a shuriken, a tool that does one job. Games: pixel
+ * stars and copper roof tiles under a night sky; Kiru runs the level.
+ */
+const BUILD_DOORS: Record<
+  BuildRoom['key'],
+  Pick<Room, 'pose' | 'tone' | 'ground'>
+> = {
+  websites: {
+    pose: 'build',
+    tone: 'hb-door-web',
+    ground: (
+      <span className="hb-door-bar" aria-hidden>
+        <i />
+        <i />
+        <i />
+      </span>
+    ),
+  },
+  apps: {
+    pose: 'throw',
+    tone: 'hb-door-app',
+    ground: <span className="hb-door-phone" aria-hidden />,
+  },
+  games: {
+    pose: 'run',
+    tone: 'hb-door-game',
+    ground: (
+      <>
+        <span className="hb-door-stars" aria-hidden>
+          <i />
+          <i />
+          <i />
+        </span>
+        <StaticSvg
+          viewBox="0 0 17 17"
+          shapeRendering="crispEdges"
+          className="hb-door-moon"
+          aria-hidden
+        >
+          {MOON_PATHS.map(([fill, d]) => (
+            <path key={fill} d={d} fill={fill} />
+          ))}
+        </StaticSvg>
+        <span
+          className="hb-door-tiles"
+          style={{ '--tile': TILE_URI } as CSSProperties}
+          aria-hidden
+        />
+      </>
+    ),
+  },
+};
+
+/**
+ * The four rooms of the dojo as app tiles: the three Build rooms and the
+ * Arcade, each with its kanji, Kiru doing that room's job, one line, and a
+ * chip that tells the truth. A 2×2 grid on a phone, a bento row on a
+ * desktop. Each tile carries its own ground, all CSS (home.css).
  */
 export default function DojoMap() {
-  const builds =
-    projects.length +
-    apps.filter(
-      (a) =>
-        !(a.slug in PROJECT_APP_SLUGS) &&
-        !(GAME_SLUGS as readonly string[]).includes(a.slug)
-    ).length;
-  // The same list /content pages through (posts plus the pinned guide), so
-  // this count and the Writing page's can never disagree.
-  const notes = getFieldNotes().length;
-  const rooms: {
-    href: string;
-    title: string;
-    line: string;
-    count: string;
-    /** More of the count, shown where the tile is wide enough to hold it
-        on one line (a phone's half-width tile is not). */
-    more?: string;
-    kanji: string;
-    pose: KiruPose;
-    tone: string;
-    /** Anything the room's ground draws above its kanji and behind Kiru. */
-    ground?: ReactNode;
-  }[] = [
-    {
-      href: '/content',
-      title: 'Writing',
-      line: 'Field notes, and Market Storm on the AI market.',
-      count: `${notes} notes`,
-      more: ` · ${marketStormReports.length} reports`,
-      kanji: '書',
-      pose: 'read',
-      tone: 'hm-room-writing',
-    },
-    {
-      href: '/learn',
-      title: 'Learn',
-      line: 'Let’s learn to build websites, apps and games. No hype.',
-      count: 'Free · by email',
-      kanji: '学',
-      pose: 'wave',
-      tone: 'hm-room-learn',
-      ground: (
-        <span className="hm-fireflies" aria-hidden>
-          {FIREFLIES.map((style, i) => (
-            <i key={i} style={style} />
-          ))}
-        </span>
-      ),
-    },
-    {
-      href: '/built',
-      title: 'What I Built',
-      line: 'Websites, apps and tools — live, with receipts.',
-      count: `${builds} builds`,
-      kanji: '創',
-      pose: 'build',
-      tone: 'hm-room-built',
-    },
+  const rooms: Room[] = [
+    ...BUILD_ROOMS.map((r) => ({
+      href: r.href,
+      title: r.title,
+      line: r.line,
+      // JOSH: no guides in these rooms yet, so no count. Once a room has
+      // some, swap this for the real number (e.g. `${guides.length} guides`).
+      count: 'New room',
+      more: ' · free by email',
+      kanji: r.kanji,
+      ...BUILD_DOORS[r.key],
+    })),
     {
       href: '/games',
       title: 'Arcade',
