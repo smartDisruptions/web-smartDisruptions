@@ -42,6 +42,12 @@
   min-height: 620px;
   max-height: 960px;
   view-timeline: --hx block;
+  /* Once the hero scrolls away its ~30 CSS loops (petals, birds, bamboo,
+     haze) stop: off screen they still cost a style pass every frame, which
+     at 4x CPU was ~42% of the main thread everywhere below it (October
+     2026). The box keeps its explicit height, so nothing moves. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 760px;
 }
 :root[data-theme='dark'] .hx {
   /* Night: the same town under a moon, windows and lanterns lit. */
@@ -471,6 +477,24 @@
   .hx-sakura {
     display: none;
   }
+}
+/* Scrolled out of view, every loop holds where it is: HeroFX sets
+   data-away from its IntersectionObserver, and they carry on from the same
+   frame when the hero comes back. Each looping part is named rather than
+   `.hx *` (DESIGN.md: an attribute's invalidations are filed under its name
+   alone). !important because each loop is an `animation` shorthand, which
+   resets the play state. */
+.hx[data-away]
+  :is(
+    .hx-stars,
+    .hx-birds,
+    .hx-haze svg,
+    .hx-bamboo,
+    .hx-lantern,
+    .hx-glow,
+    .hx-petal
+  ) {
+  animation-play-state: paused !important;
 }
 @keyframes hx-fall {
   from {

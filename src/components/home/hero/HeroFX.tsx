@@ -92,6 +92,12 @@ export default function HeroFX() {
     let visible = true;
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
+      // The CSS loops hold too while it's away (hero.css, [data-away]).
+      // content-visibility stops them only once the hero is well clear of
+      // the screen; just past the fold, under the doors, they still cost a
+      // style pass every frame.
+      if (visible) delete hero.dataset.away;
+      else hero.dataset.away = '';
       wake();
     });
     io.observe(hero);
