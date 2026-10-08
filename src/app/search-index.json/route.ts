@@ -40,6 +40,27 @@ export function GET() {
       x: 'learn newsletter email subscribe beginner course',
     },
     {
+      t: 'Build websites',
+      u: '/build-websites',
+      k: 'Page',
+      d: 'Learn to build websites with AI, in plain words',
+      x: 'learn web site html css design newsletter email',
+    },
+    {
+      t: 'Build apps',
+      u: '/build-apps',
+      k: 'Page',
+      d: 'Learn to build apps with AI, in plain words',
+      x: 'learn app mobile phone tool newsletter email',
+    },
+    {
+      t: 'Build games',
+      u: '/build-games',
+      k: 'Page',
+      d: 'Learn to build games with AI, in plain words',
+      x: 'learn game games play canvas newsletter email',
+    },
+    {
       t: 'What I Built',
       u: '/built',
       k: 'Page',
@@ -54,10 +75,18 @@ export function GET() {
       x: 'storm reports earnings research thesis',
     },
     {
-      t: 'About Josh',
+      t: 'About',
       u: '/about',
       k: 'Page',
+      d: 'The work: the newest notes, what I built, and Market Storm',
+      x: 'about latest writing builds receipts market storm',
+    },
+    {
+      t: 'About Josh',
+      u: '/about-me',
+      k: 'Page',
       d: 'Who builds this, and how AI helps',
+      x: 'about me josh story path skills',
     },
     {
       t: 'Privacy',

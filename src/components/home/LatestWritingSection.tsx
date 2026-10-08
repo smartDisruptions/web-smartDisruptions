@@ -5,6 +5,7 @@ import HeroImage from '@/components/HeroImage';
 import Kiru from '@/components/kiru/Kiru';
 import { formatDate } from '@/lib/format';
 import { Button } from '@/components/ui';
+import './showcase.css';
 
 /** A note's card image, in the shape HeroImage takes. */
 function heroOf(note: FieldNote) {

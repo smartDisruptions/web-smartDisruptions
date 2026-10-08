@@ -3,6 +3,7 @@ import { apps, GAME_SLUGS } from '@/data/apps';
 import { builtHref } from '@/data/projects';
 import Kiru from '@/components/kiru/Kiru';
 import { Button } from '@/components/ui';
+import './showcase.css';
 
 /**
  * "Stuff I built" as a film reel: two rows of real screenshots that slide in

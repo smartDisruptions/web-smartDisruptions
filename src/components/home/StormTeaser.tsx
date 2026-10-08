@@ -3,6 +3,7 @@ import { cardKpis, featuredReport, marketStormReports } from '@/data/marketStorm
 import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import { formatDate } from '@/lib/format';
+import './showcase.css';
 
 const TONE: Record<string, string> = {
   bull: 'text-[#4ade80]',

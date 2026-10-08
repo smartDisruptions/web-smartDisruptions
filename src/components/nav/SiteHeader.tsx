@@ -120,7 +120,7 @@ export default function SiteHeader() {
           <Link
             href="/about"
             prefetch={pathname === '/about' ? false : undefined}
-            aria-label="About Josh"
+            aria-label="About"
             aria-current={isActive(section, '/about') ? 'page' : undefined}
             className={`ml-0.5 block h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 transition-[box-shadow,transform] duration-300 hover:scale-105 lg:hidden ${
               isActive(section, '/about') ? 'ring-pen' : 'ring-border'
