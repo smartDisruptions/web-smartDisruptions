@@ -1,0 +1,602 @@
+/*
+  /build-games — 戯, "play". Prefix: bg-
+
+  The header is a toy: a pixel rooftop at night where you build a level and
+  then play it (LevelToy.tsx + engine.ts, one canvas island). The cabinet it
+  sits in is ALWAYS NIGHT, like the Arcade and the storm panels: an object,
+  so it re-declares the night tokens on itself and everything inside reads
+  them. The page around it follows the theme.
+
+  Motion: the canvas is the only thing that moves per frame, and it runs
+  only on screen. Everything else here is a one-shot (the banner, the
+  opt-in's ping, the watermark inking itself) and stops under reduced motion.
+*/
+
+.bg-page {
+  position: relative;
+  overflow-x: clip;
+  padding-bottom: 2rem;
+}
+
+/* ── The header ────────────────────────────────────────────────────────── */
+.bg-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-areas: 'intro' 'game' 'optin';
+  gap: 1.15rem;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: 1.15rem 1rem 0;
+}
+@media (min-width: 40rem) {
+  .bg-hero {
+    padding: 2rem 1.5rem 0;
+    gap: 1.5rem;
+  }
+}
+@media (min-width: 64rem) {
+  .bg-hero {
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'intro game'
+      'optin game';
+    column-gap: 3.25rem;
+    row-gap: 1.75rem;
+    align-items: start;
+    padding-top: 3.25rem;
+  }
+}
+.bg-intro {
+  grid-area: intro;
+}
+@media (min-width: 64rem) {
+  /* Beside the cabinet the headline sizes to its column, not the window. */
+  .bg-intro {
+    container-type: inline-size;
+  }
+}
+.bg-game {
+  grid-area: game;
+  min-width: 0;
+}
+.bg-mark {
+  z-index: -1;
+  top: -0.75rem;
+  right: -5.5rem;
+  width: clamp(14rem, 62vw, 26rem);
+  height: auto;
+}
+@media (min-width: 64rem) {
+  .bg-mark {
+    right: auto;
+    left: -3rem;
+    top: 0.5rem;
+    width: 24rem;
+  }
+}
+.bg-h1 {
+  margin-top: 0.7rem;
+  font-size: clamp(2.2rem, 9.4vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 64rem) {
+  .bg-h1 {
+    font-size: min(4.2rem, 14.5cqi);
+  }
+}
+.bg-h1-then {
+  display: block;
+  /* Vermilion as text is --sd-pen-ink (AA); --sd-pen is for marks. */
+  color: var(--sd-pen-ink);
+}
+.bg-lede {
+  margin-top: 0.75rem;
+  max-width: 34rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+}
+@media (min-width: 64rem) {
+  .bg-lede {
+    font-size: 1.12rem;
+  }
+}
+
+/* ── The cabinet (always night) ─────────────────────────────────────────── */
+.bg-cab {
+  color-scheme: dark;
+  --sd-bg: #090b16;
+  --sd-surface: #11152a;
+  --sd-surface-elevated: #1a1f3a;
+  --sd-fill: rgba(236, 238, 250, 0.07);
+  --sd-accent: #9bb0ff;
+  --sd-text-primary: #eceefa;
+  --sd-text-secondary: #a6abc8;
+  --sd-border: rgba(236, 238, 250, 0.12);
+  --sd-border-strong: rgba(236, 238, 250, 0.24);
+  --sd-pen: #ff5b3d;
+  --sd-pen-ink: #ff8166;
+  --sd-gold: #ffcf70;
+  position: relative;
+  padding: 0.55rem 0.55rem 0.7rem;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #171c38, #0c0f20 70%);
+  border: 1px solid rgba(155, 176, 255, 0.18);
+  box-shadow:
+    0 34px 60px -36px rgba(9, 11, 22, 0.8),
+    0 2px 8px -4px rgba(9, 11, 22, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  color: var(--sd-text-primary);
+}
+@media (min-width: 40rem) {
+  .bg-cab {
+    padding: 0.75rem 0.75rem 0.85rem;
+    border-radius: 26px;
+  }
+}
+
+/* The screen. Before the canvas paints, the same night sky in CSS: the
+   moon where the canvas puts it, so the hand-over is seamless. */
+.bg-screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* The level is 160×90 with a few pixels of town either side. */
+  aspect-ratio: 168 / 92;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    #080a18 0%,
+    #0f132b 42%,
+    #1a2147 78%,
+    #0a0d1e 100%
+  );
+}
+.bg-screen::before {
+  content: '';
+  position: absolute;
+  left: calc(100% - 31 / 169 * 100% - 4.7%);
+  top: 6%;
+  width: 9.2%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff3d6;
+  box-shadow: 0 0 0 0.45rem rgba(28, 35, 80, 0.85);
+}
+.bg-canvas {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  /* A vertical swipe still scrolls the page; taps and sideways drags are
+     the editor's. While playing, the screen is the jump button. */
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.bg-screen[data-ready] .bg-canvas {
+  opacity: 1;
+}
+.bg-cab[data-mode='play'] .bg-canvas {
+  touch-action: none;
+}
+.bg-canvas:focus-visible {
+  outline: none;
+}
+/* The focus ring goes on the screen: the canvas sits inside its clip. */
+.bg-screen:has(.bg-canvas:focus-visible) {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 3px;
+}
+/* A click in the demo takes over and in play it jumps; in build it builds. */
+.bg-canvas {
+  cursor: pointer;
+}
+.bg-cab[data-mode='build'] .bg-canvas {
+  cursor: crosshair;
+}
+
+/* "Level clear": words over the scene, on an ink plate so they read on any
+   pixel under them. Decorative (the status line says it to everyone). */
+.bg-banner {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 0.4rem;
+  padding-top: 12%;
+  pointer-events: none;
+  opacity: 0;
+}
+.bg-banner[data-show] {
+  animation: bg-banner 3.6s var(--ease-out-expo) both;
+}
+.bg-banner-kick {
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(9, 11, 22, 0.82);
+  color: #ffcf70;
+  font: 800 0.66rem/1 var(--font-sans);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.bg-banner-line {
+  padding: 0.3rem 0.8rem 0.42rem;
+  border-radius: 10px;
+  background: rgba(9, 11, 22, 0.82);
+  color: #fff;
+  font-size: clamp(1.15rem, 5.2vw, 1.9rem);
+  line-height: 1.15;
+  text-align: center;
+}
+@keyframes bg-banner {
+  0% {
+    opacity: 0;
+    scale: 0.82;
+  }
+  9% {
+    opacity: 1;
+    scale: 1.05;
+  }
+  15% {
+    scale: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg-banner[data-show] {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* The deck: status line, then the tools. */
+.bg-deck {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.65rem 0.1rem 0;
+}
+.bg-statusrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  /* Two lines reserved, so a longer hint never moves the buttons. */
+  min-height: 2.5rem;
+}
+.bg-chip {
+  flex: none;
+  margin-top: 0.05rem;
+  padding: 0.36rem 0.48rem;
+  border-radius: 6px;
+  background: rgba(155, 176, 255, 0.14);
+  color: #c3d0ff;
+  font: 800 0.6rem/1 var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.bg-chip[data-mode='play'] {
+  background: rgba(255, 91, 61, 0.16);
+  color: #ff9a85;
+}
+.bg-chip[data-mode='build'] {
+  background: rgba(255, 207, 112, 0.14);
+  color: #ffcf70;
+}
+.bg-status {
+  flex: 1;
+  min-width: 0;
+  color: #d9ddf2;
+  font: 600 0.84rem/1.42 var(--font-sans);
+  text-wrap: pretty;
+}
+.bg-count {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.12rem;
+  color: #ffcf70;
+  font: 750 0.8rem/1 var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.bg-count[data-none] {
+  visibility: hidden;
+}
+.bg-count-icon {
+  width: 14px;
+  height: 14px;
+  color: #ff6a48;
+}
+
+.bg-tools {
+  display: flex;
+  gap: 0.4rem;
+}
+.bg-tool {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 3.35rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.28rem;
+  padding: 0.4rem 0.15rem;
+  border: 1px solid rgba(155, 176, 255, 0.18);
+  border-radius: 12px;
+  background: #1a1f3a;
+  color: #dfe3f7;
+  font: 700 0.7rem/1 var(--font-sans);
+  letter-spacing: 0.02em;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  transition:
+    scale 0.15s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+.bg-tool:active {
+  scale: 0.94;
+}
+@media (hover: hover) {
+  .bg-tool:hover {
+    border-color: rgba(155, 176, 255, 0.42);
+  }
+}
+.bg-tool[aria-pressed='true'] {
+  background: #2b3a96;
+  border-color: #9bb0ff;
+  color: #fff;
+  box-shadow: inset 0 -3px 0 #9bb0ff;
+}
+/* The two presses that start something: the primary button's vermilion,
+   white text (4.7:1), the same object in both themes. */
+.bg-tool-play,
+.bg-jump {
+  border-color: #d63a22;
+  background: #d63a22;
+  color: #fff;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22);
+}
+@media (hover: hover) {
+  .bg-tool-play:hover,
+  .bg-jump:hover {
+    border-color: #c2311b;
+    background: #c2311b;
+  }
+}
+.bg-jump {
+  flex: 3 1 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.92rem;
+}
+.bg-ico {
+  width: 20px;
+  height: 20px;
+}
+@media (min-width: 40rem) {
+  .bg-tools {
+    gap: 0.5rem;
+  }
+  .bg-tool {
+    font-size: 0.76rem;
+    min-height: 3.5rem;
+  }
+}
+
+.bg-keys {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .bg-keys {
+    display: block;
+    margin-top: 0.7rem;
+    color: #a6abc8;
+    font: 500 0.75rem/1.4 var(--font-sans);
+    text-align: center;
+  }
+  .bg-keys kbd {
+    padding: 0.05rem 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #dfe3f7;
+    font: inherit;
+    font-weight: 700;
+  }
+}
+
+/* ── The games list ─────────────────────────────────────────────────────── */
+.bg-optin {
+  grid-area: optin;
+  position: relative;
+  padding: 1.2rem 1.1rem 1.15rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 22px;
+  background: var(--sd-surface);
+  box-shadow: 0 24px 48px -36px var(--sd-card-shadow);
+}
+@media (min-width: 40rem) {
+  .bg-optin {
+    padding: 1.5rem 1.5rem 1.35rem;
+  }
+}
+/* A ping when you clear a level you built: one ring, twice, on opacity. */
+.bg-optin::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 2px solid var(--sd-pen);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+.bg-optin.bg-ping::after {
+  animation: bg-ping 1.4s ease-out 2;
+}
+@keyframes bg-ping {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.bg-optin-title {
+  margin-top: 0.55rem;
+  font-size: clamp(1.3rem, 5.2vw, 1.6rem);
+  line-height: 1.15;
+  word-spacing: 0.06em;
+}
+.bg-optin-copy {
+  margin-top: 0.45rem;
+  max-width: 32rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+.bg-form {
+  margin-top: 0.95rem;
+}
+
+/* ── The shelf ──────────────────────────────────────────────────────────── */
+.bg-shelf {
+  max-width: 76rem;
+  margin: 4.25rem auto 0;
+  padding: 0 1rem;
+  contain-intrinsic-size: auto 560px;
+}
+@media (min-width: 40rem) {
+  .bg-shelf {
+    padding-inline: 1.5rem;
+  }
+}
+.bg-shelf-title {
+  margin-top: 0.55rem;
+  font-size: clamp(1.7rem, 6.4vw, 2.4rem);
+  line-height: 1.1;
+}
+.bg-shelf-note {
+  margin-top: 0.45rem;
+  max-width: 34rem;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+.bg-slots {
+  position: relative;
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 4.25rem;
+}
+@media (min-width: 48rem) {
+  .bg-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+/* Kiru sits on the end of the shelf, legs over the edge, waiting with you. */
+.bg-shelf-kiru {
+  position: absolute;
+  z-index: 1;
+  right: 0.75rem;
+  top: -4.35rem;
+  width: 5.4rem;
+  height: auto;
+  pointer-events: none;
+}
+.bg-slot {
+  position: relative;
+  min-height: 9rem;
+  display: grid;
+  align-content: space-between;
+  gap: 0.6rem;
+  padding: 1.05rem 1.15rem 1.1rem;
+  border-radius: var(--radius-xl);
+}
+.bg-slot-n {
+  color: var(--sd-text-secondary);
+  font: 400 1.9rem/1 var(--font-display);
+  font-size-adjust: 0.5;
+}
+/* An empty slot is a level nobody has built yet: the editor's dot grid,
+   dashed edges, and the honest word. */
+.bg-empty {
+  border: 1.5px dashed var(--sd-border-strong);
+  background-color: color-mix(in srgb, var(--sd-surface) 60%, transparent);
+  background-image: radial-gradient(
+    circle,
+    var(--sd-border-strong) 1.1px,
+    transparent 1.6px
+  );
+  background-size: 16px 16px;
+  background-position: 8px 8px;
+}
+.bg-empty-label {
+  color: var(--sd-text-secondary);
+  font: 750 0.7rem/1 var(--font-sans);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+/* On a phone an empty slot is one short row: nothing to show yet, so it
+   doesn't take a screenful to say so. */
+@media (max-width: 47.99rem) {
+  .bg-empty {
+    min-height: 4.5rem;
+    grid-template-columns: 3.3rem 1fr;
+    align-content: center;
+    align-items: center;
+    gap: 1.1rem;
+  }
+}
+.bg-guide {
+  color: var(--sd-text-primary);
+}
+.bg-guide-title {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  word-spacing: 0.06em;
+}
+.bg-guide-line {
+  color: var(--sd-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.bg-guide-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--sd-text-secondary);
+  font-size: 0.85rem;
+}
+.bg-guide-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--sd-accent);
+  font-weight: 700;
+}
