@@ -140,9 +140,14 @@ export default function RoomKeeper() {
     }
 
     // Prefetching, once the page is still (5, above). A card counts as on
-    // screen while its title link is. Which links show is read only when a
-    // scroll has ended — a handful of rects, layout already clean — rather
-    // than watched by an observer that would run on every scrolling frame.
+    // screen while its title link is. Which links show is asked once per
+    // stop, of a one-shot IntersectionObserver: it answers after the next
+    // frame's own intersection pass, so it never forces a layout, and it is
+    // gone again before the next scroll. Not a standing observer (that runs
+    // on every scrolling frame), and not rect reads at scrollend: there the
+    // hold has just been lifted, so a rect read forced a style and layout
+    // pass on the spot. Measured on a laptop, where a wheel ends a scroll
+    // between notches, that was ~3ms a notch.
     const links = [...room.querySelectorAll<HTMLAnchorElement>('a[href]')];
     const fetched = new Set<string>();
     const fetchPage = (a: Element | null | undefined) => {
@@ -151,15 +156,22 @@ export default function RoomKeeper() {
       fetched.add(href);
       router.prefetch(href);
     };
+    let look: IntersectionObserver | null = null;
     const fetchInView = () => {
-      if (fetched.size === links.length) return;
-      const h = window.innerHeight;
-      const r = room.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > h) return;
-      for (const a of links) {
-        const b = a.getBoundingClientRect();
-        if (b.bottom > 0 && b.top < h) fetchPage(a);
-      }
+      look?.disconnect();
+      look = null;
+      const left = links.filter(
+        (a) => !fetched.has(a.getAttribute('href') ?? '')
+      );
+      if (left.length === 0) return;
+      const io = new IntersectionObserver((entries) => {
+        io.disconnect();
+        if (look === io) look = null;
+        if (holding) return;
+        for (const e of entries) if (e.isIntersecting) fetchPage(e.target);
+      });
+      for (const a of left) io.observe(a);
+      look = io;
     };
     if (!below) fetchInView();
     // A mouse over a card (its stretched link) or a key landing on it says
@@ -209,6 +221,7 @@ export default function RoomKeeper() {
       once.disconnect();
       room.removeEventListener('pointerover', onIntent);
       room.removeEventListener('focusin', onIntent);
+      look?.disconnect();
       window.clearTimeout(quiet);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('scrollend', release);
