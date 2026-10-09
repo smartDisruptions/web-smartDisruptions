@@ -21,6 +21,7 @@ import RankLab, {
   type LabRow,
   type LabWorld,
 } from '../islands/c-rank-lab';
+import { plain } from '../islands/c-text';
 import WorldScope from '../islands/c-world-scope';
 import './c.css';
 
@@ -33,6 +34,10 @@ import './c.css';
  * legend, the tier cards with every company's case, the scenario chart (the
  * three worlds spread out from Steady for the top seven, lit by the world
  * picked in chapter 02), the full tables, findings and why.
+ *
+ * Every content string prints through <Rich> (the lab gets its labels
+ * pre-rendered, so no markup parser ships to the browser); aria-labels and
+ * the sentences the lab composes get the markup-free text.
  */
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -45,17 +50,26 @@ const WORLDS = S02.scenarios.items.map((s) => ({
   key: s.key as WorldKey,
   name: s.name,
 }));
+const LAB_WORLDS: LabWorld[] = WORLDS.map((w) => ({
+  key: w.key,
+  name: plain(w.name),
+  nameNode: <Rich text={w.name} />,
+}));
 
 /** "Tier 1 · core" → "Tier 1" set large, "core" set small. Same characters. */
 function TierName({ name }: { name: string }) {
   const [a, ...b] = name.split(' · ');
   return (
     <>
-      <span className="font-display re-c-tier-a">{a}</span>
+      <span className="font-display re-c-tier-a">
+        <Rich text={a} />
+      </span>
       {b.length > 0 && (
         <>
           <span className="re-c-tier-sep"> · </span>
-          <span className="re-c-tier-b">{b.join(' · ')}</span>
+          <span className="re-c-tier-b">
+            <Rich text={b.join(' · ')} />
+          </span>
         </>
       )}
     </>
@@ -68,7 +82,7 @@ function TierKey() {
       {[1, 2, 3, 4, 0].map((n) => (
         <li key={n} data-tier={n}>
           <i aria-hidden="true" />
-          {tierName(n)}
+          <Rich text={tierName(n)} />
         </li>
       ))}
     </ul>
@@ -94,9 +108,12 @@ function Tiers() {
               {list.map((r) => (
                 <li key={r.ticker}>
                   <p className="re-c-tier-co">
-                    <span className="re-c-tier-tk">{r.ticker}</span>{' '}
+                    <span className="re-c-tier-tk">
+                      <Rich text={r.ticker} />
+                    </span>{' '}
                     <b>
-                      {r.name} · {r.compositeDisplay}.
+                      <Rich text={r.name} /> ·{' '}
+                      <Rich text={r.compositeDisplay} />.
                     </b>
                     <span className="re-c-tier-meter" aria-hidden="true">
                       <i style={{ '--s': r.composite / 10 } as Vars} />
@@ -138,11 +155,11 @@ function Scenarios() {
               data-shape={SHAPE[w.key]}
               aria-hidden="true"
             />
-            {sc.legend[i]}
+            <Rich text={sc.legend[i]} />
           </li>
         ))}
       </ul>
-      <div className="re-c-scen-chart" role="img" aria-label={sc.aria}>
+      <div className="re-c-scen-chart" role="img" aria-label={plain(sc.aria)}>
         <div className="re-c-scen-axis" aria-hidden="true">
           {[0, 2, 4, 6, 8, 10].map((t) => (
             <span key={t} style={{ '--x': t / 10 } as Vars}>
@@ -159,8 +176,12 @@ function Scenarios() {
               style={{ '--i': i } as Vars}
             >
               <span className="re-c-scen-co">
-                <b>{r.ticker}</b>
-                <span>{r.name}</span>
+                <b>
+                  <Rich text={r.ticker} />
+                </b>
+                <span>
+                  <Rich text={r.name} />
+                </span>
               </span>
               <span
                 className="re-c-scen-track"
@@ -196,21 +217,21 @@ function Scenarios() {
 export default function S10Ranking() {
   const rows: LabRow[] = RANKING.map((r) => ({
     ticker: r.ticker,
-    name: r.name,
+    tickerNode: <Rich text={r.ticker} />,
+    nameNode: <Rich text={r.name} />,
     scores: r.scores,
     composite: r.composite,
     compositeDisplay: r.compositeDisplay,
     tier: r.tier,
-    tierName: tierName(r.tier),
+    tierNode: <Rich text={tierName(r.tier)} />,
     worlds: r.worlds,
   }));
   const factors: LabFactor[] = S10.factors.map((f) => ({
     key: f.key as FactorKey,
-    label: f.label,
-    short: f.short,
+    labelNode: <Rich text={f.label} />,
+    shortNode: <Rich text={f.short} />,
     weight: f.weight,
   }));
-  const worlds: LabWorld[] = WORLDS;
 
   return (
     <Chapter chapter={CHAPTERS[9]} glyph="力" className="re-bleed re-c-ch">
@@ -228,8 +249,8 @@ export default function S10Ranking() {
         <RankLab
           rows={rows}
           factors={factors}
-          worlds={worlds}
-          aria={S10.rank.aria}
+          worlds={LAB_WORLDS}
+          aria={plain(S10.rank.aria)}
         />
         <TableDetails
           summary={S10.rank.tableSummary}

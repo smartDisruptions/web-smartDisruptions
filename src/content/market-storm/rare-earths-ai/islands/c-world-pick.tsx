@@ -32,8 +32,17 @@ export default function WorldPick({
   seal,
 }: {
   labelledBy: string;
-  /** `text` arrives rendered (the server's <Rich>), so no markup parser ships here. */
-  items: { key: WorldKey; name: string; p: number; text: ReactNode }[];
+  /**
+   * `nameNode` and `text` arrive rendered (the server's <Rich>), so no markup
+   * parser ships here; `name` is the plain name for the status sentence.
+   */
+  items: {
+    key: WorldKey;
+    name: string;
+    nameNode: ReactNode;
+    p: number;
+    text: ReactNode;
+  }[];
   /** The hanko's character, rendered on the server. */
   seal: ReactNode;
 }) {
@@ -79,7 +88,7 @@ export default function WorldPick({
               checked={world === it.key}
               onChange={() => setWorld(it.key)}
             />
-            <span className="font-display re-c-world-name">{it.name}</span>
+            <span className="font-display re-c-world-name">{it.nameNode}</span>
             <span className="re-c-world-mark" aria-hidden="true">
               <span className="re-c-world-dot" />
               <span className="sd-seal re-c-world-seal">{seal}</span>

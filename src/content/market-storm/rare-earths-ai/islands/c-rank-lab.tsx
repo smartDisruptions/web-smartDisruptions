@@ -1,6 +1,13 @@
 'use client';
 
-import { memo, useEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import type { FactorKey, WorldKey } from '../content';
 import { setWorld, useWorld } from '../world';
 
@@ -42,23 +49,29 @@ import { setWorld, useWorld } from '../world';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
+/*
+ * Labels arrive rendered (`…Node`, the server's <Rich>), so glossary terms
+ * and other markup in them work here without shipping a markup parser. Plain
+ * strings are only the ones the lab composes into sentences or uses as keys.
+ */
 export type LabRow = {
   ticker: string;
-  name: string;
+  tickerNode: ReactNode;
+  nameNode: ReactNode;
   scores: Record<FactorKey, number>;
   composite: number;
   compositeDisplay: string;
   tier: number;
-  tierName: string;
+  tierNode: ReactNode;
   worlds: Record<WorldKey, number>;
 };
 export type LabFactor = {
   key: FactorKey;
-  label: string;
-  short: string;
+  labelNode: ReactNode;
+  shortNode: ReactNode;
   weight: number;
 };
-export type LabWorld = { key: WorldKey; name: string };
+export type LabWorld = { key: WorldKey; name: string; nameNode: ReactNode };
 
 type Motion = 'drag' | 'toggle';
 type Mode = 'article' | 'yours' | 'world';
@@ -109,8 +122,8 @@ const Row = memo(function Row({ r, i }: { r: LabRow; i: number }) {
       style={{ '--slot': i } as Vars}
     >
       <span className="re-c-co">
-        <b className="re-c-tk">{r.ticker}</b>{' '}
-        <span className="re-c-nm">{r.name}</span>
+        <b className="re-c-tk">{r.tickerNode}</b>{' '}
+        <span className="re-c-nm">{r.nameNode}</span>
       </span>
       <span className="re-c-track" aria-hidden="true">
         <span className="re-c-clip">
@@ -122,7 +135,7 @@ const Row = memo(function Row({ r, i }: { r: LabRow; i: number }) {
         />
       </span>
       <span className="font-display re-c-sc">{r.compositeDisplay}</span>
-      <span className="re-c-ti">{r.tierName}</span>
+      <span className="re-c-ti">{r.tierNode}</span>
     </li>
   );
 });
@@ -412,9 +425,9 @@ export default function RankLab({
     api.current?.onWorld(world);
   }, [world]);
 
-  const options: { key: WorldKey | null; name: string }[] = [
-    { key: null, name: custom ? UI.yours : UI.article },
-    ...worlds,
+  const options: { key: WorldKey | null; label: ReactNode }[] = [
+    { key: null, label: custom ? UI.yours : UI.article },
+    ...worlds.map((w) => ({ key: w.key, label: w.nameNode })),
   ];
 
   return (
@@ -440,7 +453,7 @@ export default function RankLab({
                   checked={world === o.key}
                   onChange={() => setWorld(o.key)}
                 />
-                <span>{o.name}</span>
+                <span>{o.label}</span>
               </label>
             ))}
           </div>
@@ -475,8 +488,8 @@ export default function RankLab({
             return (
               <div key={f.key} className="re-c-w">
                 <label htmlFor={`re-c-w-${f.key}`} className="re-c-w-l">
-                  <span className="re-c-w-long">{f.label}</span>
-                  <span className="re-c-w-short">{f.short}</span>
+                  <span className="re-c-w-long">{f.labelNode}</span>
+                  <span className="re-c-w-short">{f.shortNode}</span>
                 </label>
                 <output
                   htmlFor={`re-c-w-${f.key}`}

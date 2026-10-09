@@ -9,6 +9,7 @@ import {
   Verdict,
   Why,
 } from '../ui';
+import { plain } from '../islands/c-text';
 import './c.css';
 
 /*
@@ -52,17 +53,22 @@ const angle = (a: number, b: number) => {
 
 function Odds() {
   return (
-    <ol className="re-c-odds" role="list" aria-label={S03.odds.aria}>
+    <ol className="re-c-odds" role="list" aria-label={plain(S03.odds.aria)}>
       {TECH.map((t, i) => {
         const on = Math.round((t.p / 100) * FILINGS);
         return (
           <li key={t.label} className="re-c-odd">
-            <span className="re-c-odd-l">{t.label}</span>
+            <span className="re-c-odd-l">
+              <Rich text={t.label} />
+            </span>
             <span className="re-c-odd-v">
               <span className="font-display" aria-hidden="true">
                 {t.p}%
               </span>
-              <span className="sr-only">{`${t.p}${S03.odds.tipSuffix}`}</span>
+              <span className="sr-only">
+                {t.p}
+                <Rich text={S03.odds.tipSuffix} />
+              </span>
             </span>
             <span
               className="re-c-filings"
@@ -100,7 +106,7 @@ function Odds() {
 
 /** "AI-specific: data centres, drones, robots (~5)" → 5. */
 function aiCells(): number {
-  const m = /\(~(\d+)\)/.exec(S03.waffle.legendAi);
+  const m = /\(~(\d+)\)/.exec(plain(S03.waffle.legendAi));
   return m ? Number(m[1]) : 5;
 }
 
@@ -139,7 +145,7 @@ function Magnet() {
     });
   return (
     <div className="re-c-mag-wrap">
-      <div className="re-c-mag" role="img" aria-label={S03.waffle.aria}>
+      <div className="re-c-mag" role="img" aria-label={plain(S03.waffle.aria)}>
         <svg
           className="re-c-mag-field"
           viewBox="0 0 100 100"
@@ -187,11 +193,15 @@ function Magnet() {
       <ul className="re-c-mag-key" role="list">
         <li>
           <i className="re-c-sw is-ai" aria-hidden="true" />
-          <span>{S03.waffle.legendAi}</span>
+          <span>
+            <Rich text={S03.waffle.legendAi} />
+          </span>
         </li>
         <li>
           <i className="re-c-sw" aria-hidden="true" />
-          <span>{S03.waffle.legendRest}</span>
+          <span>
+            <Rich text={S03.waffle.legendRest} />
+          </span>
         </li>
       </ul>
     </div>
