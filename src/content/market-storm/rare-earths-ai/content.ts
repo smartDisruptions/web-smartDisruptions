@@ -195,7 +195,7 @@ export const LABELS = {
 } as const;
 
 export const S01 = {
-  "verdict": "Rare earths aren’t actually rare. Getting them out of rock and separated from each other is the hard part, and China does about 9 of every 10 kilograms of that work.",
+  "verdict": "Rare earths aren’t actually rare. Getting them out of rock and [[separated|Separation]] from each other is the hard part, and China does about 9 of every 10 kilograms of that work.",
   "tiles": [
     {
       "label": "Magnet recipe (by weight)",
@@ -224,7 +224,7 @@ export const S02 = {
   "verdict": "The software is speeding up fast, and the labs’ own numbers show it. The physical world (robots, power plants) is moving much more slowly, and that’s the part that uses rare earths.",
   "runRate": {
     "title": "Anthropic’s revenue run-rate, in billions of dollars a year",
-    "sub": "Reported run-rates, not audited revenue. The July figure comes from Bloomberg, not the company.",
+    "sub": "Reported [[run-rates|Run-rate]], not audited revenue. The July figure comes from Bloomberg, not the company.",
     "source": "Sources: company statements via The Next Web; Bloomberg, 17 Aug 2026^[17,18]",
     "aria": "Anthropic revenue run-rate: about 9 billion dollars at end of 2025, 30 in April 2026, 47 in May, about 65 at end of July",
     "points": [
@@ -351,7 +351,7 @@ export const S03 = {
   "findings": [
     "**Robots:** the base case is ~500–900k a year by 2030, needing about **3,200 tonnes** of magnet^[25], roughly 1% of today’s supply. Robots become a big deal only after about 2035.",
     "**Data centres:** hard drives use only 10–20 g of magnet each. Even with storage up 40% from AI, that’s a few hundred tonnes a year^[28].",
-    "**Drones and defence:** 3,000–8,000 tonnes in 2025^[29], and they need the scarce heavy rare earths. Military buyers pay almost any price.",
+    "**Drones and defence:** 3,000–8,000 tonnes in 2025^[29], and they need the scarce [[heavy rare earths|Heavy rare earths]]. Military buyers pay almost any price.",
     "**The sleeper:** **yttrium** coats the gas turbines that power data centres and the tools that make chips. Its price is up about 69× in a year^[32,33], and there’s no clean stock for it."
   ],
   "why": "“AI needs rare earths” is true, but small before 2030. The near-term AI link is drones, defence and power plants, not robots."
@@ -455,13 +455,13 @@ export const S04 = {
   "findings": [
     "**Two layers of rules.** China’s April 2025 licences on seven heavy rare earths are still fully in force. Its tougher October 2025 rules are only paused, and on paper the pause **ends 10 Nov 2026**^[8]. The September summit extended the wider truce to 10 Jan 2027 but said nothing new about rare earths^[9].",
     "In June, China put **MP Materials and USA Rare Earth** on its export-control blacklist^[10].",
-    "NdPr peaked around $111/kg in February and slid to about $92–97 by September. Western buyers were heard paying **below the $110 floor**^[6], so the scarcity is in the heavy rare earths, not NdPr.",
+    "[[NdPr]] peaked around $111/kg in February and slid to about $92–97 by September. Western buyers were heard paying **below the $110 floor**^[6], so the scarcity is in the heavy rare earths, not NdPr.",
     "**Interest rates are the hidden headwind.** The Fed raised rates on 16 Sep, and the 10-year Treasury yield passed 5%, its highest since 2007^[11,12]. That hurts companies that still need to borrow billions to build plants."
   ],
   "why": "world peace would be bad news for these stocks. Any bet on them is mostly a bet that China stays tough."
 };
 export const S05 = {
-  "verdict": "Only three are actually profitable on rare earths: Lynas, China Northern, and MP (on one measure, partly thanks to its price floor). Everyone else is still building, and building costs money.",
+  "verdict": "Only three are actually profitable on rare earths: Lynas, China Northern, and MP (on one measure, partly thanks to its [[price floor|Price floor]]). Everyone else is still building, and building costs money.",
   "table": {
     "title": "Who does which step, and are they producing yet?",
     "head": [
@@ -482,7 +482,7 @@ export const S05 = {
   },
   "findings": [
     "**The hype peaked in October 2025**, when China first tightened. MP hit about $100. By September 2026 it was around $47.",
-    "**REMX, the “rare earth ETF,” is mostly lithium.** Its biggest holdings are lithium companies, and MP is only 6.7%^[45]. It was down 8.8% for the year on 24 Sep.",
+    "**REMX, the “rare earth** [[ETF]]**,” is mostly lithium.** Its biggest holdings are lithium companies, and MP is only 6.7%^[45]. It was down 8.8% for the year on 24 Sep.",
     "**USA Rare Earth** closed its ~$2.8B Serra Verde (Brazil) purchase in early September by issuing ~127M new shares, and got a new CEO on 1 Oct^[4]."
   ],
   "why": "the sector already crashed once. Prices now reflect what companies deliver, not the dream."
@@ -563,7 +563,7 @@ export const S09 = {
   "why": "if you want to bet on AI, these are weak proxies before 2030. If you want to bet on China staying tough, they’re strong ones."
 };
 export const S10 = {
-  "verdict": "Lynas and MP lead because they’re already producing, have price protection, and survive even the bad scenarios. The pre-revenue juniors are lottery tickets, and two look likely to need far more money than they have.",
+  "verdict": "Lynas and MP lead because they’re already producing, have price protection, and survive even the bad scenarios. The [[pre-revenue|Pre-revenue]] juniors are lottery tickets, and two look likely to need far more money than they have.",
   "rank": {
     "title": "“Age of AI” score, out of 10",
     "sub": "Weighted score across 7 factors (table below). Colour = tier.",
@@ -1201,7 +1201,7 @@ export const RED_FLAGS: { name: string; flags: string; risk: { kind: StatusKind;
   },
   {
     "name": "USA Rare Earth",
-    "flags": "~67× 2026 sales, ~34% dilution from the Brazil deal, no proven reserves in Texas, must raise $375M by Mar 2027",
+    "flags": "~67× 2026 sales, ~34% [[dilution|Dilution]] from the Brazil deal, no proven reserves in Texas, must raise $375M by Mar 2027",
     "risk": {
       "kind": "fix",
       "text": "High"
