@@ -168,9 +168,15 @@ function Lead({ report }: { report: MarketStormEntry }) {
   const when = watchDate(report);
   const finding = findingFor(report);
   const [stat] = cardKpis(report);
+  // Nothing to set beside the words (no card image, no figure): they take
+  // the whole card, not a wide screen's left half next to an empty one.
+  const solo = !report.cardImage && !finding && !stat;
 
   return (
-    <article className="wms-card wms-lead" aria-labelledby="wms-lead-title">
+    <article
+      className={`wms-card wms-lead${solo ? ' wms-lead-solo' : ''}`}
+      aria-labelledby="wms-lead-title"
+    >
       <Seal char="雷" className="wms-seal" />
       {report.cardImage && !finding ? (
         <Field report={report} art={art} />

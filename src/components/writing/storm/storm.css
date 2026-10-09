@@ -620,6 +620,9 @@
   .wms-lead {
     grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
   }
+  .wms-lead.wms-lead-solo {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .wms-lead > .wms-pic {
     grid-column: 2;
     grid-row: 1;
@@ -1317,14 +1320,18 @@
 
   /* The bars, armed below the fold, fill once when seen: profit runs out to
      its full length; cash climbs to where it stood three months earlier,
-     holds, and falls to where it is now, leaving its dashed ghost. */
-  .wms-bars[data-armed] .wms-bar {
-    transform: scaleX(0);
-  }
-  .wms-bars[data-armed] .wms-ghost,
-  .wms-bars[data-armed] .wms-then,
-  .wms-bars[data-armed] .wms-bar-num {
-    opacity: 0;
+     holds, and falls to where it is now, leaving its dashed ghost. Armed
+     on screen only: a page printed before the reader got this far prints
+     them finished, not empty. */
+  @media screen {
+    .wms-bars[data-armed] .wms-bar {
+      transform: scaleX(0);
+    }
+    .wms-bars[data-armed] .wms-ghost,
+    .wms-bars[data-armed] .wms-then,
+    .wms-bars[data-armed] .wms-bar-num {
+      opacity: 0;
+    }
   }
   .wms-bars[data-seen] .wms-bar-profit {
     animation: wms-grow 1s var(--ease-out-expo) both;
