@@ -124,22 +124,19 @@
 }
 
 /* "Short version" */
+/* The vermilion bar down its left edge is part of its background, not a
+   positioned pseudo-element. (Every positioned or transformed box is one
+   more layer that each hover hit test and each frame's pre-paint walk,
+   page-wide: this page had 1,265 of them, the ARKG article 195. The shared
+   blocks below draw their marks in their own background for that reason.) */
 .re-verdict {
-  position: relative;
   padding: 1rem 1.15rem 1.05rem 1.25rem;
   border-radius: 14px;
-  background: color-mix(in oklab, var(--sd-accent) 7%, var(--sd-surface));
+  background:
+    linear-gradient(var(--sd-pen), var(--sd-pen)) 0 0.9rem / 3px
+      calc(100% - 1.8rem) no-repeat,
+    color-mix(in oklab, var(--sd-accent) 7%, var(--sd-surface));
   border: 1px solid color-mix(in oklab, var(--sd-accent) 18%, transparent);
-}
-.re-verdict::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.9rem;
-  bottom: 0.9rem;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--sd-pen);
 }
 .re-verdict-k {
   font-size: 0.7rem;
@@ -175,22 +172,25 @@
   list-style: none;
   max-width: var(--re-measure);
 }
+/* Each finding's vermilion diamond is four corner triangles in the item's
+   own background (no positioned, rotated pseudo-element: see .re-verdict). */
 .re-found-list li {
-  position: relative;
+  --re-mk: var(--sd-pen);
+  --re-mk-x: calc(0.15rem - 1.5px);
+  --re-mk-y: calc(0.68em - 1.5px);
   padding-left: 1.4rem;
   font-size: 1.06rem;
   line-height: 1.7;
-}
-.re-found-list li::before {
-  content: '';
-  position: absolute;
-  left: 0.15rem;
-  top: 0.68em;
-  width: 7px;
-  height: 7px;
-  background: var(--sd-pen);
-  transform: rotate(45deg);
-  border-radius: 1px;
+  background:
+    linear-gradient(to bottom right, transparent 46%, var(--re-mk) 54%)
+      var(--re-mk-x) var(--re-mk-y) / 5px 5px,
+    linear-gradient(to bottom left, transparent 46%, var(--re-mk) 54%)
+      calc(var(--re-mk-x) + 5px) var(--re-mk-y) / 5px 5px,
+    linear-gradient(to top right, transparent 46%, var(--re-mk) 54%)
+      var(--re-mk-x) calc(var(--re-mk-y) + 5px) / 5px 5px,
+    linear-gradient(to top left, transparent 46%, var(--re-mk) 54%)
+      calc(var(--re-mk-x) + 5px) calc(var(--re-mk-y) + 5px) / 5px 5px;
+  background-repeat: no-repeat;
 }
 .re-found-list strong,
 .re-why strong,
@@ -315,6 +315,10 @@
 /* ── Inline marks ────────────────────────────────────────────────────── */
 
 .re-cite {
+  /* Raised by vertical-align rather than the reset's position: relative,
+     which made each of the 49 citations a layer of its own. */
+  position: static;
+  vertical-align: 0.5em;
   font-size: 0.66em;
   line-height: 0;
   margin-left: 0.08em;

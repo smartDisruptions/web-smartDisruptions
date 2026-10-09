@@ -492,15 +492,25 @@ export default function MagnetField() {
     // frame. One passive listener catches just the first event (where
     // scrollend exists), so nothing runs per scrolling frame; the field
     // carries on from where it was once the page is still.
+    // A reader scrolls in bursts (and a wheel ends a scroll at every
+    // notch), so the field waits a beat after a scroll ends before it moves
+    // again: it never redraws between two flicks.
     const hasScrollEnd = 'onscrollend' in window;
     let scrolling = false;
     let quiet = 0;
-    const listenScroll = () =>
+    let grace = 0;
+    let armed = false;
+    const listenScroll = () => {
+      if (armed) return;
+      armed = true;
       window.addEventListener('scroll', onScroll, {
         passive: true,
         once: hasScrollEnd,
       });
+    };
     function onScroll() {
+      if (hasScrollEnd) armed = false; // a `once` listener is spent
+      window.clearTimeout(grace);
       if (!scrolling) {
         scrolling = true;
         stop();
@@ -508,8 +518,15 @@ export default function MagnetField() {
       window.clearTimeout(quiet);
       quiet = window.setTimeout(release, hasScrollEnd ? 3000 : 160);
     }
+    function ended() {
+      window.clearTimeout(quiet);
+      window.clearTimeout(grace);
+      grace = window.setTimeout(release, 250);
+      listenScroll();
+    }
     function release() {
       window.clearTimeout(quiet);
+      window.clearTimeout(grace);
       if (scrolling) {
         scrolling = false;
         wake();
@@ -683,7 +700,7 @@ export default function MagnetField() {
       canvas.addEventListener('contextrestored', onRestored);
       window.addEventListener('themechange', onTheme);
       listenScroll();
-      if (hasScrollEnd) window.addEventListener('scrollend', release);
+      if (hasScrollEnd) window.addEventListener('scrollend', ended);
       document.addEventListener('visibilitychange', onVisibility);
       reduceMq.addEventListener('change', onMotionPref);
       hero.addEventListener('pointerenter', onEnter, { passive: true });
@@ -719,8 +736,9 @@ export default function MagnetField() {
       canvas.removeEventListener('contextrestored', onRestored);
       window.removeEventListener('themechange', onTheme);
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('scrollend', release);
+      window.removeEventListener('scrollend', ended);
       window.clearTimeout(quiet);
+      window.clearTimeout(grace);
       document.removeEventListener('visibilitychange', onVisibility);
       reduceMq.removeEventListener('change', onMotionPref);
       hero.removeEventListener('pointerenter', onEnter);

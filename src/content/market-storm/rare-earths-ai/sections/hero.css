@@ -154,6 +154,12 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  /* Its own compositor layer. Otherwise the canvas is painted into the
+     hero's layer as an image, and anything else in the hero that repaints
+     (Kiru idling, the hint fading in) made Chrome snapshot all of its pixels
+     again: ~13ms a frame at 4× CPU while the hero was on screen. On its own
+     layer it is uploaded only when the filings actually move. */
+  will-change: transform;
 }
 
 /* The bar magnet. On a phone it stands upright — N at the top — so each
@@ -368,6 +374,10 @@
   justify-self: end;
   width: 104px;
   margin: 0.5rem -6px 0 0;
+  /* Kiru idles (SiteFX) in an SVG that re-lays itself out every frame he
+     moves. On his own layer, those frames repaint only him, not the hero
+     and the whole page around him. */
+  will-change: transform;
 }
 /* Below the two-column layout, Kiru keeps watch beside the readout. */
 @media (max-width: 959.98px) {

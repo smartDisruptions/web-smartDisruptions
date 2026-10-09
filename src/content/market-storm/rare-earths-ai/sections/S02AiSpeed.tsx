@@ -2,7 +2,6 @@ import { Fragment, type CSSProperties } from 'react';
 import Kanji from '@/components/brand/Kanji';
 import { CHAPTERS, S02, type WorldKey } from '../content';
 import { Chapter, Fig, Findings, Rich, Verdict, Why } from '../ui';
-import Near from '../islands/c-near';
 import { plain } from '../islands/c-text';
 import WorldPick from '../islands/c-world-pick';
 import './c.css';
@@ -173,8 +172,6 @@ export default function S02AiSpeed() {
         <Findings items={S02.findings} />
         <Why text={S02.why} />
       </div>
-      {/* One observer for chapters 02, 03 and 10: their charts move only near the screen. */}
-      <Near />
     </Chapter>
   );
 }

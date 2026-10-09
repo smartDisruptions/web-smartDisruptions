@@ -261,21 +261,18 @@
   font-size: 0.98rem;
   line-height: 1.6;
 }
+/* Each point is a filing: a short ink stroke drawn corner to corner in the
+   item's own background (not a positioned, rotated pseudo-element, which
+   would be one more layer for every frame to walk). */
 .re-c-ai-list li {
-  position: relative;
   padding-left: 1.15rem;
-}
-/* Each point is a filing. */
-.re-c-ai-list li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.74em;
-  width: 0.62rem;
-  height: 2.5px;
-  border-radius: 2px;
-  background: var(--re-light);
-  transform: rotate(-24deg);
+  background: linear-gradient(
+      to bottom right,
+      transparent calc(50% - 1.7px),
+      var(--re-light) calc(50% - 1.1px) calc(50% + 1.1px),
+      transparent calc(50% + 1.7px)
+    )
+    0 calc(0.74em - 1.25px) / 10px 5px no-repeat;
 }
 .re-c-ai-list strong {
   font-weight: 700;
@@ -584,35 +581,46 @@
   height: 1.5rem;
   overflow: clip;
 }
-.re-c-fl-set,
-.re-c-fl-loose {
-  position: absolute;
-  inset: 0;
+.re-c-fl-set {
   display: grid;
   grid-template-columns: repeat(20, minmax(0, 1fr));
   align-items: center;
+  height: 100%;
 }
-.re-c-fl-set i,
-.re-c-fl-loose i {
+/* Lined up by the magnet. */
+.re-c-fl-set i {
   display: block;
   width: 76%;
   height: 3px;
   margin-inline: auto;
   border-radius: 2px;
-}
-/* Lined up by the magnet. */
-.re-c-fl-set i {
   background: var(--re-light);
 }
 /* Still scattered: the paper they lie on is opaque, and slides aside by one
    slot per filing the magnet has lined up. */
 .re-c-fl-loose {
+  position: absolute;
+  inset: 0;
   background: linear-gradient(to right, transparent, var(--re-card) 0.7rem);
   transform: translateX(calc(var(--on) * 5%));
 }
-.re-c-fl-loose i {
-  background: color-mix(in oklab, var(--re-steel) 42%, var(--re-card));
-  transform: translateY(var(--y)) rotate(var(--r));
+.re-c-fl-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+/* Twenty slots of 5%; each filing 76% of its slot, centred, tipped. */
+.re-c-fl-svg rect {
+  x: calc((var(--k) + 0.12) * 5%);
+  y: calc(50% - 1.5px + var(--y));
+  width: 3.8%;
+  height: 3px;
+  rx: 1.5px;
+  fill: color-mix(in oklab, var(--re-steel) 42%, var(--re-card));
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(var(--r));
 }
 
 /* ── 03 · The magnet block ───────────────────────────────────────────────── */
@@ -1089,7 +1097,7 @@
   letter-spacing: 0.04em;
   text-transform: none;
   font-size: 0.72rem;
-  opacity: 0;
+  visibility: hidden;
 }
 .re-c-head-key i {
   width: 2px;
@@ -1117,7 +1125,7 @@
   }
 }
 .re-c-lab:not([data-mode='article']) .re-c-head-key {
-  opacity: 1;
+  visibility: visible;
 }
 /* On the narrowest phones the key needs the room "Company" had. */
 @media (max-width: 419px) {
@@ -1206,44 +1214,44 @@
   letter-spacing: 0.02em;
 }
 .re-c-nm {
-  overflow: hidden;
+  overflow: clip;
   text-overflow: ellipsis;
   font-size: 0.88rem;
   color: var(--re-muted);
 }
+/* The clip and the ghost share the track's one grid cell rather than being
+   positioned over it: thirteen rows of positioned boxes were 65 layers for
+   every frame to walk. Only the bar (it slides) is a layer. */
 .re-c-track {
   grid-area: tr;
-  position: relative;
+  display: grid;
   height: 12px;
 }
 .re-c-clip {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
   overflow: clip;
   border-radius: 999px;
   background: color-mix(in oklab, var(--sd-text-primary) 7%, transparent);
 }
 .re-c-bar {
-  position: absolute;
-  inset: 0;
+  display: block;
+  height: 100%;
   border-radius: 999px;
   background: var(--tk);
 }
 /* The article's own score, left as a thin mark when the bar is someone
-   else's (a world's, or the reader's weights). */
+   else's (a world's, or the reader's weights). Shown and hidden, not faded:
+   an element at opacity 0 is still a layer. */
 .re-c-ghost {
-  position: absolute;
-  top: -4px;
-  bottom: -4px;
-  left: calc(var(--g) * 100%);
+  grid-area: 1 / 1;
   width: 2px;
-  margin-left: -1px;
+  margin: -4px 0 -4px calc(var(--g) * 100% - 1px);
   border-radius: 1px;
-  background: var(--sd-text-primary);
-  opacity: 0;
+  background: color-mix(in oklab, var(--sd-text-primary) 80%, transparent);
+  visibility: hidden;
 }
 .re-c-lab:not([data-mode='article']) .re-c-ghost {
-  opacity: 0.8;
+  visibility: visible;
 }
 .re-c-sc {
   grid-area: sc;
@@ -1424,40 +1432,33 @@
   gap: 0.45rem;
   isolation: isolate;
 }
+/* A world's marker in its own shape (▲ ● ▼), so the ink is never the only
+   cue. Drawn with borders and a radius rather than a clipped, positioned
+   pseudo-element: the chart has 24 of them, and every positioned or clipped
+   box is one more layer for every frame to walk. A 14px cell either way. */
 .re-c-mk {
-  position: relative;
   display: block;
   flex: none;
+  box-sizing: border-box;
   width: 14px;
   height: 14px;
 }
-.re-c-mk::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--wk);
-}
-.re-c-mk[data-shape='dot']::before {
-  inset: 1px;
+.re-c-mk[data-shape='dot'] {
+  border: 1px solid transparent;
   border-radius: 50%;
+  background: var(--wk) content-box;
 }
-.re-c-mk[data-shape='up']::before {
-  clip-path: polygon(50% 0, 100% 92%, 0 92%);
+.re-c-mk[data-shape='up'] {
+  height: 12.88px;
+  margin-bottom: 1.12px;
+  border-inline: 7px solid transparent;
+  border-bottom: 12.88px solid var(--wk);
 }
-.re-c-mk[data-shape='down']::before {
-  clip-path: polygon(0 8%, 100% 8%, 50% 100%);
-}
-.re-c-mk > b {
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  padding-bottom: 3px;
-  transform: translateX(-50%);
-  font-size: 0.76rem;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--wk);
-  font-variant-numeric: tabular-nums;
+.re-c-mk[data-shape='down'] {
+  height: 12.88px;
+  margin-top: 1.12px;
+  border-inline: 7px solid transparent;
+  border-top: 12.88px solid var(--wk);
 }
 .re-c-scen-chart {
   display: grid;
@@ -1507,40 +1508,53 @@
   font-size: 0.72rem;
   color: var(--re-muted);
 }
+/* One row of the chart: the three rails lie on top of each other in a
+   single grid cell (no absolute positioning), each the full width of the
+   track, with its figure and marker placed by a margin of x% of that width.
+   The range from Stall to Takeoff and the dashed baseline are the track's
+   own background. The line sits 68% down the 2.7rem track. */
 .re-c-scen-track {
-  position: relative;
+  --base: calc(2.7rem * 0.68);
+  display: grid;
   height: 2.7rem;
   margin-inline: 10px;
-}
-.re-c-scen-track::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 68%;
-  border-top: 1px dashed var(--re-line-strong);
-}
-.re-c-scen-span {
-  position: absolute;
-  top: calc(68% - 2px);
-  left: calc(var(--lo) * 100%);
-  width: calc((var(--hi) - var(--lo)) * 100%);
-  height: 4px;
-  border-radius: 2px;
-  background: color-mix(in oklab, var(--sd-text-primary) 24%, transparent);
+  background:
+    linear-gradient(
+        color-mix(in oklab, var(--sd-text-primary) 24%, transparent),
+        color-mix(in oklab, var(--sd-text-primary) 24%, transparent)
+      )
+      calc(var(--sp) * 100%) calc(var(--base) - 2px) /
+      calc((var(--hi) - var(--lo)) * 100%) 4px no-repeat,
+    repeating-linear-gradient(
+        to right,
+        var(--re-line-strong) 0 3px,
+        transparent 3px 6px
+      )
+      0 var(--base) / 100% 1px no-repeat;
 }
 .re-c-scen-rail {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
+  min-width: 0;
   pointer-events: none;
-  /* Always its own stacking context, so dimming it is paint, not layout. */
-  isolation: isolate;
+}
+.re-c-scen-v {
+  display: block;
+  width: 2rem;
+  margin: calc(var(--base) - 7px - 3px - 0.76rem) 0 0
+    calc(var(--x) * 100% - 1rem);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  color: var(--wk);
+  font-variant-numeric: tabular-nums;
 }
 .re-c-scen-rail .re-c-mk {
-  position: absolute;
-  left: calc(var(--x) * 100%);
-  top: 68%;
-  margin: -7px 0 0 -7px;
+  margin-top: 3px;
+  margin-left: calc(var(--x) * 100% - 7px);
+}
+.re-c-scen-rail .re-c-mk[data-shape='down'] {
+  margin-top: calc(3px + 1.12px);
 }
 /* The world picked in chapter 02 (or in the lab) stays lit. */
 .re-c-scen[data-world] .re-c-scen-rail,
@@ -1558,17 +1572,33 @@
 
 /* ── Scroll-driven motion ────────────────────────────────────────────────── */
 
-/* Every timeline hangs off [data-near], which ../islands/c-near.tsx sets
+/* Every animation hangs off [data-near], which ../islands/near.tsx sets
    while a chapter is within about half a screen of the viewport: an attached
    scroll-driven animation costs a little on every scrolling frame, wherever
    the reader is, so far-off charts carry none. Without it (no JS yet, no
-   support, reduced motion) the charts simply sit in their final state. */
+   support, reduced motion) the charts simply sit in their final state.
+
+   The named timelines themselves are declared always. A timeline name that
+   comes and goes makes Chrome restyle the whole subtree under it (every
+   filing, every magnet cell: ~700 elements, ~85ms at 4× CPU, each time the
+   chapter came near or went away); a declared timeline with nothing
+   attached costs nothing measurable. */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    /* 02 · columns rise through the axis in turn, figures riding on top. */
-    .re-c-ch[data-near] .re-c-rr {
+    .re-c-rr {
       view-timeline: --re-c-rr block;
     }
+    .re-c-odd {
+      view-timeline: --re-c-odd block;
+    }
+    .re-c-mag {
+      view-timeline: --re-c-mag block;
+    }
+    .re-c-scen-chart {
+      view-timeline: --re-c-scen block;
+    }
+
+    /* 02 · columns rise through the axis in turn, figures riding on top. */
     .re-c-ch[data-near] .re-c-rr-rise {
       animation-name: re-c-rise;
       animation-fill-mode: both;
@@ -1587,9 +1617,6 @@
 
     /* 03 · the magnet sweeps each row: the scattered filings slide aside
        and the lined-up ones are left behind it. */
-    .re-c-ch[data-near] .re-c-odd {
-      view-timeline: --re-c-odd block;
-    }
     .re-c-ch[data-near] .re-c-fl-loose {
       animation-name: re-c-sweep;
       animation-fill-mode: both;
@@ -1600,9 +1627,6 @@
 
     /* 03 · the block is laid down row by row; the AI-specific five drop in
        last. */
-    .re-c-ch[data-near] .re-c-mag {
-      view-timeline: --re-c-mag block;
-    }
     .re-c-ch[data-near] .re-c-mag-g {
       animation-name: re-c-lay;
       animation-fill-mode: both;
@@ -1618,9 +1642,6 @@
     }
 
     /* 10 · the worlds spread out from Steady along their range. */
-    .re-c-ch[data-near] .re-c-scen-chart {
-      view-timeline: --re-c-scen block;
-    }
     .re-c-ch[data-near] .re-c-scen-rail:not(.is-steady) {
       animation-name: re-c-spread;
       animation-fill-mode: both;

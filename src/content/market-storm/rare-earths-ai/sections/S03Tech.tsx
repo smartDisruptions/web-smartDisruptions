@@ -81,17 +81,23 @@ function Odds() {
                 ))}
               </span>
               <span className="re-c-fl-loose">
-                {Array.from({ length: FILINGS }, (_, k) => (
-                  <i
-                    key={k}
-                    style={
-                      {
-                        '--r': `${angle(i, k)}deg`,
-                        '--y': `${Math.round((rnd(k, i + 40) - 0.5) * 8)}px`,
-                      } as Vars
-                    }
-                  />
-                ))}
+                {/* SVG shapes, not twenty rotated boxes: a transformed box
+                    is a layer of its own, and the page walks every layer
+                    on every frame (hit testing, pre-paint). */}
+                <svg className="re-c-fl-svg" focusable="false">
+                  {Array.from({ length: FILINGS }, (_, k) => (
+                    <rect
+                      key={k}
+                      style={
+                        {
+                          '--k': k,
+                          '--r': `${angle(i, k)}deg`,
+                          '--y': `${Math.round((rnd(k, i + 40) - 0.5) * 8)}px`,
+                        } as Vars
+                      }
+                    />
+                  ))}
+                </svg>
               </span>
             </span>
             <span className="re-c-odd-n">

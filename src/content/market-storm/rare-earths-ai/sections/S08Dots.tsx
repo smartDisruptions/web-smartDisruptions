@@ -34,6 +34,8 @@ const FLOW: Record<ChainStrength, { n: number; s: number }> = {
  */
 const JITTER = [0, 0.14, -0.1, 0.06, -0.13, 0.1, -0.05];
 const LENGTH = [1, 0.7, 1.3, 0.85, 1.15, 0.75, 1.2];
+/** Where rider k starts, in pattern lengths (the strip is two long). */
+const at = (k: number, n: number) => (k + JITTER[k % n]) / n;
 /** Bars on the little strength meter (the label says it in words). */
 const BARS: Partial<Record<ChainStrength, number>> = {
   strong: 3,
@@ -100,10 +102,9 @@ export default function S08Dots() {
                           className="re-e-p"
                           style={
                             {
-                              '--at': (
-                                (k + JITTER[k % flow.n]) /
-                                flow.n
-                              ).toFixed(4),
+                              '--g': (at(k + 1, flow.n) - at(k, flow.n)).toFixed(
+                                4
+                              ),
                               '--len': LENGTH[k % flow.n],
                             } as CSSProperties
                           }

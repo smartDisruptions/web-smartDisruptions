@@ -46,20 +46,15 @@ const METERS: MeterKey[] = ['uses', 'sells', 'partners'];
  * A meter: five squares and the score. The squares are one element drawn
  * with gradients (filled up to --v), not five: a sort moves every row, and
  * a moved row is restyled whole, so each element a row doesn't have is
- * work a sort doesn't do.
+ * work a sort doesn't do. It is one image to assistive tech ("3 out of
+ * 5"), so it needs no visually-hidden text (each of those is an absolutely
+ * positioned box: 39 more layers for every frame to walk).
  */
 function Meter({ v, max = 5 }: { v: number; max?: number }) {
   return (
-    <span className="re-d-m">
-      <span
-        className="re-d-m-sq"
-        style={{ '--v': v } as CSSProperties}
-        aria-hidden="true"
-      />
-      <span className="re-d-m-v">
-        {v}
-        <span className="sr-only"> out of {max}</span>
-      </span>
+    <span className="re-d-m" role="img" aria-label={`${v} out of ${max}`}>
+      <span className="re-d-m-sq" style={{ '--v': v } as CSSProperties} />
+      <span className="re-d-m-v">{v}</span>
     </span>
   );
 }

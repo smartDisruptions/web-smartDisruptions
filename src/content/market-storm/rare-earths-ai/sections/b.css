@@ -450,28 +450,32 @@
       animation-fill-mode: both;
       animation-timeline: --re-b-chain;
     }
-    .re-b-chain .re-b-flow.is-h {
+    /* Attached only while the chapter is near the screen (islands/near.tsx):
+       an attached scroll-driven animation costs a style pass on every
+       scrolling frame, wherever the reader is. The timelines above stay
+       declared (a timeline name that comes and goes restyles its subtree). */
+    .re-b-ch[data-near] .re-b-chain .re-b-flow.is-h {
       animation-name: re-b-flow-across;
     }
-    .re-b-chain .re-b-flow.is-v {
+    .re-b-ch[data-near] .re-b-chain .re-b-flow.is-v {
       animation-name: re-b-flow-down;
     }
-    .re-b-chain .is-1 .re-b-st-art {
+    .re-b-ch[data-near] .re-b-chain .is-1 .re-b-st-art {
       animation-name: re-b-drop;
     }
-    .re-b-chain .is-2 .re-b-st-art {
+    .re-b-ch[data-near] .re-b-chain .is-2 .re-b-st-art {
       animation-name: re-b-split;
     }
-    .re-b-chain .is-3 .re-b-st-art {
+    .re-b-ch[data-near] .re-b-chain .is-3 .re-b-st-art {
       animation-name: re-b-cast;
     }
-    .re-b-chain .re-b-mag {
+    .re-b-ch[data-near] .re-b-chain .re-b-mag {
       animation-name: re-b-press;
     }
-    .re-b-chain .re-b-flux {
+    .re-b-ch[data-near] .re-b-chain .re-b-flux {
       animation-name: re-b-field;
     }
-    .re-b-chain .re-b-neck {
+    .re-b-ch[data-near] .re-b-chain .re-b-neck {
       animation-name: re-b-rise;
     }
     .re-b-chain .re-b-neck {
@@ -522,7 +526,7 @@
       .re-b-chain .re-b-flux {
         animation-range: entry 60% contain 45%;
       }
-      .re-b-chain .is-2 .re-b-st-art {
+      .re-b-ch[data-near] .re-b-chain .is-2 .re-b-st-art {
         animation-name: re-b-split-down;
       }
     }
@@ -868,7 +872,7 @@
 }
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .re-b-pipe-fill {
+    .re-b-ch[data-near] .re-b-pipe-fill {
       animation: re-b-span-x linear both;
       animation-timeline: view();
       animation-range: entry 60% cover 42%;
@@ -1284,7 +1288,6 @@
   color: var(--re-muted);
 }
 .re-b-row {
-  position: relative;
   display: grid;
   grid-template-columns: var(--lab) minmax(0, 1fr);
   column-gap: var(--gap);
@@ -1298,23 +1301,28 @@
   text-align: right;
   color: var(--sd-text-primary);
 }
+/* The track is two halves either side of zero, and each bar and its number
+   sit in one of them: laid out on a grid rather than positioned, because
+   nine rows of positioned boxes were 45 layers for every frame to walk. */
 .re-b-row-track {
-  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 100%;
+  align-items: center;
   height: 1.2rem;
 }
 /* The wrapper is the bar's place; the bar inside it is what the valve
    lights (and kicks). */
 .re-b-row-bw {
-  position: absolute;
-  top: 0.08rem;
-  bottom: 0.08rem;
-  width: calc(var(--w) * 50%);
+  grid-row: 1;
+  width: calc(var(--w) * 100%);
+  height: calc(100% - 0.16rem);
 }
 /* Lit bars kick; the rest just dim (no fade: a fade on every bar would make
    each press build and drop nine compositor layers). */
 .re-b-row-bar {
-  position: absolute;
-  inset: 0;
+  display: block;
+  height: 100%;
 }
 .re-b-row[data-kind='up'] :is(.re-b-row-bw, .re-b-row-bar) {
   transform-origin: left center;
@@ -1323,42 +1331,51 @@
   transform-origin: right center;
 }
 .re-b-row[data-kind='up'] .re-b-row-bw {
-  left: 50%;
+  grid-column: 2;
+  justify-self: start;
 }
 .re-b-row[data-kind='down'] .re-b-row-bw {
-  right: 50%;
+  grid-column: 1;
+  justify-self: end;
 }
 .re-b-row[data-kind='up'] .re-b-row-bar {
-  background: var(--re-up);
+  --bar: var(--re-up);
   border-radius: 0 4px 4px 0;
 }
 .re-b-row[data-kind='down'] .re-b-row-bar {
-  background: var(--re-down);
+  --bar: var(--re-down);
   border-radius: 4px 0 0 4px;
+}
+.re-b-row-bar {
+  background: var(--bar);
 }
 /* The number sits across the zero line from its bar, where there's room. */
 .re-b-row-v {
-  position: absolute;
-  top: 50%;
-  translate: 0 -50%;
+  grid-row: 1;
   font-size: 0.78rem;
   font-weight: 750;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .re-b-row[data-kind='up'] .re-b-row-v {
-  right: calc(50% + 0.45rem);
+  grid-column: 1;
+  justify-self: end;
+  margin-right: 0.45rem;
   color: var(--re-up);
 }
 .re-b-row[data-kind='down'] .re-b-row-v {
-  left: calc(50% + 0.45rem);
+  grid-column: 2;
+  justify-self: start;
+  margin-left: 0.45rem;
   color: var(--re-down);
 }
 .re-b-row[data-spot] {
   background: color-mix(in oklab, var(--sd-accent) 8%, transparent);
 }
+/* Dimmed by mixing the ink into the card (what opacity 0.3 drew), so a
+   dimmed bar is no layer of its own. */
 .re-b-valve:not([data-state='rest']) .re-b-row:not([data-spot]) .re-b-row-bar {
-  opacity: 0.3;
+  background: color-mix(in srgb, var(--bar) 30%, var(--re-card));
 }
 .re-b-valve:not([data-state='rest']) .re-b-row:not([data-spot]) .re-b-row-l {
   color: var(--re-muted);
@@ -1656,7 +1673,7 @@
 }
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .re-b-nd-cover {
+    .re-b-ch[data-near] .re-b-nd-cover {
       display: block;
       position: absolute;
       inset: -8px;

@@ -140,6 +140,13 @@ const SHAPE: Record<WorldKey, string> = {
   stall: 'down',
 };
 
+/**
+ * A background of width (hi − lo) placed at left = lo: the percentage
+ * background-position needs for that, lo / (1 − (hi − lo)).
+ */
+const spanAt = (lo: number, hi: number) =>
+  hi - lo >= 1 ? 0 : +(lo / (1 - (hi - lo))).toFixed(4);
+
 function Scenarios() {
   const sc = S10.scenarioCard;
   const top = sc.top
@@ -190,19 +197,20 @@ function Scenarios() {
                     '--lo': stall / 10,
                     '--hi': takeoff / 10,
                     '--mid': steady / 10,
+                    // The range bar is a background: its position as a
+                    // background-position percentage (left = lo × width).
+                    '--sp': spanAt(stall / 10, takeoff / 10),
                   } as Vars
                 }
               >
-                <span className="re-c-scen-span" />
                 {WORLDS.map((w) => (
                   <span
                     key={w.key}
                     className={`re-c-scen-rail is-${w.key}`}
                     style={{ '--x': r.worlds[w.key] / 10 } as Vars}
                   >
-                    <span className="re-c-mk" data-shape={SHAPE[w.key]}>
-                      <b>{r.worlds[w.key]}</b>
-                    </span>
+                    <b className="re-c-scen-v">{r.worlds[w.key]}</b>
+                    <span className="re-c-mk" data-shape={SHAPE[w.key]} />
                   </span>
                 ))}
               </span>
