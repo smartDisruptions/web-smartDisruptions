@@ -1147,6 +1147,22 @@ html.sd-theme-vt::view-transition-new(root) {
   content-visibility: auto;
   contain-intrinsic-size: auto 900px;
 }
+/* A deferred list whose placeholder follows its length: set --rows on the
+   element. Row heights measured on Market Storm source lists (2026-10-09):
+   ~72px a source on a phone, ~47px on a tablet, ~37px on a laptop. */
+.sd-defer-rows {
+  contain-intrinsic-size: auto calc(var(--rows, 12) * 72px);
+}
+@media (min-width: 640px) {
+  .sd-defer-rows {
+    contain-intrinsic-size: auto calc(var(--rows, 12) * 47px);
+  }
+}
+@media (min-width: 1024px) {
+  .sd-defer-rows {
+    contain-intrinsic-size: auto calc(var(--rows, 12) * 37px);
+  }
+}
 
 /* Primary button: a blade-light crosses it on hover. */
 .sd-btn-primary::after {

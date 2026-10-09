@@ -2,6 +2,7 @@
 // through it before October 2026, exactly as they were published. New Market
 // Storm articles don't use it: each one is its own page in
 // src/content/market-storm/.
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import ArticleBody from '@/components/ArticleBody';
 import { Seal } from '@/components/brand/Kanji';
@@ -1024,7 +1025,15 @@ export default function ReportView({ report }: { report: MarketStormReport }) {
         </div>
       </div>
 
-      <div id="sources" className="sd-defer scroll-mt-24">
+      {/* Skips layout until it's near (sd-defer), with a placeholder sized
+          from the number of sources (sd-defer-rows in globals.css). A flat
+          900px was a quarter of the real list on a phone, and the jump when
+          it rendered pushed the subscribe panel 2,700px down mid-scroll. */}
+      <div
+        id="sources"
+        className="sd-defer sd-defer-rows scroll-mt-24"
+        style={{ '--rows': report.sources.length } as CSSProperties}
+      >
         <Sources sources={report.sources} />
       </div>
     </div>
