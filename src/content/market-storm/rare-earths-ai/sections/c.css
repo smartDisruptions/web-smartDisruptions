@@ -1516,12 +1516,15 @@
 }
 /* The world picked in chapter 02 (or in the lab) stays lit. */
 .re-c-scen[data-world] .re-c-scen-rail,
-.re-c-scen[data-world] .re-c-scen-key li {
+.re-c-scen[data-world] .re-c-scen-key > li {
   opacity: 0.22;
 }
-.re-c-scen[data-world='takeoff'] .is-takeoff,
-.re-c-scen[data-world='steady'] .is-steady,
-.re-c-scen[data-world='stall'] .is-stall {
+.re-c-scen[data-world='takeoff'] .re-c-scen-rail.is-takeoff,
+.re-c-scen[data-world='steady'] .re-c-scen-rail.is-steady,
+.re-c-scen[data-world='stall'] .re-c-scen-rail.is-stall,
+.re-c-scen[data-world='takeoff'] .re-c-scen-key > li.is-takeoff,
+.re-c-scen[data-world='steady'] .re-c-scen-key > li.is-steady,
+.re-c-scen[data-world='stall'] .re-c-scen-key > li.is-stall {
   opacity: 1;
 }
 
