@@ -55,7 +55,10 @@ export default function IndexArchive() {
         Earlier reports, each at its own link. I don&rsquo;t update them.
       </p>
 
-      <ol className="ms-arc" role="list">
+      {/* sd-defer: ten rows below the fold skip style, layout and paint
+          until they near the screen. The #archive anchor is the section
+          above, never a row inside the deferred list. */}
+      <ol className="ms-arc sd-defer" role="list">
         {reports.map((r) => (
           <li key={r.slug} className="ms-arc-row group">
             <time dateTime={r.publishDate} className="ms-arc-date">
