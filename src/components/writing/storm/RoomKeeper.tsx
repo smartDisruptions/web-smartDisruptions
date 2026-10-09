@@ -11,8 +11,10 @@ import { useEffect, useRef } from 'react';
  *     magnetic field — only while that part is on screen and clear of the
  *     site's glass bars. The rain rings, Kiru's idle and the field's pulse
  *     run on it, so a loop the reader cannot see costs nothing. (Without
- *     JavaScript, `@media (scripting: none)` runs the CSS loops instead, so
- *     nothing waits on this script to be seen.)
+ *     JavaScript, `@media (scripting: none)` runs the rain rings instead,
+ *     so nothing waits on this script to be seen.) The field switches only
+ *     while the page is still: its light is a layer, and adding one is a
+ *     layout pass.
  *  2. Holding still while the page scrolls. Any running CSS loop costs
  *     Chrome a style pass on every scrolling frame, even one the compositor
  *     draws (SiteFX pauses Pip for the same reason). Measured on a phone at
@@ -89,17 +91,32 @@ export default function RoomKeeper() {
     // Kiru and the field must be wholly clear of the glass (an umbrella or a
     // ring of light under it while the rest is not still counts); 嵐 only
     // has to show.
+    //
+    // The field's light is a layer that exists only while it is on, so
+    // switching it is a layout pass. Mid-scroll that is a dropped frame
+    // just as the lead comes into view, so the field's switch waits for
+    // the page to be still (its pulse is held while it scrolls anyway).
+    const later = new Map<Element, boolean>();
     const live = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           const whole = !e.target.classList.contains('wms-kanji');
           const on = whole ? e.intersectionRatio > 0.98 : e.isIntersecting;
-          e.target.toggleAttribute('data-on', on);
+          if (holding && e.target.hasAttribute('data-wms-field')) {
+            later.set(e.target, on);
+          } else {
+            later.delete(e.target);
+            e.target.toggleAttribute('data-on', on);
+          }
         }
         inkWhenStill();
       },
       { rootMargin: `-${top}px 0px -${bottom}px 0px`, threshold: [0, 0.99] }
     );
+    const switchLater = () => {
+      for (const [el, on] of later) el.toggleAttribute('data-on', on);
+      later.clear();
+    };
     const parts = [
       ...room.querySelectorAll<HTMLElement>(
         '.wms-kanji, .wms-kiru, [data-wms-field]'
@@ -206,6 +223,7 @@ export default function RoomKeeper() {
       if (holding) {
         holding = false;
         room!.removeAttribute('data-hold');
+        switchLater();
         inkWhenStill();
         fillWhenStill();
         fetchInView();
