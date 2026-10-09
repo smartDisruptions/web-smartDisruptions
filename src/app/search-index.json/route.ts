@@ -78,8 +78,8 @@ export function GET() {
       t: 'About',
       u: '/about',
       k: 'Page',
-      d: 'The work: the newest notes, what I built, and Market Storm',
-      x: 'about latest writing builds receipts market storm',
+      d: 'The work: what I built, with receipts',
+      x: 'about builds receipts work',
     },
     {
       t: 'About Josh',

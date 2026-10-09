@@ -4,9 +4,7 @@ import Kanji, { Seal, Slash } from '@/components/brand/Kanji';
 import Noren from '@/components/about/Noren';
 import AboutSwitch from '@/components/about/AboutSwitch';
 import AboutNext from '@/components/about/AboutNext';
-import LatestWritingSection from '@/components/home/LatestWritingSection';
 import FeaturedAppsSection from '@/components/home/FeaturedAppsSection';
-import StormTeaser from '@/components/home/StormTeaser';
 import { getFieldNotes } from '@/lib/fieldNotes';
 import { marketStormReports } from '@/data/marketStorm';
 import { GAME_SLUGS } from '@/data/apps';
@@ -16,7 +14,7 @@ import './work.css';
 
 const TITLE = 'About — SmartDisruptions';
 const DESCRIPTION =
-  'What this place is: my newest notes, the things I’ve built with AI, and Market Storm on the AI market.';
+  'What this place is, and the things I’ve built with AI. Receipts included.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -27,9 +25,11 @@ export const metadata: Metadata = {
 
 /**
  * About (/about) — the work. What this place is, and the work itself: the
- * newest notes, the reel of builds and Market Storm, which opened the home
- * page until October 2026. Its sibling, /about-me, is the person; the fusuma
- * at the top of both slides between them (components/about/AboutSwitch).
+ * reel of builds, which opened the home page until October 2026. (The newest
+ * notes and the Market Storm panel came here with it, and left on Josh's
+ * call; Writing and /market-storm hold both.) Its sibling, /about-me, is the
+ * person; the fusuma at the top of both slides between them
+ * (components/about/AboutSwitch).
  *
  * The header is a noren, the split curtain that marks a dojo's door: ai-iro
  * cloth with 場 ("place") dyed across it, Kiru peeking through the middle,
@@ -128,9 +128,7 @@ export default function AboutPage() {
         </div>
       </header>
 
-      <LatestWritingSection />
       <FeaturedAppsSection />
-      <StormTeaser />
 
       <AboutNext to="person" />
     </div>

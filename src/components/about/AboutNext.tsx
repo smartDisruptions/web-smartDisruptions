@@ -83,8 +83,7 @@ export default function AboutNext({ to }: { to: 'person' | 'work' }) {
         </span>
         <span className="au-next-body">
           <span className="au-next-p font-read">
-            The newest notes, the things I&rsquo;ve built, and Market Storm. All
-            with receipts.
+            The things I&rsquo;ve built, and the receipts for all of it.
           </span>
           <span className="au-next-go">
             Step inside <IconArrowRight size={18} />
