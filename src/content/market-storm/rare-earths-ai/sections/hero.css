@@ -154,12 +154,12 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  /* Its own compositor layer. Otherwise the canvas is painted into the
-     hero's layer as an image, and anything else in the hero that repaints
-     (Kiru idling, the hint fading in) made Chrome snapshot all of its pixels
-     again: ~13ms a frame at 4× CPU while the hero was on screen. On its own
-     layer it is uploaded only when the filings actually move. */
-  will-change: transform;
+  /* Painted with the hero, not on a compositor layer of its own: as a
+     layer, Chrome uploaded all of its pixels again on most commits, even
+     with nothing drawn (measured: ~4ms a frame at 4× CPU). Painted in, it
+     is snapshotted only when the hero repaints around it, which, with Kiru
+     on his own layer and the field holding still while the page scrolls,
+     is rare. */
 }
 
 /* The bar magnet. On a phone it stands upright — N at the top — so each
@@ -807,23 +807,22 @@
   font-variant-numeric: tabular-nums;
   text-decoration: none;
 }
-/* Each chapter is a filing: a short ink tick. Yours is vermilion. */
+/* Each chapter is a filing: a short ink tick. Yours is vermilion. It
+   changes as the reader scrolls past a chapter, so it changes at once: a
+   tween here would keep the compositor drawing between scroll frames. */
 .re-a-rail-a::before {
   content: '';
   width: 12px;
   height: 2px;
   border-radius: 1px;
-  background: currentColor;
-  opacity: 0.6;
+  background: color-mix(in srgb, currentColor 60%, transparent);
   transform-origin: left;
-  transition: transform 0.25s var(--re-ease);
 }
 .re-a-rail-a[aria-current] {
   color: var(--sd-pen-ink);
 }
 .re-a-rail-a[aria-current]::before {
   background: var(--sd-pen);
-  opacity: 1;
   transform: scaleX(1.8);
 }
 .re-a-rail-a:hover {
@@ -864,7 +863,6 @@
   .re-a-lines,
   .re-a-rail,
   .re-a-rail-t,
-  .re-a-rail-a::before,
   .re-a-pt-el {
     transition: none;
   }

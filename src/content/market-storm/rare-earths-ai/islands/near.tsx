@@ -7,10 +7,11 @@ import { useEffect } from 'react';
  * animation costs the main thread a style pass on each scrolling frame,
  * wherever on the page the reader is (measured on a phone-speed CPU while
  * building chapter 10). So this one observer sets `data-near` on each
- * chapter while it is within about half a screen of the viewport, and
- * re.css attaches the `.re-rv` reveals only there. Far away, everything sits
- * in its final state. Without JavaScript, without scroll timelines, or under
- * reduced motion nothing is hidden: the content simply shows.
+ * chapter while it is within about a third of a screen of the viewport, and
+ * the stylesheets attach their scroll-driven animations only there. Far
+ * away, everything sits in its final state. Without JavaScript, without
+ * scroll timelines, or under reduced motion nothing is hidden: the content
+ * simply shows.
  *
  * Renders nothing.
  */

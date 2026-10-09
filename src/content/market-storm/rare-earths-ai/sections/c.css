@@ -351,8 +351,8 @@
   pointer-events: none;
   opacity: 0;
 }
-.re-c-ch[data-near] .re-c-world::before,
-.re-c-ch[data-near] .re-c-world::after {
+.re-c-world::before,
+.re-c-world::after {
   transition: opacity 0.3s ease;
 }
 .re-c-world::before {
@@ -834,7 +834,7 @@
 .re-c-seg-row[data-sel='stall'] .re-c-seg-thumb {
   --wk: var(--re-w-stall);
 }
-.re-c-ch[data-near] .re-c-seg-thumb {
+.re-c-seg-thumb {
   transition: transform 0.38s var(--re-ease);
 }
 .re-c-seg-o {
@@ -1176,12 +1176,14 @@
     column-gap: 1rem;
   }
 }
-/* Motion, only while the chapter is near the screen (data-near): a running
-   transition costs a style pass every frame, so nothing glides off screen.
-   A world or a reset: rows glide to their new places in a cascade, bars
-   slide with them. A drag: bars follow the slider exactly (nothing left
-   running between input events); rows that change places still glide. */
-.re-c-ch[data-near] .re-c-lab[data-motion='toggle'] .re-c-row {
+/* Motion. A world or a reset: rows glide to their new places in a cascade,
+   bars slide with them. A drag: bars follow the slider exactly (nothing left
+   running between input events); rows that change places still glide.
+   Declared always rather than only near the screen: an idle transition costs
+   nothing, while a selector that flips as the reader scrolls restyles every
+   row each time it does. */
+@media (prefers-reduced-motion: no-preference) {
+.re-c-lab[data-motion='toggle'] .re-c-row {
   transition: transform 0.6s
     linear(
       0,
@@ -1197,11 +1199,12 @@
     );
   transition-delay: calc(var(--slot) * 16ms);
 }
-.re-c-ch[data-near] .re-c-lab[data-motion='toggle'] .re-c-bar {
+.re-c-lab[data-motion='toggle'] .re-c-bar {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.re-c-ch[data-near] .re-c-lab[data-motion='drag'] .re-c-row {
+.re-c-lab[data-motion='drag'] .re-c-row {
   transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+}
 }
 .re-c-co {
   grid-area: co;
@@ -1576,11 +1579,12 @@
 
 /* ── Scroll-driven motion ────────────────────────────────────────────────── */
 
-/* Every animation hangs off [data-near], which ../islands/near.tsx sets
-   while a chapter is within about half a screen of the viewport: an attached
-   scroll-driven animation costs a little on every scrolling frame, wherever
-   the reader is, so far-off charts carry none. Without it (no JS yet, no
-   support, reduced motion) the charts simply sit in their final state.
+/* Every scroll-driven animation hangs off [data-near], which
+   ../islands/near.tsx sets while a chapter is within about a third of a
+   screen of the viewport: an attached scroll-driven animation costs a little
+   on every scrolling frame, wherever the reader is, so far-off charts carry
+   none. Without it (no JS yet, no support, reduced motion) the charts simply
+   sit in their final state.
 
    The named timelines themselves are declared always. A timeline name that
    comes and goes makes Chrome restyle the whole subtree under it (every
@@ -1631,6 +1635,12 @@
 
     /* 03 · the block is laid down row by row; the AI-specific five drop in
        last. */
+    /* Each group keeps its own layer, so attaching and dropping the
+       animation as the chapter comes and goes doesn't build and tear down
+       eleven layers mid-scroll (measured: 7.5ms to 4ms per toggle at 1×). */
+    .re-c-mag-g {
+      will-change: transform;
+    }
     .re-c-ch[data-near] .re-c-mag-g {
       animation-name: re-c-lay;
       animation-fill-mode: both;
@@ -1656,12 +1666,12 @@
     }
   }
 
-  /* A pick lands as a stamp, with a ripple. One shot each, and only near
-     the screen (a pick made in chapter 10 doesn't stamp chapter 02 unseen). */
-  .re-c-ch[data-near] .re-c-world:has(:checked) .re-c-world-seal {
+  /* A pick lands as a stamp, with a ripple: one shot each, when it is made
+     (not again every time the chapter scrolls back into reach). */
+  .re-c-world:has(:checked) .re-c-world-seal {
     animation: re-c-stamp 0.45s cubic-bezier(0.3, 1.45, 0.5, 1) both;
   }
-  .re-c-ch[data-near] .re-c-world:has(:checked) .re-c-world-mark::after {
+  .re-c-world:has(:checked) .re-c-world-mark::after {
     animation: re-c-ripple 0.9s ease-out both;
   }
   /* Arriving at the lab with a world already picked: the toggle answers. */

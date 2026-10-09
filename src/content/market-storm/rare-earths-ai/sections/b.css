@@ -33,20 +33,6 @@
   max-width: none;
 }
 
-/* The chain scene skips layout, paint and hit-testing while it is off
-   screen. Only the scene: its words repeat the chapter's own finding, so a
-   skipped scene hides nothing (the figures in 04 carry content and stay
-   rendered). `auto` keeps its real height once it has been drawn. */
-.re-b-chain {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 340px;
-}
-@media (max-width: 47.99rem) {
-  .re-b-chain {
-    contain-intrinsic-size: auto 650px;
-  }
-}
-
 /* The site's scroll reveal, tuned for heavy drawings (same timeline and
    range). No 2% scale, which can make Chrome raster a block again as it
    rises. And the figures only lift, without the fade: they hold their own
