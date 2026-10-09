@@ -1293,9 +1293,13 @@
     animation: wms-ripple 1.9s ease-out var(--d, 0s) infinite;
   }
   /* The field: a ring of gold runs out from the magnet, then a rest —
-     one ring, so the room runs one loop here, as it did for the tape. */
+     one ring, so the room runs one loop here, as it did for the tape.
+     Three rings each time the lead comes into view, then the picture rests:
+     a running ring restyles every frame, and on a 4x-throttled phone the
+     lead's idle main thread went from ~220 to ~390ms a second with it
+     going. Three is enough to be seen. */
   .wms-field[data-on] .wms-pulse {
-    animation: wms-pulse 4.8s linear infinite;
+    animation: wms-pulse 4.8s linear 3;
   }
   @media (scripting: none) {
     .wms .wms-ripple {

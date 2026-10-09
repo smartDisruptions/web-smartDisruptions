@@ -71,6 +71,12 @@ const DATE =
  * catalyst with no date simply gets no calendar leaf. Neither does one whose
  * date doesn't exist ("31 Feb 2027"): no leaf beats a wrong one.
  */
+/** Today on the site's calendar, Pacific (as scripts/publish-day.mjs). */
+const today = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(
+    new Date()
+  );
+
 export function watchDate(e: MarketStormEntry): WatchDate | null {
   const m = e.catalyst?.match(DATE);
   if (!m) return null;
@@ -82,5 +88,8 @@ export function watchDate(e: MarketStormEntry): WatchDate | null {
   if (real.getUTCMonth() !== mi || real.getUTCDate() !== day) return null;
   const iso = `${year}-${String(mi + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   if (iso <= e.publishDate) return null;
+  // A date that has passed isn't one I'm watching. The page is built on
+  // every deploy, so the leaf goes with the first deploy after it.
+  if (iso < today()) return null;
   return { day, month: MONTHS[mi], year, iso, at: m.index ?? 0, text: m[0] };
 }
