@@ -25,7 +25,9 @@ import { formatDate } from '@/lib/format';
  * Nothing at runtime: server-rendered, no client JavaScript. The slab's rain
  * is a static SVG tile and its art one lazy image. The only motion is the
  * site's scroll reveal (`sd-reveal`, compositor-only, off under reduced
- * motion) and a hover lift on a fine pointer.
+ * motion) and, on a fine pointer, a hover lift and one flash of lightning
+ * over the lead — opacity on one layer, run once per hover, never while
+ * the page is only scrolling.
  */
 export default function IndexFront() {
   const front = frontReports();
@@ -132,7 +134,7 @@ function LeadReport({ entry }: { entry: MarketStormEntry }) {
           <Place n={1} size="lg" />
           <span>
             Lead report &middot;{' '}
-            <time dateTime={entry.publishDate}>
+            <time dateTime={entry.publishDate} className="whitespace-nowrap">
               {formatDate(entry.publishDate)}
             </time>
           </span>
