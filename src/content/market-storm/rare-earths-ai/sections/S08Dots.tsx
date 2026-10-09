@@ -102,9 +102,9 @@ export default function S08Dots() {
                           className="re-e-p"
                           style={
                             {
-                              '--g': (at(k + 1, flow.n) - at(k, flow.n)).toFixed(
-                                4
-                              ),
+                              '--g': (
+                                at(k + 1, flow.n) - at(k, flow.n)
+                              ).toFixed(4),
                               '--len': LENGTH[k % flow.n],
                             } as CSSProperties
                           }

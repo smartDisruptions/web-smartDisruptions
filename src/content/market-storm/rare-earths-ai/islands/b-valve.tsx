@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 
 /**
  * 04 · The headline simulator: China's hand on the valve.
@@ -52,7 +59,8 @@ function stopsOf(rows: ValveRow[]) {
   const groups: Stop[] = [];
   rows.forEach((r, i) => {
     const g = groups[groups.length - 1];
-    if (g && g.kind === r.kind && rows[g.rows[0]].date === r.date) g.rows.push(i);
+    if (g && g.kind === r.kind && rows[g.rows[0]].date === r.date)
+      g.rows.push(i);
     else groups.push({ kind: r.kind, rows: [i] });
   });
   const up = groups.filter((g) => g.kind === 'up').reverse();
@@ -67,7 +75,9 @@ function strands(bands: Band[], x1: number, x2: number) {
   bands.forEach((k, i) => {
     ink[k] += `M${x1} ${+(101 + i * 1.75).toFixed(2)}H${x2}`;
   });
-  return (Object.keys(ink) as Band[]).map((k) => <path key={k} className={`re-b-strand re-b-k-${k}`} d={ink[k]} />);
+  return (Object.keys(ink) as Band[]).map((k) => (
+    <path key={k} className={`re-b-strand re-b-k-${k}`} d={ink[k]} />
+  ));
 }
 
 /** The spring from `from` (moving at `v` deg/s) to `to`, one angle per frame. */
@@ -117,7 +127,8 @@ export default function BValve({
     const angleAt = (i: number) => (rest - i) * STEP;
     const lo = angleAt(last);
     const hi = angleAt(0);
-    const stopAt = (a: number) => Math.min(last, Math.max(0, rest - Math.round(a / STEP)));
+    const stopAt = (a: number) =>
+      Math.min(last, Math.max(0, rest - Math.round(a / STEP)));
 
     let cur = rest; // the picked notch, mirrored here for the handlers
     let angle = 0; // where the wheel rests (or is being held)
@@ -144,7 +155,10 @@ export default function BValve({
       const f = (Number(anim.currentTime) || 0) / (1000 / FPS);
       const i = Math.min(path.length - 1, Math.floor(f));
       const j = Math.min(path.length - 1, i + 1);
-      return { a: path[i] + (path[j] - path[i]) * (f - i), v: (path[j] - path[i]) * FPS };
+      return {
+        a: path[i] + (path[j] - path[i]) * (f - i),
+        v: (path[j] - path[i]) * FPS,
+      };
     };
     const drop = () => {
       anim?.cancel();
@@ -161,7 +175,13 @@ export default function BValve({
       drop();
       angle = to;
       write(to); // the resting state, under the animation
-      if (reduce.matches || !onScreen || document.hidden || typeof rot.animate !== 'function') return;
+      if (
+        reduce.matches ||
+        !onScreen ||
+        document.hidden ||
+        typeof rot.animate !== 'function'
+      )
+        return;
       path = springPath(from.a, v0 ?? from.v, to);
       if (path.length < 3) return;
       anim = rot.animate(
@@ -191,7 +211,11 @@ export default function BValve({
       if (r < lo) return lo - Math.min(22, (lo - r) * 0.3);
       const k = Math.round(r / STEP);
       const x = r - k * STEP;
-      return k * STEP + x - 0.55 * (STEP / (2 * Math.PI)) * Math.sin((2 * Math.PI * x) / STEP);
+      return (
+        k * STEP +
+        x -
+        0.55 * (STEP / (2 * Math.PI)) * Math.sin((2 * Math.PI * x) / STEP)
+      );
     };
     let raw = 0;
     let lastA = 0;
@@ -199,9 +223,11 @@ export default function BValve({
     let cy = 0;
     let rMin = 0;
     const trail: { t: number; a: number }[] = [];
-    const ptA = (e: PointerEvent) => (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI;
+    const ptA = (e: PointerEvent) =>
+      (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI;
     const down = (e: PointerEvent) => {
-      if (dragId !== -1 || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      if (dragId !== -1 || (e.pointerType === 'mouse' && e.button !== 0))
+        return;
       const r = el.getBoundingClientRect();
       cx = r.left + r.width / 2;
       cy = r.top + r.height / 2;
@@ -251,7 +277,8 @@ export default function BValve({
       const a0 = trail[0];
       const a1 = trail[trail.length - 1];
       const dt = (a1.t - a0.t) / 1000;
-      const v = dt > 0.012 ? Math.max(-1500, Math.min(1500, (a1.a - a0.a) / dt)) : 0;
+      const v =
+        dt > 0.012 ? Math.max(-1500, Math.min(1500, (a1.a - a0.a) / dt)) : 0;
       const i = stopAt(Math.min(hi, Math.max(lo, raw + v * 0.15)));
       pick(i);
       settle(angleAt(i), v);
@@ -278,8 +305,14 @@ export default function BValve({
     // ── Keyboard: a slider. Up/right tightens, down/left opens. ───────────
     const onKey = (e: KeyboardEvent) => {
       let i = cur;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'PageUp') i = cur - 1;
-      else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown' || e.key === 'PageDown') i = cur + 1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'PageUp')
+        i = cur - 1;
+      else if (
+        e.key === 'ArrowLeft' ||
+        e.key === 'ArrowDown' ||
+        e.key === 'PageDown'
+      )
+        i = cur + 1;
       else if (e.key === 'Home') i = last;
       else if (e.key === 'End') i = 0;
       else return;
@@ -317,17 +350,49 @@ export default function BValve({
   // The still parts are built once: a press re-renders only what it changes.
   const base = useMemo(
     () => (
-      <svg className="re-b-stage-svg" viewBox="-160 -130 320 270" aria-hidden="true" focusable="false">
+      <svg
+        className="re-b-stage-svg"
+        viewBox="-160 -130 320 270"
+        aria-hidden="true"
+        focusable="false"
+      >
         <circle className="re-b-dial" cx="0" cy="-25" r="97" />
         <circle className="re-b-wheel-shadow" cx="4" cy="-19" r="75" />
         <rect className="re-b-stem" x="-6" y="-25" width="12" height="104" />
         <path className="re-b-bonnet" d="M-20 64H20L27 90H-27Z" />
-        <rect className="re-b-pipe-in" x="-170" y="98" width="340" height="34" />
+        <rect
+          className="re-b-pipe-in"
+          x="-170"
+          y="98"
+          width="340"
+          height="34"
+        />
         {strands(bands, -170, -46)}
         <path className="re-b-pipe-wall" d="M-170 98H170M-170 132H170" />
-        <rect className="re-b-flange" x="-46" y="91" width="10" height="48" rx="2" />
-        <rect className="re-b-flange" x="36" y="91" width="10" height="48" rx="2" />
-        <rect className="re-b-body" x="-36" y="86" width="72" height="58" rx="9" />
+        <rect
+          className="re-b-flange"
+          x="-46"
+          y="91"
+          width="10"
+          height="48"
+          rx="2"
+        />
+        <rect
+          className="re-b-flange"
+          x="36"
+          y="91"
+          width="10"
+          height="48"
+          rx="2"
+        />
+        <rect
+          className="re-b-body"
+          x="-36"
+          y="86"
+          width="72"
+          height="58"
+          rx="9"
+        />
       </svg>
     ),
     [bands]
@@ -339,7 +404,11 @@ export default function BValve({
   const flowDown = useMemo(
     () => (
       <span className="re-b-flow-dn" aria-hidden="true">
-        <svg className="re-b-stage-svg" viewBox="-160 -130 320 270" focusable="false">
+        <svg
+          className="re-b-stage-svg"
+          viewBox="-160 -130 320 270"
+          focusable="false"
+        >
           {strands(bands, 46, 170)}
         </svg>
       </span>
@@ -348,10 +417,20 @@ export default function BValve({
   );
   const wheelArt = useMemo(
     () => (
-      <svg className="re-b-wheel-svg" viewBox="-86 -86 172 172" aria-hidden="true" focusable="false">
+      <svg
+        className="re-b-wheel-svg"
+        viewBox="-86 -86 172 172"
+        aria-hidden="true"
+        focusable="false"
+      >
         <circle className="re-b-rim-back" r="74" />
         {[0, 72, 144, 216, 288].map((a) => (
-          <path key={a} className="re-b-spoke" d="M-6.5 -18 -4 -70H4L6.5 -18Z" transform={`rotate(${a})`} />
+          <path
+            key={a}
+            className="re-b-spoke"
+            d="M-6.5 -18 -4 -70H4L6.5 -18Z"
+            transform={`rotate(${a})`}
+          />
         ))}
         {/* 24 grip bumps: one dotted circle (round caps on near-zero dashes) */}
         <circle className="re-b-knurl" r="81" pathLength="24" />
@@ -374,7 +453,12 @@ export default function BValve({
         <div className="re-b-stage">
           {base}
           {flowDown}
-          <svg className="re-b-stage-svg" viewBox="-160 -130 320 270" aria-hidden="true" focusable="false">
+          <svg
+            className="re-b-stage-svg"
+            viewBox="-160 -130 320 270"
+            aria-hidden="true"
+            focusable="false"
+          >
             {stops.map((s, i) => {
               const a = angleOf(i);
               const [sx, sy] = [Math.sin(a), -Math.cos(a)];
@@ -399,7 +483,11 @@ export default function BValve({
             aria-valuemin={rest - last}
             aria-valuemax={rest}
             aria-valuenow={rest - at}
-            aria-valuetext={head ? `${head.date}, ${head.event}` : 'Centred, no headline picked'}
+            aria-valuetext={
+              head
+                ? `${head.date}, ${head.event}`
+                : 'Centred, no headline picked'
+            }
           >
             <div ref={spin} className="re-b-spin">
               {wheelArt}
@@ -408,7 +496,12 @@ export default function BValve({
               </span>
             </div>
             {/* The light stays where it is while the wheel turns under it. */}
-            <svg className="re-b-wheel-lit" viewBox="-86 -86 172 172" aria-hidden="true" focusable="false">
+            <svg
+              className="re-b-wheel-lit"
+              viewBox="-86 -86 172 172"
+              aria-hidden="true"
+              focusable="false"
+            >
               <path className="re-b-lit-hi" d="M-62 -36A72 72 0 0 1 36 -62" />
               <path className="re-b-lit-lo" d="M62 36A72 72 0 0 1 -36 62" />
             </svg>
@@ -441,7 +534,11 @@ export default function BValve({
         {/* Every notch's slip is laid in the same cell, so the slip is always
             as tall as its longest headline and nothing below it ever moves.
             The words are said once, by the live line under it. */}
-        <div className="sd-note re-b-slip" data-moved={moved ? '' : undefined} aria-hidden="true">
+        <div
+          className="sd-note re-b-slip"
+          data-moved={moved ? '' : undefined}
+          aria-hidden="true"
+        >
           {stops.map((s, i) => {
             const on = i === at;
             const first = s.rows.length ? rows[s.rows[0]] : null;
@@ -454,7 +551,9 @@ export default function BValve({
                     <ul className="re-b-chips" role="list">
                       {s.rows.map((r) => (
                         <li key={r} className={`re-b-chip is-${rows[r].kind}`}>
-                          <span className="re-b-chip-a">{rows[r].kind === 'up' ? '▲' : '▼'}</span>
+                          <span className="re-b-chip-a">
+                            {rows[r].kind === 'up' ? '▲' : '▼'}
+                          </span>
                           <b>{rows[r].ticker}</b>
                           <span>{signed(rows[r].move)}%</span>
                         </li>
@@ -463,7 +562,8 @@ export default function BValve({
                   </>
                 ) : (
                   <p className="font-read re-b-slip-hint">
-                    Turn the wheel, or press a button. Each notch is a dated headline and that day’s share-price move.
+                    Turn the wheel, or press a button. Each notch is a dated
+                    headline and that day’s share-price move.
                   </p>
                 )}
               </div>
@@ -473,7 +573,9 @@ export default function BValve({
         <p className="sr-only" aria-live="polite">
           {head
             ? `${head.date}, ${head.event}: ${stop.rows
-                .map((r) => `${rows[r].ticker} ${signed(rows[r].move)}${suffix}`)
+                .map(
+                  (r) => `${rows[r].ticker} ${signed(rows[r].move)}${suffix}`
+                )
                 .join(', ')}.`
             : ''}
         </p>
@@ -483,7 +585,10 @@ export default function BValve({
         <div className="re-b-axis" aria-hidden="true">
           <span className="re-b-axis-in">
             {TICKS.map((t) => (
-              <span key={t} style={{ '--t': (t + SPAN) / (2 * SPAN) } as CSSProperties}>
+              <span
+                key={t}
+                style={{ '--t': (t + SPAN) / (2 * SPAN) } as CSSProperties}
+              >
                 {signed(t)}%
               </span>
             ))}
@@ -492,10 +597,18 @@ export default function BValve({
         {rows.map((r, i) => {
           const on = spot.has(i);
           return (
-            <div key={r.label} className="re-b-row" data-kind={r.kind} data-spot={on ? '' : undefined}>
+            <div
+              key={r.label}
+              className="re-b-row"
+              data-kind={r.kind}
+              data-spot={on ? '' : undefined}
+            >
               <span className="re-b-row-l">{r.label}</span>
               <span className="re-b-row-track">
-                <span className="re-b-row-bw" style={{ '--w': Math.abs(r.move) / SPAN } as CSSProperties}>
+                <span
+                  className="re-b-row-bw"
+                  style={{ '--w': Math.abs(r.move) / SPAN } as CSSProperties}
+                >
                   <span className="re-b-row-bar" />
                 </span>
                 <span className="re-b-row-v">{signed(r.move)}%</span>

@@ -11,150 +11,407 @@
   #ffcf70 gold, #ff5b3d vermilion, #eceefa / #a6abc8 text).
 -->
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<style>
-@font-face { font-family: 'Dela'; src: url('../../../../scripts/fonts/dela-gothic-one-400.woff2') format('woff2'); font-display: block; }
-@font-face { font-family: 'Inter'; font-weight: 700; src: url('../../../../scripts/fonts/inter-700.woff2') format('woff2'); font-display: block; }
-@font-face { font-family: 'Inter'; font-weight: 800; src: url('../../../../scripts/fonts/inter-800.woff2') format('woff2'); font-display: block; }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 1200px; height: 630px; overflow: hidden; }
-body {
-  position: relative;
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #eceefa;
-  background:
-    radial-gradient(640px 460px at 73% 47%, rgba(98, 118, 240, 0.2), transparent 72%),
-    radial-gradient(560px 360px at -6% 118%, rgba(226, 65, 42, 0.16), transparent 72%),
-    #090c1d;
-}
-canvas { position: absolute; inset: 0; }
-.wm { position: absolute; right: -60px; top: -70px; width: 560px; height: 560px; color: #fff; opacity: 0.045; }
-.txt { position: absolute; left: 72px; top: 118px; width: 470px; }
-.kick { display: flex; align-items: center; gap: 13px; font-weight: 800; font-size: 17px; letter-spacing: 0.16em; color: #a9b0d4; text-transform: uppercase; }
-.kick::before { content: ''; width: 10px; height: 10px; flex: none; background: #ff5b3d; transform: rotate(45deg); border-radius: 1px; }
-h1 { margin-top: 22px; font-family: 'Dela', 'Arial Black', sans-serif; font-weight: 400; font-size: 66px; line-height: 1.04; letter-spacing: -0.01em; text-wrap: balance; }
-.sub { margin-top: 24px; font-weight: 800; font-size: 27px; line-height: 1.25; color: #ff8a70; }
-.bar { position: absolute; left: 584px; top: 240px; width: 560px; display: grid; grid-template-columns: 22px 1fr 22px; gap: 5px; padding: 5px; border-radius: 14px; background: linear-gradient(180deg, #6d7596, #343a5a); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 26px 40px -22px rgba(0, 0, 0, 0.9); }
-.cap { display: grid; place-items: center; border-radius: 9px; font-family: 'Dela', sans-serif; font-size: 15px; }
-.cap.n { background: #ff5b3d; color: #fff; }
-.cap.s { background: #c9cfe8; color: #11152a; }
-.els { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-.el { display: grid; grid-template-rows: auto 1fr auto; height: 116px; padding: 8px 6px 9px 8px; border: 3px solid #9bb0ff; border-radius: 8px; background: #11152a; }
-.el.h { border-style: dashed; border-color: #ffcf70; }
-.z { font-weight: 700; font-size: 15px; line-height: 1; color: #a6abc8; }
-.sym { align-self: center; font-family: 'Dela', sans-serif; font-size: 42px; line-height: 1; color: #9bb0ff; }
-.h .sym { color: #ffcf70; }
-.nm { font-weight: 700; font-size: 10.5px; letter-spacing: -0.01em; line-height: 1.1; color: #c9cdea; white-space: nowrap; overflow: hidden; }
-.foot { position: absolute; left: 72px; right: 72px; bottom: 34px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 17px; color: #8f96bd; }
-.foot b { color: #d7dbf2; font-weight: 800; }
-.seal { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 12px; vertical-align: middle; border-radius: 6px; background: #e2412a; color: #fff; transform: rotate(-6deg); }
-.seal svg { width: 22px; height: 22px; }
-</style>
-</head>
-<body>
-  <canvas id="c" width="1200" height="630"></canvas>
-  <svg class="wm" viewBox="0 0 1000 1000" aria-hidden="true"><path fill="currentColor" d="M961 911L961 911Q962 925 952 934Q941 943 927 948Q912 952 900 953Q888 953 886 950L886 950Q882 945 881 933Q879 920 877 909L877 909Q874 893 863 886Q852 878 838 883L838 883Q834 884 813 892Q792 900 765 909Q738 918 714 924L714 924Q705 926 688 934Q671 941 666 943L666 943Q650 950 634 952Q617 954 615 950L615 950Q611 945 610 933Q608 920 606 909L606 909Q603 893 592 886Q581 878 567 883L567 883Q563 884 546 891Q528 897 505 906Q481 914 458 921Q434 927 417 930Q400 932 397 927L397 927Q396 926 395 922Q393 917 391 910L391 910Q387 897 369 900Q351 903 331 906L331 906Q321 907 298 908Q275 909 251 909Q226 908 209 906L209 906Q178 901 163 878Q148 854 146 816L146 816Q145 802 145 789Q144 775 144 762L144 762Q144 754 143 741Q141 728 135 716Q129 704 116 700L116 700Q95 693 77 682Q58 670 47 660Q36 650 36 650L36 650Q36 650 45 626Q54 602 69 563Q83 524 99 480Q114 435 128 394Q141 352 149 322Q156 291 153 282L153 282Q151 275 143 271Q134 266 122 262L122 262Q106 258 91 246Q76 233 66 206Q56 178 53 128L53 128L413 126Q413 126 416 137Q419 148 420 158L420 158Q425 188 472 191L472 191Q484 192 485 186Q486 179 484 172Q481 164 480 162L480 162Q468 142 469 120L469 120Q469 91 486 68Q502 45 546 40L546 40Q591 34 609 53Q627 72 636 104L636 104Q641 120 636 138Q631 155 618 169L618 169Q611 176 620 182Q629 188 637 191L637 191Q643 192 658 193Q672 194 688 193Q704 192 712 190L712 190Q732 185 720 167L720 167Q712 156 709 145Q705 133 705 120L705 120Q706 91 722 68Q738 45 783 40L783 40Q828 34 846 53Q864 72 873 104L873 104Q883 140 854 169L854 169Q848 176 855 182Q861 187 870 189L870 189Q877 190 894 190Q910 190 925 190Q940 189 940 189L940 189Q949 205 954 220Q958 234 959 246L959 246Q963 281 948 300Q932 319 919 326L919 326Q915 328 899 330Q882 331 857 333L857 333Q850 334 843 341Q836 348 839 361L839 361Q842 374 838 384L838 384Q827 410 815 436Q803 462 788 496L788 496Q783 506 777 523Q770 540 776 552L776 552Q782 564 789 554Q795 543 798 536L798 536L884 378Q884 378 897 386Q910 393 925 408Q939 423 945 446L945 446Q950 466 943 483Q936 499 934 502L934 502Q931 508 921 527Q911 545 900 569Q888 592 881 612Q873 632 874 640L874 640Q878 653 884 653Q889 653 896 652L896 652Q906 651 911 661Q916 670 919 681L919 681Q920 687 926 716Q932 744 940 782Q947 820 954 856Q960 891 961 911ZM461 373L461 373Q465 362 460 346Q454 330 428 326L428 326Q420 324 408 316Q395 308 386 295L386 295Q384 292 378 284Q372 276 362 271Q351 266 335 274L335 274Q320 280 311 289L311 289Q296 304 290 326L290 326Q285 350 282 371Q278 391 270 420L270 420Q267 432 275 450Q283 467 310 467L310 467Q315 467 329 468Q343 468 360 468Q376 468 388 467L388 467Q406 465 416 457Q425 449 431 437L431 437Q436 429 443 415Q449 401 455 388Q460 375 461 373ZM730 376L730 376Q735 359 731 349Q726 338 718 337L718 337Q685 335 651 335Q617 335 587 336L587 336Q580 337 573 343Q565 349 568 360L568 360Q572 372 567 384L567 384Q556 410 544 436Q532 462 517 496L517 496Q512 506 506 523Q499 540 505 552L505 552Q511 564 518 554Q524 543 527 536L527 536L607 383Q607 383 620 390Q632 397 647 411Q661 425 667 448L667 448Q672 469 665 488Q658 506 656 510L656 510Q653 516 644 534Q635 551 625 573Q615 595 609 614Q602 632 603 640L603 640Q607 653 613 653Q618 653 625 652L625 652Q635 651 640 661Q645 670 648 681L648 681Q649 684 652 700Q654 715 658 735Q662 754 666 769L666 769Q668 777 684 778Q699 779 704 766L704 766Q713 742 715 715Q717 688 713 675L713 675Q710 665 700 645Q690 624 678 603Q665 581 656 566Q647 551 647 551L647 551Q647 551 655 534Q663 517 675 492Q687 467 699 442Q711 416 720 398Q729 379 730 376ZM299 745L299 745L299 628Q299 618 291 614Q283 609 274 609L274 609Q264 610 256 616Q248 621 248 632L248 632L248 742Q248 757 252 766Q256 774 272 774L272 774Q289 774 294 766Q299 758 299 745ZM405 652L405 745Q405 758 415 767Q424 776 432 757L432 757Q440 739 441 718Q441 696 438 681L438 681Q437 675 432 664Q427 653 421 640L421 640Q417 632 411 637Q405 641 405 652L405 652ZM529 763L529 763Q533 765 543 764Q553 762 561 754Q568 746 563 731L563 731Q562 723 555 722Q547 721 539 729L539 729Q532 736 528 748Q524 760 529 763ZM800 763L800 763Q804 765 814 764Q824 762 832 754Q839 746 834 731L834 731Q833 723 826 722Q818 721 810 729L810 729Q803 736 799 748Q795 760 800 763Z"/></svg>
-  <div class="txt" id="txt">
-    <p class="kick">STORM research · 8 Oct 2026</p>
-    <h1>Rare earths in the age of AI</h1>
-    <p class="sub">It’s a China bet first.</p>
-  </div>
-  <div class="bar" id="bar">
-    <span class="cap n">N</span>
-    <div class="els">
-      <div class="el"><span class="z">60</span><span class="sym">Nd</span><span class="nm">Neodymium</span></div>
-      <div class="el"><span class="z">59</span><span class="sym">Pr</span><span class="nm">Praseodymium</span></div>
-      <div class="el h"><span class="z">66</span><span class="sym">Dy</span><span class="nm">Dysprosium</span></div>
-      <div class="el h"><span class="z">65</span><span class="sym">Tb</span><span class="nm">Terbium</span></div>
-      <div class="el h"><span class="z">39</span><span class="sym">Y</span><span class="nm">Yttrium</span></div>
-    </div>
-    <span class="cap s">S</span>
-  </div>
-  <p class="foot" id="foot"><span><span class="seal"><svg viewBox="0 0 1000 1000"><path fill="currentColor" d="M185 266L185 266Q172 263 151 256Q129 248 111 234Q93 219 90 194L90 194Q89 186 89 164Q89 142 89 117Q89 91 90 73Q90 54 90 54L90 54Q122 46 158 49Q194 52 219 65L219 65Q247 80 248 102L248 102Q250 148 272 163Q294 178 336 178L336 178Q357 178 374 174Q390 170 397 151L397 151Q401 142 402 123Q403 104 403 84Q403 64 403 50Q402 36 402 36L402 36Q402 36 418 36Q434 35 459 36Q483 37 510 41Q537 45 558 53L558 53Q575 60 586 70Q596 80 596 94L596 94Q596 103 597 115Q598 127 599 141L599 141Q600 160 622 169Q643 178 667 178L667 178Q691 178 718 172Q744 166 754 144L754 144Q757 139 758 125Q758 110 758 94Q758 77 758 66Q757 54 757 54L757 54Q767 52 790 54Q812 55 838 61Q863 66 882 78L882 78Q894 85 902 95Q910 105 911 118L911 118Q912 125 913 142Q914 159 913 177Q912 195 906 208L906 208Q894 237 866 249Q837 261 805 266L805 266Q793 268 756 269Q718 270 665 271Q611 272 550 273Q488 273 428 273Q367 272 315 272Q263 271 228 270Q193 268 185 266ZM978 779L978 779Q978 779 981 807Q983 835 975 868L975 868Q969 900 950 928Q930 955 887 958L887 958Q857 960 836 946Q814 931 801 908Q787 885 781 863L781 863Q771 828 763 783Q754 738 747 691Q740 643 735 601Q730 558 727 527Q723 496 721 484L721 484Q719 464 710 452Q700 440 688 433L688 433Q683 430 677 436L677 436Q671 442 676 448L676 448Q686 469 693 494Q700 519 689 531L689 531Q682 538 649 543Q616 547 572 549L572 549Q568 549 561 551Q554 553 554 559L554 559Q554 565 561 568Q568 570 572 570L572 570L717 570Q720 579 721 605Q722 631 722 658Q722 685 721 698L721 698Q720 714 709 729L709 729Q702 739 703 748Q704 757 721 777L721 777Q734 791 747 813Q760 835 769 859Q778 882 778 903L778 903Q778 914 766 926Q754 937 737 947Q720 957 705 962Q690 967 684 964L684 964Q683 959 681 952Q678 944 674 934L674 934Q672 928 661 918Q650 907 630 912L630 912Q627 912 602 915Q576 918 537 922Q497 925 453 929Q409 933 369 936Q328 939 300 940Q271 941 263 939L263 939Q246 933 236 912L236 912Q232 903 223 902Q214 900 209 908L209 908Q201 921 190 931Q178 941 164 948L164 948Q143 959 122 965Q101 970 87 972Q72 973 72 973L72 973L100 299L884 299Q884 299 885 318Q885 337 886 367Q886 396 888 430Q889 463 891 493L891 493Q894 532 896 578Q898 624 903 668Q908 712 919 745L919 745Q926 765 940 772Q954 779 966 779Q978 779 978 779ZM273 446L273 446Q268 451 272 460Q276 468 289 467L289 467Q293 467 315 464Q337 461 370 457Q402 453 439 449Q475 444 507 440Q539 436 560 433Q581 430 583 430L583 430Q588 428 593 425Q598 421 584 420L584 420Q571 419 543 420Q514 420 479 421Q443 421 409 423Q374 424 348 425Q321 426 310 428L310 428Q305 428 293 433Q281 438 273 446ZM392 831L392 831Q414 829 419 817Q424 805 424 795L424 795Q424 785 412 777Q400 768 392 767L392 767Q370 765 351 763Q331 761 317 757L317 757Q295 752 277 737Q259 722 254 698L254 698Q252 684 251 658Q250 632 252 606Q253 580 255 570L255 570L402 570Q402 570 413 569Q424 567 424 561L424 561Q424 554 417 554Q409 553 404 553L404 553Q382 553 363 553Q344 553 330 554L330 554Q314 555 297 540Q280 524 266 507L266 507Q262 501 254 506Q245 511 245 519L245 519Q244 536 242 570Q240 603 238 643Q235 683 233 721Q231 758 230 784Q228 809 228 813L228 813Q228 823 240 832Q251 840 262 840L262 840Q286 838 315 837Q343 835 365 833Q387 831 392 831ZM406 689L406 689Q426 689 426 663L426 663Q426 649 422 645Q417 641 405 641L405 641Q394 641 391 650Q387 658 387 667L387 667Q387 674 392 682Q397 689 406 689ZM574 641L574 641Q563 641 559 645Q554 649 554 663L554 663Q554 689 573 689L573 689Q582 689 587 682Q592 674 592 667L592 667Q593 658 589 650Q585 641 574 641ZM614 796L614 796Q613 790 607 781Q601 771 592 770L592 770Q580 767 570 769L570 769Q554 771 554 794L554 794Q554 804 559 812Q563 820 574 820L574 820Q580 820 588 819Q595 818 603 815L603 815Q606 813 611 809Q615 804 614 796Z"/></svg></span><b>smartdisruptions.com</b></span><span>Research, not advice</span></p>
-<script>
-// Iron filings around the bar, as in the hero (islands/a-field.tsx), but
-// drawn once, bolder, from a fixed seed.
-(function () {
-  var c = document.getElementById('c');
-  var g = c.getContext('2d');
-  var W = 1200, H = 630;
-  var br = document.getElementById('bar').getBoundingClientRect();
-  var cx = br.left + br.width / 2, cy = br.top + br.height / 2;
-  var A = br.width / 2, B = (br.height / 2) * 0.86;
-  function field(x, y, out) {
-    var vp = y - cy + B, vm = y - cy - B;
-    var du = x - (cx - A); if (Math.abs(du) < 1e-3) du = 1e-3;
-    var rp = Math.sqrt(du * du + vp * vp), rm = Math.sqrt(du * du + vm * vm);
-    var fu = (vp / rp - vm / rm) / du, fv = 1 / rm - 1 / rp;
-    du = x - (cx + A); if (Math.abs(du) < 1e-3) du = 1e-3;
-    rp = Math.sqrt(du * du + vp * vp); rm = Math.sqrt(du * du + vm * vm);
-    fu -= (vp / rp - vm / rm) / du; fv -= 1 / rm - 1 / rp;
-    out[0] = fu; out[1] = fv;
-  }
-  var a = 0x5ad15c0;
-  function rnd() { a = (a + 0x6d2b79f5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
-  var f = [0, 0];
-  field(cx, cy - A * 1.1, f);
-  var ref = Math.hypot(f[0], f[1]);
-  function box(el, p) { var r = el.getBoundingClientRect(); return [r.left - p, r.top - p, r.right + p, r.bottom + p]; }
-  var clears = [];
-  var range = document.createRange();
-  ['txt', 'foot'].forEach(function (id) {
-    var el = document.getElementById(id);
-    el.querySelectorAll('p, h1, span > b, span:last-child').forEach(function (t) {
-      range.selectNodeContents(t);
-      var rs = range.getClientRects();
-      for (var i = 0; i < rs.length; i++) clears.push([rs[i].left - 10, rs[i].top - 8, rs[i].right + 10, rs[i].bottom + 8]);
-    });
-  });
-  var seal = document.querySelector('.seal');
-  clears.push(box(seal, 8));
-  var barBox = box(document.getElementById('bar'), 5);
-  function inBar(x, y) { return x > barBox[0] && x < barBox[2] && y > barBox[1] && y < barBox[3]; }
-  function clearDist(x, y) {
-    var d = 1e9;
-    for (var i = 0; i < clears.length; i++) {
-      var q = clears[i];
-      var dx = Math.max(q[0] - x, 0, x - q[2]), dy = Math.max(q[1] - y, 0, y - q[3]);
-      var e = Math.sqrt(dx * dx + dy * dy); if (e < d) d = e;
-    }
-    return d;
-  }
-  function strength(x, y) { field(x, y, f); var m = Math.hypot(f[0], f[1]); return m / (m + ref); }
-  g.lineCap = 'round';
-  g.lineWidth = 2;
-  g.strokeStyle = 'rgba(203, 213, 255, 0.86)';
-  g.beginPath();
-  var step = 13.5, n = 0;
-  for (var gy = 0; gy < H; gy += step) {
-    for (var gx = 0; gx < W; gx += step) {
-      var x = gx + rnd() * step, y = gy + rnd() * step;
-      if (inBar(x, y)) continue;
-      var s = strength(x, y);
-      var edge = Math.min(x, W - x, y, H - y);
-      var cd = clearDist(x, y);
-      if (cd < 2) continue;
-      var p = Math.min(1, 0.1 + s * s) * (edge < 24 ? edge / 24 : 1) * (cd < 18 ? (cd / 18) * (cd / 18) : 1);
-      if (rnd() > p) continue;
-      var links = 1 + Math.floor(rnd() * (1 + 6 * s * s));
-      var dir = rnd() < 0.5 ? -1 : 1;
-      for (var k = 0; k < links; k++) {
-        if (k > 0) s = strength(x, y);
-        var len = (rnd() < 0.45 ? 3 + rnd() * 3.5 : 6 + rnd() * 7) * (0.74 + 0.46 * s);
-        var m = Math.hypot(f[0], f[1]) || 1;
-        var th = Math.atan2(f[1], f[0]) + (rnd() - 0.5) * 2.4 * (1 - s) * (1 - s);
-        var hx = Math.cos(th) * len / 2, hy = Math.sin(th) * len / 2;
-        g.moveTo(x - hx, y - hy); g.lineTo(x + hx, y + hy); n++;
-        var st = len + 2 + rnd() * 2;
-        x += dir * f[0] * st / m + (rnd() - 0.5); y += dir * f[1] * st / m + (rnd() - 0.5);
-        if (x < 0 || y < 0 || x > W || y > H || inBar(x, y) || clearDist(x, y) < 3) break;
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: 'Dela';
+        src: url('../../../../scripts/fonts/dela-gothic-one-400.woff2')
+          format('woff2');
+        font-display: block;
       }
-    }
-  }
-  g.stroke();
-  document.body.dataset.filings = n;
-})();
-</script>
-</body>
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 700;
+        src: url('../../../../scripts/fonts/inter-700.woff2') format('woff2');
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 800;
+        src: url('../../../../scripts/fonts/inter-800.woff2') format('woff2');
+        font-display: block;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        position: relative;
+        font-family: 'Inter', system-ui, sans-serif;
+        color: #eceefa;
+        background:
+          radial-gradient(
+            640px 460px at 73% 47%,
+            rgba(98, 118, 240, 0.2),
+            transparent 72%
+          ),
+          radial-gradient(
+            560px 360px at -6% 118%,
+            rgba(226, 65, 42, 0.16),
+            transparent 72%
+          ),
+          #090c1d;
+      }
+      canvas {
+        position: absolute;
+        inset: 0;
+      }
+      .wm {
+        position: absolute;
+        right: -60px;
+        top: -70px;
+        width: 560px;
+        height: 560px;
+        color: #fff;
+        opacity: 0.045;
+      }
+      .txt {
+        position: absolute;
+        left: 72px;
+        top: 118px;
+        width: 470px;
+      }
+      .kick {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        font-weight: 800;
+        font-size: 17px;
+        letter-spacing: 0.16em;
+        color: #a9b0d4;
+        text-transform: uppercase;
+      }
+      .kick::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        flex: none;
+        background: #ff5b3d;
+        transform: rotate(45deg);
+        border-radius: 1px;
+      }
+      h1 {
+        margin-top: 22px;
+        font-family: 'Dela', 'Arial Black', sans-serif;
+        font-weight: 400;
+        font-size: 66px;
+        line-height: 1.04;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+      .sub {
+        margin-top: 24px;
+        font-weight: 800;
+        font-size: 27px;
+        line-height: 1.25;
+        color: #ff8a70;
+      }
+      .bar {
+        position: absolute;
+        left: 584px;
+        top: 240px;
+        width: 560px;
+        display: grid;
+        grid-template-columns: 22px 1fr 22px;
+        gap: 5px;
+        padding: 5px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #6d7596, #343a5a);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.3),
+          0 26px 40px -22px rgba(0, 0, 0, 0.9);
+      }
+      .cap {
+        display: grid;
+        place-items: center;
+        border-radius: 9px;
+        font-family: 'Dela', sans-serif;
+        font-size: 15px;
+      }
+      .cap.n {
+        background: #ff5b3d;
+        color: #fff;
+      }
+      .cap.s {
+        background: #c9cfe8;
+        color: #11152a;
+      }
+      .els {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+      }
+      .el {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        height: 116px;
+        padding: 8px 6px 9px 8px;
+        border: 3px solid #9bb0ff;
+        border-radius: 8px;
+        background: #11152a;
+      }
+      .el.h {
+        border-style: dashed;
+        border-color: #ffcf70;
+      }
+      .z {
+        font-weight: 700;
+        font-size: 15px;
+        line-height: 1;
+        color: #a6abc8;
+      }
+      .sym {
+        align-self: center;
+        font-family: 'Dela', sans-serif;
+        font-size: 42px;
+        line-height: 1;
+        color: #9bb0ff;
+      }
+      .h .sym {
+        color: #ffcf70;
+      }
+      .nm {
+        font-weight: 700;
+        font-size: 10.5px;
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+        color: #c9cdea;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .foot {
+        position: absolute;
+        left: 72px;
+        right: 72px;
+        bottom: 34px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        font-size: 17px;
+        color: #8f96bd;
+      }
+      .foot b {
+        color: #d7dbf2;
+        font-weight: 800;
+      }
+      .seal {
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        margin-right: 12px;
+        vertical-align: middle;
+        border-radius: 6px;
+        background: #e2412a;
+        color: #fff;
+        transform: rotate(-6deg);
+      }
+      .seal svg {
+        width: 22px;
+        height: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c" width="1200" height="630"></canvas>
+    <svg class="wm" viewBox="0 0 1000 1000" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M961 911L961 911Q962 925 952 934Q941 943 927 948Q912 952 900 953Q888 953 886 950L886 950Q882 945 881 933Q879 920 877 909L877 909Q874 893 863 886Q852 878 838 883L838 883Q834 884 813 892Q792 900 765 909Q738 918 714 924L714 924Q705 926 688 934Q671 941 666 943L666 943Q650 950 634 952Q617 954 615 950L615 950Q611 945 610 933Q608 920 606 909L606 909Q603 893 592 886Q581 878 567 883L567 883Q563 884 546 891Q528 897 505 906Q481 914 458 921Q434 927 417 930Q400 932 397 927L397 927Q396 926 395 922Q393 917 391 910L391 910Q387 897 369 900Q351 903 331 906L331 906Q321 907 298 908Q275 909 251 909Q226 908 209 906L209 906Q178 901 163 878Q148 854 146 816L146 816Q145 802 145 789Q144 775 144 762L144 762Q144 754 143 741Q141 728 135 716Q129 704 116 700L116 700Q95 693 77 682Q58 670 47 660Q36 650 36 650L36 650Q36 650 45 626Q54 602 69 563Q83 524 99 480Q114 435 128 394Q141 352 149 322Q156 291 153 282L153 282Q151 275 143 271Q134 266 122 262L122 262Q106 258 91 246Q76 233 66 206Q56 178 53 128L53 128L413 126Q413 126 416 137Q419 148 420 158L420 158Q425 188 472 191L472 191Q484 192 485 186Q486 179 484 172Q481 164 480 162L480 162Q468 142 469 120L469 120Q469 91 486 68Q502 45 546 40L546 40Q591 34 609 53Q627 72 636 104L636 104Q641 120 636 138Q631 155 618 169L618 169Q611 176 620 182Q629 188 637 191L637 191Q643 192 658 193Q672 194 688 193Q704 192 712 190L712 190Q732 185 720 167L720 167Q712 156 709 145Q705 133 705 120L705 120Q706 91 722 68Q738 45 783 40L783 40Q828 34 846 53Q864 72 873 104L873 104Q883 140 854 169L854 169Q848 176 855 182Q861 187 870 189L870 189Q877 190 894 190Q910 190 925 190Q940 189 940 189L940 189Q949 205 954 220Q958 234 959 246L959 246Q963 281 948 300Q932 319 919 326L919 326Q915 328 899 330Q882 331 857 333L857 333Q850 334 843 341Q836 348 839 361L839 361Q842 374 838 384L838 384Q827 410 815 436Q803 462 788 496L788 496Q783 506 777 523Q770 540 776 552L776 552Q782 564 789 554Q795 543 798 536L798 536L884 378Q884 378 897 386Q910 393 925 408Q939 423 945 446L945 446Q950 466 943 483Q936 499 934 502L934 502Q931 508 921 527Q911 545 900 569Q888 592 881 612Q873 632 874 640L874 640Q878 653 884 653Q889 653 896 652L896 652Q906 651 911 661Q916 670 919 681L919 681Q920 687 926 716Q932 744 940 782Q947 820 954 856Q960 891 961 911ZM461 373L461 373Q465 362 460 346Q454 330 428 326L428 326Q420 324 408 316Q395 308 386 295L386 295Q384 292 378 284Q372 276 362 271Q351 266 335 274L335 274Q320 280 311 289L311 289Q296 304 290 326L290 326Q285 350 282 371Q278 391 270 420L270 420Q267 432 275 450Q283 467 310 467L310 467Q315 467 329 468Q343 468 360 468Q376 468 388 467L388 467Q406 465 416 457Q425 449 431 437L431 437Q436 429 443 415Q449 401 455 388Q460 375 461 373ZM730 376L730 376Q735 359 731 349Q726 338 718 337L718 337Q685 335 651 335Q617 335 587 336L587 336Q580 337 573 343Q565 349 568 360L568 360Q572 372 567 384L567 384Q556 410 544 436Q532 462 517 496L517 496Q512 506 506 523Q499 540 505 552L505 552Q511 564 518 554Q524 543 527 536L527 536L607 383Q607 383 620 390Q632 397 647 411Q661 425 667 448L667 448Q672 469 665 488Q658 506 656 510L656 510Q653 516 644 534Q635 551 625 573Q615 595 609 614Q602 632 603 640L603 640Q607 653 613 653Q618 653 625 652L625 652Q635 651 640 661Q645 670 648 681L648 681Q649 684 652 700Q654 715 658 735Q662 754 666 769L666 769Q668 777 684 778Q699 779 704 766L704 766Q713 742 715 715Q717 688 713 675L713 675Q710 665 700 645Q690 624 678 603Q665 581 656 566Q647 551 647 551L647 551Q647 551 655 534Q663 517 675 492Q687 467 699 442Q711 416 720 398Q729 379 730 376ZM299 745L299 745L299 628Q299 618 291 614Q283 609 274 609L274 609Q264 610 256 616Q248 621 248 632L248 632L248 742Q248 757 252 766Q256 774 272 774L272 774Q289 774 294 766Q299 758 299 745ZM405 652L405 745Q405 758 415 767Q424 776 432 757L432 757Q440 739 441 718Q441 696 438 681L438 681Q437 675 432 664Q427 653 421 640L421 640Q417 632 411 637Q405 641 405 652L405 652ZM529 763L529 763Q533 765 543 764Q553 762 561 754Q568 746 563 731L563 731Q562 723 555 722Q547 721 539 729L539 729Q532 736 528 748Q524 760 529 763ZM800 763L800 763Q804 765 814 764Q824 762 832 754Q839 746 834 731L834 731Q833 723 826 722Q818 721 810 729L810 729Q803 736 799 748Q795 760 800 763Z"
+      />
+    </svg>
+    <div class="txt" id="txt">
+      <p class="kick">STORM research · 8 Oct 2026</p>
+      <h1>Rare earths in the age of AI</h1>
+      <p class="sub">It’s a China bet first.</p>
+    </div>
+    <div class="bar" id="bar">
+      <span class="cap n">N</span>
+      <div class="els">
+        <div class="el">
+          <span class="z">60</span><span class="sym">Nd</span
+          ><span class="nm">Neodymium</span>
+        </div>
+        <div class="el">
+          <span class="z">59</span><span class="sym">Pr</span
+          ><span class="nm">Praseodymium</span>
+        </div>
+        <div class="el h">
+          <span class="z">66</span><span class="sym">Dy</span
+          ><span class="nm">Dysprosium</span>
+        </div>
+        <div class="el h">
+          <span class="z">65</span><span class="sym">Tb</span
+          ><span class="nm">Terbium</span>
+        </div>
+        <div class="el h">
+          <span class="z">39</span><span class="sym">Y</span
+          ><span class="nm">Yttrium</span>
+        </div>
+      </div>
+      <span class="cap s">S</span>
+    </div>
+    <p class="foot" id="foot">
+      <span
+        ><span class="seal"
+          ><svg viewBox="0 0 1000 1000">
+            <path
+              fill="currentColor"
+              d="M185 266L185 266Q172 263 151 256Q129 248 111 234Q93 219 90 194L90 194Q89 186 89 164Q89 142 89 117Q89 91 90 73Q90 54 90 54L90 54Q122 46 158 49Q194 52 219 65L219 65Q247 80 248 102L248 102Q250 148 272 163Q294 178 336 178L336 178Q357 178 374 174Q390 170 397 151L397 151Q401 142 402 123Q403 104 403 84Q403 64 403 50Q402 36 402 36L402 36Q402 36 418 36Q434 35 459 36Q483 37 510 41Q537 45 558 53L558 53Q575 60 586 70Q596 80 596 94L596 94Q596 103 597 115Q598 127 599 141L599 141Q600 160 622 169Q643 178 667 178L667 178Q691 178 718 172Q744 166 754 144L754 144Q757 139 758 125Q758 110 758 94Q758 77 758 66Q757 54 757 54L757 54Q767 52 790 54Q812 55 838 61Q863 66 882 78L882 78Q894 85 902 95Q910 105 911 118L911 118Q912 125 913 142Q914 159 913 177Q912 195 906 208L906 208Q894 237 866 249Q837 261 805 266L805 266Q793 268 756 269Q718 270 665 271Q611 272 550 273Q488 273 428 273Q367 272 315 272Q263 271 228 270Q193 268 185 266ZM978 779L978 779Q978 779 981 807Q983 835 975 868L975 868Q969 900 950 928Q930 955 887 958L887 958Q857 960 836 946Q814 931 801 908Q787 885 781 863L781 863Q771 828 763 783Q754 738 747 691Q740 643 735 601Q730 558 727 527Q723 496 721 484L721 484Q719 464 710 452Q700 440 688 433L688 433Q683 430 677 436L677 436Q671 442 676 448L676 448Q686 469 693 494Q700 519 689 531L689 531Q682 538 649 543Q616 547 572 549L572 549Q568 549 561 551Q554 553 554 559L554 559Q554 565 561 568Q568 570 572 570L572 570L717 570Q720 579 721 605Q722 631 722 658Q722 685 721 698L721 698Q720 714 709 729L709 729Q702 739 703 748Q704 757 721 777L721 777Q734 791 747 813Q760 835 769 859Q778 882 778 903L778 903Q778 914 766 926Q754 937 737 947Q720 957 705 962Q690 967 684 964L684 964Q683 959 681 952Q678 944 674 934L674 934Q672 928 661 918Q650 907 630 912L630 912Q627 912 602 915Q576 918 537 922Q497 925 453 929Q409 933 369 936Q328 939 300 940Q271 941 263 939L263 939Q246 933 236 912L236 912Q232 903 223 902Q214 900 209 908L209 908Q201 921 190 931Q178 941 164 948L164 948Q143 959 122 965Q101 970 87 972Q72 973 72 973L72 973L100 299L884 299Q884 299 885 318Q885 337 886 367Q886 396 888 430Q889 463 891 493L891 493Q894 532 896 578Q898 624 903 668Q908 712 919 745L919 745Q926 765 940 772Q954 779 966 779Q978 779 978 779ZM273 446L273 446Q268 451 272 460Q276 468 289 467L289 467Q293 467 315 464Q337 461 370 457Q402 453 439 449Q475 444 507 440Q539 436 560 433Q581 430 583 430L583 430Q588 428 593 425Q598 421 584 420L584 420Q571 419 543 420Q514 420 479 421Q443 421 409 423Q374 424 348 425Q321 426 310 428L310 428Q305 428 293 433Q281 438 273 446ZM392 831L392 831Q414 829 419 817Q424 805 424 795L424 795Q424 785 412 777Q400 768 392 767L392 767Q370 765 351 763Q331 761 317 757L317 757Q295 752 277 737Q259 722 254 698L254 698Q252 684 251 658Q250 632 252 606Q253 580 255 570L255 570L402 570Q402 570 413 569Q424 567 424 561L424 561Q424 554 417 554Q409 553 404 553L404 553Q382 553 363 553Q344 553 330 554L330 554Q314 555 297 540Q280 524 266 507L266 507Q262 501 254 506Q245 511 245 519L245 519Q244 536 242 570Q240 603 238 643Q235 683 233 721Q231 758 230 784Q228 809 228 813L228 813Q228 823 240 832Q251 840 262 840L262 840Q286 838 315 837Q343 835 365 833Q387 831 392 831ZM406 689L406 689Q426 689 426 663L426 663Q426 649 422 645Q417 641 405 641L405 641Q394 641 391 650Q387 658 387 667L387 667Q387 674 392 682Q397 689 406 689ZM574 641L574 641Q563 641 559 645Q554 649 554 663L554 663Q554 689 573 689L573 689Q582 689 587 682Q592 674 592 667L592 667Q593 658 589 650Q585 641 574 641ZM614 796L614 796Q613 790 607 781Q601 771 592 770L592 770Q580 767 570 769L570 769Q554 771 554 794L554 794Q554 804 559 812Q563 820 574 820L574 820Q580 820 588 819Q595 818 603 815L603 815Q606 813 611 809Q615 804 614 796Z"
+            /></svg></span
+        ><b>smartdisruptions.com</b></span
+      ><span>Research, not advice</span>
+    </p>
+    <script>
+      // Iron filings around the bar, as in the hero (islands/a-field.tsx), but
+      // drawn once, bolder, from a fixed seed.
+      (function () {
+        var c = document.getElementById('c');
+        var g = c.getContext('2d');
+        var W = 1200,
+          H = 630;
+        var br = document.getElementById('bar').getBoundingClientRect();
+        var cx = br.left + br.width / 2,
+          cy = br.top + br.height / 2;
+        var A = br.width / 2,
+          B = (br.height / 2) * 0.86;
+        function field(x, y, out) {
+          var vp = y - cy + B,
+            vm = y - cy - B;
+          var du = x - (cx - A);
+          if (Math.abs(du) < 1e-3) du = 1e-3;
+          var rp = Math.sqrt(du * du + vp * vp),
+            rm = Math.sqrt(du * du + vm * vm);
+          var fu = (vp / rp - vm / rm) / du,
+            fv = 1 / rm - 1 / rp;
+          du = x - (cx + A);
+          if (Math.abs(du) < 1e-3) du = 1e-3;
+          rp = Math.sqrt(du * du + vp * vp);
+          rm = Math.sqrt(du * du + vm * vm);
+          fu -= (vp / rp - vm / rm) / du;
+          fv -= 1 / rm - 1 / rp;
+          out[0] = fu;
+          out[1] = fv;
+        }
+        var a = 0x5ad15c0;
+        function rnd() {
+          a = (a + 0x6d2b79f5) | 0;
+          var t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        }
+        var f = [0, 0];
+        field(cx, cy - A * 1.1, f);
+        var ref = Math.hypot(f[0], f[1]);
+        function box(el, p) {
+          var r = el.getBoundingClientRect();
+          return [r.left - p, r.top - p, r.right + p, r.bottom + p];
+        }
+        var clears = [];
+        var range = document.createRange();
+        ['txt', 'foot'].forEach(function (id) {
+          var el = document.getElementById(id);
+          el.querySelectorAll('p, h1, span > b, span:last-child').forEach(
+            function (t) {
+              range.selectNodeContents(t);
+              var rs = range.getClientRects();
+              for (var i = 0; i < rs.length; i++)
+                clears.push([
+                  rs[i].left - 10,
+                  rs[i].top - 8,
+                  rs[i].right + 10,
+                  rs[i].bottom + 8,
+                ]);
+            }
+          );
+        });
+        var seal = document.querySelector('.seal');
+        clears.push(box(seal, 8));
+        var barBox = box(document.getElementById('bar'), 5);
+        function inBar(x, y) {
+          return (
+            x > barBox[0] && x < barBox[2] && y > barBox[1] && y < barBox[3]
+          );
+        }
+        function clearDist(x, y) {
+          var d = 1e9;
+          for (var i = 0; i < clears.length; i++) {
+            var q = clears[i];
+            var dx = Math.max(q[0] - x, 0, x - q[2]),
+              dy = Math.max(q[1] - y, 0, y - q[3]);
+            var e = Math.sqrt(dx * dx + dy * dy);
+            if (e < d) d = e;
+          }
+          return d;
+        }
+        function strength(x, y) {
+          field(x, y, f);
+          var m = Math.hypot(f[0], f[1]);
+          return m / (m + ref);
+        }
+        g.lineCap = 'round';
+        g.lineWidth = 2;
+        g.strokeStyle = 'rgba(203, 213, 255, 0.86)';
+        g.beginPath();
+        var step = 13.5,
+          n = 0;
+        for (var gy = 0; gy < H; gy += step) {
+          for (var gx = 0; gx < W; gx += step) {
+            var x = gx + rnd() * step,
+              y = gy + rnd() * step;
+            if (inBar(x, y)) continue;
+            var s = strength(x, y);
+            var edge = Math.min(x, W - x, y, H - y);
+            var cd = clearDist(x, y);
+            if (cd < 2) continue;
+            var p =
+              Math.min(1, 0.1 + s * s) *
+              (edge < 24 ? edge / 24 : 1) *
+              (cd < 18 ? (cd / 18) * (cd / 18) : 1);
+            if (rnd() > p) continue;
+            var links = 1 + Math.floor(rnd() * (1 + 6 * s * s));
+            var dir = rnd() < 0.5 ? -1 : 1;
+            for (var k = 0; k < links; k++) {
+              if (k > 0) s = strength(x, y);
+              var len =
+                (rnd() < 0.45 ? 3 + rnd() * 3.5 : 6 + rnd() * 7) *
+                (0.74 + 0.46 * s);
+              var m = Math.hypot(f[0], f[1]) || 1;
+              var th =
+                Math.atan2(f[1], f[0]) +
+                (rnd() - 0.5) * 2.4 * (1 - s) * (1 - s);
+              var hx = (Math.cos(th) * len) / 2,
+                hy = (Math.sin(th) * len) / 2;
+              g.moveTo(x - hx, y - hy);
+              g.lineTo(x + hx, y + hy);
+              n++;
+              var st = len + 2 + rnd() * 2;
+              x += (dir * f[0] * st) / m + (rnd() - 0.5);
+              y += (dir * f[1] * st) / m + (rnd() - 0.5);
+              if (
+                x < 0 ||
+                y < 0 ||
+                x > W ||
+                y > H ||
+                inBar(x, y) ||
+                clearDist(x, y) < 3
+              )
+                break;
+            }
+          }
+        }
+        g.stroke();
+        document.body.dataset.filings = n;
+      })();
+    </script>
+  </body>
 </html>

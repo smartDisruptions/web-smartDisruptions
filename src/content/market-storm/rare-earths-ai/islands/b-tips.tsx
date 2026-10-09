@@ -9,7 +9,13 @@ import { useEffect, useRef, type ReactNode } from 'react';
  * on a tap (a second tap, a tap elsewhere or Escape closes it). One
  * attribute changes per interaction; nothing runs otherwise.
  */
-export default function BTips({ children, className }: { children: ReactNode; className?: string }) {
+export default function BTips({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,7 +37,12 @@ export default function BTips({ children, className }: { children: ReactNode; cl
       if (e.pointerType === 'mouse') show(pointOf(e.target));
     };
     const out = (e: PointerEvent) => {
-      if (e.pointerType === 'mouse' && !pointOf(e.relatedTarget) && document.activeElement !== open) show(null);
+      if (
+        e.pointerType === 'mouse' &&
+        !pointOf(e.relatedTarget) &&
+        document.activeElement !== open
+      )
+        show(null);
     };
     const press = (e: PointerEvent) => {
       pressing = true;

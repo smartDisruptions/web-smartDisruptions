@@ -115,7 +115,8 @@
   font-size: clamp(3.25rem, 9vw, 5rem);
   line-height: 0.9;
   color: transparent;
-  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--sd-text-primary) 28%, transparent);
+  -webkit-text-stroke: 1.5px
+    color-mix(in oklab, var(--sd-text-primary) 28%, transparent);
   letter-spacing: -0.02em;
 }
 .re-ch-glyph {
@@ -375,7 +376,8 @@
 }
 
 .re-term {
-  text-decoration: underline dotted color-mix(in oklab, var(--sd-accent) 60%, transparent);
+  text-decoration: underline dotted
+    color-mix(in oklab, var(--sd-accent) 60%, transparent);
   text-underline-offset: 0.22em;
   text-decoration-thickness: 1.5px;
   cursor: help;

@@ -190,7 +190,10 @@ export function Fig({
   id?: string;
 }) {
   return (
-    <figure id={id} className={`re-fig re-rv${className ? ` ${className}` : ''}`}>
+    <figure
+      id={id}
+      className={`re-fig re-rv${className ? ` ${className}` : ''}`}
+    >
       <h3 className="re-fig-title">
         <Rich text={title} />
       </h3>
@@ -228,7 +231,11 @@ export function Table({
         <thead>
           <tr>
             {head.map((h, i) => (
-              <th key={i} scope="col" className={numeric.includes(i) ? 'is-num' : undefined}>
+              <th
+                key={i}
+                scope="col"
+                className={numeric.includes(i) ? 'is-num' : undefined}
+              >
                 {h}
               </th>
             ))}
@@ -238,7 +245,10 @@ export function Table({
           {rows.map((r, ri) => (
             <tr key={ri}>
               {r.map((c, ci) => (
-                <td key={ci} className={numeric.includes(ci) ? 'is-num' : undefined}>
+                <td
+                  key={ci}
+                  className={numeric.includes(ci) ? 'is-num' : undefined}
+                >
                   {typeof c === 'string' ? <Rich text={c} /> : c}
                 </td>
               ))}

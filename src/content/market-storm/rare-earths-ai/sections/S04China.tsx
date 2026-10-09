@@ -17,7 +17,8 @@ import './b.css';
  * NdPr price, drawn on by the scroll, against the $110 floor.
  */
 
-const signed = (m: number) => `${m > 0 ? '+' : m < 0 ? '−' : ''}${Math.abs(m)}%`;
+const signed = (m: number) =>
+  `${m > 0 ? '+' : m < 0 ? '−' : ''}${Math.abs(m)}%`;
 
 /* ── China's share of each step ─────────────────────────────────────────── */
 
@@ -26,12 +27,21 @@ const GAUGE_ART = [OreArt, BandsArt, MagnetArt];
 function Share() {
   const { share } = S04;
   return (
-    <Fig title={share.title} sub={share.sub} source={share.source} className="re-b-share">
+    <Fig
+      title={share.title}
+      sub={share.sub}
+      source={share.source}
+      className="re-b-share"
+    >
       <div className="re-b-gauges" role="img" aria-label={share.aria}>
         {share.rows.map((r, i) => {
           const Art = GAUGE_ART[i] ?? OreArt;
           return (
-            <div key={r.label} className="re-b-gauge" style={{ '--v': r.value / 100 } as CSSProperties}>
+            <div
+              key={r.label}
+              className="re-b-gauge"
+              style={{ '--v': r.value / 100 } as CSSProperties}
+            >
               <span className="re-b-gauge-art">
                 <Art />
               </span>
@@ -51,7 +61,20 @@ function Share() {
 
 /* ── NdPr: four prices against the floor ────────────────────────────────── */
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 const monthOf = (label: string) => {
   const [m, y] = label.split(' ');
   return Number(y) * 12 + MONTHS.indexOf(m);
@@ -74,11 +97,21 @@ function NdPr() {
   const area = `${line}L100 100L0 100Z`;
   const yOf = (v: number) => 1 - v / ND_MAX;
   return (
-    <Fig title={ndpr.title} sub={ndpr.sub} source={ndpr.source} className="re-b-ndpr">
+    <Fig
+      title={ndpr.title}
+      sub={ndpr.sub}
+      source={ndpr.source}
+      className="re-b-ndpr"
+    >
       <BTips className="re-b-nd">
         <div className="re-b-nd-plot">
           {ND_GRID.map((v) => (
-            <span key={v} className="re-b-nd-tick" style={{ '--y': yOf(v) } as CSSProperties} aria-hidden="true">
+            <span
+              key={v}
+              className="re-b-nd-tick"
+              style={{ '--y': yOf(v) } as CSSProperties}
+              aria-hidden="true"
+            >
               ${v}
             </span>
           ))}
@@ -87,14 +120,32 @@ function NdPr() {
               to right (a transform, so the compositor runs it). */}
           <div className="re-b-nd-win">
             {ND_GRID.map((v) => (
-              <span key={v} className="re-b-nd-grid" style={{ '--y': yOf(v) } as CSSProperties} aria-hidden="true" />
+              <span
+                key={v}
+                className="re-b-nd-grid"
+                style={{ '--y': yOf(v) } as CSSProperties}
+                aria-hidden="true"
+              />
             ))}
-            <span className="re-b-nd-floor" style={{ '--y': yOf(ndpr.floor.value) } as CSSProperties}>
+            <span
+              className="re-b-nd-floor"
+              style={{ '--y': yOf(ndpr.floor.value) } as CSSProperties}
+            >
               <span className="re-b-nd-floor-l">{ndpr.floor.label}</span>
             </span>
-            <svg className="re-b-nd-svg" viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={ndpr.aria}>
+            <svg
+              className="re-b-nd-svg"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label={ndpr.aria}
+            >
               <path className="re-b-nd-area" d={area} />
-              <path className="re-b-nd-line" d={line} vectorEffect="non-scaling-stroke" />
+              <path
+                className="re-b-nd-line"
+                d={line}
+                vectorEffect="non-scaling-stroke"
+              />
             </svg>
             <span className="re-b-nd-cover" aria-hidden="true" />
           </div>
@@ -113,7 +164,11 @@ function NdPr() {
                 <span className="re-b-nd-v" aria-hidden="true">
                   {p.display}
                 </span>
-                <span className="re-b-tip" role="tooltip" id={`re-b-nd-tip-${i}`}>
+                <span
+                  className="re-b-tip"
+                  role="tooltip"
+                  id={`re-b-nd-tip-${i}`}
+                >
                   <strong>{p.tip[0]}</strong>
                   {p.tip.slice(1).map((l) => (
                     <span key={l}>{l}</span>
@@ -127,7 +182,15 @@ function NdPr() {
           {pts.map((p, i) => (
             <span
               key={p.label}
-              className={i === 0 ? 'is-first' : i === pts.length - 1 ? 'is-last' : i % 2 ? 'is-before' : 'is-after'}
+              className={
+                i === 0
+                  ? 'is-first'
+                  : i === pts.length - 1
+                    ? 'is-last'
+                    : i % 2
+                      ? 'is-before'
+                      : 'is-after'
+              }
               style={{ '--x': p.x / 100 } as CSSProperties}
             >
               {p.label}
@@ -147,7 +210,12 @@ export default function S04China() {
     <Chapter chapter={CHAPTERS[3]} glyph="弁" className="re-bleed re-b-ch">
       <Verdict text={S04.verdict} />
       <Share />
-      <Fig title={beta.title} sub={beta.sub} source={beta.source} className="re-b-wide re-b-beta">
+      <Fig
+        title={beta.title}
+        sub={beta.sub}
+        source={beta.source}
+        className="re-b-wide re-b-beta"
+      >
         <BValve
           rows={BETA}
           bands={BANDS}

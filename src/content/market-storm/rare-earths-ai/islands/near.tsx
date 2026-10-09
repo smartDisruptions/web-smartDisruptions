@@ -27,7 +27,9 @@ export default function Near() {
       },
       { rootMargin: '35% 0px 35% 0px' }
     );
-    document.querySelectorAll('.re-ch, .re-near').forEach((el) => io.observe(el));
+    document
+      .querySelectorAll('.re-ch, .re-near')
+      .forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
   return null;

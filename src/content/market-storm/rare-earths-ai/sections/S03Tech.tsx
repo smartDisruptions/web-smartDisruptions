@@ -155,27 +155,27 @@ function Magnet() {
         {/* The span fades, not the <svg>: an animated <svg> re-lays out
             its drawing on every frame of the animation. */}
         <span className="re-c-mag-field" aria-hidden="true">
-        <svg viewBox="0 0 100 100" focusable="false">
-          {/* Field lines leave the top face and loop round to the bottom one. */}
-          {[0, 1, 2, 3].map((k) => {
-            // Lines from near the face's middle swing widest; those from
-            // near its edge hug the block.
-            const x0 = 23 + k * 6;
-            const out = 9 - k * 2.6;
-            return (
-              <g key={k}>
-                <path
-                  d={`M${x0} 14 C ${x0 - 6} ${4 - k * 2}, ${out - 2} ${10 - k * 3}, ${out} 50 S ${x0 - 6} ${96 + k * 2}, ${x0} 86`}
-                />
-                <path
-                  d={`M${100 - x0} 14 C ${106 - x0} ${4 - k * 2}, ${102 - out} ${10 - k * 3}, ${100 - out} 50 S ${106 - x0} ${96 + k * 2}, ${100 - x0} 86`}
-                />
-              </g>
-            );
-          })}
-          <path d="M50 14 V 2" />
-          <path d="M50 86 V 98" />
-        </svg>
+          <svg viewBox="0 0 100 100" focusable="false">
+            {/* Field lines leave the top face and loop round to the bottom one. */}
+            {[0, 1, 2, 3].map((k) => {
+              // Lines from near the face's middle swing widest; those from
+              // near its edge hug the block.
+              const x0 = 23 + k * 6;
+              const out = 9 - k * 2.6;
+              return (
+                <g key={k}>
+                  <path
+                    d={`M${x0} 14 C ${x0 - 6} ${4 - k * 2}, ${out - 2} ${10 - k * 3}, ${out} 50 S ${x0 - 6} ${96 + k * 2}, ${x0} 86`}
+                  />
+                  <path
+                    d={`M${100 - x0} 14 C ${106 - x0} ${4 - k * 2}, ${102 - out} ${10 - k * 3}, ${100 - out} 50 S ${106 - x0} ${96 + k * 2}, ${100 - x0} 86`}
+                  />
+                </g>
+              );
+            })}
+            <path d="M50 14 V 2" />
+            <path d="M50 86 V 98" />
+          </svg>
         </span>
         <div className="re-c-mag-block">
           {groups.map((row, r) => (

@@ -23,8 +23,12 @@ import './b.css';
 
 /** The 17 rare earths by atomic number: scandium, yttrium and the fifteen lanthanides. */
 const RARE_EARTH_Z = [21, 39, ...Array.from({ length: 15 }, (_, i) => 57 + i)];
-const LIGHT_Z = new Set<number>(HERO.elements.filter((e) => !e.heavy).map((e) => e.z));
-const HEAVY_Z = new Set<number>(HERO.elements.filter((e) => e.heavy).map((e) => e.z));
+const LIGHT_Z = new Set<number>(
+  HERO.elements.filter((e) => !e.heavy).map((e) => e.z)
+);
+const HEAVY_Z = new Set<number>(
+  HERO.elements.filter((e) => e.heavy).map((e) => e.z)
+);
 export type BandKind = 'light' | 'heavy' | 'rest';
 /** One entry per element: Nd/Pr are "light", Dy/Tb/Y "heavy" (the hero's own split). */
 export const BANDS: BandKind[] = RARE_EARTH_Z.map((z) =>
@@ -40,7 +44,12 @@ function chainOf(sentence: string) {
   const cut = last.indexOf('. ');
   if (parts.length !== 4 || first.indexOf(': ') < 0 || cut < 0) return null;
   return {
-    steps: [first.slice(first.indexOf(': ') + 2), parts[1], parts[2], last.slice(0, cut)],
+    steps: [
+      first.slice(first.indexOf(': ') + 2),
+      parts[1],
+      parts[2],
+      last.slice(0, cut),
+    ],
     note: last.slice(cut + 2),
   };
 }
@@ -63,15 +72,35 @@ const SPECKS: [number, number, number, BandKind | 'nd'][] = [
 
 export function OreArt({ className = '' }: ArtProps) {
   return (
-    <svg viewBox="0 0 200 200" className={`re-b-svg ${className}`} aria-hidden="true" focusable="false">
+    <svg
+      viewBox="0 0 200 200"
+      className={`re-b-svg ${className}`}
+      aria-hidden="true"
+      focusable="false"
+    >
       <ellipse className="re-b-shade" cx="104" cy="156" rx="64" ry="7" />
       <g className="re-b-ore">
-        <path className="re-b-rock" d="M42 122 54 82 88 56 132 58 162 86 168 124 142 152 78 154Z" />
+        <path
+          className="re-b-rock"
+          d="M42 122 54 82 88 56 132 58 162 86 168 124 142 152 78 154Z"
+        />
         <path className="re-b-rock-top" d="M54 82 88 56 132 58 116 88 72 94Z" />
-        <path className="re-b-rock-side" d="M132 58 162 86 168 124 142 152 126 114 116 88Z" />
-        <path className="re-b-rock-line" d="M72 94 116 88 126 114M116 88 132 58M72 94 54 82M72 94 84 130M126 114 142 152" />
+        <path
+          className="re-b-rock-side"
+          d="M132 58 162 86 168 124 142 152 126 114 116 88Z"
+        />
+        <path
+          className="re-b-rock-line"
+          d="M72 94 116 88 126 114M116 88 132 58M72 94 54 82M72 94 84 130M126 114 142 152"
+        />
         {SPECKS.map(([x, y, r, k]) => (
-          <circle key={`${x}-${y}`} className={`re-b-speck re-b-k-${k}`} cx={x} cy={y} r={r} />
+          <circle
+            key={`${x}-${y}`}
+            className={`re-b-speck re-b-k-${k}`}
+            cx={x}
+            cy={y}
+            r={r}
+          />
         ))}
       </g>
     </svg>
@@ -90,7 +119,12 @@ export function BandsArt({ className = '' }: ArtProps) {
     ink[key] += `M${40 + ((i * 7) % 13)} ${y}H${160 - ((i * 5) % 11)}`;
   });
   return (
-    <svg viewBox="0 0 200 200" className={`re-b-svg ${className}`} aria-hidden="true" focusable="false">
+    <svg
+      viewBox="0 0 200 200"
+      className={`re-b-svg ${className}`}
+      aria-hidden="true"
+      focusable="false"
+    >
       <g className="re-b-bands">
         <path className="re-b-band-line re-b-k-rest" d={ink.rest} />
         <path className="re-b-band-line re-b-k-rest is-alt" d={ink.alt} />
@@ -103,12 +137,20 @@ export function BandsArt({ className = '' }: ArtProps) {
 
 export function IngotArt({ className = '' }: ArtProps) {
   return (
-    <svg viewBox="0 0 200 200" className={`re-b-svg ${className}`} aria-hidden="true" focusable="false">
+    <svg
+      viewBox="0 0 200 200"
+      className={`re-b-svg ${className}`}
+      aria-hidden="true"
+      focusable="false"
+    >
       <ellipse className="re-b-shade" cx="100" cy="128" rx="66" ry="5" />
       <g className="re-b-ingot">
         <path className="re-b-ing-front" d="M38 124 162 124 147 97 53 97Z" />
         <path className="re-b-ing-top" d="M53 97 147 97 133 78 67 78Z" />
-        <path className="re-b-ing-line" d="M53 97 147 97M67 78 53 97M133 78 147 97" />
+        <path
+          className="re-b-ing-line"
+          d="M53 97 147 97M67 78 53 97M133 78 147 97"
+        />
         <path className="re-b-ing-glint" d="M78 88H116" />
       </g>
     </svg>
@@ -141,17 +183,30 @@ export function MagnetArt({ className = '' }: ArtProps) {
         </svg>
       </span>
       <span className="re-b-mag">
-      <svg viewBox="0 0 200 200" className="re-b-svg" focusable="false">
-        <path className="re-b-mag-n" d="M100 82H70a6 6 0 0 0-6 6v24a6 6 0 0 0 6 6h30Z" />
-        <path className="re-b-mag-s" d="M100 82h30a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6h-30Z" />
-        <rect className="re-b-mag-line" x="64" y="82" width="72" height="36" rx="6" />
-        <text className="re-b-mag-t" x="82" y="105.5">
-          N
-        </text>
-        <text className="re-b-mag-t" x="118" y="105.5">
-          S
-        </text>
-      </svg>
+        <svg viewBox="0 0 200 200" className="re-b-svg" focusable="false">
+          <path
+            className="re-b-mag-n"
+            d="M100 82H70a6 6 0 0 0-6 6v24a6 6 0 0 0 6 6h30Z"
+          />
+          <path
+            className="re-b-mag-s"
+            d="M100 82h30a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6h-30Z"
+          />
+          <rect
+            className="re-b-mag-line"
+            x="64"
+            y="82"
+            width="72"
+            height="36"
+            rx="6"
+          />
+          <text className="re-b-mag-t" x="82" y="105.5">
+            N
+          </text>
+          <text className="re-b-mag-t" x="118" y="105.5">
+            S
+          </text>
+        </svg>
       </span>
     </span>
   );
@@ -191,42 +246,65 @@ function FlowSlice({ i, down }: { i: number; down?: boolean }) {
   // The span moves, not the <svg> (see MagnetArt).
   return (
     <span className={`re-b-flow ${down ? 'is-v' : 'is-h'}`} aria-hidden="true">
-    <svg
-      className="re-b-flow-svg"
-      viewBox={down ? `0 ${i * 250} 200 250` : `${i * 250} 0 250 200`}
-      preserveAspectRatio="none"
-      focusable="false"
-    >
-      <defs>
-        <linearGradient
-          id={id}
-          gradientUnits="userSpaceOnUse"
-          x1="0"
-          y1="0"
-          x2={down ? '0' : '1000'}
-          y2={down ? '1000' : '0'}
-        >
-          <stop offset="0" className="re-b-stop-ore" />
-          <stop offset="0.3" className="re-b-stop-ore" />
-          <stop offset="0.36" className="re-b-stop-mid" />
-          <stop offset="0.66" className="re-b-stop-mid" />
-          <stop offset="0.8" className="re-b-stop-steel" />
-          <stop offset="1" className="re-b-stop-steel" />
-        </linearGradient>
-        <pattern id={`${id}-f`} width={down ? 26 : 46} height={down ? 46 : 26} patternUnits="userSpaceOnUse">
-          {FILINGS.map(([x1, y1, x2, y2], k) =>
-            down ? (
-              <line key={k} className="re-b-filing" x1={y1} y1={x1} x2={y2} y2={x2} />
-            ) : (
-              <line key={k} className="re-b-filing" x1={x1} y1={y1} x2={x2} y2={y2} />
-            )
-          )}
-        </pattern>
-      </defs>
-      <path d={d} fill={`url(#${id})`} />
-      <path d={d} fill={`url(#${id}-f)`} />
-      <path className="re-b-flow-edge" d={d} vectorEffect="non-scaling-stroke" />
-    </svg>
+      <svg
+        className="re-b-flow-svg"
+        viewBox={down ? `0 ${i * 250} 200 250` : `${i * 250} 0 250 200`}
+        preserveAspectRatio="none"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient
+            id={id}
+            gradientUnits="userSpaceOnUse"
+            x1="0"
+            y1="0"
+            x2={down ? '0' : '1000'}
+            y2={down ? '1000' : '0'}
+          >
+            <stop offset="0" className="re-b-stop-ore" />
+            <stop offset="0.3" className="re-b-stop-ore" />
+            <stop offset="0.36" className="re-b-stop-mid" />
+            <stop offset="0.66" className="re-b-stop-mid" />
+            <stop offset="0.8" className="re-b-stop-steel" />
+            <stop offset="1" className="re-b-stop-steel" />
+          </linearGradient>
+          <pattern
+            id={`${id}-f`}
+            width={down ? 26 : 46}
+            height={down ? 46 : 26}
+            patternUnits="userSpaceOnUse"
+          >
+            {FILINGS.map(([x1, y1, x2, y2], k) =>
+              down ? (
+                <line
+                  key={k}
+                  className="re-b-filing"
+                  x1={y1}
+                  y1={x1}
+                  x2={y2}
+                  y2={x2}
+                />
+              ) : (
+                <line
+                  key={k}
+                  className="re-b-filing"
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                />
+              )
+            )}
+          </pattern>
+        </defs>
+        <path d={d} fill={`url(#${id})`} />
+        <path d={d} fill={`url(#${id}-f)`} />
+        <path
+          className="re-b-flow-edge"
+          d={d}
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
     </span>
   );
 }
@@ -241,7 +319,10 @@ function ChainScene() {
         {CHAIN.steps.map((step, i) => {
           const Art = ART[i];
           return (
-            <div key={i} className={`re-b-st is-${i + 1}${i === 1 || i === 2 ? ' is-neck' : ''}`}>
+            <div
+              key={i}
+              className={`re-b-st is-${i + 1}${i === 1 || i === 2 ? ' is-neck' : ''}`}
+            >
               <FlowSlice i={i} />
               <FlowSlice i={i} down />
               <div className="re-b-st-art">

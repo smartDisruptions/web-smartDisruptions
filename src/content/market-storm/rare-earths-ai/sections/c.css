@@ -1183,28 +1183,28 @@
    nothing, while a selector that flips as the reader scrolls restyles every
    row each time it does. */
 @media (prefers-reduced-motion: no-preference) {
-.re-c-lab[data-motion='toggle'] .re-c-row {
-  transition: transform 0.6s
-    linear(
-      0,
-      0.18 5%,
-      0.5 12%,
-      0.79 20%,
-      0.95 28%,
-      1.03 37%,
-      1.045 45%,
-      1.025 56%,
-      1.006 70%,
-      1
-    );
-  transition-delay: calc(var(--slot) * 16ms);
-}
-.re-c-lab[data-motion='toggle'] .re-c-bar {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.re-c-lab[data-motion='drag'] .re-c-row {
-  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
-}
+  .re-c-lab[data-motion='toggle'] .re-c-row {
+    transition: transform 0.6s
+      linear(
+        0,
+        0.18 5%,
+        0.5 12%,
+        0.79 20%,
+        0.95 28%,
+        1.03 37%,
+        1.045 45%,
+        1.025 56%,
+        1.006 70%,
+        1
+      );
+    transition-delay: calc(var(--slot) * 16ms);
+  }
+  .re-c-lab[data-motion='toggle'] .re-c-bar {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .re-c-lab[data-motion='drag'] .re-c-row {
+    transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 .re-c-co {
   grid-area: co;
