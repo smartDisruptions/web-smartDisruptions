@@ -9,6 +9,7 @@ import {
 import HeroImage from '@/components/HeroImage';
 import { MethodBadge } from '@/components/market-storm/Method';
 import { toneGlyph, toneText } from '@/components/market-storm/tone';
+import { watchDate } from '@/components/writing/storm/art';
 import { formatDate } from '@/lib/format';
 
 /**
@@ -45,7 +46,9 @@ export default function IndexFront() {
           Start here
         </h2>
         <span className="h-px flex-1 bg-border" aria-hidden="true" />
-        <p className="whitespace-nowrap font-mono text-xs text-text-secondary [font-variant-numeric:tabular-nums]">
+        {/* shrink-0 keeps the count on one line: on a <p>, the nowrap
+            utility loses to globals.css's unlayered p { text-wrap }. */}
+        <p className="shrink-0 whitespace-nowrap font-mono text-xs text-text-secondary [font-variant-numeric:tabular-nums]">
           {front.length === 1 ? '1 report' : `${front.length} reports`}
         </p>
       </div>
@@ -122,6 +125,9 @@ function LeadReport({ entry }: { entry: MarketStormEntry }) {
   const href = `/market-storm/${entry.slug}`;
   const kpis = cardKpis(entry);
   const method = methodOf(entry);
+  // The date the catalyst names, kept whole: at a tablet's width the line
+  // broke as "ends 10 / Nov 2026". The room reads it the same way (art.ts).
+  const when = watchDate(entry);
 
   return (
     <article
@@ -164,7 +170,19 @@ function LeadReport({ entry }: { entry: MarketStormEntry }) {
         {entry.catalyst && (
           <p className="ms-lead-catalyst">
             <StormFlag />
-            <span>{entry.catalyst}</span>
+            <span>
+              {when ? (
+                <>
+                  {entry.catalyst.slice(0, when.at)}
+                  <time dateTime={when.iso} className="whitespace-nowrap">
+                    {when.text}
+                  </time>
+                  {entry.catalyst.slice(when.at + when.text.length)}
+                </>
+              ) : (
+                entry.catalyst
+              )}
+            </span>
           </p>
         )}
 

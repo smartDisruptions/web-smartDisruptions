@@ -44,7 +44,9 @@ export default function IndexArchive() {
           The companies, one quarter at a time
         </h2>
         <span className="h-px flex-1 bg-border" aria-hidden="true" />
-        <p className="whitespace-nowrap font-mono text-xs text-text-secondary [font-variant-numeric:tabular-nums]">
+        {/* shrink-0 keeps the count on one line: on a <p>, the nowrap
+            utility loses to globals.css's unlayered p { text-wrap }. */}
+        <p className="shrink-0 whitespace-nowrap font-mono text-xs text-text-secondary [font-variant-numeric:tabular-nums]">
           {reports.length === 1 ? '1 report' : `${reports.length} reports`}
         </p>
       </div>

@@ -740,6 +740,10 @@
   line-height: 1.4;
   color: var(--sd-text-primary);
 }
+/* The date stays whole: at some widths it broke as "ends 10 / Nov 2026". */
+.wms-watch-text time {
+  white-space: nowrap;
+}
 .wms-watch-label {
   font-size: 0.68rem;
   font-weight: 750;
