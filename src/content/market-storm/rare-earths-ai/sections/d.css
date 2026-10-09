@@ -136,6 +136,15 @@
     display: none;
   }
 }
+/* Just wide enough for the pips (most phones): tighten each step button
+   so "Separate" and "Magnets" sit clear of its edges. */
+@media (min-width: 23.95rem) and (max-width: 26.5rem) {
+  .re-d-chip {
+    gap: 0.25rem;
+    padding-inline: 0.25rem;
+    font-size: 0.69rem;
+  }
+}
 @media (max-width: 22.4rem) {
   .re-d-chain {
     gap: 0.2rem;
@@ -633,6 +642,9 @@
   width: var(--bw);
   margin-left: calc(var(--bw) / -2);
   display: grid;
+  /* one track exactly the weight's width (an auto track would grow to its
+     widest label and push the tile and label off centre) */
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: 0.3rem;
   transform: translateY(calc(var(--d) * var(--h)));
@@ -680,7 +692,9 @@
 }
 .re-d-bob-lo {
   width: max-content;
-  max-width: calc(100% + 0.7rem);
+  /* about as wide as its weight: on the narrowest phones the arrow wraps
+     onto its own line rather than the price running under the next one */
+  max-width: calc(100% + 0.35rem);
   padding: 0 0.2rem;
   border-radius: 4px;
   background: var(--re-card);
@@ -690,6 +704,10 @@
   text-align: center;
   font-variant-numeric: tabular-nums;
   color: var(--sd-text-primary);
+}
+/* the date stays one line ("(20 Sep)", never "(20" over "Sep)") */
+.re-d-bob-lo .re-d-line + .re-d-line {
+  white-space: nowrap;
 }
 @media (min-width: 40rem) {
   .re-d-ghost {

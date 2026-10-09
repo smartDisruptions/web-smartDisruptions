@@ -22,14 +22,16 @@
 }
 
 /* The chapter is the full wrap wide (re-bleed) so its big pictures can
-   break out of the reading column; everything else sits back on it. (Two
-   classes, so this outranks the shared `.re-fig { margin: 0 }`.) */
+   break out of the reading column, to the same edges as the wide figures in
+   every other chapter; everything else sits back on it. (Two classes, so
+   this outranks the shared `.re-fig { margin: 0 }`.) */
 .re-b-ch.re-ch > * {
   width: 100%;
   max-width: var(--re-col);
   margin-inline: auto;
 }
-.re-b-ch.re-ch > .re-b-wide {
+.re-b-ch.re-ch > .re-b-wide,
+.re-b-ch.re-ch > .re-b-chain {
   max-width: none;
 }
 
@@ -211,9 +213,6 @@
   position: relative;
   max-width: none;
   margin-block: 0.75rem 0.5rem;
-}
-.re-b-ch.re-ch > .re-b-chain {
-  max-width: 68rem;
 }
 .re-b-steps {
   position: relative;
@@ -883,9 +882,6 @@
 
 /* ── 04 · The headline simulator ────────────────────────────────────────── */
 
-.re-b-ch.re-ch > .re-b-beta {
-  max-width: 66rem;
-}
 .re-b-valve {
   --re-b-wheel: #2b3a96;
   --re-b-wheel-2: #1b2566;

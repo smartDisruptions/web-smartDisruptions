@@ -13,7 +13,8 @@ type Item = { id: string; n: number; toc: string };
  * chapter crosses it, moves `aria-current` from one link to another (two
  * attribute writes, a few times per article); the other shows the rail once
  * the opening — hero, short answer, contents — has scrolled away. No scroll listener, no
- * per-frame work, nothing at all below 1200px wide.
+ * per-frame work, nothing at all below 1248px wide (narrower, the margin
+ * is too slim to hold it clear of the wide figures).
  *
  * The rail is extra: the contents table is the page's real navigation, so
  * the rail stays out of the way (hidden, not focusable) until it's useful.
@@ -25,7 +26,7 @@ export default function ChapterRail({ chapters }: { chapters: Item[] }) {
     const railEl = ref.current;
     if (!railEl) return;
     const rail: HTMLElement = railEl;
-    const wide = window.matchMedia('(min-width: 1200px)');
+    const wide = window.matchMedia('(min-width: 1248px)');
     const links = new Map<string, HTMLAnchorElement>();
     rail.querySelectorAll<HTMLAnchorElement>('a[data-id]').forEach((a) => {
       if (a.dataset.id) links.set(a.dataset.id, a);
