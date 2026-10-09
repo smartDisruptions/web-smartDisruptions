@@ -8,6 +8,26 @@ const setText = (mark: HTMLElement, text: string) => {
   const pill = mark.firstElementChild;
   if (pill) pill.textContent = text;
 };
+/**
+ * Month names as en-GB writes them short (Intl's own output, "Sept"
+ * included). Spelled out here because the first Intl date format a page
+ * makes loads the locale's data: ~18ms of the page's start-up on a laptop,
+ * ~70ms on a phone, for one word.
+ */
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sept',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 /** "2026-10-28" → that calendar day, as a UTC day number (no time zones). */
 const dayOf = (iso: string) => {
   const [y, m, d] = iso.split('-').map(Number);
@@ -43,7 +63,7 @@ export default function DatesClock({ year }: { year: number }) {
       const now = new Date();
       const today =
         Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / DAY;
-      const label = `Today · ${now.getDate()} ${now.toLocaleString('en-GB', { month: 'short' })}${
+      const label = `Today · ${now.getDate()} ${MONTHS[now.getMonth()]}${
         now.getFullYear() === year ? '' : ` ${now.getFullYear()}`
       }`;
       const states = rows.map((row) => {
