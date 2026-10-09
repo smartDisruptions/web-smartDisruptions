@@ -641,9 +641,19 @@ p {
 }
 
 /* Frosted glass: the header and the tab bar. Falls back to a solid surface
-   where blur is unsupported or the reader asked for less transparency. */
+   where blur is unsupported or the reader asked for less transparency.
+   By day the glass holds 86% of the page's ground, not 76%: over a night
+   block (the ARKG hero, the storm room, the Market Storm lead) the thinner
+   glass let the header's secondary ink fall to 3.8:1. 86% keeps it over
+   4.5:1 even on pure black and looks the same over paper. */
+:root {
+  --sd-glass-mix: 86%;
+}
+:root[data-theme='dark'] {
+  --sd-glass-mix: 76%;
+}
 .sd-glass {
-  background: color-mix(in srgb, var(--sd-bg) 76%, transparent);
+  background: color-mix(in srgb, var(--sd-bg) var(--sd-glass-mix), transparent);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
 }
