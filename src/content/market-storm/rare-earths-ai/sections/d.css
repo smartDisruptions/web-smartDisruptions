@@ -1,0 +1,1453 @@
+/* Rare earths in the age of AI — chapters 05–07 (the companies builder).
+   Every class is `re-d-` prefixed. Colours are the site's tokens and the
+   article inks in re.css; the few fixed values are objects that look the
+   same by day and night (the specimen slip, solid ink seals).
+
+   Motion: transform and opacity only. One-shot entrances (the fall, the
+   stamps) are CSS animations started by islands/d-arm when their block
+   scrolls in; the Molycorp ghost is a scroll timeline. Nothing loops.
+
+   re.css loads after this file, so anything here that restyles one of its
+   classes (.re-fig, .re-flag) carries one more class to win. */
+
+.re-d-ch {
+  --d-ok: var(--sd-bull);
+  --d-unv: var(--sd-warn);
+  --d-fix: var(--sd-bear);
+  --d-tile: var(--sd-surface);
+  --d-edge: color-mix(in oklab, var(--sd-text-primary) 22%, transparent);
+  /* Solid seals are objects: one colour in both lights. */
+  --d-seal-solid: #c5321c;
+  --d-seal-deep: #9e2312;
+}
+/* Wide figures break out of the reading column to the 72rem wrap. */
+@media (min-width: 64rem) {
+  .re-d-ch .re-d-wide {
+    --d-w: min(72rem - 48px, 100vw - 64px);
+    margin-inline: calc((min(54rem, var(--d-w)) - var(--d-w)) / 2);
+  }
+}
+
+.re-d-chip,
+.re-d-el,
+.re-d-sc-sort {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.re-d-nw {
+  white-space: nowrap;
+}
+.re-d-line {
+  display: block;
+}
+
+/* ── 05 · The periodic table ─────────────────────────────────────────── */
+
+.re-d-pt {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.1rem;
+}
+
+/* The dock: the step filter, under the tiles. While the table is on screen
+   it rides at the bottom of it (sticky inside the table), just above a
+   phone's tab bar, so a thumb can try every step on every tile. */
+.re-d-dock {
+  position: sticky;
+  bottom: calc(65px + env(safe-area-inset-bottom) + 0.5rem);
+  z-index: 5;
+  margin: 0.15rem -0.45rem 0;
+  padding: 0.4rem;
+  border-radius: 17px;
+  border: 1px solid var(--re-line);
+  background: var(--re-card);
+  box-shadow: 0 12px 26px -18px var(--sd-card-shadow);
+}
+@media (min-width: 64rem) {
+  .re-d-dock {
+    bottom: 1rem;
+  }
+}
+.re-d-chain {
+  display: grid;
+  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  gap: 0.3rem;
+  /* the chain: one dotted thread behind the four step buttons (they are
+     opaque, so it shows only in the gaps between them). A strip of the
+     dock's own paper covers it up to the first step, so All stands apart. */
+  --chain-from: 3.6rem;
+  background:
+    linear-gradient(90deg, var(--re-card) var(--chain-from), transparent 0) 0
+      50% / 100% 4px no-repeat,
+    radial-gradient(circle, var(--d-edge) 1px, transparent 1.5px) 0 50% / 5px
+      3px repeat-x;
+}
+.re-d-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 46px;
+  min-width: 44px;
+  padding: 0.3rem 0.35rem;
+  border-radius: 12px;
+  border: 1px solid var(--re-line-strong);
+  background: var(--d-tile);
+  color: var(--sd-text-primary);
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.1;
+  cursor: pointer;
+  /* state changes are instant: only the press (scale) is animated */
+  transition: scale 0.15s ease;
+}
+.re-d-chip-all {
+  padding-inline: 0.7rem;
+}
+.re-d-chip:active {
+  scale: 0.94;
+}
+.re-d-chip[aria-pressed='true'] {
+  background: var(--sd-accent);
+  border-color: var(--sd-accent);
+  color: var(--sd-bg);
+}
+@media (hover: hover) {
+  .re-d-chip:not([aria-pressed='true']):hover {
+    border-color: color-mix(in oklab, var(--sd-accent) 55%, transparent);
+    color: var(--sd-accent);
+  }
+}
+/* each step button wears the tiles' pip column with its own step lit: the key */
+.re-d-chip .re-d-chip-pips {
+  --pip: 0.32rem;
+  gap: 0.12rem;
+}
+.re-d-chip .re-d-chip-pips i {
+  border-color: currentColor;
+  opacity: 0.5;
+}
+.re-d-chip .re-d-chip-pips i.on {
+  background: currentColor;
+  opacity: 1;
+}
+@media (max-width: 23.9rem) {
+  .re-d-chip .re-d-chip-pips {
+    display: none;
+  }
+}
+@media (max-width: 22.4rem) {
+  .re-d-chain {
+    gap: 0.2rem;
+  }
+  .re-d-chip {
+    padding-inline: 0.15rem;
+    font-size: 0.66rem;
+  }
+  .re-d-chip-all {
+    padding-inline: 0.45rem;
+  }
+}
+@media (min-width: 36rem) {
+  .re-d-dock {
+    justify-self: center;
+    width: fit-content;
+    margin-inline: 0;
+  }
+  .re-d-chain {
+    --chain-from: 5.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+  .re-d-chip {
+    gap: 0.5rem;
+    padding-inline: 0.85rem 1rem;
+    font-size: 0.84rem;
+  }
+  .re-d-chip-all {
+    margin-right: 0.4rem;
+    padding-inline: 1rem;
+  }
+}
+
+/* Periods: one row of the table per stage the companies are at. */
+.re-d-period {
+  display: grid;
+  gap: 0.4rem;
+}
+.re-d-period[data-kind='ok'] {
+  --k: var(--d-ok);
+}
+.re-d-period[data-kind='unv'] {
+  --k: var(--d-unv);
+}
+.re-d-period[data-kind='fix'] {
+  --k: var(--d-fix);
+}
+.re-d-period-l {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  line-height: 1.45;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-d-period-l i {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 2px;
+  background: var(--k);
+}
+.re-d-grid {
+  --gap: 0.45rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row dense;
+  gap: var(--gap);
+}
+@media (min-width: 30rem) {
+  .re-d-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 46rem) {
+  .re-d-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 64rem) {
+  .re-d-period {
+    grid-template-columns: 8rem minmax(0, 1fr);
+    align-items: start;
+    gap: 1.1rem;
+  }
+  .re-d-period-l {
+    padding-top: 0.7rem;
+  }
+  .re-d-grid {
+    --gap: 0.6rem;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* An element tile. Number top left, status top right, the ticker as the
+   symbol, the steps as a column of pips down the edge (where an element
+   lists its shells), the latest price where the atomic mass goes. */
+.re-d-el {
+  --k: var(--d-ok);
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'z flag flag'
+    'sym sym pips'
+    'name name pips'
+    'price price price';
+  grid-template-rows: auto auto 1fr auto;
+  align-items: start;
+  column-gap: 0.45rem;
+  padding: 0.6rem 0.55rem 0.5rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid var(--d-edge);
+  background: var(--d-tile);
+  color: var(--sd-text-primary);
+  text-align: left;
+  cursor: pointer;
+  /* the category band along the top (the colour key of a printed table),
+     a hairline frame inside the edge, and the lift under it */
+  --lift: 0 1px 0 color-mix(in srgb, var(--sd-card-shadow) 35%, transparent);
+  box-shadow:
+    inset 0 4px 0 var(--k),
+    inset 0 0 0 3px var(--d-tile),
+    inset 0 0 0 3.75px color-mix(in oklab, var(--k) 30%, transparent),
+    var(--lift);
+  /* Lift and press are animated; the filter's dimming is an instant state
+     change (a fade would restyle every tile on every frame of it). */
+  transition:
+    translate 0.35s var(--re-ease),
+    scale 0.15s ease;
+}
+.re-d-el[data-kind='unv'] {
+  --k: var(--d-unv);
+}
+.re-d-el[data-kind='fix'] {
+  --k: var(--d-fix);
+}
+/* lifted (hovered, or open): a deeper shadow, set at once (a shadow is
+   never animated) while the tile rises on a transform */
+@media (hover: hover) and (pointer: fine) {
+  .re-d-el:hover {
+    --lift: 0 16px 24px -16px var(--sd-card-shadow);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .re-d-el:hover {
+    translate: 0 -3px;
+  }
+}
+.re-d-el:active {
+  scale: 0.965;
+}
+.re-d-el[data-open] {
+  --lift: 0 16px 24px -16px var(--sd-card-shadow);
+  position: relative;
+  outline: 2px solid var(--sd-accent);
+  outline-offset: 2px;
+}
+.re-d-el:focus-visible {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 3px;
+}
+.re-d-el[data-dim] {
+  opacity: 0.3;
+}
+/* the open tile points down at its label */
+.re-d-el-notch {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--gap) - 4px);
+  width: 1.2rem;
+  height: 0.65rem;
+  margin-left: -0.6rem;
+  background: var(--sd-pen);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.re-d-el-z {
+  grid-area: z;
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--re-muted);
+}
+.re-d-el .re-d-el-flag {
+  grid-area: flag;
+  justify-self: end;
+  max-width: 100%;
+  font-size: 0.62rem;
+  white-space: normal;
+  text-align: right;
+  line-height: 1.25;
+}
+.re-d-el-sym {
+  grid-area: sym;
+  margin-top: 0.3rem;
+  font-family: var(--font-display);
+  font-size-adjust: 0.5;
+  /* the longer the ticker, the smaller the symbol: it always fits its tile */
+  font-size: clamp(1rem, calc((100cqi - 1.1rem) / var(--em)), 2.15rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--sd-text-primary);
+}
+.re-d-el-name {
+  grid-area: name;
+  margin-top: 0.15rem;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: var(--re-muted);
+  text-wrap: pretty;
+}
+.re-d-el-pips {
+  grid-area: pips;
+  align-self: center;
+  margin-top: 0.35rem;
+}
+.re-d-el-price {
+  grid-area: price;
+  margin-top: 0.4rem;
+  padding-top: 0.3rem;
+  border-top: 1px dashed var(--re-line-strong);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 64rem) {
+  .re-d-el {
+    padding: 0.7rem 0.65rem 0.6rem 0.75rem;
+  }
+  .re-d-el-name {
+    font-size: 0.8rem;
+  }
+  .re-d-el-price {
+    font-size: 0.78rem;
+  }
+  .re-d-el .re-d-el-flag {
+    font-size: 0.66rem;
+  }
+}
+
+/* The four pips: dig, separate, metal, magnets, top to bottom. */
+.re-d-pips {
+  --pip: 0.5rem;
+  display: inline-grid;
+  grid-auto-rows: var(--pip);
+  grid-template-columns: var(--pip);
+  gap: 0.2rem;
+}
+.re-d-pips i {
+  border-radius: 2px;
+  border: 1.25px solid var(--d-edge);
+}
+.re-d-pips i.on {
+  background: var(--sd-text-primary);
+  border-color: var(--sd-text-primary);
+}
+/* the lit step turns indigo on every tile that does it, with a ring */
+.re-d-el-pips i.hot {
+  background: var(--sd-accent);
+  border-color: var(--sd-accent);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--sd-accent) 30%, transparent);
+}
+
+/* The specimen label: an ofuda slip under the tile's row. The slip is the
+   same paper in both lights, so its inks are fixed (day inks, AA on it). */
+.re-d-label {
+  grid-column: 1 / -1;
+  padding: 0.8rem 0.95rem 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.re-d-label[hidden] {
+  display: none;
+}
+.re-d-label-dl {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+}
+@media (min-width: 46rem) {
+  .re-d-label-dl {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 1.25rem;
+  }
+}
+.re-d-label dt {
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5d554a;
+}
+.re-d-label dd {
+  margin: 0.25rem 0 0;
+  color: var(--sd-sticky-ink);
+}
+.re-d-label-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.9rem;
+  margin-bottom: 0.45rem;
+}
+.re-d-label-chain span {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.45rem;
+  border-radius: 5px;
+  border: 1px dashed rgba(31, 26, 20, 0.4);
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: #5d554a;
+}
+.re-d-label-chain span + span::before {
+  content: '→';
+  position: absolute;
+  left: -0.78rem;
+  color: rgba(31, 26, 20, 0.5);
+}
+.re-d-label-chain span.on {
+  border-style: solid;
+  border-color: #1f1a14;
+  background: #1f1a14;
+  color: #f6ecd2;
+}
+.re-d-label-text {
+  display: block;
+  font-family: var(--font-read);
+  font-size: 0.95rem;
+}
+.re-d-label-price {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.re-d-label .re-flag.is-ok {
+  color: #166534;
+  background: rgba(22, 101, 52, 0.12);
+}
+.re-d-label .re-flag.is-unv {
+  color: #8a3a0c;
+  background: rgba(146, 64, 14, 0.12);
+}
+.re-d-label .re-flag.is-fix {
+  color: #a51b1b;
+  background: rgba(185, 28, 28, 0.1);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .re-d-label:not([hidden]) {
+    animation: re-d-label-in 0.3s var(--re-ease) both;
+  }
+}
+@keyframes re-d-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.re-d-fig-pt .re-details {
+  margin-top: 0.2rem;
+}
+
+/* ── 05 · The fall from the 52-week high ─────────────────────────────── */
+
+.re-d-fall {
+  container-type: inline-size;
+  --h: 12.5rem; /* from the high (0%) down to zero (−100%) */
+  --g: 0.5rem; /* the hang under the beam */
+  /* a weight's width: never wider than its fifth of the chart */
+  --bw: min(3.3rem, 20cqi - 0.35rem);
+  --bh: 2.75rem; /* and height */
+  --beam: 4px;
+  --gut: 2.3rem; /* the scale's labels */
+  position: relative;
+  padding: 0.5rem 0 0 var(--gut);
+}
+@media (min-width: 40rem) {
+  .re-d-fall {
+    --h: 15rem;
+    --bw: min(5.6rem, 20cqi - 1rem);
+    --bh: 3.3rem;
+    --gut: 3rem;
+  }
+}
+/* the scale: dashed lines at −25/−50/−75%, the floor at −100%, measured
+   from the top of the ghosts (where each stock stood at its high) */
+.re-d-fall-scale {
+  position: absolute;
+  inset: calc(0.5rem + var(--beam) + var(--g)) 0 auto 0;
+  height: var(--h);
+  pointer-events: none;
+}
+.re-d-fall-scale span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--t) * var(--h));
+  height: 1rem;
+  margin-top: -0.5rem;
+  font-size: 0.6rem;
+  font-weight: 650;
+  line-height: 1rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--re-muted);
+}
+.re-d-fall-scale span::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--gut) - 0.35rem);
+  right: 0;
+  border-top: 1px dashed var(--re-line-strong);
+}
+.re-d-fall-scale span:last-child::after {
+  border-top: 1.5px solid var(--re-line-strong);
+}
+@media (min-width: 40rem) {
+  .re-d-fall-scale span {
+    font-size: 0.7rem;
+  }
+}
+.re-d-fall-cols {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* the ceiling: the 52-week high every stock hangs from, with a hook
+     under it over each column */
+  border-top: var(--beam) solid var(--sd-text-primary);
+  border-radius: 2px;
+  background: radial-gradient(
+      circle at 50% 0,
+      var(--sd-text-primary) 3.5px,
+      transparent 4px
+    )
+    0 0 / 20% 6px repeat-x;
+}
+.re-d-fall-cols li {
+  position: relative;
+  height: calc(var(--g) + var(--h) + var(--bh) + 0.9rem);
+  /* the threads are cut at the beam; text may spill sideways */
+  overflow-x: visible;
+  overflow-y: clip;
+}
+/* where each stock stood: its outline at the high, with the high price.
+   It sits in front of the weight (and its thread), so before the drop the
+   weight hides behind it and falls out from under it. */
+.re-d-ghost {
+  position: absolute;
+  top: var(--g);
+  left: 50%;
+  z-index: 3;
+  width: var(--bw);
+  height: var(--bh);
+  margin-left: calc(var(--bw) / -2);
+  display: grid;
+  place-content: center;
+  padding: 0.1rem;
+  border: 1.25px dashed var(--re-line-strong);
+  border-radius: 7px;
+  background: var(--re-card);
+  font-size: min(0.6rem, 4.2cqi);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--re-muted);
+}
+/* the weight and its thread; the thread rides with it and is cut off at
+   the beam, so it pays out as the weight drops */
+.re-d-bob {
+  position: absolute;
+  top: var(--g);
+  left: 50%;
+  z-index: 2;
+  width: var(--bw);
+  margin-left: calc(var(--bw) / -2);
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  transform: translateY(calc(var(--d) * var(--h)));
+  /* swing about the hook, not the weight */
+  transform-origin: 50% calc(-1 * (var(--g) + var(--d) * var(--h)));
+}
+.re-d-bob::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 1.5px;
+  height: calc(var(--h) + 2rem);
+  margin-left: -0.75px;
+  background: var(--sd-text-primary);
+}
+.re-d-bob-tile {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.15rem;
+  width: 100%;
+  height: var(--bh);
+  border-radius: 7px;
+  border: 1px solid var(--d-edge);
+  background: var(--d-tile);
+  box-shadow:
+    inset 0 3px 0 var(--re-down),
+    0 10px 16px -12px var(--sd-card-shadow);
+}
+.re-d-bob-sym {
+  font-family: var(--font-display);
+  font-size-adjust: 0.5;
+  font-weight: 400;
+  font-size: min(0.8rem, calc((var(--bw) - 0.4rem) / var(--em)));
+  line-height: 1;
+  color: var(--sd-text-primary);
+}
+.re-d-bob-pct {
+  font-size: 0.7rem;
+  font-weight: 750;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--re-down);
+}
+.re-d-bob-lo {
+  width: max-content;
+  max-width: calc(100% + 0.7rem);
+  padding: 0 0.2rem;
+  border-radius: 4px;
+  background: var(--re-card);
+  font-size: 0.6rem;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 40rem) {
+  .re-d-ghost {
+    font-size: 0.74rem;
+  }
+  .re-d-bob-sym {
+    font-size: min(1.1rem, calc((var(--bw) - 0.8rem) / var(--em)));
+  }
+  .re-d-bob-pct {
+    font-size: 0.85rem;
+  }
+  .re-d-bob-lo {
+    font-size: 0.74rem;
+    max-width: 100%;
+  }
+}
+
+/* The drop: gravity, the thread snaps taut, a bounce and a damped swing.
+   Transforms only. Until the island arms it each weight hangs where it
+   belongs, so no script and reduced motion both get the finished chart. */
+@media (prefers-reduced-motion: no-preference) {
+  .re-d-fall-cols[data-d-in='wait'] .re-d-bob {
+    transform: translateY(0);
+  }
+  .re-d-fall-cols[data-d-in='go'] .re-d-bob {
+    animation: re-d-drop calc(0.6s + var(--d) * 0.5s) both;
+    animation-delay: calc(var(--i) * 0.08s);
+  }
+  /* the price it fell to shows as the thread snaps taut */
+  .re-d-fall-cols[data-d-in='wait'] .re-d-bob-lo {
+    opacity: 0;
+  }
+  .re-d-fall-cols[data-d-in='go'] .re-d-bob-lo {
+    animation: re-d-lo calc(0.6s + var(--d) * 0.5s) both;
+    animation-delay: calc(var(--i) * 0.08s);
+  }
+}
+@keyframes re-d-lo {
+  0%,
+  45% {
+    opacity: 0;
+  }
+  62%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes re-d-drop {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45);
+  }
+  56% {
+    transform: translateY(calc(var(--d) * var(--h))) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  70% {
+    transform: translateY(calc(var(--d) * var(--h) - 8px)) rotate(1.4deg);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.6, 1);
+  }
+  83% {
+    transform: translateY(calc(var(--d) * var(--h))) rotate(-0.9deg);
+  }
+  92% {
+    transform: translateY(calc(var(--d) * var(--h) - 2px)) rotate(0.4deg);
+  }
+  100% {
+    transform: translateY(calc(var(--d) * var(--h))) rotate(0deg);
+  }
+}
+
+/* ── 06 · The AI scorecard ───────────────────────────────────────────── */
+
+.re-d-sc {
+  display: grid;
+  gap: 0.5rem;
+}
+.re-d-sc-status {
+  min-height: 1.4rem;
+  font-size: 0.8rem;
+  color: var(--re-muted);
+}
+.re-d-sc-status strong {
+  font-weight: 700;
+  color: var(--sd-accent);
+}
+.re-d-sc-t,
+.re-d-sc-t thead,
+.re-d-sc-t tbody {
+  display: block;
+  width: 100%;
+  border-collapse: collapse;
+}
+.re-d-sc-t tbody {
+  border-top: 1px solid var(--re-line-strong);
+}
+/* Phone: each company is a card, its meters under its name in three
+   columns that line up with the three sort buttons in the header. */
+.re-d-sc-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    'name name name'
+    'm1 m2 m3'
+    'v v v';
+  gap: 0.35rem 0.5rem;
+  padding: 0.75rem 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--re-line);
+  background: var(--d-tile);
+}
+.re-d-sc-row > * {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  font-weight: inherit;
+}
+/* On a phone the header is the key to every card below it: the name's
+   place, the three meters' columns (each a sort button), the verdict's. */
+.re-d-sc-head {
+  grid-template-areas:
+    'hname hname hname'
+    'h1 h2 h3'
+    'hv hv hv';
+  gap: 0.3rem 0.5rem;
+  margin-bottom: 0.4rem;
+  padding: 0.45rem 0.5rem 0.4rem;
+  border: 1px dashed var(--re-line-strong);
+  border-radius: 12px;
+  background: none;
+}
+.re-d-sc-hname {
+  grid-area: hname;
+}
+.re-d-sc-h1 {
+  grid-area: h1;
+}
+.re-d-sc-h2 {
+  grid-area: h2;
+}
+.re-d-sc-h3 {
+  grid-area: h3;
+}
+.re-d-sc-hv {
+  grid-area: hv;
+  align-self: center;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-d-sc-sort {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--re-line-strong);
+  border-radius: 10px;
+  background: var(--d-tile);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--sd-text-primary);
+  cursor: pointer;
+  transition: scale 0.15s ease;
+}
+.re-d-sc-hname .re-d-sc-sort {
+  width: auto;
+}
+.re-d-sc-sort:active {
+  scale: 0.95;
+}
+@media (hover: hover) {
+  .re-d-sc-sort:not([data-dir]):hover {
+    color: var(--sd-accent);
+  }
+}
+.re-d-sc-sort[data-dir] {
+  border-color: var(--sd-accent);
+  background: var(--sd-accent);
+  color: var(--sd-bg);
+}
+/* the sort mark: two small triangles, both faint when idle */
+.re-d-sc-arrow {
+  flex: none;
+  width: 0.5rem;
+  height: 0.75rem;
+  fill: currentColor;
+}
+.re-d-sc-arrow path {
+  opacity: 0.4;
+}
+.re-d-sc-sort[data-dir='asc'] .re-d-sc-up,
+.re-d-sc-sort[data-dir='desc'] .re-d-sc-down {
+  opacity: 1;
+}
+.re-d-sc-sort[data-dir='asc'] .re-d-sc-down,
+.re-d-sc-sort[data-dir='desc'] .re-d-sc-up {
+  opacity: 0;
+}
+
+.re-d-sc-name {
+  grid-area: name;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--sd-text-primary);
+}
+.re-d-sc-m1 {
+  grid-area: m1;
+}
+.re-d-sc-m2 {
+  grid-area: m2;
+}
+.re-d-sc-m3 {
+  grid-area: m3;
+}
+.re-d-sc-v {
+  grid-area: v;
+  font-family: var(--font-read);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--re-muted);
+}
+
+/* A meter: five squares and the score. */
+.re-d-m {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.re-d-m-sq {
+  --sq: 0.62rem; /* a square */
+  --gap: 0.18rem;
+  --st: calc(var(--sq) + var(--gap)); /* square to square */
+  --line: 1.25px;
+  flex: none;
+  width: calc(5 * var(--sq) + 4 * var(--gap));
+  height: var(--sq);
+  background:
+    /* the filled squares, as many as the score */
+    repeating-linear-gradient(
+        90deg,
+        var(--re-nd) 0 var(--sq),
+        transparent 0 var(--st)
+      )
+      0 0 / calc(var(--v) * var(--st)) 100% no-repeat,
+    /* every square's outline: its two sides… */
+    repeating-linear-gradient(
+        90deg,
+        var(--d-edge) 0 var(--line),
+        transparent 0 calc(var(--sq) - var(--line)),
+        var(--d-edge) 0 var(--sq),
+        transparent 0 var(--st)
+      ),
+    /* …its top… */
+    repeating-linear-gradient(
+        90deg,
+        var(--d-edge) 0 var(--sq),
+        transparent 0 var(--st)
+      )
+      0 0 / 100% var(--line) no-repeat,
+    /* …and its bottom */
+    repeating-linear-gradient(
+        90deg,
+        var(--d-edge) 0 var(--sq),
+        transparent 0 var(--st)
+      )
+      0 100% / 100% var(--line) no-repeat;
+}
+@media (max-width: 22.4rem) {
+  .re-d-m-sq {
+    --sq: 0.5rem;
+    --gap: 0.14rem;
+  }
+}
+.re-d-m-v {
+  min-width: 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-primary);
+}
+/* the sorted column stands out down the table: each of its cells takes a
+   tint, padded out (and pulled back by the same margin) so on a wide screen
+   the tints meet through the rows' padding and read as one band */
+.re-d-sc-m {
+  margin: -0.3rem -0.4rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+}
+.re-d-sc[data-sort='uses'] .re-d-sc-m1,
+.re-d-sc[data-sort='sells'] .re-d-sc-m2,
+.re-d-sc[data-sort='partners'] .re-d-sc-m3 {
+  background: color-mix(in oklab, var(--sd-accent) 8%, transparent);
+}
+@media (min-width: 46rem) {
+  .re-d-sc-m {
+    margin: -0.55rem -0.45rem;
+    padding: 0.55rem 0.45rem;
+    border-radius: 0;
+  }
+}
+
+/* Private companies: hatched like a specimen behind glass, and tagged. */
+.re-d-sc-row[data-private] {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 9px,
+      color-mix(in oklab, var(--re-nd) 9%, transparent) 9px 10.5px
+    ),
+    var(--d-tile);
+  box-shadow: inset 3px 0 0 color-mix(in oklab, var(--re-nd) 70%, transparent);
+}
+.re-d-sc-tag {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  border: 1px dashed var(--re-nd-ink);
+  border-radius: 5px;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--re-nd-ink);
+  vertical-align: 0.12em;
+}
+
+@media (min-width: 46rem) {
+  .re-d-sc-row {
+    grid-template-columns: minmax(9rem, 1.25fr) repeat(3, 6.6rem) minmax(
+        11rem,
+        2fr
+      );
+    grid-template-areas: 'name m1 m2 m3 v';
+    align-items: center;
+    gap: 0 0.9rem;
+    padding: 0.55rem 0.75rem;
+  }
+  /* Desktop: a plain table header; the buttons read as column heads. */
+  .re-d-sc-head {
+    grid-template-areas: 'hname h1 h2 h3 hv';
+    margin-bottom: 0;
+    padding-block: 0.1rem;
+    border: 0;
+    border-radius: 0;
+  }
+  .re-d-sc-head .re-d-sc-sort {
+    width: auto;
+    margin-left: -0.55rem;
+    border-color: transparent;
+    background: none;
+    color: var(--sd-text-primary);
+  }
+  .re-d-sc-head .re-d-sc-sort[data-dir] {
+    color: var(--sd-accent);
+    border-color: transparent;
+    background: color-mix(in oklab, var(--sd-accent) 10%, transparent);
+  }
+  @media (hover: hover) {
+    .re-d-sc-head .re-d-sc-sort:hover {
+      border-color: color-mix(in oklab, var(--sd-accent) 40%, transparent);
+    }
+  }
+  .re-d-sc-name {
+    font-size: 0.92rem;
+  }
+  .re-d-sc-v {
+    font-size: 0.88rem;
+  }
+}
+
+/* ── 07 · The Molycorp ghost ─────────────────────────────────────────── */
+
+.re-d-mc {
+  display: flow-root;
+}
+.re-d-gt {
+  float: right;
+  position: relative;
+  z-index: 1;
+  width: 5.4rem;
+  aspect-ratio: 5 / 6;
+  margin: -1.1rem 0.5rem 0.5rem 0.85rem;
+  rotate: 4deg;
+}
+@media (min-width: 40rem) {
+  .re-d-gt {
+    width: 7.4rem;
+    margin: -1.4rem -0.6rem 0.6rem 1.25rem;
+  }
+}
+.re-d-gt-ghost,
+.re-d-gt-solid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  padding: 0.45rem 0.5rem 0.4rem;
+  border-radius: 10px;
+}
+.re-d-gt-ghost {
+  border: 1.5px dashed
+    color-mix(in oklab, var(--sd-text-primary) 38%, transparent);
+  background: color-mix(in oklab, var(--sd-surface) 82%, transparent);
+  color: color-mix(in oklab, var(--sd-text-primary) 42%, transparent);
+}
+.re-d-gt-solid {
+  border: 1px solid var(--d-edge);
+  background: var(--d-tile);
+  color: var(--sd-text-primary);
+  box-shadow:
+    inset 0 4px 0 var(--sd-bear),
+    0 16px 26px -18px var(--sd-card-shadow);
+  /* Its resting state is gone: the ghost is what's left. With motion, it
+     shows first and is let go once the verdict is being read. */
+  opacity: 0;
+}
+.re-d-gt-z,
+.re-d-gt-mass {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.re-d-gt-mass {
+  text-align: right;
+}
+.re-d-gt-sym {
+  display: block;
+  width: 70%;
+  aspect-ratio: 1;
+  justify-self: center;
+  align-self: center;
+}
+.re-d-gt-name {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-align: center;
+}
+@media (min-width: 40rem) {
+  .re-d-gt-z,
+  .re-d-gt-mass {
+    font-size: 0.7rem;
+  }
+  .re-d-gt-name {
+    font-size: 0.78rem;
+  }
+}
+.re-d-gt-seal {
+  position: absolute;
+  right: -0.55rem;
+  bottom: 0.9rem;
+  width: 2.1rem;
+  rotate: -14deg;
+  z-index: 2;
+}
+@media (min-width: 40rem) {
+  .re-d-gt-seal {
+    width: 2.7rem;
+    right: -0.9rem;
+  }
+}
+/* One-shot, started by islands/d-arm when the tile is well up the screen
+   (a scroll timeline would tick on every frame the tile is on screen): the
+   live tile slips and fades, then the seal comes down on the ghost. */
+@media (prefers-reduced-motion: no-preference) {
+  .re-d-gt[data-d-in='wait'] .re-d-gt-solid {
+    opacity: 1;
+  }
+  .re-d-gt[data-d-in='wait'] .re-d-gt-seal {
+    opacity: 0;
+  }
+  .re-d-gt[data-d-in='go'] .re-d-gt-solid {
+    animation: re-d-gt-go 0.9s cubic-bezier(0.5, 0, 0.75, 0.4) 0.15s both;
+  }
+  .re-d-gt[data-d-in='go'] .re-d-gt-seal {
+    animation: re-d-gt-seal 0.3s cubic-bezier(0.3, 1.5, 0.55, 1) 0.95s both;
+  }
+}
+@keyframes re-d-gt-go {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translate(0.3rem, 1.1rem) rotate(8deg);
+  }
+}
+@keyframes re-d-gt-seal {
+  from {
+    opacity: 0;
+    transform: scale(1.9) rotate(-18deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── 07 · Red flags, stamped ─────────────────────────────────────────── */
+
+/* the scale, light to heavy, as a key above the ledger */
+.re-d-rf-scale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.12rem;
+  margin: 0.1rem 0 0.4rem;
+  --seal: 3.1rem;
+}
+.re-d-rf-scale .re-d-seal {
+  padding: 0.15rem;
+}
+.re-d-rf-scale .re-d-seal-t {
+  font-size: 0.58rem;
+}
+.re-d-rf-scale .re-d-seal[data-lv='5'] {
+  padding: 0.3rem;
+}
+.re-d-rf-scale .re-d-seal[data-lv='5'] .re-d-seal-t {
+  font-size: 0.54rem;
+}
+.re-d-rf-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.re-d-rf-arrow {
+  width: 0.45rem;
+  height: 1.5px;
+  background: var(--re-line-strong);
+}
+@media (min-width: 40rem) {
+  .re-d-rf-scale {
+    --seal: 3.5rem;
+    gap: 0.3rem 0.4rem;
+  }
+  .re-d-rf-scale .re-d-seal-t {
+    font-size: 0.64rem;
+  }
+  .re-d-rf-scale .re-d-seal[data-lv='5'] .re-d-seal-t {
+    font-size: 0.6rem;
+  }
+  .re-d-rf-step {
+    gap: 0.4rem;
+  }
+  .re-d-rf-arrow {
+    width: 1.2rem;
+  }
+}
+
+/* A hanko. Five pressures: a faint ring, a ring with a wash, a doubled ring,
+   solid ink, solid deep ink with a double border (and a harder hand). */
+.re-d-seal {
+  --rot: -2deg;
+  display: inline-grid;
+  place-items: center;
+  width: var(--seal, 4rem);
+  aspect-ratio: 1;
+  padding: 0.3rem;
+  /* a hand-cut stone: no two corners quite alike */
+  border-radius: 24% 19% 23% 18% / 19% 24% 18% 23%;
+  border: 1.5px solid var(--sd-pen);
+  color: var(--sd-pen-ink);
+  text-align: center;
+  transform: rotate(var(--rot));
+}
+.re-d-seal-t {
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0;
+  hyphens: none;
+}
+.re-d-seal[data-lv='1'] {
+  border-style: dashed;
+}
+.re-d-seal[data-lv='2'] {
+  --rot: 3deg;
+  border-width: 2px;
+  background: color-mix(in oklab, var(--sd-pen) 10%, transparent);
+}
+.re-d-seal[data-lv='3'] {
+  --rot: -4deg;
+  border-width: 2.5px;
+  background: color-mix(in oklab, var(--sd-pen) 16%, transparent);
+  box-shadow:
+    inset 0 0 0 2px var(--sd-surface),
+    inset 0 0 0 3.5px var(--sd-pen);
+}
+.re-d-seal[data-lv='4'] {
+  --rot: 2.5deg;
+  border: 0;
+  background: var(--d-seal-solid);
+  color: #fff;
+  box-shadow:
+    inset 0 0 0 3px var(--d-seal-solid),
+    inset 0 0 0 4.25px rgba(255, 255, 255, 0.6);
+}
+.re-d-seal[data-lv='5'] {
+  --rot: -7deg;
+  border: 0;
+  background: var(--d-seal-deep);
+  color: #fff;
+  box-shadow:
+    inset 0 0 0 2.5px var(--d-seal-deep),
+    inset 0 0 0 4px rgba(255, 255, 255, 0.7),
+    inset 0 0 0 5.5px var(--d-seal-deep),
+    inset 0 0 0 6.5px rgba(255, 255, 255, 0.5);
+}
+
+.re-d-rf,
+.re-d-rf thead,
+.re-d-rf tbody {
+  display: block;
+  width: 100%;
+  border-collapse: collapse;
+}
+/* Phone: a card per company, the seal at its right. */
+.re-d-rf-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name seal'
+    'flags seal';
+  align-items: start;
+  gap: 0.25rem 0.9rem;
+  padding: 0.85rem 0.15rem 0.9rem;
+  border-bottom: 1px solid var(--re-line);
+  --seal: 3.9rem;
+}
+.re-d-rf-row > * {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+.re-d-rf-head {
+  grid-template-areas: 'h0 h2' 'h1 h2';
+  padding-block: 0 0.45rem;
+  border-bottom: 1px solid var(--re-line-strong);
+}
+.re-d-rf-head th {
+  font-size: 0.64rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-d-rf-h0 {
+  grid-area: h0;
+}
+.re-d-rf-h1 {
+  grid-area: h1;
+}
+.re-d-rf-h2 {
+  grid-area: h2;
+  align-self: end;
+  width: var(--seal);
+  text-align: center !important;
+}
+.re-d-rf-name {
+  grid-area: name;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.re-d-rf-flags {
+  grid-area: flags;
+  font-family: var(--font-read);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--re-muted);
+}
+.re-d-rf-risk {
+  grid-area: seal;
+  align-self: center;
+}
+.re-d-rf-row:last-child {
+  border-bottom: 0;
+}
+@media (min-width: 46rem) {
+  .re-d-rf-row {
+    grid-template-columns: 10.5rem minmax(0, 1fr) 5rem;
+    grid-template-areas: 'name flags seal';
+    align-items: center;
+    gap: 0 1.25rem;
+    padding: 0.6rem 0.25rem;
+    --seal: 3.7rem;
+  }
+  .re-d-rf-head {
+    grid-template-areas: 'h0 h1 h2';
+  }
+  .re-d-rf-h2 {
+    justify-self: center;
+  }
+  .re-d-rf-risk {
+    justify-self: center;
+  }
+}
+
+/* The stamp: lifted, then pressed into the paper as the row scrolls in.
+   Heavier risks land harder. Transform and opacity only. */
+@media (prefers-reduced-motion: no-preference) {
+  .re-d-rf-row[data-d-in='wait'] .re-d-rf-risk .re-d-seal {
+    opacity: 0;
+    transform: scale(1.8) rotate(calc(var(--rot) - 10deg));
+  }
+  .re-d-rf-row[data-d-in='go'] .re-d-rf-risk .re-d-seal {
+    animation: re-d-stamp 0.26s both;
+    animation-delay: 0.06s;
+  }
+  .re-d-rf-row[data-d-in='go'][data-lv='5'] .re-d-rf-risk .re-d-seal {
+    animation-name: re-d-stamp-hard;
+    animation-duration: 0.34s;
+  }
+}
+@keyframes re-d-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.8) rotate(calc(var(--rot) - 10deg));
+    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.4);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(0.93) rotate(var(--rot));
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(var(--rot));
+  }
+}
+@keyframes re-d-stamp-hard {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(calc(var(--rot) - 16deg));
+    animation-timing-function: cubic-bezier(0.6, 0, 0.95, 0.35);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(0.88) rotate(var(--rot));
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  70% {
+    transform: scale(1.04) rotate(calc(var(--rot) + 1deg));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(var(--rot));
+  }
+}
