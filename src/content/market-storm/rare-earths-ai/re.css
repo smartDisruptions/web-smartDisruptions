@@ -420,6 +420,39 @@
   }
 }
 
+/* The article's ninjas hold still through a scroll and a beat after it
+   (islands/kiru-hold.tsx; SiteFX's own hold lets go at every notch of a
+   wheel). Each looping part is named, as in the site's hold, so the switch
+   restyles only them. !important: each loop is an `animation` shorthand. */
+@media (prefers-reduced-motion: no-preference) {
+  .re
+    .kiru[data-re-hold]
+    :is(
+      .k-body,
+      .k-head,
+      .k-eyes,
+      .k-wave,
+      .k-swing,
+      .k-spin,
+      .k-aura,
+      .k-dangle-l,
+      .k-dangle-r,
+      .k-thumbs,
+      .k-zap,
+      .k-run-a,
+      .k-run-b,
+      .k-bob,
+      .k-float,
+      .kt-hi,
+      .kt-lo,
+      .kt-tip,
+      .kt-hi-run,
+      .kt-lo-run
+    ) {
+    animation-play-state: paused !important;
+  }
+}
+
 /* Anything that lives below the fold and is heavy to lay out can opt in. */
 .re-defer {
   content-visibility: auto;

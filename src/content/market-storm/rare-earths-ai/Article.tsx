@@ -13,6 +13,7 @@ import S11Watch from './sections/S11Watch';
 import S12Think from './sections/S12Think';
 import End from './sections/End';
 import Near from './islands/near';
+import KiruHold from './islands/kiru-hold';
 import './re.css';
 
 /**
@@ -27,6 +28,7 @@ export default function Article() {
   return (
     <div className="re" aria-labelledby="re-title">
       <Near />
+      <KiruHold />
       <Hero />
       <div className="re-wrap re-main">
         <S01Basics />
