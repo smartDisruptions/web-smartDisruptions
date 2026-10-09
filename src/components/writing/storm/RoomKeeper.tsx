@@ -96,12 +96,18 @@ export default function RoomKeeper() {
     // switching it is a layout pass. Mid-scroll that is a dropped frame
     // just as the lead comes into view, so the field's switch waits for
     // the page to be still (its pulse is held while it scrolls anyway).
+    //
+    // "Wholly" is one number, used as both the threshold and the test: an
+    // observer only reports a crossing, so with a 0.99 threshold and a 0.98
+    // test, a slow scroll could report 0.985 on the way out, count the part
+    // as on, and never hear from it again while it slid under the glass.
+    const WHOLE = 0.98;
     const later = new Map<Element, boolean>();
     const live = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           const whole = !e.target.classList.contains('wms-kanji');
-          const on = whole ? e.intersectionRatio > 0.98 : e.isIntersecting;
+          const on = whole ? e.intersectionRatio >= WHOLE : e.isIntersecting;
           if (holding && e.target.hasAttribute('data-wms-field')) {
             later.set(e.target, on);
           } else {
@@ -111,7 +117,7 @@ export default function RoomKeeper() {
         }
         inkWhenStill();
       },
-      { rootMargin: `-${top}px 0px -${bottom}px 0px`, threshold: [0, 0.99] }
+      { rootMargin: `-${top}px 0px -${bottom}px 0px`, threshold: [0, WHOLE] }
     );
     const switchLater = () => {
       for (const [el, on] of later) el.toggleAttribute('data-on', on);
