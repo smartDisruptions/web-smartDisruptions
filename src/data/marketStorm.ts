@@ -284,13 +284,10 @@ export interface MarketStormReport {
   /** Figures referenced from `analysis` by `[[chart:id]]`. */
   charts?: ReportChart[];
   method?: ResearchMethod;
-  /**
-   * The pinned thesis piece at the top of the index. At most one report should
-   * carry this — `featuredReport()` takes the first and the rest fall into the
-   * normal grid, so a stale flag degrades into an ordinary card rather than a
-   * second hero.
-   */
-  featured?: boolean;
+  /** Its place at the front of the section (1 leads). See `frontReports()`. */
+  pin?: number;
+  /** Moved to the archive: off the front, its own URL unchanged. */
+  archived?: boolean;
   cardImage?: string;
   cardImageLight?: string;
   cardImageAlt?: string;
@@ -308,6 +305,7 @@ export const MARKET_STORM_METHOD =
 
 const amznQ2_2026: MarketStormReport = {
   slug: 'amzn-q2-2026',
+  archived: true,
   ticker: 'AMZN',
   company: 'Amazon.com, Inc.',
   title:
@@ -759,6 +757,7 @@ The practical read: if you build on top of this infrastructure, your costs are c
 
 const msftQ4_FY2026: MarketStormReport = {
   slug: 'msft-q4-fy2026',
+  archived: true,
   ticker: 'MSFT',
   company: 'Microsoft Corporation',
   title:
@@ -1309,6 +1308,7 @@ None of that is fraud; it is all disclosed, and mostly defensible. But three sep
 
 const pltrQ2_2026: MarketStormReport = {
   slug: 'pltr-q2-2026',
+  archived: true,
   ticker: 'PLTR',
   company: 'Palantir Technologies Inc.',
   title:
@@ -2144,6 +2144,7 @@ So the earnings-quality question doesn't disappear, it **relocates**. For AMZN a
 
 const spcxQ2_2026: MarketStormReport = {
   slug: 'spcx-q2-2026',
+  archived: true,
   ticker: 'SPCX',
   company: 'Space Exploration Technologies Corp.',
   title:
@@ -2978,6 +2979,7 @@ Ranked by capex-to-revenue, the four line up cleanly: **Palantir 0.75% · Micros
 
 const amdQ2_2026: MarketStormReport = {
   slug: 'amd-q2-2026',
+  archived: true,
   ticker: 'AMD',
   company: 'Advanced Micro Devices, Inc.',
   title:
@@ -3760,6 +3762,7 @@ The same pattern keeps recurring across four very different balance sheets: **th
 
 const crwvQ2_2026: MarketStormReport = {
   slug: 'crwv-q2-2026',
+  archived: true,
   ticker: 'CRWV',
   company: 'CoreWeave, Inc.',
   title:
@@ -4554,6 +4557,7 @@ What makes CoreWeave the clarifying case is that it has none of the others\u2019
 
 const nbisQ2_2026: MarketStormReport = {
   slug: 'nbis-q2-2026',
+  archived: true,
   ticker: 'NBIS',
   company: 'Nebius Group N.V.',
   title:
@@ -5285,6 +5289,7 @@ Ranked by capital spending against revenue, the picture is consistent: Palantir 
 // Newest first — the section index renders in array order, without sorting.
 const googQ2_2026: MarketStormReport = {
   slug: 'goog-q2-2026',
+  archived: true,
   ticker: 'GOOGL',
   company: 'Alphabet Inc.',
   title:
@@ -6108,7 +6113,7 @@ const aiCapexThesis2026: MarketStormReport = {
   catalyst:
     'Rebuilt after NVIDIA\u2019s latest quarterly report \u2014 checked against company filings through 31 August 2026',
   publishDate: '2026-08-31',
-  featured: true,
+  pin: 3,
   tags: ['AI-infrastructure', 'capex', 'earnings-quality', 'macro', 'thesis'],
   verdict:
     'For a year the risk in this build sat on the liability side \u2014 rent signed but not started, promises that do not count as debt yet. That is still true, and it got bigger: seven companies have now signed $1.24 trillion of rent on buildings that do not exist. But something on the asset side broke this quarter, and it broke at the top of the chain. NVIDIA sold $96 billion of chips and collected 40 cents of cash for every dollar of profit it reported. It is lending its customers the money, holding $47.9 billion of shares in them, and guaranteeing $108.5 billion of their obligations.',
@@ -6904,6 +6909,7 @@ A record bill buying less is a different story from a record buildout.`,
 
 const irenQ3_FY2026: MarketStormReport = {
   slug: 'iren-q3-fy2026',
+  archived: true,
   ticker: 'IREN',
   company: 'IREN Limited',
   title:
@@ -7753,6 +7759,7 @@ On capital spending against revenue: Palantir at 0.75%, Microsoft around 32%, Al
 
 const erocQ2_2026: MarketStormReport = {
   slug: 'eroc-q2-2026',
+  archived: true,
   ticker: 'EROC',
   company: 'ERock, Inc.',
   title:
@@ -8723,7 +8730,10 @@ export interface MarketStormArticle {
   company?: string;
   catalyst?: string;
   tags?: string[];
-  featured?: boolean;
+  /** Its place at the front of the section (1 leads). See `frontReports()`. */
+  pin?: number;
+  /** Moved to the archive: off the front, its own URL unchanged. */
+  archived?: boolean;
   cardImage?: string;
   cardImageLight?: string;
   cardImageAlt?: string;
@@ -8761,6 +8771,7 @@ export const marketStormArticles: MarketStormArticle[] = [
   {
     kind: 'article',
     slug: 'rare-earths-ai',
+    pin: 1,
     title: 'Rare earths in the age of AI',
     excerpt:
       'Until about 2030, AI uses only ~5% of rare-earth magnets. These stocks move on China’s export rules, not on AI news.',
@@ -8776,6 +8787,7 @@ export const marketStormArticles: MarketStormArticle[] = [
   {
     kind: 'article',
     slug: 'arkg-ai-takeoff',
+    pin: 2,
     title:
       'In gene stocks, using the most AI isn’t the same as winning from it.',
     excerpt:
@@ -8815,20 +8827,31 @@ export const marketStormReports: MarketStormEntry[] = [
 ];
 
 /**
- * The pinned thesis piece, if there is one.
- *
- * Takes the FIRST report flagged `featured` rather than asserting there is only
- * one, so a second flag left on an older report degrades into an ordinary card
- * instead of rendering two heroes.
+ * The front of the section, in order: every report that isn't archived, the
+ * pinned ones first by `pin` (1 leads), then any unpinned, newest first. Josh
+ * set the order on 2026-10-09: rare earths, then ARKG, then the NVIDIA thesis.
+ * A new report arrives unpinned, so it joins the front after the pinned ones
+ * until someone gives it a place.
  */
-export function featuredReport(): MarketStormEntry | undefined {
-  return marketStormReports.find((r) => r.featured);
+export function frontReports(): MarketStormEntry[] {
+  const at = (e: MarketStormEntry) => e.pin ?? Number.POSITIVE_INFINITY;
+  return marketStormReports
+    .filter((e) => !e.archived)
+    .sort(
+      (a, b) => at(a) - at(b) || b.publishDate.localeCompare(a.publishDate)
+    );
 }
 
-/** Everything that is not the pinned piece, newest first — the normal grid. */
-export function unfeaturedReports(): MarketStormEntry[] {
-  const f = featuredReport();
-  return marketStormReports.filter((r) => r !== f);
+/** The lead: the first report at the front. */
+export function leadReport(): MarketStormEntry | undefined {
+  return frontReports()[0];
+}
+
+/** The archive: every archived report, newest first. Each keeps its URL. */
+export function archivedReports(): MarketStormEntry[] {
+  return marketStormReports
+    .filter((e) => e.archived)
+    .sort((a, b) => b.publishDate.localeCompare(a.publishDate));
 }
 
 export function getReportBySlug(slug: string): MarketStormEntry | undefined {

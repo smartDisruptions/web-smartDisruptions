@@ -2,10 +2,10 @@ import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import {
   cardKpis,
-  featuredReport,
+  frontReports,
+  leadReport,
   marketStormReports,
   methodOf,
-  unfeaturedReports,
   type Kpi,
   type MarketStormEntry,
   type ResearchMethod,
@@ -59,11 +59,9 @@ import './storm.css';
  * carries `id="market-storm"` for links from elsewhere.
  */
 export default function WritingStorm() {
-  const lead = featuredReport() ?? marketStormReports[0];
+  const lead = leadReport();
   if (!lead) return null;
-  const archive = unfeaturedReports()
-    .filter((r) => r !== lead)
-    .sort((a, b) => b.publishDate.localeCompare(a.publishDate));
+  const archive = frontReports().slice(1);
   // The newest report gets its own card under the lead; the tape carries the
   // rest, so nothing is shown twice.
   const [newest, ...earlier] = archive;

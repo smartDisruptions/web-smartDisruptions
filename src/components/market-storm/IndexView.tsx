@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Fragment, type CSSProperties } from 'react';
 import {
-  featuredReport,
-  unfeaturedReports,
+  archivedReports,
+  frontReports,
+  leadReport,
   type MarketStormEntry,
   cardKpis,
   methodOf,
@@ -20,6 +21,11 @@ import {
   MethodBadge,
   verificationLine,
 } from '@/components/market-storm/Method';
+
+/** Everything below the lead: the rest of the front, then the archive. */
+function gridReports(): MarketStormEntry[] {
+  return [...frontReports().slice(1), ...archivedReports()];
+}
 
 /**
  * Reports per page.
@@ -39,13 +45,13 @@ export const REPORTS_PER_PAGE = 6;
  */
 export const totalReportPages = Math.max(
   1,
-  Math.ceil(unfeaturedReports().length / REPORTS_PER_PAGE)
+  Math.ceil(gridReports().length / REPORTS_PER_PAGE)
 );
 
 /** Authored newest-first, so page 1 is the newest. */
 export function reportsOnPage(page: number): MarketStormEntry[] {
   const start = (page - 1) * REPORTS_PER_PAGE;
-  return unfeaturedReports().slice(start, start + REPORTS_PER_PAGE);
+  return gridReports().slice(start, start + REPORTS_PER_PAGE);
 }
 
 /**
@@ -89,7 +95,7 @@ const RIPPLES = [
  * the explanation is the same as before; it has simply been given a sky.
  */
 function StormHero({ page }: { page: number }) {
-  const featured = featuredReport();
+  const featured = leadReport();
   return (
     <section className="ms-hero" aria-labelledby="ms-hero-title">
       <StormSky variant="hero" />
@@ -632,7 +638,7 @@ function FeaturedReport({ report }: { report: MarketStormEntry }) {
  * the first one, and when it was published.
  */
 function EndOfArchive({ span }: { span: 1 | 2 }) {
-  const all = unfeaturedReports();
+  const all = gridReports();
   const first = all[all.length - 1];
   if (!first) return null;
   return (
@@ -804,7 +810,7 @@ function Pagination({ page, total }: { page: number; total: number }) {
           own slot above and is not in this grid, so including it here would
           promise a card the reader can never find by paging. */}
       <p className="font-mono text-xs text-text-secondary [font-variant-numeric:tabular-nums]">
-        Page {page} of {total} &middot; {unfeaturedReports().length} company
+        Page {page} of {total} &middot; {gridReports().length} company
         reports
       </p>
     </nav>
@@ -820,7 +826,7 @@ function Pagination({ page, total }: { page: number; total: number }) {
  * told what this section is just as much as one arriving on page 1.
  */
 export default function MarketStormIndexView({ page }: { page: number }) {
-  const featured = featuredReport();
+  const featured = leadReport();
   return (
     <>
       <StormHero page={page} />
