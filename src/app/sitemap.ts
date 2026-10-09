@@ -78,11 +78,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  // Every report, archived ones included: archiving takes a report off the
+  // front, not off the web. An archived one is weighted below the reports at
+  // the front and marked as rarely changing, since its words are final.
+  // `yearly` rather than the protocol's `never` (its word for archived URLs)
+  // because the page's archived note lists the current reports, so the page
+  // still changes when they do.
   const reports: MetadataRoute.Sitemap = marketStormReports.map((report) => ({
     url: `${BASE}/market-storm/${report.slug}`,
     lastModified: new Date(report.publishDate),
-    changeFrequency: 'monthly',
-    priority: 0.8,
+    changeFrequency: report.archived ? 'yearly' : 'monthly',
+    priority: report.archived ? 0.5 : 0.8,
   }));
 
   // One entry per page that actually exists under /built: the project pages,

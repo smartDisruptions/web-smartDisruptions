@@ -1,5 +1,6 @@
 import { apps, GAME_SLUGS } from './apps';
 import { builtHref } from './projects';
+import { marketStormReports } from './marketStorm';
 
 /**
  * The skills on the About page, and the work that proves each one.
@@ -111,7 +112,9 @@ export const skillGroups: SkillGroup[] = [
             kind: 'site',
             label: 'Market Storm',
             href: '/market-storm',
-            detail: 'five reports, all produced by the pipeline',
+            // Counted, like the figure at the top of /about: it said "five"
+            // long after there were thirteen.
+            detail: `${marketStormReports.length} reports, all produced by the pipeline`,
           },
           {
             kind: 'site',
