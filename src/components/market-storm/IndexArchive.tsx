@@ -50,7 +50,9 @@ export default function IndexArchive() {
       </div>
       <p className="mt-3 max-w-[70ch] text-[0.95rem] leading-relaxed text-text-secondary">
         Each of these reads a single company&rsquo;s filing.{' '}
-        <strong className="text-text-primary">Four agents rather than five</strong>
+        <strong className="text-text-primary">
+          Four agents rather than five
+        </strong>
         , and the top load-bearing claims go to the refutation pass rather than
         all of them — every card says which, and every report names its own
         roster.

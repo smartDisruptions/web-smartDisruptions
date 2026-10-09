@@ -80,8 +80,18 @@ function Place({ n, size = 'sm' }: { n: number; size?: 'sm' | 'lg' }) {
  */
 function StormFlag() {
   return (
-    <svg viewBox="0 0 16 18" className="ms-flag" aria-hidden="true" focusable="false">
-      <path d="M2.5 1v16.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <svg
+      viewBox="0 0 16 18"
+      className="ms-flag"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M2.5 1v16.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
       <rect x="3.5" y="1.5" width="11.5" height="9" rx="1" fill="#e2412a" />
       <rect x="7.1" y="4.2" width="4.3" height="3.6" fill="#15172b" />
     </svg>
@@ -184,7 +194,13 @@ function LeadReport({ entry }: { entry: MarketStormEntry }) {
  * method line; an article has neither, so its excerpt is set in the reading
  * face and it closes on what it covers.
  */
-function FrontCard({ entry, place }: { entry: MarketStormEntry; place: number }) {
+function FrontCard({
+  entry,
+  place,
+}: {
+  entry: MarketStormEntry;
+  place: number;
+}) {
   const href = `/market-storm/${entry.slug}`;
   const kpis = cardKpis(entry);
   const method = methodOf(entry);
@@ -282,7 +298,13 @@ function FrontCard({ entry, place }: { entry: MarketStormEntry; place: number })
  * direction; the delta is detail, and detail belongs on the page the card
  * opens.
  */
-function CardFigures({ kpis, className = '' }: { kpis: Kpi[]; className?: string }) {
+function CardFigures({
+  kpis,
+  className = '',
+}: {
+  kpis: Kpi[];
+  className?: string;
+}) {
   const shown = kpis.slice(0, 3);
   if (!shown.length) return null;
   return (
