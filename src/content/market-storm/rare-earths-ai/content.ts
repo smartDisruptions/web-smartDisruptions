@@ -26,7 +26,7 @@ export interface ChartPoint { label: string; value: number; display: string; tip
 export const HERO = {
   "eyebrow": "STORM research · 8 Oct 2026 · 9 AI agents",
   "title": "Rare earths in the age of AI",
-  "elementsLabel": "The four rare earth elements that matter most for magnets",
+  "elementsLabel": "The five rare earth elements that matter most for magnets",
   "elements": [
     {
       "z": 60,
@@ -482,7 +482,7 @@ export const S05 = {
   },
   "findings": [
     "**The hype peaked in October 2025**, when China first tightened. MP hit about $100. By September 2026 it was around $47.",
-    "**REMX, the “rare earth** [[ETF]]**,” is mostly lithium.** Its biggest holdings are lithium companies, and MP is only 6.7%^[45]. It was down 8.8% for the year on 24 Sep.",
+    "**REMX, the “rare earth [[ETF]],” is mostly lithium.** Its biggest holdings are lithium companies, and MP is only 6.7%^[45]. It was down 8.8% for the year on 24 Sep.",
     "**USA Rare Earth** closed its ~$2.8B Serra Verde (Brazil) purchase in early September by issuing ~127M new shares, and got a new CEO on 1 Oct^[4]."
   ],
   "why": "the sector already crashed once. Prices now reflect what companies deliver, not the dream."

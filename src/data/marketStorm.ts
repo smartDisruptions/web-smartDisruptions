@@ -8770,7 +8770,7 @@ export const marketStormArticles: MarketStormArticle[] = [
     tags: ['rare-earths', 'AI', 'China', 'magnets'],
     cardImage: '/images/market-storm/rare-earths-ai.webp',
     cardImageAlt:
-      'Rare earths in the age of AI. Iron filings line up around a magnet, beside the five magnet elements: neodymium, praseodymium, dysprosium, terbium and yttrium.',
+      'Rare earths in the age of AI: it’s a China bet first. Iron filings line up around a bar magnet made of the five magnet elements: neodymium, praseodymium, dysprosium, terbium and yttrium.',
     ogImage: '/images/market-storm/rare-earths-ai.png',
   },
   {

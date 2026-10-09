@@ -22,7 +22,12 @@ export function Rich({ text }: { text: RichText }) {
     <>
       {parts.map((p, i) => {
         if (p.startsWith('**') && p.endsWith('**')) {
-          return <strong key={i}>{p.slice(2, -2)}</strong>;
+          // Bold may carry its own marks (a citation, a glossary term).
+          return (
+            <strong key={i}>
+              <Rich text={p.slice(2, -2)} />
+            </strong>
+          );
         }
         if (p.startsWith('^[')) {
           return <Cite key={i} n={p.slice(2, -1).split(',').map(Number)} />;
