@@ -55,9 +55,7 @@ export default function BuildWebsitesPage() {
             </span>
           </h1>
           <p className="bw-lede font-read">
-            Responsive means it fits any screen. Drag the edge of this one: each
-            red mark under it is a breakpoint, and the site rearranges as you
-            cross it.
+            See which processes are working for me, and which aren&rsquo;t.
           </p>
         </div>
 

@@ -18,9 +18,9 @@ const SIDES = [
  *
  * Two real links in a nav, so a keyboard, a screen reader and a browser
  * without JavaScript all get the same switch. SwitchFX only adds the slide:
- * the door moves the moment you tap, and for that one navigation the door
- * and its labels carry view-transition names, so they glide across while
- * the page under them slides in the door's direction (the root layout maps
+ * for the navigation a tap starts, the door and its labels carry
+ * view-transition names, so the door glides across in one movement while
+ * the page under it slides in the door's direction (the root layout maps
  * the nav-forward / nav-back types to sd-fwd / sd-back).
  *
  * Used at the top of /about and /about-me. Styles: ./switch.css (au-fsm-).
