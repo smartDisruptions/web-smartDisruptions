@@ -1,0 +1,1702 @@
+/* Builder C · chapters 02 (AI speed), 03 (tech), 10 (ranking).
+   Every class is `re-c-`. Motion is transform/opacity only, driven by scroll
+   timelines or by transitions the compositor runs; without scroll-timeline
+   support, or under reduced motion, everything shows in its final state. */
+
+/* ── Shared ──────────────────────────────────────────────────────────────── */
+
+/* Chapters 02 and 10 run at the full wrap (.re-bleed) so a few blocks can
+   break out (.re-c-wide); everything else sits in .re-c-col, the same
+   reading column every other chapter has. */
+.re-c-ch {
+  /* A gentle spring: ~4% past the mark, then home. */
+  --c-spring: linear(
+    0,
+    0.18 5%,
+    0.5 12%,
+    0.79 20%,
+    0.95 28%,
+    1.03 37%,
+    1.045 45%,
+    1.025 56%,
+    1.006 70%,
+    1
+  );
+}
+.re-c-ch > .re-ch-head,
+.re-c-col {
+  width: 100%;
+  max-width: var(--re-col);
+  margin-inline: auto;
+}
+.re-c-col {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.re-c-ch > .re-c-wide {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Tier inks: fills (--tk) and text (--tk-ink). The benchmark is grey. */
+.re-c-ch [data-tier='1'] {
+  --tk: var(--re-t1);
+  --tk-ink: var(--re-t1);
+}
+.re-c-ch [data-tier='2'] {
+  --tk: var(--re-t2);
+  --tk-ink: var(--re-t2);
+}
+.re-c-ch [data-tier='3'] {
+  --tk: var(--re-t3);
+  --tk-ink: var(--re-t3);
+}
+.re-c-ch [data-tier='4'] {
+  --tk: var(--re-t4);
+  --tk-ink: var(--re-t4);
+}
+.re-c-ch [data-tier='0'] {
+  --tk: var(--re-t0);
+  --tk-ink: var(--re-muted);
+}
+
+/* World inks, wherever a world is named. */
+.re-c-ch .is-takeoff {
+  --wk: var(--re-w-takeoff);
+}
+.re-c-ch .is-steady {
+  --wk: var(--re-w-steady);
+}
+.re-c-ch .is-stall {
+  --wk: var(--re-w-stall);
+}
+
+/* ── 02 · The run-rate, rising ───────────────────────────────────────────── */
+
+.re-c-rr {
+  position: relative;
+  padding: 2.4rem 0 0 2.3rem;
+}
+.re-c-rr-plot {
+  --h: 12.5rem;
+  position: relative;
+  height: var(--h);
+}
+@media (min-width: 640px) {
+  .re-c-rr {
+    padding-left: 3rem;
+  }
+  .re-c-rr-plot {
+    --h: 15.5rem;
+  }
+}
+.re-c-rr-tick {
+  position: absolute;
+  left: -2.3rem;
+  right: 0;
+  bottom: calc(var(--t) * 100%);
+  border-top: 1px dashed var(--re-line);
+}
+@media (min-width: 640px) {
+  .re-c-rr-tick {
+    left: -3rem;
+  }
+}
+.re-c-rr-tick[data-zero] {
+  border-top: 1.5px solid var(--re-line-strong);
+}
+.re-c-rr-tick > span {
+  position: absolute;
+  left: 0;
+  bottom: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--re-muted);
+  font-variant-numeric: tabular-nums;
+}
+.re-c-rr-cols {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.re-c-rr-col {
+  position: relative;
+}
+/* Clipped at the axis (and open above, for the figure on top). */
+.re-c-rr-win {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(-3rem -1rem 0 -1rem);
+}
+.re-c-rr-rise {
+  position: absolute;
+  inset: 0;
+}
+.re-c-rr-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: min(62%, 5.25rem);
+  height: calc(var(--v) * 100%);
+  border-radius: 10px 10px 0 0;
+  /* Woodblock grain: hairlines of paper through the ink. */
+  background:
+    repeating-linear-gradient(
+      112deg,
+      transparent 0 9px,
+      color-mix(in oklab, var(--sd-surface) 14%, transparent) 9px 10.5px
+    ),
+    var(--re-light);
+}
+/* Bloomberg's figure, not the company's: outlined, not solid. */
+.re-c-rr-col[data-src='press'] .re-c-rr-bar {
+  background: repeating-linear-gradient(
+    112deg,
+    color-mix(in oklab, var(--re-light) 30%, transparent) 0 2px,
+    transparent 2px 7px
+  );
+  border: 2px dashed var(--re-light);
+}
+.re-c-rr-val {
+  position: absolute;
+  left: -0.75rem;
+  right: -0.75rem;
+  bottom: calc(var(--v) * 100%);
+  padding-bottom: 0.45rem;
+  text-align: center;
+  font-size: clamp(1rem, 3.9vw, 1.45rem);
+  line-height: 1;
+  white-space: nowrap;
+}
+.re-c-rr-lbl {
+  position: absolute;
+  top: 100%;
+  left: -0.5rem;
+  right: -0.5rem;
+  padding-top: 0.5rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--re-muted);
+  white-space: nowrap;
+}
+.re-c-rr-log {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem 1rem;
+  margin: 2.5rem 0 0.15rem;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 640px) {
+  .re-c-rr-log {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    padding-left: 3rem;
+  }
+}
+.re-c-rr-log li {
+  display: grid;
+  align-content: start;
+  gap: 0.1rem;
+  padding-top: 0.45rem;
+  border-top: 3px solid var(--re-light);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.re-c-rr-log li[data-src='press'] {
+  border-top-style: dashed;
+}
+.re-c-rr-log b {
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+.re-c-rr-log span {
+  color: var(--re-muted);
+}
+
+/* ── 02 · The three labs ─────────────────────────────────────────────────── */
+
+.re-c-ais {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 880px) {
+  .re-c-ais {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.1rem;
+  }
+}
+.re-c-ai {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.3rem 1.2rem 1.1rem;
+  background: var(--re-card);
+  border: 1px solid var(--re-line);
+  border-radius: 16px;
+}
+/* The card's spine: a bar of ink along the top edge. */
+.re-c-ai::before {
+  content: '';
+  position: absolute;
+  left: 1.2rem;
+  width: 2.6rem;
+  top: -1px;
+  height: 4px;
+  border-radius: 0 0 3px 3px;
+  background: var(--sd-pen);
+}
+.re-c-ai-name {
+  font-size: 1.32rem;
+  line-height: 1.15;
+}
+.re-c-ai-aka {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--re-muted);
+  white-space: nowrap;
+}
+.re-c-ai-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+.re-c-ai-list li {
+  position: relative;
+  padding-left: 1.15rem;
+}
+/* Each point is a filing. */
+.re-c-ai-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.74em;
+  width: 0.62rem;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--re-light);
+  transform: rotate(-24deg);
+}
+.re-c-ai-list strong {
+  font-weight: 700;
+}
+.re-c-ai-so {
+  margin-top: auto;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--re-line-strong);
+  font-family: var(--font-read);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.re-c-ai-so > strong:first-child {
+  margin-right: 0.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sd-pen-ink);
+}
+
+/* ── 02 · Pick your 2030 ─────────────────────────────────────────────────── */
+
+.re-c-pick-fig {
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.re-c-pick {
+  display: grid;
+  gap: 0.85rem;
+}
+.re-c-pick-hint {
+  font-size: 0.9rem;
+  color: var(--re-muted);
+}
+.re-c-pick-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 640px) {
+  .re-c-pick-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.re-c-world {
+  --wk: var(--re-w-steady);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  /* Phone: a compact row (dot, name, odds), the bar, the text. */
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'mark name p'
+    'bar bar bar'
+    'text text text';
+  align-items: center;
+  align-content: start;
+  gap: 0.55rem 0.7rem;
+  padding: 0.95rem 1.05rem 1.1rem;
+  border-radius: 16px;
+  background: var(--re-card);
+  border: 1px solid var(--re-line);
+  border-bottom: 3px solid var(--re-line-strong);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    translate 0.4s var(--re-ease),
+    scale 0.18s ease;
+}
+/* Picked: a wash of the world's ink and a ring, both faded in. */
+.re-c-world::before,
+.re-c-world::after {
+  content: '';
+  position: absolute;
+  inset: -1px -1px -3px;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.re-c-world::before {
+  background: color-mix(in oklab, var(--wk) 9%, var(--re-card));
+}
+.re-c-world::after {
+  z-index: 1;
+  border: 2px solid var(--wk);
+  border-bottom-width: 4px;
+}
+.re-c-world:has(:checked)::before,
+.re-c-world:has(:checked)::after {
+  opacity: 1;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .re-c-world:hover {
+    translate: 0 -3px;
+  }
+}
+.re-c-world:active {
+  scale: 0.985;
+}
+.re-c-world:has(:focus-visible) {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 3px;
+}
+.re-c-world-in {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  /* Three across: the odds get their own line, big. */
+  .re-c-world {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name mark'
+      'p p'
+      'bar bar'
+      'text text';
+    padding: 1rem 1.05rem 1.15rem;
+  }
+}
+.re-c-world-name {
+  grid-area: name;
+  font-size: 1.3rem;
+  line-height: 1.1;
+  color: var(--wk);
+}
+.re-c-world-mark {
+  grid-area: mark;
+  position: relative;
+  width: 28px;
+  height: 28px;
+}
+.re-c-world-dot {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 2px solid var(--re-line-strong);
+}
+.re-c-world-seal {
+  position: absolute;
+  inset: -5px;
+  opacity: 0;
+  transform: scale(1.6) rotate(-18deg);
+}
+.re-c-world:has(:checked) .re-c-world-seal {
+  opacity: 1;
+  transform: rotate(-8deg);
+}
+/* A ring of field lines, out from the stamp. */
+.re-c-world-mark::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1.5px solid var(--wk);
+  opacity: 0;
+  pointer-events: none;
+}
+.re-c-world-p {
+  grid-area: p;
+  font-size: 1.6rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+@media (min-width: 640px) {
+  .re-c-world-p {
+    font-size: 2.35rem;
+  }
+}
+.re-c-world-bar {
+  grid-area: bar;
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  overflow: clip;
+  background: color-mix(in oklab, var(--wk) 12%, var(--re-line));
+}
+.re-c-world-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--wk);
+  transform: scaleX(var(--p));
+  transform-origin: 0 50%;
+}
+.re-c-world-text {
+  grid-area: text;
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+/* Takes room only once something is picked. */
+.re-c-pick-after {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.9rem;
+  margin-top: -0.85rem;
+}
+.re-c-pick-after:has(.re-c-pick-acts) {
+  margin-top: 0;
+}
+.re-c-pick-status {
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+.re-c-pick-acts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.re-c-pick-go,
+.re-c-pick-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.re-c-pick-go {
+  background: var(--sd-accent);
+  color: var(--sd-surface);
+  text-decoration: none;
+}
+.re-c-pick-clear {
+  background: transparent;
+  border: 1px solid var(--re-line-strong);
+  color: var(--sd-text-primary);
+}
+.re-c-pick-go:active,
+.re-c-pick-clear:active {
+  scale: 0.97;
+}
+
+/* ── 03 · The odds, as iron filings ──────────────────────────────────────── */
+
+.re-c-odds {
+  display: grid;
+  gap: 1.15rem;
+  margin: 0.35rem 0 0.3rem;
+  padding: 0;
+  list-style: none;
+}
+.re-c-odd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'l v'
+    'f f'
+    'n n';
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.3rem;
+}
+@media (min-width: 640px) {
+  .re-c-odd {
+    grid-template-columns: 11.5rem minmax(0, 1fr) 3.4rem;
+    grid-template-areas:
+      'l f v'
+      '. n .';
+    column-gap: 1rem;
+    row-gap: 0.15rem;
+  }
+}
+.re-c-odd-l {
+  grid-area: l;
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.re-c-odd-v {
+  grid-area: v;
+  text-align: right;
+  font-size: 1.3rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.re-c-odd-n {
+  grid-area: n;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--re-muted);
+}
+.re-c-filings {
+  grid-area: f;
+  position: relative;
+  height: 1.5rem;
+  overflow: clip;
+}
+.re-c-fl-set,
+.re-c-fl-loose {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  align-items: center;
+}
+.re-c-fl-set i,
+.re-c-fl-loose i {
+  display: block;
+  width: 76%;
+  height: 3px;
+  margin-inline: auto;
+  border-radius: 2px;
+}
+/* Lined up by the magnet. */
+.re-c-fl-set i {
+  background: var(--re-light);
+}
+/* Still scattered: the paper they lie on is opaque, and slides aside by one
+   slot per filing the magnet has lined up. */
+.re-c-fl-loose {
+  background: linear-gradient(to right, transparent, var(--re-card) 0.7rem);
+  transform: translateX(calc(var(--on) * 5%));
+}
+.re-c-fl-loose i {
+  background: color-mix(in oklab, var(--re-steel) 42%, var(--re-card));
+  transform: translateY(var(--y)) rotate(var(--r));
+}
+
+/* ── 03 · The magnet block ───────────────────────────────────────────────── */
+
+.re-c-mag-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  padding: 0.25rem 0 0.4rem;
+  /* Cells fly in from around the block; keep them inside the figure. */
+  overflow: clip;
+}
+@media (min-width: 640px) {
+  .re-c-mag-wrap {
+    grid-template-columns: minmax(0, 19rem) minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+    gap: 1.75rem;
+  }
+}
+.re-c-mag {
+  position: relative;
+  width: min(100%, 19rem);
+  aspect-ratio: 1;
+  padding: 14%;
+}
+.re-c-mag-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--re-steel);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 0 4.5;
+  opacity: 0.75;
+}
+.re-c-mag-field path {
+  vector-effect: non-scaling-stroke;
+}
+.re-c-mag-block {
+  position: relative;
+  display: grid;
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  gap: 2px;
+  height: 100%;
+  padding: 5px;
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--re-steel) 20%, var(--sd-surface));
+  box-shadow: inset 0 0 0 1px
+    color-mix(in oklab, var(--re-steel) 45%, transparent);
+}
+/* Ten columns per row; a group spans as many as it has cells, so the top
+   row's two groups line up with every row below. */
+.re-c-mag-row {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 2px;
+  min-height: 0;
+}
+.re-c-mag-g {
+  grid-column: span var(--n);
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 2px;
+  min-height: 0;
+}
+.re-c-mag-g i {
+  display: block;
+  border-radius: 2.5px;
+  background: color-mix(in oklab, var(--re-steel) 66%, var(--sd-surface));
+  box-shadow: inset 0 1px 0
+    color-mix(in oklab, var(--sd-surface) 35%, transparent);
+}
+.re-c-mag-g.is-ai i {
+  background: var(--re-nd);
+}
+.re-c-mag-key {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+.re-c-mag-key li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.6rem;
+}
+.re-c-sw {
+  width: 14px;
+  height: 14px;
+  margin-top: 0.2em;
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--re-steel) 66%, var(--sd-surface));
+}
+.re-c-sw.is-ai {
+  background: var(--re-nd);
+}
+
+/* ── 10 · Tier key ───────────────────────────────────────────────────────── */
+
+.re-c-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--re-muted);
+}
+.re-c-key li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.re-c-key i {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--tk);
+}
+
+/* ── 10 · The ranking lab ────────────────────────────────────────────────── */
+
+.re-c-lab {
+  --row: 3.4rem;
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.35rem;
+}
+@media (min-width: 720px) {
+  .re-c-lab {
+    --row: 2.9rem;
+  }
+}
+
+.re-c-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+.re-c-seg {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.re-c-seg-k {
+  margin-bottom: 0.35rem;
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-c-seg-row {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--sd-text-primary) 6%, var(--sd-surface));
+  border: 1px solid var(--re-line);
+}
+.re-c-seg-o {
+  --wk: var(--sd-accent);
+  position: relative;
+  isolation: isolate;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0.3rem 0.5rem;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 750;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--re-muted);
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 0.18s ease;
+}
+@media (min-width: 480px) {
+  .re-c-seg-o {
+    padding: 0.3rem 0.85rem;
+    font-size: 0.86rem;
+  }
+}
+.re-c-seg-o input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.re-c-seg-o::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--sd-surface);
+  box-shadow:
+    0 1px 3px color-mix(in srgb, var(--sd-card-shadow) 55%, transparent),
+    inset 0 0 0 1.5px var(--wk);
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.22s ease,
+    transform 0.4s var(--re-ease);
+}
+.re-c-seg-o:has(:checked) {
+  color: var(--wk);
+}
+.re-c-seg-o:has(:checked)::before {
+  opacity: 1;
+  transform: none;
+}
+.re-c-seg-o:has(:focus-visible) {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 2px;
+}
+.re-c-seg-o:active {
+  scale: 0.96;
+}
+
+.re-c-tune {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0 1.05rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--sd-accent);
+  background: transparent;
+  color: var(--sd-accent);
+  font-size: 0.88rem;
+  font-weight: 750;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 0.18s ease;
+}
+.re-c-tune:active {
+  scale: 0.97;
+}
+.re-c-tune svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.re-c-tune circle {
+  fill: var(--sd-surface);
+}
+.re-c-tune[aria-expanded='true'] {
+  background: var(--sd-accent);
+  color: var(--sd-surface);
+}
+.re-c-tune[aria-expanded='true'] circle {
+  fill: var(--sd-accent);
+}
+.re-c-tune-chev {
+  width: 7px;
+  height: 7px;
+  margin-left: 0.1rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.3s var(--re-ease);
+}
+.re-c-tune[aria-expanded='true'] .re-c-tune-chev {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+/* Seven sliders. */
+.re-c-weights {
+  padding: 0.85rem 0.95rem 0.9rem;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--sd-accent) 6%, var(--sd-surface));
+  border: 1px solid color-mix(in oklab, var(--sd-accent) 22%, transparent);
+}
+.re-c-weights[hidden] {
+  display: none;
+}
+.re-c-wgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem 1rem;
+}
+@media (min-width: 720px) {
+  .re-c-wgrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem 1.5rem;
+  }
+  .re-c-wgrid .re-c-reset {
+    grid-column: auto;
+    margin-top: 0;
+  }
+}
+.re-c-w {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+.re-c-w-l {
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.re-c-w-long {
+  display: none;
+}
+@media (min-width: 720px) {
+  .re-c-w-long {
+    display: inline;
+  }
+  .re-c-w-short {
+    display: none;
+  }
+}
+.re-c-w-out {
+  /* A fixed box, so the share ticking over re-lays nothing around it. */
+  display: inline-block;
+  width: 3.2em;
+  height: 1.3em;
+  contain: strict;
+  text-align: right;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--sd-accent);
+  font-variant-numeric: tabular-nums;
+}
+.re-c-w-in {
+  --fill: var(--sd-accent);
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.re-c-w-in::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--fill) calc(var(--v, 0.5) * 100%),
+    color-mix(in oklab, var(--sd-text-primary) 16%, transparent) 0
+  );
+}
+.re-c-w-in::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  margin-top: -9px;
+  border-radius: 50%;
+  border: 2.5px solid var(--fill);
+  background: var(--sd-surface);
+  box-shadow: 0 2px 6px -1px
+    color-mix(in srgb, var(--sd-card-shadow) 80%, transparent);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.re-c-w-in::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--sd-text-primary) 16%, transparent);
+}
+.re-c-w-in::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--fill);
+}
+.re-c-w-in::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--fill);
+  background: var(--sd-surface);
+}
+.re-c-w-in:focus-visible {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 2px;
+}
+.re-c-reset {
+  grid-column: 1 / -1;
+  margin-top: 0.35rem;
+  align-self: center;
+  justify-self: start;
+  min-height: 44px;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--re-line-strong);
+  background: var(--sd-surface);
+  color: var(--sd-text-primary);
+  font-size: 0.8rem;
+  font-weight: 750;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition: scale 0.18s ease;
+}
+.re-c-reset:active:not(:disabled) {
+  scale: 0.97;
+}
+.re-c-reset:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* The board. */
+.re-c-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  column-gap: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--sd-text-primary);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-c-head-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-size: 0.72rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.re-c-head-key i {
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--sd-text-primary);
+}
+.re-c-head-sc {
+  text-align: right;
+  white-space: nowrap;
+}
+.re-c-head-ti {
+  display: none;
+}
+@media (min-width: 720px) {
+  .re-c-head {
+    grid-template-columns: 12.5rem minmax(0, 1fr) 6rem 9.5rem;
+    column-gap: 1rem;
+  }
+  .re-c-head-key {
+    justify-self: end;
+  }
+  .re-c-head-ti {
+    display: block;
+  }
+}
+.re-c-lab:not([data-mode='article']) .re-c-head-key {
+  opacity: 1;
+}
+
+.re-c-rows {
+  position: relative;
+  height: calc(var(--n) * var(--row));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* A fixed-size box: score changes inside re-lay only the list, never the
+     page around it. */
+  contain: strict;
+}
+.re-c-row {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--row);
+  display: grid;
+  /* Phone: name and tier on top; the bar and its score below. The bar
+     spans the first two columns, so every row's bar is the same length
+     whatever its tier label. */
+  grid-template-columns: minmax(0, 1fr) auto 2.6rem;
+  grid-template-areas:
+    'co ti ti'
+    'tr tr sc';
+  align-content: center;
+  align-items: center;
+  column-gap: 0.7rem;
+  row-gap: 0.35rem;
+  border-bottom: 1px solid var(--re-line);
+  transform: translateY(calc(var(--slot) * var(--row)));
+  transition: transform var(--t, 0.6s) var(--e, ease) var(--d, 0s);
+}
+@media (min-width: 720px) {
+  .re-c-row {
+    grid-template-columns: 12.5rem minmax(0, 1fr) 6rem 9.5rem;
+    grid-template-areas: 'co tr sc ti';
+    column-gap: 1rem;
+  }
+}
+.re-c-lab[data-motion='toggle'] {
+  --t: 0.8s;
+  --e: var(--c-spring);
+  --tb: 0.7s;
+}
+.re-c-lab[data-motion='toggle'] .re-c-row {
+  --d: calc(var(--slot) * 22ms);
+}
+/* Dragging: bars follow the slider exactly (no transition, so nothing keeps
+   running between input events); rows that change places still glide. */
+.re-c-lab[data-motion='drag'] {
+  --t: 0.38s;
+  --e: var(--re-ease);
+}
+.re-c-lab[data-motion='drag'] .re-c-bar {
+  transition: none;
+}
+.re-c-co {
+  grid-area: co;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+.re-c-tk {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.re-c-nm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.88rem;
+  color: var(--re-muted);
+}
+.re-c-track {
+  grid-area: tr;
+  position: relative;
+  height: 12px;
+}
+.re-c-clip {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--sd-text-primary) 7%, transparent);
+}
+.re-c-bar {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--tk);
+  transition: transform var(--tb, 0.5s) var(--re-ease) var(--d, 0s);
+}
+/* The article's own score, left as a thin mark when the bar is someone
+   else's (a world's, or the reader's weights). */
+.re-c-ghost {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: calc(var(--g) * 100%);
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--sd-text-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.re-c-lab:not([data-mode='article']) .re-c-ghost {
+  opacity: 0.8;
+}
+.re-c-sc {
+  grid-area: sc;
+  text-align: right;
+  font-size: 1.15rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.re-c-ti {
+  grid-area: ti;
+  justify-self: end;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 750;
+  color: var(--tk-ink);
+  white-space: nowrap;
+}
+@media (min-width: 720px) {
+  .re-c-ti {
+    justify-self: start;
+    text-align: left;
+    font-size: 0.78rem;
+  }
+}
+/* Whose score this is, in its own ink. */
+.re-c-lab[data-mode='yours'] .re-c-sc,
+.re-c-lab[data-mode='yours'] .re-c-head-sc {
+  color: var(--sd-accent);
+}
+.re-c-lab[data-world='takeoff'] .re-c-sc,
+.re-c-lab[data-world='takeoff'] .re-c-head-sc {
+  color: var(--re-w-takeoff);
+}
+.re-c-lab[data-world='steady'] .re-c-sc,
+.re-c-lab[data-world='steady'] .re-c-head-sc {
+  color: var(--re-w-steady);
+}
+.re-c-lab[data-world='stall'] .re-c-sc,
+.re-c-lab[data-world='stall'] .re-c-head-sc {
+  color: var(--re-w-stall);
+}
+
+/* ── 10 · Tier cards ─────────────────────────────────────────────────────── */
+
+.re-c-tiers {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 880px) {
+  /* Two columns, filled down: core and watch on the left, speculative and
+     avoid on the right. Each column holds six companies. */
+  .re-c-tiers {
+    display: block;
+    columns: 2;
+    column-gap: 1.1rem;
+    margin-bottom: -1.1rem;
+  }
+  .re-c-tier {
+    break-inside: avoid;
+    margin-bottom: 1.1rem;
+  }
+  .re-c-tier[data-tier='2'] {
+    break-after: column;
+  }
+}
+.re-c-tier {
+  position: relative;
+  padding: 1.15rem 1.2rem 1.15rem 1.35rem;
+  border-radius: 16px;
+  background: var(--re-card);
+  border: 1px solid var(--re-line);
+}
+.re-c-tier::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 1.1rem;
+  bottom: 1.1rem;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--tk);
+}
+.re-c-tier-h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.45rem;
+  margin-bottom: 0.85rem;
+}
+.re-c-tier-a {
+  font-size: 1.45rem;
+  line-height: 1.1;
+  color: var(--tk-ink);
+}
+.re-c-tier-sep {
+  color: var(--re-muted);
+}
+.re-c-tier-b {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-c-tier-list {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.re-c-tier-list > li + li {
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--re-line);
+}
+.re-c-tier-co {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.55rem;
+  font-size: 0.98rem;
+}
+.re-c-tier-co b {
+  font-weight: 750;
+}
+.re-c-tier-tk {
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--tk) 14%, transparent);
+  color: var(--tk-ink);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+.re-c-tier-meter {
+  flex: 1 1 3rem;
+  max-width: 6rem;
+  height: 6px;
+  margin-left: auto;
+  border-radius: 3px;
+  overflow: clip;
+  background: color-mix(in oklab, var(--sd-text-primary) 8%, transparent);
+}
+.re-c-tier-meter i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tk);
+  transform: scaleX(var(--s));
+  transform-origin: 0 50%;
+}
+.re-c-tier-why {
+  margin-top: 0.35rem;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+/* ── 10 · The three worlds, spread from Steady ───────────────────────────── */
+
+.re-c-scen {
+  display: grid;
+  gap: 0.85rem;
+}
+.re-c-scen-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+.re-c-scen-key li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: opacity 0.35s ease;
+}
+.re-c-mk {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+.re-c-mk::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--wk);
+}
+.re-c-mk[data-shape='dot']::before {
+  inset: 1px;
+  border-radius: 50%;
+}
+.re-c-mk[data-shape='up']::before {
+  clip-path: polygon(50% 0, 100% 92%, 0 92%);
+}
+.re-c-mk[data-shape='down']::before {
+  clip-path: polygon(0 8%, 100% 8%, 50% 100%);
+}
+.re-c-mk > b {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  padding-bottom: 3px;
+  transform: translateX(-50%);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--wk);
+  font-variant-numeric: tabular-nums;
+}
+.re-c-scen-chart {
+  display: grid;
+}
+.re-c-scen-axis {
+  position: relative;
+  height: 1.1rem;
+  margin-left: calc(4.6rem + 0.6rem + 10px);
+  margin-right: 10px;
+}
+.re-c-scen-axis span {
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  transform: translateX(-50%);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--re-muted);
+  font-variant-numeric: tabular-nums;
+}
+.re-c-scen-row {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr);
+  column-gap: 0.6rem;
+  align-items: center;
+  min-height: 3.2rem;
+  border-top: 1px solid var(--re-line);
+}
+.re-c-scen-co {
+  display: grid;
+  min-width: 0;
+  line-height: 1.2;
+}
+@media (min-width: 640px) {
+  .re-c-scen-row {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+  }
+  .re-c-scen-axis {
+    margin-left: calc(8.5rem + 0.6rem + 10px);
+  }
+}
+.re-c-scen-co b {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.re-c-scen-co span {
+  font-size: 0.72rem;
+  color: var(--re-muted);
+}
+.re-c-scen-track {
+  position: relative;
+  height: 2.7rem;
+  margin-inline: 10px;
+}
+.re-c-scen-track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 68%;
+  border-top: 1px dashed var(--re-line-strong);
+}
+.re-c-scen-span {
+  position: absolute;
+  top: calc(68% - 2px);
+  left: calc(var(--lo) * 100%);
+  width: calc((var(--hi) - var(--lo)) * 100%);
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--sd-text-primary) 24%, transparent);
+  transform-origin: calc(
+      (var(--mid) - var(--lo)) / (var(--hi) - var(--lo)) * 100%
+    )
+    50%;
+}
+.re-c-scen-rail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.re-c-scen-rail .re-c-mk {
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  top: 68%;
+  margin: -7px 0 0 -7px;
+}
+/* The world picked in chapter 02 (or in the lab) stays lit. */
+.re-c-scen[data-world] .re-c-scen-rail,
+.re-c-scen[data-world] .re-c-scen-key li {
+  opacity: 0.22;
+}
+.re-c-scen[data-world='takeoff'] .is-takeoff,
+.re-c-scen[data-world='steady'] .is-steady,
+.re-c-scen[data-world='stall'] .is-stall {
+  opacity: 1;
+}
+
+/* ── Scroll-driven motion ────────────────────────────────────────────────── */
+
+/* Every timeline hangs off [data-near], which ../islands/c-near.tsx sets
+   while a chapter is within about half a screen of the viewport: an attached
+   scroll-driven animation costs a little on every scrolling frame, wherever
+   the reader is, so far-off charts carry none. Without it (no JS yet, no
+   support, reduced motion) the charts simply sit in their final state. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* 02 · columns rise through the axis in turn, figures riding on top. */
+    .re-c-ch[data-near] .re-c-rr {
+      view-timeline: --re-c-rr block;
+    }
+    .re-c-ch[data-near] .re-c-rr-rise {
+      animation-name: re-c-rise;
+      animation-fill-mode: both;
+      animation-timeline: --re-c-rr;
+      animation-range: cover calc(8% + var(--i) * 5%) cover
+        calc(26% + var(--i) * 5%);
+      animation-timing-function: cubic-bezier(0.25, 1.22, 0.45, 1);
+    }
+
+    /* 02 · probability bars fill. */
+    .re-c-ch[data-near] .re-c-world-fill {
+      animation: re-c-fill-x linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 40%;
+    }
+
+    /* 03 · the magnet sweeps each row: the scattered filings slide aside
+       and the lined-up ones are left behind it. */
+    .re-c-ch[data-near] .re-c-odd {
+      view-timeline: --re-c-odd block;
+    }
+    .re-c-ch[data-near] .re-c-fl-loose {
+      animation-name: re-c-sweep;
+      animation-fill-mode: both;
+      animation-timeline: --re-c-odd;
+      animation-range: cover 8% cover 34%;
+      animation-timing-function: cubic-bezier(0.3, 0.7, 0.2, 1);
+    }
+
+    /* 03 · the block is laid down row by row; the AI-specific five drop in
+       last. */
+    .re-c-ch[data-near] .re-c-mag {
+      view-timeline: --re-c-mag block;
+    }
+    .re-c-ch[data-near] .re-c-mag-g {
+      animation-name: re-c-lay;
+      animation-fill-mode: both;
+      animation-timeline: --re-c-mag;
+      animation-range: cover calc(5% + var(--o) * 24%) cover
+        calc(15% + var(--o) * 24%);
+      animation-timing-function: cubic-bezier(0.25, 1.15, 0.45, 1);
+    }
+    .re-c-ch[data-near] .re-c-mag-field {
+      animation: re-c-fade linear both;
+      animation-timeline: --re-c-mag;
+      animation-range: cover 34% cover 46%;
+    }
+
+    /* 10 · the worlds spread out from Steady. */
+    .re-c-ch[data-near] .re-c-scen-chart {
+      view-timeline: --re-c-scen block;
+    }
+    .re-c-ch[data-near] .re-c-scen-rail,
+    .re-c-ch[data-near] .re-c-scen-span {
+      animation-fill-mode: both;
+      animation-timeline: --re-c-scen;
+      animation-range: cover calc(12% + var(--i) * 3%) cover
+        calc(30% + var(--i) * 3%);
+      animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .re-c-ch[data-near] .re-c-scen-rail {
+      animation-name: re-c-spread;
+    }
+    .re-c-ch[data-near] .re-c-scen-span {
+      animation-name: re-c-span;
+    }
+  }
+
+  /* A pick lands as a stamp, with a ripple. One shot each. */
+  .re-c-world:has(:checked) .re-c-world-seal {
+    animation: re-c-stamp 0.45s cubic-bezier(0.3, 1.45, 0.5, 1) both;
+  }
+  .re-c-world:has(:checked) .re-c-world-mark::after {
+    animation: re-c-ripple 0.9s ease-out both;
+  }
+  /* Arriving at the lab with a world already picked: the toggle answers. */
+  .re-c-lab.is-arrive .re-c-seg-o:has(:checked)::before {
+    animation: re-c-pulse 0.9s ease-out;
+  }
+}
+
+@keyframes re-c-rise {
+  from {
+    transform: translateY(calc(var(--v) * 100% + 2.6rem));
+  }
+}
+@keyframes re-c-fill-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes re-c-sweep {
+  from {
+    transform: none;
+  }
+}
+@keyframes re-c-lay {
+  from {
+    transform: translate(var(--x), var(--y)) rotate(var(--r));
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+@keyframes re-c-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes re-c-spread {
+  from {
+    transform: translateX(calc((var(--mid) - var(--x)) * 100%));
+  }
+}
+@keyframes re-c-span {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes re-c-stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.8) rotate(-20deg);
+  }
+  45% {
+    opacity: 1;
+  }
+}
+@keyframes re-c-ripple {
+  from {
+    opacity: 0.75;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 0;
+    transform: scale(3.4);
+  }
+}
+@keyframes re-c-pulse {
+  30% {
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .re-c-world,
+  .re-c-world::before,
+  .re-c-world::after,
+  .re-c-seg-o,
+  .re-c-seg-o::before,
+  .re-c-tune,
+  .re-c-tune-chev,
+  .re-c-row,
+  .re-c-bar,
+  .re-c-ghost,
+  .re-c-head-key,
+  .re-c-scen-rail,
+  .re-c-scen-key li {
+    transition: none;
+  }
+}
