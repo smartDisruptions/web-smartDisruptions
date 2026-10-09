@@ -23,6 +23,10 @@ function shortDate(iso: string): string {
  * These are the earnings reads, so the section's old heading and its
  * paragraph, which describe exactly them, live here now, word for word.
  *
+ * The ten links don't prefetch. They are the quietest on the page, and ten
+ * route prefetches firing as the list scrolls into view would be work done
+ * during a scroll for clicks that mostly never come; a click fetches then.
+ *
  * `id="archive"`: the Writing page links straight to it.
  */
 export default function IndexArchive() {
