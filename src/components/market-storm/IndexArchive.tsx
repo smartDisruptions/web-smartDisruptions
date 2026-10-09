@@ -18,7 +18,7 @@ function shortDate(iso: string): string {
  * ledger, one line per report — the date, the ticker, the title — each line
  * a link to the report, which keeps its own URL and is not rewritten. The
  * method line stays on every entry because the paragraph above promises it
- * ("every card says which").
+ * ("every line says which").
  *
  * These are the earnings reads, so the section's old heading and its
  * paragraph, which describe exactly them, live here now, word for word.
@@ -54,7 +54,7 @@ export default function IndexArchive() {
           Four agents rather than five
         </strong>
         , and the top load-bearing claims go to the refutation pass rather than
-        all of them — every card says which, and every report names its own
+        all of them — every line says which, and every report names its own
         roster.
       </p>
       <p className="ms-arc-note">

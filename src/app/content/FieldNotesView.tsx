@@ -314,7 +314,8 @@ function EndTile({ first, span }: { first: FieldNote; span: 1 | 2 }) {
 /**
  * Which page numbers to show. Up to seven, every number fits on a phone; past
  * that it is first, current ±1 and last, with gaps — one line however long the
- * archive grows. (The same window as the Market Storm archive.)
+ * archive grows. (The Market Storm index used the same window until it
+ * stopped paging, October 2026.)
  */
 function pageWindow(page: number, total: number): (number | 'gap')[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
