@@ -821,6 +821,11 @@
     min-height: 100%;
     border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
   }
+  /* A lead image with no crop marks (art.ts) shows whole, centred. */
+  .wms-field:not(.is-framed) {
+    display: grid;
+    align-content: center;
+  }
 }
 
 /* The fades. On a phone and a tablet the field sits over the words and
@@ -1208,8 +1213,7 @@
   border-radius: 2px;
   background: #e9ddbd;
   box-shadow: 0 1.2px 0 rgba(9, 11, 22, 0.7);
-  translate: calc(var(--i) * 1.15px + var(--j) * 0.6px)
-    calc(var(--i) * -1.15px);
+  translate: calc(var(--i) * 1.15px + var(--j) * 0.6px) calc(var(--i) * -1.15px);
 }
 .wms-stack > span:last-child {
   background: #f6ecd2;

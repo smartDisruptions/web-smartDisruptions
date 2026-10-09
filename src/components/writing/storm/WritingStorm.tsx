@@ -61,9 +61,17 @@ import './storm.css';
  * elsewhere.
  */
 export default function WritingStorm() {
-  const [lead, ...rest] = frontReports();
+  const front = frontReports();
+  const [lead, ...rest] = front;
   if (!lead) return null;
-  const archived = archivedReports().length;
+  const archive = archivedReports();
+  // "Earlier" only while it is true: every archived report predates the
+  // whole front. Archive a newer one and the link says "more" instead.
+  const oldestFront = front.reduce(
+    (d, r) => (r.publishDate < d ? r.publishDate : d),
+    lead.publishDate
+  );
+  const earlier = archive.every((r) => r.publishDate <= oldestFront);
 
   return (
     <section id="market-storm" aria-labelledby="wms-title" className="wms">
@@ -117,7 +125,9 @@ export default function WritingStorm() {
             ))}
           </ol>
 
-          {archived > 0 && <ArchiveLink count={archived} />}
+          {archive.length > 0 && (
+            <ArchiveLink count={archive.length} earlier={earlier} />
+          )}
         </div>
         <RoomKeeper />
       </div>
@@ -235,7 +245,7 @@ function Field({ report, art }: { report: MarketStormEntry; art?: LeadArt }) {
         '--fx': art.focus[0],
         '--fy': art.focus[1],
         '--subject': art.subject,
-        '--mask': `url(${report.cardImage})`,
+        '--mask': `url("${report.cardImage}")`,
       } as CSSProperties)
     : undefined;
   return (
@@ -407,7 +417,7 @@ function Bars({ finding }: { finding: Finding }) {
  * drawn as a stack of paper slips (up to twelve; past that a stack stops
  * being countable at a glance).
  */
-function ArchiveLink({ count }: { count: number }) {
+function ArchiveLink({ count, earlier }: { count: number; earlier: boolean }) {
   const slips = Math.min(count, 12);
   return (
     <p className="wms-more">
@@ -420,12 +430,15 @@ function ArchiveLink({ count }: { count: number }) {
           {Array.from({ length: slips }, (_, i) => (
             <span
               key={i}
-              style={{ '--i': i, '--j': JITTER[i % JITTER.length] } as CSSProperties}
+              style={
+                { '--i': i, '--j': JITTER[i % JITTER.length] } as CSSProperties
+              }
             />
           ))}
         </span>
         <span>
-          {count} earlier {count === 1 ? 'report' : 'reports'} in the archive
+          {count} {earlier ? 'earlier' : 'more'}{' '}
+          {count === 1 ? 'report' : 'reports'} in the archive
         </span>
         <span aria-hidden="true" className="wms-go-arrow">
           &rarr;
