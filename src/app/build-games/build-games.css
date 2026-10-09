@@ -24,7 +24,7 @@
   isolation: isolate;
   display: grid;
   grid-template-areas: 'intro' 'game' 'optin';
-  gap: 1.15rem;
+  gap: 1.5rem;
   /* The site's 72rem, like the trio and the header, so the edges line up. */
   max-width: 72rem;
   margin-inline: auto;
@@ -87,15 +87,19 @@
 }
 .bg-h1 {
   margin-top: 0.7rem;
-  /* Capped at its siblings' tablet size (Websites 3.7rem, Apps 3.6rem). */
-  font-size: clamp(2.2rem, 9.4vw, 3.7rem);
+  /* Small enough that "Build custom games," holds one line from a 360px
+     phone up (it is 11 times the font size wide), and capped at its
+     siblings' tablet size (Websites 3.7rem, Apps 3.6rem). */
+  font-size: clamp(1.8rem, 8.4vw - 0.1rem, 3.7rem);
   line-height: 1.02;
   letter-spacing: -0.01em;
   color: var(--sd-text-primary);
 }
+/* Beside the cabinet the column is ~21rem, too narrow for either half on
+   one line at headline size; this size breaks each into two even lines. */
 @media (min-width: 64rem) {
   .bg-h1 {
-    font-size: min(4.2rem, 14.5cqi);
+    font-size: min(4.2rem, 12cqi);
   }
 }
 .bg-h1-then {
@@ -440,6 +444,9 @@
 .bg-optin {
   grid-area: optin;
   position: relative;
+  /* Under the cabinet (one column), a clear break: it's the next thing,
+     not part of the game. Beside it, the row gap is enough. */
+  margin-top: 1.5rem;
   padding: 1.2rem 1.1rem 1.15rem;
   border: 1px solid var(--sd-border);
   border-radius: 22px;
@@ -449,6 +456,11 @@
 @media (min-width: 40rem) {
   .bg-optin {
     padding: 1.5rem 1.5rem 1.35rem;
+  }
+}
+@media (min-width: 64rem) {
+  .bg-optin {
+    margin-top: 0;
   }
 }
 /* A ping when you clear a level you built: one ring, twice, on opacity. */
@@ -493,16 +505,9 @@
 }
 
 /* ── The shelf ──────────────────────────────────────────────────────────── */
+/* On the Build pages' band (build-band.css), which sets its spacing. */
 .bg-shelf {
-  max-width: 72rem;
-  margin: 4.25rem auto 0;
-  padding: 0 1rem;
   contain-intrinsic-size: auto 560px;
-}
-@media (min-width: 40rem) {
-  .bg-shelf {
-    padding-inline: 1.5rem;
-  }
 }
 .bg-shelf-title {
   margin-top: 0.55rem;

@@ -65,7 +65,7 @@ export default function GuideWall() {
   const blanks = empty ? 0 : (3 - (guides.length % 3)) % 3;
 
   return (
-    <section className="bw-guides" aria-labelledby="bw-guides-h">
+    <section className="bw-guides build-band" aria-labelledby="bw-guides-h">
       <p className="sd-kicker">The guides</p>
       <h2 id="bw-guides-h" className="font-display bw-h2">
         {empty ? 'Nothing on the wall yet.' : 'Website guides'}

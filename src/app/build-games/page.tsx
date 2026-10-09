@@ -9,6 +9,7 @@ import { IconArrowRight } from '@/components/icons';
 import { shareMeta } from '@/lib/shareCard';
 import LevelToy from './LevelToy';
 import { GUIDES } from './guides';
+import '@/components/build/build-band.css';
 import './build-games.css';
 
 const ROOM = buildRoom('games');
@@ -61,7 +62,8 @@ export default function BuildGamesPage() {
         <div className="bg-intro">
           <p className="sd-kicker">{ROOM.title}</p>
           <h1 id="bg-title" className="bg-h1 font-display">
-            Build a level. <span className="bg-h1-then">Then play it.</span>
+            Build custom games,{' '}
+            <span className="bg-h1-then">any way you like.</span>
           </h1>
           <p className="bg-lede font-read">
             Raise the rooftops, hang a few lanterns, move the gate. Press Play,
@@ -95,7 +97,10 @@ export default function BuildGamesPage() {
         </section>
       </section>
 
-      <section className="bg-shelf sd-defer" aria-labelledby="bg-shelf-title">
+      <section
+        className="bg-shelf build-band sd-defer"
+        aria-labelledby="bg-shelf-title"
+      >
         <p className="sd-kicker">The guides</p>
         <h2 id="bg-shelf-title" className="bg-shelf-title font-display">
           The shelf

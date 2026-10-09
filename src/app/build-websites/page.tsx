@@ -8,6 +8,7 @@ import { shareMeta } from '@/lib/shareCard';
 import ShojiBrowser from './ShojiBrowser';
 import MiniSite from './MiniSite';
 import GuideWall from './GuideWall';
+import '@/components/build/build-band.css';
 import './websites.css';
 
 const ROOM = buildRoom('websites');
@@ -40,9 +41,9 @@ export default function BuildWebsitesPage() {
         <div className="bw-copy">
           <p className="sd-kicker">{ROOM.title}</p>
           <h1 id="bw-title" className="font-display bw-h1">
-            Every website is a grid of{' '}
+            Build interactive websites that are fast, clean, and{' '}
             <span className="bw-h1-mark">
-              panels.
+              responsive.
               <StaticSvg
                 className="bw-h1-brush"
                 viewBox="0 0 200 16"
@@ -54,8 +55,9 @@ export default function BuildWebsitesPage() {
             </span>
           </h1>
           <p className="bw-lede font-read">
-            Drag the edge of this one. Each red mark under it is a breakpoint:
-            cross one and the panels rearrange.
+            Responsive means it fits any screen. Drag the edge of this one: each
+            red mark under it is a breakpoint, and the site rearranges as you
+            cross it.
           </p>
         </div>
 

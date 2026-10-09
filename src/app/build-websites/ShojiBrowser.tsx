@@ -59,11 +59,11 @@ const MODES: { key: Mode; label: string }[] = [
   { key: 'ship', label: 'Ship' },
 ];
 
-const CAPTIONS: Record<Mode, string> = {
+/** Ship, the finished site, goes without: the site says it. */
+const CAPTIONS: Partial<Record<Mode, string>> = {
   sketch:
     'Sketch: boxes on paper, before any code. An X means a picture goes here.',
   code: 'Code: each box becomes an HTML tag, and the tag says what the box is.',
-  ship: 'Ship: CSS adds the colour and the type, plus a layout for each screen size.',
 };
 
 /** Remembered per browser: the demo is for a first visit, not every visit. */

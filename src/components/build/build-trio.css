@@ -3,8 +3,9 @@
   margin: 0 auto;
   max-width: 72rem;
   /* The Build pages' own gutter (1rem on a phone), so the strip lines up
-     with the sections above it. */
-  padding: 4rem 1rem 1rem;
+     with the sections above it, and the same air over it as over the
+     guides band (build-band.css). */
+  padding: clamp(4rem, 3rem + 4vw, 6rem) 1rem 1rem;
 }
 @media (min-width: 40rem) {
   .brt-trio {

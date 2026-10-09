@@ -31,7 +31,7 @@
   gap: 0.25rem;
   max-width: 72rem;
   margin-inline: auto;
-  padding: 1.25rem 1rem 1.5rem;
+  padding: 1.25rem 1rem 0;
 }
 /* From a tablet up, the same gutter as the shelf and the trio below it. */
 @media (min-width: 40rem) {
@@ -47,7 +47,7 @@
       'list toy';
     grid-template-rows: auto 1fr;
     column-gap: 3rem;
-    padding: 3rem 1.5rem 2.5rem;
+    padding: 3rem 1.5rem 0;
     align-items: start;
   }
 }
@@ -1194,7 +1194,9 @@
 .ba-list {
   grid-area: list;
   position: relative;
-  margin-top: 1.25rem;
+  /* Under the toy (one column), a clear break: it's the next thing, not
+     part of the toy. */
+  margin-top: 2.75rem;
   padding: 1.35rem 1.2rem 1.25rem;
   border-radius: var(--radius-2xl);
   /* The shelf's "Get it by email" jumps up to here, and the header comes
@@ -1282,16 +1284,7 @@
 }
 
 /* ── The shelf: guides, and the honest empty state ─────────────────────── */
-.ba-shelf {
-  max-width: 72rem;
-  margin: 1.5rem auto 0;
-  padding: 0 1rem;
-}
-@media (min-width: 40rem) {
-  .ba-shelf {
-    padding: 0 1.5rem;
-  }
-}
+/* On the Build pages' band (build-band.css), which sets its spacing. */
 .ba-shelf-head {
   display: flex;
   align-items: end;

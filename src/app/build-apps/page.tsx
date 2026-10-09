@@ -9,6 +9,7 @@ import { IconArrowRight } from '@/components/icons';
 import { shareMeta } from '@/lib/shareCard';
 import Vessel from './Vessel';
 import { GUIDES, type Guide } from './guides';
+import '@/components/build/build-band.css';
 import './build-apps.css';
 
 const ROOM = buildRoom('apps');
@@ -85,11 +86,11 @@ export default function BuildAppsPage() {
         <div className="ba-copy">
           <p className="sd-kicker">{ROOM.title}</p>
           <h1 id="ba-title" className="ba-h1 font-display">
-            Build apps that do <span className="ba-h1-mark">one job</span> well.
+            Build apps for <span className="ba-h1-mark">anything</span>.
           </h1>
           <p className="ba-lede font-read">
-            Under the glass, most apps come down to four parts. Here&rsquo;s a
-            tiny one. Turn it, take it apart, and tap its button.
+            Follow along as I attempt to build apps that make life easier or
+            more fun.
           </p>
         </div>
 
@@ -120,7 +121,7 @@ export default function BuildAppsPage() {
         </div>
       </section>
 
-      <section className="ba-shelf" aria-labelledby="ba-shelf-title">
+      <section className="ba-shelf build-band" aria-labelledby="ba-shelf-title">
         <div className="ba-shelf-head">
           <div>
             <p className="sd-kicker">The guides</p>

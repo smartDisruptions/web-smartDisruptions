@@ -42,10 +42,10 @@
   position: relative;
   isolation: isolate;
   display: grid;
-  gap: 1.1rem;
+  gap: 1.5rem;
   max-width: 72rem;
   margin-inline: auto;
-  padding: 1.4rem 1rem 0.5rem;
+  padding: 1.4rem 1rem 0;
 }
 .bw-mark {
   z-index: -1;
@@ -102,7 +102,7 @@
 
 @media (min-width: 40rem) {
   .bw-hero {
-    padding: 2rem 1.5rem 0.5rem;
+    padding: 2rem 1.5rem 0;
   }
 }
 @media (min-width: 64rem) {
@@ -119,6 +119,7 @@
   }
   .bw-copy {
     grid-area: copy;
+    container-type: inline-size;
   }
   .bw-toy {
     grid-area: toy;
@@ -126,8 +127,10 @@
   .bw-join {
     grid-area: join;
   }
+  /* Its siblings' 3.1rem at the full 72rem; in a narrower window it shrinks
+     with its column, so it keeps four lines instead of breaking into six. */
   .bw-h1 {
-    font-size: 3.1rem;
+    font-size: min(3.1rem, 11.2cqi);
   }
   .bw-mark {
     top: 0.5rem;
@@ -797,6 +800,12 @@
   line-height: 1.5;
   color: var(--sd-text-secondary);
 }
+/* Ship has no caption. Still rendered, so the live region is there when
+   Sketch or Code fills it. */
+.bw-cap:empty {
+  min-height: 0;
+  margin-top: 0;
+}
 
 /* ── The little site ────────────────────────────────────────────────────── */
 .bw-site {
@@ -1352,7 +1361,9 @@
 /* ── The websites list ──────────────────────────────────────────────────── */
 .bw-join {
   position: relative;
-  margin-top: 0.4rem;
+  /* Under the toy (one column), a clear break: it's the next thing, not
+     part of the toy. */
+  margin-top: 1.5rem;
   padding: 1.2rem 1.15rem 1.15rem;
   border-radius: var(--radius-2xl);
   border: 1px solid var(--sd-border);
@@ -1409,19 +1420,18 @@
     padding: 1.4rem 1.5rem 1.3rem;
   }
 }
+/* Beside the toy, under the headline: the row gap is enough. */
+@media (min-width: 64rem) {
+  .bw-join {
+    margin-top: 0.4rem;
+  }
+}
 
 /* ── The guides wall ────────────────────────────────────────────────────── */
+/* On the Build pages' band (build-band.css), which sets its spacing. */
 .bw-guides {
-  max-width: 72rem;
-  margin: 3.25rem auto 0;
-  padding: 0 1rem;
   content-visibility: auto;
   contain-intrinsic-size: auto 560px;
-}
-@media (min-width: 40rem) {
-  .bw-guides {
-    padding: 0 1.5rem;
-  }
 }
 .bw-h2 {
   margin-top: 0.5rem;
