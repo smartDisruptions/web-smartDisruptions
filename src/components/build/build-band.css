@@ -1,0 +1,25 @@
+/*
+  The middle of every Build page: the guides, on the second ground. It runs
+  edge to edge with a hairline top and bottom, so the page reads as three
+  parts (the toy, the guides, the other rooms) and not one long column.
+  What's inside keeps the pages' 72rem column and gutters (1rem on a phone,
+  1.5rem from a tablet), so its edges line up with the header's. The air
+  above it is the same as the trio's below it (build-trio.css).
+*/
+.build-band {
+  --band-gut: 1rem;
+  margin-top: clamp(4rem, 3rem + 4vw, 6rem);
+  padding-block: clamp(3.5rem, 2.5rem + 4vw, 5.5rem);
+  padding-inline: max(var(--band-gut), (100% - 72rem) / 2 + var(--band-gut));
+  border-block: 1px solid var(--sd-rule);
+  /* The page's own paper grain, a shade deeper: the same washi, not a grey
+     strip. */
+  background-color: var(--sd-bg-2);
+  background-image: var(--sd-noise);
+  background-size: 180px 180px;
+}
+@media (min-width: 40rem) {
+  .build-band {
+    --band-gut: 1.5rem;
+  }
+}

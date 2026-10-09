@@ -5,6 +5,9 @@ import { useState } from 'react';
 
 // Email-capture form. Posts to /api/subscribe (Supabase-backed, insert-only).
 // `source` tags where the signup came from so we can see which surface works.
+// On the three Build pages it is also the list: 'websites', 'apps' and
+// 'games' are each that page's own email list, so a send for one category
+// goes to the people who asked for it.
 //
 // The look: in a narrow space, a full-width field above a full-width
 // vermilion button — both thumb-sized. Given 24rem or more they join into one
@@ -15,11 +18,21 @@ export default function SubscribeForm({
   source = 'site',
   className = '',
   cta = 'Get the next build',
+  done = 'You’re in. Next build, your inbox.',
 }: {
-  source?: 'site' | 'post' | 'home' | 'market-storm';
+  source?:
+    | 'site'
+    | 'post'
+    | 'home'
+    | 'market-storm'
+    | 'websites'
+    | 'apps'
+    | 'games';
   className?: string;
   /** The button's words. Defaults to the site-wide ask. */
   cta?: string;
+  /** What it says once you're in. Defaults to the site-wide line. */
+  done?: string;
 }) {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState(''); // honeypot — hidden from humans
@@ -64,7 +77,7 @@ export default function SubscribeForm({
         >
           ✓
         </span>
-        You&rsquo;re in. Next build, your inbox.
+        {done}
       </p>
     );
   }

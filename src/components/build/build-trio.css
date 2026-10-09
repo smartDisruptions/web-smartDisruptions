@@ -1,0 +1,80 @@
+/* The Build trio strip (BuildTrio.tsx). Prefix brt-. */
+.brt-trio {
+  margin: 0 auto;
+  max-width: 72rem;
+  /* The Build pages' own gutter (1rem on a phone), so the strip lines up
+     with the sections above it, and the same air over it as over the
+     guides band (build-band.css). */
+  padding: clamp(4rem, 3rem + 4vw, 6rem) 1rem 1rem;
+}
+@media (min-width: 40rem) {
+  .brt-trio {
+    padding-inline: 1.5rem;
+  }
+}
+.brt-list {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+/* Three across only from a desktop: on a tablet a third of the row leaves
+   each card ~105px of text, and "Build Apps" wraps beside "Build Games". */
+@media (min-width: 64rem) {
+  .brt-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+.brt-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  /* Fills its cell, so three across share one bottom edge however their
+     lines wrap. */
+  height: 100%;
+  min-height: 5.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  color: var(--sd-text-primary);
+}
+.brt-here {
+  border: 1.5px dashed var(--sd-border-strong);
+  background: transparent;
+}
+.brt-kanji {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  color: var(--sd-pen);
+}
+.brt-here .brt-kanji {
+  color: var(--sd-text-secondary);
+  opacity: 0.6;
+}
+.brt-text {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.brt-title {
+  font-size: 1.15rem;
+  line-height: 1.15;
+}
+.brt-line {
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--sd-text-secondary);
+  /* No one-word last line when a line wraps. */
+  text-wrap: pretty;
+}
+.brt-go {
+  margin-left: auto;
+  flex: none;
+  color: var(--sd-accent);
+  transition: translate 0.3s var(--ease-out-expo);
+}
+.brt-card:hover .brt-go {
+  translate: 4px 0;
+}

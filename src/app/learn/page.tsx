@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import SubscribeForm from '@/components/SubscribeForm';
+import BuildSections from '@/components/build/sections/BuildSections';
 import { shareMeta } from '@/lib/shareCard';
 import './learn.css';
 
@@ -20,9 +21,12 @@ export const metadata: Metadata = {
 };
 
 // /learn — the email splash. 学 ("learn") is the page kanji and Kiru waves you
-// in. One job: the form. Everything under it only answers "what am I signing
-// up for", and every promise here must stay true of what the list actually
-// sends (see /privacy). Styles: ./learn.css (ln-*).
+// in. Its first job is the form, and the cards under it answer "what am I
+// signing up for"; every promise here must stay true of what the list
+// actually sends (see /privacy). Then the three things the headline promises,
+// one section each: Build Websites, Build Apps, Build Games, each opening its
+// own page (src/components/build/sections; they were on the home page until
+// October 2026). Styles: ./learn.css (ln-*).
 
 const GETS = [
   {
@@ -71,6 +75,8 @@ export default function LearnPage() {
           ))}
         </ol>
       </section>
+
+      <BuildSections />
 
       <nav className="ln-start" aria-label="Start here">
         <p className="sd-kicker">Or start reading now</p>

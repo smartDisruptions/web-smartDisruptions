@@ -1,0 +1,259 @@
+/*
+  /about — the work (場). Prefix au-.
+
+  The header: the h1 and the noren side by side on a desktop; on a phone the
+  h1, then the doorway, then the words. The noren itself is
+  components/about/noren.css; the fusuma above it is switch.css; the card at
+  the foot is next.css. The reel of builds under the header brings its own
+  styles (components/home/showcase.css).
+*/
+
+.au-page {
+  padding-bottom: 1rem;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+
+.au-hero {
+  display: grid;
+  grid-template-areas:
+    'head'
+    'stage'
+    'body';
+  gap: 1.6rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 1.9rem 1rem 0;
+}
+@media (min-width: 40rem) {
+  .au-hero {
+    padding: 2.75rem 1.5rem 0;
+  }
+}
+@media (min-width: 60rem) {
+  .au-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 29rem);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'head stage'
+      'body stage';
+    column-gap: clamp(3rem, 6vw, 6rem);
+    row-gap: 2rem;
+    align-items: start;
+  }
+}
+.au-head {
+  grid-area: head;
+}
+.au-stage {
+  grid-area: stage;
+  width: min(100%, 25rem);
+  justify-self: center;
+}
+@media (min-width: 40rem) {
+  .au-stage {
+    width: min(100%, 28rem);
+  }
+}
+@media (min-width: 60rem) {
+  .au-stage {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+.au-body {
+  grid-area: body;
+}
+
+.au-h1 {
+  margin-top: 1rem;
+  /* "Here's the work." is 8.55em wide: one line each on a 358px phone column
+     up to the desktop split, where it shares the row with the doorway. */
+  font-size: clamp(2.2rem, 10.4vw, 3.5rem);
+  line-height: 1.04;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 60rem) {
+  .au-h1 {
+    font-size: clamp(3rem, 4.4vw, 3.9rem);
+  }
+}
+.au-h1-line {
+  display: block;
+}
+.au-h1-line + .au-h1-line {
+  color: var(--sd-pen-ink);
+}
+/* The katana slash leaves a hairline where its halves meet; once the cut has
+   landed, seal it (the same fix as About Me's headline). */
+@media (prefers-reduced-motion: no-preference) {
+  .au-h1 .sd-slash-a {
+    animation:
+      sd-slash-a 1s var(--ease-out-expo) var(--d, 0s) both,
+      au-seal 0.01s linear calc(var(--d, 0s) + 1s) forwards;
+  }
+  .au-h1 .sd-slash::before {
+    animation:
+      sd-slash-b 1s var(--ease-out-expo) var(--d, 0s) both,
+      au-seal-copy 0.01s linear calc(var(--d, 0s) + 1s) forwards;
+  }
+}
+@keyframes au-seal {
+  to {
+    clip-path: none;
+  }
+}
+@keyframes au-seal-copy {
+  to {
+    opacity: 0;
+  }
+}
+
+.au-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.88rem;
+  color: var(--sd-text-secondary);
+}
+.au-hint-k {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  color: var(--sd-pen);
+}
+.au-hint-fine {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .au-hint-fine {
+    display: inline;
+  }
+  .au-hint-touch {
+    display: none;
+  }
+}
+
+.au-lede {
+  max-width: 40ch;
+  font-size: 1.12rem;
+  line-height: 1.75;
+  color: var(--sd-text-secondary);
+}
+@media (min-width: 40rem) {
+  .au-lede {
+    font-size: 1.18rem;
+  }
+}
+
+/* ── The receipt ───────────────────────────────────────────────────────────
+   An ofuda slip (sd-note) printed as a till receipt: the same paper in both
+   lights, so every colour on it is fixed, never a theme token.          */
+
+.au-receipt {
+  max-width: 23rem;
+  margin-top: 2rem;
+  margin-bottom: 8px;
+  padding: 1.15rem 1.25rem 1.3rem;
+  border-radius: 6px 6px 0 0;
+  rotate: -1.2deg;
+}
+/* Torn off the roll: a row of paper teeth under the last line. */
+.au-receipt::after {
+  content: '';
+  position: absolute;
+  inset: 100% 0 auto;
+  height: 7px;
+  background: conic-gradient(
+      from 135deg at 50% 0,
+      var(--sd-sticky) 90deg,
+      transparent 0
+    )
+    0 0 / 11px 100% repeat-x;
+}
+@media (min-width: 60rem) {
+  .au-receipt {
+    margin-top: 2.5rem;
+  }
+}
+.au-rc-shop {
+  font-size: 1.12rem;
+  line-height: 1.2;
+  text-align: center;
+  color: #1f1a14;
+}
+.au-rc-sub {
+  margin-top: 0.3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1.5px dashed rgba(31, 26, 20, 0.32);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #5b5244;
+}
+.au-rc-lines {
+  margin-top: 0.3rem;
+}
+.au-rc-line,
+.au-rc-total {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: 0.95rem;
+  color: #1f1a14;
+}
+.au-rc-line {
+  font-weight: 600;
+  border-radius: 6px;
+  transition:
+    color 0.2s ease,
+    scale 0.2s ease;
+}
+.au-rc-line:hover {
+  color: #2b3a96;
+}
+.au-rc-line:active {
+  scale: 0.98;
+}
+.au-rc-dots {
+  flex: 1;
+  min-width: 1rem;
+  height: 0;
+  border-bottom: 2px dotted rgba(31, 26, 20, 0.36);
+  translate: 0 0.3em;
+}
+.au-rc-line b {
+  font-size: 1.08rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.au-rc-total {
+  margin-top: 0.25rem;
+  border-top: 1.5px dashed rgba(31, 26, 20, 0.32);
+  padding-top: 0.3rem;
+  font-weight: 800;
+}
+.au-rc-total b {
+  font-weight: 800;
+  color: #b42a17;
+}
+.au-rc-foot {
+  margin-top: 0.55rem;
+  padding-right: 3rem;
+  font-family: var(--font-read);
+  font-size: 0.98rem;
+  font-style: italic;
+  color: #3d3529;
+}
+.au-rc-seal {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 0.95rem;
+  width: 2.3rem;
+  rotate: -8deg;
+}

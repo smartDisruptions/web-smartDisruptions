@@ -1,0 +1,1597 @@
+/*
+  /build-websites — 網, "net, web". Prefix: bw-.
+
+  The header is the shoji browser (ShojiBrowser.tsx): a browser window framed
+  like a shoji screen, a tiny website inside (MiniSite.tsx), a finger pull to
+  slide its edge, and Sketch / Code / Ship.
+
+  How the miniature works. The track (.bw-track) is a container; from its
+  width it computes --bw-k, real px per *virtual* px, so that the window at
+  its widest is --bw-max virtual px. Everything inside the site is in em, and
+  the site's em is 16 virtual px, so its container queries are honest
+  breakpoints (560px and 800px). The window's width is the one thing that
+  changes: --bw-v, a registered number that doesn't inherit, so a drag
+  restyles one element and lays out one small, strictly contained subtree.
+
+  Motion is transform and opacity only (the intro, the brush wipe, the stamp).
+  Reduced motion gets the finished site, still.
+*/
+
+/* 0 means "not set yet": the window is at its widest (see .bw-win). */
+@property --bw-v {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+/* Registered so it computes to an absolute length where it is declared
+   (against the track's container), and inherits as plain px. */
+@property --bw-k {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0.3px;
+}
+
+.bw-page {
+  position: relative;
+  overflow-x: clip;
+  padding-bottom: 2rem;
+}
+
+/* ── The header ─────────────────────────────────────────────────────────── */
+.bw-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 1.5rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 1.4rem 1rem 0;
+}
+.bw-mark {
+  z-index: -1;
+  top: -1.25rem;
+  right: -6.5rem;
+  width: clamp(15rem, 66vw, 31rem);
+  height: auto;
+  opacity: 0.07;
+}
+:root[data-theme='dark'] .bw-mark {
+  opacity: 0.08;
+}
+.bw-h1 {
+  margin-top: 0.55rem;
+  font-size: clamp(2rem, 8.6vw, 3.7rem);
+  line-height: 1.03;
+  color: var(--sd-text-primary);
+}
+.bw-h1-mark {
+  position: relative;
+  white-space: nowrap;
+}
+.bw-h1-brush {
+  position: absolute;
+  left: -2%;
+  right: -3%;
+  bottom: -0.16em;
+  width: 105%;
+  height: 0.3em;
+  fill: none;
+  stroke: var(--sd-pen);
+  stroke-width: 5;
+  stroke-linecap: round;
+  overflow: visible;
+  transform-origin: left center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bw-h1-brush {
+    animation: bw-brush-in 0.7s cubic-bezier(0.6, 0.05, 0.3, 1) 0.35s both;
+  }
+}
+@keyframes bw-brush-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+.bw-lede {
+  margin-top: 0.8rem;
+  max-width: 34rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+}
+
+@media (min-width: 40rem) {
+  .bw-hero {
+    padding: 2rem 1.5rem 0;
+  }
+}
+@media (min-width: 64rem) {
+  .bw-hero {
+    grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+    grid-template-areas:
+      'copy toy'
+      'join toy';
+    grid-template-rows: auto 1fr;
+    column-gap: 3rem;
+    row-gap: 2rem;
+    align-items: start;
+    padding-top: 3.25rem;
+  }
+  .bw-copy {
+    grid-area: copy;
+    container-type: inline-size;
+  }
+  .bw-toy {
+    grid-area: toy;
+  }
+  .bw-join {
+    grid-area: join;
+  }
+  /* Its siblings' 3.1rem at the full 72rem; in a narrower window it shrinks
+     with its column, so it keeps four lines instead of breaking into six. */
+  .bw-h1 {
+    font-size: min(3.1rem, 11.2cqi);
+  }
+  .bw-mark {
+    top: 0.5rem;
+    right: auto;
+    left: -2.5rem;
+    width: 24rem;
+  }
+}
+
+/* ── The toy: tools, track, caption ─────────────────────────────────────── */
+.bw-toy {
+  /* Day: hinoki frame, washi panes, sumi ink. */
+  --bw-wood-hi: #e4cca3;
+  --bw-wood: #cfae80;
+  --bw-wood-lo: #b38c5d;
+  --bw-wood-edge: #8a6741;
+  --bw-grain: rgba(110, 74, 38, 0.07);
+  --bw-joint: rgba(96, 64, 32, 0.28);
+  --bw-groove: #9f7b50;
+  --bw-tick: rgba(60, 40, 20, 0.45);
+  --bw-kumiko: rgba(138, 103, 65, 0.2);
+  --bw-pane: rgba(255, 252, 245, 0.5);
+  --bw-url-bg: #fbf6ea;
+  --bw-paper: #fffcf5;
+  --bw-ink: rgba(21, 23, 43, 0.84);
+  --bw-ink-2: rgba(21, 23, 43, 0.3);
+  --bw-code: #2b3a96;
+  --bw-code-ink: #ffffff;
+  --bw-code-soft: rgba(43, 58, 150, 0.06);
+  --bw-on-accent: #ffffff;
+  --bw-pull-rim: #c8962e;
+  --bw-glow: transparent;
+  /* Hand-drawn strokes, tiled per line of text. Non-scaling strokes keep the
+     line weight in real pixels however small the miniature gets. */
+  --bw-sq: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M0 5C1.6 2.5 3.4 2.5 5 5C6.6 7.4 8.4 7.4 10 5C11.6 2.9 13.4 2.9 15 5C16.6 7.7 18.4 7.7 20 5C21.6 2.2 23.4 2.2 25 5C26.6 7.2 28.4 7.2 30 5C31.6 2.7 33.4 2.7 35 5C36.6 7.5 38.4 7.5 40 5' fill='none' stroke='%2315172b' stroke-opacity='.78' stroke-width='1.25' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  --bw-sq-bold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M0 5C3 3.4 7 3.6 10 5S17 6.8 20 5S27 3.3 30 5S37 6.6 40 5' fill='none' stroke='%2315172b' stroke-opacity='.85' stroke-width='3.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  --bw-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M1.5 2.5L98 1.2L98.6 98L2.2 98.6ZM3 3.5L97 96.5M96.5 3L3.5 97' fill='none' stroke='%23000' stroke-width='1.5' stroke-linejoin='round' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+
+  container: bw-toy / inline-size;
+  position: relative;
+  min-width: 0;
+}
+:root[data-theme='dark'] .bw-toy {
+  /* Night: lacquered frame, moonlit edge, the same washi lit from inside. */
+  --bw-wood-hi: #443a5a;
+  --bw-wood: #2e2842;
+  --bw-wood-lo: #221d33;
+  --bw-wood-edge: #120f1d;
+  --bw-grain: rgba(155, 176, 255, 0.04);
+  --bw-joint: rgba(0, 0, 0, 0.45);
+  --bw-groove: #272140;
+  --bw-tick: rgba(166, 171, 200, 0.5);
+  --bw-kumiko: rgba(155, 176, 255, 0.11);
+  --bw-pane: rgba(17, 21, 42, 0.45);
+  --bw-url-bg: #0d1023;
+  --bw-paper: #0f1326;
+  --bw-ink: rgba(226, 230, 250, 0.8);
+  --bw-ink-2: rgba(226, 230, 250, 0.28);
+  --bw-code: #9bb0ff;
+  --bw-code-ink: #090b16;
+  --bw-code-soft: rgba(155, 176, 255, 0.07);
+  --bw-on-accent: #090b16;
+  --bw-pull-rim: #ffcf70;
+  --bw-glow: rgba(255, 207, 112, 0.1);
+  --bw-sq: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M0 5C1.6 2.5 3.4 2.5 5 5C6.6 7.4 8.4 7.4 10 5C11.6 2.9 13.4 2.9 15 5C16.6 7.7 18.4 7.7 20 5C21.6 2.2 23.4 2.2 25 5C26.6 7.2 28.4 7.2 30 5C31.6 2.7 33.4 2.7 35 5C36.6 7.5 38.4 7.5 40 5' fill='none' stroke='%23e2e6fa' stroke-opacity='.75' stroke-width='1.25' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  --bw-sq-bold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M0 5C3 3.4 7 3.6 10 5S17 6.8 20 5S27 3.3 30 5S37 6.6 40 5' fill='none' stroke='%23e2e6fa' stroke-opacity='.82' stroke-width='3.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+}
+
+/* Tools: Sketch · Code · Ship on the left, the live width on the right. */
+.bw-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.55rem;
+}
+.bw-seg {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border);
+  background: var(--sd-fill);
+}
+.bw-seg-ind {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / 3);
+  border-radius: 999px;
+  background: var(--sd-accent);
+  box-shadow: 0 6px 14px -8px
+    color-mix(in srgb, var(--sd-accent) 80%, transparent);
+  transform: translateX(calc(var(--n, 2) * 100%));
+  transition: transform 0.45s var(--ease-out-expo);
+}
+.bw-seg-opt {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 0.95rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+  color: var(--sd-text-secondary);
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    scale 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.bw-seg-opt:hover {
+  color: var(--sd-text-primary);
+}
+.bw-seg-opt:has(input:checked) {
+  color: var(--bw-on-accent);
+}
+.bw-seg-opt:has(input:focus-visible) {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 2px;
+}
+.bw-seg-opt:active {
+  scale: 0.95;
+}
+.bw-read {
+  flex: none;
+  width: 8.6rem;
+  height: 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-secondary);
+  white-space: nowrap;
+  text-align: right;
+}
+/* The readout changes every frame of a drag. A fixed block with strict
+   containment (inside the flex item: a flex item can't be a relayout
+   boundary) keeps those text changes from laying out the whole page. */
+.bw-read-in {
+  display: block;
+  width: 100%;
+  height: 100%;
+  contain: strict;
+}
+.bw-dev {
+  display: inline-block;
+  font-weight: 800;
+  color: var(--sd-text-primary);
+}
+/* Before the script measures, the window is at its widest: the number is a
+   counter of the track's maximum. The script then writes into .bw-num. */
+.bw-num0::before {
+  counter-reset: bw-n var(--bw-maxn, 1280);
+  content: counter(bw-n);
+}
+.bw-read[data-live] .bw-num0 {
+  display: none;
+}
+@container bw-toy (width < 520px) {
+  .bw-read {
+    --bw-maxn: 1024;
+  }
+}
+/* The smallest phones: the three segments and the readout share 330px.
+   At 320 wide, "Sketch" only fits its third with the padding pared back
+   (and "Desktop · 1024px" needs 107px of the readout's box). */
+@container bw-toy (width < 350px) {
+  .bw-seg {
+    flex: 1 1 auto;
+  }
+  .bw-seg-opt {
+    padding: 0 0.25rem;
+    font-size: 0.8rem;
+  }
+  .bw-read {
+    width: 6.9rem;
+    font-size: 0.76rem;
+  }
+}
+
+/* The track: the window, the shoji wall behind it, and the sill under it. */
+.bw-track {
+  --bw-stile: 9px;
+  --bw-rail: 9px;
+  --bw-bar: 24px;
+  --bw-room: 36px;
+  --bw-max: 1024;
+  --bw-h: 760;
+  --bw-brush: 20px;
+  --bw-sill: 62px;
+  --bw-k: calc((100cqw - 2 * var(--bw-stile) - var(--bw-room)) / var(--bw-max));
+  position: relative;
+  height: calc(
+    6px + var(--bw-bar) + var(--bw-h) * var(--bw-k) + var(--bw-rail) +
+      var(--bw-sill)
+  );
+  /* Size, layout, paint and style: a drag inside never dirties the page. */
+  contain: strict;
+}
+@container bw-toy (width >= 520px) {
+  .bw-track {
+    --bw-stile: 12px;
+    --bw-rail: 12px;
+    --bw-bar: 34px;
+    --bw-room: 40px;
+    --bw-max: 1280;
+    --bw-brush: 28px;
+  }
+}
+
+/* The shoji wall: the full width the window can open to, a kumiko lattice
+   on washi that the window slides across. */
+.bw-wall {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: calc(var(--bw-max) * var(--bw-k) + 2 * var(--bw-stile));
+  height: calc(var(--bw-bar) + var(--bw-h) * var(--bw-k) + var(--bw-rail));
+  border-radius: 8px;
+  border: 1.5px dashed var(--sd-border-strong);
+  background-color: var(--bw-pane);
+  background-image:
+    linear-gradient(90deg, var(--bw-kumiko) 2px, transparent 2px),
+    linear-gradient(var(--bw-kumiko) 2px, transparent 2px);
+  background-size:
+    calc(100% / 7) 100%,
+    100% calc(100% / 4);
+  background-position:
+    -1px 0,
+    0 -1px;
+}
+
+.bw-win {
+  position: absolute;
+  top: 6px;
+  left: var(--bw-stile);
+  /* --bw-v when the script has set it, else --bw-max (the clamp term is 1
+     only while --bw-v is 0). Not clamped to the max: a drag past either end
+     stretches a little and springs back. */
+  width: calc(
+    (var(--bw-v) + var(--bw-max) * clamp(0, 1 - var(--bw-v), 1)) * var(--bw-k)
+  );
+  height: calc(var(--bw-bar) + var(--bw-h) * var(--bw-k));
+}
+.bw-frame {
+  position: absolute;
+  inset: 0 calc(-1 * var(--bw-stile)) calc(-1 * var(--bw-rail));
+  border-radius: 8px 8px 6px 6px;
+  background-color: var(--bw-wood);
+  /* The stiles run the full height and the rails butt into them, as in a
+     real shoji: two joint lines at each side, then grain, then the wood. */
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent calc(var(--bw-stile) - 1px),
+      var(--bw-joint) calc(var(--bw-stile) - 1px) var(--bw-stile),
+      transparent var(--bw-stile) calc(100% - var(--bw-stile)),
+      var(--bw-joint) calc(100% - var(--bw-stile))
+        calc(100% - var(--bw-stile) + 1px),
+      transparent calc(100% - var(--bw-stile) + 1px)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 9px,
+      var(--bw-grain) 9px 10px,
+      transparent 10px 23px
+    ),
+    linear-gradient(
+      180deg,
+      var(--bw-wood-hi),
+      var(--bw-wood) 22%,
+      var(--bw-wood-lo)
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 color-mix(in srgb, var(--bw-wood-edge) 60%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--bw-wood-edge) 55%, transparent),
+    0 22px 44px -26px var(--sd-card-shadow),
+    0 0 70px 6px var(--bw-glow);
+}
+:root[data-theme='dark'] .bw-frame {
+  box-shadow:
+    inset 0 1px 0 rgba(155, 176, 255, 0.28),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 22px 44px -26px var(--sd-card-shadow),
+    0 0 70px 6px var(--bw-glow);
+}
+
+/* The top rail is the browser's own bar: three studs and an address. */
+.bw-bar {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--bw-bar);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 1px;
+}
+.bw-dots {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+.bw-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sd-pen);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.bw-dots i:nth-child(2) {
+  background: var(--sd-gold);
+}
+.bw-dots i:nth-child(3) {
+  background: var(--sd-accent);
+}
+.bw-url {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+  height: 15px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--bw-url-bg);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.16);
+  font-size: 9.5px;
+  font-weight: 650;
+  line-height: 1;
+  color: var(--sd-text-secondary);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.bw-lock {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+@container bw-toy (width >= 520px) {
+  .bw-bar {
+    gap: 12px;
+    padding: 0 4px;
+  }
+  .bw-dots {
+    gap: 6px;
+  }
+  .bw-dots i {
+    width: 9px;
+    height: 9px;
+  }
+  .bw-url {
+    height: 21px;
+    max-width: 22rem;
+    padding: 0 10px;
+    font-size: 11.5px;
+    gap: 6px;
+  }
+  .bw-lock {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* The pane the site shows in. */
+.bw-view {
+  position: absolute;
+  inset: var(--bw-bar) 0 0;
+  overflow: clip;
+  contain: layout paint style;
+  border-radius: 3px;
+  background: var(--bw-paper);
+}
+.bw-view::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 3px rgba(20, 14, 6, 0.22),
+    inset 0 0 0 1px rgba(20, 14, 6, 0.12);
+  pointer-events: none;
+}
+
+/* Each copy of the site rides in a layer one brush-width wider than the
+   pane, with the brush at its far edge, out of sight until it wipes. */
+.bw-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: calc(100% + var(--bw-brush));
+  overflow: clip;
+}
+.bw-inner {
+  width: 100%;
+  height: 100%;
+}
+.bw-toy[data-top='ship'] .bw-l-ship,
+.bw-toy[data-top='sketch'] .bw-l-sketch {
+  z-index: 2;
+}
+.bw-toy:not(.bw-intro):not([data-wiping])[data-top='ship'] .bw-l-sketch,
+.bw-toy:not(.bw-intro):not([data-wiping])[data-top='sketch'] .bw-l-ship {
+  visibility: hidden;
+  content-visibility: hidden;
+}
+.bw-brush {
+  position: absolute;
+  top: -2%;
+  bottom: -2%;
+  right: 0;
+  width: var(--bw-brush);
+  /* Wet at the leading edge, dry bristle streaks trailing behind it. */
+  background:
+    repeating-linear-gradient(
+        180deg,
+        transparent 0 5px,
+        color-mix(in srgb, var(--bw-brush-c) 45%, transparent) 5px 6.5px,
+        transparent 6.5px 13px
+      )
+      0 0 / 62% 100% no-repeat,
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--bw-brush-c) 45%, transparent) 42%,
+      var(--bw-brush-c) 74%
+    );
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 300' preserveAspectRatio='none'%3E%3Cpath d='M0 0H22C25 14 21 26 26 38C29 52 22 64 27 80C30 96 24 110 28 126C30 140 23 152 27 168C30 184 24 196 28 214C30 228 22 240 26 256C29 270 24 284 27 300H0Z'/%3E%3C/svg%3E")
+    0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 300' preserveAspectRatio='none'%3E%3Cpath d='M0 0H22C25 14 21 26 26 38C29 52 22 64 27 80C30 96 24 110 28 126C30 140 23 152 27 168C30 184 24 196 28 214C30 228 22 240 26 256C29 270 24 284 27 300H0Z'/%3E%3C/svg%3E")
+    0 0 / 100% 100% no-repeat;
+}
+.bw-l-ship .bw-brush {
+  --bw-brush-c: var(--sd-pen);
+}
+.bw-l-sketch .bw-brush {
+  --bw-brush-c: var(--sd-text-primary);
+}
+
+/* The hikite: the finger pull on the right stile. The whole stile is the
+   handle; the pull is where the eye goes. */
+.bw-hikite {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(-1 * var(--bw-stile) / 2 - 22px);
+  z-index: 4;
+  width: 44px;
+  display: grid;
+  place-items: center;
+  cursor: ew-resize;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.bw-hikite:focus-visible {
+  outline: none;
+}
+.bw-pull {
+  position: relative;
+  width: 13px;
+  height: 40px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #17161d, #3b3947 46%, #141319);
+  box-shadow:
+    0 0 0 1.5px var(--bw-pull-rim),
+    0 0 0 3px rgba(0, 0, 0, 0.18),
+    0 5px 12px -4px rgba(0, 0, 0, 0.5);
+  transition:
+    transform 0.25s var(--ease-out-expo),
+    box-shadow 0.25s ease;
+}
+.bw-pull::before {
+  content: '';
+  position: absolute;
+  inset: 6px 3.5px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0b0a0f, #24222c);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+/* Two small chevrons: this slides sideways. */
+.bw-pull::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 8px;
+  margin: -4px 0 0 -15px;
+  background: var(--bw-pull-rim);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 8'%3E%3Cpath d='M4 1L1 4L4 7M26 1L29 4L26 7' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 8'%3E%3Cpath d='M4 1L1 4L4 7M26 1L29 4L26 7' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  opacity: 0;
+  transform: scaleX(0.6);
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s var(--ease-out-expo);
+}
+@media (hover: hover) {
+  .bw-hikite:hover .bw-pull::after {
+    opacity: 1;
+    transform: none;
+  }
+}
+.bw-hikite:focus-visible .bw-pull {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 4px;
+}
+.bw-hikite:focus-visible .bw-pull::after,
+.bw-toy[data-drag] .bw-pull::after,
+.bw-toy[data-demo] .bw-pull::after {
+  opacity: 1;
+  transform: none;
+}
+.bw-toy[data-drag] .bw-pull,
+.bw-toy[data-demo] .bw-pull {
+  transform: scale(0.92);
+  box-shadow:
+    0 0 0 2px var(--sd-pen),
+    0 0 0 6px color-mix(in srgb, var(--sd-pen) 22%, transparent),
+    0 3px 8px -3px rgba(0, 0, 0, 0.5);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bw-toy[data-hint] .bw-pull {
+    animation: bw-nudge 1.2s ease-in-out 2;
+  }
+}
+@keyframes bw-nudge {
+  0%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translateX(-5px);
+  }
+  60% {
+    transform: translateX(2px);
+  }
+}
+@container bw-toy (width >= 520px) {
+  .bw-pull {
+    width: 15px;
+    height: 54px;
+  }
+  .bw-pull::before {
+    inset: 8px 4px;
+  }
+}
+
+/* A vermilion mark under the window's edge, on the sill. */
+.bw-edge {
+  position: absolute;
+  top: calc(100% + var(--bw-rail) + 4px);
+  left: 100%;
+  width: 11px;
+  height: 9px;
+  margin-left: -5.5px;
+  background: var(--sd-pen);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+/* The sill: the track the shoji slides in. Ticks every 100px, a vermilion
+   mark at each breakpoint, and the three screen sizes. */
+.bw-sill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--bw-sill);
+}
+.bw-groove {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  width: calc(var(--bw-max) * var(--bw-k) + 2 * var(--bw-stile));
+  height: 6px;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(
+        90deg,
+        var(--bw-tick) 0 1px,
+        transparent 1px calc(100 * var(--bw-k))
+      )
+      var(--bw-stile) 0 / calc(100% - 2 * var(--bw-stile)) 100% no-repeat,
+    var(--bw-groove);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.bw-bp {
+  position: absolute;
+  top: -6px;
+  width: 3px;
+  height: 18px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--sd-pen);
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--sd-bg) 70%, transparent);
+}
+.bw-bp-t {
+  left: calc(var(--bw-stile) + 560 * var(--bw-k));
+}
+.bw-bp-d {
+  left: calc(var(--bw-stile) + 800 * var(--bw-k));
+}
+.bw-presets {
+  position: absolute;
+  inset: 18px 0 0;
+}
+.bw-pre {
+  position: absolute;
+  top: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  translate: -50% 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sd-text-secondary);
+  transition: scale 0.2s ease;
+}
+.bw-pre:hover {
+  color: var(--sd-text-primary);
+}
+.bw-pre:active {
+  scale: 0.94;
+}
+.bw-pre:focus-visible {
+  border-radius: 999px;
+}
+.bw-pre-phone {
+  left: calc(var(--bw-stile) + 390 * var(--bw-k));
+}
+.bw-pre-tablet {
+  left: calc(var(--bw-stile) + 768 * var(--bw-k));
+}
+.bw-pre-desktop {
+  left: calc(var(--bw-stile) + var(--bw-max) * var(--bw-k));
+}
+.bw-toy[data-layout='phone'] .bw-pre-phone,
+.bw-toy[data-layout='tablet'] .bw-pre-tablet,
+.bw-toy[data-layout='desktop'] .bw-pre-desktop {
+  color: var(--sd-accent);
+  background: color-mix(in srgb, var(--sd-accent) 11%, transparent);
+}
+
+.bw-cap {
+  min-height: 3em;
+  margin-top: 0.3rem;
+  font-size: 0.93rem;
+  line-height: 1.5;
+  color: var(--sd-text-secondary);
+}
+/* Ship has no caption. Still rendered, so the live region is there when
+   Sketch or Code fills it. */
+.bw-cap:empty {
+  min-height: 0;
+  margin-top: 0;
+}
+
+/* ── The little site ────────────────────────────────────────────────────── */
+.bw-site {
+  /* Ship look, day: the dojo's own washi site. */
+  --ms-bg: #fffcf5;
+  --ms-ink: #15172b;
+  --ms-muted: #4f5468;
+  --ms-line: rgba(21, 23, 43, 0.12);
+  --ms-line-strong: rgba(21, 23, 43, 0.28);
+  --ms-hero: linear-gradient(165deg, #f8f0e2 10%, #f6dfca 100%);
+  --ms-orb: #e2412a;
+  --ms-orb-glow: rgba(226, 65, 42, 0.16);
+  --ms-card: #fffefa;
+  --ms-shadow: rgba(30, 26, 18, 0.4);
+  --ms-pen-ink: #b42a17;
+  --ms-pen-soft: rgba(226, 65, 42, 0.12);
+  --ms-foot-bg: #15172b;
+  --ms-foot-ink: #d8d3c6;
+
+  container: bw-site / inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - var(--bw-brush));
+  min-height: 100%;
+  font-family: var(--font-sans);
+  font-size: calc(16 * var(--bw-k));
+  line-height: 1.5;
+  color: var(--ms-ink);
+  background: var(--ms-bg);
+  white-space: normal;
+}
+:root[data-theme='dark'] .bw-site {
+  --ms-bg: #0c0f20;
+  --ms-ink: #eceefa;
+  --ms-muted: #a6abc8;
+  --ms-line: rgba(236, 238, 250, 0.1);
+  --ms-line-strong: rgba(236, 238, 250, 0.26);
+  --ms-hero: linear-gradient(165deg, #060917 10%, #19214b 100%);
+  --ms-orb: radial-gradient(circle at 40% 38%, #fffcf3, #fff3d6 68%, #f1e3c0);
+  --ms-orb-glow: rgba(255, 236, 196, 0.2);
+  --ms-card: #11152a;
+  --ms-shadow: rgba(0, 0, 0, 0.85);
+  --ms-pen-ink: #ff8166;
+  --ms-pen-soft: rgba(255, 91, 61, 0.15);
+  --ms-foot-bg: #05070e;
+  --ms-foot-ink: #a6abc8;
+}
+
+.bw-s-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.75em;
+  height: 3.5em;
+  padding: 0 2.5em;
+  border-bottom: 1px solid var(--ms-line);
+}
+.bw-s-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  min-width: 0;
+}
+.bw-s-seal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: 0.45em;
+  background: var(--sd-pen);
+  color: #fff;
+}
+.bw-s-seal-k {
+  width: 72%;
+  height: 72%;
+}
+.bw-s-name {
+  font-family: var(--font-display);
+  font-size: 1.06em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.bw-s-links {
+  display: flex;
+  gap: 1.75em;
+  margin-left: auto;
+  font-size: 0.875em;
+  font-weight: 600;
+  color: var(--ms-muted);
+  white-space: nowrap;
+}
+.bw-s-join {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 2.3em;
+  padding: 0 1.15em;
+  border-radius: 999px;
+  background: #d63a22;
+  color: #fff;
+  font-size: 0.875em;
+  font-weight: 700;
+}
+.bw-s-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3em;
+  width: 1.45em;
+  height: 2.4em;
+  margin-left: auto;
+}
+.bw-s-menu i {
+  display: block;
+  height: 0.15em;
+  border-radius: 1em;
+  background: currentColor;
+}
+
+.bw-s-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2.5em;
+  padding: 2.4em 2.5em 2.6em;
+  background: var(--ms-hero);
+}
+.bw-s-kicker {
+  position: relative;
+  font-size: 0.75em;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ms-pen-ink);
+}
+.bw-s-h1 {
+  position: relative;
+  margin-top: 0.3em;
+  font-family: var(--font-display);
+  font-size: 3.4em;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+}
+.bw-s-p {
+  position: relative;
+  max-width: 22em;
+  margin-top: 0.65em;
+  font-size: 1.125em;
+  line-height: 1.5;
+  color: var(--ms-muted);
+}
+.bw-s-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  margin-top: 1.5em;
+}
+.bw-s-btn,
+.bw-s-btn2 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 2.9em;
+  padding: 0 1.4em;
+  border-radius: 999px;
+  font-size: 0.95em;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.bw-s-btn {
+  background: #d63a22;
+  color: #fff;
+  box-shadow: 0 0.7em 1.4em -0.75em rgba(214, 58, 34, 0.75);
+}
+.bw-s-btn2 {
+  border: 1px solid var(--ms-line-strong);
+  color: var(--ms-ink);
+}
+.bw-s-art {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  width: 20em;
+  aspect-ratio: 1;
+}
+.bw-s-orb {
+  position: absolute;
+  left: 10%;
+  top: 4%;
+  width: 80%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ms-orb);
+  box-shadow: 0 0 2.5em 0.6em var(--ms-orb-glow);
+}
+.bw-s-floor {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 1.5%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(10, 10, 25, 0.3), transparent);
+}
+.bw-s-kiru {
+  position: relative;
+  width: 88%;
+  height: auto;
+  will-change: transform;
+}
+/* While you drag, Kiru watches the edge you're dragging instead of chasing
+   the pointer: inside an SVG, every move of his pupils is a layout of all of
+   him, and a drag moves the pointer every frame. */
+.bw-toy[data-drag] .bw-s-kiru .k-pupils {
+  transform: translate(4.5px, 0.5px);
+}
+
+.bw-s-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25em;
+  padding: 2em 2.5em 2.4em;
+}
+.bw-s-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  padding: 1.25em;
+  border-radius: 1em;
+  border: 1px solid var(--ms-line);
+  background: var(--ms-card);
+  box-shadow: 0 0.8em 1.6em -1.2em var(--ms-shadow);
+}
+.bw-s-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.6em;
+  height: 2.6em;
+  border-radius: 50%;
+  background: var(--ms-pen-soft);
+  color: var(--sd-pen);
+}
+.bw-s-icon-k {
+  width: 1.3em;
+  height: 1.3em;
+  fill: currentColor;
+}
+.bw-s-ctext {
+  display: grid;
+  gap: 0.25em;
+  min-width: 0;
+}
+.bw-s-ct {
+  font-size: 1.06em;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.bw-s-cp {
+  font-size: 0.875em;
+  line-height: 1.5;
+  color: var(--ms-muted);
+}
+.bw-s-foot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  margin-top: auto;
+  padding: 1.15em 2.5em;
+  font-size: 0.8125em;
+  background: var(--ms-foot-bg);
+  color: var(--ms-foot-ink);
+}
+.bw-s-flinks {
+  display: flex;
+  gap: 1.5em;
+}
+
+/* Tablet: under 800px. */
+@container bw-site (width < 50em) {
+  .bw-s-nav {
+    gap: 1.25em;
+    padding: 0 1.75em;
+  }
+  .bw-s-links {
+    gap: 1.25em;
+  }
+  .bw-s-l2 {
+    display: none;
+  }
+  .bw-s-hero {
+    gap: 1.5em;
+    padding: 2em 1.75em 2.2em;
+  }
+  .bw-s-h1 {
+    font-size: 2.75em;
+  }
+  .bw-s-art {
+    width: 14.5em;
+  }
+  .bw-s-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1em;
+    padding: 1.6em 1.75em 2em;
+  }
+  .bw-s-card:last-child {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+  }
+  .bw-s-foot {
+    padding: 1em 1.75em;
+  }
+}
+/* Phone: under 560px. */
+@container bw-site (width < 35em) {
+  .bw-s-nav {
+    padding: 0 1.25em;
+  }
+  .bw-s-links,
+  .bw-s-join {
+    display: none;
+  }
+  .bw-s-menu {
+    display: flex;
+  }
+  .bw-s-hero {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 0.9em;
+    padding: 1.4em 1.25em 1.75em;
+  }
+  /* On the copy, not the hero: an inherited change on the hero would
+     restyle every part of Kiru at each crossing. */
+  .bw-s-copy {
+    text-align: center;
+  }
+  .bw-s-art {
+    order: -1;
+    width: 10.5em;
+  }
+  .bw-s-h1 {
+    font-size: 2.25em;
+  }
+  .bw-s-p {
+    margin-inline: auto;
+  }
+  .bw-s-btns {
+    justify-content: center;
+    margin-top: 1.2em;
+  }
+  .bw-s-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75em;
+    padding: 1.25em;
+  }
+  .bw-s-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.9em;
+    padding: 1em;
+  }
+  .bw-s-foot {
+    flex-direction: column;
+    gap: 0.35em;
+    padding: 1em 1.25em;
+  }
+}
+
+/* ── Sketch: the same site as a wireframe ───────────────────────────────── */
+.bw-site[data-look='sketch'] {
+  --ms-line: var(--bw-ink);
+  background: var(--bw-paper);
+}
+.bw-site[data-look='sketch'] .bw-t {
+  color: transparent;
+  background: var(--bw-sq) 0 56% / 3.2em 0.8em repeat-x;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.bw-site[data-look='sketch'] :is(.bw-s-h1, .bw-s-name) .bw-t {
+  background-image: var(--bw-sq-bold);
+  background-size: 3.2em 0.8em;
+}
+.bw-site[data-look='sketch'] .bw-s-nav {
+  border-bottom: 1.5px solid var(--bw-ink);
+}
+.bw-site[data-look='sketch'] .bw-box {
+  background: transparent;
+  color: var(--bw-ink);
+  box-shadow: none;
+  border: 1.5px solid var(--bw-ink);
+  border-radius: 1em 0.35em 0.85em 0.45em / 0.45em 0.85em 0.35em 1em;
+}
+.bw-site[data-look='sketch'] .bw-box::after {
+  content: '';
+  position: absolute;
+  inset: -2px -1px -1px -2px;
+  border: 1px solid var(--bw-ink-2);
+  border-radius: 0.5em 1em 0.4em 0.9em / 0.9em 0.4em 1em 0.5em;
+  transform: rotate(-0.5deg);
+  pointer-events: none;
+}
+.bw-site[data-look='sketch'] :is(.bw-s-join, .bw-s-btn, .bw-s-btn2) {
+  border-radius: 2em 1.6em 1.9em 1.5em / 1.5em 1.9em 1.6em 2em;
+}
+.bw-site[data-look='sketch'] .bw-s-hero {
+  background: none;
+}
+.bw-site[data-look='sketch'] .bw-s-art::before {
+  content: '';
+  position: absolute;
+  inset: 3%;
+  background: var(--bw-ink);
+  -webkit-mask: var(--bw-x) 0 0 / 100% 100% no-repeat;
+  mask: var(--bw-x) 0 0 / 100% 100% no-repeat;
+}
+.bw-site[data-look='sketch'] .bw-s-icon {
+  background: none;
+  border: 1.5px solid var(--bw-ink);
+}
+.bw-site[data-look='sketch'] .bw-s-icon::before {
+  content: '';
+  width: 45%;
+  height: 45%;
+  background: var(--bw-ink);
+  -webkit-mask: var(--bw-x) 0 0 / 100% 100% no-repeat;
+  mask: var(--bw-x) 0 0 / 100% 100% no-repeat;
+}
+.bw-site[data-look='sketch'] .bw-s-menu i {
+  background: var(--bw-ink);
+}
+.bw-site[data-look='sketch'] .bw-s-foot {
+  background: none;
+  border-top: 1.5px solid var(--bw-ink);
+}
+
+/* ── Code: the sketch, with every box named by its tag ──────────────────── */
+.bw-tag {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  padding: 0.12em 0.42em;
+  border-radius: 4px;
+  background: var(--bw-code);
+  color: var(--bw-code-ink);
+  /* Sized from the little site's base unit, not the box it names, so a
+     tag on the headline is no bigger than one on a card. */
+  font: 700 max(9.5px, calc(11.2 * var(--bw-k))) / 1.3 var(--font-mono);
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-55%) scale(0.6);
+  transform-origin: left center;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.35s var(--ease-out-expo);
+  transition-delay: calc(var(--i, 0) * 35ms);
+}
+.bw-s-art > .bw-tag {
+  left: auto;
+  right: 0;
+  transform-origin: right center;
+}
+.bw-s-nav > .bw-tag {
+  top: auto;
+  bottom: 0;
+  left: 0.6em;
+  transform: translateY(50%) scale(0.6);
+}
+.bw-toy[data-sk='code'] .bw-l-sketch .bw-tag {
+  opacity: 1;
+  transform: translateY(-55%);
+}
+.bw-toy[data-sk='code'] .bw-l-sketch .bw-s-art > .bw-tag {
+  left: auto;
+  right: 0;
+  transform-origin: right center;
+}
+/* The nav's tag hangs below its bar: above it, the window's address bar
+   would clip it. As specific as the rule above, so it wins in Code. */
+.bw-toy[data-sk='code'] .bw-l-sketch .bw-s-nav > .bw-tag {
+  transform: translateY(50%);
+}
+.bw-toy[data-sk='code'] .bw-l-sketch :has(> .bw-tag) {
+  outline: 1.5px dashed var(--bw-code);
+  outline-offset: 0.15em;
+  background-color: var(--bw-code-soft);
+}
+.bw-toy[data-sk='code'] .bw-l-sketch .bw-s-nav,
+.bw-toy[data-sk='code'] .bw-l-sketch .bw-s-foot {
+  outline-offset: -0.2em;
+}
+.bw-toy[data-sk='code'] .bw-l-sketch .bw-t {
+  opacity: 0.4;
+}
+.bw-l-sketch .bw-t {
+  transition: opacity 0.3s ease;
+}
+
+/* ── First paint: the sketch draws itself, then a brush ships it ────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .bw-intro .bw-l-sketch .bw-pop {
+    animation: bw-pop 0.46s cubic-bezier(0.2, 0.9, 0.3, 1.15)
+      calc(0.12s + var(--i) * 72ms) both;
+  }
+  .bw-intro .bw-l-ship {
+    animation: bw-wipe-a 0.95s cubic-bezier(0.65, 0, 0.35, 1) 1.2s both;
+  }
+  .bw-intro .bw-l-ship > .bw-inner {
+    animation: bw-wipe-b 0.95s cubic-bezier(0.65, 0, 0.35, 1) 1.2s both;
+  }
+  .bw-intro .bw-l-ship .bw-s-kiru {
+    animation: bw-hop 0.62s cubic-bezier(0.3, 1.5, 0.5, 1) 1.82s both;
+  }
+}
+@keyframes bw-pop {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em) scale(0.97);
+  }
+}
+@keyframes bw-wipe-a {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes bw-wipe-b {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes bw-hop {
+  from {
+    opacity: 0;
+    transform: translateY(16%) scale(0.92);
+  }
+}
+
+/* ── The websites list ──────────────────────────────────────────────────── */
+.bw-join {
+  position: relative;
+  /* Under the toy (one column), a clear break: it's the next thing, not
+     part of the toy. */
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.15rem 1.15rem;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--sd-border);
+  background: var(--sd-surface);
+  box-shadow:
+    0 30px 60px -40px var(--sd-card-shadow),
+    0 2px 6px -2px color-mix(in srgb, var(--sd-card-shadow) 40%, transparent);
+}
+/* The shoji's own wood along the top edge, so the slip reads as part of the
+   same screen. A border, so it follows the corners. */
+.bw-join {
+  border-top: 6px solid #c9a679;
+}
+:root[data-theme='dark'] .bw-join {
+  border-top-color: #3a3150;
+}
+.bw-join-line {
+  margin: 0.55rem 0 0.95rem;
+  max-width: 30rem;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--sd-text-primary);
+}
+/* Stamped across the top edge once you're in, half on the wood. */
+.bw-stamp {
+  position: absolute;
+  top: -1.1rem;
+  right: 1.1rem;
+  width: 2.9rem;
+  opacity: 0;
+  transform: scale(1.7) rotate(-16deg);
+  pointer-events: none;
+}
+.bw-join:has([role='status']) .bw-stamp {
+  opacity: 1;
+  transform: rotate(-8deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bw-join:has([role='status']) .bw-stamp {
+    animation: bw-stamp 0.5s cubic-bezier(0.25, 1.5, 0.45, 1) both;
+  }
+}
+@keyframes bw-stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.7) rotate(-16deg);
+  }
+  45% {
+    opacity: 1;
+  }
+}
+@media (min-width: 40rem) {
+  .bw-join {
+    padding: 1.4rem 1.5rem 1.3rem;
+  }
+}
+/* Beside the toy, under the headline: the row gap is enough. */
+@media (min-width: 64rem) {
+  .bw-join {
+    margin-top: 0.4rem;
+  }
+}
+
+/* ── The guides wall ────────────────────────────────────────────────────── */
+/* On the Build pages' band (build-band.css), which sets its spacing. */
+.bw-guides {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}
+.bw-h2 {
+  margin-top: 0.5rem;
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  line-height: 1.1;
+  color: var(--sd-text-primary);
+}
+.bw-guides-lede {
+  margin-top: 0.6rem;
+  max-width: 36rem;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--sd-text-secondary);
+}
+/* A shoji screen: the grid's gaps are its kumiko, the cells its panes. */
+.bw-shoji {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 1.4rem;
+  padding: 9px;
+  border-radius: 10px;
+  background-color: #b99466;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 11px,
+      rgba(110, 74, 38, 0.08) 11px 12px,
+      transparent 12px 27px
+    ),
+    linear-gradient(180deg, #d9bd92, #b99466);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 0 0 1px rgba(138, 103, 65, 0.5),
+    0 26px 50px -34px var(--sd-card-shadow);
+}
+:root[data-theme='dark'] .bw-shoji {
+  background-color: #2a2440;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 11px,
+      rgba(155, 176, 255, 0.04) 11px 12px,
+      transparent 12px 27px
+    ),
+    linear-gradient(180deg, #3b3352, #241f37);
+  box-shadow:
+    inset 0 1px 0 rgba(155, 176, 255, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 26px 50px -34px var(--sd-card-shadow),
+    0 0 80px -10px rgba(255, 207, 112, 0.08);
+}
+.bw-pane {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 8.5rem;
+  border-radius: 3px;
+  background-color: #fbf6ea;
+  background-image:
+    radial-gradient(
+      120% 90% at 50% 40%,
+      rgba(255, 255, 255, 0.7),
+      transparent 70%
+    ),
+    var(--sd-noise);
+  background-size:
+    100% 100%,
+    180px 180px;
+  box-shadow: inset 0 1px 4px rgba(60, 40, 20, 0.18);
+}
+:root[data-theme='dark'] .bw-pane {
+  background-color: #141831;
+  background-image:
+    radial-gradient(
+      120% 90% at 50% 40%,
+      rgba(255, 207, 112, 0.07),
+      transparent 70%
+    ),
+    var(--sd-noise);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+@media (min-width: 48rem) {
+  .bw-pane {
+    min-height: 13rem;
+  }
+}
+.bw-pane-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+}
+.bw-enso {
+  width: min(62%, 7rem);
+  height: auto;
+  color: var(--sd-pen);
+  opacity: 0.88;
+}
+.bw-pane-note {
+  font-family: var(--font-read);
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.3;
+  text-align: center;
+  color: #5e5140;
+}
+:root[data-theme='dark'] .bw-pane-note {
+  color: #a6abc8;
+}
+@media (min-width: 48rem) {
+  .bw-pane-note {
+    font-size: 0.95rem;
+  }
+}
+.bw-shoji-list {
+  list-style: none;
+}
+@media (max-width: 47.99rem) {
+  .bw-shoji-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bw-shoji-list .bw-pane {
+    min-height: 0;
+  }
+  .bw-pane-blank {
+    display: none;
+  }
+}
+.bw-guide {
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  width: 100%;
+  height: 100%;
+  padding: 1.15rem 1.2rem 1.25rem;
+  border-radius: 3px;
+  color: var(--sd-text-primary);
+}
+.bw-guide-date {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-pen-ink);
+}
+.bw-guide-title {
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+.bw-guide-sum {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+.bw-guide-go {
+  margin-top: 0.3rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--sd-accent);
+}

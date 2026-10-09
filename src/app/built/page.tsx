@@ -2,7 +2,12 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 import { apps, GAME_SLUGS } from '@/data/apps';
-import { projects, PROJECT_APP_SLUGS, type Project } from '@/data/projects';
+import { projects, type Project } from '@/data/projects';
+import {
+  BUILT_COVERED as COVERED,
+  BUILT_SITES,
+  builtCatalogueApps,
+} from '@/data/built';
 import {
   SectionContainer,
   Badge,
@@ -57,12 +62,6 @@ export const metadata: Metadata = {
  * project carries the picture across instead of cutting to it.
  */
 
-/** Slugs already shown as project cards, under either name. */
-const COVERED = new Set([
-  ...projects.map((p) => p.slug),
-  ...Object.keys(PROJECT_APP_SLUGS),
-]);
-
 type CatalogueEntry = {
   key: string;
   name: string;
@@ -77,33 +76,22 @@ type CatalogueEntry = {
 
 /**
  * The catalogue is what is left once the projects above have been shown and
- * the games have their own page. Kitsune Kitchen is appended by hand because
- * it is a site, not an app, and has never had an entry in the apps data;
- * without this line it would have vanished with /websites.
+ * the games have their own page, then the sites with no entry in the apps
+ * data (Kitsune Kitchen). Both lists live in src/data/built.ts, which the
+ * home band and the /about receipt count from, so they match this page.
  */
 const catalogue: CatalogueEntry[] = [
-  ...apps
-    .filter((app) => !GAME_SLUGS.includes(app.slug) && !COVERED.has(app.slug))
-    .map((app) => ({
-      key: app.slug,
-      name: app.name,
-      description: app.description,
-      thumbnail: app.thumbnailUrl,
-      liveUrl: app.liveUrl,
-      detailHref: `/built/${app.slug}`,
-      status: app.status,
-      tech: app.techStack.slice(0, 3),
-    })),
-  {
-    key: 'kitsune-kitchen',
-    name: 'Kitsune Kitchen',
-    description:
-      'The same ordering system as Samurai Kitchen, set up for a restaurant I made up so that anyone can try it. You can build an order and go through the checkout without buying anything.',
-    thumbnail: '/images/websites/kitsune-kitchen.webp',
-    liveUrl: 'https://japanese-sushi-website.vercel.app',
-    status: 'live',
-    tech: ['Next.js', 'Square API', 'Demo build'],
-  },
+  ...builtCatalogueApps.map((app) => ({
+    key: app.slug,
+    name: app.name,
+    description: app.description,
+    thumbnail: app.thumbnailUrl,
+    liveUrl: app.liveUrl,
+    detailHref: `/built/${app.slug}`,
+    status: app.status,
+    tech: app.techStack.slice(0, 3),
+  })),
+  ...BUILT_SITES,
 ];
 
 /** The games the arcade shows (front room and archive) that no project card above already covers. */

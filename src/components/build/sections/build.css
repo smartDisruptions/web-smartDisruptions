@@ -1,0 +1,976 @@
+/* ── The three Build sections on /learn (BuildSections.tsx); home until
+   October 2026.
+   Prefix hb-. Everything that moves here moves on a stage's own view
+   timeline, by transform or opacity, inside
+   @media (prefers-reduced-motion: no-preference) + @supports
+   (animation-timeline: view()). Outside those, every stage is a still.
+   ─────────────────────────────────────────────────────────────────────── */
+
+/* The shell: kicker, headline and words; a stage; a way in. One column on a
+   phone (words, stage, button), two on a desktop with the stage alternating
+   sides. */
+.hb-sec {
+  /* The bottom padding is room for the reveals: a deferred section paints
+     only inside its own box, and a button rising into place starts 28px low.
+     The 1rem sides are /learn's own gutters, so the edges line up with its
+     cards at every width. */
+  padding: 5.5rem 1rem 2rem;
+}
+@media (min-width: 40rem) {
+  .hb-sec {
+    padding: 7rem 1rem 2rem;
+  }
+}
+.hb-grid {
+  margin: 0 auto;
+  /* The edges of /learn's widest column: its three cards sit in 60rem less
+     1rem gutters, so 58rem lines these up with them. */
+  max-width: 58rem;
+  display: grid;
+  grid-template-areas: 'copy' 'stage' 'cta';
+  row-gap: 1.75rem;
+}
+.hb-copy {
+  grid-area: copy;
+}
+.hb-stage {
+  grid-area: stage;
+  position: relative;
+}
+.hb-cta {
+  grid-area: cta;
+}
+.hb-h {
+  margin-top: 0.75rem;
+  font-size: 2.25rem;
+}
+@media (min-width: 40rem) {
+  .hb-h {
+    font-size: 3rem;
+  }
+}
+/* A sentence of the headline (BuildSections): it breaks between sentences
+   first, and only inside one that is wider than the column. */
+.hb-h-s {
+  display: inline-block;
+}
+.hb-lede {
+  margin-top: 1.1rem;
+  max-width: 31rem;
+  font-size: 1.06rem;
+  line-height: 1.75;
+  color: var(--sd-text-secondary);
+}
+@media (min-width: 64rem) {
+  .hb-grid {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    grid-template-areas: 'copy stage' 'cta stage';
+    column-gap: 4.5rem;
+    row-gap: 2rem;
+  }
+  .hb-copy {
+    align-self: end;
+  }
+  .hb-cta {
+    align-self: start;
+  }
+  .hb-flip {
+    grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+    grid-template-areas: 'stage copy' 'stage cta';
+  }
+}
+
+/* Every stage is a print: a rounded panel with its own ground, sized by its
+   width (aspect-ratio), so it reserves its space before it paints. Its
+   children measure themselves in its container units. */
+.hb-ground {
+  position: relative;
+  container-type: inline-size;
+  overflow: clip;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--sd-border);
+  box-shadow:
+    0 2px 4px -2px color-mix(in srgb, var(--sd-card-shadow) 50%, transparent),
+    0 30px 60px -36px var(--sd-card-shadow);
+}
+/* The room's seal, stamped on the print's corner like an artist's mark. */
+.hb-seal {
+  position: absolute;
+  z-index: 4;
+  right: -0.55rem;
+  bottom: -0.75rem;
+  width: 2.6rem;
+  rotate: -7deg;
+}
+.hb-flip .hb-seal {
+  right: auto;
+  left: -0.55rem;
+  rotate: 6deg;
+}
+
+/* ── 網 Build Websites: the shoji browser ─────────────────────────────────
+   Geometry, in the stage's cqi (the stage is 100 wide, 78 tall):
+     window   x 5–95, y 12–70.4; wooden top rail (the browser bar) 6.5 tall,
+              posts and bottom rail 1.4; the page inside is 87.2 × 50.5
+     phone    the same window 48 narrower, x 29–71, same height (a browser
+              dragged narrow keeps its height)
+   The squeeze, without animating a width: three nested clip windows.
+     .hb-web-win  (A) moves right 24 — its left border is the left post
+     .hb-web-pane (B) moves left 48 inside A — net 24 left; its top, right
+                  and bottom borders are the rail, the right post and the
+                  bottom rail; A clips B, so they span exactly post to post
+     .hb-web-page moves right 24 inside B — net 0: the page holds still
+   so the visible window closes in from both sides while the blocks inside
+   slide and scale to their phone places. */
+.hb-web-stage {
+  --hb-ink: #1f1a14;
+  --hb-sketch: rgba(31, 26, 20, 0.78);
+  --hb-paper: #fffaf0;
+  --hb-muted: #b8ab95;
+  --hb-rule: rgba(31, 26, 20, 0.12);
+  --hb-sun: #e2412a;
+  --hb-button: #d63a22;
+  --hb-wood: #6e4b30;
+  --hb-wood-hi: #a57b55;
+  --hb-wall: #efe5cf;
+  --hb-lattice: rgba(110, 75, 48, 0.3);
+  --hb-lamp: rgba(255, 249, 232, 0.95);
+  --hb-floor: rgba(110, 75, 48, 0.14);
+  /* The whole run: from cover r0 to cover r0 + r1 of the stage's passage
+     (it starts with the stage two-thirds up into view and ends with it in
+     the top half). */
+  --r0: 20%;
+  --r1: 40%;
+  aspect-ratio: 100 / 78;
+  view-timeline: --hb-web block;
+  background:
+    radial-gradient(78% 72% at 50% 46%, var(--hb-lamp), transparent 74%),
+    linear-gradient(to top, var(--hb-floor) 0 9%, transparent 9%),
+    linear-gradient(90deg, transparent calc(100% - 2px), var(--hb-lattice) 0) 0
+      0 / 12.5% 100%,
+    linear-gradient(180deg, transparent calc(100% - 2px), var(--hb-lattice) 0) 0
+      0 / 100% 10%,
+    var(--hb-wall);
+}
+/* Night: the same room with the lamp lit behind the paper. The browser is
+   still paper (a lit screen), so the ink on it doesn't change. */
+:root[data-theme='dark'] .hb-web-stage {
+  --hb-paper: #f7ecd6;
+  --hb-wood: #4a3020;
+  --hb-wood-hi: #8a6243;
+  --hb-wall: #2b1a0e;
+  --hb-lattice: rgba(10, 5, 2, 0.62);
+  --hb-lamp: rgba(255, 168, 76, 0.42);
+  --hb-floor: rgba(0, 0, 0, 0.32);
+  border-color: rgba(255, 190, 120, 0.16);
+}
+.hb-web-shadow {
+  position: absolute;
+  left: 5cqi;
+  top: 67cqi;
+  width: 90cqi;
+  height: 7cqi;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(45, 28, 12, 0.32),
+    transparent
+  );
+}
+.hb-web-win {
+  position: absolute;
+  left: 5cqi;
+  top: 12cqi;
+  width: 90cqi;
+  height: 58.4cqi;
+  overflow: clip;
+  border-left: 1.4cqi solid var(--hb-wood);
+  border-radius: 1.8cqi 0 0 1.8cqi;
+}
+.hb-web-pane {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  background: var(--hb-paper);
+  border: 0 solid var(--hb-wood);
+  border-width: 6.5cqi 1.4cqi 1.4cqi 0;
+  border-radius: 0 1.8cqi 1.8cqi 0;
+}
+.hb-web-page {
+  position: absolute;
+  inset: 0;
+}
+.hb-web-dots {
+  position: absolute;
+  z-index: 1;
+  left: 1.6cqi;
+  top: 2.35cqi;
+  display: flex;
+  gap: 0.9cqi;
+}
+.hb-web-dots i {
+  width: 1.8cqi;
+  height: 1.8cqi;
+  border-radius: 50%;
+  background: var(--hb-wood-hi);
+}
+.hb-web-dots i:first-child {
+  background: var(--hb-sun);
+}
+.hb-web-slot {
+  position: absolute;
+  z-index: 1;
+  left: 13cqi;
+  top: 1.6cqi;
+  width: 50cqi;
+  height: 3.3cqi;
+  border-radius: 1.65cqi;
+  background: color-mix(in srgb, var(--hb-paper) 82%, transparent);
+  transform-origin: 0 50%;
+}
+.hb-web-kiru {
+  position: absolute;
+  z-index: 2;
+  left: 79cqi;
+  top: 0.4cqi;
+  width: 18.5cqi;
+}
+.hb-web-kiru > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The site inside, in the page's own coordinates (87.2 × 50.5). Each block
+   carries its phone place as --dx/--dy/--s: where it goes when the window
+   is a phone wide. */
+.hb-web-b,
+.hb-web-link {
+  position: absolute;
+  transform-origin: 0 0;
+}
+.hb-web-b > svg,
+.hb-web-sketch {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+/* The pen sketch is gone in the finished still; the run fades it out once
+   every block has pressed in over it. */
+.hb-web-sketch {
+  opacity: 0;
+}
+.hb-web-link {
+  top: 3.4cqi;
+  width: 6.5cqi;
+  height: 1.5cqi;
+  border-radius: 0.75cqi;
+  background: color-mix(in srgb, var(--hb-ink) 62%, transparent);
+  --s: 0.77 0.6;
+}
+.hb-web-l0 {
+  left: 56cqi;
+  --dx: -0.8cqi;
+  --dy: -0.7cqi;
+}
+.hb-web-l1 {
+  left: 64.5cqi;
+  --dx: -9.3cqi;
+  --dy: 0.9cqi;
+}
+.hb-web-l2 {
+  left: 73cqi;
+  --dx: -17.8cqi;
+  --dy: 2.5cqi;
+}
+.hb-web-brand {
+  left: 3.6cqi;
+  top: 2.2cqi;
+  width: 16.4cqi;
+  height: 4cqi;
+  --dx: 23.4cqi;
+  --dy: 0cqi;
+}
+.hb-web-art {
+  left: 46.2cqi;
+  top: 10.4cqi;
+  width: 37.4cqi;
+  height: 22.6cqi;
+  --dx: -16.05cqi;
+  --dy: -0.8cqi;
+  --s: 0.72;
+}
+.hb-web-words {
+  left: 3.6cqi;
+  top: 12cqi;
+  width: 36cqi;
+  height: 22.4cqi;
+  --dx: 23.8cqi;
+  --dy: 16cqi;
+  --s: 0.85;
+}
+.hb-web-card {
+  top: 37cqi;
+  width: 25cqi;
+  height: 12.2cqi;
+  --s: 1.3;
+}
+.hb-web-c0 {
+  left: 3.6cqi;
+  --dx: 23.8cqi;
+  --dy: 11.6cqi;
+}
+.hb-web-c1 {
+  left: 31cqi;
+  --dx: -3.6cqi;
+  --dy: 30cqi;
+}
+.hb-web-c2 {
+  left: 58.4cqi;
+  --dx: -31cqi;
+  --dy: 47.6cqi;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* Ink: each finished face presses in over the sketch, in reading
+       order (--a/--b: its slice of the run, set on the face), and the
+       sketch fades once they're all down. */
+    .hb-web-ink {
+      animation: hb-web-ink cubic-bezier(0.2, 0.7, 0.3, 1) both;
+      animation-timeline: --hb-web;
+      animation-range: cover calc(var(--r0) + var(--r1) * var(--a)) cover
+        calc(var(--r0) + var(--r1) * var(--b));
+    }
+    .hb-web-sketch {
+      animation: hb-web-sketch linear both;
+      animation-timeline: --hb-web;
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.4) cover
+        calc(var(--r0) + var(--r1) * 0.48);
+    }
+    /* Squeeze: the second half of the run, everything at once. */
+    .hb-web-win,
+    .hb-web-pane,
+    .hb-web-page,
+    .hb-web-kiru,
+    .hb-web-shadow,
+    .hb-web-slot,
+    .hb-web-b,
+    .hb-web-link {
+      animation-timing-function: cubic-bezier(0.55, 0, 0.3, 1);
+      animation-fill-mode: both;
+      animation-timeline: --hb-web;
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.5) cover
+        calc(var(--r0) + var(--r1) * 0.92);
+    }
+    .hb-web-win {
+      animation-name: hb-web-a;
+    }
+    .hb-web-pane {
+      animation-name: hb-web-b;
+    }
+    .hb-web-page {
+      animation-name: hb-web-a;
+    }
+    .hb-web-kiru {
+      animation-name: hb-web-kiru;
+    }
+    .hb-web-shadow {
+      animation-name: hb-web-shadow;
+    }
+    .hb-web-slot {
+      animation-name: hb-web-slot;
+    }
+    .hb-web-b {
+      animation-name: hb-web-move;
+    }
+    /* A menu link inks in like the rest, then folds into the hamburger:
+       two animations on two properties, each on its own slice. */
+    .hb-web-link {
+      animation-name: hb-web-move, hb-web-show;
+      animation-range:
+        cover calc(var(--r0) + var(--r1) * 0.5) cover
+          calc(var(--r0) + var(--r1) * 0.92),
+        cover calc(var(--r0) + var(--r1) * var(--a)) cover
+          calc(var(--r0) + var(--r1) * var(--b));
+    }
+  }
+}
+/* `transform`, not `scale`: the face is an <svg>, and Chrome composites an
+   SVG's transform but not its separate scale/translate properties. */
+@keyframes hb-web-ink {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+@keyframes hb-web-show {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes hb-web-sketch {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes hb-web-a {
+  to {
+    translate: 24cqi 0;
+  }
+}
+@keyframes hb-web-b {
+  to {
+    translate: -48cqi 0;
+  }
+}
+@keyframes hb-web-kiru {
+  to {
+    translate: -24cqi 0;
+  }
+}
+@keyframes hb-web-shadow {
+  to {
+    scale: 0.47 1;
+  }
+}
+@keyframes hb-web-slot {
+  to {
+    scale: 0.45 1;
+  }
+}
+@keyframes hb-web-move {
+  to {
+    translate: var(--dx, 0) var(--dy, 0);
+    scale: var(--s, 1);
+  }
+}
+
+/* ── 器 Build Apps: the lacquered phone ───────────────────────────────────
+   Stage 100 × 92 cqi, black urushi. The rig is a point at (34, 64): every
+   slab is centred on it. No perspective, so the view is orthographic, a
+   technical drawing: the rig turns rotateX(56deg) rotateZ(-42deg) and the
+   slabs stand apart on translateZ (0, 15, 30, 45). A slab's right corner
+   then lands at x ≈ 62–65 and y = 64 + 6.4 − 0.829·z (70.4, 57.8, 45.3,
+   33.1): that's where the labels sit, a gold leader reaching back to each.
+   Upright, the phone stands centred at (50, 46): the rig starts there. */
+.hb-app-stage {
+  --r0: 24%;
+  --r1: 36%;
+  aspect-ratio: 100 / 92;
+  view-timeline: --hb-app block;
+  border-color: rgba(231, 190, 94, 0.22);
+  background:
+    radial-gradient(
+      70% 55% at 18% 0%,
+      rgba(150, 44, 26, 0.32),
+      transparent 62%
+    ),
+    radial-gradient(
+      60% 50% at 80% 100%,
+      rgba(231, 190, 94, 0.1),
+      transparent 70%
+    ),
+    linear-gradient(160deg, #1b1113, #0b0809 66%);
+}
+.hb-app-makie {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hb-app-rig {
+  position: absolute;
+  left: 34cqi;
+  top: 64cqi;
+  transform-style: preserve-3d;
+  transform: translate(0, 0) rotateX(56deg) rotateZ(-42deg);
+}
+.hb-app-layer {
+  position: absolute;
+  left: -13.5cqi;
+  top: -27cqi;
+  width: 27cqi;
+  height: 54cqi;
+  border-radius: 3.8cqi;
+  transform-style: preserve-3d;
+  transform: translateZ(var(--z));
+  --edge: rgba(231, 190, 94, 0.45);
+  --thick: -0.5cqi;
+}
+/* Its thickness: the same shape a little below it, so a slab reads as a
+   slab once it's turned. */
+.hb-app-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--edge);
+  transform: translateZ(var(--thick));
+}
+.hb-app-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hb-app-board {
+  left: -15cqi;
+  top: -29cqi;
+  width: 30cqi;
+  height: 58cqi;
+  border-radius: 4.8cqi;
+  --z: 0cqi;
+  --edge: #6b1a0e;
+  --thick: -1.8cqi;
+}
+.hb-app-data {
+  --z: 15cqi;
+}
+.hb-app-logic {
+  --z: 30cqi;
+}
+.hb-app-screen {
+  top: -27.5cqi;
+  height: 55cqi;
+  border-radius: 3.4cqi;
+  --z: 45cqi;
+  --edge: #241c16;
+  --thick: -0.9cqi;
+  box-shadow: 0 0 6cqi 0.5cqi rgba(255, 226, 170, 0.28);
+}
+.hb-app-avatar {
+  position: absolute;
+  left: 76%;
+  top: 7.2%;
+  width: 15%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e6e9f7;
+  box-shadow: 0 0 0 0.35cqi #fffaf0;
+}
+.hb-app-avatar > svg {
+  display: block;
+  width: 118%;
+  height: auto;
+  margin: 18% 0 0 -9%;
+}
+.hb-app-labels {
+  position: absolute;
+  inset: 0;
+  font-size: clamp(0.68rem, 3.3cqi, 0.95rem);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: #f4ead5;
+}
+.hb-app-label {
+  position: absolute;
+  left: 67.5cqi;
+  max-width: 31cqi;
+  translate: 0 -50%;
+}
+.hb-app-label::before {
+  content: '';
+  position: absolute;
+  right: calc(100% + 0.8cqi);
+  top: 50%;
+  width: 4.2cqi;
+  height: 1px;
+  background: #e7be5e;
+}
+.hb-app-label::after {
+  content: '';
+  position: absolute;
+  right: calc(100% + 4.6cqi);
+  top: calc(50% - 0.55cqi);
+  width: 1.1cqi;
+  height: 1.1cqi;
+  border-radius: 50%;
+  background: #e7be5e;
+}
+.hb-app-label-screen {
+  top: 33.1cqi;
+}
+.hb-app-label-logic {
+  top: 45.3cqi;
+}
+.hb-app-label-data {
+  top: 57.8cqi;
+}
+.hb-app-label-board {
+  top: 70.4cqi;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .hb-app-rig,
+    .hb-app-layer,
+    .hb-app-label {
+      animation-fill-mode: both;
+      animation-timeline: --hb-app;
+    }
+    /* Stands facing you, then tips back into the drawing. */
+    .hb-app-rig {
+      animation-name: hb-app-tilt;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+      animation-range: cover var(--r0) cover calc(var(--r0) + var(--r1) * 0.42);
+    }
+    /* Comes apart. */
+    .hb-app-layer {
+      animation-name: hb-app-split;
+      animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.32) cover
+        calc(var(--r0) + var(--r1) * 0.8);
+    }
+    /* Each part is named as it settles, top to bottom. */
+    .hb-app-label {
+      animation-name: hb-app-label;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+      animation-range: cover
+        calc(var(--r0) + var(--r1) * (0.56 + var(--i) * 0.07)) cover
+        calc(var(--r0) + var(--r1) * (0.72 + var(--i) * 0.07));
+    }
+    .hb-app-label-screen {
+      --i: 0;
+    }
+    .hb-app-label-logic {
+      --i: 1;
+    }
+    .hb-app-label-data {
+      --i: 2;
+    }
+    .hb-app-label-board {
+      --i: 3;
+    }
+  }
+}
+@keyframes hb-app-tilt {
+  from {
+    transform: translate(16cqi, -18cqi) rotateX(0deg) rotateZ(0deg);
+  }
+}
+@keyframes hb-app-split {
+  from {
+    transform: translateZ(0cqi);
+  }
+}
+@keyframes hb-app-label {
+  from {
+    opacity: 0;
+    translate: -2cqi -50%;
+  }
+}
+
+/* ── 戯 Build Games: the pixel rooftop ────────────────────────────────────
+   A 116 × 88 logical screen. --px is the largest whole number of CSS pixels
+   per pixel that fits the stage's width, so pixels stay square and crisp;
+   the scene sits at the bottom centre and the sky fills the rest. Logical
+   layout: tile row y 66–74 (slots x = 2 + 8i, a gap at slots 8–9), Kiru's
+   feet on y 66, the torii at x 101, a lantern over the gap at (69, 27). */
+.hb-game-stage {
+  --r0: 22%;
+  --r1: 38%;
+  aspect-ratio: 116 / 88;
+  view-timeline: --hb-game block;
+  border-color: rgba(155, 176, 255, 0.2);
+  background:
+    radial-gradient(
+      42% 34% at 79% 18%,
+      rgba(255, 243, 214, 0.16),
+      transparent 70%
+    ),
+    linear-gradient(
+      #060920 0 16%,
+      #090d27 16% 32%,
+      #0c1130 32% 46%,
+      #10163a 46% 58%,
+      #151c45 58% 70%,
+      #0e1230 70%
+    );
+}
+.hb-game-scene {
+  --px: 3px;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: calc(var(--px) * 116);
+  height: calc(var(--px) * 88);
+  translate: -50% 0;
+}
+/* Where round() exists (everywhere current), the largest whole pixel that
+   fits, and a whole-pixel left edge so nothing lands between pixels. */
+@supports (width: round(down, 10.5px, 1px)) {
+  .hb-game-scene {
+    --px: max(2px, round(down, 100cqi / 116, 1px));
+    left: round(down, (100cqi - var(--px) * 116) / 2, 1px);
+    translate: none;
+  }
+}
+.hb-game-bg {
+  position: absolute;
+  top: 0;
+  left: calc(var(--px) * -40);
+  width: calc(var(--px) * 196);
+  height: 100%;
+}
+.hb-game-tile,
+.hb-game-px {
+  position: absolute;
+  left: calc(var(--px) * var(--x));
+  top: calc(var(--px) * var(--y));
+}
+.hb-game-tile {
+  width: calc(var(--px) * 8);
+  height: calc(var(--px) * 8);
+  background: var(--tile) 0 0 / 100% 100%;
+  image-rendering: pixelated;
+}
+.hb-game-px {
+  width: calc(var(--px) * var(--w));
+  height: calc(var(--px) * var(--h));
+}
+.hb-game-px > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hb-game-cursor {
+  opacity: 0;
+}
+/* The lantern glows: a soft light behind it, painted once. */
+.hb-game-lantern::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--px) * -5);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 150, 90, 0.42),
+    rgba(255, 120, 60, 0.12) 60%,
+    transparent
+  );
+}
+/* Kiru. The still: mid-leap, rising for the lantern. */
+.hb-game-kiru {
+  position: absolute;
+  left: 0;
+  top: calc(var(--px) * 50);
+  width: calc(var(--px) * 18);
+  height: calc(var(--px) * 16);
+  translate: calc(var(--px) * 58) 0;
+}
+.hb-game-hop {
+  position: absolute;
+  inset: 0;
+  translate: 0 calc(var(--px) * -12);
+}
+.hb-game-run {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  opacity: 0;
+}
+.hb-game-strip {
+  display: block;
+  width: 400%;
+  height: 100%;
+}
+.hb-game-jump,
+.hb-game-win {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hb-game-win {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .hb-game-tile,
+    .hb-game-torii,
+    .hb-game-cursor,
+    .hb-game-lantern,
+    .hb-game-kiru,
+    .hb-game-hop,
+    .hb-game-run,
+    .hb-game-strip,
+    .hb-game-jump,
+    .hb-game-win {
+      animation-timeline: --hb-game;
+      animation-fill-mode: both;
+    }
+    /* The editor drops each tile in, slot by slot; the gate goes in last. */
+    .hb-game-tile,
+    .hb-game-torii {
+      animation-name: hb-game-drop;
+      animation-timing-function: linear;
+      animation-range: cover calc(var(--r0) + var(--r1) * var(--a)) cover
+        calc(var(--r0) + var(--r1) * var(--b));
+    }
+    .hb-game-torii {
+      --a: 0.39;
+      --b: 0.47;
+    }
+    /* The cursor steps along the slots while it builds, then goes. */
+    .hb-game-cursor {
+      animation-name: hb-game-walk, hb-game-on;
+      animation-timing-function: steps(14, end), linear;
+      animation-fill-mode: both, none;
+      animation-range:
+        cover var(--r0) cover calc(var(--r0) + var(--r1) * 0.42),
+        cover var(--r0) cover calc(var(--r0) + var(--r1) * 0.44);
+    }
+    /* Kiru appears on the first tile once it's down, then runs the level:
+       whole pixels at a time. */
+    .hb-game-kiru {
+      translate: 0 0;
+      animation-name: hb-game-x, hb-game-spawn;
+      animation-timing-function: steps(82, end), steps(3, end);
+      animation-range:
+        cover calc(var(--r0) + var(--r1) * 0.36) cover
+          calc(var(--r0) + var(--r1) * 0.94),
+        cover calc(var(--r0) + var(--r1) * 0.06) cover
+          calc(var(--r0) + var(--r1) * 0.11);
+    }
+    /* Four frames a stride, stepped by the scroll. */
+    .hb-game-strip {
+      animation-name: hb-game-cycle;
+      animation-timing-function: steps(4, end);
+      animation-iteration-count: 7;
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.36) cover
+        calc(var(--r0) + var(--r1) * 0.94);
+    }
+    /* Over the gap: up, the lantern, down; the run frames hide in the air. */
+    .hb-game-hop {
+      translate: 0 0;
+      animation-name: hb-game-hop;
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.714) cover
+        calc(var(--r0) + var(--r1) * 0.912);
+    }
+    .hb-game-run {
+      opacity: 1;
+      animation-name: hb-game-off, hb-game-off;
+      animation-timing-function: linear;
+      animation-fill-mode: none, forwards;
+      animation-range:
+        cover calc(var(--r0) + var(--r1) * 0.714) cover
+          calc(var(--r0) + var(--r1) * 0.912),
+        cover calc(var(--r0) + var(--r1) * 0.94) cover
+          calc(var(--r0) + var(--r1) * 1);
+    }
+    .hb-game-jump {
+      opacity: 0;
+      animation-name: hb-game-on;
+      animation-timing-function: linear;
+      animation-fill-mode: none;
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.714) cover
+        calc(var(--r0) + var(--r1) * 0.912);
+    }
+    .hb-game-lantern {
+      animation-name: hb-game-collect;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.8) cover
+        calc(var(--r0) + var(--r1) * 0.845);
+    }
+    /* Home: happy eyes, fist up. */
+    .hb-game-win {
+      animation-name: hb-game-on;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+      animation-range: cover calc(var(--r0) + var(--r1) * 0.94) cover
+        calc(var(--r0) + var(--r1) * 1);
+    }
+  }
+}
+@keyframes hb-game-drop {
+  0% {
+    opacity: 0;
+    translate: 0 calc(var(--px) * -18);
+  }
+  55% {
+    opacity: 1;
+    translate: 0 calc(var(--px) * 1);
+  }
+  75% {
+    translate: 0 calc(var(--px) * -2);
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes hb-game-walk {
+  to {
+    translate: calc(var(--px) * 112) 0;
+  }
+}
+@keyframes hb-game-on {
+  from,
+  to {
+    opacity: 1;
+  }
+}
+@keyframes hb-game-off {
+  from,
+  to {
+    opacity: 0;
+  }
+}
+@keyframes hb-game-spawn {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes hb-game-x {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: calc(var(--px) * 82) 0;
+  }
+}
+/* The strip is an <svg>: `transform`, so the compositor can run it. */
+@keyframes hb-game-cycle {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes hb-game-hop {
+  0% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.33, 0.67, 0.6, 1);
+  }
+  50% {
+    translate: 0 calc(var(--px) * -14);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.67, 0.33);
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+@keyframes hb-game-collect {
+  0% {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+  45% {
+    opacity: 1;
+    scale: 1.35;
+    translate: 0 calc(var(--px) * -6);
+  }
+  100% {
+    opacity: 0;
+    scale: 0.6;
+    translate: 0 calc(var(--px) * -9);
+  }
+}

@@ -1,0 +1,437 @@
+/* ── The noren (components/about/Noren.tsx) ──────────────────────────────────
+   A dojo doorway with an ai-iro curtain, 場 dyed across it, and Kiru behind
+   it. Prefix au-. The cloth and Kiru are OBJECTS: the same colours in both
+   lights. The doorway around them is the place, so it follows the theme:
+   pale hinoki and a sunlit room by day, dark wood and a lamplit room at
+   night.
+
+   Every moving part is its own composited box, moved by transform only:
+   eight pieces of cloth (NorenFX writes their skew), the four panels that
+   hold them (a CSS ripple as the page opens), Kiru's wrapper (a CSS
+   transition when he ducks). Nothing here repaints per frame.            */
+
+.au-door {
+  /* The cloth: indigo, deep in the folds. */
+  --au-ai: #1f2b6d;
+  --au-ai-deep: #141c4b;
+  --au-ai-sleeve: #18225a;
+  --au-dye: #f0e7d4;
+  --au-dye-bleed: rgba(120, 140, 220, 0.34);
+  /* Cotton: a fixed fibre noise (the cloth is an object, so not the page's
+     theme-dependent one). One 120px tile, rasterised once. */
+  --au-fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95 .55' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .92 0 0 0 0 .93 0 0 0 0 1 0 0 0 .9 -.32'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23f)'/%3E%3C/svg%3E");
+  --au-stitch: rgba(240, 231, 212, 0.5);
+  /* Day: pale hinoki, a sunlit room. */
+  --au-wood: #c39462;
+  --au-wood-hi: #d9b27f;
+  --au-wood-lo: #9c6e3f;
+  --au-wood-grain: rgba(110, 70, 30, 0.16);
+  --au-wall-hi: #f1e2c2;
+  --au-wall: #c9b08a;
+  --au-wall-lo: #8f7856;
+  --au-light: rgba(255, 249, 232, 0.95);
+  --au-floor: #c79c63;
+  --au-floor-lo: #a77b45;
+  --au-board: rgba(96, 60, 24, 0.22);
+  --au-ground: rgba(40, 30, 20, 0.28);
+  --au-rim: transparent;
+
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+  user-select: none;
+  -webkit-user-select: none;
+}
+:root[data-theme='dark'] .au-door {
+  /* Night: dark wood, the room lit by a lantern you can't see. */
+  --au-wood: #3a2a1e;
+  --au-wood-hi: #4d3827;
+  --au-wood-lo: #261a12;
+  --au-wood-grain: rgba(0, 0, 0, 0.28);
+  --au-wall-hi: #6b4a2a;
+  --au-wall: #3a271a;
+  --au-wall-lo: #22170f;
+  --au-light: rgba(255, 205, 120, 0.78);
+  --au-floor: #4a3220;
+  --au-floor-lo: #2c1d12;
+  --au-board: rgba(0, 0, 0, 0.35);
+  --au-ground: rgba(255, 190, 100, 0.16);
+  --au-rim: rgba(176, 196, 255, 0.28);
+}
+
+.au-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.au-scene {
+  position: absolute;
+  inset: 0;
+}
+.au-scene > * {
+  position: absolute;
+}
+
+/* ── Inside: wall, light, floor ────────────────────────────────────────── */
+
+.au-in {
+  overflow: hidden;
+  background:
+    /* the light behind Kiru: day through a far window, night a lantern */
+    radial-gradient(52% 30% at 50% 84%, var(--au-light), transparent 74%),
+    /* the floor, from the far wall to the sill */
+    linear-gradient(
+        180deg,
+        transparent 80%,
+        var(--au-floor) 80%,
+        var(--au-floor-lo) 100%
+      ),
+    linear-gradient(
+      180deg,
+      var(--au-wall-lo) 0%,
+      var(--au-wall-lo) 38%,
+      var(--au-wall) 66%,
+      var(--au-wall-hi) 80%
+    );
+}
+/* Floorboards, converging on the far wall. */
+.au-in::after {
+  content: '';
+  position: absolute;
+  inset: 80% -40% 0;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--au-board) 0 1px,
+    transparent 1px 34px
+  );
+  transform: perspective(60px) rotateX(38deg);
+  transform-origin: 50% 0;
+}
+
+/* His body: the same shared parts every ninja uses (KiruDefs), static. */
+.au-kbody {
+  overflow: visible;
+}
+
+.au-kbody,
+.au-kiru {
+  transform-origin: 50% 100%;
+}
+.au-k {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.au-k-1 {
+  display: none;
+}
+.au-door[data-mood='1'] .au-k-0 {
+  display: none;
+}
+.au-door[data-mood='1'] .au-k-1 {
+  display: block;
+}
+/* Ducked: he lets go and leans back, so his fists slip behind the cloth as
+   it swings shut; his legs stay put (he is not as hidden as he thinks). */
+.au-door[data-kiru='duck'] .au-kiru {
+  translate: 0 -11%;
+  scale: 0.96;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .au-kiru {
+    transition:
+      translate 0.5s var(--ease-out-expo),
+      scale 0.5s var(--ease-out-expo);
+  }
+  .au-door[data-kiru='duck'] .au-kiru {
+    transition-duration: 0.28s;
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+  .au-door[data-kiru='duck'] .au-kbody {
+    animation: au-shuffle 0.42s ease-out;
+  }
+}
+@keyframes au-shuffle {
+  35% {
+    translate: -1.5% 0;
+  }
+  70% {
+    translate: 1% 0;
+  }
+}
+
+/* ── The doorway ───────────────────────────────────────────────────────── */
+
+.au-lintel,
+.au-post,
+.au-sill {
+  background:
+    repeating-linear-gradient(
+      var(--au-grain-dir, 180deg),
+      var(--au-wood-grain) 0 1px,
+      transparent 1px 7px
+    ),
+    linear-gradient(
+      var(--au-shade-dir, 180deg),
+      var(--au-wood-hi),
+      var(--au-wood) 45%,
+      var(--au-wood-lo)
+    );
+  box-shadow: inset 0 1px 0 var(--au-rim);
+}
+.au-lintel {
+  --au-grain-dir: 0deg;
+  border-radius: 4px 4px 2px 2px;
+  box-shadow:
+    inset 0 1px 0 var(--au-rim),
+    0 6px 10px -6px rgba(0, 0, 0, 0.45);
+}
+.au-post {
+  --au-grain-dir: 90deg;
+  --au-shade-dir: 90deg;
+  border-radius: 2px 2px 3px 3px;
+}
+.au-post-r {
+  --au-shade-dir: 270deg;
+}
+.au-sill {
+  --au-grain-dir: 0deg;
+  border-radius: 3px;
+}
+/* The doorway stands on the page: a soft shadow on the ground. */
+.au-step {
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--au-ground), transparent);
+}
+
+/* The rod: polished wood, darker caps where it rests on the posts. */
+.au-rod {
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      #22160d 0 2.4%,
+      transparent 2.4% 97.6%,
+      #22160d 97.6%
+    ),
+    linear-gradient(180deg, #8a5d36, #5b3a20 55%, #3e2614);
+  box-shadow: 0 3px 4px -2px rgba(0, 0, 0, 0.5);
+}
+
+/* ── The cloth ─────────────────────────────────────────────────────────── */
+
+.au-noren {
+  z-index: 1;
+}
+.au-pn {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+}
+/* The two Kiru holds lie over their neighbours where they overlap. */
+.au-pn[data-i='1'],
+.au-pn[data-i='2'] {
+  z-index: 2;
+}
+/* As the page opens, the cloth is still swaying from whoever came through
+   last: a ripple across the panels, in CSS, so it plays from the first paint
+   without waiting for NorenFX (which moves the pieces inside each panel, so
+   the two never touch the same transform). */
+@media (prefers-reduced-motion: no-preference) {
+  .au-door:not(.au-door-mini) .au-pn {
+    transform-origin: 50% 0;
+    animation: au-enter 2.1s cubic-bezier(0.33, 0.7, 0.4, 1) 0.3s both;
+  }
+  /* The two in Kiru's fists hardly move. */
+  .au-door:not(.au-door-mini) .au-pn:nth-child(2) {
+    animation-name: au-enter-held;
+    animation-delay: 0.42s;
+  }
+  .au-door:not(.au-door-mini) .au-pn:nth-child(3) {
+    animation-name: au-enter-held;
+    animation-delay: 0.54s;
+  }
+  .au-door:not(.au-door-mini) .au-pn:nth-child(4) {
+    animation-delay: 0.66s;
+  }
+}
+@keyframes au-enter {
+  0% {
+    transform: skewX(0deg);
+  }
+  16% {
+    transform: skewX(-6deg);
+  }
+  38% {
+    transform: skewX(3.6deg);
+  }
+  60% {
+    transform: skewX(-1.8deg);
+  }
+  80% {
+    transform: skewX(0.7deg);
+  }
+  100% {
+    transform: skewX(0deg);
+  }
+}
+@keyframes au-enter-held {
+  0%,
+  100% {
+    transform: skewX(0deg);
+  }
+  20% {
+    transform: skewX(-1.6deg);
+  }
+  48% {
+    transform: skewX(0.9deg);
+  }
+  74% {
+    transform: skewX(-0.3deg);
+  }
+}
+.au-u,
+.au-d {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+.au-u {
+  top: 0;
+  transform: skewX(var(--s, 0deg));
+}
+.au-d {
+  top: 100%;
+  transform: skewX(var(--b, 0deg));
+}
+
+.au-cloth {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    /* soft folds */
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0) 13%,
+      rgba(255, 255, 255, 0.05) 30%,
+      rgba(0, 0, 0, 0.1) 52%,
+      rgba(255, 255, 255, 0.04) 72%,
+      rgba(0, 0, 0, 0) 86%,
+      rgba(0, 0, 0, 0.32) 100%
+    ),
+    var(--au-ai);
+  box-shadow: inset 1px 0 0 var(--au-rim);
+}
+/* The lower piece overlaps the upper by a hair, so the cut never shows. */
+.au-cloth-d {
+  top: -1px;
+  background:
+    /* the hem, folded and stitched */
+    linear-gradient(
+      180deg,
+      transparent calc(100% - 9%),
+      rgba(0, 0, 0, 0.2) calc(100% - 9%)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0) 13%,
+      rgba(255, 255, 255, 0.05) 30%,
+      rgba(0, 0, 0, 0.1) 52%,
+      rgba(255, 255, 255, 0.04) 72%,
+      rgba(0, 0, 0, 0) 86%,
+      rgba(0, 0, 0, 0.32) 100%
+    ),
+    linear-gradient(180deg, var(--au-ai), var(--au-ai-deep));
+}
+.au-cloth svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+/* Resist-dyed: the white is the cloth left undyed, so it carries the weave
+   and its edges bleed a little blue. */
+.au-ba-bleed {
+  fill: none;
+  stroke: var(--au-dye-bleed);
+  stroke-width: 14px;
+  stroke-linejoin: round;
+}
+.au-ba-ink {
+  fill: var(--au-dye);
+}
+/* The cotton, over dye and cloth alike. */
+.au-cloth::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--au-fibre) 0 0 / 120px 120px;
+  opacity: 0.3;
+}
+/* The sleeve the rod runs through, and its stitching. */
+.au-cloth-u::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 9.2%;
+  z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      transparent 45%,
+      rgba(0, 0, 0, 0.32)
+    ),
+    var(--au-ai-sleeve);
+  border-bottom: 1.5px dashed var(--au-stitch);
+}
+.au-cloth-d::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 6.5%;
+  height: 0;
+  z-index: 1;
+  border-bottom: 1.5px dashed var(--au-stitch);
+}
+
+/* ── The hit area ──────────────────────────────────────────────────────── */
+
+.au-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  /* A sideways swipe is the cloth's; an up-or-down one still scrolls. */
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.au-hit:focus-visible {
+  outline-offset: 6px;
+}
+
+/* ── Mini: About Me's closing card ─────────────────────────────────────── */
+
+.au-door-mini .au-u,
+.au-door-mini .au-d {
+  will-change: auto;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .au-door-mini .au-u,
+  .au-door-mini .au-d {
+    transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}

@@ -18,7 +18,15 @@ const SUPABASE_ANON_JWT =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wdHJpamRjbnNsa2Vlb21rc3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzODYwNDQsImV4cCI6MjA5ODk2MjA0NH0.JXL-MOvwIpMK43VLlCl-FzpP1IS21w0r9s2FgcvoyfA';
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-const ALLOWED_SOURCES = new Set(['site', 'post', 'home']);
+// 'websites', 'apps' and 'games' are the three Build pages' own lists.
+const ALLOWED_SOURCES = new Set([
+  'site',
+  'post',
+  'home',
+  'websites',
+  'apps',
+  'games',
+]);
 
 // First-layer per-IP rate limit (in-memory, per serverless instance — the
 // edge function holds the durable DB-backed limit).

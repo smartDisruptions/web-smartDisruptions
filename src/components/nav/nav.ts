@@ -24,10 +24,18 @@ export const NAV: NavItem[] = [
  * the nav in October 2026 and became a section of the Writing page, so its
  * archive (/market-storm, its pages and every report) lights Writing. The
  * guides are listed among Writing's field notes, so they light it too.
+ *
+ * About is two pages since October 2026: /about (the work) and /about-me (the
+ * person), so About Me lights About. The three Build pages are the three
+ * tracks /learn promises ("websites, apps and games"), so they light Learn.
  */
 const PARENT: Record<string, string> = {
   'market-storm': '/content',
   guides: '/content',
+  'about-me': '/about',
+  'build-websites': '/learn',
+  'build-apps': '/learn',
+  'build-games': '/learn',
 };
 
 /**

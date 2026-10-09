@@ -33,7 +33,7 @@ export default function AboutTeaser() {
             who feel behind, stuck, or underpowered.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button variant="secondary" href="/about">
+            <Button variant="secondary" href="/about-me">
               More about me
             </Button>
             <Link

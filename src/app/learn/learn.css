@@ -1,7 +1,9 @@
 /*
   /learn — 学, "learn". A calm splash: one headline, one promise, one form.
   The page says "no hype", so it doesn't shout either. The kanji inks itself
-  once behind the words, Kiru waves, and nothing else moves. Prefix: ln-
+  once behind the words and Kiru waves. Under the cards come the three Build
+  sections (src/components/build/sections), which move only as you scroll
+  them. Prefix: ln-
 */
 
 .ln-page {

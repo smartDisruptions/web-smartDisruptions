@@ -1,0 +1,91 @@
+/* ── The reel of builds ("Stuff I built"), on /about. It opened the home
+   page until October 2026; FeaturedAppsSection imports this file. Prefix
+   hm- (kept from home so the class names didn't churn). ─────────────── */
+
+/* The reel */
+.hm-reel {
+  overflow: clip;
+  view-timeline: --hm-reel block;
+}
+.hm-reel-row {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  padding-inline: 1.25rem;
+}
+.hm-reel-row > li {
+  width: clamp(15rem, 34vw, 23rem);
+  flex: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .hm-reel-row {
+      animation: hm-reel linear both;
+      animation-timeline: --hm-reel;
+      animation-range: entry 0% exit 100%;
+    }
+    .hm-reel-rev {
+      animation-name: hm-reel-rev;
+    }
+  }
+}
+@supports not (animation-timeline: view()) {
+  .hm-reel-row {
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hm-reel-row {
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+}
+@keyframes hm-reel {
+  from {
+    translate: 4vw 0;
+  }
+  to {
+    translate: calc(-100% + 96vw) 0;
+  }
+}
+@keyframes hm-reel-rev {
+  from {
+    translate: calc(-100% + 96vw) 0;
+  }
+  to {
+    translate: 4vw 0;
+  }
+}
+.hm-frame {
+  display: block;
+  padding: 0;
+}
+.hm-frame-bar {
+  display: flex;
+  gap: 5px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--sd-border);
+}
+.hm-frame-bar i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sd-border-strong);
+}
+.hm-frame-bar i:first-child {
+  background: #e2412a;
+}
+.hm-frame img {
+  display: block;
+}
+.hm-frame-cap {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  border-top: 1px solid var(--sd-border);
+}
