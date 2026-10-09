@@ -49,8 +49,13 @@ export default function ArchivedNotice({
         <ul role="list" className="ms-archived-list">
           {current.map((r) => (
             <li key={r.slug}>
+              {/* No prefetch: these sit in the first screen, and prefetching
+                  the three current reports cost every archived page view
+                  about 640 KB on a phone (rare earths alone is 330 KB), for
+                  links most readers never press. A click loads it then. */}
               <Link
                 href={`/market-storm/${r.slug}`}
+                prefetch={false}
                 className="ms-archived-link"
               >
                 {/* One inline run, so a title that wraps keeps its arrow on
