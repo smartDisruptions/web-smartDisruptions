@@ -27,7 +27,7 @@ import './build.css';
 type Section = {
   room: BuildRoom;
   headline: string;
-  /** The page's promise in its own words, then what the page opens on. */
+  /** The page's promise, in its own words. */
   lede: string;
   stage: ReactNode;
   /** Its height on a phone, measured: the space held before it renders. */
@@ -43,23 +43,23 @@ const SECTIONS: Section[] = [
   {
     room: buildRoom('websites'),
     headline: 'Fast. Clean. Responsive.',
-    lede: 'Websites that load fast, look clean and fit any screen. The page opens on a tiny site you can squeeze from desktop to phone.',
+    lede: 'Websites that load fast, look clean and fit any screen.',
     stage: <WebStage />,
-    height: 747,
+    height: 717,
   },
   {
     room: buildRoom('apps'),
     headline: 'Apps for anything.',
-    lede: 'Follow along as I attempt to build apps that make life easier or more fun. The page opens on a phone that comes apart into what you see, what it decides, what it remembers and what it runs on.',
+    lede: 'Follow along as I attempt to build apps that make life easier or more fun.',
     stage: <AppStage />,
-    height: 816,
+    height: 727,
   },
   {
     room: buildRoom('games'),
     headline: 'Any way you like.',
-    lede: 'Custom games you build yourself, then play. The page opens on a level editor: raise the roofs, hang the lanterns, and Kiru runs whatever you make.',
+    lede: 'Custom games you build yourself, then play.',
     stage: <GameStage />,
-    height: 729,
+    height: 640,
     eager: true,
   },
 ];
