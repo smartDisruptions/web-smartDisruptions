@@ -6567,7 +6567,8 @@ A record bill buying less is a different story from a record buildout.`,
   },
   cardImage: '/images/content/ai-capex-thesis-card-hero.webp',
   cardImageLight: '/images/content/ai-capex-thesis-card-hero-light.webp',
-  cardImageAlt: 'Market Storm — the standing thesis on AI capital spending',
+  cardImageAlt:
+    'NVIDIA profit, quarter to 26 July: $59.7 billion. Cash that actually arrived: $24.1 billion.',
   sources: [
     {
       n: 1,
