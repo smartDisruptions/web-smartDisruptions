@@ -10,6 +10,7 @@ import {
 import { articlePages } from '@/content/market-storm';
 import { Badge, Button } from '@/components/ui';
 import ReportView from '@/components/market-storm/ReportView';
+import ArchivedNotice from '@/components/market-storm/ArchivedNotice';
 import StormSky from '@/components/market-storm/StormSky';
 import SubscribeForm from '@/components/SubscribeForm';
 import Kiru from '@/components/kiru/Kiru';
@@ -109,6 +110,8 @@ export default async function MarketStormDetail({
   );
 
   // An article is its own page: nothing of the old report template around it.
+  // Archived, it gets the notice as a bar above it, since the article's own
+  // opening is its to design.
   if (isArticle(report)) {
     const page = articlePages[report.slug];
     if (!page) {
@@ -120,6 +123,7 @@ export default async function MarketStormDetail({
     return (
       <>
         {ld}
+        {report.archived && <ArchivedNotice report={report} strip />}
         <Article />
       </>
     );
@@ -179,6 +183,9 @@ export default async function MarketStormDetail({
                 </Badge>
               ))}
             </div>
+            {/* Archived: said here, with the page's other facts about itself,
+                inside the clearing so it reads over the live sky. */}
+            {report.archived && <ArchivedNotice report={report} />}
           </div>
         </div>
 
