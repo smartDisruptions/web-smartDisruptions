@@ -872,7 +872,7 @@
       --sx: -18px;
       --sr: -2.5deg;
     }
-    /* Attached only near the screen (islands/near.tsx), like every scroll
+    /* Attached under [data-near] (islands/near.tsx), like every scroll
        animation on the page. */
     [data-near] .re-e-card {
       animation: re-e-snap linear both;

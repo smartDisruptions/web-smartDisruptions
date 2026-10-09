@@ -11,12 +11,11 @@ import { useEffect, useRef, useState } from 'react';
  * same-page link.
  */
 export default function CiteBack() {
-  const ref = useRef<HTMLDivElement>(null);
   const from = useRef<{ y: number; link: HTMLElement } | null>(null);
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const sources = ref.current?.closest('section');
+    const sources = document.getElementById('sources');
     if (!sources) return;
     const onClick = (e: MouseEvent) => {
       const link = (e.target as Element | null)?.closest?.<HTMLElement>(
@@ -51,7 +50,7 @@ export default function CiteBack() {
   };
 
   return (
-    <div ref={ref} className="re-e-back-wrap">
+    <div className="re-e-back-wrap">
       {show && (
         <button type="button" className="re-e-back-pill" onClick={back}>
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">

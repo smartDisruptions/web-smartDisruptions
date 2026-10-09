@@ -441,10 +441,10 @@
       animation-fill-mode: both;
       animation-timeline: --re-b-chain;
     }
-    /* Attached only while the chapter is near the screen (islands/near.tsx):
-       an attached scroll-driven animation costs a style pass on every
-       scrolling frame, wherever the reader is. The timelines above stay
-       declared (a timeline name that comes and goes restyles its subtree). */
+    /* Attached under [data-near], which islands/near.tsx sets once JavaScript
+       runs (off-screen chapters skip rendering, so they cost nothing there).
+       The timelines above stay declared (a timeline name that comes and goes
+       restyles its subtree). */
     .re-b-ch[data-near] .re-b-chain .re-b-flow.is-h {
       animation-name: re-b-flow-across;
     }

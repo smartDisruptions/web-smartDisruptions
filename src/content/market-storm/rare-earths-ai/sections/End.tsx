@@ -73,8 +73,11 @@ export default function End() {
             </li>
           ))}
         </ol>
-        <CiteBack />
       </section>
+      {/* Outside the section: the list skips rendering while off screen
+          (content-visibility in re.css), and that containment would pin a
+          fixed pill to the list instead of the screen. */}
+      <CiteBack />
 
       <footer className="re-e-colophon">
         <div className="re-e-col-head">

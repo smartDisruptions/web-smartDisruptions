@@ -104,6 +104,147 @@
 .re-e-colophon {
   will-change: opacity;
 }
+/* Off-screen chapters skip style, layout, paint and hit-testing until they
+   come near the screen (content-visibility). Their words stay in the page,
+   readable by assistive tech, find-in-page and links. Measured on a phone
+   with a 4x-throttled CPU and touch scrolling: every hit test (the browser
+   runs one after each scroll step) fell from ~4.7ms to ~0.6ms, and long
+   tasks while scrolling from 4-7 to 0-1. Each chapter's placeholder height
+   is close to its real one at three widths (measured), so the scrollbar and
+   the reading-progress thread barely move as chapters render; `auto` then
+   remembers the real height. Two things come with it. A chapter clips
+   what it paints to its own box plus this margin, enough for focus rings,
+   card shadows and the stamps that hang over an edge (a block that breaks
+   out wider, like chapter 05's tiles, widens it: see d.css). And it is the
+   containing block for anything position: fixed inside it, so fixed
+   things live outside the chapters (the citation pill, End.tsx). */
+.re-ch,
+.re #sources {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--re-cis, 2400px);
+  overflow-clip-margin: 32px;
+}
+.re #basics {
+  --re-cis: 2140px;
+}
+.re #ai-speed {
+  --re-cis: 3610px;
+}
+.re #tech {
+  --re-cis: 2680px;
+}
+.re #china {
+  --re-cis: 3430px;
+}
+.re #companies {
+  --re-cis: 2650px;
+}
+.re #ai-use {
+  --re-cis: 2900px;
+}
+.re #bear {
+  --re-cis: 2520px;
+}
+.re #dots {
+  --re-cis: 2780px;
+}
+.re #missed {
+  --re-cis: 1760px;
+}
+.re #ranking {
+  --re-cis: 5140px;
+}
+.re #watch {
+  --re-cis: 2540px;
+}
+.re #think {
+  --re-cis: 2660px;
+}
+.re #sources {
+  --re-cis: 4940px;
+}
+@media (min-width: 600px) {
+  .re #basics {
+    --re-cis: 1370px;
+  }
+  .re #ai-speed {
+    --re-cis: 2540px;
+  }
+  .re #tech {
+    --re-cis: 1860px;
+  }
+  .re #china {
+    --re-cis: 2680px;
+  }
+  .re #companies {
+    --re-cis: 2030px;
+  }
+  .re #ai-use {
+    --re-cis: 1830px;
+  }
+  .re #bear {
+    --re-cis: 1840px;
+  }
+  .re #dots {
+    --re-cis: 1960px;
+  }
+  .re #missed {
+    --re-cis: 1070px;
+  }
+  .re #ranking {
+    --re-cis: 3920px;
+  }
+  .re #watch {
+    --re-cis: 1790px;
+  }
+  .re #think {
+    --re-cis: 1540px;
+  }
+  .re #sources {
+    --re-cis: 2610px;
+  }
+}
+@media (min-width: 1024px) {
+  .re #basics {
+    --re-cis: 1360px;
+  }
+  .re #ai-speed {
+    --re-cis: 2060px;
+  }
+  .re #tech {
+    --re-cis: 1860px;
+  }
+  .re #china {
+    --re-cis: 2380px;
+  }
+  .re #companies {
+    --re-cis: 1870px;
+  }
+  .re #ai-use {
+    --re-cis: 1650px;
+  }
+  .re #bear {
+    --re-cis: 1820px;
+  }
+  .re #dots {
+    --re-cis: 1890px;
+  }
+  .re #missed {
+    --re-cis: 980px;
+  }
+  .re #ranking {
+    --re-cis: 3260px;
+  }
+  .re #watch {
+    --re-cis: 1650px;
+  }
+  .re #think {
+    --re-cis: 1300px;
+  }
+  .re #sources {
+    --re-cis: 2410px;
+  }
+}
 .re-ch-head {
   position: relative;
   display: grid;
@@ -383,10 +524,11 @@
   cursor: help;
 }
 
-/* Scroll reveals (./ui.tsx marks blocks .re-rv). The site's sd-rise, but
-   attached only inside a chapter that islands/near.tsx has marked as near the
-   screen, so off-screen chapters cost nothing per scrolling frame. Without
-   scroll timelines, JavaScript, or under reduced motion, content shows. */
+/* Scroll reveals (./ui.tsx marks blocks .re-rv). The site's sd-rise, attached
+   under [data-near], which islands/near.tsx sets on every chapter once
+   JavaScript runs; chapters off screen skip rendering, so their reveals cost
+   nothing there. Without scroll timelines, JavaScript, or under reduced
+   motion, content shows. */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     [data-near] .re-rv {
@@ -451,12 +593,6 @@
     ) {
     animation-play-state: paused !important;
   }
-}
-
-/* Anything that lives below the fold and is heavy to lay out can opt in. */
-.re-defer {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 900px;
 }
 
 @media (prefers-reduced-motion: reduce) {

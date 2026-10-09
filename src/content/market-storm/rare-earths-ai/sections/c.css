@@ -1580,11 +1580,10 @@
 /* ── Scroll-driven motion ────────────────────────────────────────────────── */
 
 /* Every scroll-driven animation hangs off [data-near], which
-   ../islands/near.tsx sets while a chapter is within about a third of a
-   screen of the viewport: an attached scroll-driven animation costs a little
-   on every scrolling frame, wherever the reader is, so far-off charts carry
-   none. Without it (no JS yet, no support, reduced motion) the charts simply
-   sit in their final state.
+   ../islands/near.tsx sets on every chapter once JavaScript runs. Chapters
+   off screen skip rendering (content-visibility in re.css), so far-off charts
+   cost nothing per scrolling frame. Without it (no JS yet, no support,
+   reduced motion) the charts simply sit in their final state.
 
    The named timelines themselves are declared always. A timeline name that
    comes and goes makes Chrome restyle the whole subtree under it (every

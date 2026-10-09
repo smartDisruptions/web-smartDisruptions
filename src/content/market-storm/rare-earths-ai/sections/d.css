@@ -26,6 +26,13 @@
     --d-w: min(72rem - 48px, 100vw - 64px);
     margin-inline: calc((min(54rem, var(--d-w)) - var(--d-w)) / 2);
   }
+  /* A chapter clips its paint to its own box plus a margin (content-
+     visibility in re.css), so the margin grows by the breakout: at most
+     (72rem - 48px - 54rem) / 2 = 120px a side, plus re.css's 32px. A plain
+     length, because Chrome takes no calc() in overflow-clip-margin. */
+  .re-ch.re-d-ch {
+    overflow-clip-margin: 152px;
+  }
 }
 
 .re-d-chip,
