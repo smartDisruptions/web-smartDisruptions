@@ -190,7 +190,16 @@ export default function RoomKeeper() {
       for (const a of left) io.observe(a);
       look = io;
     };
-    if (!below) fetchInView();
+    // "Still" here means stopped for a moment, not between two notches of a
+    // wheel (which ends a scroll each notch): the page payloads are big, and
+    // parsing one is main-thread work that should land after the reader
+    // has stopped, not between notches.
+    let settle = 0;
+    const fetchSoon = () => {
+      window.clearTimeout(settle);
+      settle = window.setTimeout(fetchInView, 300);
+    };
+    if (!below) fetchSoon();
     // A mouse over a card (its stretched link) or a key landing on it says
     // the reader means it: fetch now. A finger touching down is usually the
     // start of a scroll, so touch waits for the scroll to end like the rest.
@@ -215,6 +224,7 @@ export default function RoomKeeper() {
         holding = true;
         room!.setAttribute('data-hold', '');
       }
+      window.clearTimeout(settle);
       window.clearTimeout(quiet);
       quiet = window.setTimeout(release, hasEnd ? 3000 : 160);
     }
@@ -226,7 +236,7 @@ export default function RoomKeeper() {
         switchLater();
         inkWhenStill();
         fillWhenStill();
-        fetchInView();
+        fetchSoon();
       }
       if (hasEnd) listen();
     }
@@ -240,6 +250,7 @@ export default function RoomKeeper() {
       room.removeEventListener('pointerover', onIntent);
       room.removeEventListener('focusin', onIntent);
       look?.disconnect();
+      window.clearTimeout(settle);
       window.clearTimeout(quiet);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('scrollend', release);
