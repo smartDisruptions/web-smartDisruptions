@@ -1,0 +1,604 @@
+/* Rare earths in the age of AI. Every class is `re-` prefixed. Colours come
+   from the site's tokens plus a few article inks below, each with a night
+   value, so the page follows the day/night toggle.
+
+   This file is the shared base (layout, chapter rhythm, the building blocks
+   in ./ui.tsx). Each chapter's own visuals live in its own stylesheet next
+   to its component in ./sections. */
+
+.re {
+  --re-wrap: 72rem;
+  --re-col: 54rem;
+  --re-measure: 62ch;
+
+  /* Article inks. Fills are free to use anywhere; when an ink has to be
+     TEXT, use the -ink variant (AA on washi by day, on lacquer by night). */
+  --re-light: var(--sd-accent); /* light rare earths: Nd, Pr */
+  --re-heavy: #a8781a; /* heavy rare earths: Dy, Tb, Y (old gold) */
+  --re-heavy-ink: #8a5a00;
+  --re-nd: #6b45b8; /* neodymium salts glow lilac: the AI-specific slice */
+  --re-nd-ink: #5a379f;
+  --re-steel: #5d6275; /* magnet metal, ore, machinery */
+  --re-ore: #8b7f6a;
+  --re-up: var(--sd-bull);
+  --re-down: var(--sd-bear);
+  --re-warn: var(--sd-warn);
+  --re-pen: var(--sd-pen);
+
+  /* Tiers are verdicts, so they wear the verdict inks. */
+  --re-t1: var(--sd-bull);
+  --re-t2: var(--sd-accent);
+  --re-t3: var(--sd-warn);
+  --re-t4: var(--sd-bear);
+  --re-t0: color-mix(in oklab, var(--sd-text-secondary) 50%, var(--sd-surface));
+
+  /* The three 2030 worlds. */
+  --re-w-takeoff: #0f7a70;
+  --re-w-steady: var(--sd-accent);
+  --re-w-stall: var(--sd-pen-ink);
+
+  --re-card: var(--sd-surface);
+  --re-line: var(--sd-border);
+  --re-line-strong: var(--sd-border-strong);
+  --re-muted: var(--sd-text-secondary);
+  --re-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  position: relative;
+  color: var(--sd-text-primary);
+}
+:root[data-theme='dark'] .re {
+  --re-heavy: #ffcf70;
+  --re-heavy-ink: #ffcf70;
+  --re-nd: #b89cff;
+  --re-nd-ink: #c3a6ff;
+  --re-steel: #9aa0bb;
+  --re-ore: #b9ad95;
+  --re-w-takeoff: #4fd1c5;
+}
+
+.re-wrap {
+  max-width: var(--re-wrap);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 640px) {
+  .re-wrap {
+    padding-inline: 24px;
+  }
+}
+
+/* One reading column, centred. A chapter's big visuals may break out of it
+   with .re-bleed (full wrap width). */
+.re-main {
+  padding-bottom: 4rem;
+}
+.re-main > * {
+  max-width: var(--re-col);
+  margin-inline: auto;
+}
+.re-bleed {
+  max-width: none;
+}
+
+/* ── Chapter rhythm ──────────────────────────────────────────────────── */
+
+.re-ch {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 5rem;
+  scroll-margin-top: 5rem;
+}
+/* Each chapter, and each block of the opening and the end matter, is its own
+   compositor layer. Scrolling a long page makes Chrome repaint whatever lies
+   within ~4,000px of the screen every so often, and this page is dense:
+   as one layer that repaint was ~20ms at 4× CPU. A chapter shorter than
+   that is painted once, and a change inside one repaints only it.
+   (will-change: opacity, not transform, so nothing position: fixed inside
+   is affected.) */
+.re-ch,
+.re-a-answer,
+.re-a-toc,
+.re-e-method,
+.re-e-sources,
+.re-e-colophon {
+  will-change: opacity;
+}
+/* Off-screen chapters skip style, layout, paint and hit-testing until they
+   come near the screen (content-visibility). Their words stay in the page,
+   readable by assistive tech, find-in-page and links. Measured on a phone
+   with a 4x-throttled CPU and touch scrolling: every hit test (the browser
+   runs one after each scroll step) fell from ~4.7ms to ~0.6ms, and long
+   tasks while scrolling from 4-7 to 0-1. Each chapter's placeholder height
+   is close to its real one at three widths (measured), so the scrollbar and
+   the reading-progress thread barely move as chapters render; `auto` then
+   remembers the real height. Two things come with it. A chapter clips
+   what it paints to its own box plus this margin, enough for focus rings,
+   card shadows and the stamps that hang over an edge (a block that breaks
+   out wider, like chapter 05's tiles, widens it: see d.css). And it is the
+   containing block for anything position: fixed inside it, so fixed
+   things live outside the chapters (the citation pill, End.tsx). */
+.re-ch,
+.re #sources {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--re-cis, 2400px);
+  overflow-clip-margin: 32px;
+}
+.re #basics {
+  --re-cis: 2140px;
+}
+.re #ai-speed {
+  --re-cis: 3610px;
+}
+.re #tech {
+  --re-cis: 2680px;
+}
+.re #china {
+  --re-cis: 3430px;
+}
+.re #companies {
+  --re-cis: 2650px;
+}
+.re #ai-use {
+  --re-cis: 2900px;
+}
+.re #bear {
+  --re-cis: 2520px;
+}
+.re #dots {
+  --re-cis: 2780px;
+}
+.re #missed {
+  --re-cis: 1760px;
+}
+.re #ranking {
+  --re-cis: 5140px;
+}
+.re #watch {
+  --re-cis: 2540px;
+}
+.re #think {
+  --re-cis: 2660px;
+}
+.re #sources {
+  --re-cis: 4940px;
+}
+@media (min-width: 600px) {
+  .re #basics {
+    --re-cis: 1370px;
+  }
+  .re #ai-speed {
+    --re-cis: 2540px;
+  }
+  .re #tech {
+    --re-cis: 1860px;
+  }
+  .re #china {
+    --re-cis: 2680px;
+  }
+  .re #companies {
+    --re-cis: 2030px;
+  }
+  .re #ai-use {
+    --re-cis: 1830px;
+  }
+  .re #bear {
+    --re-cis: 1840px;
+  }
+  .re #dots {
+    --re-cis: 1960px;
+  }
+  .re #missed {
+    --re-cis: 1070px;
+  }
+  .re #ranking {
+    --re-cis: 3920px;
+  }
+  .re #watch {
+    --re-cis: 1790px;
+  }
+  .re #think {
+    --re-cis: 1540px;
+  }
+  .re #sources {
+    --re-cis: 2610px;
+  }
+}
+@media (min-width: 1024px) {
+  .re #basics {
+    --re-cis: 1360px;
+  }
+  .re #ai-speed {
+    --re-cis: 2060px;
+  }
+  .re #tech {
+    --re-cis: 1860px;
+  }
+  .re #china {
+    --re-cis: 2380px;
+  }
+  .re #companies {
+    --re-cis: 1870px;
+  }
+  .re #ai-use {
+    --re-cis: 1650px;
+  }
+  .re #bear {
+    --re-cis: 1820px;
+  }
+  .re #dots {
+    --re-cis: 1890px;
+  }
+  .re #missed {
+    --re-cis: 980px;
+  }
+  .re #ranking {
+    --re-cis: 3260px;
+  }
+  .re #watch {
+    --re-cis: 1650px;
+  }
+  .re #think {
+    --re-cis: 1300px;
+  }
+  .re #sources {
+    --re-cis: 2410px;
+  }
+}
+.re-ch-head {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+.re-ch-n {
+  font-family: var(--font-display);
+  font-size: clamp(3.25rem, 9vw, 5rem);
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 1.5px
+    color-mix(in oklab, var(--sd-text-primary) 28%, transparent);
+  letter-spacing: -0.02em;
+}
+.re-ch-glyph {
+  position: absolute;
+  right: 0;
+  top: -0.5rem;
+  width: clamp(5.5rem, 16vw, 8.5rem);
+  aspect-ratio: 1;
+  color: var(--sd-text-primary);
+  opacity: 0.07;
+  pointer-events: none;
+}
+.re-ch-kick {
+  color: var(--re-muted);
+}
+.re-ch-title {
+  font-size: clamp(1.7rem, 4.6vw, 2.5rem);
+  line-height: 1.1;
+  text-wrap: balance;
+  max-width: 22ch;
+}
+
+/* "Short version" */
+/* The vermilion bar down its left edge is part of its background, not a
+   positioned pseudo-element. (Every positioned or transformed box is one
+   more layer that each hover hit test and each frame's pre-paint walk,
+   page-wide: this page had 1,265 of them, the ARKG article 195. The shared
+   blocks below draw their marks in their own background for that reason.) */
+.re-verdict {
+  padding: 1rem 1.15rem 1.05rem 1.25rem;
+  border-radius: 14px;
+  background:
+    linear-gradient(var(--sd-pen), var(--sd-pen)) 0 0.9rem / 3px
+      calc(100% - 1.8rem) no-repeat,
+    color-mix(in oklab, var(--sd-accent) 7%, var(--sd-surface));
+  border: 1px solid color-mix(in oklab, var(--sd-accent) 18%, transparent);
+}
+.re-verdict-k {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-accent);
+}
+.re-verdict-t {
+  margin-top: 0.3rem;
+  font-size: 1.12rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* "What we found" */
+.re-found {
+  display: grid;
+  gap: 0.6rem;
+}
+.re-found-k {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-found-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: var(--re-measure);
+}
+/* Each finding's vermilion diamond is four corner triangles in the item's
+   own background (no positioned, rotated pseudo-element: see .re-verdict). */
+.re-found-list li {
+  --re-mk: var(--sd-pen);
+  --re-mk-x: calc(0.15rem - 1.5px);
+  --re-mk-y: calc(0.68em - 1.5px);
+  padding-left: 1.4rem;
+  font-size: 1.06rem;
+  line-height: 1.7;
+  background:
+    linear-gradient(to bottom right, transparent 46%, var(--re-mk) 54%)
+      var(--re-mk-x) var(--re-mk-y) / 5px 5px,
+    linear-gradient(to bottom left, transparent 46%, var(--re-mk) 54%)
+      calc(var(--re-mk-x) + 5px) var(--re-mk-y) / 5px 5px,
+    linear-gradient(to top right, transparent 46%, var(--re-mk) 54%)
+      var(--re-mk-x) calc(var(--re-mk-y) + 5px) / 5px 5px,
+    linear-gradient(to top left, transparent 46%, var(--re-mk) 54%)
+      calc(var(--re-mk-x) + 5px) calc(var(--re-mk-y) + 5px) / 5px 5px;
+  background-repeat: no-repeat;
+}
+.re-found-list strong,
+.re-why strong,
+.re-verdict-t strong {
+  font-weight: 700;
+}
+
+/* "Why it matters" */
+.re-why {
+  max-width: var(--re-measure);
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--re-line-strong);
+  font-size: 1.04rem;
+  line-height: 1.7;
+  color: var(--re-muted);
+}
+.re-why > strong:first-child {
+  color: var(--sd-text-primary);
+}
+
+/* ── Figures ─────────────────────────────────────────────────────────── */
+
+.re-fig {
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.1rem 1.1rem 0.9rem;
+  border-radius: 16px;
+  background: var(--re-card);
+  border: 1px solid var(--re-line);
+  box-shadow:
+    0 24px 48px -36px var(--sd-card-shadow),
+    0 2px 6px -3px color-mix(in srgb, var(--sd-card-shadow) 40%, transparent);
+  min-width: 0;
+}
+@media (min-width: 640px) {
+  .re-fig {
+    padding: 1.4rem 1.5rem 1.1rem;
+  }
+}
+.re-fig-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+.re-fig-sub {
+  margin-top: -0.25rem;
+  font-size: 0.88rem;
+  color: var(--re-muted);
+}
+.re-fig-body {
+  position: relative;
+  min-width: 0;
+}
+.re-fig-src {
+  font-size: 0.78rem;
+  color: var(--re-muted);
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+
+.re-tbl-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--re-line);
+  border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.re-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+}
+.re-tbl th,
+.re-tbl td {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--re-line);
+}
+.re-tbl th {
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+  background: color-mix(in oklab, var(--sd-bg) 60%, var(--sd-surface));
+  white-space: nowrap;
+}
+.re-tbl tr:last-child td {
+  border-bottom: 0;
+}
+.re-tbl .is-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.re-details summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: var(--sd-accent);
+  list-style: none;
+}
+.re-details summary::-webkit-details-marker {
+  display: none;
+}
+.re-details summary::before {
+  content: '+';
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.re-details[open] summary::before {
+  content: '−';
+}
+
+/* ── Inline marks ────────────────────────────────────────────────────── */
+
+.re-cite {
+  /* Raised by vertical-align rather than the reset's position: relative,
+     which made each of the 49 citations a layer of its own. */
+  position: static;
+  vertical-align: 0.5em;
+  font-size: 0.66em;
+  line-height: 0;
+  margin-left: 0.08em;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.re-cite-a {
+  color: var(--re-muted);
+  text-decoration: none;
+  padding: 0.1em 0.05em;
+}
+.re-cite-a:hover {
+  color: var(--sd-accent);
+  text-decoration: underline;
+}
+
+.re-flag {
+  display: inline-block;
+  padding: 0.05em 0.45em;
+  border-radius: 5px;
+  font-family: system-ui, sans-serif;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  vertical-align: 0.08em;
+}
+.re-flag.is-ok {
+  color: var(--sd-bull);
+  background: var(--sd-bull-soft);
+}
+.re-flag.is-unv {
+  color: var(--sd-warn);
+  background: var(--sd-warn-soft);
+}
+.re-flag.is-fix {
+  color: var(--sd-bear);
+  background: var(--sd-bear-soft);
+}
+
+.re-term {
+  text-decoration: underline dotted
+    color-mix(in oklab, var(--sd-accent) 60%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1.5px;
+  cursor: help;
+}
+
+/* Scroll reveals (./ui.tsx marks blocks .re-rv). The site's sd-rise, attached
+   under [data-near], which islands/near.tsx sets on every chapter once
+   JavaScript runs; chapters off screen skip rendering, so their reveals cost
+   nothing there. Without scroll timelines, JavaScript, or under reduced
+   motion, content shows. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-near] .re-rv {
+      animation: re-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+    /* A figure only lifts: fading a card that holds its own moving parts
+       would force it onto an offscreen surface for every frame of the fade. */
+    [data-near] .re-fig.re-rv {
+      animation-name: re-lift;
+    }
+  }
+}
+@keyframes re-rise {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes re-lift {
+  from {
+    translate: 0 32px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* The article's ninjas hold still through a scroll and a beat after it
+   (islands/kiru-hold.tsx; SiteFX's own hold lets go at every notch of a
+   wheel). Each looping part is named, as in the site's hold, so the switch
+   restyles only them. !important: each loop is an `animation` shorthand. */
+@media (prefers-reduced-motion: no-preference) {
+  .re
+    .kiru[data-re-hold]
+    :is(
+      .k-body,
+      .k-head,
+      .k-eyes,
+      .k-wave,
+      .k-swing,
+      .k-spin,
+      .k-aura,
+      .k-dangle-l,
+      .k-dangle-r,
+      .k-thumbs,
+      .k-zap,
+      .k-run-a,
+      .k-run-b,
+      .k-bob,
+      .k-float,
+      .kt-hi,
+      .kt-lo,
+      .kt-tip,
+      .kt-hi-run,
+      .kt-lo-run
+    ) {
+    animation-play-state: paused !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .re *,
+  .re *::before,
+  .re *::after {
+    scroll-behavior: auto;
+  }
+}

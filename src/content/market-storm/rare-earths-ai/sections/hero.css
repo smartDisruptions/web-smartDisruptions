@@ -1,0 +1,869 @@
+/* The opening (Hero.tsx): iron filings on washi, the short answer, the
+   contents as a periodic table, and the frame — the reading-progress thread
+   and the chapter rail. Every class is `re-a-` prefixed. */
+
+/* ── Frame: reading progress ───────────────────────────────────────────── */
+
+/* A vermilion thread along the top, driven by the scroll itself (no
+   listener). Browsers without scroll timelines simply don't show it. */
+.re-a-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 70;
+  height: 3px;
+  background: var(--sd-pen);
+  transform-origin: left;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+@supports (animation-timeline: scroll()) {
+  .re-a-progress {
+    animation: re-a-grow linear both;
+    animation-timeline: scroll(root);
+  }
+}
+@keyframes re-a-grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+
+.re-a-hero {
+  /* The filings' ink (read by the canvas island), and the static field
+     lines drawn before it starts. Sumi on washi by day, moonlit
+     silver-indigo by night. */
+  --re-a-filing: rgba(21, 23, 43, 0.86);
+  --re-a-line: rgba(21, 23, 43, 0.42);
+  /* The magnet's body: brushed steel; its S cap darker steel. */
+  --re-a-steel-hi: #7c8195;
+  --re-a-steel-lo: #474b5e;
+  --re-a-cap-s: #2a2e43;
+  --re-a-cap-s-ink: #f4efe4;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  /* Sideways finger drags reach the magnet; vertical ones still scroll. */
+  touch-action: pan-y pinch-zoom;
+}
+:root[data-theme='dark'] .re-a-hero {
+  --re-a-filing: rgba(207, 216, 255, 0.92);
+  --re-a-line: rgba(203, 213, 255, 0.38);
+  --re-a-steel-hi: #6d7596;
+  --re-a-steel-lo: #343a5a;
+  --re-a-cap-s: #c9cfe8;
+  --re-a-cap-s-ink: #11152a;
+}
+
+/* The page kanji: 磁, "magnet" — in faint ink, like the chapter glyphs. */
+.re-a-wm {
+  position: absolute;
+  z-index: 0;
+  color: var(--sd-text-primary);
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+  right: -16%;
+  top: 0.25rem;
+  width: 300px;
+  aspect-ratio: 1;
+}
+@media (min-width: 960px) {
+  .re-a-wm {
+    left: max(-3rem, calc((100vw - 72rem) / 2 - 5rem));
+    right: auto;
+    top: -2.5rem;
+    width: 320px;
+    opacity: 0.05;
+  }
+}
+
+.re-a-in {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-top: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.re-a-back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--sd-bg) 70%, transparent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--sd-text-secondary);
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    scale 0.15s;
+}
+.re-a-back:hover {
+  color: var(--sd-accent);
+  border-color: color-mix(in oklab, var(--sd-accent) 45%, transparent);
+}
+.re-a-back:active {
+  scale: 0.97;
+}
+
+.re-a-kick {
+  justify-self: start;
+  margin-top: 1.6rem;
+}
+
+/* The LCP element: painted with the first frame, never faded or delayed. */
+.re-a-h1 {
+  margin-top: 0.8rem;
+  max-width: 13ch;
+  font-size: clamp(2.45rem, 10.6vw, 4.35rem);
+  line-height: 1.03;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+/* ── The magnet ── */
+
+.re-a-mag {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding-top: 4.25rem;
+}
+
+/* The paper the filings lie on. On a phone it is a full-bleed band around
+   the magnet; on a wide screen the whole hero (see the 960px block). The
+   island makes and sizes the canvas inside it. */
+.re-a-field {
+  position: absolute;
+  z-index: -1;
+  top: 0.25rem;
+  bottom: -1.25rem;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  pointer-events: none;
+}
+.re-a-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Painted with the hero, not on a compositor layer of its own: as a
+     layer, Chrome uploaded all of its pixels again on most commits, even
+     with nothing drawn (measured: ~4ms a frame at 4× CPU). Painted in, it
+     is snapshotted only when the hero repaints around it, which, with Kiru
+     on his own layer and the field holding still while the page scrolls,
+     is rare. */
+}
+
+/* The bar magnet. On a phone it stands upright — N at the top — so each
+   element gets a full row and its whole name; from 640px it lies flat. */
+.re-a-bar {
+  --re-a-cap: 1.05rem;
+  --re-a-len: 18.75rem;
+  position: relative;
+  display: grid;
+  grid-template-rows: var(--re-a-cap) minmax(0, 1fr) var(--re-a-cap);
+  gap: 3px;
+  width: 12rem;
+  height: var(--re-a-len);
+  padding: 3px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--re-a-steel-hi),
+    var(--re-a-steel-lo)
+  );
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.28),
+    0 14px 26px -18px var(--sd-card-shadow);
+}
+
+/* The field as the server draws it: dashed ink lines, in bar lengths. The
+   canvas covers it once it starts (data-state on the hero). */
+.re-a-lines {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--re-a-len) * 2.6);
+  aspect-ratio: 2.6 / 1.6;
+  translate: -50% -50%;
+  rotate: 90deg;
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: var(--re-a-line);
+  stroke-width: 0.0032;
+  stroke-dasharray: 0.01 0.0075;
+  stroke-linecap: round;
+  -webkit-mask-image: radial-gradient(closest-side, #000 46%, transparent);
+  mask-image: radial-gradient(closest-side, #000 46%, transparent);
+  transition: opacity 0.9s ease;
+}
+.re-a-hero[data-state] .re-a-lines {
+  opacity: 0;
+}
+.re-a-hero[data-state='fallback'] .re-a-lines {
+  opacity: 1;
+}
+
+.re-a-cap {
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  line-height: 1;
+}
+.re-a-cap.is-n {
+  background: var(--sd-pen);
+  color: #fff;
+}
+.re-a-cap.is-s {
+  background: var(--re-a-cap-s);
+  color: var(--re-a-cap-s-ink);
+}
+
+.re-a-els {
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A periodic tile. Light rare earths (Nd, Pr) have a solid border; the
+   scarce heavy ones (Dy, Tb, Y) a dashed one — the pattern carries the
+   meaning (the note under the bar says so), the ink only repeats it. */
+.re-a-el {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.3rem 2.6rem minmax(0, 1fr);
+  align-items: center;
+  min-width: 0;
+  padding: 0 0.5rem 0 0.4rem;
+  border: 2px solid var(--re-light);
+  border-radius: 5px;
+  background: var(--sd-surface);
+}
+.re-a-el.is-heavy {
+  border-style: dashed;
+  border-color: var(--re-heavy);
+}
+.re-a-el-z {
+  align-self: start;
+  padding-top: 0.42rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--re-muted);
+  font-variant-numeric: tabular-nums;
+}
+.re-a-el-sym {
+  font-family: var(--font-display);
+  font-size: 1.42rem;
+  line-height: 1;
+  color: var(--sd-accent);
+}
+.re-a-el.is-heavy .re-a-el-sym {
+  color: var(--re-heavy-ink);
+}
+.re-a-el-nm {
+  overflow: hidden;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+  color: var(--sd-text-secondary);
+}
+
+.re-a-elnote {
+  justify-self: start;
+  max-width: 46ch;
+  margin-top: 3.75rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--re-muted);
+}
+
+/* The hint: a little horseshoe magnet and one line, faded in once the
+   field is live. Its box is always there, so nothing moves when it shows. */
+.re-a-hint {
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--re-muted);
+  visibility: hidden;
+  opacity: 0;
+}
+.re-a-hero[data-state='live'] .re-a-hint {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.6s ease 1.1s;
+}
+.re-a-hint svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
+  fill: var(--sd-pen);
+}
+.re-a-hint-touch {
+  display: none;
+}
+@media (pointer: coarse) {
+  .re-a-hint-fine {
+    display: none;
+  }
+  .re-a-hint-touch {
+    display: inline;
+  }
+}
+
+.re-a-lede {
+  max-width: 40ch;
+  margin-top: 1.75rem;
+  font-size: clamp(1.08rem, 2.7vw, 1.24rem);
+  line-height: 1.62;
+  color: var(--sd-text-secondary);
+}
+
+/* The readout: a quiet data strip, like the label on an instrument. */
+.re-a-readout {
+  display: grid;
+  margin-top: 1.6rem;
+  border-block: 1px solid var(--re-line);
+}
+.re-a-ro {
+  display: grid;
+  grid-template-columns: 6.6rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+}
+.re-a-ro + .re-a-ro {
+  border-top: 1px dashed var(--re-line);
+}
+.re-a-readout dt {
+  padding-top: 0.22em;
+  font-size: 0.64rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-a-readout dd {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--sd-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.re-a-kiru {
+  justify-self: end;
+  width: 104px;
+  margin: 0.5rem -6px 0 0;
+  /* Kiru idles (SiteFX) in an SVG that re-lays itself out every frame he
+     moves. On his own layer, those frames repaint only him, not the hero
+     and the whole page around him. */
+  will-change: transform;
+}
+/* Below the two-column layout, Kiru keeps watch beside the readout. */
+@media (max-width: 959.98px) {
+  .re-a-in {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 0.5rem;
+  }
+  .re-a-in > * {
+    grid-column: 1 / -1;
+  }
+  .re-a-readout {
+    grid-column: 1;
+    align-self: start;
+  }
+  .re-a-kiru {
+    grid-column: 2;
+    align-self: end;
+    width: 92px;
+    margin: 0 -8px 0 0;
+  }
+}
+@media (max-width: 639.98px) {
+  .re-a-ro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .re-a-mag {
+    padding-top: 6.5rem;
+  }
+  .re-a-bar {
+    --re-a-cap: 22px;
+    grid-template-rows: none;
+    grid-template-columns: var(--re-a-cap) minmax(0, 1fr) var(--re-a-cap);
+    gap: 4px;
+    width: 100%;
+    max-width: 34rem;
+    height: auto;
+    padding: 4px;
+    border-radius: 11px;
+    background: linear-gradient(
+      180deg,
+      var(--re-a-steel-hi),
+      var(--re-a-steel-lo)
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      0 14px 26px -18px var(--sd-card-shadow);
+  }
+  .re-a-lines {
+    width: 260%;
+    rotate: none;
+  }
+  .re-a-els {
+    grid-template-rows: none;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .re-a-el {
+    grid-template-columns: none;
+    grid-template-rows: auto 1fr auto;
+    align-items: stretch;
+    min-height: 5.6rem;
+    padding: 0.4rem 0.4rem 0.45rem;
+    border-radius: 6px;
+  }
+  .re-a-el-z {
+    padding-top: 0;
+    font-size: 0.7rem;
+  }
+  .re-a-el-sym {
+    align-self: center;
+    font-size: 1.9rem;
+  }
+  .re-a-el-nm {
+    font-size: 0.62rem;
+  }
+  .re-a-cap {
+    font-size: 0.85rem;
+  }
+  .re-a-elnote {
+    margin-top: 5.25rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .re-a-in {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    grid-template-areas:
+      'back back'
+      'kick mag'
+      'h1 mag'
+      'lede mag'
+      'ro mag';
+    grid-template-rows: auto auto auto auto 1fr;
+    column-gap: 3rem;
+    padding-top: 1.5rem;
+    padding-bottom: 3.25rem;
+  }
+  .re-a-back {
+    grid-area: back;
+  }
+  .re-a-kick {
+    grid-area: kick;
+    margin-top: 2rem;
+  }
+  .re-a-h1 {
+    grid-area: h1;
+  }
+  .re-a-lede {
+    grid-area: lede;
+  }
+  .re-a-readout {
+    grid-area: ro;
+    align-self: start;
+  }
+  /* The magnet sits in the right column; the paper is the whole hero. */
+  .re-a-mag {
+    grid-area: mag;
+    position: static;
+    align-self: center;
+    padding: 0 0 1rem;
+  }
+  .re-a-field {
+    top: 0;
+    bottom: 0;
+    /* From 240px left of the magnet's column to the screen's right edge:
+       the title column stays clean washi (the island fades the paper in). */
+    left: calc((100% - 96px) * 0.46 - 168px);
+  }
+  .re-a-elnote {
+    margin-top: 2.25rem;
+    justify-self: center;
+    max-width: 38ch;
+    text-align: center;
+  }
+  .re-a-hint {
+    justify-self: center;
+  }
+  .re-a-readout {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .re-a-ro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+    align-content: start;
+    padding: 0.7rem 0.9rem 0.8rem;
+  }
+  .re-a-ro:first-child {
+    padding-left: 0;
+  }
+  .re-a-ro + .re-a-ro {
+    border-top: 0;
+    border-left: 1px dashed var(--re-line);
+  }
+  .re-a-kiru {
+    position: absolute;
+    right: 24px;
+    bottom: 0;
+    width: 150px;
+    margin: 0;
+  }
+}
+
+/* The tap that lines the filings up also settles the tiles into the bar. */
+@media (prefers-reduced-motion: no-preference) {
+  .re-a-hero[data-a-tap] .re-a-el {
+    animation: re-a-click 0.55s var(--re-ease) calc(var(--i, 0) * 45ms) both;
+  }
+}
+@keyframes re-a-click {
+  0% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 0 -4px;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+/* ── The short answer ──────────────────────────────────────────────────── */
+
+.re-a-answer {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 2.5rem;
+}
+.re-a-answer-t {
+  font-size: clamp(1.55rem, 5.2vw, 2.1rem);
+  line-height: 1.1;
+}
+.re-a-picks {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 720px) {
+  .re-a-picks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .re-a-pick.is-twist {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1040px) {
+  .re-a-picks {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.22fr);
+    align-items: stretch;
+  }
+  .re-a-pick.is-twist {
+    grid-column: auto;
+  }
+}
+
+.re-a-pick {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 1.1rem 1.15rem 1.2rem;
+}
+
+/* #1 and #2: Tier 1 core, so they wear the Tier 1 verdict ink. */
+.re-a-pick.is-ranked {
+  overflow: clip;
+  padding-bottom: 1.6rem;
+  border: 1px solid var(--re-line);
+  border-top: 4px solid var(--re-t1);
+  border-radius: 14px;
+  background: var(--sd-surface);
+}
+.re-a-pick-n {
+  position: absolute;
+  right: 0.4rem;
+  bottom: -1.9rem;
+  font-family: var(--font-display);
+  font-size: 7rem;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--re-t1) 40%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+.re-a-pick-role {
+  position: relative;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--re-t1);
+}
+.re-a-pick-name {
+  position: relative;
+  max-width: 14ch;
+  font-size: clamp(1.35rem, 4.2vw, 1.55rem);
+  line-height: 1.12;
+}
+.re-a-pick-text {
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+
+/* The twist is the article's real thesis, so it is a different object: an
+   ofuda paper slip pinned over the two picks, sealed. Same in both themes,
+   like any object (its ink never follows the theme). */
+.re-a-pick.is-twist {
+  padding: 1.3rem 1.3rem 1.45rem;
+  rotate: -0.8deg;
+}
+.is-twist .re-a-pick-role {
+  color: #b42a17;
+}
+.is-twist .re-a-pick-name {
+  max-width: 13ch;
+  padding-right: 3.2rem;
+  font-size: clamp(1.6rem, 5.4vw, 2rem);
+  color: var(--sd-sticky-ink);
+}
+.is-twist .re-a-pick-text {
+  font-size: 1.04rem;
+  line-height: 1.6;
+  color: #3b352b;
+}
+.re-a-twist-seal {
+  position: absolute;
+  right: 1.05rem;
+  top: 1.15rem;
+  width: 2.7rem;
+  rotate: 7deg;
+}
+
+.re-a-disclaimer {
+  max-width: 62ch;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--re-line-strong);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--re-muted);
+}
+
+/* ── Contents: the chapters as a periodic table ────────────────────────── */
+
+.re-a-toc {
+  display: grid;
+  gap: 0.85rem;
+  padding-top: 2.75rem;
+}
+.re-a-toc-t {
+  justify-self: start;
+}
+.re-a-pt {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 640px) {
+  .re-a-pt {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1000px) {
+  .re-a-pt {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+.re-a-pt-el {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr;
+  gap: 0.35rem 0.4rem;
+  height: 100%;
+  min-height: 5.6rem;
+  padding: 0.5rem 0.6rem 0.65rem;
+  border: 1.5px solid var(--re-line-strong);
+  border-radius: 8px;
+  background: var(--sd-surface);
+  color: var(--sd-text-primary);
+  text-decoration: none;
+  transition:
+    translate 0.3s var(--re-ease),
+    border-color 0.2s ease,
+    scale 0.15s ease;
+}
+.re-a-pt-n {
+  font-size: 0.7rem;
+  font-weight: 750;
+  line-height: 1;
+  color: var(--re-muted);
+  font-variant-numeric: tabular-nums;
+}
+.re-a-pt-sym {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  line-height: 0.85;
+  color: var(--sd-accent);
+}
+.re-a-pt-t {
+  grid-column: 1 / -1;
+  align-self: end;
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.28;
+  text-wrap: balance;
+}
+@media (hover: hover) {
+  .re-a-pt-el:hover {
+    border-color: var(--sd-accent);
+    translate: 0 -2px;
+  }
+}
+.re-a-pt-el:active {
+  scale: 0.97;
+}
+
+/* ── Frame: the chapter rail (wide screens; islands/a-rail.tsx) ────────── */
+
+.re-a-rail {
+  display: none;
+}
+@media (min-width: 1248px) {
+  .re-a-rail {
+    display: block;
+    position: fixed;
+    z-index: 40;
+    left: max(8px, calc((100vw - 72rem) / 2 - 60px));
+    top: 50%;
+    translate: 0 -50%;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.3s ease,
+      visibility 0s linear 0.3s;
+  }
+  .re-a-rail[data-on] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+  }
+}
+.re-a-rail ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.re-a-rail-a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 6px;
+  font-size: 0.66rem;
+  font-weight: 750;
+  color: var(--re-muted);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+}
+/* Each chapter is a filing: a short ink tick. Yours is vermilion. It
+   changes as the reader scrolls past a chapter, so it changes at once: a
+   tween here would keep the compositor drawing between scroll frames. */
+.re-a-rail-a::before {
+  content: '';
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, currentColor 60%, transparent);
+  transform-origin: left;
+}
+.re-a-rail-a[aria-current] {
+  color: var(--sd-pen-ink);
+}
+.re-a-rail-a[aria-current]::before {
+  background: var(--sd-pen);
+  transform: scaleX(1.8);
+}
+.re-a-rail-a:hover {
+  color: var(--sd-accent);
+}
+.re-a-rail-n {
+  min-width: 1.4em;
+}
+.re-a-rail-a[aria-current] .re-a-rail-n {
+  translate: 10px 0;
+}
+.re-a-rail-t {
+  position: absolute;
+  left: calc(100% + 2px);
+  top: 50%;
+  translate: -4px -50%;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--re-line);
+  border-radius: 6px;
+  background: var(--sd-surface);
+  font-size: 0.8rem;
+  font-weight: 650;
+  white-space: nowrap;
+  color: var(--sd-text-primary);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    translate 0.2s var(--re-ease);
+}
+.re-a-rail-a:hover .re-a-rail-t,
+.re-a-rail-a:focus-visible .re-a-rail-t {
+  opacity: 1;
+  translate: 0 -50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .re-a-lines,
+  .re-a-rail,
+  .re-a-rail-t,
+  .re-a-pt-el {
+    transition: none;
+  }
+}

@@ -1,0 +1,1697 @@
+/* Builder B · 01 (the chain) and 04 (the valve). Every class is `re-b-`.
+   Colours are the site's tokens and the article inks from re.css, so both
+   chapters follow the day/night toggle with no script.
+
+   Motion: scroll-linked pieces use `animation-timeline: view()` and animate
+   only transform and opacity: Chrome 141 still runs clip-path animations on
+   the main thread (measured), so the two "draw-on" wipes are a sliding
+   cover and per-station slices instead. Each lives inside
+   `prefers-reduced-motion: no-preference` + `@supports`, so without either
+   the finished picture is what renders. Nothing here loops. */
+
+.re-b-ch {
+  --re-b-ink: color-mix(in oklab, var(--sd-text-primary) 80%, transparent);
+  --re-b-ink-2: color-mix(in oklab, var(--sd-text-primary) 46%, transparent);
+  --re-b-ink-3: color-mix(in oklab, var(--sd-text-primary) 16%, transparent);
+  --re-b-wash: color-mix(in oklab, var(--sd-text-primary) 5%, transparent);
+  /* Text on a vermilion or indigo fill. */
+  --re-b-on: #fff;
+}
+:root[data-theme='dark'] .re-b-ch {
+  --re-b-on: #090b16;
+}
+
+/* The chapter is the full wrap wide (re-bleed) so its big pictures can
+   break out of the reading column, to the same edges as the wide figures in
+   every other chapter; everything else sits back on it. (Two classes, so
+   this outranks the shared `.re-fig { margin: 0 }`.) */
+.re-b-ch.re-ch > * {
+  width: 100%;
+  max-width: var(--re-col);
+  margin-inline: auto;
+}
+.re-b-ch.re-ch > .re-b-wide,
+.re-b-ch.re-ch > .re-b-chain {
+  max-width: none;
+}
+
+/* The site's scroll reveal, tuned for heavy drawings (same timeline and
+   range). No 2% scale, which can make Chrome raster a block again as it
+   rises. And the figures only lift, without the fade: they hold their own
+   moving layers (gauge fills, the NdPr wipe), and fading a block like that
+   needs an offscreen surface for every frame of the fade. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .re-b-ch .sd-reveal {
+      animation-name: re-b-rise-flat;
+    }
+    .re-b-ch .re-fig.sd-reveal {
+      animation-name: re-b-lift;
+    }
+  }
+}
+@keyframes re-b-rise-flat {
+  from {
+    opacity: 0;
+    translate: 0 28px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes re-b-lift {
+  from {
+    translate: 0 28px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* ── Station art (shared by 01's chain and 04's gauges) ─────────────────── */
+
+.re-b-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.re-b-shade {
+  fill: var(--sd-text-primary);
+  opacity: 0.08;
+}
+.re-b-rock {
+  fill: var(--re-ore);
+  stroke: var(--re-b-ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.re-b-rock-top {
+  fill: #fff;
+  opacity: 0.24;
+}
+.re-b-rock-side {
+  fill: #000;
+  opacity: 0.16;
+}
+.re-b-rock-line {
+  fill: none;
+  stroke: var(--re-b-ink);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.45;
+}
+.re-b-speck {
+  stroke: var(--sd-surface);
+  stroke-width: 1;
+}
+.re-b-speck.re-b-k-light {
+  fill: var(--re-light);
+}
+.re-b-speck.re-b-k-heavy {
+  fill: var(--re-heavy);
+}
+.re-b-speck.re-b-k-nd {
+  fill: var(--re-nd);
+}
+.re-b-speck.re-b-k-rest {
+  fill: var(--re-steel);
+}
+
+.re-b-band-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 2.2;
+}
+.re-b-band-line.re-b-k-light {
+  stroke: var(--re-light);
+  stroke-width: 3.3;
+}
+/* The scarce heavies are dashed, as in the hero's element tiles. */
+.re-b-band-line.re-b-k-heavy {
+  stroke: var(--re-heavy);
+  stroke-width: 3;
+  stroke-dasharray: 6 3.2;
+}
+.re-b-band-line.re-b-k-rest {
+  stroke: var(--re-steel);
+  opacity: 0.62;
+}
+.re-b-band-line.re-b-k-rest.is-alt {
+  opacity: 0.38;
+}
+
+.re-b-ing-front {
+  fill: var(--re-steel);
+  stroke: var(--re-b-ink);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+}
+.re-b-ing-top {
+  fill: color-mix(in oklab, var(--re-steel) 52%, #fff);
+  stroke: var(--re-b-ink);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+}
+.re-b-ing-line {
+  fill: none;
+  stroke: var(--re-b-ink);
+  stroke-width: 1.2;
+  opacity: 0.5;
+}
+.re-b-ing-glint {
+  stroke: #fff;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+
+.re-b-magnet {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.re-b-magnet > span {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.re-b-fl {
+  fill: none;
+  stroke: var(--re-b-ink);
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 5.4;
+  opacity: 0.7;
+}
+.re-b-mag-n {
+  fill: var(--sd-pen);
+}
+.re-b-mag-s {
+  fill: var(--re-light);
+}
+.re-b-mag-line {
+  fill: none;
+  stroke: var(--re-b-ink);
+  stroke-width: 2.2;
+}
+.re-b-mag-t {
+  fill: var(--re-b-on);
+  font-family: system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+/* ── 01 · The chain, as a scene ─────────────────────────────────────────── */
+
+.re-b-chain {
+  --art: clamp(8.5rem, 17vw, 12.5rem);
+  position: relative;
+  max-width: none;
+  margin-block: 0.75rem 0.5rem;
+}
+.re-b-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* Each station carries its own slice of the flow, behind its art. */
+.re-b-flow {
+  position: absolute;
+  pointer-events: none;
+}
+.re-b-flow-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.re-b-flow.is-h {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--art);
+}
+.re-b-flow.is-v {
+  display: none;
+}
+.re-b-stop-ore {
+  stop-color: var(--re-ore);
+  stop-opacity: 0.3;
+}
+.re-b-stop-mid {
+  stop-color: var(--re-light);
+  stop-opacity: 0.1;
+}
+.re-b-stop-steel {
+  stop-color: var(--re-steel);
+  stop-opacity: 0.22;
+}
+.re-b-flow-edge {
+  fill: none;
+  stroke: var(--re-b-ink-3);
+  stroke-width: 1.5;
+}
+.re-b-filing {
+  stroke: var(--re-b-ink-2);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  opacity: 0.32;
+}
+.re-b-st {
+  position: relative;
+  display: grid;
+  grid-template-rows: var(--art) auto;
+  justify-items: center;
+  align-content: start;
+}
+.re-b-st-art {
+  position: relative;
+  width: var(--art);
+  height: var(--art);
+}
+.re-b-cap {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  max-width: 14.5rem;
+  margin-top: 0.6rem;
+  padding-inline: 0.5rem;
+  text-align: center;
+}
+.re-b-cap-n {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--re-b-ink-2);
+  font-size: 0.75rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-primary);
+  background: var(--sd-surface);
+}
+.re-b-st.is-neck .re-b-cap-n {
+  border-color: var(--sd-pen);
+  background: var(--sd-pen);
+  color: var(--re-b-on);
+}
+.re-b-cap-t {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--re-muted);
+  text-wrap: balance;
+}
+.re-b-cap-t strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.08em;
+  letter-spacing: 0.01em;
+  color: var(--sd-text-primary);
+}
+
+/* The bottleneck: a vermilion bracket under the middle two steps. */
+.re-b-neck {
+  position: relative;
+  margin: 0.9rem 25% 0;
+  padding-top: 1.35rem;
+  text-align: center;
+}
+.re-b-neck::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 0.65rem;
+  border: 2px solid var(--sd-pen);
+  border-top: 0;
+  border-radius: 0 0 7px 7px;
+}
+.re-b-neck::after {
+  content: '';
+  position: absolute;
+  top: 0.65rem;
+  left: 50%;
+  width: 2px;
+  height: 0.5rem;
+  margin-left: -1px;
+  background: var(--sd-pen);
+}
+.re-b-neck-t {
+  max-width: 30ch;
+  margin-inline: auto;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+@media (max-width: 47.99rem) {
+  .re-b-chain {
+    --art: 8.25rem;
+  }
+  /* Down a phone the flow is a column: the separated bands sit in it like
+     layers in a glass, and the bar of metal is cast to fit. */
+  .re-b-art-2 {
+    transform: scaleX(0.62);
+  }
+  .re-b-art-3 {
+    transform: scale(0.74);
+  }
+  .re-b-steps {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(4, minmax(8.5rem, 1fr));
+  }
+  .re-b-flow.is-h {
+    display: none;
+  }
+  .re-b-flow.is-v {
+    display: block;
+    left: 0;
+    top: 0;
+    width: var(--art);
+    height: 100%;
+  }
+  .re-b-st {
+    grid-template-columns: var(--art) minmax(0, 1fr);
+    grid-template-rows: none;
+    align-items: center;
+    justify-items: start;
+    column-gap: 1.1rem;
+  }
+  .re-b-cap {
+    justify-items: start;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+  }
+  /* The bracket stands beside the middle two rows. */
+  .re-b-steps::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--art) + 0.3rem);
+    top: 26%;
+    bottom: 26%;
+    width: 0.45rem;
+    border: 2px solid var(--sd-pen);
+    border-right: 0;
+    border-radius: 7px 0 0 7px;
+  }
+  .re-b-st.is-neck .re-b-cap {
+    padding-left: 0.4rem;
+  }
+  .re-b-neck {
+    margin: 0.6rem 0 0 calc(var(--art) + 1.1rem);
+    padding: 0.1rem 0 0.1rem 0.85rem;
+    text-align: left;
+    border-left: 2px solid var(--sd-pen);
+  }
+  .re-b-neck::before,
+  .re-b-neck::after {
+    content: none;
+  }
+  .re-b-neck-t {
+    margin: 0;
+  }
+}
+
+/* The scroll draws the chain. One timeline for the whole scene across a
+   wide screen, the stages staggered along it so the flow reaches each one
+   just before it forms; on a phone, where the stages stack, each runs on its
+   own. Longhands throughout: the `animation` shorthand would reset
+   animation-timeline. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .re-b-chain {
+      view-timeline: --re-b-chain block;
+    }
+    .re-b-st {
+      view-timeline: --re-b-st block;
+    }
+    .re-b-chain .re-b-flow,
+    .re-b-chain .re-b-st-art,
+    .re-b-chain .re-b-mag,
+    .re-b-chain .re-b-flux,
+    .re-b-chain .re-b-neck {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --re-b-chain;
+    }
+    /* Attached under [data-near], which islands/near.tsx sets once JavaScript
+       runs (off-screen chapters skip rendering, so they cost nothing there).
+       The timelines above stay declared (a timeline name that comes and goes
+       restyles its subtree). */
+    .re-b-ch[data-near] .re-b-chain .re-b-flow.is-h {
+      animation-name: re-b-flow-across;
+    }
+    .re-b-ch[data-near] .re-b-chain .re-b-flow.is-v {
+      animation-name: re-b-flow-down;
+    }
+    .re-b-ch[data-near] .re-b-chain .is-1 .re-b-st-art {
+      animation-name: re-b-drop;
+    }
+    .re-b-ch[data-near] .re-b-chain .is-2 .re-b-st-art {
+      animation-name: re-b-split;
+    }
+    .re-b-ch[data-near] .re-b-chain .is-3 .re-b-st-art {
+      animation-name: re-b-cast;
+    }
+    .re-b-ch[data-near] .re-b-chain .re-b-mag {
+      animation-name: re-b-press;
+    }
+    .re-b-ch[data-near] .re-b-chain .re-b-flux {
+      animation-name: re-b-field;
+    }
+    .re-b-ch[data-near] .re-b-chain .re-b-neck {
+      animation-name: re-b-rise;
+    }
+    .re-b-chain .re-b-neck {
+      animation-range: contain 38% contain 55%;
+    }
+
+    @media (min-width: 48rem) {
+      /* The flow reaches each station just before it forms. */
+      .re-b-chain .is-1 .re-b-flow {
+        animation-range: entry 25% entry 70%;
+      }
+      .re-b-chain .is-2 .re-b-flow {
+        animation-range: entry 65% contain 6%;
+      }
+      .re-b-chain .is-3 .re-b-flow {
+        animation-range: contain 2% contain 22%;
+      }
+      .re-b-chain .is-4 .re-b-flow {
+        animation-range: contain 18% contain 36%;
+      }
+      .re-b-chain .is-1 .re-b-st-art {
+        animation-range: entry 43% entry 86%;
+      }
+      .re-b-chain .is-2 .re-b-st-art {
+        animation-range: entry 80% contain 13%;
+      }
+      .re-b-chain .is-3 .re-b-st-art {
+        animation-range: contain 8% contain 31%;
+      }
+      .re-b-chain .is-4 .re-b-mag {
+        animation-range: contain 28% contain 45%;
+      }
+      .re-b-chain .re-b-flux {
+        animation-range: contain 35% contain 53%;
+      }
+    }
+    @media (max-width: 47.99rem) {
+      .re-b-chain .re-b-st-art,
+      .re-b-chain .re-b-mag,
+      .re-b-chain .re-b-flux,
+      .re-b-chain .re-b-flow {
+        animation-timeline: --re-b-st;
+        animation-range: entry 25% contain 30%;
+      }
+      .re-b-chain .re-b-flow {
+        animation-range: entry 0% contain 12%;
+      }
+      .re-b-chain .re-b-flux {
+        animation-range: entry 60% contain 45%;
+      }
+      .re-b-ch[data-near] .re-b-chain .is-2 .re-b-st-art {
+        animation-name: re-b-split-down;
+      }
+    }
+  }
+}
+@keyframes re-b-flow-across {
+  from {
+    opacity: 0;
+    transform: translateX(-10%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes re-b-flow-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* The ore lands. */
+@keyframes re-b-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-22%) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* One grey line of mixed oxide fans out into seventeen. */
+@keyframes re-b-split {
+  from {
+    opacity: 0;
+    transform: translateX(-24%) scaleY(0.06);
+  }
+  45% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes re-b-split-down {
+  from {
+    opacity: 0;
+    transform: translateY(-30%) scaleY(0.06);
+  }
+  45% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* The bands close up into a bar of metal. */
+@keyframes re-b-cast {
+  from {
+    opacity: 0;
+    transform: translateX(-18%) scale(0.6, 0.2);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Pressed: the block comes down into place... */
+@keyframes re-b-press {
+  from {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* ...and its field opens out around it. */
+@keyframes re-b-field {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes re-b-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes re-b-span-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* ── 01 · The numbers, as element tiles ─────────────────────────────────── */
+
+.re-b-tiles {
+  display: grid;
+  gap: 0.75rem;
+  margin-block: 0.25rem 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 40rem) {
+  .re-b-tiles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.re-b-tile {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'v k'
+    's s';
+  align-items: center;
+  column-gap: 0.9rem;
+  overflow: clip;
+  padding: 0.85rem 0.95rem 0.9rem;
+  border-radius: 10px;
+  background:
+    linear-gradient(var(--re-card), var(--re-card)) padding-box,
+    linear-gradient(160deg, var(--re-b-ink-2), var(--re-b-ink-3) 60%) border-box;
+  border: 1.5px solid transparent;
+  box-shadow: 0 18px 36px -30px var(--sd-card-shadow);
+}
+/* Field lines in the corner: each number is a fact about a magnet. */
+.re-b-tile::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 7.5rem;
+  height: 5.6rem;
+  background: var(--re-b-ink-3);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 90' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='0.1 5.5'%3E%3Cpath d='M120 6A84 84 0 0 0 36 90'/%3E%3Cpath d='M120 25A65 65 0 0 0 55 90'/%3E%3Cpath d='M120 44A46 46 0 0 0 74 90'/%3E%3Cpath d='M120 63A27 27 0 0 0 93 90'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 90' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='0.1 5.5'%3E%3Cpath d='M120 6A84 84 0 0 0 36 90'/%3E%3Cpath d='M120 25A65 65 0 0 0 55 90'/%3E%3Cpath d='M120 44A46 46 0 0 0 74 90'/%3E%3Cpath d='M120 63A27 27 0 0 0 93 90'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  pointer-events: none;
+}
+/* The atomic-number corner of a periodic tile. */
+.re-b-tile-z {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--re-muted);
+}
+.re-b-tile-k {
+  grid-area: k;
+  padding-right: 1.6rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1.35;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-b-tile-v {
+  grid-area: v;
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--sd-text-primary);
+}
+.re-b-tile-s {
+  grid-area: s;
+  position: relative;
+  z-index: 1;
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--re-line-strong);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--re-muted);
+}
+@media (min-width: 40rem) {
+  .re-b-tile {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'k'
+      'v'
+      's';
+    align-items: start;
+    align-content: start;
+    padding: 0.9rem 1rem 1rem;
+  }
+  .re-b-tile-v {
+    margin-top: 0.55rem;
+  }
+  .re-b-tile-s {
+    margin-top: 0.7rem;
+  }
+}
+
+/* ── 04 · China's share, as gauges on the chain ─────────────────────────── */
+
+.re-b-ch {
+  --re-b-china: color-mix(in oklab, var(--sd-text-primary) 88%, transparent);
+}
+.re-b-gauges {
+  display: grid;
+  gap: 1.35rem;
+  padding-top: 0.4rem;
+}
+.re-b-gauge {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  grid-template-areas:
+    'art l v'
+    'art t v'
+    'pipe pipe pipe';
+  align-items: center;
+  column-gap: 0.8rem;
+}
+.re-b-gauge-art {
+  grid-area: art;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+.re-b-gauge-l {
+  grid-area: l;
+  align-self: end;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.re-b-gauge-t {
+  grid-area: t;
+  align-self: start;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--re-muted);
+}
+.re-b-gauge-v {
+  grid-area: v;
+  font-size: clamp(1.75rem, 5vw, 2.15rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+/* The pipe: China's share is the ink in it; the hatched rest is everyone else. */
+.re-b-pipe {
+  grid-area: pipe;
+  position: relative;
+  height: 1.35rem;
+  margin-top: 0.6rem;
+  overflow: clip;
+  border: 1.5px solid var(--re-b-ink-2);
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      var(--re-b-ink-3) 0 1.5px,
+      transparent 1.5px 7px
+    ),
+    var(--re-b-wash);
+}
+.re-b-pipe-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--v) * 100%);
+  background: var(--re-b-china);
+  border-radius: 0 6px 6px 0;
+  transform-origin: left center;
+}
+/* Wide: the three gauges join into one pipeline, flanged at the joints. */
+@media (min-width: 40rem) {
+  .re-b-gauges {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+  .re-b-gauge {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    grid-template-areas:
+      'art v'
+      'l l'
+      't t'
+      'pipe pipe';
+    align-items: start;
+    row-gap: 0.15rem;
+  }
+  .re-b-gauge > :not(.re-b-pipe) {
+    margin-inline: 0.85rem;
+  }
+  .re-b-gauge-art {
+    margin-bottom: 0.4rem;
+  }
+  .re-b-gauge-v {
+    justify-self: end;
+    align-self: center;
+  }
+  .re-b-gauge-l {
+    align-self: start;
+  }
+  .re-b-pipe {
+    border-radius: 0;
+    border-inline-width: 0;
+  }
+  .re-b-gauge:first-child .re-b-pipe {
+    border-left-width: 1.5px;
+    border-radius: 999px 0 0 999px;
+  }
+  .re-b-gauge:last-child .re-b-pipe {
+    border-right-width: 1.5px;
+    border-radius: 0 999px 999px 0;
+  }
+  .re-b-gauge + .re-b-gauge::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    bottom: -0.3rem;
+    width: 6px;
+    height: calc(1.35rem + 0.6rem);
+    border-radius: 2px;
+    background: var(--re-steel);
+    box-shadow: 0 0 0 1.5px var(--re-b-ink-2);
+    z-index: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .re-b-ch[data-near] .re-b-pipe-fill {
+      animation: re-b-span-x linear both;
+      animation-timeline: view();
+      animation-range: entry 60% cover 42%;
+    }
+    /* In one row the three fill in turn, left to right. */
+    @media (min-width: 40rem) {
+      .re-b-gauge:nth-child(2) .re-b-pipe-fill {
+        animation-range: entry 80% cover 46%;
+      }
+      .re-b-gauge:nth-child(3) .re-b-pipe-fill {
+        animation-range: entry 100% cover 50%;
+      }
+    }
+  }
+}
+
+/* ── 04 · The headline simulator ────────────────────────────────────────── */
+
+.re-b-valve {
+  --re-b-wheel: #2b3a96;
+  --re-b-wheel-2: #1b2566;
+  display: grid;
+  gap: 1.6rem;
+  margin-top: 0.3rem;
+}
+:root[data-theme='dark'] .re-b-valve {
+  --re-b-wheel: #8ea4ff;
+  --re-b-wheel-2: #566bcf;
+}
+@media (min-width: 56rem) {
+  .re-b-valve {
+    grid-template-columns: minmax(17rem, 21rem) minmax(0, 1fr);
+    gap: 2.25rem;
+    align-items: start;
+  }
+}
+/* Positioned, so the live line (sr-only, absolute) is laid out here when it
+   changes, not by the whole chapter. */
+.re-b-rig {
+  position: relative;
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+  width: 100%;
+  max-width: 21rem;
+  margin-inline: auto;
+}
+.re-b-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 320 / 270;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.re-b-stage-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.re-b-dial {
+  fill: none;
+  stroke: var(--re-b-ink-3);
+  stroke-width: 1.2;
+}
+.re-b-tick {
+  stroke: var(--re-b-ink-2);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.re-b-tick.is-up {
+  stroke: var(--re-up);
+}
+.re-b-tick.is-down {
+  stroke: var(--re-down);
+}
+.re-b-tick.is-on {
+  stroke-width: 6;
+}
+.re-b-stem {
+  fill: var(--re-steel);
+  stroke: var(--re-b-ink);
+  stroke-width: 1.5;
+}
+.re-b-bonnet,
+.re-b-body,
+.re-b-flange {
+  fill: color-mix(in oklab, var(--re-steel) 62%, var(--sd-surface));
+  stroke: var(--re-b-ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.re-b-body {
+  fill: color-mix(in oklab, var(--re-steel) 80%, var(--sd-surface));
+}
+.re-b-pipe-in {
+  fill: var(--re-b-wash);
+}
+.re-b-pipe-wall {
+  fill: none;
+  stroke: var(--re-b-ink);
+  stroke-width: 2.2;
+}
+.re-b-strand {
+  stroke-width: 1.05;
+}
+.re-b-strand.re-b-k-light {
+  stroke: var(--re-light);
+  stroke-width: 1.5;
+}
+.re-b-strand.re-b-k-heavy {
+  stroke: var(--re-heavy);
+  stroke-width: 1.4;
+}
+.re-b-strand.re-b-k-rest {
+  stroke: var(--re-steel);
+  opacity: 0.6;
+}
+/* Downstream of the valve: a trickle when China tightens, the full flow on
+   peace, and in between at rest. */
+/* Its own <svg> layer, squeezed about the pipe's centre line (y 115 of the
+   270-unit drawing), so the compositor runs the change. */
+.re-b-flow-dn {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform-origin: 50% 90.74%;
+  transform: scaleY(0.55);
+  transition:
+    transform 0.7s var(--re-ease),
+    opacity 0.7s;
+}
+.re-b-valve[data-state='up'] .re-b-flow-dn {
+  transform: scaleY(0.1);
+  opacity: 0.75;
+}
+.re-b-valve[data-state='down'] .re-b-flow-dn {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .re-b-flow-dn {
+    transition: none;
+  }
+}
+
+.re-b-wheel {
+  position: absolute;
+  left: 23.125%;
+  top: 7.037%;
+  width: 53.75%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* A thumb swiping up the page over the wheel scrolls the page; a sideways
+     drag turns the wheel. (none would trap a phone reader's scroll on a
+     centred dial.) */
+  touch-action: pan-y;
+  cursor: grab;
+}
+.re-b-wheel[data-drag] {
+  cursor: grabbing;
+}
+.re-b-spin {
+  position: absolute;
+  inset: 0;
+}
+.re-b-wheel-lit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.re-b-lit-hi,
+.re-b-lit-lo {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.re-b-lit-hi {
+  stroke: rgba(255, 255, 255, 0.34);
+}
+.re-b-lit-lo {
+  stroke: rgba(0, 0, 0, 0.16);
+}
+.re-b-wheel-shadow {
+  fill: none;
+  stroke: var(--sd-text-primary);
+  stroke-width: 17;
+  opacity: 0.08;
+}
+.re-b-wheel-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.re-b-rim-back {
+  fill: none;
+  stroke: var(--re-b-wheel-2);
+  stroke-width: 18;
+}
+.re-b-rim {
+  fill: none;
+  stroke: var(--re-b-wheel);
+  stroke-width: 12;
+}
+.re-b-knurl {
+  fill: none;
+  stroke: var(--re-b-wheel-2);
+  stroke-width: 7.2;
+  stroke-linecap: round;
+  stroke-dasharray: 0.0001 1;
+}
+.re-b-spoke {
+  fill: var(--re-b-wheel-2);
+  stroke: var(--re-b-wheel);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.re-b-rim-hi {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.32);
+  stroke-width: 1.4;
+}
+.re-b-pointer {
+  fill: var(--sd-pen);
+  stroke: var(--re-b-on);
+  stroke-width: 1.6;
+}
+.re-b-hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 27%;
+  translate: -50% -50%;
+  /* a pressed cap, not a glow */
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.22) inset,
+    0 2px 4px -1px rgba(0, 0, 0, 0.35);
+}
+.re-b-wheel:focus-visible {
+  border-radius: 50%;
+  outline-offset: 6px;
+}
+.re-b-btn:focus-visible {
+  border-radius: 999px;
+}
+
+.re-b-btns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+}
+.re-b-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 44px;
+  padding: 0.45rem 0.55rem;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in oklab, var(--sd-accent) 55%, transparent);
+  background: var(--sd-surface);
+  color: var(--sd-accent);
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: scale 0.15s;
+}
+.re-b-btn svg {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.re-b-btn:hover {
+  border-color: var(--sd-accent);
+}
+@media (max-width: 22.49rem) {
+  .re-b-btns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.re-b-btn:active {
+  scale: 0.96;
+}
+.re-b-valve[data-state='up'] .re-b-btn.is-up,
+.re-b-valve[data-state='down'] .re-b-btn.is-down {
+  background: var(--sd-accent);
+  border-color: var(--sd-accent);
+  color: var(--sd-surface);
+}
+
+/* The headline, on a paper slip. The slip is the same paper in both themes,
+   so its inks are fixed (AA on the cream). */
+.re-b-slip {
+  display: grid;
+  width: 100%;
+  padding: 0.7rem 0.95rem 0.85rem;
+}
+.re-b-slip-in {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+.re-b-slip-in.is-on {
+  visibility: visible;
+}
+.re-b-slip-d {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5e5547;
+}
+.re-b-slip-h {
+  margin-top: 0.2rem;
+  font-size: 1.2rem;
+  line-height: 1.15;
+  color: var(--sd-sticky-ink);
+}
+.re-b-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.4rem;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.re-b-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.1rem 0.5rem 0.12rem;
+  border-radius: 999px;
+  background: rgba(31, 26, 20, 0.06);
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.re-b-chip b {
+  color: var(--sd-sticky-ink);
+  font-weight: 750;
+}
+.re-b-chip.is-up {
+  color: #166534;
+}
+.re-b-chip.is-down {
+  color: #b91c1c;
+}
+.re-b-chip-a {
+  font-size: 0.66rem;
+}
+@media (max-width: 35.99rem) {
+  .re-b-chips {
+    gap: 0.28rem 0.3rem;
+  }
+  .re-b-chip {
+    gap: 0.2rem;
+    padding-inline: 0.42rem;
+    font-size: 0.79rem;
+  }
+}
+.re-b-slip-hint {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sd-sticky-ink);
+}
+
+/* The chart: all nine moves, always. The valve only lights some of them. */
+.re-b-bars {
+  --lab: 16.5rem;
+  --gap: 0.9rem;
+  --trk: calc(var(--lab) + var(--gap));
+  position: relative;
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+.re-b-bars::before {
+  content: '';
+  position: absolute;
+  left: var(--trk);
+  right: 0;
+  top: 1.5rem;
+  bottom: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--re-b-ink-2), var(--re-b-ink-2)) 50% 0 / 1.5px 100%
+      no-repeat,
+    linear-gradient(var(--re-line), var(--re-line)) 10% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--re-line), var(--re-line)) 30% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--re-line), var(--re-line)) 70% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--re-line), var(--re-line)) 90% 0 / 1px 100% no-repeat;
+}
+.re-b-axis {
+  position: relative;
+  height: 1.5rem;
+  margin-left: var(--trk);
+}
+.re-b-axis-in > span {
+  position: absolute;
+  top: 0;
+  left: calc(var(--t) * 100%);
+  translate: -50% 0;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--re-muted);
+}
+.re-b-row {
+  display: grid;
+  grid-template-columns: var(--lab) minmax(0, 1fr);
+  column-gap: var(--gap);
+  align-items: center;
+  padding-block: 0.3rem;
+  border-radius: 6px;
+}
+.re-b-row-l {
+  font-size: 0.84rem;
+  line-height: 1.3;
+  text-align: right;
+  color: var(--sd-text-primary);
+}
+/* The track is two halves either side of zero, and each bar and its number
+   sit in one of them: laid out on a grid rather than positioned, because
+   nine rows of positioned boxes were 45 layers for every frame to walk. */
+.re-b-row-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 100%;
+  align-items: center;
+  height: 1.2rem;
+}
+/* The wrapper is the bar's place; the bar inside it is what the valve
+   lights (and kicks). */
+.re-b-row-bw {
+  grid-row: 1;
+  width: calc(var(--w) * 100%);
+  height: calc(100% - 0.16rem);
+}
+/* Lit bars kick; the rest just dim (no fade: a fade on every bar would make
+   each press build and drop nine compositor layers). */
+.re-b-row-bar {
+  display: block;
+  height: 100%;
+}
+.re-b-row[data-kind='up'] :is(.re-b-row-bw, .re-b-row-bar) {
+  transform-origin: left center;
+}
+.re-b-row[data-kind='down'] :is(.re-b-row-bw, .re-b-row-bar) {
+  transform-origin: right center;
+}
+.re-b-row[data-kind='up'] .re-b-row-bw {
+  grid-column: 2;
+  justify-self: start;
+}
+.re-b-row[data-kind='down'] .re-b-row-bw {
+  grid-column: 1;
+  justify-self: end;
+}
+.re-b-row[data-kind='up'] .re-b-row-bar {
+  --bar: var(--re-up);
+  border-radius: 0 4px 4px 0;
+}
+.re-b-row[data-kind='down'] .re-b-row-bar {
+  --bar: var(--re-down);
+  border-radius: 4px 0 0 4px;
+}
+.re-b-row-bar {
+  background: var(--bar);
+}
+/* The number sits across the zero line from its bar, where there's room. */
+.re-b-row-v {
+  grid-row: 1;
+  font-size: 0.78rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.re-b-row[data-kind='up'] .re-b-row-v {
+  grid-column: 1;
+  justify-self: end;
+  margin-right: 0.45rem;
+  color: var(--re-up);
+}
+.re-b-row[data-kind='down'] .re-b-row-v {
+  grid-column: 2;
+  justify-self: start;
+  margin-left: 0.45rem;
+  color: var(--re-down);
+}
+.re-b-row[data-spot] {
+  background: color-mix(in oklab, var(--sd-accent) 8%, transparent);
+}
+/* Dimmed by mixing the ink into the card (what opacity 0.3 drew), so a
+   dimmed bar is no layer of its own. */
+.re-b-valve:not([data-state='rest']) .re-b-row:not([data-spot]) .re-b-row-bar {
+  background: color-mix(in srgb, var(--bar) 30%, var(--re-card));
+}
+.re-b-valve:not([data-state='rest']) .re-b-row:not([data-spot]) .re-b-row-l {
+  color: var(--re-muted);
+}
+@media (min-width: 56rem) {
+  .re-b-bars {
+    align-self: center;
+  }
+  .re-b-row {
+    padding-block: 0.42rem;
+  }
+  .re-b-row-track {
+    height: 1.35rem;
+  }
+}
+@media (max-width: 35.99rem) {
+  .re-b-bars {
+    --lab: 0px;
+    --gap: 0px;
+  }
+  .re-b-row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.2rem;
+    padding: 0.35rem 0.4rem;
+    margin-inline: -0.4rem;
+  }
+  .re-b-bars::before {
+    top: 1.5rem;
+  }
+  .re-b-row-l {
+    text-align: left;
+    font-size: 0.82rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* Each slip and bar holds a zero translate at rest, so the print and the
+     kick attach to something that is already transformed: no relayout of
+     the slip and the bars on every press (~30ms less at 4× CPU). */
+  .re-b-slip-in,
+  .re-b-row-bar {
+    translate: 0 0;
+  }
+  .re-b-slip[data-moved] .re-b-slip-in.is-on {
+    animation: re-b-print 0.35s var(--re-ease) both;
+  }
+  .re-b-row[data-spot] .re-b-row-bar {
+    animation: re-b-kick 0.6s var(--re-ease) both;
+  }
+}
+@keyframes re-b-print {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes re-b-kick {
+  0% {
+    transform: scaleX(0);
+  }
+  65% {
+    transform: scaleX(1.06);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* ── 04 · NdPr against the floor ────────────────────────────────────────── */
+
+.re-b-nd {
+  padding-top: 0.3rem;
+}
+.re-b-nd-plot {
+  position: relative;
+  height: clamp(13rem, 40vw, 17rem);
+  margin: 1.7rem 0.6rem 0 2.5rem;
+}
+.re-b-nd-win {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  overflow-clip-margin: 8px;
+}
+.re-b-nd-grid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--y) * 100%);
+  border-top: 1px solid var(--re-line);
+}
+.re-b-nd-tick {
+  position: absolute;
+  right: calc(100% + 0.45rem);
+  top: calc(var(--y) * 100%);
+  translate: 0 -50%;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--re-muted);
+}
+.re-b-nd-cover {
+  display: none;
+}
+.re-b-nd-floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--y) * 100%);
+  border-top: 2px dashed var(--sd-pen);
+}
+.re-b-nd-floor-l {
+  position: absolute;
+  left: 0;
+  bottom: 0.3rem;
+  font-size: 0.76rem;
+  font-weight: 750;
+  white-space: nowrap;
+  color: var(--sd-pen-ink);
+}
+.re-b-nd-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.re-b-nd-area {
+  fill: color-mix(in oklab, var(--re-light) 14%, transparent);
+}
+.re-b-nd-line {
+  fill: none;
+  stroke: var(--re-light);
+  stroke-width: 2.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.re-b-nd-pts {
+  position: absolute;
+  inset: 0;
+}
+.re-b-nd-pt {
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  top: calc(var(--y) * 100%);
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.re-b-nd-pt[data-open] {
+  z-index: 2;
+}
+.re-b-nd-pt:focus-visible {
+  border-radius: 50%;
+  outline-offset: -9px;
+}
+.re-b-nd-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--sd-surface);
+  border: 2.5px solid var(--re-light);
+  transition: scale 0.15s;
+}
+.re-b-nd-pt:hover .re-b-nd-dot,
+.re-b-nd-pt[data-open] .re-b-nd-dot {
+  scale: 1.3;
+}
+.re-b-nd-pt.is-peak .re-b-nd-dot {
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  background: var(--re-light);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--re-light) 22%, transparent);
+}
+.re-b-nd-v {
+  position: absolute;
+  left: calc(50% + 0.25rem);
+  top: calc(50% + 0.5rem);
+  font-size: 0.82rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--sd-text-primary);
+}
+.re-b-nd-pt.is-peak .re-b-nd-v {
+  top: auto;
+  bottom: calc(50% + 0.6rem);
+  left: 50%;
+  translate: -50% 0;
+}
+.re-b-nd-pt.is-last .re-b-nd-v {
+  left: auto;
+  right: calc(50% + 0.2rem);
+}
+.re-b-tip {
+  position: absolute;
+  bottom: calc(50% + 0.9rem);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 3;
+  display: grid;
+  gap: 0.1rem;
+  width: max-content;
+  max-width: min(15.5rem, 70vw);
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  background: var(--sd-text-primary);
+  color: var(--sd-bg);
+  box-shadow: 0 10px 24px -12px var(--sd-card-shadow);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.15s,
+    visibility 0.15s;
+}
+.re-b-tip strong {
+  font-weight: 750;
+}
+.re-b-nd-pt.is-first .re-b-tip {
+  left: 0.4rem;
+  translate: 0 0;
+}
+.re-b-nd-pt.is-last .re-b-tip {
+  left: auto;
+  right: 0.4rem;
+  translate: 0 0;
+}
+.re-b-nd-pt[data-open] .re-b-tip {
+  opacity: 1;
+  visibility: visible;
+}
+.re-b-nd-x {
+  position: relative;
+  height: 1.4rem;
+  margin: 0.5rem 0.6rem 0 2.5rem;
+}
+.re-b-nd-x > span {
+  position: absolute;
+  top: 0;
+  left: calc(var(--x) * 100%);
+  translate: -50% 0;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  color: var(--re-muted);
+}
+.re-b-nd-x > .is-first {
+  translate: -0.2rem 0;
+}
+.re-b-nd-x > .is-last {
+  translate: calc(-100% + 0.2rem) 0;
+}
+.re-b-nd-x > .is-before {
+  translate: calc(-100% + 0.6rem) 0;
+}
+.re-b-nd-x > .is-after {
+  translate: -0.6rem 0;
+}
+/* Narrow: the labels take turns on two rows (a hairline ties each lower
+   one to its point), so two quotes two months apart never collide. */
+@media (max-width: 35.99rem) {
+  .re-b-nd-x {
+    height: 2.5rem;
+  }
+  .re-b-nd-x > span:nth-child(even) {
+    top: 1.2rem;
+  }
+  .re-b-nd-x > span:nth-child(even)::before {
+    content: '';
+    position: absolute;
+    top: -1.15rem;
+    width: 1px;
+    height: 1.05rem;
+    background: var(--re-line-strong);
+  }
+  .re-b-nd-x > .is-before::before,
+  .re-b-nd-x > .is-last::before {
+    right: 0;
+  }
+  .re-b-nd-x > .is-after::before,
+  .re-b-nd-x > .is-first::before {
+    left: 0;
+  }
+  .re-b-nd-x > :is(.is-before, .is-last) {
+    translate: -100% 0;
+  }
+  .re-b-nd-x > :is(.is-after, .is-first) {
+    translate: 0 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .re-b-ch[data-near] .re-b-nd-cover {
+      display: block;
+      position: absolute;
+      inset: -8px;
+      background: var(--re-card);
+      animation: re-b-uncover linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 42%;
+    }
+  }
+}
+@keyframes re-b-uncover {
+  to {
+    transform: translateX(101%);
+  }
+}
