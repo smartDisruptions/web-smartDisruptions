@@ -148,7 +148,9 @@ function No({ n }: { n: number }) {
  * One link per card: the title. Its ::after stretches over the whole card,
  * so the card is the tap target and a keyboard stops once, on a link named
  * by the title. The button-shaped "Read the report" is that same link's
- * face, so it is hidden from assistive tech rather than read twice.
+ * face, so it is hidden from assistive tech rather than read twice. None of
+ * the room's links prefetch on sight: RoomKeeper fetches a card's page once
+ * the page is still, so no 300KB payload is parsed mid-fling.
  */
 function Lead({ report }: { report: MarketStormEntry }) {
   const href = hrefOf(report);
@@ -178,7 +180,7 @@ function Lead({ report }: { report: MarketStormEntry }) {
           </p>
         </div>
         <h3 id="wms-lead-title" className="font-display wms-lead-title">
-          <Link href={href} className="wms-link">
+          <Link href={href} className="wms-link" prefetch={false}>
             {report.title}
           </Link>
         </h3>
@@ -253,14 +255,17 @@ function Field({ report, art }: { report: MarketStormEntry; art?: LeadArt }) {
           decoding="async"
           className="wms-field-img"
         />
-        {art?.pulse && (
-          <span className="wms-field-fx" aria-hidden="true">
-            <span className="wms-pulse" />
-            <span className="wms-pulse wms-pulse-b" />
-            <span className="wms-strike" />
-          </span>
-        )}
       </div>
+      {/* The light: a sibling laid exactly over the picture, never inside
+          it, so the picture's masked layer stays still and cached while
+          the light moves (storm.css, "the pulse"). */}
+      {art?.pulse && (
+        <span className="wms-field-fx" aria-hidden="true">
+          <span className="wms-pulse" />
+          <span className="wms-pulse wms-pulse-b" />
+          <span className="wms-strike" />
+        </span>
+      )}
     </div>
   );
 }
@@ -305,7 +310,7 @@ function Card({ report, no }: { report: MarketStormEntry; no: number }) {
           </p>
         </div>
         <h3 id={id} className="font-display wms-pair-title">
-          <Link href={href} className="wms-link">
+          <Link href={href} className="wms-link" prefetch={false}>
             {report.title}
           </Link>
         </h3>
@@ -407,7 +412,11 @@ function ArchiveLink({ count }: { count: number }) {
   const slips = Math.min(count, 12);
   return (
     <p className="wms-more">
-      <Link href="/market-storm#archive" className="wms-more-link">
+      <Link
+        href="/market-storm#archive"
+        className="wms-more-link"
+        prefetch={false}
+      >
         <span className="wms-stack" aria-hidden="true">
           {Array.from({ length: slips }, (_, i) => (
             <span

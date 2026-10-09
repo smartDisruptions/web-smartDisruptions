@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 /**
@@ -28,6 +29,14 @@ import { useEffect, useRef } from 'react';
  *  4. The bars. Anything marked `data-wms-fill` that is still below the
  *     fold is armed (drawn empty) and fills once — just once — when 40% of
  *     it is in view. Already on screen, it is left full.
+ *  5. Prefetching, once the page is still. A <Link> prefetches its page the
+ *     moment it scrolls into view, and these pages are big (the rare-earths
+ *     article's payload is ~330KB): measured on a phone, the room's four
+ *     links fetched ~700KB and parsed it on the main thread mid-scroll. So
+ *     the links say prefetch={false}, and this fetches a card's page once
+ *     the card is on screen at the end of a scroll, or the moment a mouse
+ *     points at it or a key focuses it — before the click, never during a
+ *     fling.
  *
  * This used to be the ticker tape's pause button, which kept these books
  * behind it. The tape left the room with the archive (October 2026), and
@@ -41,6 +50,7 @@ import { useEffect, useRef } from 'react';
  */
 export default function RoomKeeper() {
   const ref = useRef<HTMLSpanElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const room = ref.current?.closest<HTMLElement>('.wms');
@@ -115,6 +125,37 @@ export default function RoomKeeper() {
       once.observe(el);
     }
 
+    // Prefetching, once the page is still (5, above). A card counts as on
+    // screen while its title link is; links in view are fetched when the
+    // scroll ends, or now if the page is already still.
+    const links = [...room.querySelectorAll<HTMLAnchorElement>('a[href]')];
+    const fetched = new Set<string>();
+    const inView = new Set<Element>();
+    const fetchPage = (a: Element | null | undefined) => {
+      const href = a?.getAttribute('href');
+      if (!href || fetched.has(href)) return;
+      fetched.add(href);
+      router.prefetch(href);
+    };
+    const fetchInView = () => inView.forEach(fetchPage);
+    const near = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) inView.add(e.target);
+        else inView.delete(e.target);
+      }
+      if (!holding) fetchInView();
+    });
+    for (const a of links) near.observe(a);
+    // A mouse over a card (its stretched link) or a key landing on it says
+    // the reader means it: fetch now. A finger touching down is usually the
+    // start of a scroll, so touch waits for the scroll to end like the rest.
+    const onIntent = (e: Event) => {
+      if (e instanceof PointerEvent && e.pointerType !== 'mouse') return;
+      fetchPage((e.target as Element | null)?.closest?.('a[href]'));
+    };
+    room.addEventListener('pointerover', onIntent, { passive: true });
+    room.addEventListener('focusin', onIntent);
+
     // The scroll hold. Where `scrollend` exists the listener fires once per
     // gesture and is re-armed at the end; elsewhere a quiet spell ends it.
     const hasEnd = 'onscrollend' in window;
@@ -138,6 +179,7 @@ export default function RoomKeeper() {
         holding = false;
         room!.removeAttribute('data-hold');
         inkWhenStill();
+        fetchInView();
       }
       if (hasEnd) listen();
     }
@@ -148,13 +190,16 @@ export default function RoomKeeper() {
     return () => {
       live.disconnect();
       once.disconnect();
+      near.disconnect();
+      room.removeEventListener('pointerover', onIntent);
+      room.removeEventListener('focusin', onIntent);
       window.clearTimeout(quiet);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('scrollend', release);
       for (const el of parts) el.removeAttribute('data-on');
       room.removeAttribute('data-hold');
     };
-  }, []);
+  }, [router]);
 
   return <span ref={ref} hidden />;
 }

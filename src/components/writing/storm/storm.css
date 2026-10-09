@@ -779,58 +779,38 @@
      as more of the same night. */
   background: #090c1d;
 }
-/* Framed: scaled so the subject spans --span of the frame, its centre on
-   the frame's centre. For the magnet, 0.86 is as loose as the frame can
-   go: the magnet sits at 72% across its image, so any wider and the frame
-   runs off the image's right edge on one side and into the baked title on
-   the other. The frame's shape changes with the screen; the span never
-   does. */
-.wms-field.is-framed {
-  --span: 0.86;
-  aspect-ratio: 4 / 3;
-}
 .wms-field-art {
   position: relative;
-}
-.wms-field.is-framed .wms-field-art {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc(var(--span) / var(--subject) * 100%);
-  aspect-ratio: 1200 / 630;
-  translate: calc(var(--fx) * -100%) calc(var(--fy) * -100%);
-  /* The card image signs itself along its foot ("Research, not advice",
-     baked in): the frame fades out above that line, and softens the top to
-     match, so the picture never ends in an edge. */
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 1%,
-    #000 11%,
-    #000 81%,
-    transparent 89.5%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 1%,
-    #000 11%,
-    #000 81%,
-    transparent 89.5%
-  );
 }
 .wms-field-img {
   display: block;
   width: 100%;
   height: auto;
 }
-/* On a phone and a tablet the field sits over the words and fades into
-   them at its foot; on a wide screen it is the card's right half and fades
-   into the words at its left edge. */
-.wms-field {
-  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent);
-  mask-image: linear-gradient(to bottom, #000 80%, transparent);
+/* Framed: scaled so the subject spans --span of the frame, its centre on
+   the frame's centre. For the magnet, 0.86 is as loose as the frame can
+   go: the magnet sits at 72% across its image, so any wider and the frame
+   runs off the image's right edge on one side and into the baked title on
+   the other. The frame's shape changes with the screen; the span never
+   does.
+
+   The picture and its light are two siblings laid over the same box. */
+.wms-field.is-framed {
+  --span: 0.86;
+  --ar: 0.75; /* the frame's height over its width */
+  aspect-ratio: 4 / 3;
+}
+.wms-field.is-framed :is(.wms-field-art, .wms-field-fx) {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--span) / var(--subject) * 100%);
+  aspect-ratio: 1200 / 630;
+  translate: calc(var(--fx) * -100%) calc(var(--fy) * -100%);
 }
 @media (min-width: 40rem) {
   .wms-field.is-framed {
+    --ar: 0.625;
     aspect-ratio: 16 / 10;
   }
 }
@@ -840,9 +820,56 @@
     aspect-ratio: auto;
     min-height: 100%;
     border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 24%);
-    mask-image: linear-gradient(to right, transparent, #000 24%);
   }
+}
+
+/* The fades. On a phone and a tablet the field sits over the words and
+   fades into them at its foot; on a wide screen it is the card's right half
+   and fades into the words at its left edge. And the card image signs
+   itself along its own foot ("Research, not advice", baked in), so the
+   picture fades out above that line and softens its top to match.
+
+   They are drawn in the image's coordinates, not the frame's: where the
+   frame's foot (--half below the magnet) and left edge (--left) fall on the
+   picture follows from the crop. That puts the fades on the picture and on
+   its light as masks of their own, and none on the frame around them —
+   measured at 1280px with the frame masked too, every pulse re-rendered
+   three nested masked layers and idle fell to 34fps; with the masks on the
+   two leaves alone, the still picture's layer is cached and only the light
+   is redrawn (59fps). */
+.wms-field.is-framed {
+  --half: calc(var(--ar) * var(--subject) / (1.05 * var(--span)));
+  --left: calc(var(--fx) - var(--subject) / (2 * var(--span)));
+  --fade-y: linear-gradient(
+    to bottom,
+    transparent 1%,
+    #000 11%,
+    #000 calc((var(--fy) + 0.6 * var(--half)) * 100%),
+    transparent calc((var(--fy) + var(--half)) * 100%)
+  );
+  --fade-x: linear-gradient(#000, #000);
+}
+@media (min-width: 64rem) {
+  .wms-field.is-framed {
+    --fade-y: linear-gradient(
+      to bottom,
+      transparent 1%,
+      #000 11%,
+      #000 81%,
+      transparent 89.5%
+    );
+    --fade-x: linear-gradient(
+      to right,
+      transparent calc(var(--left) * 100%),
+      #000 calc((var(--left) + 0.24 * var(--subject) / var(--span)) * 100%)
+    );
+  }
+}
+.wms-field.is-framed .wms-field-art {
+  -webkit-mask-image: var(--fade-y), var(--fade-x);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--fade-y), var(--fade-x);
+  mask-composite: intersect;
 }
 
 /* A lead with no card image (a template report, if one is pinned first)
@@ -865,21 +892,24 @@
 
 /* The pulse and the strike, lit through the image itself: a luminance mask
    of the same picture, so the light shows on the bright iron filings and
-   the magnet and not on the dark between them. The mask (the image again,
-   from cache) is attached only while the field is on screen — so with no
-   script the field is simply the picture, still: an eager second fetch of
-   a 140KB image is not worth a loop. */
+   the magnet and not on the dark between them — and the same fades as the
+   picture, so it never lights what the picture has faded out. The mask
+   (the image again, from cache) is attached only while the field is on
+   screen — so with no script the field is simply the picture, still: an
+   eager second fetch of a 140KB image is not worth a loop. */
 .wms-field-fx {
   display: none;
   position: absolute;
-  inset: 0;
   pointer-events: none;
 }
 @supports (mask-mode: luminance) {
   .wms-field[data-on] .wms-field-fx {
     display: block;
-    -webkit-mask: var(--mask) 0 0 / 100% 100% no-repeat;
-    mask: var(--mask) 0 0 / 100% 100% no-repeat luminance;
+    mask-image: var(--mask), var(--fade-y), var(--fade-x);
+    mask-mode: luminance, alpha, alpha;
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    mask-composite: intersect;
   }
 }
 /* A ring of the heavy elements' gold. It leaves the bar as a flat ellipse
@@ -1379,9 +1409,11 @@
 
 /* ── Reduced motion: everything still, everything there ─────────────────── */
 /* The field is the picture, and nothing lights it: no rings, no strike
-   (the sky draws one still frame and never strikes). */
+   (the sky draws one still frame and never strikes), and so no light layer
+   and no second fetch of the image for its mask. As specific as the rule
+   that shows it, and later. */
 @media (prefers-reduced-motion: reduce) {
-  .wms-field .wms-field-fx {
+  .wms-field[data-on] .wms-field-fx {
     display: none;
   }
 }
