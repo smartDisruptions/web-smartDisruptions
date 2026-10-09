@@ -46,6 +46,9 @@ export interface WatchDate {
   month: string; // "Nov"
   year: number;
   iso: string; // "2026-11-10"
+  /** Where the date sits in the catalyst, so the page can mark it up. */
+  at: number;
+  text: string; // "10 Nov 2026", as the catalyst writes it
 }
 
 /**
@@ -68,5 +71,5 @@ export function watchDate(e: MarketStormEntry): WatchDate | null {
   if (day < 1 || day > 31 || mi < 0) return null;
   const iso = `${year}-${String(mi + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   if (iso <= e.publishDate) return null;
-  return { day, month: MONTHS[mi], year, iso };
+  return { day, month: MONTHS[mi], year, iso, at: m.index ?? 0, text: m[0] };
 }

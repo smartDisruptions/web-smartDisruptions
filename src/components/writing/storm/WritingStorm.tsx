@@ -162,11 +162,11 @@ function Lead({ report }: { report: MarketStormEntry }) {
       <Seal char="雷" className="wms-seal" />
       {report.cardImage && !finding ? (
         <Field report={report} art={art} />
-      ) : (
-        <div className="wms-pic wms-lead-plate">
+      ) : finding || stat ? (
+        <div className="wms-pic wms-plate wms-lead-plate">
           <Plate stat={stat} finding={finding} />
         </div>
-      )}
+      ) : null}
       <div className="wms-lead-body">
         <div className="wms-top">
           <No n={1} />
@@ -196,11 +196,17 @@ function Lead({ report }: { report: MarketStormEntry }) {
               <span className="wms-watch-label">
                 {when ? 'The date I’m watching' : 'The catalyst'}
               </span>{' '}
-              {when ? (
-                <time dateTime={when.iso}>{report.catalyst}</time>
-              ) : (
-                report.catalyst
-              )}
+              <span>
+                {when ? (
+                  <>
+                    {report.catalyst.slice(0, when.at)}
+                    <time dateTime={when.iso}>{when.text}</time>
+                    {report.catalyst.slice(when.at + when.text.length)}
+                  </>
+                ) : (
+                  report.catalyst
+                )}
+              </span>
             </p>
           </div>
         )}

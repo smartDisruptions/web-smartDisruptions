@@ -10,10 +10,11 @@
 
   Motion is transform, translate, scale and opacity, on the compositor. Each
   loop runs only while its own part is on screen (`data-on`, set by
-  RoomKeeper; `scripting: none` runs them without it), holds still while the
-  page scrolls (`data-hold`), and stops under reduced motion. One-shot
-  reveals are armed by that island only for what is still below the fold, so
-  without a script everything is finished.
+  RoomKeeper; `scripting: none` runs the rain rings without it, and leaves
+  the field a still picture), holds still while the page scrolls
+  (`data-hold`), and stops under reduced motion. One-shot reveals are armed
+  by that island only for what is still below the fold, so without a script
+  everything is finished.
 
   This page does not load src/app/market-storm/market-storm.css, so the few
   StormSky rules it needs are restated here, scoped to .wms — they win over
@@ -673,6 +674,12 @@
   font-size: 1.04rem;
   line-height: 1.7;
   color: #c3c8e6;
+  /* Room for a long one without the card becoming a page. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
 }
 @media (min-width: 40rem) {
   .wms-lead-excerpt {
@@ -838,10 +845,30 @@
   }
 }
 
+/* A lead with no card image (a template report, if one is pinned first)
+   leads with its own figure and the finding drawn, in the picture's place. */
+.wms .wms-lead-plate {
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  padding: 1.75rem 1.25rem 1.5rem;
+}
+@media (min-width: 40rem) {
+  .wms .wms-lead-plate {
+    padding: 2rem 2rem 1.75rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wms .wms-lead-plate {
+    border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
+    padding: 2.6rem 2.75rem;
+  }
+}
+
 /* The pulse and the strike, lit through the image itself: a luminance mask
    of the same picture, so the light shows on the bright iron filings and
    the magnet and not on the dark between them. The mask (the image again,
-   from cache) is attached only while the field is on screen. */
+   from cache) is attached only while the field is on screen — so with no
+   script the field is simply the picture, still: an eager second fetch of
+   a 140KB image is not worth a loop. */
 .wms-field-fx {
   display: none;
   position: absolute;
