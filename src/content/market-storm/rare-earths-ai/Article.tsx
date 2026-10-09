@@ -12,6 +12,7 @@ import S10Ranking from './sections/S10Ranking';
 import S11Watch from './sections/S11Watch';
 import S12Think from './sections/S12Think';
 import End from './sections/End';
+import Near from './islands/near';
 import './re.css';
 
 /**
@@ -25,6 +26,7 @@ import './re.css';
 export default function Article() {
   return (
     <div className="re" aria-labelledby="re-title">
+      <Near />
       <Hero />
       <div className="re-wrap re-main">
         <S01Basics />

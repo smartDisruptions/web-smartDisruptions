@@ -362,6 +362,20 @@
   cursor: help;
 }
 
+/* Scroll reveals (./ui.tsx marks blocks .re-rv). The site's sd-rise, but
+   attached only inside a chapter that islands/near.tsx has marked as near the
+   screen, so off-screen chapters cost nothing per scrolling frame. Without
+   scroll timelines, JavaScript, or under reduced motion, content shows. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-near] .re-rv {
+      animation: sd-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+  }
+}
+
 /* Anything that lives below the fold and is heavy to lay out can opt in. */
 .re-defer {
   content-visibility: auto;

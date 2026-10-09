@@ -133,7 +133,7 @@ export function Chapter({
 /** "Short version": the chapter's verdict, one strip. */
 export function Verdict({ text }: { text: RichText }) {
   return (
-    <div className="re-verdict sd-reveal">
+    <div className="re-verdict re-rv">
       <p className="re-verdict-k">{LABELS.shortVersion}</p>
       <p className="font-read re-verdict-t">
         <Rich text={text} />
@@ -155,7 +155,7 @@ export function Findings({
       <p className="re-found-k">{label}</p>
       <ul className="font-read re-found-list" role="list">
         {items.map((t, i) => (
-          <li key={i} className="sd-reveal">
+          <li key={i} className="re-rv">
             <Rich text={t} />
           </li>
         ))}
@@ -167,7 +167,7 @@ export function Findings({
 /** "Why it matters:" — the chapter's last word. */
 export function Why({ text }: { text: RichText }) {
   return (
-    <p className="font-read re-why sd-reveal">
+    <p className="font-read re-why re-rv">
       <strong>{LABELS.whyItMatters}</strong> <Rich text={text} />
     </p>
   );
@@ -190,7 +190,7 @@ export function Fig({
   id?: string;
 }) {
   return (
-    <figure id={id} className={`re-fig sd-reveal${className ? ` ${className}` : ''}`}>
+    <figure id={id} className={`re-fig re-rv${className ? ` ${className}` : ''}`}>
       <h3 className="re-fig-title">
         <Rich text={title} />
       </h3>
