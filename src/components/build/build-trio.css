@@ -66,6 +66,8 @@
   font-size: 0.88rem;
   line-height: 1.4;
   color: var(--sd-text-secondary);
+  /* No one-word last line when a line wraps. */
+  text-wrap: pretty;
 }
 .brt-go {
   margin-left: auto;

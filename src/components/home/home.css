@@ -157,6 +157,9 @@
   font-size: 0.82rem;
   line-height: 1.4;
   color: var(--sd-text-secondary);
+  /* Two even lines when it wraps, never a one-word last line ("screen.").
+     Balance, not pretty: pretty counts the arrow spacer below as a word. */
+  text-wrap: balance;
 }
 /* The corner arrow sits level with the last line. A spacer at the end of the
    text keeps that line clear of it without re-wrapping any line above. */
