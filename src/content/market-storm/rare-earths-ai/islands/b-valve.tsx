@@ -331,7 +331,15 @@ export default function BValve({
     el.addEventListener('pointerup', up);
     el.addEventListener('pointercancel', up);
     el.addEventListener('lostpointercapture', up);
-    el.addEventListener('wheel', onWheel, { passive: false });
+    // The wheel listener has to be able to cancel, which makes the browser
+    // wait on the main thread before scrolling over it. So it exists only
+    // while the valve has focus: everyone scrolling past keeps a free scroll.
+    const armWheel = () =>
+      el.addEventListener('wheel', onWheel, { passive: false });
+    const disarmWheel = () => el.removeEventListener('wheel', onWheel);
+    el.addEventListener('focus', armWheel);
+    el.addEventListener('blur', disarmWheel);
+    if (document.activeElement === el) armWheel();
     el.addEventListener('keydown', onKey);
     return () => {
       drop();
@@ -341,7 +349,9 @@ export default function BValve({
       el.removeEventListener('pointerup', up);
       el.removeEventListener('pointercancel', up);
       el.removeEventListener('lostpointercapture', up);
-      el.removeEventListener('wheel', onWheel);
+      disarmWheel();
+      el.removeEventListener('focus', armWheel);
+      el.removeEventListener('blur', disarmWheel);
       el.removeEventListener('keydown', onKey);
       api.current = null;
     };

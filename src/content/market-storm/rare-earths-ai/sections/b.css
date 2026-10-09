@@ -1021,7 +1021,10 @@
   width: 53.75%;
   aspect-ratio: 1;
   border-radius: 50%;
-  touch-action: none;
+  /* A thumb swiping up the page over the wheel scrolls the page; a sideways
+     drag turns the wheel. (none would trap a phone reader's scroll on a
+     centred dial.) */
+  touch-action: pan-y;
   cursor: grab;
 }
 .re-b-wheel[data-drag] {
