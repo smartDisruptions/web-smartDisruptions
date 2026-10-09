@@ -541,6 +541,10 @@
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     align-items: center;
   }
+  /* a lead with no card art keeps the words, one column */
+  .ms-lead.ms-lead-solo {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .ms-lead-art {
     grid-row: 1;
     grid-column: 2;

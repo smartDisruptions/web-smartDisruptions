@@ -114,7 +114,10 @@ function LeadReport({ entry }: { entry: MarketStormEntry }) {
   const method = methodOf(entry);
 
   return (
-    <article className="ms-lead ms-night group" aria-labelledby="ms-lead-title">
+    <article
+      className={`ms-lead ms-night group ${entry.cardImage ? '' : 'ms-lead-solo'}`.trim()}
+      aria-labelledby="ms-lead-title"
+    >
       {entry.cardImage && (
         <div className="ms-lead-art">
           {/* Always the night card: the slab is night in both lights. */}
@@ -178,7 +181,8 @@ function LeadReport({ entry }: { entry: MarketStormEntry }) {
  * the page it opens — but with the card art whole, the place stamped on it,
  * and the excerpt allowed four lines instead of three, since there are two of
  * these, not six. A template report keeps its headline figures and its
- * method line; an article has neither and ends on its excerpt.
+ * method line; an article has neither, so its excerpt is set in the reading
+ * face and it closes on what it covers.
  */
 function FrontCard({ entry, place }: { entry: MarketStormEntry; place: number }) {
   const href = `/market-storm/${entry.slug}`;
