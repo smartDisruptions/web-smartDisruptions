@@ -1369,7 +1369,6 @@
   display: grid;
   grid-template-columns: 2.1rem minmax(0, 1fr);
   align-items: baseline;
-  padding: 0.45rem 0.4rem 0.5rem 0;
   border-radius: 8px;
   break-inside: avoid;
   scroll-margin-top: calc(var(--sd-header-h) + 1.5rem);
@@ -1387,22 +1386,25 @@
   padding-right: 0.65rem;
   color: var(--sd-text-secondary);
 }
-.re-e-src-b {
+.re-e-src-a {
   display: grid;
   gap: 0.05rem;
   min-width: 0;
+  padding: 0.45rem 0.4rem 0.5rem 0;
+  border-radius: 8px;
+  color: var(--sd-text-primary);
+  text-decoration: none;
 }
-.re-e-src-a {
+.re-e-src-t {
   font-size: 0.9rem;
   line-height: 1.45;
-  color: var(--sd-text-primary);
   text-decoration: underline;
   text-decoration-color: color-mix(in oklab, var(--sd-accent) 45%, transparent);
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
   overflow-wrap: anywhere;
 }
-.re-e-src-a:hover {
+.re-e-src-a:hover .re-e-src-t {
   color: var(--sd-accent);
   text-decoration-color: currentColor;
 }

@@ -59,17 +59,17 @@ export default function End() {
           {SOURCES.map((s) => (
             <li key={s.n} id={`src-${s.n}`} className="re-e-src-i">
               <span className="re-e-src-n">{s.n}</span>
-              <span className="re-e-src-b">
-                <a
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="re-e-src-a"
-                >
-                  {s.title}
-                </a>
+              {/* The whole entry, title and site, is the link: a target as
+                  tall as the entry, not one line of small type. */}
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="re-e-src-a"
+              >
+                <span className="re-e-src-t">{s.title}</span>
                 <span className="re-e-src-host">{host(s.url)}</span>
-              </span>
+              </a>
             </li>
           ))}
         </ol>
