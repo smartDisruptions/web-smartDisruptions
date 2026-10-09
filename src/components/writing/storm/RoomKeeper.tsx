@@ -1,26 +1,24 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
- * The storm room's one island. On the page it is the ticker tape's
- * pause/play button (WCAG 2.2.2: anything that moves for more than five
- * seconds can be stopped). Behind the button it keeps the room's books, so
- * the section ships one small script instead of four:
+ * The storm room's one island. It draws nothing: it keeps the room's books,
+ * so the section ships one small script instead of four.
  *
- *  1. Liveness. `data-on` sits on each moving part — 嵐, the tape, Kiru —
- *     only while that part is on screen and clear of the site's glass
- *     bars. The tape's crawl, the rain rings and Kiru's idle run on it, so
- *     a loop the reader cannot see costs nothing. (Without JavaScript,
- *     `@media (scripting: none)` runs the CSS loops instead, so nothing
- *     waits on this script to be seen.)
+ *  1. Liveness. `data-on` sits on each moving part — 嵐, Kiru, the lead's
+ *     magnetic field — only while that part is on screen and clear of the
+ *     site's glass bars. The rain rings, Kiru's idle and the field's pulse
+ *     run on it, so a loop the reader cannot see costs nothing. (Without
+ *     JavaScript, `@media (scripting: none)` runs the CSS loops instead, so
+ *     nothing waits on this script to be seen.)
  *  2. Holding still while the page scrolls. Any running CSS loop costs
  *     Chrome a style pass on every scrolling frame, even one the compositor
  *     draws (SiteFX pauses Pip for the same reason). Measured on a phone at
  *     4× CPU, the room's loops took scrolling through it from ~56fps to
  *     ~48. So the first scroll event of a gesture sets `data-hold` — one
  *     passive listener, `once`, no layout read — and `scrollend` lifts it:
- *     the tape and the rain rings pause mid-motion and carry on. (Kiru is
+ *     the rain rings and the field pause mid-motion and carry on. (Kiru is
  *     held by SiteFX, like every ninja on the site.)
  *  3. The kanji. If the room is still below the fold when this mounts, 嵐 is
  *     held un-inked (`data-ink="wait"`) and brushed in (`"go"`) once it is
@@ -31,14 +29,18 @@ import { useEffect, useRef, useState } from 'react';
  *     fold is armed (drawn empty) and fills once — just once — when 40% of
  *     it is in view. Already on screen, it is left full.
  *
+ * This used to be the ticker tape's pause button, which kept these books
+ * behind it. The tape left the room with the archive (October 2026), and
+ * nothing that moves here now carries words, so there is nothing to pause:
+ * the island stayed, the button went.
+ *
  * Every armed state lives inside `prefers-reduced-motion: no-preference` in
  * storm.css, and none of it is set under reduced motion, so a reader who
  * asked for less motion — or whose script never ran — sees every figure
  * finished.
  */
-export default function TapeToggle() {
-  const ref = useRef<HTMLButtonElement>(null);
-  const [paused, setPaused] = useState(false);
+export default function RoomKeeper() {
+  const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const room = ref.current?.closest<HTMLElement>('.wms');
@@ -73,13 +75,13 @@ export default function TapeToggle() {
         )
       ) || 65;
     const bottom = window.matchMedia('(min-width: 64rem)').matches ? 0 : 68;
-    // Kiru must be wholly clear of the glass (his umbrella under it while his
-    // feet are not still counts); the tape is wider than the screen on
-    // purpose, so any of it showing is enough.
+    // Kiru and the field must be wholly clear of the glass (an umbrella or a
+    // ring of light under it while the rest is not still counts); 嵐 only
+    // has to show.
     const live = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          const whole = e.target.classList.contains('wms-kiru');
+          const whole = !e.target.classList.contains('wms-kanji');
           const on = whole ? e.intersectionRatio > 0.98 : e.isIntersecting;
           e.target.toggleAttribute('data-on', on);
         }
@@ -88,7 +90,9 @@ export default function TapeToggle() {
       { rootMargin: `-${top}px 0px -${bottom}px 0px`, threshold: [0, 0.99] }
     );
     const parts = [
-      ...room.querySelectorAll<HTMLElement>('.wms-kanji, .wms-tape, .wms-kiru'),
+      ...room.querySelectorAll<HTMLElement>(
+        '.wms-kanji, .wms-kiru, [data-wms-field]'
+      ),
     ];
     for (const el of parts) live.observe(el);
 
@@ -152,28 +156,5 @@ export default function TapeToggle() {
     };
   }, []);
 
-  useEffect(() => {
-    ref.current
-      ?.closest('.wms')
-      ?.querySelector('.wms-tape')
-      ?.toggleAttribute('data-paused', paused);
-  }, [paused]);
-
-  return (
-    <button
-      ref={ref}
-      type="button"
-      className="wms-tape-btn"
-      onClick={() => setPaused((p) => !p)}
-      aria-label={paused ? 'Play the report ticker' : 'Pause the report ticker'}
-    >
-      <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-        {paused ? (
-          <path d="M6 4.2v11.6c0 .6.6.9 1.1.6l9-5.8c.5-.3.5-.9 0-1.2l-9-5.8C6.6 3.3 6 3.6 6 4.2Z" />
-        ) : (
-          <path d="M5.5 4h3v12h-3zM11.5 4h3v12h-3z" />
-        )}
-      </svg>
-    </button>
-  );
+  return <span ref={ref} hidden />;
 }

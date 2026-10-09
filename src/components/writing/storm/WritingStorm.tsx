@@ -1,24 +1,20 @@
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import {
+  archivedReports,
   cardKpis,
   frontReports,
-  leadReport,
-  marketStormReports,
-  methodOf,
   type Kpi,
   type MarketStormEntry,
-  type ResearchMethod,
 } from '@/data/marketStorm';
 import StormSky from '@/components/market-storm/StormSky';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import Kiru from '@/components/kiru/Kiru';
-import Button from '@/components/ui/Button';
-import HeroImage from '@/components/HeroImage';
 import { toneGlyph, toneText } from '@/components/market-storm/tone';
 import { formatDate } from '@/lib/format';
+import { leadArt, watchDate, type LeadArt } from './art';
 import { cents, findingFor, type Finding } from './finding';
-import TapeToggle from './TapeToggle';
+import RoomKeeper from './RoomKeeper';
 import './storm.css';
 
 /**
@@ -27,8 +23,9 @@ import './storm.css';
  * The page above is paper. Here it tears open, and behind the tear is the
  * storm: the live WebGL sky (StormSky, always night here), 嵐 brushing itself
  * in and flaring with each strike, Kiru under his wagasa with rain rings at
- * his feet. In the room: the lead report with its central finding drawn as a
- * picture, and the rest of the archive crawling past on a paper ticker tape.
+ * his feet. In the room: the front of Market Storm, in the order Josh pinned
+ * it — the lead as the headline act, the next two as a pair beneath it —
+ * and one quiet way into the archive, which lives on /market-storm.
  *
  * WHY ALWAYS NIGHT
  * ----------------
@@ -37,11 +34,20 @@ import './storm.css';
  * scrolling out of washi paper into a thunderstorm — and the only thing that
  * follows the theme is the torn paper itself, which is the page.
  *
+ * THE LEAD
+ * --------
+ * Big and first: the whole width, the biggest number, the only primary
+ * button. Its card image is framed rather than shown whole (art.ts says how,
+ * per report), and when the image is the rare-earths magnet the field is
+ * alive: rings of light run out from the magnet through the iron filings,
+ * and a lightning strike lights every filing at once. Its catalyst, when it
+ * names a date still ahead of the report, is pinned up as a calendar leaf.
+ *
  * WHAT IT COSTS
  * -------------
  * Server-rendered. The WebGL sky is the existing island (starts after load,
  * pauses off screen, one still frame under reduced motion). One more tiny
- * island, the ticker's pause button, also tells the CSS which parts are on
+ * island, RoomKeeper, draws nothing: it tells the CSS which parts are on
  * screen and when the page is scrolling. Every other moving thing is CSS on
  * the compositor — transform and opacity — and every loop stops off
  * screen, holds still while the page scrolls, and stops under reduced
@@ -49,32 +55,22 @@ import './storm.css';
  * (a parallax tear, a drifting kanji, a rising panel) cost compositor time
  * on every scrolling frame for a nuance nobody would miss.
  *
- * Measured on a phone at 4× CPU: idle in the room, 60fps with no slow
- * frames; scrolling through it, within a couple of frames of the same page
- * with the room hidden.
- *
- * Content comes from the data: whichever report is pinned as featured leads,
- * the rest of the archive rides the tape newest first, and the counts are
- * counted. Mount it outside any max-width column (it is full-bleed); it
- * carries `id="market-storm"` for links from elsewhere.
+ * Content comes from the data: frontReports() in order, the lead first; the
+ * archive is counted, never listed. Mount it outside any max-width column
+ * (it is full-bleed); it carries `id="market-storm"` for links from
+ * elsewhere.
  */
 export default function WritingStorm() {
-  const lead = leadReport();
+  const [lead, ...rest] = frontReports();
   if (!lead) return null;
-  const archive = frontReports().slice(1);
-  // The newest report gets its own card under the lead; the tape carries the
-  // rest, so nothing is shown twice.
-  const [newest, ...earlier] = archive;
-  const [stat, ...figs] = cardKpis(lead).slice(0, 3);
-  const finding = findingFor(lead);
-  const href = `/market-storm/${lead.slug}`;
+  const archived = archivedReports().length;
 
   return (
     <section id="market-storm" aria-labelledby="wms-title" className="wms">
       <div className="wms-room">
         <StormSky variant="band" night />
         {/* 嵐, arashi, "storm": brushed in once the reader stops to look,
-            lit by every strike (storm.css, TapeToggle). */}
+            lit by every strike (storm.css, RoomKeeper). */}
         <div className="wms-kanji" aria-hidden="true">
           <Kanji char="嵐" draw className="wms-kanji-glyph" />
         </div>
@@ -108,53 +104,22 @@ export default function WritingStorm() {
             </div>
           </header>
 
-          {/* Source order is the phone's reading order — the claim, the
-              evidence, then the way in. On a wide screen the evidence takes
-              the right-hand column (grid areas in storm.css). */}
-          <article className="wms-lead" aria-labelledby="wms-lead-title">
-            <Seal char="雷" className="wms-seal" />
-            <p className="wms-lead-kicker">
-              Lead report &middot;{' '}
-              <time dateTime={lead.publishDate}>
-                {formatDate(lead.publishDate)}
-              </time>
-            </p>
-            <h3 id="wms-lead-title" className="font-display wms-lead-title">
-              <Link href={href}>{lead.title}</Link>
-            </h3>
-            <p className="font-read wms-excerpt">{lead.excerpt}</p>
-            <div className="wms-finding">
-              {stat && <BigStat kpi={stat} />}
-              {finding && <Bars finding={finding} />}
-              {figs.length > 0 && <Figures kpis={figs} />}
-            </div>
-            <MethodLine method={methodOf(lead)} />
-            <div className="wms-cta-row">
-              <Button href={href} size="lg">
-                Read the report <span aria-hidden="true">&rarr;</span>
-              </Button>
-              <p className="wms-advice">Research, not advice.</p>
-            </div>
-          </article>
+          {/* The front, in Josh's order: an ordered list, so a screen reader
+              hears "1 of 3" where a reader sees the numbers. */}
+          <ol className="wms-front" role="list">
+            <li className="wms-slot wms-slot-lead">
+              <Lead report={lead} />
+            </li>
+            {rest.map((report, i) => (
+              <li key={report.slug} className="wms-slot">
+                <Card report={report} no={i + 2} />
+              </li>
+            ))}
+          </ol>
 
-          {newest && <Newest report={newest} />}
-
-          {earlier.length > 0 && (
-            <div className="wms-archive">
-              <h3 className="sd-kicker wms-archive-title">Earlier reports</h3>
-              <TapeToggle />
-              <Tape reports={earlier} />
-              <Button
-                variant="secondary"
-                href="/market-storm#reports"
-                className="wms-browse"
-              >
-                Browse all {marketStormReports.length} reports{' '}
-                <span aria-hidden="true">&rarr;</span>
-              </Button>
-            </div>
-          )}
+          {archived > 0 && <ArchiveLink count={archived} />}
         </div>
+        <RoomKeeper />
       </div>
       <Tear edge="top" />
       <Tear edge="bottom" />
@@ -162,46 +127,203 @@ export default function WritingStorm() {
   );
 }
 
-/* ── The lead report's figures ─────────────────────────────────────────── */
+const hrefOf = (r: MarketStormEntry) => `/market-storm/${r.slug}`;
 
-/** The figure the report turns on, set big, in its semantic ink. */
-/** The newest report, as a card of its own between the lead and the tape. */
-function Newest({ report }: { report: MarketStormEntry }) {
-  const href = `/market-storm/${report.slug}`;
+/**
+ * Its place in the order, set big. Decoration: the list carries the order
+ * for a screen reader, and the number is the same one.
+ */
+function No({ n }: { n: number }) {
   return (
-    <article className="wms-new" aria-labelledby="wms-new-title">
-      {report.cardImage && (
-        <div className="wms-new-img">
-          {/* The room is always night, so only the night card. */}
-          <HeroImage
-            post={{
-              heroImage: report.cardImage,
-              heroImageAlt: report.cardImageAlt,
-              title: report.title,
-            }}
-            className="h-full w-full object-cover"
-          />
+    <span className="font-display wms-no" aria-hidden="true">
+      <span className="wms-no-l">No.</span>
+      {n}
+    </span>
+  );
+}
+
+/* ── The lead ───────────────────────────────────────────────────────────── */
+
+/*
+ * One link per card: the title. Its ::after stretches over the whole card,
+ * so the card is the tap target and a keyboard stops once, on a link named
+ * by the title. The button-shaped "Read the report" is that same link's
+ * face, so it is hidden from assistive tech rather than read twice.
+ */
+function Lead({ report }: { report: MarketStormEntry }) {
+  const href = hrefOf(report);
+  const art = leadArt(report);
+  const when = watchDate(report);
+  const finding = findingFor(report);
+  const [stat] = cardKpis(report);
+
+  return (
+    <article className="wms-card wms-lead" aria-labelledby="wms-lead-title">
+      <Seal char="雷" className="wms-seal" />
+      {report.cardImage && !finding ? (
+        <Field report={report} art={art} />
+      ) : (
+        <div className="wms-pic wms-lead-plate">
+          <Plate stat={stat} finding={finding} />
         </div>
       )}
-      <div className="wms-new-body">
-        <p className="wms-lead-kicker">
-          <span className="wms-new-pill">New</span> Newest report &middot;{' '}
-          <time dateTime={report.publishDate}>
-            {formatDate(report.publishDate)}
-          </time>
-        </p>
-        <h3 id="wms-new-title" className="font-display wms-new-title">
-          <Link href={href}>{report.title}</Link>
+      <div className="wms-lead-body">
+        <div className="wms-top">
+          <No n={1} />
+          <p className="wms-kick">
+            <span>Lead report</span>
+            <time dateTime={report.publishDate}>
+              {formatDate(report.publishDate)}
+            </time>
+          </p>
+        </div>
+        <h3 id="wms-lead-title" className="font-display wms-lead-title">
+          <Link href={href} className="wms-link">
+            {report.title}
+          </Link>
         </h3>
-        <p className="font-read wms-new-excerpt">{report.excerpt}</p>
-        <Button href={href} variant="secondary" className="wms-new-cta">
-          Read it <span aria-hidden="true">&rarr;</span>
-        </Button>
+        <p className="font-read wms-lead-excerpt">{report.excerpt}</p>
+        {report.catalyst && (
+          <div className="wms-watch">
+            {when && (
+              <span className="wms-leaf" aria-hidden="true">
+                <span className="wms-leaf-m">{when.month}</span>
+                <span className="font-display wms-leaf-d">{when.day}</span>
+                <span className="wms-leaf-y">{when.year}</span>
+              </span>
+            )}
+            <p className="wms-watch-text">
+              <span className="wms-watch-label">
+                {when ? 'The date I’m watching' : 'The catalyst'}
+              </span>{' '}
+              {when ? (
+                <time dateTime={when.iso}>{report.catalyst}</time>
+              ) : (
+                report.catalyst
+              )}
+            </p>
+          </div>
+        )}
+        <div className="wms-lead-foot">
+          <span className="wms-go wms-go-primary" aria-hidden="true">
+            Read the report <span className="wms-go-arrow">&rarr;</span>
+          </span>
+          <p className="wms-advice">Research, not advice.</p>
+        </div>
       </div>
     </article>
   );
 }
 
+/**
+ * The lead's card image, framed on its subject. When the subject is the
+ * magnet, the field pulses: two rings of light run out from the magnet's
+ * centre, and the image's own brightness is their mask, so they light the
+ * iron filings and nothing else. A strike lights them all at once.
+ */
+function Field({ report, art }: { report: MarketStormEntry; art?: LeadArt }) {
+  const style = art
+    ? ({
+        '--fx': art.focus[0],
+        '--fy': art.focus[1],
+        '--subject': art.subject,
+        '--mask': `url(${report.cardImage})`,
+      } as CSSProperties)
+    : undefined;
+  return (
+    <div
+      className={`wms-pic wms-field${art ? ' is-framed' : ''}`}
+      data-wms-field={art?.pulse ? '' : undefined}
+      style={style}
+    >
+      <div className="wms-field-art">
+        {/* eslint-disable-next-line @next/next/no-img-element -- a pre-sized 1200×630 webp the CSS frames, masks and lights; lazy, below the fold */}
+        <img
+          src={report.cardImage}
+          alt={report.cardImageAlt ?? ''}
+          width={1200}
+          height={630}
+          loading="lazy"
+          decoding="async"
+          className="wms-field-img"
+        />
+        {art?.pulse && (
+          <span className="wms-field-fx" aria-hidden="true">
+            <span className="wms-pulse" />
+            <span className="wms-pulse wms-pulse-b" />
+            <span className="wms-strike" />
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── The pair ───────────────────────────────────────────────────────────── */
+
+function Card({ report, no }: { report: MarketStormEntry; no: number }) {
+  const href = hrefOf(report);
+  const id = `wms-card-${report.slug}`;
+  const finding = findingFor(report);
+  const [stat] = cardKpis(report);
+  const tag = report.ticker ?? report.company;
+
+  return (
+    <article className="wms-card wms-pair" aria-labelledby={id}>
+      {finding || (!report.cardImage && stat) ? (
+        <div className="wms-pic wms-plate">
+          <Plate stat={stat} finding={finding} />
+        </div>
+      ) : report.cardImage ? (
+        <div className="wms-pic wms-print">
+          {/* The room is always night, so only the night card. */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- a pre-sized 1200×630 webp card, lazy, below the fold: nothing for next/image to do */}
+          <img
+            src={report.cardImage}
+            alt={report.cardImageAlt ?? ''}
+            width={1200}
+            height={630}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      ) : null}
+      <div className="wms-pair-body">
+        <div className="wms-top">
+          <No n={no} />
+          <p className="wms-kick">
+            {tag && <span>{tag}</span>}
+            <time dateTime={report.publishDate}>
+              {formatDate(report.publishDate)}
+            </time>
+          </p>
+        </div>
+        <h3 id={id} className="font-display wms-pair-title">
+          <Link href={href} className="wms-link">
+            {report.title}
+          </Link>
+        </h3>
+        <p className="font-read wms-pair-excerpt">{report.excerpt}</p>
+        <span className="wms-go" aria-hidden="true">
+          Read it <span className="wms-go-arrow">&rarr;</span>
+        </span>
+      </div>
+    </article>
+  );
+}
+
+/* ── A report's own picture: its figure, and the finding drawn ─────────── */
+
+function Plate({ stat, finding }: { stat?: Kpi; finding: Finding | null }) {
+  return (
+    <div className="wms-finding">
+      {stat && <BigStat kpi={stat} />}
+      {finding && <Bars finding={finding} />}
+    </div>
+  );
+}
+
+/** The figure the report turns on, set big, in its semantic ink. */
 function BigStat({ kpi }: { kpi: Kpi }) {
   const tone = kpi.tone ?? 'neutral';
   return (
@@ -267,133 +389,40 @@ function Bars({ finding }: { finding: Finding }) {
   );
 }
 
-/** The next two headline figures, in the report's own semantic inks. */
-function Figures({ kpis }: { kpis: Kpi[] }) {
-  return (
-    <dl className="wms-figs">
-      {kpis.map((kpi) => {
-        const tone = kpi.tone ?? 'neutral';
-        return (
-          <div key={kpi.label}>
-            <dt className="wms-fig-label">{kpi.label}</dt>
-            <dd className={`wms-fig-value ${toneText[tone]}`}>
-              {toneGlyph[tone] && (
-                <span className="wms-glyph" aria-hidden="true">
-                  {toneGlyph[tone]}
-                </span>
-              )}
-              {cents(kpi.value)}
-            </dd>
-            {kpi.delta && <dd className="wms-fig-delta">{cents(kpi.delta)}</dd>}
-          </div>
-        );
-      })}
-    </dl>
-  );
-}
-
-/** How it was made, in one line of plain words. */
-function MethodLine({ method }: { method?: ResearchMethod }) {
-  if (!method) return null;
-  const facts: string[] = [];
-  if (method.agentCount > 0) facts.push(`${method.agentCount} AI agents`);
-  facts.push(
-    method.claimsVerified === undefined
-      ? `${method.claimsSurfaced} claims tracked`
-      : `${method.claimsVerified} claims sent to be disproved`
-  );
-  if (method.primaryDocsOpened !== undefined) {
-    facts.push(`${method.primaryDocsOpened} original documents opened`);
-  }
-  return (
-    <ul className="wms-method" role="list" aria-label="How it was researched">
-      {facts.map((f) => (
-        <li key={f}>{f}</li>
-      ))}
-    </ul>
-  );
-}
-
-/* ── The archive, on ticker tape ──────────────────────────────────────── */
-
-const MONTHS = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ');
-const shortDate = (iso: string) => {
-  const [, m, d] = iso.split('-').map(Number);
-  return m && d ? `${MONTHS[m - 1]} ${d}` : iso;
-};
+/* ── The way into the archive ──────────────────────────────────────────── */
 
 /**
- * A strip of cream paper crawling across the storm: every other report,
- * newest first, ticker and date and the figure it leads with.
- *
- * The crawl is one translateX on the compositor over two copies of the list;
- * the second copy is for the seamless loop only, so it is hidden from
- * assistive tech and out of the tab order. It pauses on hover and on the
- * button; when a key brings focus into it, it stops and lays itself out as
- * a still paper slip, every link on screen. Under reduced motion it is that
- * slip from the start (one row to swipe, on a phone).
+ * The archive left the room for /market-storm. What stays is one quiet link
+ * that says how much is there — counted, never hardcoded — beside the count
+ * drawn as a stack of paper slips (up to twelve; past that a stack stops
+ * being countable at a glance).
  */
-function Tape({ reports }: { reports: MarketStormEntry[] }) {
-  const style = { '--wms-n': reports.length } as CSSProperties;
+function ArchiveLink({ count }: { count: number }) {
+  const slips = Math.min(count, 12);
   return (
-    <div className="wms-tape" style={style}>
-      <div className="wms-tape-track">
-        <TapeSet reports={reports} />
-        <TapeSet reports={reports} copy />
-      </div>
-    </div>
+    <p className="wms-more">
+      <Link href="/market-storm#archive" className="wms-more-link">
+        <span className="wms-stack" aria-hidden="true">
+          {Array.from({ length: slips }, (_, i) => (
+            <span
+              key={i}
+              style={{ '--i': i, '--j': JITTER[i % JITTER.length] } as CSSProperties}
+            />
+          ))}
+        </span>
+        <span>
+          {count} earlier {count === 1 ? 'report' : 'reports'} in the archive
+        </span>
+        <span aria-hidden="true" className="wms-go-arrow">
+          &rarr;
+        </span>
+      </Link>
+    </p>
   );
 }
 
-function TapeSet({
-  reports,
-  copy = false,
-}: {
-  reports: MarketStormEntry[];
-  copy?: boolean;
-}) {
-  return (
-    <ul
-      className="wms-tape-set"
-      role={copy ? undefined : 'list'}
-      aria-hidden={copy || undefined}
-    >
-      {reports.map((r) => {
-        const k = cardKpis(r)[0];
-        const tone = k?.tone ?? 'neutral';
-        return (
-          <li key={r.slug}>
-            <Link
-              href={`/market-storm/${r.slug}`}
-              className="wms-tick"
-              tabIndex={copy ? -1 : undefined}
-              prefetch={false}
-            >
-              <span className="sr-only">{r.company ?? r.title},</span>{' '}
-              <span className="font-display wms-tick-sym">
-                {r.ticker ?? 'Storm'}
-              </span>{' '}
-              <span className="wms-tick-date">{shortDate(r.publishDate)}</span>{' '}
-              {k && (
-                <>
-                  <span className={`wms-tick-fig ${toneText[tone]}`}>
-                    {toneGlyph[tone] && (
-                      <span className="wms-glyph" aria-hidden="true">
-                        {toneGlyph[tone]}
-                      </span>
-                    )}
-                    {k.value}
-                  </span>{' '}
-                  <span className="wms-tick-label">{k.label}</span>
-                </>
-              )}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
+/** How far each slip in the stack sits off square, in px (fixed, not random). */
+const JITTER = [0, 2, -1, 3, 1, -2, 2, 0, -1, 3, 1, -2];
 
 /* ── The tear ─────────────────────────────────────────────────────────── */
 
