@@ -111,7 +111,7 @@ function BuildSection({
         </div>
         <div className="hb-cta sd-reveal">
           <Button href={room.href}>
-            Open {room.title}
+            {room.title}
             <IconArrowRight size={18} />
           </Button>
         </div>
