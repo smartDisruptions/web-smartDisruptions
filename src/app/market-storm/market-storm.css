@@ -403,6 +403,10 @@
     outline: 2.5px solid var(--sd-pen);
     outline-offset: 3px;
   }
+  /* a ledger line is ringed inside its own rules, not over its neighbours' */
+  .ms-arc-row:has(.ms-stretch:focus-visible) {
+    outline-offset: -1px;
+  }
 }
 
 /* The lead: a night slab in both lights (the footer's and the storm room's
@@ -416,7 +420,10 @@
   overflow: clip;
   display: grid;
   height: 100%;
-  border: 1px solid rgba(155, 176, 255, 0.18);
+  /* Elevation is declared once per light: on washi the night slab lifts
+     on its shadow and needs no line; under the moon a shadow can't show,
+     so a moonlit edge does the work instead. */
+  border: 1px solid transparent;
   border-radius: var(--radius-2xl);
   background:
     radial-gradient(75% 60% at 0% 0%, rgba(43, 58, 150, 0.42), transparent 70%),
@@ -430,6 +437,10 @@
     translate 0.45s var(--ease-out-expo),
     scale 0.2s ease,
     border-color 0.3s ease;
+}
+:root[data-theme='dark'] .ms-lead {
+  border-color: rgba(155, 176, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(236, 238, 250, 0.09);
 }
 .ms-lead::before {
   content: '';
@@ -569,6 +580,8 @@
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .ms-lead:hover {
     translate: 0 -4px;
+  }
+  :root[data-theme='dark'] .ms-lead:hover {
     border-color: rgba(155, 176, 255, 0.34);
   }
   .ms-lead:hover::after {
