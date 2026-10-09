@@ -24,7 +24,7 @@ export default function Near() {
           else e.target.removeAttribute('data-near');
         }
       },
-      { rootMargin: '60% 0px 60% 0px' }
+      { rootMargin: '35% 0px 35% 0px' }
     );
     document.querySelectorAll('.re-ch, .re-near').forEach((el) => io.observe(el));
     return () => io.disconnect();

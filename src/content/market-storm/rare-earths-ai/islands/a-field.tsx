@@ -617,6 +617,17 @@ export default function MagnetField() {
       if (onScreen) wake();
       else stop();
     });
+    // Well away from the screen the canvas leaves the page altogether
+    // (display: none; its pixels survive). On its own compositor layer it
+    // otherwise stays in the layer tree, and Chrome uploaded all of its
+    // pixels again on most commits while the next chapter scrolled by:
+    // ~5ms a frame at 4× CPU, with nothing drawn.
+    const near = new IntersectionObserver(
+      ([entry]) => {
+        canvas.style.display = entry.isIntersecting ? '' : 'none';
+      },
+      { rootMargin: '50% 0px 50% 0px' }
+    );
 
     let forceLayout = false;
     const relayout = () => {
@@ -693,6 +704,7 @@ export default function MagnetField() {
         setMode('live');
       }
       io.observe(layer);
+      near.observe(layer);
       ro.observe(layer);
       ro.observe(hero);
       document.fonts?.addEventListener?.('loadingdone', onFonts);
@@ -730,6 +742,7 @@ export default function MagnetField() {
       if (layoutQueued) cancelAnimationFrame(layoutQueued);
       stop();
       io.disconnect();
+      near.disconnect();
       ro.disconnect();
       document.fonts?.removeEventListener?.('loadingdone', onFonts);
       canvas.removeEventListener('contextlost', onLost);

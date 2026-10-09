@@ -152,12 +152,10 @@ function Magnet() {
   return (
     <div className="re-c-mag-wrap">
       <div className="re-c-mag" role="img" aria-label={plain(S03.waffle.aria)}>
-        <svg
-          className="re-c-mag-field"
-          viewBox="0 0 100 100"
-          aria-hidden="true"
-          focusable="false"
-        >
+        {/* The span fades, not the <svg>: an animated <svg> re-lays out
+            its drawing on every frame of the animation. */}
+        <span className="re-c-mag-field" aria-hidden="true">
+        <svg viewBox="0 0 100 100" focusable="false">
           {/* Field lines leave the top face and loop round to the bottom one. */}
           {[0, 1, 2, 3].map((k) => {
             // Lines from near the face's middle swing widest; those from
@@ -178,6 +176,7 @@ function Magnet() {
           <path d="M50 14 V 2" />
           <path d="M50 86 V 98" />
         </svg>
+        </span>
         <div className="re-c-mag-block">
           {groups.map((row, r) => (
             <span key={r} className="re-c-mag-row">

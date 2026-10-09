@@ -151,11 +151,11 @@ export function Findings({
   label?: string;
 }) {
   return (
-    <div className="re-found">
+    <div className="re-found re-rv">
       <p className="re-found-k">{label}</p>
       <ul className="font-read re-found-list" role="list">
         {items.map((t, i) => (
-          <li key={i} className="re-rv">
+          <li key={i}>
             <Rich text={t} />
           </li>
         ))}
@@ -167,7 +167,7 @@ export function Findings({
 /** "Why it matters:" — the chapter's last word. */
 export function Why({ text }: { text: RichText }) {
   return (
-    <p className="font-read re-why re-rv">
+    <p className="font-read re-why">
       <strong>{LABELS.whyItMatters}</strong> <Rich text={text} />
     </p>
   );

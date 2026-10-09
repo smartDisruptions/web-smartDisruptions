@@ -186,9 +186,10 @@
   width: 100%;
   height: 100%;
 }
-.re-b-magnet > .re-b-svg {
+.re-b-magnet > span {
   position: absolute;
   inset: 0;
+  display: block;
 }
 .re-b-fl {
   fill: none;
@@ -237,6 +238,11 @@
 .re-b-flow {
   position: absolute;
   pointer-events: none;
+}
+.re-b-flow-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .re-b-flow.is-h {
   left: 0;
@@ -1000,6 +1006,9 @@
 /* Its own <svg> layer, squeezed about the pipe's centre line (y 115 of the
    270-unit drawing), so the compositor runs the change. */
 .re-b-flow-dn {
+  position: absolute;
+  inset: 0;
+  display: block;
   transform-origin: 50% 90.74%;
   transform: scaleY(0.55);
   transition:

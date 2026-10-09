@@ -650,15 +650,19 @@
 .re-c-mag-field {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+  display: block;
   fill: none;
   stroke: var(--re-steel);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-dasharray: 0 4.5;
   opacity: 0.75;
+}
+.re-c-mag-field > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 .re-c-mag-field path {
   vector-effect: non-scaling-stroke;

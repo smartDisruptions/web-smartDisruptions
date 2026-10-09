@@ -89,6 +89,21 @@
   padding-top: 5rem;
   scroll-margin-top: 5rem;
 }
+/* Each chapter, and each block of the opening and the end matter, is its own
+   compositor layer. Scrolling a long page makes Chrome repaint whatever lies
+   within ~4,000px of the screen every so often, and this page is dense:
+   as one layer that repaint was ~20ms at 4× CPU. A chapter shorter than
+   that is painted once, and a change inside one repaints only it.
+   (will-change: opacity, not transform, so nothing position: fixed inside
+   is affected.) */
+.re-ch,
+.re-a-answer,
+.re-a-toc,
+.re-e-method,
+.re-e-sources,
+.re-e-colophon {
+  will-change: opacity;
+}
 .re-ch-head {
   position: relative;
   display: grid;

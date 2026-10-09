@@ -333,12 +333,16 @@ export default function BValve({
     [bands]
   );
   // Downstream of the valve, in its own <svg> so its squeeze is a compositor
-  // transform rather than a repaint of the whole drawing.
+  // transform rather than a repaint of the whole drawing; and in a span,
+  // which is what squeezes: a transformed <svg> re-lays out its drawing on
+  // every frame of the change.
   const flowDown = useMemo(
     () => (
-      <svg className="re-b-stage-svg re-b-flow-dn" viewBox="-160 -130 320 270" aria-hidden="true" focusable="false">
-        {strands(bands, 46, 170)}
-      </svg>
+      <span className="re-b-flow-dn" aria-hidden="true">
+        <svg className="re-b-stage-svg" viewBox="-160 -130 320 270" focusable="false">
+          {strands(bands, 46, 170)}
+        </svg>
+      </span>
     ),
     [bands]
   );

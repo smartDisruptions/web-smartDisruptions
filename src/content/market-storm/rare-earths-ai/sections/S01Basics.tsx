@@ -126,14 +126,22 @@ const FLUX = [
   'M142 100H188',
 ];
 
-/** Two layers (the field, then the block) so each can move on its own. */
+/**
+ * Two layers (the field, then the block) so each can move on its own. Each
+ * <svg> sits in a span, and it is the span that moves: an animated <svg>
+ * re-lays out its whole drawing every frame of the animation (measured: a
+ * third of chapter 01's scrolling cost); a moving box around it doesn't.
+ */
 export function MagnetArt({ className = '' }: ArtProps) {
   return (
     <span className={`re-b-magnet ${className}`} aria-hidden="true">
-      <svg viewBox="0 0 200 200" className="re-b-svg re-b-flux" focusable="false">
-        <path className="re-b-fl" d={FLUX.join('')} />
-      </svg>
-      <svg viewBox="0 0 200 200" className="re-b-svg re-b-mag" focusable="false">
+      <span className="re-b-flux">
+        <svg viewBox="0 0 200 200" className="re-b-svg" focusable="false">
+          <path className="re-b-fl" d={FLUX.join('')} />
+        </svg>
+      </span>
+      <span className="re-b-mag">
+      <svg viewBox="0 0 200 200" className="re-b-svg" focusable="false">
         <path className="re-b-mag-n" d="M100 82H70a6 6 0 0 0-6 6v24a6 6 0 0 0 6 6h30Z" />
         <path className="re-b-mag-s" d="M100 82h30a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6h-30Z" />
         <rect className="re-b-mag-line" x="64" y="82" width="72" height="36" rx="6" />
@@ -144,6 +152,7 @@ export function MagnetArt({ className = '' }: ArtProps) {
           S
         </text>
       </svg>
+      </span>
     </span>
   );
 }
@@ -179,12 +188,13 @@ const FILINGS = [
 function FlowSlice({ i, down }: { i: number; down?: boolean }) {
   const id = `re-b-flow-${down ? 'v' : 'h'}${i}`;
   const d = down ? FLOW_DOWN : FLOW;
+  // The span moves, not the <svg> (see MagnetArt).
   return (
+    <span className={`re-b-flow ${down ? 'is-v' : 'is-h'}`} aria-hidden="true">
     <svg
-      className={`re-b-flow ${down ? 'is-v' : 'is-h'}`}
+      className="re-b-flow-svg"
       viewBox={down ? `0 ${i * 250} 200 250` : `${i * 250} 0 250 200`}
       preserveAspectRatio="none"
-      aria-hidden="true"
       focusable="false"
     >
       <defs>
@@ -217,6 +227,7 @@ function FlowSlice({ i, down }: { i: number; down?: boolean }) {
       <path d={d} fill={`url(#${id}-f)`} />
       <path className="re-b-flow-edge" d={d} vectorEffect="non-scaling-stroke" />
     </svg>
+    </span>
   );
 }
 
