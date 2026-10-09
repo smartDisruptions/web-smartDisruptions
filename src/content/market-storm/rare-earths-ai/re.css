@@ -1,0 +1,377 @@
+/* Rare earths in the age of AI. Every class is `re-` prefixed. Colours come
+   from the site's tokens plus a few article inks below, each with a night
+   value, so the page follows the day/night toggle.
+
+   This file is the shared base (layout, chapter rhythm, the building blocks
+   in ./ui.tsx). Each chapter's own visuals live in its own stylesheet next
+   to its component in ./sections. */
+
+.re {
+  --re-wrap: 72rem;
+  --re-col: 54rem;
+  --re-measure: 62ch;
+
+  /* Article inks. Fills are free to use anywhere; when an ink has to be
+     TEXT, use the -ink variant (AA on washi by day, on lacquer by night). */
+  --re-light: var(--sd-accent); /* light rare earths: Nd, Pr */
+  --re-heavy: #a8781a; /* heavy rare earths: Dy, Tb, Y (old gold) */
+  --re-heavy-ink: #8a5a00;
+  --re-nd: #6b45b8; /* neodymium salts glow lilac: the AI-specific slice */
+  --re-nd-ink: #5a379f;
+  --re-steel: #5d6275; /* magnet metal, ore, machinery */
+  --re-ore: #8b7f6a;
+  --re-up: var(--sd-bull);
+  --re-down: var(--sd-bear);
+  --re-warn: var(--sd-warn);
+  --re-pen: var(--sd-pen);
+
+  /* Tiers are verdicts, so they wear the verdict inks. */
+  --re-t1: var(--sd-bull);
+  --re-t2: var(--sd-accent);
+  --re-t3: var(--sd-warn);
+  --re-t4: var(--sd-bear);
+  --re-t0: color-mix(in oklab, var(--sd-text-secondary) 50%, var(--sd-surface));
+
+  /* The three 2030 worlds. */
+  --re-w-takeoff: #0f7a70;
+  --re-w-steady: var(--sd-accent);
+  --re-w-stall: var(--sd-pen-ink);
+
+  --re-card: var(--sd-surface);
+  --re-line: var(--sd-border);
+  --re-line-strong: var(--sd-border-strong);
+  --re-muted: var(--sd-text-secondary);
+  --re-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  position: relative;
+  color: var(--sd-text-primary);
+}
+:root[data-theme='dark'] .re {
+  --re-heavy: #ffcf70;
+  --re-heavy-ink: #ffcf70;
+  --re-nd: #b89cff;
+  --re-nd-ink: #c3a6ff;
+  --re-steel: #9aa0bb;
+  --re-ore: #b9ad95;
+  --re-w-takeoff: #4fd1c5;
+}
+
+.re-wrap {
+  max-width: var(--re-wrap);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 640px) {
+  .re-wrap {
+    padding-inline: 24px;
+  }
+}
+
+/* One reading column, centred. A chapter's big visuals may break out of it
+   with .re-bleed (full wrap width). */
+.re-main {
+  padding-bottom: 4rem;
+}
+.re-main > * {
+  max-width: var(--re-col);
+  margin-inline: auto;
+}
+.re-bleed {
+  max-width: none;
+}
+
+/* ── Chapter rhythm ──────────────────────────────────────────────────── */
+
+.re-ch {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 5rem;
+  scroll-margin-top: 5rem;
+}
+.re-ch-head {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+.re-ch-n {
+  font-family: var(--font-display);
+  font-size: clamp(3.25rem, 9vw, 5rem);
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--sd-text-primary) 28%, transparent);
+  letter-spacing: -0.02em;
+}
+.re-ch-glyph {
+  position: absolute;
+  right: 0;
+  top: -0.5rem;
+  width: clamp(5.5rem, 16vw, 8.5rem);
+  aspect-ratio: 1;
+  color: var(--sd-text-primary);
+  opacity: 0.07;
+  pointer-events: none;
+}
+.re-ch-kick {
+  color: var(--re-muted);
+}
+.re-ch-title {
+  font-size: clamp(1.7rem, 4.6vw, 2.5rem);
+  line-height: 1.1;
+  text-wrap: balance;
+  max-width: 22ch;
+}
+
+/* "Short version" */
+.re-verdict {
+  position: relative;
+  padding: 1rem 1.15rem 1.05rem 1.25rem;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--sd-accent) 7%, var(--sd-surface));
+  border: 1px solid color-mix(in oklab, var(--sd-accent) 18%, transparent);
+}
+.re-verdict::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--sd-pen);
+}
+.re-verdict-k {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-accent);
+}
+.re-verdict-t {
+  margin-top: 0.3rem;
+  font-size: 1.12rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* "What we found" */
+.re-found {
+  display: grid;
+  gap: 0.6rem;
+}
+.re-found-k {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+}
+.re-found-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: var(--re-measure);
+}
+.re-found-list li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: 1.06rem;
+  line-height: 1.7;
+}
+.re-found-list li::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 0.68em;
+  width: 7px;
+  height: 7px;
+  background: var(--sd-pen);
+  transform: rotate(45deg);
+  border-radius: 1px;
+}
+.re-found-list strong,
+.re-why strong,
+.re-verdict-t strong {
+  font-weight: 700;
+}
+
+/* "Why it matters" */
+.re-why {
+  max-width: var(--re-measure);
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--re-line-strong);
+  font-size: 1.04rem;
+  line-height: 1.7;
+  color: var(--re-muted);
+}
+.re-why > strong:first-child {
+  color: var(--sd-text-primary);
+}
+
+/* ── Figures ─────────────────────────────────────────────────────────── */
+
+.re-fig {
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.1rem 1.1rem 0.9rem;
+  border-radius: 16px;
+  background: var(--re-card);
+  border: 1px solid var(--re-line);
+  box-shadow:
+    0 24px 48px -36px var(--sd-card-shadow),
+    0 2px 6px -3px color-mix(in srgb, var(--sd-card-shadow) 40%, transparent);
+  min-width: 0;
+}
+@media (min-width: 640px) {
+  .re-fig {
+    padding: 1.4rem 1.5rem 1.1rem;
+  }
+}
+.re-fig-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+.re-fig-sub {
+  margin-top: -0.25rem;
+  font-size: 0.88rem;
+  color: var(--re-muted);
+}
+.re-fig-body {
+  position: relative;
+  min-width: 0;
+}
+.re-fig-src {
+  font-size: 0.78rem;
+  color: var(--re-muted);
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+
+.re-tbl-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--re-line);
+  border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.re-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+}
+.re-tbl th,
+.re-tbl td {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--re-line);
+}
+.re-tbl th {
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--re-muted);
+  background: color-mix(in oklab, var(--sd-bg) 60%, var(--sd-surface));
+  white-space: nowrap;
+}
+.re-tbl tr:last-child td {
+  border-bottom: 0;
+}
+.re-tbl .is-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.re-details summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: var(--sd-accent);
+  list-style: none;
+}
+.re-details summary::-webkit-details-marker {
+  display: none;
+}
+.re-details summary::before {
+  content: '+';
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.re-details[open] summary::before {
+  content: '−';
+}
+
+/* ── Inline marks ────────────────────────────────────────────────────── */
+
+.re-cite {
+  font-size: 0.66em;
+  line-height: 0;
+  margin-left: 0.08em;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.re-cite-a {
+  color: var(--re-muted);
+  text-decoration: none;
+  padding: 0.1em 0.05em;
+}
+.re-cite-a:hover {
+  color: var(--sd-accent);
+  text-decoration: underline;
+}
+
+.re-flag {
+  display: inline-block;
+  padding: 0.05em 0.45em;
+  border-radius: 5px;
+  font-family: system-ui, sans-serif;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  vertical-align: 0.08em;
+}
+.re-flag.is-ok {
+  color: var(--sd-bull);
+  background: var(--sd-bull-soft);
+}
+.re-flag.is-unv {
+  color: var(--sd-warn);
+  background: var(--sd-warn-soft);
+}
+.re-flag.is-fix {
+  color: var(--sd-bear);
+  background: var(--sd-bear-soft);
+}
+
+.re-term {
+  text-decoration: underline dotted color-mix(in oklab, var(--sd-accent) 60%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1.5px;
+  cursor: help;
+}
+
+/* Anything that lives below the fold and is heavy to lay out can opt in. */
+.re-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .re *,
+  .re *::before,
+  .re *::after {
+    scroll-behavior: auto;
+  }
+}

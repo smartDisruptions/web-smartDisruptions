@@ -14,5 +14,6 @@ export const articlePages: Record<
   string,
   () => Promise<{ default: ComponentType }>
 > = {
+  'rare-earths-ai': () => import('./rare-earths-ai/Article'),
   'arkg-ai-takeoff': () => import('./arkg-ai-takeoff/Article'),
 };

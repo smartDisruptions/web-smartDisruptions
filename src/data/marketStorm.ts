@@ -8760,6 +8760,21 @@ export function methodOf(e: MarketStormEntry): ResearchMethod | undefined {
 export const marketStormArticles: MarketStormArticle[] = [
   {
     kind: 'article',
+    slug: 'rare-earths-ai',
+    title: 'Rare earths in the age of AI',
+    excerpt:
+      'Until about 2030, AI uses only ~5% of rare-earth magnets. These stocks move on China’s export rules, not on AI news.',
+    publishDate: '2026-10-09',
+    company: 'Rare earth stocks',
+    catalyst: 'China’s export-rule pause ends 10 Nov 2026',
+    tags: ['rare-earths', 'AI', 'China', 'magnets'],
+    cardImage: '/images/market-storm/rare-earths-ai.webp',
+    cardImageAlt:
+      'Rare earths in the age of AI. Iron filings line up around a magnet, beside the five magnet elements: neodymium, praseodymium, dysprosium, terbium and yttrium.',
+    ogImage: '/images/market-storm/rare-earths-ai.png',
+  },
+  {
+    kind: 'article',
     slug: 'arkg-ai-takeoff',
     title:
       'In gene stocks, using the most AI isn’t the same as winning from it.',
