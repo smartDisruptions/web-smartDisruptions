@@ -764,7 +764,11 @@
   justify-content: space-between;
   gap: 0.75rem 1rem;
 }
+/* "Rank by": a segmented control as wide as the toolbar allows (the whole
+   width on a phone), four equal columns, one thumb sliding under the pick. */
 .re-c-seg {
+  flex: 1 1 24rem;
+  max-width: 30rem;
   min-width: 0;
   margin: 0;
   padding: 0;
@@ -780,30 +784,58 @@
   color: var(--re-muted);
 }
 .re-c-seg-row {
-  display: flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 3px;
-  /* Its first label changes ("Article score" / "Your weights"); a fixed
-     box keeps that from moving the page. */
-  height: calc(44px + 8px);
-  contain: size layout;
   padding: 3px;
+  /* 44px targets, plus padding and border. Its width comes from the
+     toolbar and its columns ignore their labels, so the first label
+     changing ("Article score" / "Your weights") can't move anything. */
+  height: 52px;
+  contain: layout;
   border-radius: 14px;
   background: color-mix(in oklab, var(--sd-text-primary) 6%, var(--sd-surface));
   border: 1px solid var(--re-line);
 }
+.re-c-seg-thumb {
+  --wk: var(--sd-accent);
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  /* One column: the padding box less 2 × 3px padding and 3 × 3px gaps. */
+  width: calc((100% - 15px) / 4);
+  border-radius: 11px;
+  background: var(--sd-surface);
+  box-shadow:
+    0 1px 3px color-mix(in srgb, var(--sd-card-shadow) 55%, transparent),
+    inset 0 0 0 1.5px var(--wk);
+  pointer-events: none;
+}
+.re-c-seg-row[data-sel='takeoff'] .re-c-seg-thumb {
+  --wk: var(--re-w-takeoff);
+}
+.re-c-seg-row[data-sel='steady'] .re-c-seg-thumb {
+  --wk: var(--re-w-steady);
+}
+.re-c-seg-row[data-sel='stall'] .re-c-seg-thumb {
+  --wk: var(--re-w-stall);
+}
+.re-c-ch[data-near] .re-c-seg-thumb {
+  transition: transform 0.38s var(--re-ease);
+}
 .re-c-seg-o {
   --wk: var(--sd-accent);
   position: relative;
-  isolation: isolate;
-  flex: 1 1 auto;
   min-width: 0;
   display: grid;
   place-items: center;
   min-height: 44px;
-  padding: 0.3rem 0.5rem;
+  padding: 0.25rem 0.2rem;
   border-radius: 11px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 750;
   line-height: 1.15;
   text-align: center;
@@ -811,11 +843,19 @@
   -webkit-tap-highlight-color: transparent;
   transition: scale 0.18s ease;
 }
-@media (min-width: 480px) {
+@media (min-width: 380px) {
   .re-c-seg-o {
-    padding: 0.3rem 0.85rem;
+    font-size: 0.8rem;
+  }
+}
+@media (min-width: 640px) {
+  .re-c-seg-o {
+    padding: 0.25rem 0.6rem;
     font-size: 0.86rem;
   }
+}
+.re-c-seg-l {
+  position: relative;
 }
 .re-c-seg-o input {
   position: absolute;
@@ -825,28 +865,8 @@
   opacity: 0;
   pointer-events: none;
 }
-.re-c-seg-o::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: var(--sd-surface);
-  box-shadow:
-    0 1px 3px color-mix(in srgb, var(--sd-card-shadow) 55%, transparent),
-    inset 0 0 0 1.5px var(--wk);
-  opacity: 0;
-  transform: scale(0.9);
-  transition:
-    opacity 0.22s ease,
-    transform 0.4s var(--re-ease);
-}
 .re-c-seg-o:has(:checked) {
   color: var(--wk);
-}
-.re-c-seg-o:has(:checked)::before {
-  opacity: 1;
-  transform: none;
 }
 .re-c-seg-o:has(:focus-visible) {
   outline: 2.5px solid var(--sd-pen);
@@ -1098,6 +1118,12 @@
 }
 .re-c-lab:not([data-mode='article']) .re-c-head-key {
   opacity: 1;
+}
+/* On the narrowest phones the key needs the room "Company" had. */
+@media (max-width: 419px) {
+  .re-c-lab:not([data-mode='article']) .re-c-head-co {
+    visibility: hidden;
+  }
 }
 
 .re-c-rows {
@@ -1614,7 +1640,7 @@
     animation: re-c-ripple 0.9s ease-out both;
   }
   /* Arriving at the lab with a world already picked: the toggle answers. */
-  .re-c-lab.is-arrive .re-c-seg-o:has(:checked)::before {
+  .re-c-lab.is-arrive .re-c-seg-thumb {
     animation: re-c-pulse 0.9s ease-out;
   }
 }
@@ -1672,9 +1698,10 @@
     transform: scale(3.4);
   }
 }
+/* The individual scale property, so it composes with the thumb's slide. */
 @keyframes re-c-pulse {
   30% {
-    transform: scale(1.06);
+    scale: 1.06;
   }
 }
 
@@ -1683,7 +1710,7 @@
   .re-c-world::before,
   .re-c-world::after,
   .re-c-seg-o,
-  .re-c-seg-o::before,
+  .re-c-seg-thumb,
   .re-c-tune,
   .re-c-tune-chev,
   .re-c-row,

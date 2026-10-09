@@ -429,6 +429,12 @@ export default function RankLab({
     { key: null, label: custom ? UI.yours : UI.article },
     ...worlds.map((w) => ({ key: w.key, label: w.nameNode })),
   ];
+  // The thumb slides under the picked option: equal columns, so its place
+  // is the option's index (a transform, run by the compositor).
+  const sel = Math.max(
+    0,
+    options.findIndex((o) => o.key === world)
+  );
 
   return (
     <div
@@ -440,7 +446,12 @@ export default function RankLab({
       <div className="re-c-tools">
         <fieldset className="re-c-seg">
           <legend className="re-c-seg-k">{UI.rankBy}</legend>
-          <div className="re-c-seg-row">
+          <div className="re-c-seg-row" data-sel={world ?? 'article'}>
+            <span
+              className="re-c-seg-thumb"
+              aria-hidden="true"
+              style={{ transform: `translateX(calc(${sel} * (100% + 3px)))` }}
+            />
             {options.map((o) => (
               <label
                 key={o.key ?? 'article'}
@@ -453,7 +464,7 @@ export default function RankLab({
                   checked={world === o.key}
                   onChange={() => setWorld(o.key)}
                 />
-                <span>{o.label}</span>
+                <span className="re-c-seg-l">{o.label}</span>
               </label>
             ))}
           </div>
