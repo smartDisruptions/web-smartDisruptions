@@ -249,7 +249,7 @@ export default function RankLab({
       // Write only what changed: a drag calls this every frame.
       setData('motion', animate ? motion : 'none');
       setData('mode', mode);
-      setData('world', w ?? '');
+      setData('lw', w ?? '');
       const label =
         mode === 'world'
           ? UI.scoreWorld(worldName(w!))

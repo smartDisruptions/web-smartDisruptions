@@ -309,10 +309,6 @@
   display: grid;
   gap: 0.85rem;
 }
-.re-c-pick-hint {
-  font-size: 0.9rem;
-  color: var(--re-muted);
-}
 .re-c-pick-grid {
   display: grid;
   gap: 0.75rem;
@@ -478,25 +474,33 @@
   font-size: 0.98rem;
   line-height: 1.55;
 }
-/* Takes room only once something is picked. */
-.re-c-pick-after {
+/* The prompt, then the answer, in one fixed box: a pick changes its text
+   but never the height of the page (which would make every scroll-driven
+   animation on the page re-time). */
+.re-c-pick-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 0.9rem;
-  margin-top: -0.85rem;
+  align-content: center;
+  gap: 0.4rem 0.9rem;
+  height: 6rem;
+  contain: size layout;
 }
-.re-c-pick-after:has(.re-c-pick-acts) {
-  margin-top: 0;
+@media (min-width: 640px) {
+  .re-c-pick-bar {
+    height: 2.75rem;
+  }
 }
 .re-c-pick-status {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 650;
 }
 .re-c-pick-acts {
   display: inline-flex;
-  flex-wrap: wrap;
   gap: 0.5rem;
+}
+.re-c-pick-clear[hidden] {
+  display: none;
 }
 .re-c-pick-go,
 .re-c-pick-clear {
@@ -778,6 +782,10 @@
 .re-c-seg-row {
   display: flex;
   gap: 3px;
+  /* Its first label changes ("Article score" / "Your weights"); a fixed
+     box keeps that from moving the page. */
+  height: calc(44px + 8px);
+  contain: size layout;
   padding: 3px;
   border-radius: 14px;
   background: color-mix(in oklab, var(--sd-text-primary) 6%, var(--sd-surface));
@@ -1043,6 +1051,9 @@
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: end;
   column-gap: 0.75rem;
+  /* Fixed, so the score label changing re-lays only this line. */
+  height: 1.75rem;
+  contain: size layout;
   padding-bottom: 0.4rem;
   border-bottom: 1.5px solid var(--sd-text-primary);
   font-size: 0.66rem;
@@ -1133,7 +1144,7 @@
    slide with them. A drag: bars follow the slider exactly (nothing left
    running between input events); rows that change places still glide. */
 .re-c-ch[data-near] .re-c-lab[data-motion='toggle'] .re-c-row {
-  transition: transform 0.7s
+  transition: transform 0.6s
     linear(
       0,
       0.18 5%,
@@ -1146,11 +1157,10 @@
       1.006 70%,
       1
     );
-  transition-delay: calc(var(--slot) * 20ms);
+  transition-delay: calc(var(--slot) * 16ms);
 }
 .re-c-ch[data-near] .re-c-lab[data-motion='toggle'] .re-c-bar {
-  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: calc(var(--slot) * 20ms);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .re-c-ch[data-near] .re-c-lab[data-motion='drag'] .re-c-row {
   transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1237,16 +1247,16 @@
 .re-c-lab[data-mode='yours'] .re-c-head-sc {
   color: var(--sd-accent);
 }
-.re-c-lab[data-world='takeoff'] .re-c-sc,
-.re-c-lab[data-world='takeoff'] .re-c-head-sc {
+.re-c-lab[data-lw='takeoff'] .re-c-sc,
+.re-c-lab[data-lw='takeoff'] .re-c-head-sc {
   color: var(--re-w-takeoff);
 }
-.re-c-lab[data-world='steady'] .re-c-sc,
-.re-c-lab[data-world='steady'] .re-c-head-sc {
+.re-c-lab[data-lw='steady'] .re-c-sc,
+.re-c-lab[data-lw='steady'] .re-c-head-sc {
   color: var(--re-w-steady);
 }
-.re-c-lab[data-world='stall'] .re-c-sc,
-.re-c-lab[data-world='stall'] .re-c-head-sc {
+.re-c-lab[data-lw='stall'] .re-c-sc,
+.re-c-lab[data-lw='stall'] .re-c-head-sc {
   color: var(--re-w-stall);
 }
 
@@ -1382,10 +1392,11 @@
   font-size: 0.82rem;
   font-weight: 650;
 }
-.re-c-scen-key li {
+.re-c-scen-k {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  isolation: isolate;
 }
 .re-c-mk {
   position: relative;
@@ -1496,6 +1507,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* Always its own stacking context, so dimming it is paint, not layout. */
+  isolation: isolate;
 }
 .re-c-scen-rail .re-c-mk {
   position: absolute;
@@ -1505,15 +1518,15 @@
 }
 /* The world picked in chapter 02 (or in the lab) stays lit. */
 .re-c-scen[data-world] .re-c-scen-rail,
-.re-c-scen[data-world] .re-c-scen-key > li {
+.re-c-scen[data-world] .re-c-scen-k {
   opacity: 0.22;
 }
 .re-c-scen[data-world='takeoff'] .re-c-scen-rail.is-takeoff,
 .re-c-scen[data-world='steady'] .re-c-scen-rail.is-steady,
 .re-c-scen[data-world='stall'] .re-c-scen-rail.is-stall,
-.re-c-scen[data-world='takeoff'] .re-c-scen-key > li.is-takeoff,
-.re-c-scen[data-world='steady'] .re-c-scen-key > li.is-steady,
-.re-c-scen[data-world='stall'] .re-c-scen-key > li.is-stall {
+.re-c-scen[data-world='takeoff'] .re-c-scen-k.is-takeoff,
+.re-c-scen[data-world='steady'] .re-c-scen-k.is-steady,
+.re-c-scen[data-world='stall'] .re-c-scen-k.is-stall {
   opacity: 1;
 }
 

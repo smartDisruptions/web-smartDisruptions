@@ -132,7 +132,7 @@ function Scenarios() {
     <WorldScope className="re-c-scen">
       <ul className="re-c-scen-key" role="list">
         {WORLDS.map((w, i) => (
-          <li key={w.key} className={`is-${w.key}`}>
+          <li key={w.key} className={`re-c-scen-k is-${w.key}`}>
             <i
               className="re-c-mk"
               data-shape={SHAPE[w.key]}

@@ -42,9 +42,27 @@ export default function WorldPick({
 
   return (
     <div className="re-c-pick">
-      <p id="re-c-pick-hint" className="re-c-pick-hint">
-        {UI.hint}
-      </p>
+      {/* One fixed-size line for the prompt and, once picked, the answer:
+          its text changes, the page around it never moves. */}
+      <div className="re-c-pick-bar">
+        <p id="re-c-pick-hint" className="re-c-pick-status" aria-live="polite">
+          {picked ? UI.picked(picked.name) : UI.hint}
+        </p>
+        <span className="re-c-pick-acts">
+          <a className="re-c-pick-go" href="#ranking">
+            {UI.go}
+            <span aria-hidden="true">↓</span>
+          </a>
+          <button
+            type="button"
+            className="re-c-pick-clear"
+            hidden={!picked}
+            onClick={() => setWorld(null)}
+          >
+            {UI.clear}
+          </button>
+        </span>
+      </div>
       <div
         className="re-c-pick-grid"
         role="radiogroup"
@@ -76,26 +94,6 @@ export default function WorldPick({
             <span className="font-read re-c-world-text">{it.text}</span>
           </label>
         ))}
-      </div>
-      <div className="re-c-pick-after">
-        <p className="re-c-pick-status" aria-live="polite">
-          {picked ? UI.picked(picked.name) : ''}
-        </p>
-        {picked && (
-          <span className="re-c-pick-acts">
-            <a className="re-c-pick-go" href="#ranking">
-              {UI.go}
-              <span aria-hidden="true">↓</span>
-            </a>
-            <button
-              type="button"
-              className="re-c-pick-clear"
-              onClick={() => setWorld(null)}
-            >
-              {UI.clear}
-            </button>
-          </span>
-        )}
       </div>
     </div>
   );
