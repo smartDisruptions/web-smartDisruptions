@@ -37,15 +37,15 @@ export async function generateMetadata({
 
   const ticker = report.ticker ? `${report.ticker} — ` : '';
   const share = shareImageOf(report);
+  // An article's share image is its own card art, so the card's alt fits it.
+  // A template report's is the card its template drew (the ticker over the
+  // title), a different picture from the index card `cardImageAlt` describes,
+  // so it is described by what it shows.
+  const shareAlt = isArticle(report)
+    ? (report.cardImageAlt ?? report.title)
+    : `Market Storm, ${report.ticker}: ${report.title}`;
   const images = share
-    ? [
-        {
-          url: share,
-          width: 1200,
-          height: 630,
-          alt: report.cardImageAlt ?? report.title,
-        },
-      ]
+    ? [{ url: share, width: 1200, height: 630, alt: shareAlt }]
     : undefined;
 
   return {
