@@ -4,7 +4,7 @@ import Kiru, { type KiruPose } from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import StaticSvg from '@/components/brand/StaticSvg';
 import { BUILD_ROOMS, type BuildRoom } from '@/components/build/rooms';
-import { MOON, TILE_URI, pixelPaths } from '@/components/home/build/pixels';
+import { MOON, TILE_URI, pixelPaths } from '@/components/build/sections/pixels';
 import { GAME_SLUGS } from '@/data/apps';
 import { IconArrowRight } from '@/components/icons';
 

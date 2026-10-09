@@ -9,10 +9,12 @@ import GameStage from './GameStage';
 import './build.css';
 
 /**
- * The three Build rooms on the home page, one section each, right after the
- * doors. A trio: the same bones (kicker, headline, a line or two, a stage, a
- * way in) and three personalities — a shoji browser, a lacquered phone, a
- * pixel rooftop. On a desktop the stage alternates sides: right, left, right.
+ * The three Build rooms on /learn, one section each, after the cards that say
+ * what the list sends (they were on the home page, after the doors, until
+ * October 2026). A trio: the same bones (kicker, headline, a line or two, a
+ * stage, a way in) and three personalities — a shoji browser, a lacquered
+ * phone, a pixel rooftop. On a desktop the stage alternates sides: right,
+ * left, right. The class prefix is still hb- from those days.
  *
  * Each stage previews the interactive header waiting on its page, played by
  * the scroll instead of the reader's hands: zero JavaScript. Everything moves
@@ -30,6 +32,11 @@ type Section = {
   stage: ReactNode;
   /** Its height on a phone, measured: the space held before it renders. */
   height: number;
+  /** Render with the page rather than on approach (no content-visibility).
+      The pixel rooftop's first paint, released mid-scroll, cost one ~50ms
+      frame at 4x CPU every time; done at load it costs nothing you can
+      measure (October 2026). */
+  eager?: boolean;
 };
 
 const SECTIONS: Section[] = [
@@ -53,6 +60,7 @@ const SECTIONS: Section[] = [
     more: 'The page opens on a level editor: raise the roofs, hang the lanterns, and Kiru runs whatever you make.',
     stage: <GameStage />,
     height: 735,
+    eager: true,
   },
 ];
 
@@ -72,14 +80,15 @@ function BuildSection({
   more,
   stage,
   height,
+  eager,
   flip,
 }: Section & { flip: boolean }) {
   const id = `hb-${room.key}-h`;
   return (
     <section
       aria-labelledby={id}
-      className={`hb-sec hb-${room.key} sd-defer`}
-      style={{ containIntrinsicSize: `auto ${height}px` }}
+      className={`hb-sec hb-${room.key}${eager ? '' : ' sd-defer'}`}
+      style={eager ? undefined : { containIntrinsicSize: `auto ${height}px` }}
     >
       <div className={`hb-grid${flip ? ' hb-flip' : ''}`}>
         <div className="hb-copy sd-reveal">

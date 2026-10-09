@@ -1,4 +1,5 @@
-/* ── The three Build sections on the home page (BuildSections.tsx).
+/* ── The three Build sections on /learn (BuildSections.tsx); home until
+   October 2026.
    Prefix hb-. Everything that moves here moves on a stage's own view
    timeline, by transform or opacity, inside
    @media (prefers-reduced-motion: no-preference) + @supports
@@ -10,19 +11,21 @@
    sides. */
 .hb-sec {
   /* The bottom padding is room for the reveals: a deferred section paints
-     only inside its own box, and a button rising into place starts 28px low. */
-  padding: 5.5rem 1.25rem 2rem;
+     only inside its own box, and a button rising into place starts 28px low.
+     The 1rem sides are /learn's own gutters, so the edges line up with its
+     cards at every width. */
+  padding: 5.5rem 1rem 2rem;
 }
 @media (min-width: 40rem) {
   .hb-sec {
-    padding: 7rem 1.5rem 2rem;
+    padding: 7rem 1rem 2rem;
   }
 }
 .hb-grid {
   margin: 0 auto;
-  /* The rest of the home page is a 72rem column with 1.5rem gutters inside
-     it; this grid sits inside the section's gutters, so 72rem less two. */
-  max-width: 69rem;
+  /* The edges of /learn's widest column: its three cards sit in 60rem less
+     1rem gutters, so 58rem lines these up with them. */
+  max-width: 58rem;
   display: grid;
   grid-template-areas: 'copy' 'stage' 'cta';
   row-gap: 1.75rem;
