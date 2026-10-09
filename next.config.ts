@@ -131,6 +131,14 @@ const nextConfig: NextConfig = {
       { source: '/apps', destination: '/built', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/built', permanent: true },
+      // The Market Storm index was paged (/market-storm/page/2, …) until
+      // 2026-10-09. It is one page now — the front, then the archive — and
+      // everything that was on a numbered page is in the archive.
+      {
+        source: '/market-storm/page/:page',
+        destination: '/market-storm#archive',
+        permanent: true,
+      },
     ];
   },
 };

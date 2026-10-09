@@ -303,9 +303,9 @@
   font-size: 0.92em;
   line-height: 1.6;
 }
+/* Full text-secondary: at 0.7 the separator fell under AA (3.5:1). */
 .ms-dot {
   color: var(--sd-text-secondary);
-  opacity: 0.7;
 }
 
 /* An ofuda — the sd-note material — pinned with a seal. */
@@ -320,58 +320,470 @@
   rotate: 6deg;
 }
 
-/* ── Index: the standing thesis, an ink-lacquer panel in both lights ───────── */
-.ms-feature.sd-card {
-  background:
-    radial-gradient(90% 120% at 100% 0%, rgba(43, 58, 150, 0.55), transparent 62%),
-    radial-gradient(60% 80% at 0% 100%, rgba(255, 91, 61, 0.1), transparent 70%),
-    linear-gradient(160deg, #141938, #0b0e20 55%, #080a14);
-  border-color: rgba(155, 176, 255, 0.2);
-  border-radius: var(--radius-2xl);
+/* ── Index: the front ──────────────────────────────────────────────────────
+   The reports Josh put first, in his order (frontReports): the lead as a
+   night slab with its card art set into it, then the rest as cards, two up
+   from a tablet. Each wears its place as a hanko stamp. Server-rendered and
+   still: the only motion is the scroll reveal and a hover lift. */
+.ms-front-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
 }
-.ms-feature-art {
+@media (min-width: 48rem) {
+  .ms-front-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  .ms-front-lead,
+  /* an odd card out (a fourth pin, someday) takes a whole row */
+  .ms-front-list > li:last-child:nth-child(even) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* The place, stamped. Vermilion with white in both lights, like the primary
+   button (4.7:1): an object, not a theme colour. */
+.ms-num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  aspect-ratio: 1;
+  border-radius: 22%;
+  background: #d63a22;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size-adjust: 0.5;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.22) inset,
+    0 8px 18px -8px rgba(214, 58, 34, 0.75);
+  rotate: -6deg;
+}
+.ms-num-sm {
+  width: 2.1rem;
+  font-size: 1.15rem;
+}
+.ms-num-lg {
+  width: 2.9rem;
+  font-size: 1.6rem;
+}
+
+/* The line a front piece opens with: stamp, then what it is and when. */
+.ms-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+
+/* One link per piece — its title — stretched over the whole piece, so the
+   link's name is the title rather than everything on the card. */
+.ms-stretch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+@supports selector(:has(*)) {
+  .ms-stretch:focus-visible {
+    outline: none;
+  }
+  .ms-lead:has(.ms-stretch:focus-visible),
+  .ms-pick:has(.ms-stretch:focus-visible),
+  .ms-arc-row:has(.ms-stretch:focus-visible) {
+    outline: 2.5px solid var(--sd-pen);
+    outline-offset: 3px;
+  }
+}
+
+/* The lead: a night slab in both lights (the footer's and the storm room's
+   material), so the card art's night ground and the slab are one surface.
+   Rain falls across it — a static tile of StormSky's slanted streaks,
+   painted once — and the moonlight sits over the words, not the art, so
+   the art's dark ground has nothing to show an edge against. */
+.ms-lead {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: grid;
+  height: 100%;
+  border: 1px solid rgba(155, 176, 255, 0.18);
+  border-radius: var(--radius-2xl);
+  background:
+    radial-gradient(75% 60% at 0% 0%, rgba(43, 58, 150, 0.42), transparent 70%),
+    radial-gradient(60% 55% at 0% 100%, rgba(255, 91, 61, 0.08), transparent 70%),
+    #0a0b1d;
+  box-shadow:
+    inset 0 1px 0 rgba(236, 238, 250, 0.09),
+    0 44px 80px -52px rgba(9, 11, 22, 0.9),
+    0 2px 6px -2px rgba(9, 11, 22, 0.25);
+  transition:
+    translate 0.45s var(--ease-out-expo),
+    scale 0.2s ease,
+    border-color 0.3s ease;
+}
+.ms-lead::before {
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  overflow: hidden;
-  border-radius: inherit;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cg stroke='%23b9c3ff' stroke-linecap='round'%3E%3Cpath d='M12 16l-2 9' stroke-opacity='0.6'/%3E%3Cpath d='M56 8l-5 19' stroke-opacity='0.6'/%3E%3Cpath d='M86 6l-3 14' stroke-opacity='0.6'/%3E%3Cpath d='M134 12l-3 10' stroke-opacity='1.0'/%3E%3Cpath d='M174 12l-4 17' stroke-opacity='0.8'/%3E%3Cpath d='M10 42l-3 13' stroke-opacity='0.8'/%3E%3Cpath d='M53 57l-2 10' stroke-opacity='0.7'/%3E%3Cpath d='M97 62l-3 14' stroke-opacity='0.6'/%3E%3Cpath d='M136 45l-4 18' stroke-opacity='1.0'/%3E%3Cpath d='M171 53l-4 18' stroke-opacity='0.7'/%3E%3Cpath d='M24 83l-4 15' stroke-opacity='0.8'/%3E%3Cpath d='M53 83l-2 9' stroke-opacity='0.8'/%3E%3Cpath d='M95 84l-2 9' stroke-opacity='0.5'/%3E%3Cpath d='M117 91l-4 16' stroke-opacity='1.0'/%3E%3Cpath d='M153 92l-3 10' stroke-opacity='0.9'/%3E%3Cpath d='M26 130l-5 21' stroke-opacity='1.0'/%3E%3Cpath d='M51 129l-2 10' stroke-opacity='0.7'/%3E%3Cpath d='M86 124l-2 9' stroke-opacity='0.6'/%3E%3Cpath d='M125 123l-5 20' stroke-opacity='0.6'/%3E%3Cpath d='M173 129l-3 12' stroke-opacity='0.4'/%3E%3Cpath d='M10 160l-4 17' stroke-opacity='0.9'/%3E%3Cpath d='M49 173l-5 22' stroke-opacity='0.8'/%3E%3Cpath d='M49 -7l-5 22' stroke-opacity='0.8'/%3E%3Cpath d='M89 168l-4 18' stroke-opacity='0.9'/%3E%3Cpath d='M89 -12l-4 18' stroke-opacity='0.9'/%3E%3Cpath d='M119 160l-5 19' stroke-opacity='0.5'/%3E%3Cpath d='M163 157l-4 16' stroke-opacity='0.8'/%3E%3C/g%3E%3C/svg%3E")
+    0 0 / 180px 180px;
+  opacity: 0.2;
 }
-/* The bolt strikes into the corner, under the roster, never through words;
-   on a single-column phone layout there is no clear corner, so it stays out. */
-.ms-feature-bolt {
-  display: none;
-  position: absolute;
-  bottom: -3%;
-  right: 6%;
-  height: 40%;
-  width: auto;
-  opacity: 0.85;
+
+/* The art: the right-hand square of the card (the share-card plan puts the
+   words left and the picture right), at an aspect that keeps the whole
+   picture and none of the card's own lettering. Its edges feather into the
+   slab, so it reads as drawn on it rather than placed in a frame. */
+.ms-lead-art {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 1.04;
+  pointer-events: none;
+}
+.ms-lead-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 100% 50%;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 12%, #000 66%, transparent 90%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 12%, #000 66%, transparent 90%);
+  mask-composite: intersect;
+  transition: scale 0.9s var(--ease-out-expo);
+}
+/* No `position` on the body: a grid item takes z-index without it, and the
+   title's stretched link has to reach past the body to cover the slab. */
+.ms-lead-body {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.25rem 1.35rem 1.6rem;
+}
+.ms-lead .ms-meta {
+  flex-wrap: nowrap;
+  color: #c4c9e4;
+}
+.ms-meta > span:not(.ms-num) {
+  min-width: 0;
+}
+.ms-lead-title {
+  margin-top: 1.1rem;
+  max-width: 13ch;
+  font-size: clamp(2.35rem, 1.6rem + 3vw, 3.85rem);
+  line-height: 1.02;
+  color: var(--sd-text-primary);
+  transition: color 0.3s ease;
+}
+.ms-lead-excerpt {
+  margin-top: 1.1rem;
+  max-width: 44ch;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--sd-text-secondary);
+}
+/* The catalyst, under a storm-warning flag: the thing that could move it. */
+.ms-lead-catalyst {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+  padding: 0.6rem 0.85rem 0.6rem 0.7rem;
+  border: 1px dashed rgba(236, 238, 250, 0.22);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sd-text-primary);
+}
+.ms-flag {
+  width: 0.95rem;
+  flex: none;
+  margin-top: 0.05rem;
+  color: #a6abc8;
+}
+.ms-lead-cta {
+  margin-top: 1.6rem;
+}
+
+@media (min-width: 48rem) {
+  .ms-lead {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: center;
+  }
+  .ms-lead-art {
+    grid-row: 1;
+    grid-column: 2;
+    margin-block: 1.25rem;
+  }
+  .ms-lead-body {
+    grid-row: 1;
+    grid-column: 1;
+    padding: 2.5rem 0.5rem 2.5rem 2.25rem;
+  }
 }
 @media (min-width: 64rem) {
-  .ms-feature-bolt {
-    display: block;
+  .ms-lead {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
   }
+  .ms-lead-body {
+    padding: 3.5rem 1.75rem 3.25rem 3.5rem;
+  }
+  .ms-lead-excerpt {
+    font-size: 1.1875rem;
+  }
+}
+
+/* Lightning, once, when a pointer comes to rest on it: the sky over the
+   art lights twice — the return stroke and one restrike, StormSky's
+   envelope — and goes dark. Opacity only, one layer, and only on hover, so
+   it costs nothing while the page scrolls; never under reduced motion. */
+.ms-lead::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(70% 75% at 72% 0%, rgba(195, 208, 255, 0.3), transparent 70%);
+  opacity: 0;
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .ms-feature:hover .ms-feature-bolt {
-    animation: ms-restrike 0.7s steps(1) both;
+  .ms-lead:hover {
+    translate: 0 -4px;
+    border-color: rgba(155, 176, 255, 0.34);
+  }
+  .ms-lead:hover::after {
+    animation: ms-strike 0.95s ease-out 0.12s both;
+  }
+  .ms-lead:hover .ms-lead-img {
+    scale: 1.035;
+  }
+  .ms-lead:hover .ms-lead-title {
+    color: var(--sd-accent-hover);
   }
 }
-@keyframes ms-restrike {
-  0%,
-  30% {
+@keyframes ms-strike {
+  0% {
+    opacity: 0;
+  }
+  6% {
     opacity: 1;
   }
-  15%,
-  45% {
+  16% {
     opacity: 0.25;
+  }
+  26% {
+    opacity: 0.8;
   }
   60%,
   100% {
-    opacity: 1;
+    opacity: 0;
   }
 }
+.ms-lead:active {
+  scale: 0.992;
+}
+
+/* Second and third: cards, the art whole above the words. */
+.ms-pick {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.ms-pick-art {
+  aspect-ratio: 1200 / 630;
+  overflow: hidden;
+  border-bottom: 1px solid var(--sd-border);
+}
+.ms-pick-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.15rem 1.25rem 1.3rem;
+}
+.ms-pick-ticker {
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--sd-accent);
+}
+.ms-pick-date {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.ms-pick-catalyst {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 0.95rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.55;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.ms-pick-title {
+  margin-top: 0.55rem;
+  font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem);
+  line-height: 1.2;
+  color: var(--sd-text-primary);
+  transition: color 0.3s ease;
+}
+.group:hover .ms-pick-title {
+  color: var(--sd-accent);
+}
+.ms-pick-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--sd-text-secondary);
+}
+.ms-pick-foot {
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--sd-border-strong);
+}
+.ms-pick-excerpt-read {
+  -webkit-line-clamp: 6;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+@media (min-width: 40rem) {
+  .ms-pick-body {
+    padding: 1.4rem 1.6rem 1.5rem;
+  }
+}
+
+/* ── Index: the method, between the front and the archive ─────────────────── */
+.ms-how {
+  margin-top: 4.5rem;
+}
+@media (min-width: 40rem) {
+  .ms-how {
+    margin-top: 6rem;
+  }
+}
+
+/* ── Index: the archive ────────────────────────────────────────────────────
+   Quieter than the front on purpose: no art, no excerpts, no figures. A
+   ledger of dashed rules, one line per report, each line one link. */
+.ms-archive {
+  margin-top: 4.5rem;
+}
+@media (min-width: 40rem) {
+  .ms-archive {
+    margin-top: 6rem;
+  }
+}
+.ms-arc-note {
+  margin-top: 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--sd-text-primary);
+}
+.ms-arc {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--sd-border-strong);
+}
+.ms-arc-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'date tick go'
+    'main main go';
+  align-items: center;
+  gap: 0.35rem 0.9rem;
+  padding: 0.95rem 0.5rem 1rem;
+  border-bottom: 1px dashed var(--sd-border-strong);
+  transition: background-color 0.25s ease;
+}
+.ms-arc-date {
+  grid-area: date;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--sd-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ms-arc-ticker {
+  grid-area: tick;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--sd-text-secondary);
+}
+.ms-arc-main {
+  grid-area: main;
+  min-width: 0;
+}
+.ms-arc-title {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--sd-text-primary);
+  transition: color 0.25s ease;
+}
+.ms-arc-go {
+  grid-area: go;
+  color: var(--sd-text-secondary);
+  transition:
+    color 0.25s ease,
+    translate 0.35s var(--ease-out-expo);
+}
+@media (min-width: 48rem) {
+  .ms-arc-row {
+    grid-template-columns: 7.5rem 5.25rem minmax(0, 1fr) 1.5rem;
+    grid-template-areas: 'date tick main go';
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1.05rem 0.75rem;
+  }
+}
+@media (hover: hover) {
+  .ms-arc-row:hover {
+    background-color: var(--sd-fill);
+  }
+  .ms-arc-row:hover .ms-arc-title,
+  .ms-arc-row:hover .ms-arc-go {
+    color: var(--sd-accent);
+  }
+  .ms-arc-row:hover .ms-arc-go {
+    translate: 4px 0;
+  }
+}
+.ms-arc-row:active {
+  background-color: var(--sd-fill);
+}
+
 .ms-cta {
   display: inline-flex;
   align-items: center;
@@ -388,7 +800,7 @@
     background-color 0.3s ease,
     translate 0.3s var(--ease-out-expo);
 }
-.ms-feature:hover .ms-cta {
+.ms-lead:hover .ms-cta {
   background: #c2311b;
 }
 .ms-cta-arrow {
@@ -410,7 +822,7 @@
 .ms-figs > div {
   background: var(--sd-surface);
 }
-.ms-feature .ms-figs > div {
+.ms-lead .ms-figs > div {
   background: color-mix(in srgb, var(--sd-surface) 82%, transparent);
 }
 
