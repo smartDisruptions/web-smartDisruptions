@@ -51,6 +51,16 @@ export interface WatchDate {
   text: string; // "10 Nov 2026", as the catalyst writes it
 }
 
+/*
+ * A day, a month in words, a year: "10 Nov 2026", "10 November 2026",
+ * "5 Sept. 2027". The month is its name or a usual short form and nothing
+ * longer ("10 Mayfair" is not May), and the day that ends a range
+ * ("10–12 Nov 2026") is not read: the leaf shows one day, and the range
+ * starts on another.
+ */
+const DATE =
+  /(?<!\b\d{1,2}\s*[-–—]\s*)\b(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+(\d{4})\b/;
+
 /**
  * The first "10 Nov 2026"-style date in a report's catalyst, if it falls
  * after the report was published: a moment the report is waiting for rather
@@ -58,17 +68,18 @@ export interface WatchDate {
  * August 2026" is the day of publishing, so it is not one.)
  *
  * The catalyst is prose, so this reads it rather than trusting a field; a
- * catalyst with no date simply gets no calendar leaf.
+ * catalyst with no date simply gets no calendar leaf. Neither does one whose
+ * date doesn't exist ("31 Feb 2027"): no leaf beats a wrong one.
  */
 export function watchDate(e: MarketStormEntry): WatchDate | null {
-  const m = e.catalyst?.match(
-    /\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+(\d{4})\b/
-  );
+  const m = e.catalyst?.match(DATE);
   if (!m) return null;
   const day = Number(m[1]);
-  const mi = MONTHS.indexOf(m[2]);
+  const mi = MONTHS.indexOf(m[2].slice(0, 3));
   const year = Number(m[3]);
-  if (day < 1 || day > 31 || mi < 0) return null;
+  if (mi < 0) return null;
+  const real = new Date(Date.UTC(year, mi, day));
+  if (real.getUTCMonth() !== mi || real.getUTCDate() !== day) return null;
   const iso = `${year}-${String(mi + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   if (iso <= e.publishDate) return null;
   return { day, month: MONTHS[mi], year, iso, at: m.index ?? 0, text: m[0] };
