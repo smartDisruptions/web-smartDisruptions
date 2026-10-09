@@ -200,6 +200,14 @@ export default function RankLab({
     };
 
     const isDefault = () => s.weights.every((w, k) => w === defaults[k]);
+    // Housekeeping that can wait for a quiet moment.
+    const idle = (fn: () => void) => {
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(fn, { timeout: 1000 });
+      } else {
+        setTimeout(fn, 0);
+      }
+    };
     const setData = (key: string, value: string) => {
       if (root.dataset[key] !== value) root.dataset[key] = value;
     };
@@ -285,7 +293,7 @@ export default function RankLab({
         setText(live!, say);
       }
       window.clearTimeout(s.settle);
-      s.settle = window.setTimeout(settle, 1300);
+      s.settle = window.setTimeout(() => idle(settle), 1300);
     }
 
     // Bring the DOM order in line with what's on screen, once nothing is

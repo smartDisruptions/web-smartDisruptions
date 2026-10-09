@@ -83,7 +83,7 @@ function Tiers() {
         return (
           <section
             key={n}
-            className="re-c-tier sd-reveal"
+            className="re-c-tier"
             data-tier={n}
             aria-labelledby={`re-c-tier-${n}`}
           >

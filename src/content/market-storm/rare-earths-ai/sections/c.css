@@ -8,21 +8,6 @@
 /* Chapters 02 and 10 run at the full wrap (.re-bleed) so a few blocks can
    break out (.re-c-wide); everything else sits in .re-c-col, the same
    reading column every other chapter has. */
-.re-c-ch {
-  /* A gentle spring: ~4% past the mark, then home. */
-  --c-spring: linear(
-    0,
-    0.18 5%,
-    0.5 12%,
-    0.79 20%,
-    0.95 28%,
-    1.03 37%,
-    1.045 45%,
-    1.025 56%,
-    1.006 70%,
-    1
-  );
-}
 .re-c-ch > .re-ch-head,
 .re-c-col {
   width: 100%;
@@ -372,6 +357,9 @@
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
+}
+.re-c-ch[data-near] .re-c-world::before,
+.re-c-ch[data-near] .re-c-world::after {
   transition: opacity 0.3s ease;
 }
 .re-c-world::before {
@@ -1071,7 +1059,6 @@
   text-transform: none;
   font-size: 0.72rem;
   opacity: 0;
-  transition: opacity 0.3s ease;
 }
 .re-c-head-key i {
   width: 2px;
@@ -1132,7 +1119,6 @@
   row-gap: 0.35rem;
   border-bottom: 1px solid var(--re-line);
   transform: translateY(calc(var(--slot) * var(--row)));
-  transition: transform var(--t, 0.6s) var(--e, ease) var(--d, 0s);
 }
 @media (min-width: 720px) {
   .re-c-row {
@@ -1141,22 +1127,33 @@
     column-gap: 1rem;
   }
 }
-.re-c-lab[data-motion='toggle'] {
-  --t: 0.8s;
-  --e: var(--c-spring);
-  --tb: 0.7s;
-}
-.re-c-lab[data-motion='toggle'] .re-c-row {
-  --d: calc(var(--slot) * 22ms);
-}
-/* Dragging: bars follow the slider exactly (no transition, so nothing keeps
+/* Motion, only while the chapter is near the screen (data-near): a running
+   transition costs a style pass every frame, so nothing glides off screen.
+   A world or a reset: rows glide to their new places in a cascade, bars
+   slide with them. A drag: bars follow the slider exactly (nothing left
    running between input events); rows that change places still glide. */
-.re-c-lab[data-motion='drag'] {
-  --t: 0.38s;
-  --e: var(--re-ease);
+.re-c-ch[data-near] .re-c-lab[data-motion='toggle'] .re-c-row {
+  transition: transform 0.7s
+    linear(
+      0,
+      0.18 5%,
+      0.5 12%,
+      0.79 20%,
+      0.95 28%,
+      1.03 37%,
+      1.045 45%,
+      1.025 56%,
+      1.006 70%,
+      1
+    );
+  transition-delay: calc(var(--slot) * 20ms);
 }
-.re-c-lab[data-motion='drag'] .re-c-bar {
-  transition: none;
+.re-c-ch[data-near] .re-c-lab[data-motion='toggle'] .re-c-bar {
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--slot) * 20ms);
+}
+.re-c-ch[data-near] .re-c-lab[data-motion='drag'] .re-c-row {
+  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .re-c-co {
   grid-area: co;
@@ -1195,7 +1192,6 @@
   inset: 0;
   border-radius: 999px;
   background: var(--tk);
-  transition: transform var(--tb, 0.5s) var(--re-ease) var(--d, 0s);
 }
 /* The article's own score, left as a thin mark when the bar is someone
    else's (a world's, or the reader's weights). */
@@ -1209,7 +1205,6 @@
   border-radius: 1px;
   background: var(--sd-text-primary);
   opacity: 0;
-  transition: opacity 0.3s ease;
 }
 .re-c-lab:not([data-mode='article']) .re-c-ghost {
   opacity: 0.8;
@@ -1391,7 +1386,6 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  transition: opacity 0.35s ease;
 }
 .re-c-mk {
   position: relative;
@@ -1497,16 +1491,11 @@
   height: 4px;
   border-radius: 2px;
   background: color-mix(in oklab, var(--sd-text-primary) 24%, transparent);
-  transform-origin: calc(
-      (var(--mid) - var(--lo)) / (var(--hi) - var(--lo)) * 100%
-    )
-    50%;
 }
 .re-c-scen-rail {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: opacity 0.35s ease;
 }
 .re-c-scen-rail .re-c-mk {
   position: absolute;
@@ -1589,31 +1578,26 @@
       animation-range: cover 34% cover 46%;
     }
 
-    /* 10 · the worlds spread out from Steady. */
+    /* 10 · the worlds spread out from Steady along their range. */
     .re-c-ch[data-near] .re-c-scen-chart {
       view-timeline: --re-c-scen block;
     }
-    .re-c-ch[data-near] .re-c-scen-rail,
-    .re-c-ch[data-near] .re-c-scen-span {
+    .re-c-ch[data-near] .re-c-scen-rail:not(.is-steady) {
+      animation-name: re-c-spread;
       animation-fill-mode: both;
       animation-timeline: --re-c-scen;
       animation-range: cover calc(12% + var(--i) * 3%) cover
         calc(30% + var(--i) * 3%);
       animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    .re-c-ch[data-near] .re-c-scen-rail {
-      animation-name: re-c-spread;
-    }
-    .re-c-ch[data-near] .re-c-scen-span {
-      animation-name: re-c-span;
-    }
   }
 
-  /* A pick lands as a stamp, with a ripple. One shot each. */
-  .re-c-world:has(:checked) .re-c-world-seal {
+  /* A pick lands as a stamp, with a ripple. One shot each, and only near
+     the screen (a pick made in chapter 10 doesn't stamp chapter 02 unseen). */
+  .re-c-ch[data-near] .re-c-world:has(:checked) .re-c-world-seal {
     animation: re-c-stamp 0.45s cubic-bezier(0.3, 1.45, 0.5, 1) both;
   }
-  .re-c-world:has(:checked) .re-c-world-mark::after {
+  .re-c-ch[data-near] .re-c-world:has(:checked) .re-c-world-mark::after {
     animation: re-c-ripple 0.9s ease-out both;
   }
   /* Arriving at the lab with a world already picked: the toggle answers. */
@@ -1656,11 +1640,6 @@
     transform: translateX(calc((var(--mid) - var(--x)) * 100%));
   }
 }
-@keyframes re-c-span {
-  from {
-    transform: scaleX(0);
-  }
-}
 @keyframes re-c-stamp {
   from {
     opacity: 0;
@@ -1695,11 +1674,7 @@
   .re-c-tune,
   .re-c-tune-chev,
   .re-c-row,
-  .re-c-bar,
-  .re-c-ghost,
-  .re-c-head-key,
-  .re-c-scen-rail,
-  .re-c-scen-key li {
+  .re-c-bar {
     transition: none;
   }
 }

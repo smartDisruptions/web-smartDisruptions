@@ -108,7 +108,7 @@ export default function S02AiSpeed() {
         {S02.labs.map((l, i) => (
           <article
             key={l.name}
-            className="re-c-ai sd-reveal"
+            className="re-c-ai"
             aria-labelledby={`re-c-ai-${i}`}
           >
             <h3 id={`re-c-ai-${i}`} className="font-display re-c-ai-name">
