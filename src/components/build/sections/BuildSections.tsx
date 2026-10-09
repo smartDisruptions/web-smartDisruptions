@@ -27,8 +27,8 @@ import './build.css';
 type Section = {
   room: BuildRoom;
   headline: string;
-  /** What the page opens on — said plainly, after the room's own line. */
-  more: string;
+  /** The page's promise in its own words, then what the page opens on. */
+  lede: string;
   stage: ReactNode;
   /** Its height on a phone, measured: the space held before it renders. */
   height: number;
@@ -42,24 +42,24 @@ type Section = {
 const SECTIONS: Section[] = [
   {
     room: buildRoom('websites'),
-    headline: 'Sketch it. Ship it.',
-    more: 'The page opens on a tiny site you can squeeze from desktop to phone.',
+    headline: 'Fast. Clean. Responsive.',
+    lede: 'Websites that load fast, look clean and fit any screen. The page opens on a tiny site you can squeeze from desktop to phone.',
     stage: <WebStage />,
-    height: 700,
+    height: 747,
   },
   {
     room: buildRoom('apps'),
-    headline: 'Take an app apart.',
-    more: 'The page opens on a phone that comes apart into what you see, what it decides, what it remembers and what it runs on.',
+    headline: 'Apps for anything.',
+    lede: 'Follow along as I attempt to build apps that make life easier or more fun. The page opens on a phone that comes apart into what you see, what it decides, what it remembers and what it runs on.',
     stage: <AppStage />,
-    height: 820,
+    height: 816,
   },
   {
     room: buildRoom('games'),
-    headline: 'Build a level. Kiru runs it.',
-    more: 'The page opens on a level editor: raise the roofs, hang the lanterns, and Kiru runs whatever you make.',
+    headline: 'Any way you like.',
+    lede: 'Custom games you build yourself, then play. The page opens on a level editor: raise the roofs, hang the lanterns, and Kiru runs whatever you make.',
     stage: <GameStage />,
-    height: 735,
+    height: 729,
     eager: true,
   },
 ];
@@ -77,7 +77,7 @@ export default function BuildSections() {
 function BuildSection({
   room,
   headline,
-  more,
+  lede,
   stage,
   height,
   eager,
@@ -94,8 +94,8 @@ function BuildSection({
         <div className="hb-copy sd-reveal">
           <p className="sd-kicker">{room.title}</p>
           <h2 id={id} className="font-display sd-brush-under hb-h">
-            {/* One unbreakable run per sentence, so a narrow column breaks
-                "Sketch it. / Ship it.", never "Sketch / it. Ship it." */}
+            {/* One run per sentence, so a narrow column breaks between
+                sentences before it breaks inside one. */}
             {headline.split(/(?<=\.)\s+/).map((s, i) => (
               <Fragment key={i}>
                 {i > 0 && ' '}
@@ -103,9 +103,7 @@ function BuildSection({
               </Fragment>
             ))}
           </h2>
-          <p className="font-read hb-lede">
-            {room.line} {more}
-          </p>
+          <p className="font-read hb-lede">{lede}</p>
         </div>
         <div className="hb-stage" aria-hidden>
           {stage}

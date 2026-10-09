@@ -1,7 +1,8 @@
 /**
- * The three Build rooms — one list, read by the home doors, the home
+ * The three Build rooms — one list, read by the home doors, the /learn
  * sections, the trio strip at the foot of each Build page, and anything else
- * that names them, so a name or a line changes in one place.
+ * that names them, so a name or a line changes in one place. (The /learn
+ * sections write their own lines, in the words of each page's header.)
  *
  * `source` is the page's email list (SubscribeForm / /api/subscribe).
  */
