@@ -225,9 +225,9 @@ function Lead({ report }: { report: MarketStormEntry }) {
 
 /**
  * The lead's card image, framed on its subject. When the subject is the
- * magnet, the field pulses: two rings of light run out from the magnet's
- * centre, and the image's own brightness is their mask, so they light the
- * iron filings and nothing else. A strike lights them all at once.
+ * magnet, the field pulses: a ring of light runs out from the magnet's
+ * centre, and the image's own brightness is its mask, so it lights the iron
+ * filings and nothing else. A strike lights them all at once.
  */
 function Field({ report, art }: { report: MarketStormEntry; art?: LeadArt }) {
   const style = art
@@ -262,7 +262,6 @@ function Field({ report, art }: { report: MarketStormEntry; art?: LeadArt }) {
       {art?.pulse && (
         <span className="wms-field-fx" aria-hidden="true">
           <span className="wms-pulse" />
-          <span className="wms-pulse wms-pulse-b" />
           <span className="wms-strike" />
         </span>
       )}

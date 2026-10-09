@@ -1281,15 +1281,10 @@
   .wms-kiru[data-on] .wms-ripple {
     animation: wms-ripple 1.9s ease-out var(--d, 0s) infinite;
   }
-  /* The field: a ring of gold runs out from the magnet every 3s — two
-     rings, half a period apart. */
+  /* The field: a ring of gold runs out from the magnet, then a rest —
+     one ring, so the room runs one loop here, as it did for the tape. */
   .wms-field[data-on] .wms-pulse {
-    animation:
-      wms-pulse 6s cubic-bezier(0.3, 0.3, 0.5, 1) infinite,
-      wms-pulse-light 6s linear infinite;
-  }
-  .wms-field[data-on] .wms-pulse-b {
-    animation-delay: -3s;
+    animation: wms-pulse 4.8s linear infinite;
   }
   @media (scripting: none) {
     .wms .wms-ripple {
@@ -1305,7 +1300,8 @@
      him going under it). Named parts, never `*`: a toggle restyles a
      handful of elements, not the room. The !important outranks the
      `animation` shorthands. */
-  .wms[data-hold] :is(.wms-ripple, .wms-pulse),
+  .wms[data-hold]
+    :is(.wms-ripple, .wms-pulse, .wms-bar, .wms-ghost, .wms-then, .wms-bar-num),
   .wms-kiru:not([data-on])
     :is(.k-body, .k-head, .k-eyes, .k-zap, .kt-hi, .kt-lo, .kt-tip) {
     animation-play-state: paused !important;
@@ -1350,29 +1346,36 @@
     opacity: 0;
   }
 }
-/* Out from the bar to the edge of the frame, evenly, slowing at the end… */
+/* One animation, not one each for the light and the travel: Blink re-samples
+   every running animation in every main frame, composited or not, and
+   StormSky's rAF makes a main frame every frame while the room is on
+   screen. Easing is per keyframe and per property: the travel eases out
+   from 0% to 70%, the light is linear — up by 6%, held to 40%, gone by
+   66% — then a rest until the next ring. */
 @keyframes wms-pulse {
   /* Starts just clear of the element tiles, so the light is in the filings
      and the magnet's letters keep their own inks. */
   0% {
     scale: 1 0.27;
-  }
-  70%,
-  100% {
-    scale: 1.14 0.9;
-  }
-}
-/* …lit for most of the way, then gone, then a rest. */
-@keyframes wms-pulse-light {
-  0% {
     opacity: 0;
+    animation-timing-function: cubic-bezier(0.3, 0.3, 0.5, 1);
   }
-  6%,
+  6% {
+    opacity: 1;
+    animation-timing-function: linear;
+  }
   40% {
     opacity: 1;
+    animation-timing-function: linear;
   }
-  66%,
+  66% {
+    opacity: 0;
+  }
+  70% {
+    scale: 1.14 0.9;
+  }
   100% {
+    scale: 1.14 0.9;
     opacity: 0;
   }
 }

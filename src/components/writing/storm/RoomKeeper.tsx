@@ -28,7 +28,8 @@ import { useEffect, useRef } from 'react';
  *     already looking at it, it stays as it is: inked.
  *  4. The bars. Anything marked `data-wms-fill` that is still below the
  *     fold is armed (drawn empty) and fills once — just once — when 40% of
- *     it is in view. Already on screen, it is left full.
+ *     it is in view and the page is still. Already on screen, it is left
+ *     full.
  *  5. Prefetching, once the page is still. A <Link> prefetches its page the
  *     moment it scrolls into view, and these pages are big (the rare-earths
  *     article's payload is ~330KB): measured on a phone, the room's four
@@ -106,17 +107,30 @@ export default function RoomKeeper() {
     ];
     for (const el of parts) live.observe(el);
 
+    // The fill waits for a still page, like the ink: run mid-fling, its
+    // frames are restyled on every scrolling frame and the reader misses
+    // it anyway. So it starts when 40% of it is in view and nothing is
+    // scrolling — now, or when the scroll ends with it still in view.
     const fills =
       below && !still
         ? [...room.querySelectorAll<HTMLElement>('[data-wms-fill]')]
         : [];
+    const shown = new Set<Element>();
+    const fillWhenStill = () => {
+      if (holding) return;
+      for (const el of shown) {
+        el.setAttribute('data-seen', '');
+        once.unobserve(el);
+      }
+      shown.clear();
+    };
     const once = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          e.target.setAttribute('data-seen', '');
-          once.unobserve(e.target);
+          if (e.intersectionRatio >= 0.4) shown.add(e.target);
+          else shown.delete(e.target);
         }
+        fillWhenStill();
       },
       { threshold: 0.4 }
     );
@@ -126,26 +140,28 @@ export default function RoomKeeper() {
     }
 
     // Prefetching, once the page is still (5, above). A card counts as on
-    // screen while its title link is; links in view are fetched when the
-    // scroll ends, or now if the page is already still.
+    // screen while its title link is. Which links show is read only when a
+    // scroll has ended — a handful of rects, layout already clean — rather
+    // than watched by an observer that would run on every scrolling frame.
     const links = [...room.querySelectorAll<HTMLAnchorElement>('a[href]')];
     const fetched = new Set<string>();
-    const inView = new Set<Element>();
     const fetchPage = (a: Element | null | undefined) => {
       const href = a?.getAttribute('href');
       if (!href || fetched.has(href)) return;
       fetched.add(href);
       router.prefetch(href);
     };
-    const fetchInView = () => inView.forEach(fetchPage);
-    const near = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) inView.add(e.target);
-        else inView.delete(e.target);
+    const fetchInView = () => {
+      if (fetched.size === links.length) return;
+      const h = window.innerHeight;
+      const r = room.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > h) return;
+      for (const a of links) {
+        const b = a.getBoundingClientRect();
+        if (b.bottom > 0 && b.top < h) fetchPage(a);
       }
-      if (!holding) fetchInView();
-    });
-    for (const a of links) near.observe(a);
+    };
+    if (!below) fetchInView();
     // A mouse over a card (its stretched link) or a key landing on it says
     // the reader means it: fetch now. A finger touching down is usually the
     // start of a scroll, so touch waits for the scroll to end like the rest.
@@ -179,6 +195,7 @@ export default function RoomKeeper() {
         holding = false;
         room!.removeAttribute('data-hold');
         inkWhenStill();
+        fillWhenStill();
         fetchInView();
       }
       if (hasEnd) listen();
@@ -190,7 +207,6 @@ export default function RoomKeeper() {
     return () => {
       live.disconnect();
       once.disconnect();
-      near.disconnect();
       room.removeEventListener('pointerover', onIntent);
       room.removeEventListener('focusin', onIntent);
       window.clearTimeout(quiet);
