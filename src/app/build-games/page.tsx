@@ -66,8 +66,7 @@ export default function BuildGamesPage() {
             <span className="bg-h1-then">any way you like.</span>
           </h1>
           <p className="bg-lede font-read">
-            Raise the rooftops, hang a few lanterns, move the gate. Press Play,
-            and Kiru runs whatever you made.
+            Imagine and build incredible games and worlds.
           </p>
         </div>
 

@@ -86,11 +86,6 @@
 .au-fsm[data-on='person'] .au-fsm-door {
   translate: 100% 0;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .au-fsm-door {
-    transition: translate 0.55s var(--ease-out-expo);
-  }
-}
 
 /* The pull (hikite): a gold ring sunk into the paper, on the edge you would
    slide it by. */
@@ -165,20 +160,13 @@
   .au-fsm-tab:not([aria-current]):hover {
     color: #fff;
   }
-  /* Hover the other side and the door leans toward it, ready to slide. */
-  .au-fsm[data-on='work']:has(.au-fsm-tab[data-id='person']:hover)
-    .au-fsm-door {
-    translate: 6px 0;
-  }
-  .au-fsm[data-on='person']:has(.au-fsm-tab[data-id='work']:hover)
-    .au-fsm-door {
-    translate: calc(100% - 6px) 0;
-  }
 }
 
 /* For a slide that starts on the switch (SwitchFX), its parts glide between
-   the two pages: the frame holds still, the door crosses, the labels trade
-   ink. Listed door-first, so the labels paint over it. */
+   the two pages: the frame holds still, the door crosses from where it rests
+   on this page to where it rests on the next, and the labels trade ink over
+   the same half second. One movement, eased in and out like a door on its
+   track. Listed door-first, so the labels paint over it. */
 html[data-au-door] .au-fsm {
   view-transition-name: au-fsm;
 }
@@ -192,14 +180,12 @@ html[data-au-door] .au-fsm-tab[data-id='person'] {
   view-transition-name: au-fsm-person;
 }
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition-group(au-fsm-door) {
-    animation-duration: 0.55s;
-    animation-timing-function: var(--ease-out-expo);
-  }
+  ::view-transition-group(au-fsm-door),
   ::view-transition-old(au-fsm-work),
   ::view-transition-new(au-fsm-work),
   ::view-transition-old(au-fsm-person),
   ::view-transition-new(au-fsm-person) {
-    animation-duration: 0.4s;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
