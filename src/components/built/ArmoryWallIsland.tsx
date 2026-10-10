@@ -1,94 +1,105 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import type { WallDrive } from './armory-drive';
 
 /**
- * The ring's controls, and the switch that wakes the ring up.
+ * The switch that wakes the ring up, the chips, and the status line.
  *
- * The plaques themselves are server markup (ArmoryWall). This island renders
- * only the two buttons and the status line, and imports the behaviour
- * (./armory-drive) when the ring comes within 400px of the screen — so a
- * reader who never scrolls that far never downloads it. Under reduced
- * motion it never loads at all: the ring is a flat grid of links and needs
- * nothing.
+ * Everything you can see is server markup (ArmoryWall): the plaques, the
+ * chips, the buttons, the caption. This island renders only the polite live
+ * line a screen reader hears, and wires the rest:
+ *
+ *  - It imports the ring's behaviour (./armory-drive) when the ring comes
+ *    within 400px of the screen, so a reader who never scrolls that far
+ *    never downloads it. Under reduced motion it never loads at all: the
+ *    ring lies flat as a grid of links and needs nothing.
+ *  - The chips (All · Projects · Smaller builds · Games) are shown only
+ *    once they work (data-chips). On the ring a chip turns to the first
+ *    plaque of its kind and leaves the rest in shadow, so the arrows step
+ *    between the plaques it picked; on the flat grid it shows only those.
+ *    Either way the plaques it leaves out carry data-out, and the line
+ *    below says what happened.
  */
-export default function ArmoryWallIsland({
-  count,
-  first,
-}: {
-  count: number;
-  first: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
+export default function ArmoryWallIsland() {
+  const ref = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
-    const root = ref.current?.closest<HTMLElement>('[data-wall]');
-    if (!root) return;
+    const status = ref.current;
+    const root = status?.closest<HTMLElement>('[data-wall]');
+    if (!status || !root) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let cleanup: (() => void) | null = null;
+    const chips = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('[data-wall-chip]')
+    );
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('.bt-panel'));
+    let wall: WallDrive | null = null;
     let io: IntersectionObserver | null = null;
     let alive = true;
 
+    const choose = (chip: HTMLButtonElement) => {
+      const id = chip.dataset.wallChip ?? 'all';
+      const label = chip.dataset.label ?? '';
+      const all = id === 'all';
+      for (const c of chips) c.setAttribute('aria-pressed', String(c === chip));
+      let count = 0;
+      for (const p of panels) {
+        const keep = all || p.dataset.group === id;
+        p.toggleAttribute('data-out', !keep);
+        if (keep) count++;
+      }
+      const what = all ? `All ${count}` : `The ${count} ${label.toLowerCase()}`;
+      if (wall) wall.find(id, `${what}: `);
+      else status.textContent = `Showing ${what.toLowerCase()}.`;
+    };
+    const onChip = (e: MouseEvent) =>
+      choose(e.currentTarget as HTMLButtonElement);
+    for (const c of chips) c.addEventListener('click', onChip);
+
     const start = () => {
-      if (cleanup || io || reduce.matches) return;
+      if (reduce.matches) {
+        // The flat grid: the chips filter it, no behaviour needed.
+        root.setAttribute('data-chips', '');
+        return;
+      }
+      if (wall || io) return;
       io = new IntersectionObserver(
         (entries) => {
           if (!entries.some((e) => e.isIntersecting)) return;
           io?.disconnect();
           io = null;
           import('./armory-drive').then(({ drive }) => {
-            if (!alive || cleanup || reduce.matches) return;
-            cleanup = drive(root);
+            if (!alive || wall || reduce.matches) return;
+            wall = drive(root);
+            root.setAttribute('data-chips', '');
           });
         },
-        { rootMargin: '400px 0px' },
+        { rootMargin: '400px 0px' }
       );
       io.observe(root);
     };
     const stop = () => {
       io?.disconnect();
       io = null;
-      cleanup?.();
-      cleanup = null;
+      wall?.stop();
+      wall = null;
     };
-    const onChange = () => (reduce.matches ? stop() : start());
+    const onChange = () => {
+      stop();
+      start();
+    };
 
     start();
     reduce.addEventListener('change', onChange);
     return () => {
       alive = false;
       reduce.removeEventListener('change', onChange);
+      for (const c of chips) c.removeEventListener('click', onChip);
       stop();
     };
   }, []);
 
   return (
-    <div ref={ref} className="bt-wall-controls">
-      <button
-        type="button"
-        className="bt-wall-btn"
-        data-wall-prev
-        aria-label="Turn the wall back one"
-        disabled
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-          <path d="M15 5l-7 7 7 7" />
-        </svg>
-      </button>
-      <p className="bt-wall-status" data-wall-status aria-live="polite">
-        1 of {count} · <b>{first}</b>
-      </p>
-      <button
-        type="button"
-        className="bt-wall-btn"
-        data-wall-next
-        aria-label="Turn the wall on one"
-        disabled
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-          <path d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-    </div>
+    <p ref={ref} className="sr-only" aria-live="polite" data-wall-status />
   );
 }

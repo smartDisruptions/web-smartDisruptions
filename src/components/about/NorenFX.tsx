@@ -22,10 +22,17 @@ import { NOREN, REST, panelLeft } from './noren';
  * While Kiru holds the middle two, they mostly stay put in his fists; let go,
  * they swing as freely as the rest.
  *
- * Costs: transforms only, written to eight elements, from one rAF loop that
- * runs only while the cloth is moving, and never while the doorway is off
- * screen or the tab is hidden. No React state. Under reduced motion there is
- * no loop at all: a tap swaps the still picture (Kiru hidden, then back).
+ * The room's light answers the cloth: the wider its gaps open at the hem
+ * (past the V Kiru holds), the brighter the room behind it, the pool on the
+ * ground and the dust in the doorway. Three opacities (the scene's au-th-
+ * flare, au-th-spill-hi and au-th-motes, absent on the mini), written from
+ * the same frame as the cloth, and only when they change.
+ *
+ * Costs: transforms only, written to eight elements, plus those three
+ * opacities, from one rAF loop that runs only while the cloth is moving, and
+ * never while the doorway is off screen or the tab is hidden. No React
+ * state. Under reduced motion there is no loop at all: a tap swaps the still
+ * picture (Kiru hidden, then back), and the light stays as it is.
  */
 
 const N = NOREN.panels;
@@ -47,6 +54,27 @@ const PART_S = 8.5; // degrees at the hem, straight under the hand
 const PART_B = 11;
 const BRUSH = 0.026; // degrees per second of swing, per cloth unit per second
 const HELD = 0.3; // what's left of a push on a panel Kiru is holding
+
+// The light: cloth units of gap, opened past the resting V, for full
+// brightness.
+const OPEN_FULL = 70;
+const RAD = Math.PI / 180;
+/** Where a panel's hem sits, sideways, for a swing s and a bend b (the lower
+    piece hangs from the upper one, so its shear is both skews added). */
+const hemOf = (s: number, b: number) =>
+  Math.tan(s * RAD) * NOREN.h + Math.tan(b * RAD) * LOW;
+/** How much the cloth lets through at the hem, in cloth units: each gap
+    between neighbours (an overlap lets nothing through) and the two at the
+    jambs, where an outer panel swings in off its post. */
+const openOf = (hem: ArrayLike<number>) => {
+  let open = Math.max(0, hem[0]) + Math.max(0, -hem[N - 1]);
+  for (let i = 0; i < N - 1; i++)
+    open += Math.max(0, NOREN.gap + hem[i + 1] - hem[i]);
+  return open;
+};
+/** The resting V Kiru holds open: the light at rest, the zero of the flare.
+    (Let go, the cloth hangs straight and lets through less than this.) */
+const OPEN_REST = openOf(REST.peek.map(([s, b]) => hemOf(s, b)));
 
 export default function NorenFX() {
   const anchor = useRef<HTMLSpanElement>(null);
@@ -73,6 +101,11 @@ export default function NorenFX() {
     const uppers = [...door.querySelectorAll<HTMLElement>('.au-u')];
     const lowers = [...door.querySelectorAll<HTMLElement>('.au-d')];
     if (uppers.length !== N || lowers.length !== N) return;
+    // The scene's light (the live doorway has it; a doorway without just
+    // moves its cloth).
+    const flare = door.querySelector<HTMLElement>('.au-th-flare');
+    const pool = door.querySelector<HTMLElement>('.au-th-spill-hi');
+    const dust = door.querySelector<HTMLElement>('.au-th-motes');
 
     // The CSS arrival sway starts when the doorway is inserted: at the first
     // paint, or on a client navigation, about now.
@@ -125,6 +158,21 @@ export default function NorenFX() {
     };
     const held = (i: number) => (peeking && (i === 1 || i === 2) ? HELD : 1);
     for (let i = 0; i < N; i++) write(i);
+
+    // ── The light: how far the gaps are open past the resting V ───────────
+    const hem = new Float64Array(N);
+    let shownLight = 0;
+    const light = () => {
+      if (!flare && !pool && !dust) return;
+      for (let i = 0; i < N; i++) hem[i] = hemOf(s[i], b[i]);
+      const l = Math.min(1, Math.max(0, (openOf(hem) - OPEN_REST) / OPEN_FULL));
+      if (Math.abs(l - shownLight) < 0.01 && !(l === 0 && shownLight !== 0))
+        return;
+      shownLight = l;
+      if (flare) flare.style.opacity = l.toFixed(3);
+      if (pool) pool.style.opacity = (l * 0.9).toFixed(3);
+      if (dust) dust.style.opacity = (0.7 + 0.3 * l).toFixed(3);
+    };
 
     // ── Kiru: let go, then peek again ─────────────────────────────────────
     function duck() {
@@ -426,11 +474,14 @@ export default function NorenFX() {
           vs[i] = vb[i] = 0;
           write(i);
         }
+      light();
     }
 
     return () => {
       cancelAnimationFrame(raf);
       cleanups.forEach((c) => c());
+      // Hand the light back to the stylesheet's resting values.
+      for (const el of [flare, pool, dust]) el?.style.removeProperty('opacity');
     };
   }, [reduce]);
 

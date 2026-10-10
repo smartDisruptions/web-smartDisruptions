@@ -3,58 +3,171 @@
  * (ArmoryWallIsland imports this file lazily, so it is its own small chunk).
  *
  * It never re-renders anything. The ring is server-rendered markup; this
- * writes one custom property (--spin) on one element per frame while the
- * ring is moving, and nothing at all when it is still or off screen.
+ * writes one property on one element per frame while the ring is moving —
+ * the ring's own transform, rotateY(turn) — and nothing at all when it is
+ * still or off screen.
+ *
+ * WHAT A FRAME COSTS. The ring used to turn by an inherited custom property
+ * that each plaque also shaded itself from with CSS trig: every frame of a
+ * turn restyled ~285 elements and repainted the plaques it darkened (~390
+ * raster tasks for one drag). Writing the transform itself restyles the
+ * ring and next to nothing else (1–4 elements measured; a registered,
+ * non-inherited custom property still cost 63), and it is a transform on a
+ * layer the compositor already holds: no layout, no paint. The light and the shadow belong to the hall, not the plaques
+ * (wall.css): they stay where the lantern is and the plaques turn through
+ * them, which is how light behaves, and costs nothing per frame.
+ *
+ * ONE LAYER PER PLAQUE. Each plaque's back (its seal) is drawn inside the
+ * plaque, mirrored, and shown only while the plaque faces away. Which ones
+ * face away is worked out each frame from the same numbers the CSS places
+ * them with (see `measure`): exact, so the swap happens while a plaque is
+ * edge-on and can't be seen. Only the one or two plaques that crossed get
+ * their attribute flipped.
  *
  *  - Drag / swipe: horizontal only. The stage is `touch-action: pan-y`, so a
  *    vertical swipe still scrolls the page; the browser cancels our pointer
  *    when that happens. A drag of one plaque's width turns one plaque.
- *  - Throw: release with speed and it coasts, then settles on a plaque.
+ *    Pressing on a moving ring catches it.
+ *  - Throw: release with speed and it coasts, then settles on a plaque. As a
+ *    plaque comes to rest at the front, a gloss crosses it (data-lit).
  *  - Keys: ←/→ (and Home/End) on a plaque move focus to its neighbour and
  *    turn it to the front. Only the front plaque is in the Tab order (roving
- *    tabindex), so the ring is one stop for a keyboard, not thirteen.
- *  - Buttons and the status line: the visible way to turn it, announced.
+ *    tabindex), so the ring is one stop for a keyboard, not twenty.
+ *  - Buttons, the caption and the status line: the visible way to turn it,
+ *    the front plaque's name in big type as it turns, and a polite live line
+ *    that says where it stopped (never while it is only passing through).
+ *  - Chips (ArmoryWallIsland): `find(group)` turns to the first plaque of a
+ *    kind; while a kind is chosen, the arrows step between its plaques.
  *  - Trackpads: a sideways two-finger swipe turns it; vertical wheel is left
  *    alone, so the page scroll is never taken over.
- *  - A tap that did not move is a click: the plaque's link opens.
+ *  - A tap that did not move is a click: the plaque's link opens. A tap on a
+ *    plaque seen from behind turns it round instead.
+ *  - Entrance: the server parks the ring three plaques short of the first
+ *    (ArmoryWall). The first time it is properly in view it turns that last
+ *    short way and settles on the first plaque — once, and anything the
+ *    reader does first cancels it.
  */
-export function drive(root: HTMLElement): () => void {
+
+export type WallDrive = {
+  /** Turn to the first plaque of a group ('all': the first plaque) and say so. */
+  find: (group: string, lead: string) => void;
+  /** Take every listener off and leave the ring where it stands. */
+  stop: () => void;
+};
+
+const RAD = Math.PI / 180;
+const pad = (n: number) => String(n).padStart(2, '0');
+const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
+/** A settle with a whisper of overshoot, for the entrance. */
+const easeSettle = (p: number) => {
+  const s = 0.9;
+  const q = p - 1;
+  return 1 + (s + 1) * q * q * q + s * q * q;
+};
+
+type Tween = {
+  from: number;
+  to: number;
+  t0: number;
+  dur: number;
+  ease: (p: number) => number;
+};
+
+export function drive(root: HTMLElement): WallDrive {
   const stage = root.querySelector<HTMLElement>('.bt-wall-stage');
   const ring = root.querySelector<HTMLElement>('.bt-ring');
-  if (!stage || !ring) return () => {};
-  const panels = Array.from(ring.querySelectorAll<HTMLElement>('.bt-panel'));
-  const links = panels.map((p) => p.querySelector<HTMLAnchorElement>('.bt-panel-face'));
-  const names = panels.map(
-    (p) => p.querySelector('.bt-panel-name')?.textContent?.trim() ?? '',
-  );
-  const status = root.querySelector<HTMLElement>('[data-wall-status]');
-  const prev = root.querySelector<HTMLButtonElement>('[data-wall-prev]');
-  const next = root.querySelector<HTMLButtonElement>('[data-wall-next]');
+  const panels = ring
+    ? Array.from(ring.querySelectorAll<HTMLElement>('.bt-panel'))
+    : [];
   const n = panels.length;
-  if (!n) return () => {};
-  const step = 360 / n;
+  if (!stage || !ring || !n) return { find() {}, stop() {} };
 
-  let spin = 0; // degrees; any value, rotateY does not care about turns
+  const links = panels.map((p) =>
+    p.querySelector<HTMLAnchorElement>('.bt-panel-face')
+  );
+  const read = (p: HTMLElement, sel: string) =>
+    p.querySelector(sel)?.textContent?.trim() ?? '';
+  const names = panels.map((p) => read(p, '.bt-panel-name'));
+  const kinds = panels.map((p) => read(p, '.bt-panel-kind'));
+  const q = <T extends HTMLElement = HTMLElement>(sel: string) =>
+    root.querySelector<T>(sel);
+  const status = q('[data-wall-status]');
+  const capKind = q('[data-wall-kind]');
+  const capName = q('[data-wall-name]');
+  const capAt = q('[data-wall-at]');
+  const controls = q('.bt-wall-controls');
+  const prev = q<HTMLButtonElement>('[data-wall-prev]');
+  const next = q<HTMLButtonElement>('[data-wall-next]');
+  const step = 360 / n;
+  const mod = (i: number) => ((i % n) + n) % n;
+
+  // Where the server left it (--park plaques short of the first, see
+  // ArmoryWall), or wherever a previous run of this file stopped.
+  const park = parseFloat(root.style.getPropertyValue('--park')) || 0;
+  let spin = root.dataset.spin ? parseFloat(root.dataset.spin) : park * step;
   let vel = 0; // degrees per second, while coasting
-  let target: number | null = null; // where it is settling
-  let tween: { from: number; to: number; t0: number; dur: number } | null = null;
+  let target: number | null = null; // where it is settling after a drag
+  let tween: Tween | null = null; // a turn to a chosen plaque
+  let dest = -1; // the plaque a turn is heading to (button presses stack on it)
   let raf = 0;
   let last = 0;
-  let front = -1;
-  let onScreen = true;
+  let onScreen = false;
+  let front = panels.findIndex((p) => p.hasAttribute('data-front'));
+  const away = panels.map((p) => p.hasAttribute('data-away'));
+  let lit = -1;
+  let said = front; // what the status line last said
+  let intro: 'parked' | 'playing' | 'done' = root.hasAttribute('data-park')
+    ? 'parked'
+    : 'done';
+  let introIo: IntersectionObserver | null = null;
 
-  const degPerPx = () => {
-    const w = panels[0].offsetWidth || 200;
-    const gap = parseFloat(getComputedStyle(root).getPropertyValue('--gap')) || 20;
-    return step / (w + gap);
+  // ── Geometry, read once (and on resize) — never inside a frame ────────────
+  // A plaque faces away when its normal points away from the eye. With the
+  // ring placed as wall.css places it (translateZ(-r) rotateX(tilt)
+  // rotateY(spin); each plaque rotateY(i·step) translateZ(r)) and seen from
+  // `perspective` P at the stage's perspective-origin, the ring's centre yO
+  // below the eye, the dot product of the two works out to
+  //   cos(a) · (yO·sin(tilt) + (P + r)·cos(tilt)) − r,
+  // so a plaque at angle a faces away exactly when cos(a) < `edge`.
+  let dpp = 0.1; // degrees of turn per pixel of drag
+  let edge = 0.35;
+  const measure = () => {
+    const cs = getComputedStyle(root);
+    const ss = getComputedStyle(stage);
+    const pw = panels[0].offsetWidth || 200;
+    const gap = parseFloat(cs.getPropertyValue('--gap')) || 20;
+    const tilt = (parseFloat(cs.getPropertyValue('--tilt')) || 0) * RAD;
+    const r = pw / 2 / Math.sin(Math.PI / n) + gap;
+    const P = parseFloat(ss.perspective) || 1500;
+    const eye = parseFloat(ss.perspectiveOrigin.split(' ')[1]) || 0;
+    const yO = ring.offsetTop + ring.offsetHeight / 2 - eye;
+    dpp = step / (pw + gap);
+    edge = r / (yO * Math.sin(tilt) + (P + r) * Math.cos(tilt));
   };
-  let dpp = degPerPx();
 
+  const frontOf = (s: number) => mod(Math.round(-s / step));
   const nearest = (s: number) => Math.round(s / step) * step;
-  const frontOf = (s: number) => (((Math.round(-s / step) % n) + n) % n);
+
+  const caption = (i: number) => {
+    // New text nodes, not edits: the caption's boxes are fixed (wall.css),
+    // so a longer name never moves anything around it.
+    if (capName) {
+      capName.textContent = names[i];
+      capName.toggleAttribute('data-long', names[i].length > 22);
+    }
+    if (capKind) capKind.textContent = kinds[i];
+    if (capAt) capAt.textContent = pad(i + 1);
+  };
 
   const paint = () => {
-    ring.style.setProperty('--spin', `${spin.toFixed(3)}deg`);
+    ring.style.transform = `rotateY(${spin.toFixed(2)}deg)`;
+    for (let i = 0; i < n; i++) {
+      const a = Math.cos((spin + i * step) * RAD) < edge;
+      if (a !== away[i]) {
+        away[i] = a;
+        panels[i].toggleAttribute('data-away', a);
+      }
+    }
     const f = frontOf(spin);
     if (f !== front) {
       if (front >= 0) {
@@ -66,26 +179,68 @@ export function drive(root: HTMLElement): () => void {
       const cur = links[f];
       if (cur) cur.tabIndex = 0;
       front = f;
+      caption(f);
     }
   };
+  let paintRaf = 0;
+  const schedulePaint = () => {
+    if (!paintRaf)
+      paintRaf = requestAnimationFrame(() => {
+        paintRaf = 0;
+        paint();
+      });
+  };
 
-  const mod = (i: number) => ((i % n) + n) % n;
-  let said = -1;
-  /** Write the status line. `quiet` keeps a screen reader from hearing it
-   *  twice when focus has already moved to the plaque and said its name. */
-  const announce = (i: number, quiet = false) => {
+  /** Write the status line: where the ring is going, said once. */
+  const announce = (i: number, lead = '') => {
     if (!status) return;
     const j = mod(i);
     said = j;
-    if (quiet) status.setAttribute('aria-live', 'off');
-    status.textContent = `${j + 1} of ${n} · `;
-    const b = document.createElement('b');
-    b.textContent = names[j];
-    status.append(b);
-    if (quiet) requestAnimationFrame(() => status.setAttribute('aria-live', 'polite'));
+    status.textContent = `${lead}${names[j]}, ${kinds[j].toLowerCase()}. ${j + 1} of ${n}.`;
   };
 
-  const ease = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  // While the ring turns, the lantern holds still (wall.css), the way Kiru
+  // holds still while the page scrolls: its sway would otherwise be ticked
+  // on the main thread every frame the ring is producing.
+  let turning = false;
+  const setTurning = (on: boolean) => {
+    if (on === turning) return;
+    turning = on;
+    root.toggleAttribute('data-turning', on);
+  };
+
+  // The gloss that crosses a plaque as it comes to rest at the front.
+  const unlight = () => {
+    if (lit >= 0) panels[lit].removeAttribute('data-lit');
+    lit = -1;
+  };
+  const light = (i: number) => {
+    unlight();
+    panels[i].setAttribute('data-lit', '');
+    lit = i;
+  };
+
+  const endIntro = () => {
+    if (intro === 'done') return;
+    intro = 'done';
+    root.removeAttribute('data-park');
+    introIo?.disconnect();
+    introIo = null;
+  };
+
+  const rest = () => {
+    // Keep the number small; a whole turn changes nothing on screen.
+    spin = ((spin % 360) + 360) % 360;
+    if (spin > 180) spin -= 360;
+    paint();
+    dest = -1;
+    setTurning(false);
+    light(front);
+    if (intro === 'playing') endIntro();
+    // After a drag, a throw or a swipe, say where it stopped. (Turns that
+    // focus led have already been heard: the reader read the plaque.)
+    if (front !== said) announce(front);
+  };
 
   const tick = (now: number) => {
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
@@ -93,7 +248,7 @@ export function drive(root: HTMLElement): () => void {
     let done = false;
     if (tween) {
       const p = Math.min(1, (now - tween.t0) / tween.dur);
-      spin = tween.from + (tween.to - tween.from) * ease(p);
+      spin = tween.from + (tween.to - tween.from) * tween.ease(p);
       if (p >= 1) {
         tween = null;
         done = true;
@@ -112,45 +267,83 @@ export function drive(root: HTMLElement): () => void {
       }
     }
     paint();
-    if (done || !onScreen || document.hidden) {
+    if (done) {
       raf = 0;
-      if (done) {
-        // Keep the number small; a whole turn changes nothing on screen.
-        spin = ((spin % 360) + 360) % 360;
-        if (spin > 180) spin -= 360;
-        paint();
-        if (front !== said) announce(front, ring.contains(document.activeElement));
-      }
+      rest();
+      return;
+    }
+    if (!onScreen || document.hidden) {
+      raf = 0;
       return;
     }
     raf = requestAnimationFrame(tick);
   };
   const run = () => {
-    if (!raf) {
+    unlight();
+    setTurning(true);
+    if (!raf && onScreen && !document.hidden) {
       last = performance.now();
       raf = requestAnimationFrame(tick);
     }
   };
-  const stop = () => {
+  const halt = () => {
     if (raf) cancelAnimationFrame(raf);
     raf = 0;
+    tween = null;
+    target = null;
+    vel = 0;
+    dest = -1;
   };
+  const moving = () =>
+    raf !== 0 || tween !== null || target !== null || Math.abs(vel) > 12;
 
   /** Turn so plaque i is at the front, the short way round. */
   const goTo = (i: number, say = false) => {
-    const base = -mod(i) * step;
-    const k = Math.round((spin - base) / 360);
-    tween = null;
-    vel = 0;
-    target = base + 360 * k;
+    const j = mod(i);
+    const base = -j * step;
+    const to = base + 360 * Math.round((spin - base) / 360);
+    endIntro();
+    halt();
+    dest = j;
+    tween = {
+      from: spin,
+      to,
+      t0: performance.now(),
+      dur: Math.min(1100, 340 + Math.abs(to - spin) * 4.2),
+      ease: easeOut,
+    };
     run();
     // Announce where it is going now, not after the turn.
-    if (say) announce(i);
+    if (say) announce(j);
   };
-  const goBy = (d: number, say = false) => {
-    const base = target ?? nearest(spin);
-    const idx = frontOf(base);
-    goTo(idx + d, say);
+
+  // While a chip has picked a kind, the others carry data-out (the island
+  // sets it) and the arrows step between the plaques that are left.
+  const inSet = (i: number) => !panels[i].hasAttribute('data-out');
+  const stepFrom = (i: number, d: 1 | -1) => {
+    for (let k = 1; k <= n; k++) {
+      const j = mod(i + d * k);
+      if (inSet(j)) return j;
+    }
+    return mod(i + d);
+  };
+  const firstIn = () =>
+    Math.max(
+      0,
+      panels.findIndex((_, i) => inSet(i))
+    );
+  const lastIn = () => {
+    for (let i = n - 1; i >= 0; i--) if (inSet(i)) return i;
+    return n - 1;
+  };
+  const at = () => (dest >= 0 ? dest : front);
+
+  const find = (group: string, lead: string) => {
+    const first =
+      group === 'all' ? 0 : panels.findIndex((p) => p.dataset.group === group);
+    if (first < 0) return;
+    goTo(first);
+    announce(first, lead);
   };
 
   // ── Pointer ───────────────────────────────────────────────────────────────
@@ -159,7 +352,18 @@ export function drive(root: HTMLElement): () => void {
   let lastX = 0;
   let lastT = 0;
   let dragging = false;
+  let caught = false; // this press stopped a moving ring
   let suppressClick = false;
+  let clearSuppress = 0;
+  const swallowClick = () => {
+    // The click that follows is not a press. Cleared again shortly, so a
+    // keyboard Enter later on is never swallowed.
+    suppressClick = true;
+    window.clearTimeout(clearSuppress);
+    clearSuppress = window.setTimeout(() => (suppressClick = false), 80);
+  };
+  const indexOfLink = (el: EventTarget | null) =>
+    el ? links.findIndex((l) => l !== null && l === el) : -1;
 
   const onDown = (e: PointerEvent) => {
     if (e.button !== 0 || pid !== null) return;
@@ -168,6 +372,10 @@ export function drive(root: HTMLElement): () => void {
     lastT = e.timeStamp;
     dragging = false;
     suppressClick = false;
+    endIntro();
+    // A press on a moving ring catches it, the way a hand would.
+    caught = moving();
+    if (caught) halt();
   };
   const onMove = (e: PointerEvent) => {
     if (e.pointerId !== pid) return;
@@ -180,11 +388,9 @@ export function drive(root: HTMLElement): () => void {
         /* pointer already gone */
       }
       root.classList.add('is-dragging');
-      tween = null;
-      target = null;
-      vel = 0;
-      stop();
-      dpp = degPerPx();
+      halt();
+      unlight();
+      setTurning(true);
     }
     const dx = e.clientX - lastX;
     const dt = Math.max(0.001, (e.timeStamp - lastT) / 1000);
@@ -192,22 +398,36 @@ export function drive(root: HTMLElement): () => void {
     vel = 0.75 * ((dx * dpp) / dt) + 0.25 * vel;
     lastX = e.clientX;
     lastT = e.timeStamp;
-    paint();
+    schedulePaint();
   };
   const onUp = (e: PointerEvent) => {
     if (e.pointerId !== pid) return;
     pid = null;
-    if (!dragging) return;
-    dragging = false;
-    // The click that follows a drag is not a press. Cleared again shortly, so
-    // a keyboard Enter later on is never swallowed.
-    suppressClick = true;
-    window.setTimeout(() => (suppressClick = false), 80);
-    root.classList.remove('is-dragging');
-    // A pause before letting go means no throw.
-    if (e.timeStamp - lastT > 90) vel = 0;
-    vel = Math.max(-900, Math.min(900, vel));
-    run();
+    if (dragging) {
+      dragging = false;
+      swallowClick();
+      root.classList.remove('is-dragging');
+      // A pause before letting go means no throw.
+      if (e.timeStamp - lastT > 90) vel = 0;
+      vel = Math.max(-900, Math.min(900, vel));
+      run();
+      return;
+    }
+    if (caught) {
+      // The press stopped the ring; it was not meant to open anything.
+      swallowClick();
+      run();
+      return;
+    }
+    // A tap on a plaque seen from behind turns it round rather than opening
+    // something the reader can't see yet. (Pointers only: a keyboard or a
+    // screen reader activating the link always opens it.)
+    const face = (e.target as Element | null)?.closest?.('.bt-panel-face');
+    const i = indexOfLink(face ?? null);
+    if (i >= 0 && away[i]) {
+      swallowClick();
+      goTo(i, true);
+    }
   };
   const onCancel = (e: PointerEvent) => {
     if (e.pointerId !== pid) return;
@@ -215,8 +435,8 @@ export function drive(root: HTMLElement): () => void {
     if (dragging) {
       dragging = false;
       root.classList.remove('is-dragging');
-      run();
     }
+    run();
   };
   const onClickCapture = (e: MouseEvent) => {
     if (suppressClick) {
@@ -230,59 +450,105 @@ export function drive(root: HTMLElement): () => void {
   // ── Trackpad: sideways swipes only ────────────────────────────────────────
   let wheelIdle = 0;
   const onWheel = (e: WheelEvent) => {
-    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 1) return;
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 1) {
+      return;
+    }
     e.preventDefault();
-    tween = null;
-    target = null;
-    vel = 0;
-    stop();
-    spin -= e.deltaX * dpp;
-    paint();
+    endIntro();
+    halt();
+    unlight();
+    setTurning(true);
+    spin -= (e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX) * dpp;
+    schedulePaint();
     window.clearTimeout(wheelIdle);
     wheelIdle = window.setTimeout(run, 120);
   };
 
   // ── Keys and focus ────────────────────────────────────────────────────────
-  const indexOfLink = (el: EventTarget | null) =>
-    links.findIndex((l) => l !== null && l === el);
   const onKey = (e: KeyboardEvent) => {
     const i = indexOfLink(e.target);
     if (i < 0) return;
-    let to: number | null = null;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') to = i + 1;
-    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') to = i - 1;
-    else if (e.key === 'Home') to = 0;
-    else if (e.key === 'End') to = n - 1;
-    if (to === null) return;
+    let to = -1;
+    if (e.key === 'ArrowRight') to = stepFrom(i, 1);
+    else if (e.key === 'ArrowLeft') to = stepFrom(i, -1);
+    else if (e.key === 'Home') to = firstIn();
+    else if (e.key === 'End') to = lastIn();
+    if (to < 0) return;
     e.preventDefault();
-    const j = ((to % n) + n) % n;
-    links[j]?.focus({ preventScroll: true });
+    links[to]?.focus({ preventScroll: true });
   };
   const onFocusIn = (e: FocusEvent) => {
+    // Keyboard (or screen reader) focus turns the plaque to the front. A
+    // pointer's focus doesn't: the press itself decides what happens.
     const i = indexOfLink(e.target);
-    if (i >= 0 && !dragging) goTo(i);
+    if (i >= 0 && pid === null && !dragging) {
+      goTo(i);
+      said = i; // a screen reader says the focused plaque's name itself
+    }
   };
 
-  const onPrev = () => goBy(-1, true);
-  const onNext = () => goBy(1, true);
+  const onPrev = () => goTo(stepFrom(at(), -1), true);
+  const onNext = () => goTo(stepFrom(at(), 1), true);
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   const io = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         onScreen = entry.isIntersecting;
-        if (!onScreen) stop();
-        else if (target !== null || tween || Math.abs(vel) > 12) run();
+        // The lantern sways only while the hall is on screen (wall.css).
+        root.toggleAttribute('data-awake', onScreen);
+        if (!onScreen) {
+          if (raf) cancelAnimationFrame(raf);
+          raf = 0;
+        } else if (tween || target !== null || Math.abs(vel) > 12) run();
       }
     },
-    { rootMargin: '60px' },
+    { rootMargin: '60px' }
   );
   io.observe(stage);
+
+  // The entrance waits until the caption under the ring is clear of the
+  // bottom of the screen (and of a phone's tab bar), so the front plaque is
+  // in full view when it plays.
+  if (intro === 'parked') {
+    introIo = new IntersectionObserver(
+      (entries) => {
+        if (intro !== 'parked' || !entries.some((e) => e.isIntersecting)) {
+          return;
+        }
+        introIo?.disconnect();
+        introIo = null;
+        intro = 'playing';
+        said = 0;
+        dest = 0;
+        tween = {
+          from: spin,
+          to: 360 * Math.round(spin / 360), // the first plaque
+          t0: performance.now(),
+          dur: 1700,
+          ease: easeSettle,
+        };
+        run();
+      },
+      { rootMargin: '0px 0px -15% 0px' }
+    );
+    introIo.observe(controls ?? stage);
+  }
+
   const onVisibility = () => {
-    if (document.hidden) stop();
+    if (document.hidden) {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    } else if (tween || target !== null) run();
   };
+  let resizeRaf = 0;
   const onResize = () => {
-    dpp = degPerPx();
+    if (!resizeRaf)
+      resizeRaf = requestAnimationFrame(() => {
+        resizeRaf = 0;
+        measure();
+        paint();
+      });
   };
 
   stage.addEventListener('pointerdown', onDown);
@@ -300,62 +566,56 @@ export function drive(root: HTMLElement): () => void {
   document.addEventListener('visibilitychange', onVisibility);
   window.addEventListener('resize', onResize, { passive: true });
 
+  measure();
   // Roving tab stop: only the front plaque is tabbable.
-  for (const l of links) if (l) l.tabIndex = -1;
+  links.forEach((l, i) => {
+    if (l) l.tabIndex = i === front ? 0 : -1;
+  });
   paint();
-  announce(front, true);
   root.setAttribute('data-ready', '');
-  if (prev) prev.disabled = false;
-  if (next) next.disabled = false;
   // Focus may have arrived before this did (a Tab into the ring scrolls it
   // into view, which is what loads this file). Turn to it now.
   const already = indexOfLink(document.activeElement);
-  if (already > 0) goTo(already);
+  if (already >= 0 && already !== front) {
+    goTo(already);
+    said = already;
+  }
 
-  // One turn on arrival, so it reads as a ring and not a row. Ends where it
-  // started; anything the reader does interrupts it.
-  let introDone = false;
-  const intro = new IntersectionObserver(
-    (entries) => {
-      if (introDone || !entries.some((e) => e.isIntersecting)) return;
-      introDone = true;
-      intro.disconnect();
-      // Never spin under someone who is already using it.
-      if (pid !== null || dragging || target !== null || ring.contains(document.activeElement)) {
-        return;
-      }
-      tween = { from: spin + 360, to: spin, t0: performance.now(), dur: 2200 };
-      run();
+  return {
+    find,
+    stop() {
+      if (raf) cancelAnimationFrame(raf);
+      if (paintRaf) cancelAnimationFrame(paintRaf);
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+      raf = paintRaf = resizeRaf = 0;
+      io.disconnect();
+      introIo?.disconnect();
+      window.clearTimeout(wheelIdle);
+      window.clearTimeout(clearSuppress);
+      stage.removeEventListener('pointerdown', onDown);
+      stage.removeEventListener('pointermove', onMove);
+      stage.removeEventListener('pointerup', onUp);
+      stage.removeEventListener('pointercancel', onCancel);
+      stage.removeEventListener('lostpointercapture', onCancel);
+      stage.removeEventListener('wheel', onWheel);
+      stage.removeEventListener('dragstart', onDragStart);
+      ring.removeEventListener('click', onClickCapture, true);
+      ring.removeEventListener('keydown', onKey);
+      ring.removeEventListener('focusin', onFocusIn);
+      prev?.removeEventListener('click', onPrev);
+      next?.removeEventListener('click', onNext);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('resize', onResize);
+      for (const l of links) l?.removeAttribute('tabindex');
+      unlight();
+      root.removeAttribute('data-ready');
+      root.removeAttribute('data-awake');
+      root.removeAttribute('data-turning');
+      root.classList.remove('is-dragging');
+      // Hand the ring back to the CSS (under reduced motion it lies flat),
+      // remembering where it stood so a later run carries on from there.
+      root.dataset.spin = String(spin);
+      ring.style.removeProperty('transform');
     },
-    { threshold: 0.45 },
-  );
-  intro.observe(stage);
-
-  return () => {
-    stop();
-    io.disconnect();
-    intro.disconnect();
-    window.clearTimeout(wheelIdle);
-    stage.removeEventListener('pointerdown', onDown);
-    stage.removeEventListener('pointermove', onMove);
-    stage.removeEventListener('pointerup', onUp);
-    stage.removeEventListener('pointercancel', onCancel);
-    stage.removeEventListener('lostpointercapture', onCancel);
-    stage.removeEventListener('wheel', onWheel);
-    stage.removeEventListener('dragstart', onDragStart);
-    ring.removeEventListener('click', onClickCapture, true);
-    ring.removeEventListener('keydown', onKey);
-    ring.removeEventListener('focusin', onFocusIn);
-    prev?.removeEventListener('click', onPrev);
-    next?.removeEventListener('click', onNext);
-    document.removeEventListener('visibilitychange', onVisibility);
-    window.removeEventListener('resize', onResize);
-    for (const l of links) if (l) l.removeAttribute('tabindex');
-    for (const p of panels) p.removeAttribute('data-front');
-    ring.style.removeProperty('--spin');
-    root.removeAttribute('data-ready');
-    root.classList.remove('is-dragging');
-    if (prev) prev.disabled = true;
-    if (next) next.disabled = true;
   };
 }

@@ -1,0 +1,767 @@
+/*
+  The games (#games) — the dojo's arcade back room, after dark. Prefix wk-gm-.
+
+  The room is NIGHT IN BOTH THEMES, like the footer and the Arcade: it is an
+  object rather than a surface, so its colours are fixed, and it redefines the
+  site's night tokens on itself (.wk-gm-room). Anything shared inside it — the
+  kicker, the brush stroke, the focus ring, Kiru's moonlit outline — wears its
+  night dress whatever the theme toggle says, and every text colour in it is a
+  fixed light ink.
+
+  By day, walking in is a change of light, so the doorway is drawn rather than
+  cut: a ranma (the latticed transom over a Japanese doorway) at the top, the
+  room's neon showing through its asanoha lattice and spilling onto the paper
+  above; a wooden sill at the bottom, the same light falling out onto the paper
+  below. Both spills are painted inside the section's own box, so the
+  section's paint containment (content-visibility) never clips them.
+
+  Contrast, worst case on the room (#0a0b18), the screens' plates (lightest
+  #191c36) and the plaque (#10122a), all >= 4.5:1: ink #eceefa 14.4 ·
+  secondary #b4b8d2 8.5 · the arcade inks at night, red #f87171 6.0 · yellow
+  #fde047 12.6 · blue #60a5fa 6.6 · the focus ring #ff5b3d 5.4. The bright
+  arcade colours (--wk-gm-red/yellow/blue) are decorative fills and glows
+  only, never text (DESIGN.md, "The ink flip").
+
+  Motion: the two rows slide on scroll timelines (compositor, no JavaScript);
+  the sign flickers rarely while Kiru is on screen. Nothing else moves. Reduced
+  motion and browsers without scroll timelines get swipe rails instead.
+*/
+
+/* ── The section: the doorway in, the room, the sill out ───────────────── */
+.wk-gm {
+  /* The arcade colours: fills and glows only (DESIGN.md mirrors these). */
+  --wk-gm-red: #ef4444;
+  --wk-gm-yellow: #facc15;
+  --wk-gm-blue: #3b82f6;
+  /* Paper above the transom and below the sill, where the light spills. */
+  --wk-gm-bleed: 5rem;
+  --wk-gm-bleed-b: 3.5rem;
+  /* The transom: lattice height, then the beam under it. */
+  --wk-gm-ranma: 2.6rem;
+  --wk-gm-beam: 0.7rem;
+
+  position: relative;
+  isolation: isolate;
+  padding-top: var(--wk-gm-bleed);
+  padding-bottom: var(--wk-gm-bleed-b);
+  /* Well below the fold: skip its layout and paint until it is near. The
+     placeholder is the room's measured height at each width (and `auto`
+     keeps the real one once it has rendered), so nothing shifts. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1300px;
+}
+@media (min-width: 40rem) {
+  .wk-gm {
+    contain-intrinsic-size: auto 1320px;
+  }
+}
+@media (min-width: 64rem) {
+  .wk-gm {
+    --wk-gm-bleed: 6.5rem;
+    --wk-gm-bleed-b: 4rem;
+    --wk-gm-ranma: 3.25rem;
+    --wk-gm-beam: 0.85rem;
+    contain-intrinsic-size: auto 1448px;
+  }
+}
+
+/* The room's light, spilling up through the transom onto the paper above,
+   and out over the sill onto the paper below. Low enough to read as a glow
+   on washi by day and as coloured haze by night. Painted once. */
+.wk-gm::before,
+.wk-gm::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+.wk-gm::before {
+  top: 0;
+  height: var(--wk-gm-bleed);
+  background:
+    radial-gradient(
+      26% 100% at 16% 100%,
+      rgba(59, 130, 246, 0.16),
+      transparent 78%
+    ),
+    radial-gradient(
+      30% 115% at 47% 100%,
+      rgba(239, 68, 68, 0.17),
+      transparent 78%
+    ),
+    radial-gradient(
+      26% 100% at 78% 100%,
+      rgba(250, 204, 21, 0.2),
+      transparent 78%
+    );
+}
+.wk-gm::after {
+  bottom: 0;
+  height: var(--wk-gm-bleed-b);
+  background:
+    radial-gradient(
+      30% 100% at 24% 0%,
+      rgba(250, 204, 21, 0.2),
+      transparent 78%
+    ),
+    radial-gradient(
+      34% 110% at 62% 0%,
+      rgba(239, 68, 68, 0.16),
+      transparent 78%
+    ),
+    radial-gradient(
+      24% 100% at 90% 0%,
+      rgba(59, 130, 246, 0.16),
+      transparent 78%
+    );
+}
+
+/* ── The ranma: neon seen through an asanoha lattice ──────────────────────
+   The lattice is one small SVG tile (triangles split at their centres: the
+   hemp-leaf pattern of kumiko joinery), repeated along the beam and scaled
+   to its height. Behind it is the room itself: dark, lit by its screens in
+   the arcade colours. A heavy beam (the kamoi) closes it underneath and
+   throws a shadow into the room. Static: painted once. */
+.wk-gm-ranma {
+  position: relative;
+  height: calc(var(--wk-gm-ranma) + var(--wk-gm-beam));
+  border-top: 4px solid #22170f;
+  background:
+    linear-gradient(180deg, #4a3423 0%, #2e2016 38%, #1a120c 100%) 0 100% / 100%
+      var(--wk-gm-beam) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 41.569'%3E%3Cpath d='M0 0H24M0 20.785H24M0 41.569H24M0 0L24 41.569M24 0L0 41.569M0 0L12 6.928L24 0M12 6.928V20.785M0 0V13.856L12 20.785L24 13.856V0M0 41.569V27.713L12 20.785L24 27.713V41.569M0 41.569L12 34.641L24 41.569M12 34.641V20.785' fill='none' stroke='%231f150e' stroke-width='1.9'/%3E%3C/svg%3E")
+      0 0 / auto var(--wk-gm-ranma) repeat-x,
+    radial-gradient(
+      20% 120% at 16% 70%,
+      rgba(96, 165, 250, 0.95),
+      transparent 72%
+    ),
+    radial-gradient(
+      24% 130% at 47% 70%,
+      rgba(248, 113, 113, 0.95),
+      transparent 72%
+    ),
+    radial-gradient(
+      20% 120% at 78% 70%,
+      rgba(253, 224, 71, 0.85),
+      transparent 72%
+    ),
+    radial-gradient(
+      14% 110% at 99% 70%,
+      rgba(248, 113, 113, 0.7),
+      transparent 72%
+    ),
+    linear-gradient(180deg, #3b2a4e, #241a3a);
+}
+/* The beam's lit top edge. */
+.wk-gm-ranma::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--wk-gm-beam) - 1px);
+  height: 1px;
+  background: rgba(255, 214, 160, 0.22);
+}
+
+/* ── The room ───────────────────────────────────────────────────────────── */
+.wk-gm-room {
+  /* The site's night tokens, scoped. Values mirror :root[data-theme='dark']
+     in globals.css (secondary text is the footer's brighter #b4b8d2). */
+  color-scheme: dark;
+  --sd-bg: #090b16;
+  --sd-bg-2: #0e1122;
+  --sd-surface: #11152a;
+  --sd-surface-elevated: #1a1f3a;
+  --sd-fill: rgba(236, 238, 250, 0.07);
+  --sd-accent: #9bb0ff;
+  --sd-accent-hover: #c3d0ff;
+  --sd-text-primary: #eceefa;
+  --sd-text-secondary: #b4b8d2;
+  --sd-border: rgba(236, 238, 250, 0.12);
+  --sd-border-strong: rgba(236, 238, 250, 0.24);
+  --sd-pen: #ff5b3d;
+  --sd-pen-ink: #ff8166;
+  --sd-gold: #ffcf70;
+  --sd-gold-ink: #ffcf70;
+  --sd-card-shadow: rgba(0, 0, 0, 0.75);
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+  --arcade-red-ink: #f87171;
+  --arcade-yellow-ink: #fde047;
+  --arcade-blue-ink: #60a5fa;
+
+  position: relative;
+  color: var(--sd-text-primary);
+  background-color: #0a0b18;
+  /* The sign's red on the wall behind it, the screens' blue from the left,
+     a warm pool over the plaque at the end; the wall itself is dark slats.
+     Painted once; nothing here moves. */
+  background-image:
+    radial-gradient(
+      34rem 26rem at 90% 2rem,
+      rgba(239, 68, 68, 0.15),
+      transparent 70%
+    ),
+    radial-gradient(
+      40rem 30rem at 4% 38%,
+      rgba(59, 130, 246, 0.11),
+      transparent 70%
+    ),
+    radial-gradient(
+      46rem 22rem at 50% 100%,
+      rgba(250, 204, 21, 0.07),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(236, 238, 250, 0.022) 0 1px,
+      transparent 1px 2.25rem
+    );
+  /* The beam's shadow, falling into the room. */
+  box-shadow: inset 0 18px 22px -18px rgba(0, 0, 0, 0.85);
+}
+
+/* ── The head: the section header, and the sign with Kiru on it ────────── */
+.wk-gm-head {
+  --wk-gm-head-pt: 4.25rem;
+  --wk-gm-sign-w: 3.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--wk-gm-sign-w);
+  column-gap: 1rem;
+  align-items: start;
+  padding-top: var(--wk-gm-head-pt);
+}
+@media (min-width: 40rem) {
+  .wk-gm-head {
+    --wk-gm-head-pt: 5.25rem;
+    --wk-gm-sign-w: 4.5rem;
+    column-gap: 2rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wk-gm-head {
+    --wk-gm-head-pt: 6.25rem;
+    --wk-gm-sign-w: 5.5rem;
+    column-gap: 3rem;
+    padding-right: 1.5rem;
+  }
+}
+.wk-gm-copy {
+  min-width: 0;
+}
+/* Where the sign and Kiru stand taller than the header, the header sits at
+   their foot, right over the screens it introduces, and the height above it
+   is the room's own: dark wall, under the lit transom. */
+@media (min-width: 40rem) {
+  .wk-gm-copy {
+    align-self: end;
+  }
+}
+
+/* The sign hangs high on the wall, just under the beam; Kiru stands on it. */
+.wk-gm-sign {
+  position: relative;
+  z-index: 0;
+  margin-top: calc(1.1rem - var(--wk-gm-head-pt));
+}
+/* Kiru, playing. His figure sits left of centre in the game pose's box (the
+   headband's tails fly off to the right), so the box is shifted to put his
+   feet in the middle of the sign, and lowered until his boots rest on the
+   tube along its top edge (he is painted over it). Never over text, never
+   over a tap: the whole sign is decoration, and the column is his own. */
+.wk-gm-kiru {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 136%;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0 -29.3% -6.4% -6.7%;
+  pointer-events: none;
+}
+.wk-gm-sign-box {
+  position: relative;
+  padding: 0.6rem 0.45rem;
+  border-radius: 0.6rem;
+  background:
+    radial-gradient(
+      90% 60% at 50% 50%,
+      rgba(239, 68, 68, 0.16),
+      transparent 75%
+    ),
+    linear-gradient(180deg, #15173a, #0b0c1e);
+  /* The frame is a blue tube: a pale core, the colour as glow. */
+  border: 2px solid #cfe0ff;
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.6),
+    0 0 9px rgba(59, 130, 246, 0.75),
+    0 0 26px rgba(59, 130, 246, 0.35),
+    inset 0 0 12px rgba(59, 130, 246, 0.4),
+    0 26px 40px -22px rgba(0, 0, 0, 0.9);
+}
+@media (min-width: 64rem) {
+  .wk-gm-sign-box {
+    padding: 0.9rem 0.7rem;
+    border-radius: 0.8rem;
+  }
+}
+.wk-gm-neon {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1120 / 3360;
+  overflow: visible;
+}
+/* The tubes: four strokes of one outline, faint and wide to hot and thin. */
+.wk-gm-neon use {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.wk-gm-neon .wk-gm-tube-halo {
+  fill: var(--wk-gm-red);
+  fill-opacity: 0.07;
+  stroke: var(--wk-gm-red);
+  stroke-opacity: 0.16;
+  stroke-width: 11px;
+}
+.wk-gm-neon .wk-gm-tube-glow {
+  stroke: var(--wk-gm-red);
+  stroke-opacity: 0.42;
+  stroke-width: 5.5px;
+}
+.wk-gm-neon .wk-gm-tube {
+  stroke: #ff6b5e;
+  stroke-width: 2.6px;
+}
+.wk-gm-neon .wk-gm-tube-core {
+  stroke: #ffe6e1;
+  stroke-width: 1.1px;
+}
+@media (min-width: 64rem) {
+  .wk-gm-neon .wk-gm-tube-halo {
+    stroke-width: 16px;
+  }
+  .wk-gm-neon .wk-gm-tube-glow {
+    stroke-width: 8px;
+  }
+  .wk-gm-neon .wk-gm-tube {
+    stroke-width: 3.6px;
+  }
+  .wk-gm-neon .wk-gm-tube-core {
+    stroke-width: 1.5px;
+  }
+}
+
+/* A rare flicker: two short dips in a ten-second cycle, on opacity only,
+   so at most two flashes in any second (WCAG 2.3.1 allows three). It runs
+   only while Kiru is on screen — SiteFX marks him data-live, and never does
+   under reduced motion — and holds mid-cycle while the page scrolls (his
+   data-hold), so it costs nothing off screen or during a scroll. */
+@media (prefers-reduced-motion: no-preference) {
+  .wk-gm-sign:has(.kiru[data-live]) .wk-gm-neon {
+    animation: wk-gm-flicker 10s steps(1, end) 1.5s infinite;
+  }
+  .wk-gm-sign:has(.kiru[data-hold]) .wk-gm-neon {
+    animation-play-state: paused;
+  }
+}
+@keyframes wk-gm-flicker {
+  0% {
+    opacity: 1;
+  }
+  22% {
+    opacity: 0.32;
+  }
+  22.8% {
+    opacity: 1;
+  }
+  23.9% {
+    opacity: 0.62;
+  }
+  24.6% {
+    opacity: 1;
+  }
+}
+
+/* ── The reel: two rows of screens ────────────────────────────────────────
+   Each row is ONE element that moves: a flex row of six screens, wider than
+   the screen, translated along its own view timeline. The reel is a size
+   container so a row can be moved by exactly its overflow (100cqw - 100%),
+   and it clips sideways only, so focus rings and glows above and below a
+   row are never cut off. The rows line up with the page's content column
+   at each end (--wk-gm-pad), so the first screen starts under the heading
+   and the last ends at the column's right edge. */
+.wk-gm-reel {
+  --wk-gm-w: 12rem;
+  --wk-gm-gap: 0.875rem;
+  --wk-gm-pad: max(1.25rem, calc((100cqw - 72rem) / 2 + 1.5rem));
+  position: relative;
+  z-index: 1;
+  container-type: inline-size;
+  overflow-x: clip;
+  margin-top: 2.5rem;
+}
+@media (min-width: 40rem) {
+  .wk-gm-reel {
+    --wk-gm-w: 16rem;
+    --wk-gm-gap: 1.125rem;
+    --wk-gm-pad: max(1.5rem, calc((100cqw - 72rem) / 2 + 1.5rem));
+    margin-top: 3rem;
+  }
+}
+@media (min-width: 64rem) {
+  .wk-gm-reel {
+    --wk-gm-w: 18.5rem;
+    --wk-gm-gap: 1.375rem;
+  }
+}
+
+/* The base row is a swipe rail: what reduced motion, browsers without
+   scroll timelines, and a row holding keyboard focus all get. Scroll-snap
+   stops each swipe on a screen; the block padding keeps a focus ring inside
+   the rail's scroll box. The right edge fades over the width of the rail's
+   end padding, so a screen running off it says "more this way" even where
+   scrollbars hide until used (macOS), and the last screen, which stops
+   that far from the edge, is never dimmed. */
+.wk-gm-row {
+  display: flex;
+  gap: var(--wk-gm-gap);
+  margin: 0;
+  padding: 0.5rem var(--wk-gm-pad);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--wk-gm-pad);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(236, 238, 250, 0.26) transparent;
+  -webkit-mask-image: linear-gradient(
+    to left,
+    transparent,
+    #000 var(--wk-gm-pad)
+  );
+  mask-image: linear-gradient(to left, transparent, #000 var(--wk-gm-pad));
+}
+/* A rail holding keyboard focus doesn't snap: the browser scrolls a focused
+   screen just far enough to show it (scroll-padding keeps it off the edge),
+   and mandatory snapping would pull that back to the previous stop, leaving
+   every other screen half off a phone's edge. */
+.wk-gm-row:has(:focus-visible) {
+  scroll-snap-type: none;
+}
+.wk-gm-row + .wk-gm-row {
+  margin-top: 0.75rem;
+}
+.wk-gm-row > li {
+  display: flex;
+  flex: none;
+  width: var(--wk-gm-w);
+  scroll-snap-align: start;
+}
+
+/* The reel in motion. Each row crosses its whole length while it is wholly
+   on screen (the `contain` range: from its foot clearing the bottom to its
+   top reaching the top), measured inside the bars that cover the page — the
+   tab bar on a phone, the header on a desktop — so every screen, plate and
+   all, is fully in view at some point. A row holding keyboard focus drops
+   out of this rule and becomes the rail above, so the focused screen can be
+   scrolled into view (./RailFocus): a moving row could leave it off the
+   edge. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wk-gm-row:not(:has(:focus-visible)) {
+      width: max-content;
+      overflow: visible;
+      scroll-snap-type: none;
+      -webkit-mask-image: none;
+      mask-image: none;
+      animation: wk-gm-slide linear both;
+      /* Plain view() first: a browser that can't read the insets keeps it
+         rather than dropping the timeline and freezing the row at its end. */
+      animation-timeline: view();
+      animation-timeline: view(block 0px 64px);
+      animation-range: contain 0% contain 100%;
+    }
+    .wk-gm-rev:not(:has(:focus-visible)) {
+      animation-name: wk-gm-slide-rev;
+    }
+  }
+}
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wk-gm-row:not(:has(:focus-visible)) {
+      animation-timeline: view();
+      animation-timeline: view(block 65px 0px);
+    }
+  }
+}
+@keyframes wk-gm-slide {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: calc(100cqw - 100%) 0;
+  }
+}
+@keyframes wk-gm-slide-rev {
+  from {
+    translate: calc(100cqw - 100%) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* ── A screen: a small CRT in a neon-rimmed bezel ─────────────────────────
+   The whole thing is one link. The rim is the screen's arcade colour; the
+   glass over the picture (glare, a vignette, faint scanlines) is one static
+   overlay that clears a little when you reach for the screen. */
+.wk-gm-cab {
+  --c: var(--wk-gm-red);
+  --c-ink: var(--arcade-red-ink);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.5rem 0.5rem 0.2rem;
+  border-radius: 1.1rem;
+  color: var(--sd-text-primary);
+  text-decoration: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 34%),
+    linear-gradient(180deg, #191c36 0%, #0e1022 100%);
+  border: 1px solid color-mix(in srgb, var(--c) 58%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 0 20px -6px color-mix(in srgb, var(--c) 72%, transparent),
+    inset 0 0 16px -9px color-mix(in srgb, var(--c) 70%, transparent),
+    0 26px 36px -26px rgba(0, 0, 0, 0.95);
+  transition: scale 0.2s ease;
+}
+.wk-gm-cab[data-tube='yellow'] {
+  --c: var(--wk-gm-yellow);
+  --c-ink: var(--arcade-yellow-ink);
+}
+.wk-gm-cab[data-tube='blue'] {
+  --c: var(--wk-gm-blue);
+  --c-ink: var(--arcade-blue-ink);
+}
+.wk-gm-cab:active {
+  scale: 0.97;
+}
+
+.wk-gm-screen {
+  position: relative;
+  overflow: clip;
+  aspect-ratio: 16 / 10;
+  /* A CRT's face bulges: corners a touch rounder top-to-bottom. */
+  border-radius: 0.7rem / 0.85rem;
+  background: #04050b;
+  box-shadow:
+    0 0 0 3px #07080f,
+    0 0 0 4px color-mix(in srgb, var(--c) 28%, transparent);
+}
+.wk-gm-shot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wk-gm-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0.17) 0%,
+      rgba(255, 255, 255, 0.05) 24%,
+      transparent 44%
+    ),
+    radial-gradient(
+      ellipse at 50% 46%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.52) 100%
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(3, 4, 12, 0.24) 0 1px,
+      transparent 1px 3px
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 0 22px rgba(0, 0, 0, 0.55);
+  transition: opacity 0.35s ease;
+}
+@media (hover: hover) {
+  .wk-gm-cab:hover .wk-gm-glass {
+    opacity: 0.4;
+  }
+}
+.wk-gm-cab:focus-visible .wk-gm-glass {
+  opacity: 0.4;
+}
+
+/* The plate: the name, then a lit label in the screen's own ink. The rows
+   stretch every screen to the tallest, and the label sits at the bottom, so
+   the labels line up whether a name takes one line or two. */
+.wk-gm-plate {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.7rem 0.3rem 0.5rem;
+}
+.wk-gm-name {
+  font-size: 0.98rem;
+  line-height: 1.22;
+  color: #eceefa;
+}
+@media (min-width: 64rem) {
+  .wk-gm-name {
+    font-size: 1.08rem;
+  }
+}
+.wk-gm-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: auto;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-ink);
+}
+/* The cabinet's power lamp. */
+.wk-gm-label::before {
+  content: '';
+  flex: none;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 7px var(--c);
+}
+
+/* ── The plaque at the end: every game is in the Arcade ───────────────────
+   A lit sign over the door out: the count on an LED panel, the line, and
+   the way there. Text on it is fixed light ink on #10122a. */
+.wk-gm-end {
+  padding-top: 3rem;
+  padding-bottom: 4.25rem;
+}
+@media (min-width: 64rem) {
+  .wk-gm-end {
+    padding-top: 3.5rem;
+    padding-bottom: 5rem;
+  }
+}
+.wk-gm-plaque {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'led text'
+    'go go';
+  align-items: center;
+  gap: 1.1rem 1.1rem;
+  padding: 1.15rem;
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 45%), #10122a;
+  border: 1.5px solid color-mix(in srgb, var(--wk-gm-yellow) 52%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 0 26px -8px color-mix(in srgb, var(--wk-gm-yellow) 55%, transparent),
+    inset 0 0 20px -12px
+      color-mix(in srgb, var(--wk-gm-yellow) 60%, transparent),
+    0 30px 50px -30px rgba(0, 0, 0, 0.95);
+}
+@media (min-width: 48rem) {
+  .wk-gm-plaque {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'led text go';
+    gap: 1.5rem;
+    padding: 1.4rem 1.6rem;
+  }
+}
+.wk-gm-led {
+  grid-area: led;
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  min-width: 5.25rem;
+  padding: 0.6rem 0.8rem 0.65rem;
+  border-radius: 0.8rem;
+  background: #07080f;
+  border: 1px solid color-mix(in srgb, var(--wk-gm-yellow) 34%, transparent);
+  box-shadow: inset 0 0 18px -10px var(--wk-gm-yellow);
+}
+.wk-gm-led-k {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b4b8d2;
+}
+/* The count in neon: a near-white core carries the contrast, the colour is
+   only glow. */
+.wk-gm-led-n {
+  font-size: 2.4rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: #fff6d6;
+  text-shadow:
+    0 0 1px #fff6d6,
+    0 0 5px var(--wk-gm-yellow),
+    0 0 14px color-mix(in srgb, var(--wk-gm-yellow) 65%, transparent),
+    0 0 32px color-mix(in srgb, var(--wk-gm-yellow) 35%, transparent);
+}
+.wk-gm-cta {
+  grid-area: text;
+  min-width: 0;
+}
+.wk-gm-cta-t {
+  font-size: 1.35rem;
+  line-height: 1.15;
+  color: #eceefa;
+}
+@media (min-width: 40rem) {
+  .wk-gm-cta-t {
+    font-size: 1.7rem;
+  }
+}
+.wk-gm-cta-p {
+  margin-top: 0.45rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: #b4b8d2;
+}
+.wk-gm-go {
+  grid-area: go;
+}
+@media (max-width: 47.99rem) {
+  .wk-gm-go {
+    width: 100%;
+  }
+}
+
+/* ── The sill: the way out ──────────────────────────────────────────────── */
+.wk-gm-sill {
+  height: 0.85rem;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0 0.25rem,
+      rgba(0, 0, 0, 0.55) 0.25rem calc(0.25rem + 1px),
+      transparent calc(0.25rem + 1px) 0.5rem,
+      rgba(0, 0, 0, 0.55) 0.5rem calc(0.5rem + 1px),
+      transparent calc(0.5rem + 1px)
+    ),
+    linear-gradient(180deg, #4a3526 0%, #2e2116 45%, #1c140e 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, 0.16);
+}

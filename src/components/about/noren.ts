@@ -95,6 +95,54 @@ export const REST = {
   ],
 } as const;
 
+/**
+ * The scene around the live doorway (the mini leaves all of it out), in the
+ * same doorway units. Parts of it reach past the doorway's box: the tiled
+ * eave rises above the lintel, and the light on the ground and the stepping
+ * stone fall below the sill, so whoever places the doorway leaves `above`
+ * and `below` units of room around it (threshold.css does, in % of width).
+ */
+export const SCENE = {
+  /** The eave over the door: a row of round tile ends under a tiled slope. */
+  eave: { x: -24, y: -44, w: DOOR.w + 48, h: 56 },
+  /** The light from inside, on the ground in front of the sill. */
+  spill: { x: -70, y: FRAME.sill - 10, w: DOOR.w + 140, h: 92 },
+  /** A flat stone at the foot of the door, catching that light. */
+  stone: { x: 164, y: 468, w: 124, h: 32 },
+  /** The room's extra light, behind the cloth (only its gaps show it). */
+  flare: { x: FRAME.post, y: 150, w: NOREN.w, h: FRAME.sill - 150 },
+  /** The light at the hem: what spills under the cloth and out of the slit. */
+  glow: { x: 60, y: 300, w: DOOR.w - 120, h: 200 },
+  /** The dust drifting up through that light. */
+  motes: { x: 96, y: 236, w: DOOR.w - 192, h: 240 },
+  above: 44,
+  below: 22,
+} as const;
+
+/**
+ * The dust, in the motes box's own percent: where each mote starts, how long
+ * one drift takes (s), where in it the page opens (a negative delay, so they
+ * are already scattered on arrival), and how far it sways and rises (px).
+ */
+export const MOTES: readonly (readonly [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+])[] = [
+  // Either side of Kiru, and one up in the slit above his head: never over
+  // his face.
+  [10, 72, 11, -2, 14, -70],
+  [20, 38, 14, -7, -12, -88],
+  [28, 92, 9.5, -4, 9, -58],
+  [50, 6, 15, -3, 8, -40],
+  [76, 66, 13, -1, -16, -80],
+  [88, 34, 10.5, -6, 12, -54],
+  [93, 86, 12, -9, -9, -62],
+];
+
 /** Percent of the doorway, for placing parts in the server markup. */
 export const pctX = (n: number) => `${((n / DOOR.w) * 100).toFixed(3)}%`;
 export const pctY = (n: number) => `${((n / DOOR.h) * 100).toFixed(3)}%`;

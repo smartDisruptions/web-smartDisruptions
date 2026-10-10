@@ -1,0 +1,55 @@
+/*
+  Everything on one wall — the room (WorkWall.tsx). Prefix wk-wl-.
+
+  The hall is a band of its own ground between the games and the card to
+  About Me: it comes up out of the page under the header, holds the ring at
+  its darkest, and fades back into the page at the foot. The ring's shade
+  (components/built/wall.css) is painted in --wk-wl-hall, so the dark at the
+  sides of the ring is the room's own colour and never shows as a box.
+*/
+
+.wk-wl {
+  /* Day: washi in the shade of a paper lamp. */
+  --wk-wl-hall: #e4dbc9;
+  position: relative;
+  padding: 6rem 0 3.5rem;
+  background:
+    var(--sd-noise) 0 0 / 180px 180px,
+    linear-gradient(180deg, var(--sd-bg), transparent 15rem),
+    linear-gradient(0deg, var(--sd-bg), transparent 8rem),
+    var(--wk-wl-hall);
+  /* The last thing on a long page: skip its layout and paint until it is
+     near. The size is the band's real height at each width. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1230px;
+}
+:root[data-theme='dark'] .wk-wl {
+  /* Night: the hall under one lantern, a shade deeper than the page. */
+  --wk-wl-hall: #05060d;
+}
+@media (min-width: 40rem) {
+  .wk-wl {
+    padding-top: 8rem;
+    contain-intrinsic-size: auto 1290px;
+  }
+}
+
+.wk-wl-ring {
+  margin-top: 2.25rem;
+}
+
+/* The last line of the work: a seal and a short sentence. */
+.wk-wl-end {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 3rem auto 0;
+  padding: 0 1.25rem;
+  font-size: 1.05rem;
+  color: var(--sd-text-secondary);
+}
+.wk-wl-seal {
+  width: 30px;
+  flex: none;
+}
