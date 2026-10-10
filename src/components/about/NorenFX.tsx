@@ -339,15 +339,42 @@ export default function NorenFX() {
       if (e.pointerType !== 'mouse') clearField();
     });
     on(hit, 'pointercancel', clearField);
+    // A gust the compositor is playing holds still while the page scrolls,
+    // as Kiru does (SiteFX's data-hold), and carries on where it was at
+    // scrollend. Chrome services its keyframes on the main thread, and on a
+    // phone at 4x CPU a gust playing under a scroll of the doorway cost a
+    // third of the scroll's frames.
+    const scrollEnds = 'onscrollend' in window;
+    let gustPaused = false;
+    let resumeAt = 0;
+    const resumeGust = () => {
+      window.clearTimeout(resumeAt);
+      if (!gustPaused) return;
+      gustPaused = false;
+      for (const a of played) a.play();
+    };
     on(
       window,
       'scroll',
       () => {
         rect = null;
         lastScroll = performance.now();
+        if (!played.length) return;
+        if (!gustPaused) {
+          gustPaused = true;
+          for (const a of played) a.pause();
+          // A safety net if scrollend never comes; where the browser has no
+          // scrollend at all, a short quiet spell is the end of the scroll.
+          resumeAt = window.setTimeout(resumeGust, scrollEnds ? 3000 : 200);
+        } else if (!scrollEnds) {
+          window.clearTimeout(resumeAt);
+          resumeAt = window.setTimeout(resumeGust, 200);
+        }
       },
       { passive: true }
     );
+    on(window, 'scrollend', resumeGust, { passive: true });
+    cleanups.push(() => window.clearTimeout(resumeAt));
     on(window, 'resize', () => (rect = null), { passive: true });
 
     // ── A tap: push through ───────────────────────────────────────────────
@@ -504,6 +531,8 @@ export default function NorenFX() {
       for (const a of played) a.cancel();
       played = [];
       baked = [];
+      gustPaused = false;
+      window.clearTimeout(resumeAt);
     }
     /** A gust's kicks, panel by panel, 120ms apart (as frame() gives them):
         applied to frame f's velocities; returns how many are still to come. */
@@ -527,6 +556,7 @@ export default function NorenFX() {
     function play(
       kicks: (f: number, VS: Float64Array, VB: Float64Array) => number
     ) {
+      gustPaused = false;
       const S = Float64Array.from(s);
       const VS = Float64Array.from(vs);
       const B = Float64Array.from(b);
