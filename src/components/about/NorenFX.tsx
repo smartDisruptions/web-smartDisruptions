@@ -404,6 +404,14 @@ export default function NorenFX() {
       // open a little and settle.
       const t = window.setTimeout(
         () => {
+          // Scrolled away (or the tab hidden) before it came: keep the grip
+          // for when the doorway is next on screen (the observer calls
+          // intro() again). Played off screen, it was four seconds of
+          // keyframes serviced on every frame of the scroll below.
+          if (!visible || document.hidden) {
+            introDone = false;
+            return;
+          }
           gustNext = performance.now() + 5000;
           const grip = (f: number, VS: Float64Array) => {
             if (f === 0) {
