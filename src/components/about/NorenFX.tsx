@@ -240,6 +240,14 @@ export default function NorenFX() {
       if (visible) {
         wake();
         if (!introDone) intro();
+      } else {
+        // Off screen, a gust the compositor is playing stops where it is,
+        // as the live loop does: left to play out (up to 12s), its keyframes
+        // were serviced on every frame of the scroll further down the page,
+        // which doubled the style work scrolling the ema rack and the arcade
+        // on a phone at 4x CPU. Back on screen, the live loop settles the
+        // cloth from there.
+        unplay();
       }
     });
     io.observe(door);
