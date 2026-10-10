@@ -181,7 +181,9 @@ function Ema({ item, i }: { item: CatalogueEntry; i: number }) {
           </p>
         )}
         {/* Whichever link carries wk-mr-open also covers the plaque above
-            it (its ::after), so the picture opens the same place. */}
+            it (its ::after), so the picture opens the same place. Each name
+            carries the thing's after the words you see, so a screen reader's
+            list of links tells the four "Try it"s apart. */}
         <div className="wk-mr-acts">
           {item.detailHref && (
             <Link
@@ -191,6 +193,7 @@ function Ema({ item, i }: { item: CatalogueEntry; i: number }) {
             >
               <span className="wk-mr-act-in">
                 How I built it
+                <span className="sr-only">, {item.name}</span>
                 <IconArrowRight size={18} />
               </span>
             </Link>
@@ -204,6 +207,7 @@ function Ema({ item, i }: { item: CatalogueEntry; i: number }) {
             >
               <span className="wk-mr-act-in">
                 Try it
+                <span className="sr-only">, {item.name}</span>
                 <IconExternal size={16} />
                 <span className="sr-only"> (opens in a new tab)</span>
               </span>
@@ -217,11 +221,7 @@ function Ema({ item, i }: { item: CatalogueEntry; i: number }) {
 
 export default function WorkMore() {
   return (
-    <section
-      id={WORK_IDS.more}
-      aria-labelledby="wk-mr-h"
-      className="wk-mr scroll-mt-20"
-    >
+    <section id={WORK_IDS.more} aria-labelledby="wk-mr-h" className="wk-mr">
       {/* A paper lantern hung from the top of the room: unlit paper by day,
           lit at night, when its light is the band's. */}
       <span className="wk-mr-lantern" aria-hidden="true">

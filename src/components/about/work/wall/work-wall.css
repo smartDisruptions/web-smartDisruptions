@@ -19,9 +19,16 @@
     linear-gradient(0deg, var(--sd-bg), transparent 8rem),
     var(--wk-wl-hall);
   /* The last thing on a long page: skip its layout and paint until it is
-     near. The size is the band's real height at each width. */
+     near. The placeholder is the band's measured content height at each
+     width (the padding is added on top), and the flat grid's under reduced
+     motion, which is about twice as tall on a phone. */
   content-visibility: auto;
-  contain-intrinsic-size: auto 1230px;
+  contain-intrinsic-size: auto 1064px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wk-wl {
+    contain-intrinsic-size: auto 2300px;
+  }
 }
 :root[data-theme='dark'] .wk-wl {
   /* Night: the hall under one lantern, a shade deeper than the page. */
@@ -30,7 +37,22 @@
 @media (min-width: 40rem) {
   .wk-wl {
     padding-top: 8rem;
-    contain-intrinsic-size: auto 1290px;
+    contain-intrinsic-size: auto 1119px;
+  }
+}
+@media (min-width: 40rem) and (prefers-reduced-motion: reduce) {
+  .wk-wl {
+    contain-intrinsic-size: auto 2075px;
+  }
+}
+@media (min-width: 64rem) {
+  .wk-wl {
+    contain-intrinsic-size: auto 1089px;
+  }
+}
+@media (min-width: 64rem) and (prefers-reduced-motion: reduce) {
+  .wk-wl {
+    contain-intrinsic-size: auto 1378px;
   }
 }
 

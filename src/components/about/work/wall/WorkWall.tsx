@@ -53,11 +53,7 @@ export default function WorkWall() {
   ];
 
   return (
-    <section
-      id={WORK_IDS.wall}
-      aria-labelledby="wk-wl-h"
-      className="wk-wl scroll-mt-20"
-    >
+    <section id={WORK_IDS.wall} aria-labelledby="wk-wl-h" className="wk-wl">
       <div className="mx-auto max-w-6xl px-5 text-center sm:px-6">
         <p className="sd-kicker">All of it at once</p>
         <h2

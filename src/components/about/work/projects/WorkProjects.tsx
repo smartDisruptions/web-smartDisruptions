@@ -1,15 +1,9 @@
 import { Fragment, type CSSProperties } from 'react';
 import Link from 'next/link';
 import Kanji, { Seal } from '@/components/brand/Kanji';
-import Kiru from '@/components/kiru/Kiru';
 import Device from '@/components/built/Device';
 import { IconArrowRight, IconExternal } from '@/components/icons';
-import {
-  frameFor,
-  hostOf,
-  markFor,
-  shotTransition,
-} from '@/components/built/media';
+import { frameFor, hostOf, markFor } from '@/components/built/media';
 import { WORK_IDS, inWords, pad, projects } from '@/components/about/work/data';
 import type { Project } from '@/data/projects';
 import WorkProjectsIsland from './WorkProjectsIsland';
@@ -29,8 +23,9 @@ import './projects.css';
  * paper; each scene's brush kanji drifts behind it, slower. Four seals above
  * the scroll stamp themselves as each scene comes to rest, and each is a
  * link to its scene. At night it is the same scroll under the moon: indigo
- * lacquer, gold, moonlight. Kiru peeks over the top edge by the right-hand
- * roller: he is the one unrolling it, and he rides in with the roller.
+ * lacquer, gold, moonlight. Kiru sits this room out: he has just peeked
+ * through the noren above, and he is on the rack in the next room (one Kiru
+ * per room, and never the same gag twice in a row).
  *
  * HOW (all CSS, no JavaScript per frame): the scroll is a tall runway with a
  * view timeline (--wk-pj). Every layer — the paper, the scenes, the mist,
@@ -121,7 +116,9 @@ function Scene({ project, k }: { project: Project; k: number }) {
           <p className="wk-pj-sum font-read">{project.summary}</p>
 
           {/* Straight to each part — the game, the website — and then the
-              page that describes them. */}
+              page that describes them. Each name carries the project's after
+              the words you see, so a screen reader's list of links tells the
+              four scenes' "What is built into it" apart. */}
           <div className="wk-pj-acts">
             {project.parts.map((part, pi) => (
               <a
@@ -132,6 +129,7 @@ function Scene({ project, k }: { project: Project; k: number }) {
                 className={pi === 0 ? BTN_PRIMARY : BTN_SECONDARY}
               >
                 {part.linkLabel}
+                <span className="sr-only">, {project.name}</span>
                 <IconExternal size={16} />
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
@@ -139,6 +137,7 @@ function Scene({ project, k }: { project: Project; k: number }) {
           </div>
           <Link href={`/built/${project.slug}`} className="wk-pj-more">
             What is built into it
+            <span className="sr-only">, {project.name}</span>
             <IconArrowRight size={18} />
           </Link>
         </div>
@@ -146,7 +145,14 @@ function Scene({ project, k }: { project: Project; k: number }) {
         {/* The devices are a link to the project's page, for a tap or a
             click. The keyboard gets the same page from "What is built into
             it" above, so this one stays out of the Tab order; its name is
-            the screenshots' own alt text. */}
+            the screenshots' own alt text.
+
+            No view-transition name here (unlike the ema and the games): a
+            named element whose ancestors move on this scroll's timeline
+            stops Chrome capturing the page for a view transition (141,
+            measured: every navigation from /about, a nav tab included, froze
+            for the browser's full 4 s timeout whenever the emaki's animations
+            were live, and the morph itself never played). */}
         <Link
           href={`/built/${project.slug}`}
           className="wk-pj-stage"
@@ -160,7 +166,6 @@ function Scene({ project, k }: { project: Project; k: number }) {
               alt={project.imageAlt}
               sizes="(min-width: 1024px) 560px, 72vw"
               className="wk-pj-main"
-              style={shotTransition(project.slug)}
             />
             {side && (
               <Device
@@ -236,8 +241,8 @@ function Base() {
 
 /**
  * Everything in front of the paper, none of it pressable: the gold mist that
- * crosses between scenes, the light on the paper, and the two rollers (Kiru
- * rides the right-hand one). On the still scroll this is the top roller.
+ * crosses between scenes, the light on the paper, and the two rollers. On
+ * the still scroll this is the top roller.
  */
 function Fore() {
   return (
@@ -260,7 +265,6 @@ function Fore() {
       <div className="wk-pj-jiku wk-pj-jiku-r">
         <span className="wk-pj-cover" />
         <span className="wk-pj-roll" />
-        <Kiru pose="peek" className="wk-pj-kiru" />
       </div>
     </div>
   );
@@ -272,7 +276,7 @@ export default function WorkProjects() {
     <section
       id={WORK_IDS.projects}
       aria-labelledby="wk-pj-h"
-      className={`wk-pj scroll-mt-20${emaki ? ' wk-pj-emaki' : ''}`}
+      className={`wk-pj${emaki ? ' wk-pj-emaki' : ''}`}
     >
       <div className="mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32">
         <p className="sd-kicker">Live, with receipts</p>
@@ -280,7 +284,10 @@ export default function WorkProjects() {
           id="wk-pj-h"
           className="font-display sd-brush-under mt-3 text-4xl text-text-primary sm:text-5xl"
         >
-          The {inWords(projects.length)} I&rsquo;d show you first
+          {/* A literal ’, not &rsquo;: this Next's compiler drops the space
+              before a line of JSX text that holds an entity when it follows
+              an expression, which printed "fourI’d". */}
+          The {inWords(projects.length)} I’d show you first
         </h2>
         <p className="font-read mt-5 max-w-[52ch] text-lg leading-[1.7] text-text-secondary">
           All {inWords(projects.length)} are online right now. Each one has a

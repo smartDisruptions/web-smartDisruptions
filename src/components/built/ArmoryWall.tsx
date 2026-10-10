@@ -111,9 +111,16 @@ export default function ArmoryWall({
         <ul className="bt-ring" role="list" aria-label={label}>
           {items.map((item, i) => {
             const [w, h] = sizeOf(item.src);
-            // Name first in the DOM, so a screen reader hears it first; the
-            // label sits above it visually (CSS order). The back is
-            // decoration: the name is already said once.
+            // The label painted on the plaque is part of the picture: the
+            // hall's light shades it as the plaque turns away (wall.css), so
+            // on the slivers at the edge of the light (three plaques round,
+            // ~2.8:1) it is below AA by design. So it is presentation, and the
+            // link is named by the sr-only copy: name, then kind, in words.
+            // At AA the name is on the front plaque and in the caption under
+            // the ring, which is where every keyboard path and every tap on a
+            // far plaque brings it (armory-drive.ts), and on the flat grid
+            // under reduced motion. The back is decoration too: the name is
+            // already said once.
             const face = (
               <>
                 <span className="bt-panel-shot">
@@ -127,10 +134,11 @@ export default function ArmoryWall({
                     draggable={false}
                   />
                 </span>
-                <span className="bt-panel-cap">
+                <span className="bt-panel-cap" aria-hidden="true">
                   <span className="bt-panel-name">{item.name}</span>
                   <span className="bt-panel-kind">{item.kind}</span>
                 </span>
+                <span className="sr-only">{`${item.name}, ${item.kind}`}</span>
                 <span className="bt-panel-back" aria-hidden="true">
                   <Seal char={item.mark} />
                   <span className="bt-panel-back-name">{item.name}</span>

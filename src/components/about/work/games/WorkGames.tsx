@@ -112,11 +112,7 @@ export default function WorkGames() {
   const rows = [games.slice(0, half), games.slice(half)];
 
   return (
-    <section
-      id={WORK_IDS.games}
-      aria-labelledby="wk-gm-h"
-      className="wk-gm scroll-mt-20"
-    >
+    <section id={WORK_IDS.games} aria-labelledby="wk-gm-h" className="wk-gm">
       <RailFocus id={WORK_IDS.games} />
       <div className="wk-gm-ranma" aria-hidden="true" />
 

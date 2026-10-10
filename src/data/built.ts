@@ -2,19 +2,21 @@ import { apps, GAME_SLUGS } from './apps';
 import { projects, PROJECT_APP_SLUGS } from './projects';
 
 /**
- * What /built shows, as data, so anything that counts it reads the same list
- * the page renders. The home receipts band and the /about receipt both said
- * "7 things built" while /built showed 4 projects and 4 more (October 2026):
- * each had its own copy of the filter, and neither knew about Kitsune Kitchen.
+ * What I Built's lists, as data, so anything that counts them reads the same
+ * lists the page renders: /about (the work) since October 2026, when the
+ * /built index was folded into it. The home receipts band and the /about
+ * receipt both said "7 things built" while /built showed 4 projects and 4
+ * more (October 2026): each had its own copy of the filter, and neither knew
+ * about Kitsune Kitchen.
  */
 
-/** Slugs /built already shows as project cards, under either name. */
+/** Slugs already shown as one of the four projects, under either name. */
 export const BUILT_COVERED = new Set<string>([
   ...projects.map((p) => p.slug),
   ...Object.keys(PROJECT_APP_SLUGS),
 ]);
 
-/** The apps /built's catalogue lists: not a game, not already a project card. */
+/** The apps listed as "everything else": not a game, not one of the four. */
 export const builtCatalogueApps = apps.filter(
   (app) =>
     !(GAME_SLUGS as readonly string[]).includes(app.slug) &&
@@ -32,7 +34,7 @@ export type BuiltSite = {
 };
 
 /**
- * Sites /built lists by hand, because they have no entry in the apps data.
+ * Sites listed by hand, because they have no entry in the apps data.
  * Kitsune Kitchen is a site, not an app; without this it would have vanished
  * with /websites.
  */
@@ -50,7 +52,7 @@ export const BUILT_SITES: BuiltSite[] = [
 ];
 
 /**
- * Everything /built shows that isn't a game: the project cards, the
+ * Everything built that isn't a game: the four projects, the
  * catalogue's apps and the hand-listed sites.
  */
 export const THINGS_BUILT =

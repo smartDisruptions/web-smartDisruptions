@@ -206,3 +206,10 @@
     translate: 0 -6%;
   }
 }
+
+/* On a 375px phone the head column beside the photo is a few pixels short
+   of "The person behind it", which left "it" alone on a second line;
+   balanced, the kicker breaks into two even lines instead. */
+.au-next-head .sd-kicker {
+  text-wrap: balance;
+}

@@ -52,9 +52,18 @@
 
   position: relative;
   padding-bottom: 5rem;
-  background-color: var(--sd-bg-2);
-  background-image: var(--sd-noise);
-  background-size: 180px 180px;
+  /* The darker paper of the scroll room comes up out of the page ground and
+     goes back into it, so the doorway's cue above points into the room
+     rather than at a seam, and the rack's room below starts on the page
+     ground with its own ceiling line (more.css). The fades are spent inside
+     the header's top padding and this band's bottom padding, so the pinned
+     scroll always lies on the full colour (the cover that hides the paper
+     still to unroll is painted in it). Painted once, never moved. */
+  background:
+    var(--sd-noise) 0 0 / 180px 180px,
+    linear-gradient(180deg, var(--sd-bg), transparent 5.5rem),
+    linear-gradient(0deg, var(--sd-bg), transparent 4.5rem),
+    var(--sd-bg-2);
   overflow-x: clip;
 }
 @media (min-width: 64rem) {
@@ -133,8 +142,7 @@
   order: 3;
 }
 
-/* The top roller, with Kiru peeking over it. Everything else in the fore is
-   for the moving scroll. */
+/* The top roller. Everything else in the fore is for the moving scroll. */
 .wk-pj-fore {
   order: 1;
   position: relative;
@@ -143,26 +151,8 @@
 .wk-pj-base,
 .wk-pj-mistwin,
 .wk-pj-light,
-.wk-pj-jiku-l,
-.wk-pj-cover,
-.wk-pj-jiku-r .wk-pj-roll {
+.wk-pj-jiku {
   display: none;
-}
-.wk-pj-jiku-r {
-  position: absolute;
-  right: 2rem;
-  bottom: calc(100% - 0.45rem);
-}
-.wk-pj-kiru {
-  display: block;
-  width: 68px;
-  height: auto;
-  pointer-events: none;
-}
-@media (min-width: 48rem) {
-  .wk-pj-kiru {
-    width: 88px;
-  }
 }
 
 /* ── The seals: the scroll's contents on the still scroll ─────────────── */
@@ -209,11 +199,12 @@
 
 /* ── A scene ──────────────────────────────────────────────────────────── */
 
+/* A seal's jump target. The page's scroll padding (app/about/work.css)
+   already lands it clear of the header. */
 .wk-pj-at {
   order: 2;
   display: block;
   height: 0;
-  scroll-margin-top: 5rem;
 }
 .wk-pj-scene {
   order: 2;
@@ -514,13 +505,17 @@
       padding: 0;
     }
 
-    /* Markers: where each scene comes to rest, as a scroll offset. */
+    /* Markers: where each scene comes to rest, as a scroll offset. A jump
+       must put the marker exactly at the top of the pinned window (under
+       the header on a desktop, at the very top on a phone), so the margin
+       takes back the page's scroll padding (--au-scroll-top, which clears
+       the header for everything else) and leaves the window's own top. */
     .wk-pj-emaki .wk-pj-at {
       position: absolute;
       left: 0;
       width: 0;
       top: calc((0.065 + var(--k) * 0.29) * var(--wk-pj-span));
-      scroll-margin-top: var(--wk-pj-top);
+      scroll-margin-top: calc(var(--wk-pj-top) - var(--au-scroll-top, 0px));
     }
 
     /* ── Scenes: side by side, one window apart, rolled a step at a time. */
@@ -781,7 +776,7 @@
       white-space: nowrap;
     }
 
-    /* ── In front of the paper: mist, light, rollers, Kiru. ──────────── */
+    /* ── In front of the paper: mist, light, rollers. ──────────────────── */
     .wk-pj-emaki .wk-pj-fore {
       z-index: 3;
       pointer-events: none;
@@ -829,6 +824,26 @@
     }
     .wk-pj-emaki .wk-pj-veil:nth-child(2) {
       scale: -1 1;
+    }
+    /* Below a desktop the words sit under the picture, at the foot of the
+       paper, and the lower banks swept straight across them mid-roll: on a
+       390px screen that was gold over every line and both buttons. There a
+       veil paints only its upper banks — the clouds crossing the top of the
+       scene, over the picture — at the same size and in the same place, and
+       the words stay clear. (The words start 30% down the paper at the
+       least, on a 360 × 660 phone; the upper banks end at 25%.) */
+    @media (max-width: 63.99rem) {
+      .wk-pj-emaki .wk-pj-veil {
+        bottom: 50%;
+        background-size: 100% 200%;
+        background-position: center top;
+      }
+      /* The header comes back over the top 65px as you scroll up, and the
+         seals sit just under it; seated closer to their thread, a keyboard's
+         focus ring round one (5.5px out) clears the header too. */
+      .wk-pj-emaki .wk-pj-seals {
+        padding-bottom: 0.15rem;
+      }
     }
 
     /* The paper curls into each roller (a shadow at both ends), and at
@@ -960,9 +975,7 @@
     /* The opening: as the scroll comes up the screen the right roller
        starts beside the left one — a rolled-up scroll — and travels to its
        place, the band's own ground (the cover) hiding the paper it has not
-       yet unrolled. Kiru rides along out of sight and comes up over the
-       paper's edge as it finishes (riding in view, he passed under the
-       seals' labels). */
+       yet unrolled. */
     .wk-pj-emaki .wk-pj-cover {
       display: block;
       position: absolute;
@@ -974,16 +987,6 @@
       background-color: var(--sd-bg-2);
       background-image: var(--sd-noise);
       background-size: 180px 180px;
-    }
-    .wk-pj-emaki .wk-pj-kiru {
-      position: absolute;
-      z-index: 2;
-      right: calc(100% + 0.1rem);
-      bottom: calc(100% - var(--wk-pj-cap) - 0.3rem);
-      width: 54px;
-      animation: wk-pj-peek ease-out both;
-      animation-timeline: --wk-pj;
-      animation-range: entry 82% entry 100%;
     }
 
     @media (min-width: 64rem) {
@@ -1062,9 +1065,6 @@
         height: auto;
         overflow: visible;
         clip-path: none;
-      }
-      .wk-pj-emaki .wk-pj-kiru {
-        width: clamp(64px, 6vw, 92px);
       }
     }
     /* A short desktop window (a 13-inch laptop): the numeral goes back
@@ -1230,16 +1230,6 @@
   }
   100% {
     opacity: 0;
-  }
-}
-@keyframes wk-pj-peek {
-  from {
-    opacity: 0;
-    translate: 0 45%;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
   }
 }
 @keyframes wk-pj-join {

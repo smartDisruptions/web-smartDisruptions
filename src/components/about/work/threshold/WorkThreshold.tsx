@@ -114,12 +114,24 @@ export default function WorkThreshold() {
             {lines.map((l) => (
               <li key={l.href}>
                 {/* Named by what it shows ("Games 12"), so the spoken name
-                    matches the printed one (WCAG 2.5.3). */}
-                <Link href={l.href} className="au-rc-line">
-                  <span>{l.label}</span>
-                  <span className="au-rc-dots" aria-hidden />
-                  <b>{l.n}</b>
-                </Link>
+                    matches the printed one (WCAG 2.5.3). A line that opens a
+                    section of this page is a plain anchor: through next/link
+                    a same-page jump became a router navigation wrapped in a
+                    full-page view transition, so the page froze for the
+                    capture and cross-faded instead of simply scrolling. */}
+                {l.href.startsWith('#') ? (
+                  <a href={l.href} className="au-rc-line">
+                    <span>{l.label}</span>
+                    <span className="au-rc-dots" aria-hidden />
+                    <b>{l.n}</b>
+                  </a>
+                ) : (
+                  <Link href={l.href} className="au-rc-line">
+                    <span>{l.label}</span>
+                    <span className="au-rc-dots" aria-hidden />
+                    <b>{l.n}</b>
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -146,7 +158,9 @@ export default function WorkThreshold() {
       </div>
 
       <p className="au-th-cue">
-        <Link href={`#${WORK_IDS.projects}`} className="au-th-cue-link">
+        {/* A plain anchor, like the receipt's section lines: a jump down
+            this page, not a navigation. */}
+        <a href={`#${WORK_IDS.projects}`} className="au-th-cue-link">
           <span className="au-th-cue-text">See the work</span>
           <svg
             className="au-th-cue-ink"
@@ -156,7 +170,7 @@ export default function WorkThreshold() {
           >
             <path d="M21 2c4.5.5 6 4 5 8-1.4 20-2.6 44-3.4 68-.4 12-.8 22-1.6 30h-1.4c-.6-12-1.2-24-1.6-36-.8-22-1.4-44-2.4-62-.4-5 1.4-8.4 5.4-8ZM20.6 110c-4.2-8-9.6-14.6-16-19.4-1.2-1-.2-3 1.4-2.4 6.4 2.6 11.6 8.8 15.8 16.4ZM20 110c3.2-9 7.8-16.4 14.4-23 1-1-.2-2.8-1.6-2-6.4 3.6-11.2 10.4-14.2 18.4Z" />
           </svg>
-        </Link>
+        </a>
       </p>
 
       <ThresholdFX />

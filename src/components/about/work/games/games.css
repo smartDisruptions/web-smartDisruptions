@@ -45,14 +45,16 @@
   padding-top: var(--wk-gm-bleed);
   padding-bottom: var(--wk-gm-bleed-b);
   /* Well below the fold: skip its layout and paint until it is near. The
-     placeholder is the room's measured height at each width (and `auto`
-     keeps the real one once it has rendered), so nothing shifts. */
+     placeholder is the room's measured content height at each width — the
+     content box, since the padding is added on top of it (sized with the
+     padding in, it came out ~150px too tall) — and `auto` keeps the real
+     one once it has rendered, so nothing shifts. */
   content-visibility: auto;
-  contain-intrinsic-size: auto 1300px;
+  contain-intrinsic-size: auto 1158px;
 }
 @media (min-width: 40rem) {
   .wk-gm {
-    contain-intrinsic-size: auto 1320px;
+    contain-intrinsic-size: auto 1201px;
   }
 }
 @media (min-width: 64rem) {
@@ -61,7 +63,7 @@
     --wk-gm-bleed-b: 4rem;
     --wk-gm-ranma: 3.25rem;
     --wk-gm-beam: 0.85rem;
-    contain-intrinsic-size: auto 1448px;
+    contain-intrinsic-size: auto 1280px;
   }
 }
 

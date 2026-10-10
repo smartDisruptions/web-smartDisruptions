@@ -164,10 +164,10 @@ export function markFor(slug: string): string {
 }
 
 /**
- * The shared-element name a screenshot carries on /built and on its own page,
+ * The shared-element name a screenshot carries on /about and on its own page,
  * so the browser carries the picture from the card into the hero on the way
  * in (a View Transition). Names must be unique on a page: one per slug. The
- * class lets built.css time all of them together.
+ * class lets device.css time all of them together.
  */
 export function shotTransition(slug: string) {
   return {

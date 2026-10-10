@@ -41,7 +41,8 @@
  *  - Trackpads: a sideways two-finger swipe turns it; vertical wheel is left
  *    alone, so the page scroll is never taken over.
  *  - A tap that did not move is a click: the plaque's link opens. A tap on a
- *    plaque seen from behind turns it round instead.
+ *    plaque seen from behind, or turned far round into the dark at the side,
+ *    turns it to the front instead.
  *  - Entrance: the server parks the ring three plaques short of the first
  *    (ArmoryWall). The first time it is properly in view it turns that last
  *    short way and settles on the first plaque — once, and anything the
@@ -56,6 +57,13 @@ export type WallDrive = {
 };
 
 const RAD = Math.PI / 180;
+/**
+ * The arc a tap can open from: within ~45° of the front (cos > 0.7), which
+ * takes in the plaques two either side of it at rest (36°), whose labels the
+ * hall's light leaves at AA. Further round (54°, a sliver in the dark) a tap
+ * turns the plaque to the front first.
+ */
+const READABLE = 0.7;
 const pad = (n: number) => String(n).padStart(2, '0');
 const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
 /** A settle with a whisper of overshoot, for the entrance. */
@@ -159,6 +167,34 @@ export function drive(root: HTMLElement): WallDrive {
     if (capAt) capAt.textContent = pad(i + 1);
   };
 
+  // The ring's one tab stop (roving tabindex). It follows the front plaque
+  // as the ring turns, except while a keyboard is in the ring: then it is
+  // the focused plaque, which that turn is bringing round, so a quick second
+  // Tab can't land on a plaque passing the front on the way. While the ring
+  // stands parked for its entrance it is the first plaque, the one the
+  // entrance settles on: a keyboard enters the ring at 01 (and its focus
+  // turns the ring there, as the entrance would), not at whichever plaque
+  // happened to be parked in front.
+  let tabStop = -1;
+  const setTabStop = (at: number) => {
+    if (at === tabStop) return;
+    if (tabStop < 0) {
+      links.forEach((l, i) => {
+        if (l) l.tabIndex = i === at ? 0 : -1;
+      });
+    } else {
+      const old = links[tabStop];
+      if (old) old.tabIndex = -1;
+      const cur = links[at];
+      if (cur) cur.tabIndex = 0;
+    }
+    tabStop = at;
+  };
+  const keyboardIn = () => {
+    const el = document.activeElement;
+    return !!el && ring.contains(el) && el.matches(':focus-visible');
+  };
+
   const paint = () => {
     ring.style.transform = `rotateY(${spin.toFixed(2)}deg)`;
     for (let i = 0; i < n; i++) {
@@ -170,15 +206,10 @@ export function drive(root: HTMLElement): WallDrive {
     }
     const f = frontOf(spin);
     if (f !== front) {
-      if (front >= 0) {
-        panels[front].removeAttribute('data-front');
-        const old = links[front];
-        if (old) old.tabIndex = -1;
-      }
+      if (front >= 0) panels[front].removeAttribute('data-front');
       panels[f].setAttribute('data-front', '');
-      const cur = links[f];
-      if (cur) cur.tabIndex = 0;
       front = f;
+      if (intro === 'done' && !keyboardIn()) setTabStop(f);
       caption(f);
     }
   };
@@ -226,6 +257,28 @@ export function drive(root: HTMLElement): WallDrive {
     root.removeAttribute('data-park');
     introIo?.disconnect();
     introIo = null;
+    // From here the tab stop follows the front (unless a keyboard brought
+    // this about by focusing a plaque, which then keeps it).
+    if (!keyboardIn()) setTabStop(front);
+  };
+
+  // After a turn that keyboard focus started, the focused plaque stands at
+  // the front: lower and larger than where the browser scrolled to find it
+  // (coming in from the Tab order it was a sliver at the side), over the
+  // caption and the arrows. If those end below the window (or under a
+  // phone's tab bar), bring them up. Only then, and only once the turn is
+  // over: the page scrolls smoothly, so a scroll that wasn't needed would
+  // cut the browser's own scroll to the focused plaque short. Measured in
+  // the frame after the turn ends, never in the frame that wrote it.
+  let reveal = false;
+  const revealFront = () => {
+    const below = controls ?? stage;
+    const pad =
+      parseFloat(
+        getComputedStyle(document.documentElement).scrollPaddingBottom
+      ) || 0;
+    if (below.getBoundingClientRect().bottom > innerHeight - pad)
+      below.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   };
 
   const rest = () => {
@@ -237,6 +290,10 @@ export function drive(root: HTMLElement): WallDrive {
     setTurning(false);
     light(front);
     if (intro === 'playing') endIntro();
+    if (reveal) {
+      reveal = false;
+      requestAnimationFrame(revealFront);
+    }
     // After a drag, a throw or a swipe, say where it stopped. (Turns that
     // focus led have already been heard: the reader read the plaque.)
     if (front !== said) announce(front);
@@ -420,11 +477,15 @@ export function drive(root: HTMLElement): WallDrive {
       return;
     }
     // A tap on a plaque seen from behind turns it round rather than opening
-    // something the reader can't see yet. (Pointers only: a keyboard or a
-    // screen reader activating the link always opens it.)
+    // something the reader can't see yet, and so does a tap on one turned
+    // far round to the side (past READABLE): a sliver at the edge of the
+    // light whose label the hall's shade has taken below AA. It comes to the
+    // front, lit, its name in the caption, and the next tap opens it.
+    // (Pointers only: a keyboard or a screen reader activating the link
+    // always opens it, and only the front plaque is in the Tab order.)
     const face = (e.target as Element | null)?.closest?.('.bt-panel-face');
     const i = indexOfLink(face ?? null);
-    if (i >= 0 && away[i]) {
+    if (i >= 0 && (away[i] || Math.cos((spin + i * step) * RAD) < READABLE)) {
       swallowClick();
       goTo(i, true);
     }
@@ -483,7 +544,9 @@ export function drive(root: HTMLElement): WallDrive {
     const i = indexOfLink(e.target);
     if (i >= 0 && pid === null && !dragging) {
       goTo(i);
+      setTabStop(i);
       said = i; // a screen reader says the focused plaque's name itself
+      reveal = true;
     }
   };
 
@@ -539,7 +602,7 @@ export function drive(root: HTMLElement): WallDrive {
     if (document.hidden) {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
-    } else if (tween || target !== null) run();
+    } else if (tween || target !== null || Math.abs(vel) > 12) run();
   };
   let resizeRaf = 0;
   const onResize = () => {
@@ -567,10 +630,8 @@ export function drive(root: HTMLElement): WallDrive {
   window.addEventListener('resize', onResize, { passive: true });
 
   measure();
-  // Roving tab stop: only the front plaque is tabbable.
-  links.forEach((l, i) => {
-    if (l) l.tabIndex = i === front ? 0 : -1;
-  });
+  // Roving tab stop: only one plaque is tabbable (setTabStop).
+  setTabStop(intro === 'parked' ? 0 : front);
   paint();
   root.setAttribute('data-ready', '');
   // Focus may have arrived before this did (a Tab into the ring scrolls it

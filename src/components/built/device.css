@@ -310,7 +310,7 @@
   height: 100%;
 }
 
-/* The screenshot carried between /built and a detail page: a slower, softer
+/* The screenshot carried between /about and a detail page: a slower, softer
    morph than the browser's default quarter second, in step with the page. */
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-group(*.bt-shot) {

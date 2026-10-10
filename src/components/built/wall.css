@@ -464,7 +464,10 @@
       transparent 60%
     ),
     #141729;
-  color: #e8d9b5;
+  /* The ofuda paper's cream (the same in both themes): seen through the
+     hall's haze on the far side of the ring, a paler ink keeps the name
+     legible. It is a mirrored copy of the name, aria-hidden. */
+  color: var(--sd-sticky);
 }
 .bt-panel[data-away] .bt-panel-face {
   border-color: #2c3150;
@@ -594,7 +597,11 @@
   letter-spacing: 0.16em;
   line-height: 1.3;
   text-transform: uppercase;
-  color: var(--sd-pen-ink);
+  /* Vermilion ink deepened with sumi. Plain --sd-pen-ink measured 4.3:1 on
+     the hall's darker washi by day; this is 6.4:1 there, and at night it
+     comes out lighter, not darker (the sumi token is pale then). This line
+     and the name under it are the readable name of the plaque in front. */
+  color: color-mix(in srgb, var(--sd-pen-ink) 75%, var(--sd-text-primary));
 }
 /* The box is the same height whatever the name (two lines, or one on a
    wide screen); a long name (data-long, over 22 letters) is set smaller

@@ -14,3 +14,32 @@
      page sideways on a phone. */
   overflow-x: clip;
 }
+
+/* Keyboard focus never lands under the header or on the very edge of the
+   screen. Going back up the page (Shift+Tab), the browser leaves a focused
+   element where it is if it is anywhere inside the window, even entirely
+   under the sticky header (a receipt line did exactly that), and scrolls one
+   that is partly off screen only just in, to the top edge, under the header
+   again (which on a phone comes back as you scroll up). Going down on a
+   desktop, it stopped them on the bottom edge, which cut the focus ring off.
+   Padding on the page's scroller tells it the window starts below the header
+   and ends a ring's width above the bottom. (A margin on the elements
+   themselves is not enough: the browser ignores it when deciding whether to
+   scroll, and the games' rails and the ring clip it away.) globals.css
+   already keeps a phone's tab bar clear with scroll-padding-bottom.
+
+   Scoped to this page with :has(), so it can't outlive a navigation away
+   from it. Every jump on the page clears the header through it too, so the
+   sections need no scroll margin of their own, and the projects' markers
+   take it back off (projects.css) to land each scene exactly at rest. */
+html:has(.au-page) {
+  --au-scroll-top: calc(
+    var(--sd-header-h) + env(safe-area-inset-top) + 0.75rem
+  );
+  scroll-padding-top: var(--au-scroll-top);
+}
+@media (min-width: 64rem) {
+  html:has(.au-page) {
+    scroll-padding-bottom: 0.75rem;
+  }
+}
