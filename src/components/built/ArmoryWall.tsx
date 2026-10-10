@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 import { Seal } from '@/components/brand/Kanji';
 import ArmoryWallIsland from './ArmoryWallIsland';
 import { sizeOf } from './media';
+import './wall.css';
 
 export type WallItem = {
   key: string;
@@ -26,7 +27,7 @@ export type WallItem = {
  * angle. Before the behaviour loads (and if it never does) this is already a
  * ring of real links in tab order.
  *
- * Under reduced motion the same plaques lie flat in a grid (built.css).
+ * Under reduced motion the same plaques lie flat in a grid (./wall.css).
  */
 export default function ArmoryWall({
   items,
@@ -81,7 +82,7 @@ export default function ArmoryWall({
                     draggable={false}
                   >
                     {face}
-                    <span className="bt-sr"> (opens in a new tab)</span>
+                    <span className="sr-only"> (opens in a new tab)</span>
                   </a>
                 ) : (
                   <Link

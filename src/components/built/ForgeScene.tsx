@@ -1,7 +1,9 @@
 import Kiru from '@/components/kiru/Kiru';
+import './forge.css';
 
 /**
- * The /built hero: Kiru at the anvil, hammering a website into shape.
+ * Kiru at the anvil, hammering a website into shape (the What I Built
+ * hero until /built was folded into /about). Styles: ./forge.css.
  *
  * He is nested inside this scene's own <svg> at his build pose's exact
  * viewBox (0 -24 250 264), so the anvil is drawn in his units and lines up

@@ -101,20 +101,25 @@ const nextConfig: NextConfig = {
     };
   },
   /**
-   * /apps and /websites were folded into /built on 2026-09-20. These keep every
-   * old address working — search results, anything Josh has shared, and the
-   * links inside already-published articles.
+   * /apps and /websites were folded into /built on 2026-09-20, and /built
+   * itself into /about (the work) in October 2026. Each thing keeps its own
+   * page at /built/<slug>; only the index moved. These keep every old address
+   * working — search results, anything Josh has shared, and the links inside
+   * already-published articles — and send each straight to where it lives
+   * now, never through a second redirect.
    *
-   * Order matters: the two named rules have to come before the /apps/:slug
+   * Order matters: the named rules have to come before the /apps/:slug
    * catch-all, because Next takes the first match.
    */
   async redirects() {
     return [
+      // What I Built's index, folded into About.
+      { source: '/built', destination: '/about', permanent: true },
       // Pages taken off the site on 2026-10-07 (Josh's call): their old
-      // addresses land on What I Built instead of a 404.
+      // addresses land on the work, on About, instead of a 404.
       ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling'].flatMap((slug) => [
-        { source: `/built/${slug}`, destination: '/built', permanent: true },
-        { source: `/apps/${slug}`, destination: '/built', permanent: true },
+        { source: `/built/${slug}`, destination: '/about', permanent: true },
+        { source: `/apps/${slug}`, destination: '/about', permanent: true },
         // the frozen Notebook archive dropped them too (scripts/archive-site.mjs)
         {
           source: `/archive/notebook/built/${slug}`,
@@ -128,9 +133,9 @@ const nextConfig: NextConfig = {
         destination: '/content',
         permanent: true,
       })),
-      { source: '/apps', destination: '/built', permanent: true },
+      { source: '/apps', destination: '/about', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
-      { source: '/websites', destination: '/built', permanent: true },
+      { source: '/websites', destination: '/about', permanent: true },
       // The Market Storm index was paged (/market-storm/page/2, …) until
       // 2026-10-09. It is one page now — the front, then the archive — and
       // everything that was on a numbered page is in the archive.

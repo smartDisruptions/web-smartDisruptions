@@ -1,0 +1,116 @@
+/*
+  The forge (ForgeScene.tsx imports this file): Kiru at the anvil, hammering
+  a website into shape, sparks timed to his swing. Prefix bt-forge.
+*/
+
+.bt-forge {
+  --bt-floor: rgba(21, 23, 43, 0.2);
+}
+:root[data-theme='dark'] .bt-forge {
+  --bt-floor: rgba(0, 0, 0, 0.6);
+}
+.bt-forge-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.bt-forge-ground {
+  fill: var(--bt-floor);
+}
+.bt-forge {
+  --bt-s1: #e8902a;
+  --bt-s2: #e2412a;
+  --bt-s3: #c8962e;
+}
+:root[data-theme='dark'] .bt-forge {
+  --bt-s1: #ffcf70;
+  --bt-s2: #ffe3a3;
+  --bt-s3: #ff8a3d;
+}
+.bt-forge-sparks .bs1 {
+  stroke: var(--bt-s1);
+}
+.bt-forge-sparks .bs2 {
+  stroke: var(--bt-s2);
+}
+.bt-forge-sparks .bs3 {
+  stroke: var(--bt-s3);
+}
+.bt-forge-sparks .bs1f {
+  fill: var(--bt-s1);
+}
+.bt-forge-sparks .bs2f {
+  fill: var(--bt-s2);
+}
+.bt-forge-sparks .bs3f {
+  fill: var(--bt-s3);
+}
+.bt-forge-glow {
+  opacity: 0.55;
+}
+.bt-forge-sparks {
+  opacity: 0.9;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bt-forge-glow,
+  .bt-forge-sparks {
+    opacity: 0;
+  }
+  .bt-forge:has(.kiru[data-live]) .bt-forge-sparks {
+    animation: bt-sparks 1.5s linear infinite;
+    transform-origin: 232px 111px;
+  }
+  .bt-forge:has(.kiru[data-live]) .bt-forge-glow {
+    animation: bt-glow 1.5s ease-out infinite;
+  }
+  .bt-forge:has(.kiru[data-live]) .bt-forge-piece {
+    animation: bt-piece 1.5s ease-out infinite;
+    transform-origin: 234px 118px;
+  }
+}
+/* The hammer lands at 62% of Kiru's 1.5s swing. */
+@keyframes bt-sparks {
+  0%,
+  60% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  62.5% {
+    opacity: 1;
+    transform: scale(0.85);
+  }
+  84% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+@keyframes bt-glow {
+  0%,
+  60% {
+    opacity: 0.35;
+  }
+  64% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.35;
+  }
+}
+@keyframes bt-piece {
+  0%,
+  61% {
+    transform: scale(1, 1);
+  }
+  64% {
+    transform: scale(1.06, 0.82);
+  }
+  76%,
+  100% {
+    transform: scale(1, 1);
+  }
+}

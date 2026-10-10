@@ -221,9 +221,12 @@ animation of layout properties, nothing that animates while off screen.
 
 ## Native on a phone
 
-- A **tab bar** (Home, Writing, Learn, Built, Arcade) where a thumb reaches;
-  About is the avatar in the top bar. The top bar tucks away while you scroll
-  down and returns when you scroll up.
+- A **tab bar** (Home, Writing, Learn, Arcade, About) where a thumb reaches.
+  About's tab is Josh's photo, the way an app's last tab is its profile. The
+  top bar tucks away while you scroll down and returns when you scroll up.
+- **What I Built lives on About** (since October 2026): its index was folded
+  into `/about`, the work, and `/built` redirects there. Each thing keeps its
+  own page at `/built/<slug>`, which lights the About tab.
 - **Market Storm lives inside Writing** (since October 2026): a section of
   the Writing page, with `/market-storm` as its own page — the front, then
   the archive. That page and every report light the Writing tab, and so do

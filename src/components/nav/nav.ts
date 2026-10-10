@@ -1,7 +1,11 @@
 /**
  * The site's sections, in tab order. The desktop header, the phone tab bar
  * and the footer all read this list, so a section is added in one place.
- * `tab` marks the five that fit a phone tab bar; About lives on the avatar.
+ * `tab` marks the ones in the phone tab bar, which holds five.
+ *
+ * What I Built left the nav in October 2026, when its page was folded into
+ * About (the work), so About took the last tab: on a phone it is Josh's
+ * photo, the way an app's last tab is its profile.
  */
 export type NavItem = {
   href: string;
@@ -14,9 +18,8 @@ export const NAV: NavItem[] = [
   { href: '/', label: 'Home', short: 'Home', tab: true },
   { href: '/content', label: 'Writing', short: 'Writing', tab: true },
   { href: '/learn', label: 'Learn', short: 'Learn', tab: true },
-  { href: '/built', label: 'What I Built', short: 'Built', tab: true },
   { href: '/games', label: 'Arcade', short: 'Arcade', tab: true },
-  { href: '/about', label: 'About', short: 'About', tab: false },
+  { href: '/about', label: 'About', short: 'About', tab: true },
 ];
 
 /**
@@ -26,13 +29,16 @@ export const NAV: NavItem[] = [
  * guides are listed among Writing's field notes, so they light it too.
  *
  * About is two pages since October 2026: /about (the work) and /about-me (the
- * person), so About Me lights About. The three Build pages are the three
- * tracks /learn promises ("websites, apps and games"), so they light Learn.
+ * person), so About Me lights About. What I Built was folded into /about the
+ * same month, and each thing's own page (/built/<slug>) lights About too. The
+ * three Build pages are the three tracks /learn promises ("websites, apps and
+ * games"), so they light Learn.
  */
 const PARENT: Record<string, string> = {
   'market-storm': '/content',
   guides: '/content',
   'about-me': '/about',
+  built: '/about',
   'build-websites': '/learn',
   'build-apps': '/learn',
   'build-games': '/learn',

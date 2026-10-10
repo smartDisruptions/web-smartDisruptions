@@ -12,7 +12,7 @@ import { NAV, isActive, direction, sectionOf } from './nav';
  * The top bar. Desktop: the full section nav, with a vermilion brush stroke
  * under the current section that glides to the next one (it carries a
  * view-transition-name, so the browser animates it between pages). Phone:
- * logo, search, theme and an avatar to About — the sections live in the tab
+ * logo, search and theme — the sections, About included, live in the tab
  * bar — and the bar tucks away while you scroll down, like a native app.
  */
 export default function SiteHeader() {
@@ -62,7 +62,7 @@ export default function SiteHeader() {
         >
           <KiruMark className="h-9 w-9 shrink-0 transition-transform duration-500 ease-out group-hover:-rotate-12 group-hover:scale-110" />
           {/* The wordmark scales with the phone's width so it fits whole
-              beside the three buttons from 340px up, instead of truncating. */}
+              beside the buttons from 340px up, instead of truncating. */}
           <span className="font-display truncate text-[length:clamp(11.5px,calc(10vw_-_22.5px),1.05rem)] leading-none text-text-primary max-[339px]:hidden sm:text-[1.15rem]">
             Smart Disruptions
           </span>
@@ -117,17 +117,6 @@ export default function SiteHeader() {
             </kbd>
           </button>
           <ThemeToggle />
-          <Link
-            href="/about"
-            prefetch={pathname === '/about' ? false : undefined}
-            aria-label="About"
-            aria-current={isActive(section, '/about') ? 'page' : undefined}
-            className={`ml-0.5 block h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 transition-[box-shadow,transform] duration-300 hover:scale-105 lg:hidden ${
-              isActive(section, '/about') ? 'ring-pen' : 'ring-border'
-            }`}
-          >
-            <img src="/images/josh.webp" alt="" width={36} height={36} className="h-full w-full object-cover" />
-          </Link>
         </div>
       </nav>
     </header>

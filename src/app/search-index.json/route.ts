@@ -62,10 +62,13 @@ export function GET() {
       x: 'learn game games play canvas newsletter email',
     },
     {
+      // What I Built was folded into About (the work) in October 2026; the
+      // name still finds it, and opens the projects.
       t: 'What I Built',
-      u: '/built',
+      u: '/about#projects',
       k: 'Page',
-      d: 'Websites, apps and tools, live',
+      d: 'Websites, apps and games, live, on About',
+      x: 'built projects websites apps work portfolio',
     },
     { t: 'Arcade', u: '/games', k: 'Page', d: 'Games you can play right now' },
     {
@@ -81,8 +84,8 @@ export function GET() {
       t: 'About',
       u: '/about',
       k: 'Page',
-      d: 'The work: what I built, with receipts',
-      x: 'about builds receipts work',
+      d: 'The work: everything I built, with receipts',
+      x: 'about builds built projects receipts work',
     },
     {
       t: 'About Josh',

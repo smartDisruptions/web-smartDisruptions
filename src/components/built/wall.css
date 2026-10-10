@@ -1,0 +1,308 @@
+/*
+  Everything on one wall (ArmoryWall.tsx imports this file): a ring of
+  plaques in CSS 3D, turned by one custom property (--spin) that
+  armory-drive.ts writes. Prefix bt-wall / bt-panel / bt-ring.
+*/
+
+.bt-wall {
+  --bt-floor: rgba(21, 23, 43, 0.2);
+}
+:root[data-theme='dark'] .bt-wall {
+  --bt-floor: rgba(0, 0, 0, 0.6);
+}
+
+/* ── Index: everything on one wall (the ring) ────────────────────────────── */
+
+.bt-wall {
+  --n: 13;
+  --pw: 236px;
+  --ph: 148px;
+  --cap: 48px;
+  --gap: 26px;
+  --tilt: -8deg;
+  --r: calc(var(--pw) / 2 / sin(180deg / var(--n)) + var(--gap));
+  position: relative;
+}
+@media (max-width: 39.99rem) {
+  .bt-wall {
+    --pw: 158px;
+    --ph: 99px;
+    --cap: 40px;
+    --gap: 14px;
+    --tilt: -9deg;
+  }
+}
+.bt-wall-stage {
+  position: relative;
+  height: calc((var(--ph) + var(--cap)) * 2.05);
+  perspective: 1500px;
+  perspective-origin: 50% 0%;
+  overflow: clip;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+@media (max-width: 39.99rem) {
+  .bt-wall-stage {
+    perspective: 900px;
+    margin-inline: -20px;
+  }
+}
+.bt-wall.is-dragging .bt-wall-stage {
+  cursor: grabbing;
+}
+/* The floor the ring stands over. */
+.bt-wall-stage::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  width: min(900px, 120%);
+  height: 34%;
+  translate: -50% 0;
+  background: radial-gradient(closest-side, var(--bt-floor), transparent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.bt-ring {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: var(--pw);
+  height: calc(var(--ph) + var(--cap));
+  margin: calc((var(--ph) + var(--cap)) / -2) 0 0 calc(var(--pw) / -2);
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--r) * -1)) rotateX(var(--tilt))
+    rotateY(var(--spin, 0deg));
+}
+.bt-panel {
+  --a: calc(var(--i) * 360deg / var(--n) + var(--spin, 0deg));
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--r));
+}
+.bt-panel-face,
+.bt-panel-back {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.bt-panel-face {
+  display: flex;
+  flex-direction: column;
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border-strong);
+  box-shadow: 0 18px 30px -18px var(--sd-card-shadow);
+  -webkit-user-drag: none;
+}
+.bt-panel-shot {
+  position: relative;
+  height: var(--ph);
+  flex: none;
+  overflow: hidden;
+  background: #05060c;
+}
+.bt-panel-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.bt-panel-cap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 12px;
+  border-top: 1px solid var(--sd-border);
+}
+.bt-panel-kind {
+  order: -1;
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.bt-panel-name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--sd-text-primary);
+}
+@media (max-width: 39.99rem) {
+  .bt-panel-cap {
+    padding: 0 9px;
+  }
+  .bt-panel-kind {
+    font-size: 0.56rem;
+  }
+  .bt-panel-name {
+    font-size: 0.8rem;
+  }
+}
+/* Panels turning away go into shadow (CSS trig: no JS per panel). */
+.bt-panel-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #070912;
+  opacity: 0;
+  opacity: calc(0.62 * (1 - cos(var(--a))) / 2);
+}
+.bt-panel[data-front] .bt-panel-face {
+  border-color: color-mix(in srgb, var(--sd-pen) 55%, transparent);
+}
+/* The back of each plaque: lacquer and a seal. Same in both themes. */
+.bt-panel-back {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  transform: rotateY(180deg);
+  background:
+    radial-gradient(
+      120% 90% at 50% 0%,
+      rgba(255, 207, 112, 0.14),
+      transparent 60%
+    ),
+    #141729;
+  border: 1px solid #2c3150;
+  color: #e8d9b5;
+}
+.bt-panel-back .sd-seal {
+  width: 30%;
+}
+.bt-panel-back span:last-child {
+  max-width: 86%;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.bt-wall-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+.bt-wall-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border-strong);
+  background: var(--sd-surface);
+  color: var(--sd-text-primary);
+  transition:
+    scale 0.15s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+.bt-wall-btn:hover {
+  border-color: var(--sd-text-primary);
+}
+.bt-wall-btn:active {
+  scale: 0.93;
+}
+.bt-wall-btn:disabled {
+  opacity: 0.4;
+}
+.bt-wall-btn svg {
+  width: 20px;
+  height: 20px;
+}
+.bt-wall-status {
+  min-width: 13.5em;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--sd-text-secondary);
+}
+.bt-wall-status b {
+  color: var(--sd-text-primary);
+}
+
+/* Reduced motion: the same plaques, flat and still, in centred rows. */
+@media (prefers-reduced-motion: reduce) {
+  .bt-wall-stage {
+    height: auto;
+    perspective: none;
+    overflow: visible;
+    margin-inline: 0;
+    cursor: auto;
+    touch-action: auto;
+  }
+  .bt-wall-stage::before {
+    content: none;
+  }
+  .bt-ring {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0;
+    transform: none;
+  }
+  .bt-panel {
+    position: relative;
+    inset: auto;
+    flex: 0 1 200px;
+    height: auto;
+    transform: none;
+  }
+  .bt-panel-face {
+    position: relative;
+    inset: auto;
+    height: 100%;
+  }
+  .bt-panel-cap {
+    padding-block: 10px 12px;
+  }
+  .bt-panel-name {
+    white-space: normal;
+  }
+  .bt-panel-face::after,
+  .bt-panel-back,
+  .bt-wall-controls {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 39.99rem) {
+  .bt-ring {
+    gap: 12px;
+  }
+  .bt-panel {
+    flex-basis: calc(50% - 6px);
+  }
+}
+/* The instructions follow what the wall actually does. */
+.bt-still-only {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bt-still-only {
+    display: inline;
+  }
+  .bt-motion-only {
+    display: none;
+  }
+}
