@@ -7,6 +7,7 @@ import WorkMore from '@/components/about/work/more/WorkMore';
 import WorkGames from '@/components/about/work/games/WorkGames';
 import WorkWall from '@/components/about/work/wall/WorkWall';
 import { GlyphSprite } from '@/components/about/work/glyphs';
+import ScrollPad from '@/components/about/work/ScrollPad';
 import { shareMeta } from '@/lib/shareCard';
 import './work.css';
 
@@ -48,6 +49,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="au-page">
+      <ScrollPad />
       <GlyphSprite />
       <AboutSwitch current="work" />
       <WorkThreshold />

@@ -28,18 +28,32 @@
    scroll, and the games' rails and the ring clip it away.) globals.css
    already keeps a phone's tab bar clear with scroll-padding-bottom.
 
-   Scoped to this page with :has(), so it can't outlive a navigation away
-   from it. Every jump on the page clears the header through it too, so the
-   sections need no scroll margin of their own, and the projects' markers
-   take it back off (projects.css) to land each scene exactly at rest. */
-html:has(.au-page) {
+   Scoped to this page by an attribute on <html>, data-au-pad, which
+   ScrollPad (components/about/work/ScrollPad.tsx) sets while the page is
+   showing and takes away when it goes, so it can't outlive a navigation.
+   It was `html:has(.au-page)` first, and that cost a phone at 4x CPU four
+   whole-page style recalculations (1,500 elements, ~300ms each) in one
+   scroll through the emaki: Chrome restyles every element under an element
+   that carries a :has() rule whenever any :has() argument below it may have
+   changed, and the ema rack's :has(a:hover) changes under a passing finger.
+
+   Every jump on the page clears the header through it too, so the sections
+   need no scroll margin of their own, and the projects' markers take it
+   back off (projects.css, through --au-scroll-top, set on the page itself
+   so the attribute changes nothing but <html>) to land each scene exactly
+   at rest. */
+.au-page {
   --au-scroll-top: calc(
     var(--sd-header-h) + env(safe-area-inset-top) + 0.75rem
   );
-  scroll-padding-top: var(--au-scroll-top);
+}
+html[data-au-pad] {
+  scroll-padding-top: calc(
+    var(--sd-header-h) + env(safe-area-inset-top) + 0.75rem
+  );
 }
 @media (min-width: 64rem) {
-  html:has(.au-page) {
+  html[data-au-pad] {
     scroll-padding-bottom: 0.75rem;
   }
 }
