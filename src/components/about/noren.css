@@ -291,11 +291,14 @@
 /* As the page opens, the cloth is still swaying from whoever came through
    last: a ripple across the panels, in CSS, so it plays from the first paint
    without waiting for NorenFX (which moves the pieces inside each panel, so
-   the two never touch the same transform). */
+   the two never touch the same transform). It ends at rest (skewX(0), the
+   panel's own style), so it fills backwards only: once it has played the
+   panels are no longer animations, and stop being layers that might move,
+   which the browser answers by layering everything painted after them. */
 @media (prefers-reduced-motion: no-preference) {
   .au-door:not(.au-door-mini) .au-pn {
     transform-origin: 50% 0;
-    animation: au-enter 2.1s cubic-bezier(0.33, 0.7, 0.4, 1) 0.3s both;
+    animation: au-enter 2.1s cubic-bezier(0.33, 0.7, 0.4, 1) 0.3s backwards;
   }
   /* The two in Kiru's fists hardly move. */
   .au-door:not(.au-door-mini) .au-pn:nth-child(2) {

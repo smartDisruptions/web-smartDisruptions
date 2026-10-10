@@ -29,8 +29,10 @@ import { NOREN, REST, panelLeft } from './noren';
  * the same frame as the cloth, and only when they change.
  *
  * Costs: transforms only, written to eight elements, plus those three
- * opacities, from one rAF loop that runs only while the cloth is moving, and
- * never while the doorway is off screen or the tab is hidden. No React
+ * opacities, from one rAF loop that runs only while a hand or a tap is
+ * moving the cloth, and never while the doorway is off screen or the tab is
+ * hidden; a breeze on untouched cloth is simulated up front and played by
+ * the compositor (play), so the main thread sleeps through it. No React
  * state. Under reduced motion there is no loop at all: a tap swaps the still
  * picture (Kiru hidden, then back), and the light stays as it is.
  */
@@ -47,6 +49,8 @@ const CB = 4.4;
 const LAG = 0.55; // the lower piece's inertia against the upper's swing
 const MAX_S = 18;
 const MAX_B = 24;
+/** The rate a played gust is simulated at (see play). */
+const FPS = 60;
 
 // The hand.
 const SPREAD = 64; // cloth units: how wide a hand's push reaches
@@ -134,6 +138,9 @@ export default function NorenFX() {
     const handB = new Float64Array(N);
     const shownS = new Float64Array(N); // last values written to the DOM
     const shownB = new Float64Array(N);
+    // A gust the compositor is playing (see play), and its frames.
+    let played: Animation[] = [];
+    let baked: Float64Array[] = []; // per frame: s, vs, b, vb (N each)
     for (let i = 0; i < N; i++) {
       s[i] = restS[i] = shownS[i] = REST.peek[i][0];
       b[i] = restB[i] = shownB[i] = REST.peek[i][1];
@@ -162,10 +169,13 @@ export default function NorenFX() {
     // ── The light: how far the gaps are open past the resting V ───────────
     const hem = new Float64Array(N);
     let shownLight = 0;
+    const lightOf = (S: Float64Array, B: Float64Array) => {
+      for (let i = 0; i < N; i++) hem[i] = hemOf(S[i], B[i]);
+      return Math.min(1, Math.max(0, (openOf(hem) - OPEN_REST) / OPEN_FULL));
+    };
     const light = () => {
       if (!flare && !pool && !dust) return;
-      for (let i = 0; i < N; i++) hem[i] = hemOf(s[i], b[i]);
-      const l = Math.min(1, Math.max(0, (openOf(hem) - OPEN_REST) / OPEN_FULL));
+      const l = lightOf(s, b);
       if (Math.abs(l - shownLight) < 0.01 && !(l === 0 && shownLight !== 0))
         return;
       shownLight = l;
@@ -176,6 +186,7 @@ export default function NorenFX() {
 
     // ── Kiru: let go, then peek again ─────────────────────────────────────
     function duck() {
+      unplay();
       peeking = false;
       door.dataset.kiru = 'duck';
       setRest(REST.duck);
@@ -183,6 +194,7 @@ export default function NorenFX() {
       backTimer = window.setTimeout(peek, 1500 + Math.random() * 900);
     }
     function peek() {
+      unplay();
       // A new face while he's out of sight.
       mood = (mood + 1) % 2;
       door.dataset.mood = String(mood);
@@ -269,6 +281,7 @@ export default function NorenFX() {
       wake();
     };
     const move = (e: PointerEvent) => {
+      unplay();
       const p = place(e);
       const t = e.timeStamp;
       if (handOn && lastT) {
@@ -331,6 +344,7 @@ export default function NorenFX() {
 
     // ── A tap: push through ───────────────────────────────────────────────
     on(hit, 'click', (e: MouseEvent) => {
+      unplay();
       // Enter / Space arrive as a click with no pointer: push at the middle.
       let px = NOREN.w / 2;
       let py = NOREN.h * 0.85;
@@ -368,6 +382,7 @@ export default function NorenFX() {
     let gustNext = mountedAt + 6000;
     const gusted = new Uint8Array(N);
     const gust = (dir: number, amp: number) => {
+      unplay();
       gustAt = performance.now();
       gustDir = dir;
       gustAmp = amp;
@@ -381,9 +396,20 @@ export default function NorenFX() {
       // open a little and settle.
       const t = window.setTimeout(
         () => {
-          vs[1] -= 14;
-          vs[2] += 14;
           gustNext = performance.now() + 5000;
+          const grip = (f: number, VS: Float64Array) => {
+            if (f === 0) {
+              VS[1] -= 14;
+              VS[2] += 14;
+            }
+            return 0;
+          };
+          if (!raf && !handOn && !played.length && 'animate' in door) {
+            play(grip);
+            return;
+          }
+          unplay();
+          grip(0, vs);
           wake();
         },
         Math.max(400, mountedAt + 2500 - performance.now())
@@ -395,12 +421,209 @@ export default function NorenFX() {
       if (!visible || document.hidden || now < gustNext) return;
       if (now - lastTouch < 4000 || now - lastScroll < 1200) return;
       gustNext = now + 6500 + Math.random() * 6000;
-      gust(Math.random() < 0.5 ? -1 : 1, 0.7 + Math.random() * 0.5);
+      const dir = Math.random() < 0.5 ? -1 : 1;
+      const amp = 0.7 + Math.random() * 0.5;
+      // At rest and untouched: hand the whole gust to the compositor.
+      if (!raf && !handOn && !played.length && 'animate' in door)
+        play(gustKicks(dir, amp));
+      else gust(dir, amp);
     }, 1000);
     cleanups.push(() => window.clearInterval(breeze));
 
+    // ── A gust, played by the compositor ──────────────────────────────────
+    // A gust (or Kiru's first grip) that starts with the cloth at rest and
+    // nobody touching it is fully determined, so it is simulated up front
+    // (the same springs, at 60fps) and played as transform and opacity
+    // animations on the same eight pieces and three lights. The compositor
+    // runs those: the main thread sleeps through the seconds the cloth takes
+    // to settle. Run live, each of those frames was a full main-thread frame
+    // for the whole page (Kiru's loops and the dust included), which kept a
+    // 4x-throttled phone's main thread ~90% busy while the reader sat on the
+    // first screen. A hand, a tap or another gust mid-way takes over from
+    // the frame on screen and carries on live.
+    const settled = (
+      S: Float64Array,
+      VS: Float64Array,
+      B: Float64Array,
+      VB: Float64Array
+    ) => {
+      for (let i = 0; i < N; i++) {
+        const off =
+          Math.abs(VS[i]) +
+          Math.abs(VB[i]) +
+          Math.abs(S[i] - restS[i] - handS[i]) +
+          Math.abs(B[i] - restB[i] - handB[i]);
+        if (off > 0.015) return false;
+      }
+      return true;
+    };
+    const snap = (
+      S: Float64Array,
+      VS: Float64Array,
+      B: Float64Array,
+      VB: Float64Array
+    ) => {
+      const f = new Float64Array(N * 4);
+      f.set(S, 0);
+      f.set(VS, N);
+      f.set(B, 2 * N);
+      f.set(VB, 3 * N);
+      return f;
+    };
+    function unplay() {
+      if (!played.length) return;
+      // Carry on from the frame on screen.
+      const t = Number(played[0].currentTime) || 0;
+      const k = Math.min(
+        baked.length - 1,
+        Math.max(0, Math.floor((t * FPS) / 1000))
+      );
+      const f = baked[k];
+      s.set(f.subarray(0, N));
+      vs.set(f.subarray(N, 2 * N));
+      b.set(f.subarray(2 * N, 3 * N));
+      vb.set(f.subarray(3 * N, 4 * N));
+      for (let i = 0; i < N; i++) write(i);
+      light();
+      for (const a of played) a.cancel();
+      played = [];
+      baked = [];
+    }
+    /** A gust's kicks, panel by panel, 120ms apart (as frame() gives them):
+        applied to frame f's velocities; returns how many are still to come. */
+    const gustKicks = (dir: number, amp: number) => {
+      const kicked = new Uint8Array(N);
+      return (f: number, VS: Float64Array, VB: Float64Array) => {
+        let left = 0;
+        for (let k = 0; k < N; k++) {
+          const i = dir > 0 ? k : N - 1 - k;
+          if (kicked[i]) continue;
+          if ((f * 1000) / FPS >= k * 120) {
+            kicked[i] = 1;
+            const g = amp * held(i);
+            VS[i] += dir * 15 * g;
+            VB[i] += dir * 19 * g;
+          } else left++;
+        }
+        return left;
+      };
+    };
+    function play(
+      kicks: (f: number, VS: Float64Array, VB: Float64Array) => number
+    ) {
+      const S = Float64Array.from(s);
+      const VS = Float64Array.from(vs);
+      const B = Float64Array.from(b);
+      const VB = Float64Array.from(vb);
+      const frames = [snap(S, VS, B, VB)];
+      const dt = 1 / FPS;
+      for (let f = 0; f < FPS * 12; f++) {
+        const left = kicks(f, VS, VB);
+        integrate(S, VS, B, VB, dt);
+        frames.push(snap(S, VS, B, VB));
+        if (!left && settled(S, VS, B, VB)) break;
+      }
+      baked = frames;
+      const opts: KeyframeAnimationOptions = {
+        duration: ((frames.length - 1) * 1000) / FPS,
+        easing: 'linear',
+      };
+      const deg = (v: number) => `skewX(${v.toFixed(3)}deg)`;
+      for (let i = 0; i < N; i++) {
+        played.push(
+          uppers[i].animate(
+            frames.map((f) => ({ transform: deg(f[i]) })),
+            opts
+          )
+        );
+        played.push(
+          lowers[i].animate(
+            frames.map((f) => ({ transform: deg(f[2 * N + i]) })),
+            opts
+          )
+        );
+      }
+      if (flare || pool || dust) {
+        const ls = frames.map((f) =>
+          lightOf(f.subarray(0, N), f.subarray(2 * N, 3 * N))
+        );
+        if (flare)
+          played.push(
+            flare.animate(
+              ls.map((l) => ({ opacity: l })),
+              opts
+            )
+          );
+        if (pool)
+          played.push(
+            pool.animate(
+              ls.map((l) => ({ opacity: l * 0.9 })),
+              opts
+            )
+          );
+        if (dust)
+          played.push(
+            dust.animate(
+              ls.map((l) => ({ opacity: 0.7 + 0.3 * l })),
+              opts
+            )
+          );
+      }
+      const mine = played;
+      mine[0].onfinish = () => {
+        if (played !== mine) return;
+        // Settled: land exactly on rest, as the live loop does.
+        for (let i = 0; i < N; i++) {
+          s[i] = restS[i] + handS[i];
+          b[i] = restB[i] + handB[i];
+          vs[i] = vb[i] = 0;
+          write(i);
+        }
+        light();
+        for (const a of played) a.cancel();
+        played = [];
+        baked = [];
+      };
+    }
+    cleanups.push(() => {
+      for (const a of played) a.cancel();
+      played = [];
+    });
+
+    // ── The springs: one step, for the live loop and a played gust alike ──
+    // Fixed substeps keep stiff springs stable on a slow frame.
+    function integrate(
+      S: Float64Array,
+      VS: Float64Array,
+      B: Float64Array,
+      VB: Float64Array,
+      dt: number
+    ) {
+      const steps = Math.max(1, Math.ceil(dt * 120));
+      const h = dt / steps;
+      for (let k = 0; k < steps; k++) {
+        for (let i = 0; i < N; i++) {
+          const as = -KS * (S[i] - restS[i] - handS[i]) - CS * VS[i];
+          VS[i] += as * h;
+          S[i] += VS[i] * h;
+          const ab = -KB * (B[i] - restB[i] - handB[i]) - CB * VB[i] - LAG * as;
+          VB[i] += ab * h;
+          B[i] += VB[i] * h;
+          if (S[i] > MAX_S || S[i] < -MAX_S) {
+            S[i] = Math.max(-MAX_S, Math.min(MAX_S, S[i]));
+            VS[i] *= -0.3;
+          }
+          if (B[i] > MAX_B || B[i] < -MAX_B) {
+            B[i] = Math.max(-MAX_B, Math.min(MAX_B, B[i]));
+            VB[i] *= -0.3;
+          }
+        }
+      }
+    }
+
     // ── The loop: runs only while the cloth moves ─────────────────────────
     function wake() {
+      if (played.length) return;
       if (!raf && visible && !document.hidden) {
         last = performance.now();
         raf = requestAnimationFrame(frame);
@@ -427,27 +650,7 @@ export default function NorenFX() {
         if (!left) gustAt = -1;
       }
 
-      // Fixed substeps keep stiff springs stable on a slow frame.
-      const steps = Math.max(1, Math.ceil(dt * 120));
-      const h = dt / steps;
-      for (let k = 0; k < steps; k++) {
-        for (let i = 0; i < N; i++) {
-          const as = -KS * (s[i] - restS[i] - handS[i]) - CS * vs[i];
-          vs[i] += as * h;
-          s[i] += vs[i] * h;
-          const ab = -KB * (b[i] - restB[i] - handB[i]) - CB * vb[i] - LAG * as;
-          vb[i] += ab * h;
-          b[i] += vb[i] * h;
-          if (s[i] > MAX_S || s[i] < -MAX_S) {
-            s[i] = Math.max(-MAX_S, Math.min(MAX_S, s[i]));
-            vs[i] *= -0.3;
-          }
-          if (b[i] > MAX_B || b[i] < -MAX_B) {
-            b[i] = Math.max(-MAX_B, Math.min(MAX_B, b[i]));
-            vb[i] *= -0.3;
-          }
-        }
-      }
+      integrate(s, vs, b, vb, dt);
 
       // A hand resting on the cloth doesn't keep the loop awake; its next move
       // wakes it.

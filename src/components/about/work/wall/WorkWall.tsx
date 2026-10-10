@@ -2,7 +2,7 @@ import ArmoryWall, {
   type WallGroup,
   type WallItem,
 } from '@/components/built/ArmoryWall';
-import { Seal } from '@/components/brand/Kanji';
+import { GlyphSeal } from '@/components/about/work/glyphs';
 import {
   WORK_IDS,
   catalogue,
@@ -81,7 +81,7 @@ export default function WorkWall() {
       {/* The page closes with the seal it opened with (the receipt's 作,
           "made"), before the card that introduces the person. */}
       <p className="wk-wl-end">
-        <Seal char="作" className="wk-wl-seal" />
+        <GlyphSeal char="作" className="wk-wl-seal" />
         <span className="font-read">That&rsquo;s all of it, so far.</span>
       </p>
     </section>

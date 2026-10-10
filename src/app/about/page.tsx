@@ -6,6 +6,7 @@ import WorkProjects from '@/components/about/work/projects/WorkProjects';
 import WorkMore from '@/components/about/work/more/WorkMore';
 import WorkGames from '@/components/about/work/games/WorkGames';
 import WorkWall from '@/components/about/work/wall/WorkWall';
+import { GlyphSprite } from '@/components/about/work/glyphs';
 import { shareMeta } from '@/lib/shareCard';
 import './work.css';
 
@@ -39,11 +40,15 @@ export const metadata: Metadata = {
  *  4. the games (#games);
  *  5. everything on one wall (#wall), the ring.
  *
+ * Every kanji and seal in those sections is drawn from one copy of its
+ * glyph, the sprite rendered first here (components/about/work/glyphs.tsx).
+ *
  * Styles: ./work.css (au-) for the page itself.
  */
 export default function AboutPage() {
   return (
     <div className="au-page">
+      <GlyphSprite />
       <AboutSwitch current="work" />
       <WorkThreshold />
       <WorkProjects />

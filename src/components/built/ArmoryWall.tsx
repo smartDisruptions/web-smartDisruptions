@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
-import Kanji, { Seal } from '@/components/brand/Kanji';
+import { Glyph, GlyphSeal } from '@/components/about/work/glyphs';
 import ArmoryWallIsland from './ArmoryWallIsland';
 import { sizeOf } from './media';
 import './wall.css';
@@ -58,6 +58,10 @@ const AWAY = 0.36;
  *
  * Under reduced motion the same plaques lie flat in a grid, the chips filter
  * it, and nothing loads.
+ *
+ * The seals and the lantern's 創 are drawn from /about's glyph sprite
+ * (components/about/work/glyphs.tsx), so the page that hangs this wall must
+ * render <GlyphSprite /> — /about does, and is the only page that does.
  */
 export default function ArmoryWall({
   items,
@@ -140,7 +144,7 @@ export default function ArmoryWall({
                 </span>
                 <span className="sr-only">{`${item.name}, ${item.kind}`}</span>
                 <span className="bt-panel-back" aria-hidden="true">
-                  <Seal char={item.mark} />
+                  <GlyphSeal char={item.mark} />
                   <span className="bt-panel-back-name">{item.name}</span>
                 </span>
               </>
@@ -236,7 +240,7 @@ export default function ArmoryWall({
             <rect x="18" y="95.5" width="28" height="1.5" fill="#c8962e" />
             <path d="M32 103v10" stroke="#1b1512" strokeWidth="2" />
           </svg>
-          <Kanji char="創" className="bt-wall-lantern-k" />
+          <Glyph char="創" className="bt-wall-lantern-k" />
         </div>
       </div>
 

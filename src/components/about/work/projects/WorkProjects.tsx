@@ -1,6 +1,6 @@
 import { Fragment, type CSSProperties } from 'react';
 import Link from 'next/link';
-import Kanji, { Seal } from '@/components/brand/Kanji';
+import { GlyphSeal, glyphId } from '@/components/about/work/glyphs';
 import Device from '@/components/built/Device';
 import { IconArrowRight, IconExternal } from '@/components/icons';
 import { frameFor, hostOf, markFor } from '@/components/built/media';
@@ -46,8 +46,8 @@ import './projects.css';
  * it has to become a layer of its own. With the devices painted last,
  * nothing does. The paper and the kanji are one layer each for the same
  * reason (.wk-pj-base): one sheet of washi behind all four scenes, and one
- * row of kanji drawn with <use> from each scene's own glyph, so no glyph is
- * shipped twice.
+ * row of kanji. Every kanji and seal here is drawn with <use> from the
+ * page's glyph sprite (../glyphs.tsx), so no glyph is shipped twice.
  *
  * The one island (./WorkProjectsIsland, behaviour in ./follow.ts, loaded as
  * the section nears the screen) handles keyboard focus: when Tab reaches a
@@ -73,8 +73,6 @@ const BTN_SECONDARY = `${BTN_BASE} border border-[var(--sd-border-strong)] bg-su
 
 /** A scene's marker: what its seal links to, and the hash a jump leaves in the address bar. */
 const markerId = (slug: string) => `${WORK_IDS.projects}-${slug}`;
-/** A scene's brush kanji, which the moving scroll's kanji row draws with <use>. */
-const glyphId = (slug: string) => `wk-pj-glyph-${slug}`;
 
 /** One scene of the scroll: the devices on the paper, and the words. */
 function Scene({ project, k }: { project: Project; k: number }) {
@@ -94,12 +92,11 @@ function Scene({ project, k }: { project: Project; k: number }) {
       <svg
         className="wk-pj-mark"
         viewBox="0 0 1000 1000"
+        fill="currentColor"
         aria-hidden="true"
         focusable="false"
       >
-        <g id={glyphId(project.slug)}>
-          <Kanji char={markFor(project.slug)} />
-        </g>
+        <use href={`#${glyphId(markFor(project.slug))}`} />
       </svg>
 
       <div className="wk-pj-in">
@@ -199,7 +196,7 @@ function Rail() {
               <span className="wk-pj-ghost" aria-hidden="true">
                 {pad(k + 1)}
               </span>
-              <Seal char={markFor(p.slug)} className="wk-pj-stamp" />
+              <GlyphSeal char={markFor(p.slug)} className="wk-pj-stamp" />
               <span className="wk-pj-seal-name">{p.name}</span>
             </a>
           </li>
@@ -226,11 +223,12 @@ function Base() {
               key={p.slug}
               className="wk-pj-glyph"
               viewBox="0 0 1000 1000"
+              fill="currentColor"
               focusable="false"
               data-flip={k % 2 === 1 || undefined}
               style={{ '--k': k } as CSSProperties}
             >
-              <use href={`#${glyphId(p.slug)}`} />
+              <use href={`#${glyphId(markFor(p.slug))}`} />
             </svg>
           ))}
         </div>

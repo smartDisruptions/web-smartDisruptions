@@ -1,5 +1,5 @@
 import StaticSvg from '@/components/brand/StaticSvg';
-import { GLYPHS } from '@/components/brand/glyphs';
+import { glyphId } from '@/components/about/work/glyphs';
 
 /**
  * The back room's sign: 遊戯場 (yūgijō, "a place to play"), a vertical neon
@@ -8,13 +8,15 @@ import { GLYPHS } from '@/components/brand/glyphs';
  * "Games I built" in English — so it is aria-hidden.
  *
  * The glyphs are the site's baked brush paths (components/brand/glyphs.ts),
- * never a font, and each is traced as an outline rather than filled: neon is
- * a line you bend. The outline is defined once and stroked four times by
- * <use>, wide and faint to narrow and bright — a halo, a glow, the tube and
- * its hot white core. That is how the sign glows without a blur filter: a
+ * never a font, drawn from /about's glyph sprite (../glyphs.tsx, whose paths
+ * keep their stroke width in screen pixels for this sign), and each is
+ * traced as an outline rather than filled: neon is a line you bend. The
+ * outline is placed once and stroked four times by <use>, wide and faint to
+ * narrow and bright — a halo, a glow, the tube and its hot white core. That is how the sign glows without a blur filter: a
  * blur is repainted whenever anything near it changes, four static strokes
  * are painted once. The strokes keep their width in screen pixels
- * (non-scaling-stroke), so the tube reads the same on a phone and a desktop.
+ * (non-scaling-stroke, on the sprite's paths), so the tube reads the same on
+ * a phone and a desktop.
  *
  * One string of static markup (StaticSvg), so React never sees the paths.
  */
@@ -36,11 +38,10 @@ export default function NeonSign({ className }: { className?: string }) {
       <defs>
         <g id="wk-gm-sign-glyphs">
           {CHARS.map((ch, i) => (
-            <path
+            <use
               key={ch}
-              d={GLYPHS.brush[ch].d}
+              href={`#${glyphId(ch)}`}
               transform={i ? `translate(0 ${i * STEP})` : undefined}
-              vectorEffect="non-scaling-stroke"
             />
           ))}
         </g>

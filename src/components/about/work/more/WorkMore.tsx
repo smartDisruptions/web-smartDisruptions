@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
-import Kanji, { Seal } from '@/components/brand/Kanji';
+import { Glyph, GlyphSeal } from '@/components/about/work/glyphs';
 import Kiru from '@/components/kiru/Kiru';
 import { IconArrowRight, IconExternal } from '@/components/icons';
 import { markFor, shotTransition, sizeOf } from '@/components/built/media';
@@ -151,7 +151,7 @@ function Ema({ item, i }: { item: CatalogueEntry; i: number }) {
                   );
                 })}
               </div>
-              <Seal char={markFor(item.key)} className="wk-mr-seal" />
+              <GlyphSeal char={markFor(item.key)} className="wk-mr-seal" />
               <span className="wk-mr-hole" aria-hidden="true" />
             </div>
           </div>
@@ -226,7 +226,7 @@ export default function WorkMore() {
           lit at night, when its light is the band's. */}
       <span className="wk-mr-lantern" aria-hidden="true">
         <span className="wk-mr-lantern-body">
-          <Kanji char="光" />
+          <Glyph char="光" />
         </span>
       </span>
 

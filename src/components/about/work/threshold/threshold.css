@@ -88,27 +88,43 @@
   color: var(--sd-pen-ink);
 }
 /* The katana slash leaves a hairline where its halves meet; once the cut has
-   landed, seal it (the same fix as About Me's headline). */
+   landed, seal it (the same fix as About Me's headline). The sealed line is
+   the resting style (no clip, the lower copy hidden) and the cut is held
+   only while the slash plays (backwards fill), so once it has landed
+   nothing here is still an animation. A finished animation that keeps
+   filling stays a composited layer for good, and a layer that might move
+   makes the browser lift what is painted after it into layers of its own
+   (with the noren's arrival and the stamp below: ~20 layers on a phone,
+   one of them 390×4764px). */
 @media (prefers-reduced-motion: no-preference) {
   .au-h1 .sd-slash-a {
+    clip-path: none;
     animation:
-      sd-slash-a 1s var(--ease-out-expo) var(--d, 0s) both,
-      au-seal 0.01s linear calc(var(--d, 0s) + 1s) forwards;
+      sd-slash-a 1s var(--ease-out-expo) var(--d, 0s) backwards,
+      au-cut 1s linear var(--d, 0s) backwards;
   }
   .au-h1 .sd-slash::before {
-    animation:
-      sd-slash-b 1s var(--ease-out-expo) var(--d, 0s) both,
-      au-seal-copy 0.01s linear calc(var(--d, 0s) + 1s) forwards;
-  }
-}
-@keyframes au-seal {
-  to {
-    clip-path: none;
-  }
-}
-@keyframes au-seal-copy {
-  to {
     opacity: 0;
+    animation:
+      sd-slash-b 1s var(--ease-out-expo) var(--d, 0s) backwards,
+      au-cut-copy 1s linear var(--d, 0s) backwards;
+  }
+  .au-h1 .sd-slash::after {
+    animation-fill-mode: backwards;
+  }
+}
+/* The cut, while it plays: the upper half clipped (globals.css .sd-slash-a)
+   and the lower copy showing. */
+@keyframes au-cut {
+  from,
+  to {
+    clip-path: polygon(-5% -20%, 105% -20%, 105% 40%, -5% 66%);
+  }
+}
+@keyframes au-cut-copy {
+  from,
+  to {
+    opacity: 1;
   }
 }
 
@@ -502,11 +518,14 @@
   .au-th-till[data-armed]:not([data-landed]) .au-rc-seal {
     opacity: 0;
   }
+  /* Both end on the resting style (the seal at -8deg, its ink ring gone),
+     so they fill backwards only and are done with once they have played
+     (see the h1's note on finished animations above). */
   .au-th-till[data-landed] .au-rc-seal {
-    animation: au-th-stamp 0.52s cubic-bezier(0.3, 0, 0.25, 1) both;
+    animation: au-th-stamp 0.52s cubic-bezier(0.3, 0, 0.25, 1) backwards;
   }
   .au-th-till[data-landed] .au-rc-seal::after {
-    animation: au-th-ink 0.7s ease-out 0.24s both;
+    animation: au-th-ink 0.7s ease-out 0.24s backwards;
   }
   .au-th-till[data-landed] .au-receipt {
     animation: au-th-thump 0.38s ease-out 0.2s;

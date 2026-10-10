@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import Kanji, { Seal, Slash } from '@/components/brand/Kanji';
+import { Slash } from '@/components/brand/Kanji';
+import { Glyph, GlyphSeal } from '@/components/about/work/glyphs';
 import Noren from '@/components/about/Noren';
 import { getFieldNotes } from '@/lib/fieldNotes';
 import { marketStormReports } from '@/data/marketStorm';
@@ -87,7 +88,7 @@ export default function WorkThreshold() {
           <Noren />
         </div>
         <p className="au-hint" aria-hidden>
-          <Kanji char="場" className="au-hint-k" />
+          <Glyph char="場" className="au-hint-k" />
           <span className="au-hint-fine">
             Brush the noren aside. Kiru&rsquo;s back there.
           </span>
@@ -143,7 +144,7 @@ export default function WorkThreshold() {
           <p className="au-rc-foot">
             Receipts over claims. {wall.length} things, all on one wall.
           </p>
-          <Seal char="作" className="au-rc-seal" />
+          <GlyphSeal char="作" className="au-rc-seal" />
         </div>
         {/* The till the slip comes out of: a lacquered box with a slot, a
             lamp and a drawer. It rides the bottom of the screen until the
