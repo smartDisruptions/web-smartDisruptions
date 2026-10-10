@@ -56,10 +56,10 @@ export default function Footer() {
                 </li>
               ))}
               {/* Market Storm left the nav for a section of the Writing page.
-                  Every report still lives in its archive, linked from here so
-                  it stays one tap from any page. "Market Storm archive" wrapped
-                  to two lines in this column at every width; the page it opens
-                  says it is the archive. */}
+                  Every report is still listed on /market-storm, linked from
+                  here so it stays one tap from any page. "Market Storm
+                  archive" wrapped to two lines in this column at every width,
+                  and that page is the front, then the archive, now. */}
               <li>
                 <Link
                   href="/market-storm"

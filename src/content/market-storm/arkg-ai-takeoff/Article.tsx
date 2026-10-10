@@ -111,12 +111,14 @@ function Prose({ children }: { children: ReactNode }) {
   return <div className="font-read ak-prose">{children}</div>;
 }
 
+// A <div>, not an <aside>: a number set big in the running text is part of
+// the article, not a landmark of its own (axe: an aside inside <main>).
 function Big({ value, children }: { value: string; children: ReactNode }) {
   return (
-    <aside className="ak-big sd-reveal">
+    <div className="ak-big sd-reveal">
       <span className="font-display ak-big-v">{value}</span>
       <span className="ak-big-c">{children}</span>
-    </aside>
+    </div>
   );
 }
 

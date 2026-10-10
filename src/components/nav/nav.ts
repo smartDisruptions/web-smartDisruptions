@@ -22,7 +22,7 @@ export const NAV: NavItem[] = [
 /**
  * Top-level segments that belong to another section's tab. Market Storm left
  * the nav in October 2026 and became a section of the Writing page, so its
- * archive (/market-storm, its pages and every report) lights Writing. The
+ * own page (/market-storm) and every report light Writing. The
  * guides are listed among Writing's field notes, so they light it too.
  *
  * About is two pages since October 2026: /about (the work) and /about-me (the

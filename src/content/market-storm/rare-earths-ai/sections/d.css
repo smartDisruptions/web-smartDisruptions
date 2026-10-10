@@ -256,7 +256,6 @@
    lists its shells), the latest price where the atomic mass goes. */
 .re-d-el {
   --k: var(--d-ok);
-  container-type: inline-size;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-areas:
@@ -353,8 +352,29 @@
   text-align: right;
   line-height: 1.25;
 }
+/* The symbol's row, the full width of the tile: a size container whose
+   width is exactly the tile's content box (its three tracks and two gaps
+   are the whole of that box), so 100cqi below is the same number, to the
+   64th of a pixel, that the whole tile measured when it was the container.
+   The pips share its right end; the symbol is sized to stop short of them.
+   Why not the tile: a size container's contents are styled in the middle of
+   layout, and twelve tile containers cost 8-17% of this chapter's first
+   style and layout (a 390px phone, thread time in a fresh document, 50-70
+   paired samples, 2026-10-09). With only the ticker inside, the chapter
+   lays out 5-7% faster, about half of that back; on the built page at 4x
+   CPU its first layout went from a median of 184ms to 165ms (25 loads
+   each). Removing the containers outright would save the rest, but no
+   formula from the viewport, the grid or the figure reproduces a tile's
+   width to the 64th of a pixel (the grid hands its leftover 64ths to some
+   columns and not others), and a symbol 0.005px off renders differently:
+   tried, and not pixel-identical. */
+.re-d-el-symw {
+  container-type: inline-size;
+  grid-row: 2;
+  grid-column: 1 / -1;
+}
 .re-d-el-sym {
-  grid-area: sym;
+  display: block;
   margin-top: 0.3rem;
   font-family: var(--font-display);
   font-size-adjust: 0.5;

@@ -68,10 +68,19 @@ export default function PaletteDialog({ open, onClose }: { open: boolean; onClos
         ...items.filter((i) => i.k === 'Note').slice(0, 5),
       ];
     }
+    // The best match wins, then the kind; between two Market Storm reports
+    // that match equally, the current one comes before the archived one. So
+    // an archived report named in the query still comes first, and a broad
+    // query ("storm") lists the current reports before the archive.
     return items
       .map((i) => ({ i, s: score(i, terms) }))
       .filter((r) => r.s > 0)
-      .sort((a, b) => b.s - a.s || KIND_ORDER.indexOf(a.i.k) - KIND_ORDER.indexOf(b.i.k))
+      .sort(
+        (a, b) =>
+          b.s - a.s ||
+          KIND_ORDER.indexOf(a.i.k) - KIND_ORDER.indexOf(b.i.k) ||
+          (a.i.a ?? 0) - (b.i.a ?? 0)
+      )
       .slice(0, 12)
       .map((r) => r.i);
   }, [items, q]);
@@ -161,7 +170,19 @@ export default function PaletteDialog({ open, onClose }: { open: boolean; onClos
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{item.t}</span>
-                {item.d && <span className="block truncate text-sm text-text-secondary">{item.d}</span>}
+                {(item.d || item.a) && (
+                  <span className="block truncate text-sm text-text-secondary">
+                    {/* Said in words, first on the line, so it survives the
+                        truncation and a screen reader hears it too. */}
+                    {item.a ? (
+                      <>
+                        <span className="font-semibold">Archived</span>
+                        {item.d ? ' · ' : ''}
+                      </>
+                    ) : null}
+                    {item.d}
+                  </span>
+                )}
               </span>
               <IconArrowRight size={16} className={`shrink-0 text-text-secondary transition-opacity ${i === sel ? 'opacity-100' : 'opacity-0'}`} />
             </li>

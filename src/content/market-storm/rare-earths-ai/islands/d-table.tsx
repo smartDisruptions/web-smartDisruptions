@@ -121,7 +121,9 @@ const Tile = memo(function Tile({
         <span className="re-d-el-z" aria-hidden="true">
           {String(n).padStart(2, '0')}
         </span>
-        <span className="re-d-el-sym">{t.ticker}</span>
+        <span className="re-d-el-symw">
+          <span className="re-d-el-sym">{t.ticker}</span>
+        </span>
         <span className="re-d-el-name">{t.face.name}</span>
         <span className={`re-flag is-${t.kind} re-d-el-flag`}>
           {t.face.status}

@@ -1,5 +1,5 @@
 import { getPublishedPosts } from '@/lib/posts';
-import { marketStormReports } from '@/data/marketStorm';
+import { archivedReports, frontReports } from '@/data/marketStorm';
 import { projects } from '@/data/projects';
 import { apps, GAME_SLUGS } from '@/data/apps';
 import { builtHref } from '@/data/projects';
@@ -18,6 +18,7 @@ export type SearchItem = {
   k: 'Page' | 'Note' | 'Market Storm' | 'Built' | 'Arcade';
   d?: string; // one line of description
   x?: string; // extra words to match on, never shown
+  a?: 1; // an archived Market Storm report: still found, ranked after the current ones, marked
 };
 
 export function GET() {
@@ -68,11 +69,13 @@ export function GET() {
     },
     { t: 'Arcade', u: '/games', k: 'Page', d: 'Games you can play right now' },
     {
-      t: 'Market Storm archive',
+      // Not "Market Storm archive" any more: the archive is now the reports
+      // that left the front, and this page leads with the ones that didn't.
+      t: 'Market Storm',
       u: '/market-storm',
       k: 'Page',
       d: 'Every report: the AI market, read by a research method',
-      x: 'storm reports earnings research thesis',
+      x: 'storm reports earnings research thesis archive',
     },
     {
       t: 'About',
@@ -119,13 +122,19 @@ export function GET() {
       x: [p.category, ...p.tags].join(' '),
     });
   }
-  for (const r of marketStormReports) {
+  // Every report, the front first in its order, then the archive. Archived
+  // ones stay findable (their pages are all still up) but carry `a`, which the
+  // palette marks and ranks after the current ones on an equal match.
+  for (const r of [...frontReports(), ...archivedReports()]) {
     items.push({
       t: r.title,
       u: `/market-storm/${r.slug}`,
       k: 'Market Storm',
       d: r.excerpt,
-      x: [r.ticker, r.company, ...(r.tags ?? [])].filter(Boolean).join(' '),
+      x: [r.ticker, r.company, ...(r.tags ?? []), r.archived && 'archived']
+        .filter(Boolean)
+        .join(' '),
+      ...(r.archived ? { a: 1 as const } : {}),
     });
   }
   for (const p of projects) {
