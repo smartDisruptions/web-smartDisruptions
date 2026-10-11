@@ -6,8 +6,8 @@ import { GlyphSeal } from '@/components/about/work/glyphs';
 import {
   WORK_IDS,
   catalogue,
+  featured,
   games,
-  projects,
   wall,
 } from '@/components/about/work/data';
 import './work-wall.css';
@@ -15,8 +15,8 @@ import './work-wall.css';
 /**
  * Everything on one wall (#wall): the last room of the work, and of /about.
  *
- * Every project, app and game on the site — the four, the smaller builds and
- * the games, twenty plaques — hung on one ring in a hall lit by a single red
+ * Every project, app and game on the site — the four, everything else and
+ * the games, one plaque each — hung on one ring in a hall lit by a single red
  * paper lantern. The ring turns through the lantern's light: the plaque at
  * the front is lit and glossed, the ones turning away go into the dark, the
  * far side shows the backs of the plaques with their seals. Day is the same
@@ -37,7 +37,7 @@ import './work-wall.css';
 export default function WorkWall() {
   // Which chip finds each plaque: the section it is shown in above.
   const groupOf = new Map<string, string>([
-    ...projects.map((p) => [p.slug, 'projects'] as const),
+    ...featured.map((f) => [f.slug, 'projects'] as const),
     ...catalogue.map((c) => [c.key, 'more'] as const),
     ...games.map((g) => [g.slug, 'games'] as const),
   ]);
@@ -47,8 +47,8 @@ export default function WorkWall() {
   }));
   const groups: WallGroup[] = [
     { id: 'all', label: 'All', count: wall.length },
-    { id: 'projects', label: 'Projects', count: projects.length },
-    { id: 'more', label: 'Smaller builds', count: catalogue.length },
+    { id: 'projects', label: 'Projects', count: featured.length },
+    { id: 'more', label: 'More builds', count: catalogue.length },
     { id: 'games', label: 'Games', count: games.length },
   ];
 

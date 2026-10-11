@@ -9,23 +9,22 @@ import { getAppBySlug } from '@/data/apps';
 import {
   WORK_IDS,
   catalogue,
-  inWords,
-  projects,
   type CatalogueEntry,
 } from '@/components/about/work/data';
 import './more.css';
 
 /**
- * EVERYTHING ELSE (#more) — the smaller builds, hung as ema on a rack.
+ * EVERYTHING ELSE (#more) — the rest of the work, hung as ema on a rack.
  *
  * At a shrine, an ema (絵馬) is a small wooden plaque with a picture painted
  * on one face, hung by a cord on a long wooden rack beside everybody else's.
- * Here each of the smaller builds is one: its screenshot painted on the face
- * inside a thin ink line, its name brushed under the picture, its brush kanji
- * stamped across the corner as a seal. The four hang from one rail on a
- * desktop and from two shorter rails on a tablet, and slide past on a swipe
- * rail on a phone. What each one is, and the two ways in (how I built it,
- * try it), sit under its plaque as plain text, so nothing waits on a hover.
+ * Here each build that isn't one of the four is one: its screenshot painted
+ * on the face inside a thin ink line, its name brushed under the picture,
+ * its brush kanji stamped across the corner as a seal. The six hang from two
+ * rails of three on a desktop (the websites, then the apps) and from rails
+ * of two on a tablet, and slide past on a swipe rail on a phone. What each
+ * one is, and the two ways in (how I built it, and the thing itself), sit
+ * under its plaque as plain text, so nothing waits on a hover.
  *
  * MOTION is CSS only (./more.css): each plaque swings into place on its cord
  * as the rack scrolls into view (a scroll timeline), sways like a hung thing
@@ -52,7 +51,7 @@ import './more.css';
 /**
  * How each plaque hangs: its cord (px), the angle it comes to rest at, and the
  * way it swings (data-swing picks the side its swing-in starts from). Set by
- * hand: render has to be deterministic, and four plaques at exactly the same
+ * hand: render has to be deterministic, and plaques at exactly the same
  * height and angle look printed, not hung. The longest cord is
  * --wk-mr-cord-max in ./more.css.
  */
@@ -61,6 +60,8 @@ const HANG = [
   { cord: 40, rest: 1.1, dir: -1 },
   { cord: 24, rest: -0.6, dir: 1 },
   { cord: 34, rest: 1.6, dir: -1 },
+  { cord: 26, rest: -1.0, dir: 1 },
+  { cord: 38, rest: 0.7, dir: -1 },
 ] as const;
 
 const tall = (src: string) => {
@@ -183,7 +184,7 @@ function Ema({ item, i }: { item: CatalogueEntry; i: number }) {
         {/* Whichever link carries wk-mr-open also covers the plaque above
             it (its ::after), so the picture opens the same place. Each name
             carries the thing's after the words you see, so a screen reader's
-            list of links tells the four "Try it"s apart. */}
+            list of links tells the "Try it"s apart. */}
         <div className="wk-mr-acts">
           {item.detailHref && (
             <Link
@@ -206,7 +207,7 @@ function Ema({ item, i }: { item: CatalogueEntry; i: number }) {
               className={`wk-mr-act${item.detailHref ? '' : ' wk-mr-open'}`}
             >
               <span className="wk-mr-act-in">
-                Try it
+                {item.liveLabel ?? 'Try it'}
                 <span className="sr-only">, {item.name}</span>
                 <IconExternal size={16} />
                 <span className="sr-only"> (opens in a new tab)</span>
@@ -232,7 +233,7 @@ export default function WorkMore() {
 
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <div className="sd-reveal">
-          <p className="sd-kicker">Smaller builds</p>
+          <p className="sd-kicker">More builds</p>
           <h2
             id="wk-mr-h"
             className="font-display sd-brush-under mt-3 text-4xl sm:text-5xl"
@@ -240,13 +241,13 @@ export default function WorkMore() {
             Everything else
           </h2>
           <p className="font-read mt-5 max-w-[52ch] text-lg leading-[1.7] text-text-secondary">
-            Smaller projects than the {inWords(projects.length)} above. All of
-            them are online, and all of them are free to try.
+            The rest of what I’ve built: websites first, then apps. All of it is
+            online.
           </p>
         </div>
 
         <div className="wk-mr-rack">
-          <ul className="wk-mr-row" role="list" aria-label="Smaller builds">
+          <ul className="wk-mr-row" role="list" aria-label="More builds">
             {catalogue.map((item, i) => (
               <Ema key={item.key} item={item} i={i} />
             ))}

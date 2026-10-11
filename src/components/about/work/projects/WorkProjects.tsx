@@ -4,8 +4,14 @@ import { GlyphSeal, glyphId } from '@/components/about/work/glyphs';
 import Device from '@/components/built/Device';
 import { IconArrowRight, IconExternal } from '@/components/icons';
 import { frameFor, hostOf, markFor } from '@/components/built/media';
-import { WORK_IDS, inWords, pad, projects } from '@/components/about/work/data';
-import type { Project } from '@/data/projects';
+import {
+  WORK_IDS,
+  featured,
+  inWords,
+  pad,
+  type Showcase,
+  type ShowcaseLink,
+} from '@/components/about/work/data';
 import WorkProjectsIsland from './WorkProjectsIsland';
 import './projects.css';
 
@@ -14,11 +20,13 @@ import './projects.css';
  * that unrolls sideways as you scroll down the page.
  *
  * WHAT YOU SEE: the section pins, and a long washi hand-scroll unrolls from
- * right to left between two wooden rollers, one scene per project. Each
- * scene is the project itself in a CSS device (a laptop for the website,
- * and a tablet beside it for Broom & Blade's game), with its number, name,
- * one line about it, a button straight to each part, and a link to the page
- * that describes it. Gold mist (suyari-gasumi, the clouds that divide the
+ * right to left between two wooden rollers, one scene per project: the
+ * Arcade, Kiru, Broom & Blade and VOLTIC, in Josh's order (2026-10-11,
+ * src/data/showcase.ts). Each scene is the thing itself in CSS devices (a
+ * laptop for its page, and a second device beside it: the Arcade's first
+ * game, Kiru's crew, Broom & Blade's game), with its number, name, one line
+ * about it, a button straight to each way in, and one more link: the page
+ * that describes it, or for the Arcade and Kiru, more of them. Gold mist (suyari-gasumi, the clouds that divide the
  * scenes of a real emaki) sweeps across between scenes, faster than the
  * paper; each scene's brush kanji drifts behind it, slower. Four seals above
  * the scroll stamp themselves as each scene comes to rest, and each is a
@@ -65,20 +73,71 @@ import './projects.css';
 
 const BTN_BASE =
   'relative inline-flex min-h-11 items-center justify-center gap-2 overflow-hidden rounded-full px-5 text-[0.95rem] font-bold tracking-[0.01em] transition-[background-color,box-shadow,border-color,translate,scale] duration-300 ease-out active:scale-[0.97]';
-// The same two looks as components/ui/Button. Button can't open a new tab,
-// and every part lives somewhere else (another site, or a past design of
-// this one), so these are plain anchors wearing its classes.
+// The same two looks as components/ui/Button, on whichever link a way in
+// needs (Go, below): Button can't open a new tab or make a plain anchor.
 const BTN_PRIMARY = `${BTN_BASE} sd-btn-primary bg-[#d63a22] text-white shadow-[0_10px_24px_-10px_rgba(214,58,34,.7)] hover:bg-[#c2311b] hover:shadow-[0_16px_34px_-12px_rgba(214,58,34,.8)]`;
 const BTN_SECONDARY = `${BTN_BASE} border border-[var(--sd-border-strong)] bg-surface/60 text-text-primary hover:border-text-primary hover:bg-surface`;
 
 /** A scene's marker: what its seal links to, and the hash a jump leaves in the address bar. */
 const markerId = (slug: string) => `${WORK_IDS.projects}-${slug}`;
 
+/**
+ * One way in, as the link it needs: another site opens in a new tab and
+ * says so; a jump down this page (#games) or a static page from public/
+ * (Kiru's casts) is a plain anchor; a page of this site is a client
+ * navigation. Its name carries the thing's after the words you see, so a
+ * screen reader's list of links tells the four scenes' links apart.
+ */
+function Go({
+  link,
+  name,
+  className,
+  icon = 16,
+}: {
+  link: ShowcaseLink;
+  name: string;
+  className: string;
+  icon?: number;
+}) {
+  if (/^https?:\/\//.test(link.href)) {
+    return (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+      >
+        {link.label}
+        <span className="sr-only">, {name}</span>
+        <IconExternal size={icon} />
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    );
+  }
+  const inner = (
+    <>
+      {link.label}
+      <span className="sr-only">, {name}</span>
+      <IconArrowRight size={icon} />
+    </>
+  );
+  if (link.href.startsWith('#') || link.static) {
+    return (
+      <a href={link.href} className={className}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link href={link.href} className={className}>
+      {inner}
+    </Link>
+  );
+}
+
 /** One scene of the scroll: the devices on the paper, and the words. */
-function Scene({ project, k }: { project: Project; k: number }) {
-  // The project's own picture is the website; a part with a different
-  // picture (Broom & Blade's game) gets a second device beside it.
-  const side = project.parts.find((part) => part.image !== project.image);
+function Scene({ project, k }: { project: Showcase; k: number }) {
+  const side = project.side;
   const nameId = `wk-pj-name-${project.slug}`;
 
   return (
@@ -112,37 +171,30 @@ function Scene({ project, k }: { project: Project; k: number }) {
           </div>
           <p className="wk-pj-sum font-read">{project.summary}</p>
 
-          {/* Straight to each part — the game, the website — and then the
-              page that describes them. Each name carries the project's after
-              the words you see, so a screen reader's list of links tells the
-              four scenes' "What is built into it" apart. */}
+          {/* Straight to each way in — the game, the website, the page —
+              and then one more: the page that describes it, or more of it. */}
           <div className="wk-pj-acts">
-            {project.parts.map((part, pi) => (
-              <a
-                key={part.heading}
-                href={part.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={pi === 0 ? BTN_PRIMARY : BTN_SECONDARY}
-              >
-                {part.linkLabel}
-                <span className="sr-only">, {project.name}</span>
-                <IconExternal size={16} />
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>
+            {project.actions.map((action, ai) => (
+              <Go
+                key={action.href}
+                link={action}
+                name={project.name}
+                className={ai === 0 ? BTN_PRIMARY : BTN_SECONDARY}
+              />
             ))}
           </div>
-          <Link href={`/built/${project.slug}`} className="wk-pj-more">
-            What is built into it
-            <span className="sr-only">, {project.name}</span>
-            <IconArrowRight size={18} />
-          </Link>
+          <Go
+            link={project.more}
+            name={project.name}
+            className="wk-pj-more"
+            icon={18}
+          />
         </div>
 
-        {/* The devices are a link to the project's page, for a tap or a
-            click. The keyboard gets the same page from "What is built into
-            it" above, so this one stays out of the Tab order; its name is
-            the screenshots' own alt text.
+        {/* The devices are a link to the thing's page, for a tap or a
+            click. The keyboard reaches the same page from the links above,
+            so this one stays out of the Tab order; its name is the
+            screenshots' own alt text.
 
             No view-transition name here (unlike the ema and the games): a
             named element whose ancestors move on this scroll's timeline
@@ -150,11 +202,7 @@ function Scene({ project, k }: { project: Project; k: number }) {
             measured: every navigation from /about, a nav tab included, froze
             for the browser's full 4 s timeout whenever the emaki's animations
             were live, and the morph itself never played). */}
-        <Link
-          href={`/built/${project.slug}`}
-          className="wk-pj-stage"
-          tabIndex={-1}
-        >
+        <Link href={project.href} className="wk-pj-stage" tabIndex={-1}>
           <span className="wk-pj-devs" data-pair={side ? '' : undefined}>
             <span className="wk-pj-ground" aria-hidden="true" />
             <Device
@@ -190,7 +238,7 @@ function Rail() {
   return (
     <nav className="wk-pj-rail" aria-label="Jump to a project">
       <ol className="wk-pj-seals" role="list">
-        {projects.map((p, k) => (
+        {featured.map((p, k) => (
           <li key={p.slug} style={{ '--k': k } as CSSProperties}>
             <a href={`#${markerId(p.slug)}`} className="wk-pj-seal">
               <span className="wk-pj-ghost" aria-hidden="true">
@@ -218,7 +266,7 @@ function Base() {
       <div className="wk-pj-sheet" />
       <div className="wk-pj-glyphs">
         <div className="wk-pj-glyphrow">
-          {projects.map((p, k) => (
+          {featured.map((p, k) => (
             <svg
               key={p.slug}
               className="wk-pj-glyph"
@@ -247,7 +295,7 @@ function Fore() {
     <div className="wk-pj-fore" aria-hidden="true">
       <div className="wk-pj-mistwin">
         <div className="wk-pj-mist">
-          {projects.slice(1).map((p, j) => (
+          {featured.slice(1).map((p, j) => (
             <span
               key={p.slug}
               className="wk-pj-veil"
@@ -269,7 +317,7 @@ function Fore() {
 }
 
 export default function WorkProjects() {
-  const emaki = projects.length === 4;
+  const emaki = featured.length === 4;
   return (
     <section
       id={WORK_IDS.projects}
@@ -285,19 +333,18 @@ export default function WorkProjects() {
           {/* A literal ’, not &rsquo;: this Next's compiler drops the space
               before a line of JSX text that holds an entity when it follows
               an expression, which printed "fourI’d". */}
-          The {inWords(projects.length)} I’d show you first
+          The {inWords(featured.length)} I’d show you first
         </h2>
         <p className="font-read mt-5 max-w-[52ch] text-lg leading-[1.7] text-text-secondary">
-          All {inWords(projects.length)} are online right now. Each one has a
-          button that takes you straight to it, and a page about what is built
-          into it.
+          All {inWords(featured.length)} are online right now, and each one has
+          a button that takes you straight to it.
         </p>
       </div>
 
       <div className="wk-pj-run">
         <Rail />
         <Base />
-        {projects.map((project, k) => (
+        {featured.map((project, k) => (
           <Fragment key={project.slug}>
             <span
               id={markerId(project.slug)}

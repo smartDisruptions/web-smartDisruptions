@@ -1,5 +1,6 @@
 import { apps, GAME_SLUGS } from './apps';
 import { projects, PROJECT_APP_SLUGS } from './projects';
+import { SHOWCASE } from './showcase';
 
 /**
  * What I Built's lists, as data, so anything that counts them reads the same
@@ -52,8 +53,12 @@ export const BUILT_SITES: BuiltSite[] = [
 ];
 
 /**
- * Everything built that isn't a game: the four projects, the
+ * Everything built that isn't a game: the Arcade and Kiru (two of the four
+ * /about leads with, src/data/showcase.ts), the projects with a page, the
  * catalogue's apps and the hand-listed sites.
  */
 export const THINGS_BUILT =
-  projects.length + builtCatalogueApps.length + BUILT_SITES.length;
+  SHOWCASE.length +
+  projects.length +
+  builtCatalogueApps.length +
+  BUILT_SITES.length;

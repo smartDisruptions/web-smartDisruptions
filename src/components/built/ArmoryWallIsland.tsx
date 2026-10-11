@@ -14,7 +14,7 @@ import type { WallDrive } from './armory-drive';
  *    within 400px of the screen, so a reader who never scrolls that far
  *    never downloads it. Under reduced motion it never loads at all: the
  *    ring lies flat as a grid of links and needs nothing.
- *  - The chips (All · Projects · Smaller builds · Games) are shown only
+ *  - The chips (All · Projects · More builds · Games) are shown only
  *    once they work (data-chips). On the ring a chip turns to the first
  *    plaque of its kind and leaves the rest in shadow, so the arrows step
  *    between the plaques it picked; on the flat grid it shows only those.

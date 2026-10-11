@@ -754,20 +754,36 @@
     row-gap: 4rem;
   }
 }
-/* Desktop: all four on one rail. */
+/* Desktop: two rails of three (the websites, then the apps). The slots
+   touch, so each rail's beam runs unbroken from post to post; the rack is
+   three quarters of the page's width, so a slot is the width it was in a
+   row of four and the plaques stay their size. */
 @media (min-width: 64rem) {
   .wk-mr-row {
     --wk-mr-kiru-h: 92px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 75%;
+    margin-inline: auto;
+    row-gap: 4.5rem;
     padding-top: 80px;
   }
 }
 
-/* Where each row of the rack starts and ends. */
-@media (max-width: 39.99rem), (min-width: 64rem) {
+/* Where each row of the rack starts and ends: the phone's one rail, and
+   the desktop's rails of three. */
+@media (max-width: 39.99rem) {
   .wk-mr-item:first-child > .wk-mr-beam {
     --wk-mr-s: 1;
   }
+  .wk-mr-item:last-child > .wk-mr-beam {
+    --wk-mr-e: 1;
+  }
+}
+@media (min-width: 64rem) {
+  .wk-mr-item:nth-child(3n + 1) > .wk-mr-beam {
+    --wk-mr-s: 1;
+  }
+  .wk-mr-item:nth-child(3n) > .wk-mr-beam,
   .wk-mr-item:last-child > .wk-mr-beam {
     --wk-mr-e: 1;
   }
@@ -834,11 +850,34 @@
 }
 @media (min-width: 40rem) and (max-width: 63.99rem) and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    /* Two rails: the lower one swings in when it, not the rack's top, comes
-       up the screen. */
+    /* More than one rail: a lower one swings in when it, not the rack's
+       top, comes up the screen (a tablet's rails of two, then a desktop's
+       of three). */
     .wk-mr-item:nth-child(n + 3) .wk-mr-hang {
       animation-range: cover calc(24% + var(--wk-mr-i) * 3%) cover
         calc(44% + var(--wk-mr-i) * 3%);
+    }
+  }
+}
+@media (min-width: 40rem) and (max-width: 63.99rem) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .wk-mr-item:nth-child(n + 5) .wk-mr-hang {
+      animation-range: cover calc(34% + var(--wk-mr-i) * 3%) cover
+        calc(54% + var(--wk-mr-i) * 3%);
+    }
+  }
+}
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* A desktop's rails hold three: the third plaque is on the upper rail
+       (the first range), the lower rail starts at the fourth. */
+    .wk-mr-item:nth-child(3) .wk-mr-hang {
+      animation-range: cover calc(4% + var(--wk-mr-i) * 3%) cover
+        calc(28% + var(--wk-mr-i) * 3%);
+    }
+    .wk-mr-item:nth-child(n + 4) .wk-mr-hang {
+      animation-range: cover calc(18% + var(--wk-mr-i) * 3%) cover
+        calc(38% + var(--wk-mr-i) * 3%);
     }
   }
 }

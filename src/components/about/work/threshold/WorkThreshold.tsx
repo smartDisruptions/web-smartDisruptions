@@ -7,8 +7,8 @@ import { marketStormReports } from '@/data/marketStorm';
 import {
   WORK_IDS,
   catalogue,
+  featured,
   games,
-  projects,
   wall,
 } from '@/components/about/work/data';
 import ThresholdFX from './ThresholdFX';
@@ -48,11 +48,11 @@ export default function WorkThreshold() {
     {
       href: `#${WORK_IDS.projects}`,
       label: 'Projects, start to finish',
-      n: projects.length,
+      n: featured.length,
     },
     {
       href: `#${WORK_IDS.more}`,
-      label: 'Smaller builds',
+      label: 'More builds',
       n: catalogue.length,
     },
     { href: `#${WORK_IDS.games}`, label: 'Games', n: games.length },
