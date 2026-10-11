@@ -10,9 +10,9 @@ import { BackArrow, backTarget } from './back';
  * src/components/BackLink.tsx, in this section's own clothes: the Arcade
  * tags its links with `?from=arcade` and its archive with `?from=archive`, so
  * a visitor goes back to the room they came from; everyone else goes back to
- * /built.
+ * the work on /about, where What I Built lives since October 2026.
  *
- * The page wraps it in <Suspense> with the /built version as the fallback,
+ * The page wraps it in <Suspense> with that version as the fallback,
  * so the route stays static and a soft navigation reads the param at once.
  */
 export default function BuiltBackLink({ variant }: { variant: 'top' | 'bottom' }) {

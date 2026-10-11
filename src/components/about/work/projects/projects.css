@@ -1,0 +1,1256 @@
+/*
+  The four projects on /about (#projects): an emaki (絵巻), a picture scroll.
+  Prefix wk-pj-. WorkProjects.tsx explains the idea and the markup.
+
+  Two layouts from one markup:
+
+  1. THE STILL SCROLL (the default): the scenes stacked top to bottom on
+     one strip of washi, a roller at each end, gold mist between scenes.
+     Everyone gets this first: reduced motion, browsers without scroll
+     timelines (Firefox), short screens (a phone on its side), and any
+     count other than four. Nothing in it waits on an animation.
+
+  2. THE EMAKI (inside the motion + scroll-timeline gate further down): the
+     section pins and the scroll unrolls sideways, one scene per step.
+
+  Everything that moves is a transform or an opacity on a scroll timeline:
+  the compositor runs it, and no JavaScript runs per frame. Colours are the
+  site's tokens, or this file's own (--wk-pj-*), which flip with the theme:
+  washi and sumi by day, indigo lacquer and gold under the moon at night.
+  The mist and the paper's grain are small inline SVGs, drawn once per
+  layer and then only moved.
+*/
+
+/* ── The band, and this section's own colours ────────────────────────── */
+
+.wk-pj {
+  /* The pinned window starts under the header on a desktop, where the
+     header never leaves; on a phone it pins to the very top, and nothing
+     you need sits in the top 65px, where the header comes back. */
+  --wk-pj-top: 0px;
+  --wk-pj-roll: 12px; /* a roller's width */
+  --wk-pj-cap: 9px; /* how far a roller's rod stands out past the paper */
+
+  --wk-pj-paper: #fbf7ee; /* washi */
+  --wk-pj-edge: rgba(21, 23, 43, 0.13);
+  --wk-pj-ink: rgba(21, 23, 43, 0.86); /* sumi */
+  --wk-pj-gold: #c8962e;
+  --wk-pj-mist: 0.95;
+  --wk-pj-edge-mist: 0.8;
+  --wk-pj-mark: var(--sd-text-primary);
+  --wk-pj-mark-o: 0.035;
+  --wk-pj-roll-1: #f4ecda;
+  --wk-pj-roll-2: #b19c76;
+  --wk-pj-lacquer: #1e1814;
+  --wk-pj-curl: rgba(70, 50, 24, 0.15);
+  --wk-pj-shadow: rgba(30, 26, 18, 0.3);
+  --wk-pj-rim: rgba(0, 0, 0, 0);
+  --wk-pj-fibres: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cpath d='M12 52c60-18 120 12 190-4s96 6 150-2M40 170c40 14 104-10 170 8M0 290c74-12 140 10 230-8M226 22c24 42 58 70 96 82M30 108c18 30 46 44 62 86M300 196c-28 34-30 80-10 122M140 236c30-10 54 2 80-6M250 330c40-8 70 4 104-2M90 330c10-30 32-50 60-58M330 60c-10 30-6 60 12 84' fill='none' stroke='rgba(110,84,46,0.13)' stroke-width='.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  /* Gold-leaf mist banks: outlined bands with flecks of cut gold. */
+  --wk-pj-edge-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cstyle%3Epath{vector-effect:non-scaling-stroke}%3C/style%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23f1dc9f'/%3E%3Cstop offset='.55' stop-color='%23e3c372'/%3E%3Cstop offset='1' stop-color='%23f1dc9f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23g)' stroke='%23a37a24' stroke-opacity='0.5' stroke-width='1'%3E%3Cpath d='M291 75C162.1 75 128.9 80.9 83.1 80.9A3.2 3.2 0 0 0 83.1 87.2C128.9 87.2 162.1 93 291 93A9 9 0 0 0 291 75z'/%3E%3Cpath d='M970 86C1085.6 86 1115.5 92.5 1156.5 92.5A3.5 3.5 0 0 1 1156.5 99.5C1115.5 99.5 1085.6 106 970 106A10 10 0 0 1 970 86z'/%3E%3Cpath d='M350 58C685.4 58 772 69 891 69A9 9 0 0 1 891 87C772 87 685.4 98 350 98A20 20 0 0 1 350 58z'/%3E%3Cpath d='M-34 14C326.2 14 419.2 27 547 27A13 13 0 0 1 547 53C419.2 53 326.2 66 -34 66A26 26 0 0 1 -34 14z'/%3E%3Cpath d='M1238 14C935.4 14 857.3 26.1 749.9 26.1A9.9 9.9 0 0 0 749.9 45.9C857.3 45.9 935.4 58 1238 58A22 22 0 0 0 1238 14z'/%3E%3C/g%3E%3Cg fill='%23bf8f2a' opacity='.7'%3E%3Crect x='300' y='14' width='5' height='5'/%3E%3Crect x='612' y='30' width='4' height='4'/%3E%3Crect x='700' y='104' width='5' height='5'/%3E%3Crect x='930' y='70' width='4' height='4'/%3E%3Crect x='1170' y='108' width='4' height='4'/%3E%3Crect x='48' y='104' width='5' height='5'/%3E%3Crect x='520' y='100' width='3' height='3'/%3E%3Crect x='1060' y='14' width='4' height='4'/%3E%3C/g%3E%3C/svg%3E");
+  --wk-pj-veil-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000' preserveAspectRatio='none'%3E%3Cstyle%3Epath{vector-effect:non-scaling-stroke}%3C/style%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23f1dc9f'/%3E%3Cstop offset='.55' stop-color='%23e3c372'/%3E%3Cstop offset='1' stop-color='%23f1dc9f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23g)' stroke='%23a37a24' stroke-opacity='0.5' stroke-width='1'%3E%3Cpath d='M14 210C275.1 210 342.5 219.1 435.1 219.1A4.9 4.9 0 0 1 435.1 228.9C342.5 228.9 275.1 238 14 238A14 14 0 0 1 14 210z'/%3E%3Cpath d='M956 144C494 144 374.7 157.2 210.8 157.2A10.8 10.8 0 0 0 210.8 178.8C374.7 178.8 494 192 956 192A24 24 0 0 0 956 144z'/%3E%3Cpath d='M72 64C501 64 611.8 80 764 80A16 16 0 0 1 764 112C611.8 112 501 128 72 128A32 32 0 0 1 72 64z'/%3E%3Cpath d='M946 912C697.3 912 633.1 921.1 544.9 921.1A4.9 4.9 0 0 0 544.9 930.9C633.1 930.9 697.3 940 946 940A14 14 0 0 0 946 912z'/%3E%3Cpath d='M34 824C411.6 824 509 841 643 841A17 17 0 0 1 643 875C509 875 411.6 892 34 892A34 34 0 0 1 34 824z'/%3E%3Cpath d='M972 762C538.4 762 426.5 777.4 272.6 777.4A12.6 12.6 0 0 0 272.6 802.6C426.5 802.6 538.4 818 972 818A28 28 0 0 0 972 762z'/%3E%3C/g%3E%3Cg fill='%23bf8f2a' opacity='.7'%3E%3Crect x='880' y='120' width='7' height='7'/%3E%3Crect x='470' y='40' width='6' height='6'/%3E%3Crect x='930' y='290' width='6' height='6'/%3E%3Crect x='60' y='300' width='5' height='5'/%3E%3Crect x='180' y='720' width='7' height='7'/%3E%3Crect x='840' y='700' width='5' height='5'/%3E%3Crect x='380' y='970' width='6' height='6'/%3E%3Crect x='90' y='980' width='5' height='5'/%3E%3C/g%3E%3C/svg%3E");
+
+  position: relative;
+  padding-bottom: 5rem;
+  /* The darker paper of the scroll room comes up out of the page ground and
+     goes back into it, so the doorway's cue above points into the room
+     rather than at a seam, and the rack's room below starts on the page
+     ground with its own ceiling line (more.css). The fades are spent inside
+     the header's top padding and this band's bottom padding, so the pinned
+     scroll always lies on the full colour (the cover that hides the paper
+     still to unroll is painted in it). Painted once, never moved. */
+  background:
+    var(--sd-noise) 0 0 / 180px 180px,
+    linear-gradient(180deg, var(--sd-bg), transparent 5.5rem),
+    linear-gradient(0deg, var(--sd-bg), transparent 4.5rem),
+    var(--sd-bg-2);
+  overflow-x: clip;
+}
+@media (min-width: 64rem) {
+  .wk-pj {
+    --wk-pj-top: var(--sd-header-h);
+    --wk-pj-roll: 26px;
+    --wk-pj-cap: 15px;
+    padding-bottom: 7rem;
+  }
+}
+/* The same scroll under the moon: indigo lacquer, gold that glows, the ink
+   gone to moonlight, black lacquer rollers with a moonlit rim. */
+:root[data-theme='dark'] .wk-pj {
+  --wk-pj-paper: #161c3a;
+  --wk-pj-edge: rgba(255, 207, 112, 0.34);
+  --wk-pj-ink: rgba(255, 243, 214, 0.2);
+  --wk-pj-gold: #ffcf70;
+  --wk-pj-mist: 0.7;
+  --wk-pj-edge-mist: 0.55;
+  --wk-pj-mark: var(--sd-gold);
+  --wk-pj-mark-o: 0.06;
+  --wk-pj-roll-1: #2c3459;
+  --wk-pj-roll-2: #0b0e20;
+  --wk-pj-lacquer: #05060c;
+  --wk-pj-curl: rgba(0, 0, 0, 0.42);
+  --wk-pj-shadow: rgba(0, 0, 0, 0.7);
+  --wk-pj-rim: rgba(155, 176, 255, 0.28);
+  --wk-pj-fibres: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cpath d='M12 52c60-18 120 12 190-4s96 6 150-2M40 170c40 14 104-10 170 8M0 290c74-12 140 10 230-8M226 22c24 42 58 70 96 82M30 108c18 30 46 44 62 86M300 196c-28 34-30 80-10 122M140 236c30-10 54 2 80-6M250 330c40-8 70 4 104-2M90 330c10-30 32-50 60-58M330 60c-10 30-6 60 12 84' fill='none' stroke='rgba(214,222,255,0.08)' stroke-width='.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --wk-pj-edge-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cstyle%3Epath{vector-effect:non-scaling-stroke}%3C/style%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23ffe6a8'/%3E%3Cstop offset='.55' stop-color='%23f7c35a'/%3E%3Cstop offset='1' stop-color='%23ffe6a8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23g)' stroke='%23fff6dc' stroke-opacity='0.6' stroke-width='1'%3E%3Cpath d='M291 75C162.1 75 128.9 80.9 83.1 80.9A3.2 3.2 0 0 0 83.1 87.2C128.9 87.2 162.1 93 291 93A9 9 0 0 0 291 75z'/%3E%3Cpath d='M970 86C1085.6 86 1115.5 92.5 1156.5 92.5A3.5 3.5 0 0 1 1156.5 99.5C1115.5 99.5 1085.6 106 970 106A10 10 0 0 1 970 86z'/%3E%3Cpath d='M350 58C685.4 58 772 69 891 69A9 9 0 0 1 891 87C772 87 685.4 98 350 98A20 20 0 0 1 350 58z'/%3E%3Cpath d='M-34 14C326.2 14 419.2 27 547 27A13 13 0 0 1 547 53C419.2 53 326.2 66 -34 66A26 26 0 0 1 -34 14z'/%3E%3Cpath d='M1238 14C935.4 14 857.3 26.1 749.9 26.1A9.9 9.9 0 0 0 749.9 45.9C857.3 45.9 935.4 58 1238 58A22 22 0 0 0 1238 14z'/%3E%3C/g%3E%3Cg fill='%23fff0c4' opacity='.7'%3E%3Crect x='300' y='14' width='5' height='5'/%3E%3Crect x='612' y='30' width='4' height='4'/%3E%3Crect x='700' y='104' width='5' height='5'/%3E%3Crect x='930' y='70' width='4' height='4'/%3E%3Crect x='1170' y='108' width='4' height='4'/%3E%3Crect x='48' y='104' width='5' height='5'/%3E%3Crect x='520' y='100' width='3' height='3'/%3E%3Crect x='1060' y='14' width='4' height='4'/%3E%3C/g%3E%3C/svg%3E");
+  --wk-pj-veil-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000' preserveAspectRatio='none'%3E%3Cstyle%3Epath{vector-effect:non-scaling-stroke}%3C/style%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23ffe6a8'/%3E%3Cstop offset='.55' stop-color='%23f7c35a'/%3E%3Cstop offset='1' stop-color='%23ffe6a8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23g)' stroke='%23fff6dc' stroke-opacity='0.6' stroke-width='1'%3E%3Cpath d='M14 210C275.1 210 342.5 219.1 435.1 219.1A4.9 4.9 0 0 1 435.1 228.9C342.5 228.9 275.1 238 14 238A14 14 0 0 1 14 210z'/%3E%3Cpath d='M956 144C494 144 374.7 157.2 210.8 157.2A10.8 10.8 0 0 0 210.8 178.8C374.7 178.8 494 192 956 192A24 24 0 0 0 956 144z'/%3E%3Cpath d='M72 64C501 64 611.8 80 764 80A16 16 0 0 1 764 112C611.8 112 501 128 72 128A32 32 0 0 1 72 64z'/%3E%3Cpath d='M946 912C697.3 912 633.1 921.1 544.9 921.1A4.9 4.9 0 0 0 544.9 930.9C633.1 930.9 697.3 940 946 940A14 14 0 0 0 946 912z'/%3E%3Cpath d='M34 824C411.6 824 509 841 643 841A17 17 0 0 1 643 875C509 875 411.6 892 34 892A34 34 0 0 1 34 824z'/%3E%3Cpath d='M972 762C538.4 762 426.5 777.4 272.6 777.4A12.6 12.6 0 0 0 272.6 802.6C426.5 802.6 538.4 818 972 818A28 28 0 0 0 972 762z'/%3E%3C/g%3E%3Cg fill='%23fff0c4' opacity='.7'%3E%3Crect x='880' y='120' width='7' height='7'/%3E%3Crect x='470' y='40' width='6' height='6'/%3E%3Crect x='930' y='290' width='6' height='6'/%3E%3Crect x='60' y='300' width='5' height='5'/%3E%3Crect x='180' y='720' width='7' height='7'/%3E%3Crect x='840' y='700' width='5' height='5'/%3E%3Crect x='380' y='970' width='6' height='6'/%3E%3Crect x='90' y='980' width='5' height='5'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ══ 1. THE STILL SCROLL ═══════════════════════════════════════════════ */
+
+/* The runway. On the still scroll it is just the strip: the seals, the top
+   roller (.wk-pj-fore), the scenes, the bottom roller (::after). */
+.wk-pj-run {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: min(100% - 1.5rem, 72rem);
+  margin: 2.75rem auto 0;
+}
+
+/* A roller lying across the scroll: rolled paper between two rod ends of
+   black lacquer tipped with gold. The top one is .wk-pj-fore, the bottom
+   one this ::after; both are three background layers, no extra boxes. */
+.wk-pj-fore,
+.wk-pj-run::after {
+  --wk-pj-tip: linear-gradient(
+    90deg,
+    var(--wk-pj-gold) 0 3px,
+    var(--wk-pj-lacquer) 3px calc(100% - 3px),
+    var(--wk-pj-gold) calc(100% - 3px)
+  );
+  height: 1.15rem;
+  margin-inline: -0.7rem;
+  border-radius: 0.3rem;
+  background:
+    var(--wk-pj-tip) left center / 0.7rem 62% no-repeat,
+    var(--wk-pj-tip) right center / 0.7rem 62% no-repeat,
+    linear-gradient(
+        180deg,
+        var(--wk-pj-roll-2),
+        var(--wk-pj-roll-1) 38%,
+        color-mix(in srgb, var(--wk-pj-roll-1) 70%, #fff) 50%,
+        var(--wk-pj-roll-1) 62%,
+        var(--wk-pj-roll-2)
+      )
+      center / calc(100% - 1.4rem) 100% no-repeat;
+  box-shadow: 0 8px 12px -8px var(--wk-pj-shadow);
+}
+.wk-pj-run::after {
+  content: '';
+  order: 3;
+}
+
+/* The top roller. Everything else in the fore is for the moving scroll. */
+.wk-pj-fore {
+  order: 1;
+  position: relative;
+  z-index: 2;
+}
+.wk-pj-base,
+.wk-pj-mistwin,
+.wk-pj-light,
+.wk-pj-jiku {
+  display: none;
+}
+
+/* ── The seals: the scroll's contents on the still scroll ─────────────── */
+
+.wk-pj-rail {
+  order: 0;
+  margin-bottom: 2.6rem;
+}
+.wk-pj-seals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 1.1rem;
+}
+.wk-pj-seal {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 0.5rem 0 0.25rem;
+  border-radius: 999px;
+  color: var(--sd-text-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition:
+    color 0.2s ease,
+    scale 0.15s ease;
+}
+.wk-pj-seal:hover {
+  color: var(--sd-accent);
+}
+.wk-pj-seal:active {
+  scale: 0.97;
+}
+.wk-pj-ghost {
+  display: none;
+}
+.wk-pj-stamp {
+  flex: none;
+  width: 2.1rem;
+}
+
+/* ── A scene ──────────────────────────────────────────────────────────── */
+
+/* A seal's jump target. The page's scroll padding (app/about/work.css)
+   already lands it clear of the header. */
+.wk-pj-at {
+  order: 2;
+  display: block;
+  height: 0;
+}
+.wk-pj-scene {
+  order: 2;
+  position: relative;
+  isolation: isolate;
+  padding: 3.6rem 1.25rem 3.4rem;
+}
+@media (min-width: 48rem) {
+  .wk-pj-scene {
+    padding: 4.75rem clamp(2rem, 5vw, 4.5rem) 4.5rem;
+  }
+}
+
+/* The paper: washi — long fibres and a fine grain, both small enough that
+   no seam shows where two scenes meet — with its two long edges. Gold mist lies along the top and bottom of every scene
+   (::before, ::after); where two scenes meet, the two banks divide them,
+   as they do on a real emaki. Each scene flips its banks so no two repeat.
+   It reaches a pixel past its scene on both sides, so neighbours overlap
+   and no hairline opens between them while they move. */
+.wk-pj-paper {
+  position: absolute;
+  z-index: -2;
+  inset: 0 -1px;
+  background-color: var(--wk-pj-paper);
+  background-image: var(--wk-pj-fibres), var(--sd-noise);
+  background-size:
+    360px 360px,
+    180px 180px;
+  box-shadow:
+    inset 1px 0 0 var(--wk-pj-edge),
+    inset -1px 0 0 var(--wk-pj-edge);
+}
+.wk-pj-paper::before,
+.wk-pj-paper::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: clamp(1.7rem, 9%, 3.8rem);
+  background: var(--wk-pj-edge-img) center / 100% 100% no-repeat;
+  opacity: var(--wk-pj-edge-mist);
+}
+.wk-pj-paper::before {
+  top: 0.35rem;
+}
+.wk-pj-paper::after {
+  bottom: 0.35rem;
+  scale: -1 -1;
+}
+.wk-pj-scene[data-flip] .wk-pj-paper::before {
+  scale: -1 1;
+}
+.wk-pj-scene[data-flip] .wk-pj-paper::after {
+  scale: 1 -1;
+}
+
+/* The scene's brush kanji, big and faint behind it: sumi by day, gold at
+   night. Decorative; the English is the scene itself. */
+.wk-pj-mark {
+  position: absolute;
+  z-index: -1;
+  top: 9%;
+  right: -2%;
+  width: min(60%, 24rem);
+  aspect-ratio: 1;
+  color: var(--wk-pj-mark);
+  opacity: var(--wk-pj-mark-o);
+  pointer-events: none;
+}
+.wk-pj-scene[data-flip] .wk-pj-mark {
+  right: auto;
+  left: -2%;
+}
+.wk-pj-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The words come before the devices in the document (see WorkProjects.tsx:
+   the devices are painted last so nothing has to be lifted over them); the
+   grid areas put the devices first on screen. */
+.wk-pj-in {
+  display: grid;
+  grid-template-areas:
+    'stage'
+    'copy';
+  gap: 2rem;
+  align-items: center;
+}
+.wk-pj-copy {
+  grid-area: copy;
+}
+.wk-pj-stage {
+  grid-area: stage;
+}
+@media (min-width: 48rem) {
+  .wk-pj-in {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    grid-template-areas: 'stage copy';
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  .wk-pj-scene[data-flip] .wk-pj-in {
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+    grid-template-areas: 'copy stage';
+  }
+}
+
+/* The devices stand on a stroke of sumi, like a stage brushed onto the
+   paper. The stage is a link to the project's page (out of the Tab order:
+   "What is built into it" is the keyboard's way there). */
+.wk-pj-stage {
+  position: relative;
+  display: block;
+  border-radius: 12px;
+}
+.wk-pj-devs {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: min(100%, 36rem);
+  margin-inline: auto;
+  transition: scale 0.45s var(--ease-out-expo);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .wk-pj-stage:hover .wk-pj-devs {
+    scale: 1.015;
+  }
+}
+.wk-pj-stage:active .wk-pj-devs {
+  scale: 0.99;
+}
+.wk-pj-devs[data-pair] .wk-pj-main {
+  width: 84%;
+}
+.wk-pj-side {
+  position: absolute;
+  z-index: 2;
+  right: -1%;
+  bottom: -8%;
+  width: 40%;
+  rotate: 3deg;
+}
+.wk-pj-ground {
+  position: absolute;
+  z-index: -1;
+  left: -7%;
+  right: -7%;
+  bottom: -4.5%;
+  height: 13%;
+  background: var(--wk-pj-ink);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 70' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M6 40C70 24 160 19 262 21S470 21 560 26C584 28 597 33 594 38C540 46 470 49 380 49S200 51 120 49C64 48 22 46 6 40ZM60 34C180 29 330 30 500 29C380 33 200 34 60 36ZM120 43C250 41 380 40 520 37C400 43 260 45 120 45Z'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 70' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M6 40C70 24 160 19 262 21S470 21 560 26C584 28 597 33 594 38C540 46 470 49 380 49S200 51 120 49C64 48 22 46 6 40ZM60 34C180 29 330 30 500 29C380 33 200 34 60 36ZM120 43C250 41 380 40 520 37C400 43 260 45 120 45Z'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+
+/* The words: a big outlined numeral beside the kind of thing and its name,
+   one line about it, a button per part, and the page about it. */
+.wk-pj-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1rem;
+  align-items: center;
+}
+.wk-pj-num {
+  grid-row: 1 / span 2;
+  font-size: 3.4rem;
+  line-height: 0.82;
+  letter-spacing: -0.02em;
+  color: var(--sd-pen-ink);
+}
+@supports (-webkit-text-stroke: 1px) {
+  .wk-pj-num {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--sd-pen-ink);
+  }
+}
+.wk-pj-eyebrow {
+  align-self: end;
+}
+.wk-pj-name {
+  align-self: start;
+  margin-top: 0.35rem;
+  font-size: clamp(1.85rem, 6.5vw, 2.7rem);
+  line-height: 1.05;
+  color: var(--sd-text-primary);
+}
+.wk-pj-sum {
+  margin-top: 1rem;
+  max-width: 44ch;
+  font-size: 1.1rem;
+  line-height: 1.62;
+  color: var(--sd-text-primary);
+}
+.wk-pj-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.4rem;
+}
+.wk-pj-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  min-height: 44px;
+  margin-top: 0.45rem;
+  font-weight: 750;
+  color: var(--sd-accent);
+  transition:
+    color 0.2s ease,
+    scale 0.15s ease;
+}
+.wk-pj-more svg {
+  transition: translate 0.35s var(--ease-out-expo);
+}
+.wk-pj-more:hover {
+  color: var(--sd-accent-hover);
+}
+.wk-pj-more:hover svg {
+  translate: 4px 0;
+}
+.wk-pj-more:active {
+  scale: 0.97;
+}
+
+/* ══ 2. THE EMAKI — the moving scroll ══════════════════════════════════
+
+   The runway is the scroll's length: one pinned window tall plus four
+   windows of scroll (--wk-pj-span). It names a view timeline, inset by the
+   header on a desktop, so that 0%–100% of its `contain` range is exactly
+   the stretch where the window is pinned.
+
+   That range is cut into steps, the same in every layer:
+
+       0–13%   scene 1 at rest        13–29%  the paper rolls to scene 2
+      29–42%   scene 2 at rest        42–58%  … to scene 3
+      58–71%   scene 3 at rest        71–87%  … to scene 4
+      87–100%  scene 4 at rest
+
+   so scene k (0–3) rests around 6.5% + k × 29%. That is where its marker
+   sits (its seal's link target), where its seal is stamped, and the centre
+   of its own small motions: the lid opening, the screen coming on, the
+   devices floating up, the kanji drifting behind. The first scene does
+   those in the `entry` range instead, while the scroll is being unrolled
+   as it comes up the screen.
+
+   Every layer is a sticky item in the same grid cell of the runway, all
+   with the same top and height, so they pin together and let go together.
+   Markers are absolutely placed in the runway, outside every moving or
+   sticky box, so a link to one lands on its step.
+
+   Layers that move: the paper (one sheet) and the four scenes, a window
+   per step; the row of kanji, slower and never resting; the mist, faster,
+   so it sweeps across between scenes; the rollers (the left one fattens as
+   the right one thins); each scene's devices, lid and screen; and the
+   seals. All of it transforms and opacity.                               */
+
+/* The gate: motion allowed, scroll timelines supported, and a screen tall
+   enough for a whole scene — 40rem on a phone, 35rem on a desktop (rem, so a
+   reader whose default text is larger needs a taller screen, and gets the
+   still scroll rather than words spilling off the paper). */
+@media (prefers-reduced-motion: no-preference) and (min-height: 40rem),
+  (prefers-reduced-motion: no-preference) and (min-width: 64rem) and (min-height: 35rem) {
+  @supports (animation-timeline: view()) {
+    .wk-pj-emaki .wk-pj-run {
+      /* The pinned window's height, and where the paper sits inside it:
+         --wk-pj-p0 is the band above it (the seals), --wk-pj-p1 below it.
+         On a phone the band above clears the header's 65px and the paper
+         stops above the tab bar. */
+      --wk-pj-h: calc(100svh - var(--wk-pj-top));
+      --wk-pj-span: calc(var(--wk-pj-h) * 4);
+      --wk-pj-p0: calc(var(--sd-header-h) + 3.75rem);
+      --wk-pj-p1: calc(64px + env(safe-area-inset-bottom) + 0.75rem);
+      display: grid;
+      grid-template-columns: 100%;
+      grid-template-rows: calc(var(--wk-pj-h) + var(--wk-pj-span));
+      width: 100%;
+      margin-top: 2.25rem;
+      /* clip, not hidden: a hidden box is a scroll container, and focus
+         would scroll it sideways under the scenes' transforms. */
+      overflow-x: clip;
+      view-timeline: --wk-pj block;
+      view-timeline-inset: var(--wk-pj-top) 0px;
+    }
+    .wk-pj-emaki .wk-pj-run::after {
+      content: none;
+    }
+    .wk-pj-emaki
+      .wk-pj-run
+      > :where(.wk-pj-rail, .wk-pj-base, .wk-pj-scene, .wk-pj-fore) {
+      grid-area: 1 / 1;
+      align-self: start;
+      position: sticky;
+      top: var(--wk-pj-top);
+      height: var(--wk-pj-h);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Markers: where each scene comes to rest, as a scroll offset. A jump
+       must put the marker exactly at the top of the pinned window (under
+       the header on a desktop, at the very top on a phone), so the margin
+       takes back the page's scroll padding (--au-scroll-top, which clears
+       the header for everything else) and leaves the window's own top. */
+    .wk-pj-emaki .wk-pj-at {
+      position: absolute;
+      left: 0;
+      width: 0;
+      top: calc((0.065 + var(--k) * 0.29) * var(--wk-pj-span));
+      scroll-margin-top: calc(var(--wk-pj-top) - var(--au-scroll-top, 0px));
+    }
+
+    /* ── Scenes: side by side, one window apart, rolled a step at a time. */
+    .wk-pj-emaki .wk-pj-scene {
+      width: 100%;
+      margin-left: calc(var(--k) * 100%);
+      animation: wk-pj-step cubic-bezier(0.62, 0, 0.32, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain 0% contain 100%;
+    }
+    /* The paper itself is the base sheet below; a scene keeps only its two
+       banks of mist, which travel with it. */
+    .wk-pj-emaki .wk-pj-paper {
+      inset: var(--wk-pj-p0) 0 var(--wk-pj-p1);
+      background: none;
+      box-shadow: none;
+    }
+    .wk-pj-emaki .wk-pj-paper::before {
+      top: 0.4rem;
+    }
+    /* A thin bank along the bottom on a phone, where the last link sits. */
+    .wk-pj-emaki .wk-pj-paper::after {
+      bottom: 0.2rem;
+      height: clamp(1rem, 3.2%, 3rem);
+    }
+
+    .wk-pj-emaki .wk-pj-mark {
+      display: none;
+    }
+
+    /* ── The base: one sheet of washi under all four scenes, rolled a
+       window per step like they are, and one row of their kanji, drifting
+       slower than the paper and never resting. Each kanji floats in the
+       upper half of its scene on a phone and behind the words on a
+       desktop, and passes its spot as its scene comes to rest. */
+    .wk-pj-emaki .wk-pj-base {
+      display: block;
+      container-type: size;
+      pointer-events: none;
+    }
+    .wk-pj-emaki .wk-pj-sheet {
+      position: absolute;
+      top: var(--wk-pj-p0);
+      bottom: var(--wk-pj-p1);
+      left: 0;
+      width: 400%;
+      background-color: var(--wk-pj-paper);
+      background-image: var(--wk-pj-fibres), var(--sd-noise);
+      background-size:
+        360px 360px,
+        180px 180px;
+      box-shadow:
+        inset 0 1px 0 var(--wk-pj-edge),
+        inset 0 -1px 0 var(--wk-pj-edge),
+        0 28px 40px -32px var(--wk-pj-shadow);
+      animation: wk-pj-step-q cubic-bezier(0.62, 0, 0.32, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain 0% contain 100%;
+    }
+    .wk-pj-emaki .wk-pj-glyphs {
+      position: absolute;
+      inset: var(--wk-pj-p0) 0 var(--wk-pj-p1);
+      overflow: clip;
+    }
+    .wk-pj-emaki .wk-pj-glyphrow {
+      position: absolute;
+      inset: 0;
+      animation: wk-pj-glide linear both;
+      animation-timeline: --wk-pj;
+      animation-range: contain 0% contain 100%;
+    }
+    .wk-pj-emaki .wk-pj-glyph {
+      --wk-pj-gs: min(68cqi, 21rem);
+      position: absolute;
+      top: 2%;
+      left: calc(var(--k) * 60cqi + 50cqi - var(--wk-pj-gs) / 2);
+      width: var(--wk-pj-gs);
+      height: var(--wk-pj-gs);
+      color: var(--wk-pj-mark);
+      opacity: var(--wk-pj-mark-o);
+    }
+
+    .wk-pj-emaki .wk-pj-in {
+      position: absolute;
+      inset: var(--wk-pj-p0) 0 var(--wk-pj-p1);
+      grid-template-rows: minmax(0, 1fr) auto;
+      align-items: stretch;
+      gap: 0.85rem;
+      padding: 1.1rem calc(var(--wk-pj-roll) + 1.1rem) 0.85rem;
+    }
+    /* One column below a desktop, whatever the still scroll does there. */
+    .wk-pj-emaki .wk-pj-in,
+    .wk-pj-emaki .wk-pj-scene[data-flip] .wk-pj-in {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'stage'
+        'copy';
+    }
+    /* The devices take whatever height the words leave, and size to fit it:
+       a laptop is about 1.7 times as wide as it is tall. */
+    .wk-pj-emaki .wk-pj-stage {
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      container-type: size;
+    }
+    .wk-pj-emaki .wk-pj-devs {
+      width: min(100cqi, 100cqb * 1.62);
+      animation: wk-pj-float linear both;
+      animation-timeline: --wk-pj;
+      animation-range: contain calc(var(--k) * 29% - 22.5%) contain
+        calc(var(--k) * 29% + 35.5%);
+    }
+    .wk-pj-emaki .wk-pj-devs[data-pair] {
+      width: min(100cqi, 100cqb * 1.42);
+    }
+    .wk-pj-emaki .wk-pj-num {
+      font-size: 2.85rem;
+    }
+    .wk-pj-emaki .wk-pj-name {
+      font-size: clamp(1.6rem, 7vw, 2.1rem);
+    }
+    .wk-pj-emaki .wk-pj-sum {
+      margin-top: 0.65rem;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+    .wk-pj-emaki .wk-pj-acts {
+      gap: 0.5rem;
+      margin-top: 0.95rem;
+    }
+    /* Button's small size on a phone, so two parts fit on one row. */
+    .wk-pj-emaki .wk-pj-acts > a {
+      padding-inline: 0.95rem;
+      font-size: 0.9rem;
+    }
+    .wk-pj-emaki .wk-pj-more {
+      margin-top: 0.1rem;
+    }
+
+    /* The laptop opens as its scene arrives, and its screen comes on: a
+       dark glass with a line of light across it, which fades into the
+       picture. The dark glass is an overlay laid over the screenshot (last
+       in paint order, so it lifts nothing else into a layer of its own).
+       The tablet beside Broom & Blade's laptop slides in to join it. */
+    .wk-pj-emaki .wk-pj-main .bt-body {
+      animation: wk-pj-lid cubic-bezier(0.3, 0.7, 0.2, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain calc(var(--k) * 29% - 13%) contain
+        calc(var(--k) * 29% - 2%);
+    }
+    .wk-pj-emaki .wk-pj-main .bt-screen::before {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background:
+        radial-gradient(
+          50% 1.5% at 50% 50%,
+          rgba(236, 240, 255, 0.95),
+          rgba(155, 176, 255, 0.35) 60%,
+          transparent
+        ),
+        #05060c;
+      pointer-events: none;
+      animation: wk-pj-power ease-in both;
+      animation-timeline: --wk-pj;
+      animation-range: contain calc(var(--k) * 29% - 4.5%) contain
+        calc(var(--k) * 29% + 2%);
+    }
+    .wk-pj-emaki .wk-pj-scene:first-of-type .wk-pj-main .bt-body {
+      animation-range: entry 30% entry 88%;
+    }
+    .wk-pj-emaki .wk-pj-scene:first-of-type .wk-pj-main .bt-screen::before {
+      animation-range: entry 74% contain 1%;
+    }
+    .wk-pj-emaki .wk-pj-side {
+      animation: wk-pj-join cubic-bezier(0.3, 0.7, 0.2, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain calc(var(--k) * 29% - 8%) contain
+        calc(var(--k) * 29% + 1%);
+    }
+    .wk-pj-emaki .wk-pj-scene:first-of-type .wk-pj-side {
+      animation-range: entry 52% entry 96%;
+    }
+
+    /* ── The seals: above the paper, stamped as each scene comes to rest. */
+    .wk-pj-emaki .wk-pj-rail {
+      z-index: 4;
+      pointer-events: none;
+    }
+    .wk-pj-emaki .wk-pj-seals {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(100% - var(--wk-pj-p0) + 0.5rem);
+      flex-wrap: nowrap;
+      gap: 0.4rem;
+      width: fit-content;
+      margin-inline: auto;
+      padding-bottom: 0.45rem;
+      pointer-events: auto;
+    }
+    /* The thread under the seals, and the vermilion that fills it. */
+    .wk-pj-emaki .wk-pj-seals::before,
+    .wk-pj-emaki .wk-pj-seals::after {
+      content: '';
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--sd-border-strong);
+    }
+    .wk-pj-emaki .wk-pj-seals::after {
+      background: var(--sd-pen);
+      transform-origin: 0 50%;
+      animation: wk-pj-fill cubic-bezier(0.62, 0, 0.32, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain 0% contain 100%;
+    }
+    .wk-pj-emaki .wk-pj-seal {
+      gap: 0.55rem;
+      padding: 0 0.3rem;
+    }
+    .wk-pj-emaki .wk-pj-ghost {
+      display: grid;
+      place-items: center;
+      flex: none;
+      width: 2.25rem;
+      aspect-ratio: 1;
+      border: 1.5px solid color-mix(in srgb, var(--sd-pen) 55%, transparent);
+      border-radius: 22%;
+      color: var(--sd-pen-ink);
+      font-size: 0.72rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+    }
+    .wk-pj-emaki .wk-pj-stamp {
+      position: absolute;
+      left: 0.3rem;
+      top: 50%;
+      width: 2.25rem;
+      margin-top: -1.125rem;
+      animation: wk-pj-stamp linear both;
+      animation-timeline: --wk-pj;
+      animation-range: contain calc(var(--k) * 29% - 8%) contain
+        calc(var(--k) * 29% + 21%);
+    }
+    /* A phone shows the numbers; the names are still read out. */
+    .wk-pj-emaki .wk-pj-seal-name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* ── In front of the paper: mist, light, rollers. ──────────────────── */
+    .wk-pj-emaki .wk-pj-fore {
+      z-index: 3;
+      pointer-events: none;
+      container-type: size;
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+    }
+    .wk-pj-emaki .wk-pj-fore > .wk-pj-mistwin,
+    .wk-pj-emaki .wk-pj-fore > .wk-pj-light,
+    .wk-pj-emaki .wk-pj-fore > .wk-pj-jiku {
+      display: block;
+      position: absolute;
+    }
+
+    /* The mist is a layer of its own, as wide as four of its steps, and a
+       step of it is 1.9 windows to the paper's one: each bank enters after
+       a scene has left its rest and is gone before the next one settles,
+       sweeping across in front of the paper the way the gold clouds part
+       the scenes of a real emaki. It is heavy at the top and the bottom and
+       thin through the middle, so the words show through as it passes. */
+    .wk-pj-emaki .wk-pj-mistwin {
+      z-index: 1;
+      inset: var(--wk-pj-p0) 0 var(--wk-pj-p1);
+      overflow: clip;
+    }
+    .wk-pj-emaki .wk-pj-mist {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: calc(4 * 190cqi);
+      animation: wk-pj-step-q cubic-bezier(0.62, 0, 0.32, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain 0% contain 100%;
+    }
+    .wk-pj-emaki .wk-pj-veil {
+      position: absolute;
+      top: 2%;
+      bottom: 2%;
+      width: 80cqi;
+      left: calc(10cqi + (var(--j) + 0.5) * 190cqi);
+      background: var(--wk-pj-veil-img) center / 100% 100% no-repeat;
+      opacity: var(--wk-pj-mist);
+    }
+    .wk-pj-emaki .wk-pj-veil:nth-child(2) {
+      scale: -1 1;
+    }
+    /* Below a desktop the words sit under the picture, at the foot of the
+       paper, and the lower banks swept straight across them mid-roll: on a
+       390px screen that was gold over every line and both buttons. There a
+       veil paints only its upper banks — the clouds crossing the top of the
+       scene, over the picture — at the same size and in the same place, and
+       the words stay clear. (The words start 30% down the paper at the
+       least, on a 360 × 660 phone; the upper banks end at 25%.) */
+    @media (max-width: 63.99rem) {
+      .wk-pj-emaki .wk-pj-veil {
+        bottom: 50%;
+        background-size: 100% 200%;
+        background-position: center top;
+      }
+      /* The header comes back over the top 65px as you scroll up, and the
+         seals sit just under it; seated closer to their thread, a keyboard's
+         focus ring round one (5.5px out) clears the header too. */
+      .wk-pj-emaki .wk-pj-seals {
+        padding-bottom: 0.15rem;
+      }
+    }
+
+    /* The paper curls into each roller (a shadow at both ends), and at
+       night the moon lights it from the top right. Nothing here moves; the
+       paper moves under it. */
+    .wk-pj-emaki .wk-pj-light {
+      z-index: 2;
+      inset: var(--wk-pj-p0) 0 var(--wk-pj-p1);
+      background: linear-gradient(
+        90deg,
+        var(--wk-pj-curl),
+        transparent calc(var(--wk-pj-roll) + 4%),
+        transparent calc(100% - var(--wk-pj-roll) - 4%),
+        var(--wk-pj-curl)
+      );
+    }
+    :root[data-theme='dark'] .wk-pj-emaki .wk-pj-light {
+      background:
+        linear-gradient(
+          90deg,
+          var(--wk-pj-curl),
+          transparent calc(var(--wk-pj-roll) + 4%),
+          transparent calc(100% - var(--wk-pj-roll) - 4%),
+          var(--wk-pj-curl)
+        ),
+        radial-gradient(
+          60% 90% at 82% 0%,
+          rgba(255, 243, 214, 0.075),
+          transparent 70%
+        );
+    }
+
+    /* The rollers (jiku), one at each end of the window: the paper rolled
+       round a rod whose lacquer ends, ringed in gold, stand out above and
+       below it. The left roll is what you have seen, the right roll what
+       is still to come. */
+    .wk-pj-emaki .wk-pj-jiku {
+      z-index: 3;
+      top: calc(var(--wk-pj-p0) - var(--wk-pj-cap));
+      bottom: calc(var(--wk-pj-p1) - var(--wk-pj-cap));
+      width: var(--wk-pj-roll);
+    }
+    .wk-pj-emaki .wk-pj-jiku-l {
+      left: 0;
+    }
+    .wk-pj-emaki .wk-pj-jiku-r {
+      left: auto;
+      right: 0;
+      animation: wk-pj-unroll cubic-bezier(0.3, 0.55, 0.2, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: entry 18% entry 94%;
+    }
+    .wk-pj-emaki .wk-pj-roll {
+      display: block;
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+    }
+    .wk-pj-emaki .wk-pj-roll::before,
+    .wk-pj-emaki .wk-pj-roll::after {
+      content: '';
+      position: absolute;
+    }
+    /* The rolled paper. */
+    .wk-pj-emaki .wk-pj-roll::before {
+      inset: var(--wk-pj-cap) 0;
+      border-radius: calc(var(--wk-pj-roll) / 3);
+      background: linear-gradient(
+        90deg,
+        var(--wk-pj-roll-2),
+        var(--wk-pj-roll-1) 34%,
+        color-mix(in srgb, var(--wk-pj-roll-1) 70%, #fff) 48%,
+        var(--wk-pj-roll-1) 62%,
+        var(--wk-pj-roll-2)
+      );
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.1),
+        0 0 0 1.5px var(--wk-pj-rim);
+    }
+    /* The rod's two ends: turned lacquer, a gold ring at the tip. */
+    .wk-pj-emaki .wk-pj-roll::after {
+      --wk-pj-turn: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.3),
+        transparent 45%,
+        rgba(0, 0, 0, 0.42)
+      );
+      inset: 0 19%;
+      border-radius: 35% / 6px;
+      background:
+        var(--wk-pj-turn) top / 100% var(--wk-pj-cap) no-repeat,
+        var(--wk-pj-turn) bottom / 100% var(--wk-pj-cap) no-repeat,
+        linear-gradient(
+            180deg,
+            var(--wk-pj-gold) 0 3px,
+            var(--wk-pj-lacquer) 3px
+          )
+          top / 100% var(--wk-pj-cap) no-repeat,
+        linear-gradient(0deg, var(--wk-pj-gold) 0 3px, var(--wk-pj-lacquer) 3px)
+          bottom / 100% var(--wk-pj-cap) no-repeat;
+    }
+    .wk-pj-emaki .wk-pj-jiku-l .wk-pj-roll {
+      animation: wk-pj-thick-l cubic-bezier(0.62, 0, 0.32, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain 0% contain 100%;
+    }
+    .wk-pj-emaki .wk-pj-jiku-r .wk-pj-roll {
+      animation: wk-pj-thick-r cubic-bezier(0.62, 0, 0.32, 1) both;
+      animation-timeline: --wk-pj;
+      animation-range: contain 0% contain 100%;
+    }
+    /* Each roll casts a soft shadow onto the paper beside it. */
+    .wk-pj-emaki .wk-pj-jiku::after {
+      content: '';
+      position: absolute;
+      top: var(--wk-pj-cap);
+      bottom: var(--wk-pj-cap);
+      width: calc(var(--wk-pj-roll) * 0.9 + 0.5rem);
+    }
+    .wk-pj-emaki .wk-pj-jiku-l::after {
+      left: 100%;
+      background: linear-gradient(90deg, var(--wk-pj-curl), transparent);
+    }
+    .wk-pj-emaki .wk-pj-jiku-r::after {
+      right: 100%;
+      background: linear-gradient(270deg, var(--wk-pj-curl), transparent);
+    }
+
+    /* The opening: as the scroll comes up the screen the right roller
+       starts beside the left one — a rolled-up scroll — and travels to its
+       place, the band's own ground (the cover) hiding the paper it has not
+       yet unrolled. */
+    .wk-pj-emaki .wk-pj-cover {
+      display: block;
+      position: absolute;
+      z-index: 0;
+      left: 50%;
+      width: 100cqi;
+      top: calc(var(--wk-pj-cap) - var(--wk-pj-p0));
+      bottom: calc(var(--wk-pj-cap) - var(--wk-pj-p1));
+      background-color: var(--sd-bg-2);
+      background-image: var(--sd-noise);
+      background-size: 180px 180px;
+    }
+
+    @media (min-width: 64rem) {
+      .wk-pj-emaki .wk-pj-run {
+        --wk-pj-p0: 4.75rem;
+        --wk-pj-p1: 2.25rem;
+        width: min(100% - 4rem, 105rem);
+      }
+      .wk-pj-emaki .wk-pj-paper::after {
+        bottom: 0.4rem;
+        height: clamp(1.7rem, 7%, 3.4rem);
+      }
+      .wk-pj-emaki .wk-pj-in {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+        grid-template-rows: 100%;
+        grid-template-areas: 'stage copy';
+        align-items: center;
+        column-gap: clamp(2.5rem, 5vw, 5rem);
+        padding: clamp(2rem, 7vh, 4rem)
+          max(calc(var(--wk-pj-roll) + 3.5rem), calc(50% - 40rem));
+      }
+      .wk-pj-emaki .wk-pj-scene[data-flip] .wk-pj-in {
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        grid-template-areas: 'copy stage';
+      }
+      .wk-pj-emaki .wk-pj-stage {
+        height: 100%;
+      }
+      .wk-pj-emaki .wk-pj-glyph {
+        --wk-pj-gs: min(42cqi, 36rem);
+        top: 6%;
+        left: calc(var(--k) * 60cqi + 96cqi - var(--wk-pj-gs));
+      }
+      .wk-pj-emaki .wk-pj-glyph[data-flip] {
+        left: calc(var(--k) * 60cqi + 4cqi);
+      }
+      /* The numeral stands over the words on a desktop, so a long name
+         keeps the whole column. */
+      .wk-pj-emaki .wk-pj-head {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .wk-pj-emaki .wk-pj-num {
+        grid-row: auto;
+        margin-bottom: 0.9rem;
+        font-size: clamp(4rem, 6vw, 5.75rem);
+      }
+      .wk-pj-emaki .wk-pj-name {
+        margin-top: 0.55rem;
+        font-size: clamp(2.3rem, 3.3vw, 3.4rem);
+      }
+      .wk-pj-emaki .wk-pj-sum {
+        margin-top: 1.1rem;
+        font-size: 1.2rem;
+        line-height: 1.62;
+      }
+      .wk-pj-emaki .wk-pj-acts {
+        gap: 0.75rem;
+        margin-top: 1.6rem;
+      }
+      .wk-pj-emaki .wk-pj-acts > a {
+        padding-inline: 1.25rem;
+        font-size: 0.95rem;
+      }
+      .wk-pj-emaki .wk-pj-more {
+        margin-top: 0.5rem;
+      }
+      .wk-pj-emaki .wk-pj-seals {
+        gap: 0.9rem;
+      }
+      .wk-pj-emaki .wk-pj-seal {
+        padding-right: 0.85rem;
+      }
+      .wk-pj-emaki .wk-pj-seal-name {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip-path: none;
+      }
+    }
+    /* A short desktop window (a 13-inch laptop): the numeral goes back
+       beside the name, so a two-line name still fits the paper. */
+    @media (min-width: 64rem) and (max-height: 50rem) {
+      .wk-pj-emaki .wk-pj-in {
+        padding-block: clamp(1.25rem, 4.5vh, 2.5rem);
+      }
+      .wk-pj-emaki .wk-pj-head {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+      .wk-pj-emaki .wk-pj-num {
+        grid-row: 1 / span 2;
+        margin-bottom: 0;
+        font-size: 3.9rem;
+      }
+      .wk-pj-emaki .wk-pj-name {
+        font-size: clamp(2.1rem, 3vw, 2.9rem);
+      }
+      .wk-pj-emaki .wk-pj-sum {
+        font-size: 1.1rem;
+      }
+      .wk-pj-emaki .wk-pj-acts {
+        margin-top: 1.2rem;
+      }
+    }
+  }
+}
+
+/* ── Keyframes (they only run inside the gate above) ──────────────────── */
+
+/* The paper: one window per step, resting between steps. */
+@keyframes wk-pj-step {
+  0%,
+  13% {
+    translate: 0 0;
+  }
+  29%,
+  42% {
+    translate: -100% 0;
+  }
+  58%,
+  71% {
+    translate: -200% 0;
+  }
+  87%,
+  100% {
+    translate: -300% 0;
+  }
+}
+/* The same steps for a layer four steps wide (the mist). */
+@keyframes wk-pj-step-q {
+  0%,
+  13% {
+    translate: 0 0;
+  }
+  29%,
+  42% {
+    translate: -25% 0;
+  }
+  58%,
+  71% {
+    translate: -50% 0;
+  }
+  87%,
+  100% {
+    translate: -75% 0;
+  }
+}
+@keyframes wk-pj-fill {
+  0%,
+  13% {
+    scale: 0 1;
+  }
+  29%,
+  42% {
+    scale: 0.3333 1;
+  }
+  58%,
+  71% {
+    scale: 0.6667 1;
+  }
+  87%,
+  100% {
+    scale: 1 1;
+  }
+}
+@keyframes wk-pj-thick-l {
+  0%,
+  13% {
+    scale: 0.62 1;
+  }
+  29%,
+  42% {
+    scale: 0.8 1;
+  }
+  58%,
+  71% {
+    scale: 0.98 1;
+  }
+  87%,
+  100% {
+    scale: 1.16 1;
+  }
+}
+@keyframes wk-pj-thick-r {
+  0%,
+  13% {
+    scale: 1.16 1;
+  }
+  29%,
+  42% {
+    scale: 0.98 1;
+  }
+  58%,
+  71% {
+    scale: 0.8 1;
+  }
+  87%,
+  100% {
+    scale: 0.62 1;
+  }
+}
+@keyframes wk-pj-unroll {
+  from {
+    translate: calc(2 * var(--wk-pj-roll) - 100cqi) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+/* The kanji row: one kanji (60% of a window) per step, against the paper's
+   whole window, and without resting — kanji k passes its spot as scene k
+   rests, at 6.5% + k × 29% of the way. */
+@keyframes wk-pj-glide {
+  from {
+    translate: calc(0.2241 * 60cqi) 0;
+  }
+  to {
+    translate: calc(-3.2241 * 60cqi) 0;
+  }
+}
+@keyframes wk-pj-float {
+  from {
+    translate: 7% 5%;
+  }
+  to {
+    translate: -7% -5%;
+  }
+}
+@keyframes wk-pj-lid {
+  from {
+    transform: perspective(1400px) rotateX(-80deg);
+  }
+  to {
+    transform: perspective(1400px) rotateX(0deg);
+  }
+}
+@keyframes wk-pj-power {
+  0%,
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes wk-pj-join {
+  from {
+    opacity: 0;
+    translate: 32% 16%;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+/* Opacity only: a stamp that changed size would make the browser lift every
+   seal after it into a layer of its own. */
+@keyframes wk-pj-stamp {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  24%,
+  76% {
+    opacity: 1;
+  }
+}

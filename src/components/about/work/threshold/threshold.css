@@ -1,0 +1,648 @@
+/*
+  The threshold of /about: the doorway, the h1, the lede, the receipt on its
+  till, and the cue into the work. Prefix au- for the parts that came with
+  the page, au-th- for the threshold's own (October 2026).
+
+  Phone first: the h1, the doorway, the words, the till, the cue, sized so
+  the first screen holds the h1 and the whole doorway with the words just
+  starting under it. From a tablet up the doorway stands beside the words
+  (the h1 spans the top on a tablet and shares the row on a desktop) and
+  stays beside you (sticky) while the receipt prints under the words and the
+  cue follows it. The noren and the scene around it are
+  components/about/noren.css.
+*/
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+
+.au-hero {
+  display: grid;
+  grid-template-areas:
+    'head'
+    'stage'
+    'body'
+    'till'
+    'cue';
+  row-gap: 1.1rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 1.5rem 1.25rem 0;
+}
+@media (min-width: 40rem) {
+  .au-hero {
+    row-gap: 1.6rem;
+    padding: 2.5rem 1.5rem 0;
+  }
+}
+@media (min-width: 44rem) {
+  .au-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      'head head'
+      'body stage'
+      'till stage'
+      'cue stage';
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+}
+@media (min-width: 64rem) {
+  .au-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+    grid-template-areas:
+      'head stage'
+      'body stage'
+      'till stage'
+      'cue stage';
+    column-gap: clamp(3rem, 6vw, 6rem);
+    row-gap: 1.75rem;
+    padding-top: 2.75rem;
+  }
+}
+.au-head {
+  grid-area: head;
+}
+.au-body {
+  grid-area: body;
+}
+
+/* ── The h1 ────────────────────────────────────────────────────────────── */
+
+.au-h1 {
+  margin-top: 1rem;
+  /* "Here's the work." is 8.55em wide: one line each on a 350px phone column
+     up to the desktop split, where it shares the row with the doorway. */
+  font-size: clamp(2.2rem, 10.4vw, 3.5rem);
+  line-height: 1.04;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 64rem) {
+  .au-h1 {
+    font-size: clamp(3rem, 4.4vw, 3.9rem);
+  }
+}
+.au-h1-line {
+  display: block;
+}
+.au-h1-line + .au-h1-line {
+  color: var(--sd-pen-ink);
+}
+/* The katana slash leaves a hairline where its halves meet; once the cut has
+   landed, seal it (the same fix as About Me's headline). The sealed line is
+   the resting style (no clip, the lower copy hidden) and the cut is held
+   only while the slash plays (backwards fill), so once it has landed
+   nothing here is still an animation. A finished animation that keeps
+   filling stays a composited layer for good, and a layer that might move
+   makes the browser lift what is painted after it into layers of its own
+   (with the noren's arrival and the stamp below: ~20 layers on a phone,
+   one of them 390×4764px). */
+@media (prefers-reduced-motion: no-preference) {
+  .au-h1 .sd-slash-a {
+    clip-path: none;
+    animation:
+      sd-slash-a 1s var(--ease-out-expo) var(--d, 0s) backwards,
+      au-cut 1s linear var(--d, 0s) backwards;
+  }
+  .au-h1 .sd-slash::before {
+    opacity: 0;
+    animation:
+      sd-slash-b 1s var(--ease-out-expo) var(--d, 0s) backwards,
+      au-cut-copy 1s linear var(--d, 0s) backwards;
+  }
+  .au-h1 .sd-slash::after {
+    animation-fill-mode: backwards;
+  }
+}
+/* The cut, while it plays: the upper half clipped (globals.css .sd-slash-a)
+   and the lower copy showing. */
+@keyframes au-cut {
+  from,
+  to {
+    clip-path: polygon(-5% -20%, 105% -20%, 105% 40%, -5% 66%);
+  }
+}
+@keyframes au-cut-copy {
+  from,
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── The doorway ───────────────────────────────────────────────────────── */
+
+.au-stage {
+  grid-area: stage;
+  /* On a phone the doorway takes a share of the first screen, not all of it:
+     the h1 above it and the first lines of the words under it still show. */
+  width: min(80%, 19rem);
+  justify-self: center;
+}
+@media (min-width: 44rem) {
+  .au-stage {
+    width: 100%;
+    align-self: start;
+  }
+}
+/* Beside the words, the doorway keeps you company while the slip prints:
+   sticky in its column (the compositor's job, nothing per frame), until
+   the cue's row ends and it leaves with the rest of the threshold. */
+@media (min-width: 44rem) and (prefers-reduced-motion: no-preference) {
+  .au-stage {
+    position: sticky;
+    top: calc(var(--sd-header-h) + 1.25rem);
+  }
+}
+.au-th-door {
+  /* The scene reaches past the doorway's box (noren.ts SCENE): the eave
+     rises 44 units over it and the light on the ground falls 22 under it.
+     The doorway is 452 units wide, so that is 9.735% and 4.867% of its
+     width, which is what % padding measures. */
+  padding: 9.735% 0 4.867%;
+}
+
+.au-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+  color: var(--sd-text-secondary);
+}
+.au-hint-k {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  color: var(--sd-pen);
+}
+.au-hint-fine {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .au-hint-fine {
+    display: inline;
+  }
+  .au-hint-touch {
+    display: none;
+  }
+}
+
+/* ── The words ─────────────────────────────────────────────────────────── */
+
+.au-lede {
+  max-width: 40ch;
+  font-size: 1.12rem;
+  line-height: 1.75;
+  color: var(--sd-text-secondary);
+}
+@media (min-width: 40rem) {
+  .au-lede {
+    font-size: 1.18rem;
+  }
+}
+
+/* ── The till and its receipt ──────────────────────────────────────────────
+   A till slip (an sd-note: the same paper in both lights, so every colour
+   printed on it is fixed, never a theme token) standing in the slot of a
+   lacquered till. The paper never moves. While the till box is coming up
+   the screen, the till itself rides the bottom edge (sticky), so the slip
+   seems to feed up out of its slot as you scroll, and when the box's foot
+   arrives the till settles under the slip. A keyboard user tabbing into
+   the slip gets the till parked at once (:focus-within), so no focused line
+   is ever behind it. Reduced motion parks it for good.                  */
+
+.au-th-till {
+  grid-area: till;
+  position: relative;
+  width: min(100%, 22.5rem);
+  justify-self: center;
+  margin-top: 0.9rem;
+  /* The till's height. On a phone its lower part rides behind the tab bar
+     (64px) while the slip prints, so it is tall enough to cover what is
+     still inside it there too. */
+  --au-th-mh: 5.75rem;
+  /* How much of the slip is still inside the till once it settles. */
+  --au-th-tuck: 0.85rem;
+  --au-th-gold: rgba(200, 150, 46, 0.3);
+}
+@media (min-width: 44rem) {
+  .au-th-till {
+    justify-self: start;
+    margin-top: 1.4rem;
+  }
+}
+@media (min-width: 64rem) {
+  .au-th-till {
+    --au-th-mh: 4.6rem;
+  }
+}
+
+.au-receipt.sd-note {
+  margin: 0 0.75rem;
+  padding: 1.4rem 1.25rem calc(1.15rem + var(--au-th-tuck));
+  border-top: 0;
+  border-radius: 0;
+  background:
+    /* the shop's vermilion band, printed under the torn edge */
+    linear-gradient(#d63a22, #d63a22) 0 0.55rem / 100% 4px no-repeat,
+    /* the slip curls a little toward you at its top and its sides */
+    linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.5),
+        rgba(255, 255, 255, 0) 2.4rem
+      ),
+    linear-gradient(
+      90deg,
+      rgba(31, 26, 20, 0.06),
+      transparent 7% 93%,
+      rgba(31, 26, 20, 0.06)
+    ),
+    /* thermal print: the faint banding a print head leaves */
+    repeating-linear-gradient(
+        180deg,
+        rgba(31, 26, 20, 0.028) 0 1px,
+        transparent 1px 3px
+      ),
+    var(--sd-sticky);
+  box-shadow:
+    0 1px 2px rgba(31, 26, 20, 0.14),
+    0 24px 32px -20px var(--sd-card-shadow);
+}
+/* Torn off the roll: a row of paper teeth along the top. */
+.au-receipt::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 100%;
+  height: 7px;
+  background: conic-gradient(
+      from 135deg at 50% 0,
+      var(--sd-sticky) 90deg,
+      transparent 0
+    )
+    0 0 / 12px 100% repeat-x;
+}
+.au-rc-shop {
+  font-size: 1.12rem;
+  line-height: 1.2;
+  text-align: center;
+  color: #1f1a14;
+}
+.au-rc-sub {
+  margin-top: 0.3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1.5px dashed rgba(31, 26, 20, 0.32);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #5b5244;
+}
+.au-rc-lines {
+  margin-top: 0.3rem;
+}
+.au-rc-line,
+.au-rc-total {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: 0.95rem;
+  color: #1f1a14;
+}
+.au-rc-line {
+  font-weight: 600;
+  border-radius: 6px;
+  transition:
+    color 0.2s ease,
+    scale 0.2s ease;
+}
+.au-rc-line:hover {
+  color: #2b3a96;
+}
+.au-rc-line:active {
+  scale: 0.98;
+}
+.au-rc-dots {
+  flex: 1;
+  min-width: 1rem;
+  height: 0;
+  border-bottom: 2px dotted rgba(31, 26, 20, 0.36);
+  translate: 0 0.3em;
+}
+.au-rc-line b {
+  font-size: 1.08rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.au-rc-total {
+  margin-top: 0.25rem;
+  border-top: 1.5px dashed rgba(31, 26, 20, 0.32);
+  padding-top: 0.3rem;
+  font-weight: 800;
+}
+.au-rc-total b {
+  font-weight: 800;
+  color: #b42a17;
+}
+.au-rc-foot {
+  margin-top: 0.55rem;
+  padding-right: 3rem;
+  font-family: var(--font-read);
+  font-size: 0.98rem;
+  font-style: italic;
+  color: #3d3529;
+}
+/* The shop's seal, the same vermilion in both lights, like the paper. */
+.au-rc-seal {
+  position: absolute;
+  right: 1.1rem;
+  bottom: calc(0.95rem + var(--au-th-tuck));
+  width: 2.4rem;
+  rotate: -8deg;
+  background: #d63a22;
+}
+/* The ink that spreads when it lands (seen only then). */
+.au-rc-seal::after {
+  content: '';
+  position: absolute;
+  inset: -0.35rem;
+  border: 2px solid rgba(214, 58, 34, 0.5);
+  border-radius: 30%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The till: black lacquer lit from above, a gold makie line, the slot along
+   its top, a lamp, and a drawer dusted with gold seigaiha (the wave crest
+   of lacquerware) and a brass pull. An object, so the same colours in both
+   lights; at night the moon rims its top edge. */
+.au-th-machine {
+  position: relative;
+  z-index: 2;
+  height: var(--au-th-mh);
+  margin-top: calc(var(--au-th-tuck) * -1);
+  border-radius: 0.7rem 0.7rem 0.9rem 0.9rem;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)) 0 2.6rem / 100% 1px
+      no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)) 0
+      calc(2.6rem + 1px) / 100% 1px no-repeat,
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05),
+      transparent 14% 86%,
+      rgba(0, 0, 0, 0.32)
+    ),
+    linear-gradient(180deg, #2e2724, #1b1614 1.1rem, #120e0c 55%, #0a0807);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 18px 26px -16px rgba(0, 0, 0, 0.55);
+}
+@media (max-width: 63.99rem) {
+  .au-th-machine {
+    height: calc(var(--au-th-mh) + env(safe-area-inset-bottom, 0px));
+  }
+}
+:root[data-theme='dark'] .au-th-machine {
+  box-shadow:
+    inset 0 1px 0 rgba(176, 196, 255, 0.4),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 18px 26px -16px rgba(0, 0, 0, 0.8);
+}
+/* The gold line under the slot. */
+.au-th-machine::before {
+  content: '';
+  position: absolute;
+  inset: 1.5rem 0.9rem auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c8962e 12% 88%, transparent);
+  opacity: 0.8;
+}
+/* The shade the slot throws up onto the slip where it comes out. */
+.au-th-machine::after {
+  content: '';
+  position: absolute;
+  inset: auto 0.75rem 100%;
+  height: 1rem;
+  background: linear-gradient(180deg, transparent, rgba(31, 26, 20, 0.16));
+  pointer-events: none;
+}
+.au-th-slot {
+  position: absolute;
+  inset: 0.45rem 0.55rem auto;
+  height: 0.34rem;
+  border-radius: 99px;
+  background: #040302;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+.au-th-lamp {
+  position: absolute;
+  top: 1.95rem;
+  right: 1rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffc2ae, #ff5b3d 45%, #b3261a);
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.45),
+    0 0 9px 1px rgba(255, 91, 61, 0.55);
+}
+/* The drawer front: seigaiha in faint gold, overlapping rows of waves. Each
+   tile is a fan of rings with lacquer outside it, and the second row sits
+   half a tile across and down, under the first. */
+.au-th-drawer {
+  position: absolute;
+  inset: calc(2.6rem + 3px) 0.55rem 0.5rem;
+  border-radius: 0.3rem 0.3rem 0.6rem 0.6rem;
+  background:
+    radial-gradient(
+        circle at 50% 100%,
+        transparent 0 20%,
+        var(--au-th-gold) 21% 27%,
+        transparent 28% 43%,
+        var(--au-th-gold) 44% 50%,
+        transparent 51% 66%,
+        var(--au-th-gold) 67% 73%,
+        #120e0c 74%
+      )
+      0 0 / 1.5rem 0.75rem,
+    radial-gradient(
+        circle at 50% 100%,
+        transparent 0 20%,
+        var(--au-th-gold) 21% 27%,
+        transparent 28% 43%,
+        var(--au-th-gold) 44% 50%,
+        transparent 51% 66%,
+        var(--au-th-gold) 67% 73%,
+        #120e0c 74%
+      )
+      0.75rem 0.375rem / 1.5rem 0.75rem;
+  -webkit-mask: linear-gradient(180deg, transparent, #000 0.9rem);
+  mask: linear-gradient(180deg, transparent, #000 0.9rem);
+}
+.au-th-pull {
+  position: absolute;
+  top: 3.25rem;
+  left: 50%;
+  width: 2.6rem;
+  height: 0.3rem;
+  margin-left: -1.3rem;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #ecca72, #a87a26);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+/* The till's foot: what ThresholdFX watches for. */
+.au-th-end {
+  display: block;
+  height: 1px;
+  margin-top: -1px;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .au-th-machine {
+    position: sticky;
+    bottom: 0;
+  }
+  .au-th-till:focus-within .au-th-machine {
+    position: relative;
+  }
+
+  /* The stamp: hidden while the slip is still printing (ThresholdFX arms
+     this only when the foot is below the fold, so it is out of sight in the
+     till), then pressed down with a thump the moment the till settles. */
+  .au-th-till[data-armed]:not([data-landed]) .au-rc-seal {
+    opacity: 0;
+  }
+  /* Both end on the resting style (the seal at -8deg, its ink ring gone),
+     so they fill backwards only and are done with once they have played
+     (see the h1's note on finished animations above). */
+  .au-th-till[data-landed] .au-rc-seal {
+    animation: au-th-stamp 0.52s cubic-bezier(0.3, 0, 0.25, 1) backwards;
+  }
+  .au-th-till[data-landed] .au-rc-seal::after {
+    animation: au-th-ink 0.7s ease-out 0.24s backwards;
+  }
+  .au-th-till[data-landed] .au-receipt {
+    animation: au-th-thump 0.38s ease-out 0.2s;
+  }
+}
+@keyframes au-th-stamp {
+  0% {
+    opacity: 0;
+    scale: 2.3;
+    translate: -0.4rem -1.2rem;
+    rotate: -24deg;
+  }
+  46% {
+    opacity: 1;
+    scale: 0.9;
+    translate: 0 0;
+    rotate: -6deg;
+  }
+  70% {
+    scale: 1.06;
+    rotate: -9deg;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+    rotate: -8deg;
+  }
+}
+@keyframes au-th-ink {
+  0% {
+    opacity: 0.8;
+    scale: 0.7;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.7;
+  }
+}
+@keyframes au-th-thump {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  30% {
+    translate: 0 3px;
+  }
+  62% {
+    translate: 0 -1px;
+  }
+}
+
+/* ── The cue ───────────────────────────────────────────────────────────────
+   The end of the threshold: a real link to the first room, over a brushed
+   vermilion arrow pointing down at it. When it comes on screen the arrow
+   inks itself downward (a clip on a 26px-wide drawing, once).           */
+
+.au-th-cue {
+  grid-area: cue;
+  justify-self: center;
+  margin-top: 0.6rem;
+}
+/* Beside the doorway, under the till and centred on it. */
+@media (min-width: 44rem) {
+  .au-th-cue {
+    justify-self: start;
+    width: min(100%, 22.5rem);
+    margin-top: 0.2rem;
+    text-align: center;
+  }
+}
+.au-th-cue-link {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 44px;
+  padding: 0.55rem 1rem 0.2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  color: var(--sd-accent);
+  transition: scale 0.2s ease;
+}
+.au-th-cue-link:hover .au-th-cue-text {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+}
+.au-th-cue-link:active {
+  scale: 0.97;
+}
+.au-th-cue-ink {
+  width: 1.7rem;
+  height: 4.75rem;
+  fill: var(--sd-pen);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .au-th-cue-ink {
+    transition: translate 0.35s var(--ease-out-expo);
+  }
+  .au-th-cue-link:hover .au-th-cue-ink {
+    translate: 0 4px;
+  }
+  .au-th-cue[data-armed]:not([data-seen]) .au-th-cue-ink {
+    clip-path: inset(0 0 100% 0);
+  }
+  .au-th-cue[data-seen] .au-th-cue-ink {
+    animation: au-th-ink-down 0.9s cubic-bezier(0.55, 0.05, 0.3, 1) 0.1s both;
+  }
+}
+@keyframes au-th-ink-down {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}

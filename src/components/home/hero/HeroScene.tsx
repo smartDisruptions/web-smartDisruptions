@@ -122,7 +122,7 @@ export default function HeroScene() {
           <Button variant="primary" size="lg" href="/content">
             Read the notes
           </Button>
-          <Button variant="secondary" size="lg" href="/built">
+          <Button variant="secondary" size="lg" href="/about">
             See what I&apos;ve built
           </Button>
         </div>

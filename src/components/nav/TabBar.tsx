@@ -6,7 +6,6 @@ import {
   IconHome,
   IconWriting,
   IconLearn,
-  IconBuilt,
   IconArcade,
 } from '@/components/icons';
 import { NAV, isActive, direction, sectionOf } from './nav';
@@ -15,9 +14,31 @@ const ICONS: Record<string, (p: { size?: number }) => React.ReactElement> = {
   '/': IconHome,
   '/content': IconWriting,
   '/learn': IconLearn,
-  '/built': IconBuilt,
   '/games': IconArcade,
 };
+
+/**
+ * About's tab is Josh's photo, the way an app's last tab is its profile:
+ * ringed in vermilion while you're on it. It used to be the avatar in the
+ * top bar, before About had a tab. Lazy, so a desktop (where this bar is
+ * hidden) never fetches it.
+ */
+function Avatar({ active }: { active: boolean }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- the same 12 KB pre-sized webp the About pages use
+    <img
+      src="/images/josh.webp"
+      alt=""
+      width={24}
+      height={24}
+      loading="lazy"
+      decoding="async"
+      className={`block h-6 w-6 rounded-full object-cover ring-2 transition-[box-shadow] duration-300 ${
+        active ? 'ring-pen' : 'ring-border'
+      }`}
+    />
+  );
+}
 
 /**
  * The phone tab bar — the site's sections where a thumb can reach them. The
@@ -66,7 +87,7 @@ export default function TabBar() {
                   />
                 )}
                 <span className="relative">
-                  <Icon size={23} />
+                  {Icon ? <Icon size={23} /> : <Avatar active={active} />}
                 </span>
                 <span className="relative">{item.short}</span>
               </Link>

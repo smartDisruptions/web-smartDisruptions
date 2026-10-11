@@ -77,8 +77,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/tokaido-run-2.webp': [1600, 900],
   '/images/apps/tokaido-run-3.webp': [780, 1688],
   '/images/apps/tokaido-run-thumbnail.webp': [1200, 630],
+  '/images/websites/arcade.webp': [1200, 750],
   '/images/websites/broom-blade.webp': [1200, 750],
-  '/images/websites/kitsune-kitchen.webp': [1200, 750],
+  '/images/websites/kiru.webp': [1200, 750],
+  '/images/websites/kiru-cast.webp': [1200, 750],
   '/images/websites/notebook.webp': [1200, 750],
   '/images/websites/samurai-kitchen.webp': [1200, 750],
   '/images/websites/voltic.webp': [1200, 750],
@@ -136,6 +138,8 @@ export function hostOf(url?: string): string | undefined {
  * (components/brand/glyphs.ts), so nothing here loads a font.
  */
 const MARKS: Record<string, string> = {
+  arcade: '戯', // play, as in 遊戯: the Arcade
+  kiru: '切', // his name: 切る, kiru, "to cut"
   'broom-blade': '遊', // play: chores turned into a game
   'samurai-kitchen': '侍', // samurai
   voltic: '雷', // thunder: "liquid lightning"
@@ -145,7 +149,6 @@ const MARKS: Record<string, string> = {
   'cloth-simulator': '風', // wind
   'ai-diary': '心', // heart, mind
   'aureum-snake': '遊', // play
-  'kitsune-kitchen': '作', // made
   'lantern-night': '光', // light: "Light the night"
   'night-parade': '斬', // cut: Kiru cuts each yokai in two
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道
@@ -164,10 +167,10 @@ export function markFor(slug: string): string {
 }
 
 /**
- * The shared-element name a screenshot carries on /built and on its own page,
+ * The shared-element name a screenshot carries on /about and on its own page,
  * so the browser carries the picture from the card into the hero on the way
  * in (a View Transition). Names must be unique on a page: one per slug. The
- * class lets built.css time all of them together.
+ * class lets device.css time all of them together.
  */
 export function shotTransition(slug: string) {
   return {

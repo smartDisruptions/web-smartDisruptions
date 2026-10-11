@@ -2,7 +2,18 @@ import type { CSSProperties } from 'react';
 import Kiru from '@/components/kiru/Kiru';
 import { GLYPHS } from '@/components/brand/glyphs';
 import StaticSvg from '@/components/brand/StaticSvg';
-import { DOOR, FRAME, KIRU, NOREN, REST, panelLeft, pctX, pctY } from './noren';
+import {
+  DOOR,
+  FRAME,
+  KIRU,
+  MOTES,
+  NOREN,
+  REST,
+  SCENE,
+  panelLeft,
+  pctX,
+  pctY,
+} from './noren';
 import NorenFX from './NorenFX';
 import './noren.css';
 
@@ -20,8 +31,17 @@ import './noren.css';
  * JS, reduced motion) this is the still picture: Kiru peeking through the
  * gap.
  *
+ * The live doorway stands in a scene (October 2026, when /about took in all
+ * the work): a tiled eave over the lintel, a lantern-lit room behind the
+ * cloth whose light leaks through every gap and pools on the ground in
+ * front, a stepping stone in that light, and a little dust drifting up
+ * through it. Brush the cloth aside and the room's light comes up with it
+ * (NorenFX writes three opacities from the same loop that moves the cloth);
+ * the dust drifts only while Kiru is live (on screen, motion allowed), in
+ * CSS. All of it is boxes and gradients, a few hundred bytes of CSS.
+ *
  * `mini` is the same doorway as a small, still illustration (About Me's
- * closing card); it parts on hover in CSS.
+ * closing card), without the scene; it parts on hover in CSS.
  */
 
 // 場 inked across the cloth: its ink box is x 35–960, y 50–961 of the em.
@@ -40,6 +60,8 @@ const box = (x: number, y: number, w: number, h: number): CSSProperties => ({
   width: pctX(w),
   height: pctY(h),
 });
+const place = (b: { x: number; y: number; w: number; h: number }) =>
+  box(b.x, b.y, b.w, b.h);
 
 const LOWER = NOREN.h - NOREN.seam;
 
@@ -90,6 +112,17 @@ export default function Noren({
           className="au-step"
           style={box(10, FRAME.sill + 8, DOOR.w - 20, 26)}
         />
+        {!mini && (
+          <>
+            {/* The room's light on the ground in front of the door, over
+                that shadow, under the stone that sits in it. */}
+            <div className="au-th-spill" style={place(SCENE.spill)} />
+            <div className="au-th-stone" style={place(SCENE.stone)} />
+            {/* The ground light again, brighter, over the stone: NorenFX
+                raises it while the cloth is pushed open. */}
+            <div className="au-th-spill-hi" style={place(SCENE.spill)} />
+          </>
+        )}
         {/* Inside the dojo: the back wall, the light, the floorboards. */}
         <div
           className="au-in"
@@ -100,6 +133,8 @@ export default function Noren({
             FRAME.sill - FRAME.lintel
           )}
         />
+        {/* The room brightening behind the cloth as it opens. */}
+        {!mini && <div className="au-th-flare" style={place(SCENE.flare)} />}
 
         {/* Kiru, standing behind the cloth: his own legs and torso (the
             shared parts every ninja uses), arms up to the hem, and over them
@@ -145,6 +180,8 @@ export default function Noren({
           className="au-sill"
           style={box(FRAME.post - 6, FRAME.sill, NOREN.w + 12, 18)}
         />
+        {/* The eave over the lintel, and the shade it throws on it. */}
+        {!mini && <div className="au-th-eave" style={place(SCENE.eave)} />}
 
         {/* The rod, through every panel's sleeve; its ends rest on the posts. */}
         <div className="au-rod" style={box(8, NOREN.y + 7, DOOR.w - 16, 10)} />
@@ -199,6 +236,32 @@ export default function Noren({
             );
           })}
         </div>
+
+        {!mini && (
+          <>
+            {/* Light leaking out at the hem and the slit, in front of the
+                cloth; and the dust drifting up through it. */}
+            <div className="au-th-glow" style={place(SCENE.glow)} />
+            <div className="au-th-motes" style={place(SCENE.motes)}>
+              {MOTES.map(([x, y, dur, delay, dx, dy], i) => (
+                <i
+                  key={i}
+                  className="au-th-mote"
+                  style={
+                    {
+                      left: `${x}%`,
+                      top: `${y}%`,
+                      '--au-th-dur': `${dur}s`,
+                      '--au-th-delay': `${delay}s`,
+                      '--au-th-dx': `${dx}px`,
+                      '--au-th-dy': `${dy}px`,
+                    } as CSSProperties
+                  }
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {!mini && (

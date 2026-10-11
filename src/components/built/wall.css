@@ -1,0 +1,782 @@
+/*
+  Everything on one wall (ArmoryWall.tsx imports this file): a ring of
+  plaques in CSS 3D, hung in a hall lit by one red paper lantern, turned by
+  one property (the ring's transform) that armory-drive.ts writes.
+  Prefix bt-wall / bt-ring / bt-panel.
+
+  Why it is cheap to turn:
+   - The ring's place (translate, rotate) is CSS; its turn is the one value
+     the drive writes, as the transform itself. Measured in Chrome, a frame
+     written that way restyles 1–4 elements; through a registered,
+     non-inherited custom property it was 63, and through an ordinary
+     inherited one (how this ring used to turn) 296.
+   - Each plaque is one composited layer (its back is drawn inside it and
+     shown by data-away, which the drive flips while a plaque is edge-on).
+   - The light is fixed to the room, not to the plaques: the lantern's pool,
+     the dark at the sides and the gleam on the floor are gradients that
+     never move. The plaques turn through them, so a plaque arriving at the
+     front comes into the light and one leaving goes into the dark, at the
+     cost of nothing per frame. The dark is painted in the hall's own colour
+     (--bt-hall), so it is invisible over the ground and only darkens what
+     passes under it.
+*/
+
+/* ── The hall's light (both themes) ─────────────────────────────────────── */
+
+/* Day: the same hall by paper-lamp light. Warm paper in shade, a lamp's
+   glow, a light wood floor with a soft sheen. */
+.bt-wall {
+  --bt-hall: var(--wk-wl-hall, var(--sd-bg));
+  /* How dark the sides get: the shade's colour and its grain both use it. */
+  --bt-shade: color-mix(in srgb, var(--bt-hall) 78%, transparent);
+  --bt-shade-a: 0.78;
+  --bt-haze: color-mix(in srgb, var(--bt-hall) 34%, transparent);
+  --bt-haze-a: 0.34;
+  --bt-lamp: rgba(255, 226, 168, 0.66);
+  --bt-pool: rgba(255, 248, 232, 0.3);
+  --bt-gleam: rgba(255, 252, 244, 0.78);
+  --bt-floor-far: color-mix(in oklab, var(--bt-hall), #7a5c30 9%);
+  --bt-floor: color-mix(in oklab, var(--bt-hall), #7a5c30 16%);
+  --bt-cord: #2a2320;
+  --bt-face: var(--sd-surface);
+  --bt-edge: var(--sd-border-strong);
+  --bt-lit: rgba(200, 150, 46, 0.85);
+  /* The lantern's light on the front plaque: set when a plaque arrives at
+     the front, never animated. */
+  --bt-halo:
+    0 18px 30px -18px var(--sd-card-shadow),
+    0 0 38px -6px rgba(255, 214, 140, 0.75);
+}
+/* Night: a hall under one lantern. */
+:root[data-theme='dark'] .bt-wall {
+  --bt-shade: color-mix(in srgb, var(--bt-hall) 86%, transparent);
+  --bt-shade-a: 0.86;
+  --bt-haze: color-mix(in srgb, var(--bt-hall) 30%, transparent);
+  --bt-haze-a: 0.3;
+  --bt-lamp: rgba(255, 150, 72, 0.3);
+  --bt-pool: rgba(255, 200, 130, 0.1);
+  --bt-gleam: rgba(255, 186, 112, 0.3);
+  --bt-floor-far: color-mix(in oklab, var(--bt-hall), #39406e 22%);
+  --bt-floor: color-mix(in oklab, var(--bt-hall), #5a4a4a 30%);
+  --bt-cord: rgba(255, 214, 160, 0.4);
+  --bt-face: #11152a;
+  --bt-edge: rgba(236, 238, 250, 0.2);
+  --bt-lit: rgba(255, 207, 112, 0.8);
+  --bt-halo:
+    0 18px 30px -18px var(--sd-card-shadow),
+    0 0 38px -6px rgba(255, 178, 96, 0.4);
+}
+
+/* ── Geometry ────────────────────────────────────────────────────────────── */
+
+.bt-wall {
+  --n: 20;
+  --pw: 252px; /* plaque width */
+  --ph: 158px; /* its screenshot (16:10) */
+  --cap: 52px; /* its label */
+  --gap: 22px;
+  --tilt: -5deg;
+  --persp: 1700px;
+  --stage-h: 548px;
+  --ring-y: 304px; /* the ring's centre, from the top of the stage */
+  --eye-y: 150px; /* where the eye is (perspective-origin) */
+  --lw: 54px; /* the lantern */
+  --lantern-y: 8px;
+  --r: calc(var(--pw) / 2 / sin(180deg / var(--n)) + var(--gap));
+  /* Where the front plaque lands: the tilt lowers it by r·sin(tilt). */
+  --front-y: calc(var(--ring-y) + var(--r) * sin(var(--tilt) * -1));
+  --front-bottom: calc(var(--front-y) + (var(--ph) + var(--cap)) / 2);
+  position: relative;
+}
+@media (max-width: 39.99rem) {
+  .bt-wall {
+    --pw: 176px;
+    --ph: 110px;
+    --cap: 44px;
+    --gap: 14px;
+    --tilt: -6deg;
+    --persp: 1000px;
+    --stage-h: 410px;
+    --ring-y: 220px;
+    --eye-y: 96px;
+    --lw: 40px;
+    --lantern-y: 2px;
+  }
+}
+
+/* ── The stage ───────────────────────────────────────────────────────────── */
+
+.bt-wall-stage {
+  position: relative;
+  height: var(--stage-h);
+  margin-top: 18px;
+  perspective: var(--persp);
+  perspective-origin: 50% var(--eye-y);
+  /* Clipped sideways only: the ring is wider than the screen, but the
+     lantern's glow rises above the stage, behind the chips. */
+  overflow-x: clip;
+  overflow-y: visible;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.bt-wall.is-dragging .bt-wall-stage {
+  cursor: grabbing;
+}
+
+/* The polished floor, behind the ring: it comes out of the dark behind the
+   front row, catches the lantern under the front plaque (the gleam, a
+   soft reflection of the plaque and its light), and goes back into the
+   dark toward you, so the caption below sits on the hall again. */
+.bt-wall-floor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Every layer is spent before the stage's bottom edge, so the floor
+     never ends in a line. */
+  background:
+    radial-gradient(
+      calc(var(--pw) * 0.62)
+        min(
+          calc((var(--ph) + var(--cap)) * 0.42),
+          calc(var(--stage-h) - var(--front-bottom) - 8px)
+        )
+        at 50% calc(var(--front-bottom) + 6px),
+      var(--bt-gleam),
+      transparent
+    ),
+    radial-gradient(
+      calc(var(--r) * 0.9) calc(var(--stage-h) - var(--front-bottom) + 8px) at
+        50% calc(var(--front-bottom) - 10px),
+      var(--bt-floor),
+      transparent
+    ),
+    linear-gradient(
+      180deg,
+      transparent calc(var(--front-y) - 40px),
+      var(--bt-floor-far) var(--front-y),
+      transparent
+    );
+}
+
+/* The hall's light, over the ring: the lantern's pool falling on the front
+   plaque, the dark the plaques turn into at the sides, and a little of the
+   hall's haze over the far side of the ring, so it stands back. */
+.bt-wall-light {
+  /* Where the far side of the ring hangs: above the front row's top. */
+  --bt-far: calc(var(--front-y) - (var(--ph) + var(--cap)) / 2);
+  --bt-dark: linear-gradient(
+    90deg,
+    #000 calc(50% - var(--r) * 0.8),
+    transparent calc(50% - var(--pw) * 0.62),
+    transparent calc(50% + var(--pw) * 0.62),
+    #000 calc(50% + var(--r) * 0.8)
+  );
+  /* The haze is --bt-haze-a of the hall; the grain layer runs at
+     --bt-shade-a, so its mask carries the ratio of the two. */
+  --bt-haze-mask: linear-gradient(
+    180deg,
+    rgb(0 0 0 / calc(var(--bt-haze-a) / var(--bt-shade-a)))
+      calc(var(--bt-far) - 40px),
+    transparent calc(var(--bt-far) - 4px)
+  );
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      calc(var(--pw) * 0.78) calc((var(--ph) + var(--cap)) * 1.15) at 50%
+        calc(var(--front-y) - (var(--ph) + var(--cap)) * 0.15),
+      var(--bt-pool),
+      transparent
+    ),
+    linear-gradient(
+      90deg,
+      var(--bt-shade) calc(50% - var(--r) * 0.8),
+      transparent calc(50% - var(--pw) * 0.62),
+      transparent calc(50% + var(--pw) * 0.62),
+      var(--bt-shade) calc(50% + var(--r) * 0.8)
+    ),
+    linear-gradient(
+      180deg,
+      var(--bt-haze) calc(var(--bt-far) - 40px),
+      transparent calc(var(--bt-far) - 4px)
+    );
+}
+/* The room's washi grain over its own dark, with the same fall-off, so the
+   shade reads as the ground and never as a box over it. */
+.bt-wall-light::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sd-noise) 0 0 / 180px 180px;
+  opacity: var(--bt-shade-a);
+  -webkit-mask: var(--bt-dark), var(--bt-haze-mask);
+  mask: var(--bt-dark), var(--bt-haze-mask);
+}
+
+/* ── The lantern ─────────────────────────────────────────────────────────── */
+
+.bt-wall-lantern {
+  position: absolute;
+  left: 50%;
+  top: var(--lantern-y);
+  width: var(--lw);
+  aspect-ratio: 64 / 116;
+  margin-left: calc(var(--lw) / -2);
+  /* It swings from where its cord meets the ceiling. */
+  transform-origin: 50% -120%;
+  pointer-events: none;
+}
+.bt-wall-lantern-art {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.bt-wall-lantern-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 640%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--bt-lamp), transparent);
+}
+.bt-wall-lantern-cord {
+  position: absolute;
+  left: 50%;
+  bottom: 88%;
+  width: 2px;
+  height: 64px;
+  margin-left: -1px;
+  background: linear-gradient(to top, var(--bt-cord), transparent);
+}
+.bt-wall-lantern-k {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  translate: -50% -50%;
+  color: #1b1512;
+  opacity: 0.86;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bt-wall[data-awake] .bt-wall-lantern {
+    animation: bt-sway 7s ease-in-out infinite alternate;
+  }
+}
+/* It holds still while the ring turns (data-turning, from the drive). */
+.bt-wall[data-turning] .bt-wall-lantern {
+  animation-play-state: paused;
+}
+@keyframes bt-sway {
+  from {
+    rotate: -1.4deg;
+  }
+  to {
+    rotate: 1.4deg;
+  }
+}
+
+/* ── The ring ────────────────────────────────────────────────────────────── */
+
+.bt-ring {
+  position: absolute;
+  left: 50%;
+  top: var(--ring-y);
+  width: var(--pw);
+  height: calc(var(--ph) + var(--cap));
+  margin: calc((var(--ph) + var(--cap)) / -2) 0 0 calc(var(--pw) / -2);
+  padding: 0;
+  list-style: none;
+  transform-style: preserve-3d;
+  /* translate and rotate apply outside transform, so this is
+     translateZ(-r) rotateX(tilt) rotateY(turn). The turn starts where the
+     server parks it (--park plaques short of the first, set on the wall)
+     and from then on is the inline transform the drive writes. */
+  translate: 0 0 calc(var(--r) * -1);
+  rotate: x var(--tilt);
+  transform: rotateY(calc(var(--park, 0) * 360deg / var(--n)));
+}
+/* Flat on purpose: the plaque is one layer, with its face and its back
+   painted into it. */
+.bt-panel {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--r));
+}
+.bt-panel-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--bt-face);
+  border: 1px solid var(--bt-edge);
+  /* The halo is there on every plaque, unlit, so a plaque arriving at the
+     front only repaints its layer instead of growing it. */
+  box-shadow:
+    0 18px 30px -18px var(--sd-card-shadow),
+    0 0 38px -6px transparent;
+  color: var(--sd-text-primary);
+  -webkit-user-drag: none;
+  transition: scale 0.15s ease;
+}
+.bt-panel-face:focus-visible {
+  border-radius: 14px;
+}
+/* A press presses in — but not while the press is a drag. */
+.bt-panel-face:active {
+  scale: 0.97;
+}
+.bt-wall.is-dragging .bt-panel-face:active {
+  scale: 1;
+}
+.bt-panel-shot {
+  position: relative;
+  height: var(--ph);
+  flex: none;
+  overflow: hidden;
+  background: #05060c;
+}
+.bt-panel-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.bt-panel-cap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 12px;
+  border-top: 1px solid var(--sd-border);
+}
+.bt-panel-kind {
+  order: -1;
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.bt-panel-name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--sd-text-primary);
+}
+@media (max-width: 39.99rem) {
+  .bt-panel-cap {
+    padding: 0 10px;
+  }
+  .bt-panel-kind {
+    font-size: 0.56rem;
+  }
+  .bt-panel-name {
+    font-size: 0.82rem;
+  }
+}
+
+/* The front plaque: the lantern's light catches its edge. */
+.bt-panel[data-front] .bt-panel-face {
+  border-color: var(--bt-lit);
+  box-shadow: var(--bt-halo);
+}
+
+/* As a plaque comes to rest at the front, the lantern's gloss crosses its
+   lacquer once (data-lit, set by the drive when the ring stops). Parked
+   off the plaque the rest of the time, where its overflow clips it. */
+.bt-panel-face::before {
+  content: '';
+  position: absolute;
+  inset: 0 -30%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 36%,
+    rgba(255, 247, 228, 0.16) 44%,
+    rgba(255, 249, 236, 0.5) 50%,
+    rgba(255, 247, 228, 0.16) 56%,
+    transparent 64%
+  );
+  /* ±50% of its own width puts the band just off either edge. */
+  translate: -50% 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bt-panel[data-lit] .bt-panel-face::before {
+    animation: bt-gloss 1.25s cubic-bezier(0.45, 0.05, 0.25, 1) 0.05s both;
+  }
+}
+@keyframes bt-gloss {
+  from {
+    translate: -50% 0;
+  }
+  to {
+    translate: 50% 0;
+  }
+}
+
+/* A chip that leaves a plaque out puts it in the hall's shade. */
+.bt-panel-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: var(--bt-hall);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.bt-panel[data-out] .bt-panel-face::after {
+  opacity: 0.7;
+}
+
+/* The back of a plaque, seen while it faces away: lacquer, its seal and
+   its name. Drawn mirrored, because it is seen from behind; the same in
+   both themes (an object). */
+.bt-panel-back {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  transform: scaleX(-1);
+  background:
+    radial-gradient(
+      120% 90% at 50% 0%,
+      rgba(255, 207, 112, 0.16),
+      transparent 60%
+    ),
+    #141729;
+  /* The ofuda paper's cream (the same in both themes): seen through the
+     hall's haze on the far side of the ring, a paler ink keeps the name
+     legible. It is a mirrored copy of the name, aria-hidden. */
+  color: var(--sd-sticky);
+}
+.bt-panel[data-away] .bt-panel-face {
+  border-color: #2c3150;
+  background: #141729;
+}
+.bt-panel[data-away] .bt-panel-back {
+  display: grid;
+}
+/* The back is opaque, so the picture under it needn't be painted. The
+   label stays: it is the link's name, and visibility: hidden would take it
+   out of what a screen reader hears. */
+.bt-panel[data-away] .bt-panel-shot {
+  visibility: hidden;
+}
+.bt-panel-back .sd-seal {
+  width: 30%;
+}
+.bt-panel-back-name {
+  max-width: 86%;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  line-height: 1.15;
+  text-align: center;
+}
+
+/* ── Chips: find a kind ──────────────────────────────────────────────────── */
+
+/* Hidden (but holding their space) until they work: the island shows them
+   once the ring's behaviour has loaded, or at once on the flat grid. */
+.bt-wall-chips {
+  position: relative;
+  z-index: 1; /* over the lantern's glow, which rises above the stage */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0 20px;
+  visibility: hidden;
+}
+.bt-wall[data-chips] .bt-wall-chips {
+  visibility: visible;
+}
+.bt-wall-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border-strong);
+  background: color-mix(in srgb, var(--bt-hall) 60%, transparent);
+  color: var(--sd-text-primary);
+  font-size: 0.9rem;
+  font-weight: 650;
+  transition:
+    scale 0.15s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.bt-wall-chip:hover {
+  border-color: var(--sd-text-primary);
+}
+.bt-wall-chip:active {
+  scale: 0.97;
+}
+.bt-wall-chip-n {
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+  color: var(--sd-text-secondary);
+}
+.bt-wall-chip[aria-pressed='true'] {
+  border-color: var(--sd-accent);
+  background: var(--sd-accent);
+  color: var(--sd-bg);
+}
+.bt-wall-chip[aria-pressed='true'] .bt-wall-chip-n {
+  color: inherit;
+}
+/* A phone gets them two by two, so four never wrap into three and one. */
+@media (max-width: 39.99rem) {
+  .bt-wall-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    max-width: 24rem;
+  }
+  .bt-wall-chip {
+    justify-content: center;
+    padding: 0 12px;
+  }
+}
+
+/* ── The caption: the front plaque's name, big ───────────────────────────── */
+
+/* The name, then a pager under it: ‹ 01 / 20 ›. The name's box is the
+   row's full width and the pager's middle is a fixed width, so nothing
+   moves when a longer name comes round. */
+.bt-wall-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas:
+    'cap cap cap'
+    'prev at next';
+  align-items: center;
+  gap: 4px 20px;
+  max-width: 46rem;
+  margin: 10px auto 0;
+  padding: 0 20px;
+}
+.bt-wall-cap {
+  grid-area: cap;
+  display: grid;
+  margin: 0;
+  text-align: center;
+  /* Fixed boxes: a long name and a short one take the same room, so the
+     page never moves as the ring turns. */
+  contain: layout paint;
+}
+.bt-wall-cap-kind {
+  display: block;
+  height: 1.3em;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  /* Vermilion ink deepened with sumi. Plain --sd-pen-ink measured 4.3:1 on
+     the hall's darker washi by day; this is 6.4:1 there, and at night it
+     comes out lighter, not darker (the sumi token is pale then). This line
+     and the name under it are the readable name of the plaque in front. */
+  color: color-mix(in srgb, var(--sd-pen-ink) 75%, var(--sd-text-primary));
+}
+/* The box is the same height whatever the name (two lines, or one on a
+   wide screen); a long name (data-long, over 22 letters) is set smaller
+   inside it rather than growing it. */
+.bt-wall-cap-name {
+  display: -webkit-box;
+  height: 3.8rem;
+  margin-top: 0.3rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 1.7rem;
+  line-height: 1.9rem;
+  color: var(--sd-text-primary);
+}
+.bt-wall-cap-name[data-long] {
+  font-size: 1.4rem;
+}
+@media (min-width: 40rem) {
+  .bt-wall-cap-name {
+    height: 5.2rem;
+    font-size: 2.3rem;
+    line-height: 2.6rem;
+  }
+  .bt-wall-cap-name[data-long] {
+    font-size: 1.9rem;
+  }
+}
+@media (min-width: 64rem) {
+  .bt-wall-cap-name {
+    display: block;
+    height: 3.3rem;
+    line-height: 3.3rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 2.6rem;
+  }
+  .bt-wall-cap-name[data-long] {
+    font-size: 1.95rem;
+  }
+}
+.bt-wall-at {
+  grid-area: at;
+  min-width: 5.5em;
+  margin: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-primary);
+}
+.bt-wall-at-of {
+  color: var(--sd-text-secondary);
+}
+.bt-wall-btn[data-wall-prev] {
+  grid-area: prev;
+  justify-self: end;
+}
+.bt-wall-btn[data-wall-next] {
+  grid-area: next;
+  justify-self: start;
+}
+
+.bt-wall-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid var(--sd-border-strong);
+  background: var(--bt-face);
+  color: var(--sd-text-primary);
+  /* Shown once they work (data-ready, set by the drive). */
+  visibility: hidden;
+  transition:
+    scale 0.15s ease,
+    border-color 0.2s ease;
+}
+.bt-wall[data-ready] .bt-wall-btn {
+  visibility: visible;
+}
+.bt-wall-btn:hover {
+  border-color: var(--sd-text-primary);
+}
+.bt-wall-btn:active {
+  scale: 0.93;
+}
+.bt-wall-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ── Reduced motion: the same plaques, flat and still, in a grid ─────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .bt-wall-stage {
+    height: auto;
+    max-width: 72rem;
+    margin: 18px auto 0;
+    padding: 0 20px;
+    perspective: none;
+    overflow: visible;
+    cursor: auto;
+    touch-action: auto;
+  }
+  .bt-wall-floor,
+  .bt-wall-light,
+  .bt-wall-lantern,
+  .bt-wall-controls {
+    display: none;
+  }
+  .bt-ring {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0;
+    translate: none;
+    rotate: none;
+    transform: none;
+  }
+  .bt-panel {
+    position: relative;
+    inset: auto;
+    transform: none;
+  }
+  .bt-panel[data-out] {
+    display: none;
+  }
+  .bt-panel-face {
+    position: relative;
+    inset: auto;
+    height: 100%;
+  }
+  .bt-panel[data-front] .bt-panel-face,
+  .bt-panel[data-away] .bt-panel-face {
+    border-color: var(--bt-edge);
+    background: var(--bt-face);
+    box-shadow: 0 18px 30px -18px var(--sd-card-shadow);
+  }
+  .bt-panel[data-away] .bt-panel-back {
+    display: none;
+  }
+  .bt-panel[data-away] .bt-panel-shot {
+    visibility: visible;
+  }
+  .bt-panel-cap {
+    padding-block: 10px 12px;
+  }
+  .bt-panel-name {
+    white-space: normal;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 39.99rem) {
+  .bt-ring {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .bt-wall-stage {
+    padding: 0 16px;
+  }
+}
+
+/* The instructions follow what the wall actually does. */
+.bt-still-only {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bt-still-only {
+    display: inline;
+  }
+  .bt-motion-only {
+    display: none;
+  }
+}

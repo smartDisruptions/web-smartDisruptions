@@ -94,9 +94,9 @@ const SPOTS: Spot[] = [
   },
   {
     pose: 'build',
-    where: 'What I Built',
+    where: 'Build Websites',
     caption: 'Hammer in hand, mid-build.',
-    href: '/built',
+    href: '/build-websites',
   },
   {
     pose: 'game',

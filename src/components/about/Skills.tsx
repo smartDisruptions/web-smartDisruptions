@@ -176,7 +176,7 @@ export default function Skills() {
           Nothing on this list is here because I have read about it. Each one
           came out of a build that needed it, and each one opens to what I made
           with it and something you can click. Most of those links go to the{' '}
-          <Link href="/built">apps</Link> and the{' '}
+          <Link href="/about">apps</Link> and the{' '}
           <Link href="/games">arcade</Link> — those are not a separate showcase,
           they are the same evidence from a different angle. Every one of them
           took some of these skills to make.

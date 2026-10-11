@@ -38,12 +38,14 @@ import '../built.css';
  *    This is the old /apps/[slug] page, moved here when /apps was removed.
  *
  * An app a project covers (PROJECT_APP_SLUGS in src/data/projects.ts) is
- * rendered once, as the project. Pages taken off the site redirect to /built
- * from next.config.ts.
+ * rendered once, as the project. Pages taken off the site redirect to /about
+ * (the work, where What I Built's index lives since October 2026) from
+ * next.config.ts.
  *
  * LOOK (Shadow Dojo): the hero is the thing itself, in a CSS device, with Kiru
  * peeking over the top of it. That device shares a view-transition name with
- * the card on /built, so the picture travels from the card into the hero. It
+ * the thing's picture on /about (the ema rack and the games carry one; the
+ * moving emaki can't), so the picture travels from the card into the hero. It
  * is the page's one high-priority image. Each part's receipts are stamped as
  * hanko seals; its bullets are led by vermilion marks.
  */

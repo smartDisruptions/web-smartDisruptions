@@ -7,7 +7,8 @@
  * website in its bullets. Same for The Pembroke File (taken off the site
  * 2026-10-07). So a project is now a
  * list of PARTS, each with its own address, its own description and its own
- * evidence. /built lists the parts; /built/<slug> describes them.
+ * evidence. /about lists the parts (it holds What I Built's index since
+ * October 2026); /built/<slug> describes them.
  *
  * VOICE: written for the average person. No analogies, no wordplay, no
  * sentence that has to be read twice. In-game names (Armory, Skill Grove) are
@@ -266,7 +267,7 @@ export function getProjectBySlug(slug: string): Project | undefined {
 }
 
 /**
- * App slugs already covered by a project page above, so /built does not list
+ * App slugs already covered by a project page above, so /about does not list
  * them twice and /built/<app-slug> hands over to the project page instead.
  */
 export const PROJECT_APP_SLUGS: Record<string, string> = {

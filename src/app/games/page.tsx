@@ -27,7 +27,7 @@ export const metadata: Metadata = {
  * the Broom & Blade Arcade (./guild, BROOM_BLADE_ARCADE_SLUGS): Pip's room,
  * where the page's theme turns from neon to firelight (docs/broom-blade-arcade.md).
  * Every other game is in the archive, /games/archive, behind the hall's cellar
- * door at the bottom. /built reads the same lists, so the pages can't drift.
+ * door at the bottom. /about reads the same lists, so the pages can't drift.
  *
  * This page is a server component. What moves is CSS on the compositor —
  * the neon's rare flicker, the lanterns, the ticker, the hall's firelight —

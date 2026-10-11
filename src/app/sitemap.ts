@@ -27,7 +27,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     { url: `${BASE}/learn`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE}/built`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/games`, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${BASE}/kiru/cast`, changeFrequency: 'monthly', priority: 0.4 },
     {

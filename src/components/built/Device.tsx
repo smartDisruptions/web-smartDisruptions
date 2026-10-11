@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import type { CSSProperties } from 'react';
 import { sizeOf, type FrameKind } from './media';
+import './device.css';
 
 /**
  * A screenshot inside a device — a laptop, a browser window, a tablet or a
- * phone. The devices are drawn in CSS (src/app/built/built.css, `bt-dev`),
+ * phone. The devices are drawn in CSS (./device.css, `bt-dev`),
  * not images: a bezel is a padded box, a hinge is a gradient, and every
  * measurement is in container units, so one frame reads right at 120px in the
  * ring and at 700px in a page hero.

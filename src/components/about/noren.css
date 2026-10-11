@@ -8,7 +8,13 @@
    Every moving part is its own composited box, moved by transform only:
    eight pieces of cloth (NorenFX writes their skew), the four panels that
    hold them (a CSS ripple as the page opens), Kiru's wrapper (a CSS
-   transition when he ducks). Nothing here repaints per frame.            */
+   transition when he ducks). Nothing here repaints per frame.
+
+   The live doorway's scene (au-th-, the mini has none of it): a tiled eave,
+   the room's lantern light leaking through the cloth and pooling on the
+   ground, a stepping stone, a little dust. Three of its layers carry an
+   opacity NorenFX writes while the cloth moves (the room's flare, the
+   bright pool, the dust); the dust drifts in CSS while Kiru is live.     */
 
 .au-door {
   /* The cloth: indigo, deep in the folds. */
@@ -35,6 +41,25 @@
   --au-board: rgba(96, 60, 24, 0.22);
   --au-ground: rgba(40, 30, 20, 0.28);
   --au-rim: transparent;
+  /* A paper lantern hangs in the room: its glow on the back wall. */
+  --au-lamp: rgba(255, 226, 160, 0.9);
+  /* The scene, by day: grey kawara tiles, warm lantern light on washi. */
+  --au-th-tile-hi: #8a91a1;
+  --au-th-tile: #5f6577;
+  --au-th-tile-lo: #3d4252;
+  --au-th-tile-end: #6d7486;
+  --au-th-tile-rim: rgba(255, 255, 255, 0.34);
+  --au-th-spill: rgba(255, 176, 64, 0.5);
+  --au-th-spill-hi: rgba(255, 214, 140, 0.7);
+  --au-th-flare: rgba(255, 236, 196, 0.95);
+  --au-th-glow: rgba(255, 214, 140, 0.4);
+  --au-th-stone-hi: #b9b09f;
+  --au-th-stone: #978e80;
+  --au-th-stone-lo: #6c655a;
+  --au-th-stone-lit: rgba(255, 232, 186, 0.75);
+  --au-th-mote: #fffaf0;
+  --au-th-mote-halo: rgba(255, 228, 170, 0.4);
+  --au-th-edge: rgba(255, 214, 140, 0.55);
 
   position: relative;
   width: 100%;
@@ -57,6 +82,24 @@
   --au-board: rgba(0, 0, 0, 0.35);
   --au-ground: rgba(255, 190, 100, 0.16);
   --au-rim: rgba(176, 196, 255, 0.28);
+  --au-lamp: rgba(255, 178, 76, 0.92);
+  /* The scene, by night: moonlit tiles, amber lantern light on the dark. */
+  --au-th-tile-hi: #3c4359;
+  --au-th-tile: #252a3b;
+  --au-th-tile-lo: #141722;
+  --au-th-tile-end: #2d3346;
+  --au-th-tile-rim: rgba(176, 196, 255, 0.42);
+  --au-th-spill: rgba(255, 164, 60, 0.42);
+  --au-th-spill-hi: rgba(255, 190, 100, 0.62);
+  --au-th-flare: rgba(255, 196, 110, 0.95);
+  --au-th-glow: rgba(255, 170, 80, 0.36);
+  --au-th-stone-hi: #45414a;
+  --au-th-stone: #2c2b34;
+  --au-th-stone-lo: #17171e;
+  --au-th-stone-lit: rgba(255, 178, 90, 0.5);
+  --au-th-mote: #ffe2ae;
+  --au-th-mote-halo: rgba(255, 166, 70, 0.6);
+  --au-th-edge: rgba(255, 176, 84, 0.6);
 }
 
 .au-defs {
@@ -79,6 +122,15 @@
 .au-in {
   overflow: hidden;
   background:
+    /* the jambs' inner faces: the opening has depth, and they are in shade */
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.3),
+      transparent 6% 94%,
+      rgba(0, 0, 0, 0.3)
+    ),
+    /* the paper lantern hanging in the room, glowing on the back wall */
+    radial-gradient(30% 24% at 50% 40%, var(--au-lamp), transparent 74%),
     /* the light behind Kiru: day through a far window, night a lantern */
     radial-gradient(52% 30% at 50% 84%, var(--au-light), transparent 74%),
     /* the floor, from the far wall to the sill */
@@ -239,11 +291,14 @@
 /* As the page opens, the cloth is still swaying from whoever came through
    last: a ripple across the panels, in CSS, so it plays from the first paint
    without waiting for NorenFX (which moves the pieces inside each panel, so
-   the two never touch the same transform). */
+   the two never touch the same transform). It ends at rest (skewX(0), the
+   panel's own style), so it fills backwards only: once it has played the
+   panels are no longer animations, and stop being layers that might move,
+   which the browser answers by layering everything painted after them. */
 @media (prefers-reduced-motion: no-preference) {
   .au-door:not(.au-door-mini) .au-pn {
     transform-origin: 50% 0;
-    animation: au-enter 2.1s cubic-bezier(0.33, 0.7, 0.4, 1) 0.3s both;
+    animation: au-enter 2.1s cubic-bezier(0.33, 0.7, 0.4, 1) 0.3s backwards;
   }
   /* The two in Kiru's fists hardly move. */
   .au-door:not(.au-door-mini) .au-pn:nth-child(2) {
@@ -402,6 +457,205 @@
   height: 0;
   z-index: 1;
   border-bottom: 1.5px dashed var(--au-stitch);
+}
+
+/* ── The scene around the live doorway (au-th-) ────────────────────────── */
+
+/* The eave: round tile ends along its front edge, the tile courses above
+   them, the slope catching the sky; its ends lift, the way a temple roof's
+   do. One box, three gradients, clipped to shape. */
+.au-th-eave {
+  background:
+    radial-gradient(
+        circle at 50% 46%,
+        var(--au-th-tile-rim) 0 14%,
+        var(--au-th-tile-end) 16% 54%,
+        rgba(0, 0, 0, 0.38) 57% 63%,
+        transparent 65%
+      )
+      0 100% / 5.2% 40% repeat-x,
+    repeating-linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.26) 0 0.9%,
+        rgba(255, 255, 255, 0.06) 0.9% 1.5%,
+        transparent 1.5% 5.2%
+      )
+      0 0 / 100% 66% no-repeat,
+    linear-gradient(
+      180deg,
+      var(--au-th-tile-lo),
+      var(--au-th-tile) 22%,
+      var(--au-th-tile-hi) 52%,
+      var(--au-th-tile) 64%,
+      var(--au-th-tile-lo)
+    );
+  clip-path: polygon(0 58%, 2.6% 100%, 97.4% 100%, 100% 58%, 93% 0, 7% 0);
+}
+/* The shade the eave throws on the lintel. */
+.au-door:not(.au-door-mini) .au-lintel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.42), transparent 75%);
+}
+
+/* The room's light on the ground: a pool that starts at the sill and
+   spreads toward you, wider than the door. */
+.au-th-spill,
+.au-th-spill-hi {
+  pointer-events: none;
+}
+.au-th-spill {
+  background: radial-gradient(
+    46% 86% at 50% 10%,
+    var(--au-th-spill),
+    transparent 72%
+  );
+}
+.au-th-spill-hi {
+  opacity: 0;
+  will-change: opacity;
+  background: radial-gradient(
+    30% 70% at 50% 10%,
+    var(--au-th-spill-hi),
+    transparent 74%
+  );
+}
+/* The stone at the foot of the door, its top lit by the doorway. */
+.au-th-stone {
+  /* Flat on top, with a side you can see below it: two tones and an
+     uneven, lopsided outline make a stone of an ellipse. */
+  border-radius: 38% 62% 46% 40% / 70% 52% 48% 30%;
+  rotate: -2deg;
+  background:
+    radial-gradient(
+      60% 64% at 46% 20%,
+      var(--au-th-stone-lit),
+      transparent 70%
+    ),
+    radial-gradient(18% 22% at 72% 34%, rgba(0, 0, 0, 0.12), transparent 100%),
+    linear-gradient(
+      180deg,
+      var(--au-th-stone-hi) 0 50%,
+      var(--au-th-stone) 60%,
+      var(--au-th-stone-lo)
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 4px 6px -3px rgba(0, 0, 0, 0.5);
+}
+/* The room's light catches whatever edges face it: the sill's top, the
+   posts' inner sides, and the two edges of cloth either side of the slit. */
+.au-door:not(.au-door-mini) .au-sill {
+  box-shadow:
+    inset 0 2px 0 var(--au-th-edge),
+    inset 0 1px 0 var(--au-rim);
+}
+.au-door:not(.au-door-mini) .au-post {
+  box-shadow:
+    inset -2px 0 0 var(--au-th-edge),
+    inset 0 1px 0 var(--au-rim);
+}
+.au-door:not(.au-door-mini) .au-post-r {
+  box-shadow:
+    inset 2px 0 0 var(--au-th-edge),
+    inset 0 1px 0 var(--au-rim);
+}
+.au-door:not(.au-door-mini) .au-pn[data-i='1'] .au-cloth {
+  box-shadow:
+    inset -2px 0 0 var(--au-th-edge),
+    inset 1px 0 0 var(--au-rim);
+}
+.au-door:not(.au-door-mini) .au-pn[data-i='2'] .au-cloth {
+  box-shadow: inset 2px 0 0 var(--au-th-edge);
+}
+
+/* Behind the cloth: the room brightening as the cloth opens. Only its gaps
+   show it, so the slits glow. */
+.au-th-flare {
+  opacity: 0;
+  will-change: opacity;
+  pointer-events: none;
+  background: radial-gradient(
+    46% 52% at 50% 74%,
+    var(--au-th-flare),
+    transparent 76%
+  );
+}
+
+/* In front of the cloth: what leaks out at the hem and the slit. Dims when
+   Kiru lets go and the cloth closes. */
+.au-th-glow {
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    46% 34% at 50% 58%,
+    var(--au-th-glow),
+    transparent 74%
+  );
+}
+.au-door[data-kiru='duck'] .au-th-glow,
+.au-door[data-kiru='duck'] .au-th-spill {
+  opacity: 0.55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .au-th-glow,
+  .au-th-spill {
+    transition: opacity 0.6s ease;
+  }
+}
+
+/* The dust: seven motes adrift in the light. Each is a small box with a soft
+   core; it drifts (transform and opacity, on the compositor) only while Kiru
+   is live, and holds while the page scrolls, as he does. Still, they are a
+   few specks hanging in the light. */
+.au-th-motes {
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.au-th-mote {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--au-th-mote) 0 26%,
+    var(--au-th-mote-halo) 40%,
+    transparent 70%
+  );
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .au-door:has(.kiru[data-live]) .au-th-mote {
+    animation: au-th-drift var(--au-th-dur) ease-in-out var(--au-th-delay)
+      infinite;
+  }
+  .au-door:has(.kiru[data-hold]) .au-th-mote {
+    animation-play-state: paused;
+  }
+}
+@keyframes au-th-drift {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(var(--au-th-dx), calc(var(--au-th-dy) * 0.52));
+  }
+  82% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(calc(var(--au-th-dx) * -0.4), var(--au-th-dy));
+    opacity: 0;
+  }
 }
 
 /* ── The hit area ──────────────────────────────────────────────────────── */

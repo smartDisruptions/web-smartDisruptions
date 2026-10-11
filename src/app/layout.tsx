@@ -15,7 +15,9 @@ import PaletteTrigger from '@/components/palette/PaletteTrigger';
 
 // Display: Dela Gothic One — a Japanese poster gothic, headlines only.
 // Self-hosted as a Latin-only subset (fonts/dela-gothic-one-latin.woff2, cut
-// with fontTools' pyftsubset from the OFL release). Loading it through
+// with fontTools' pyftsubset from the OFL release, keeping kern and liga).
+// It carries the macron vowels (ā ē ī ō ū) too, since October 2026, so a
+// romanised name like Kiru's Tōkaidō Run stays in one face. Loading it through
 // next/font/google emitted an @font-face for every Japanese slice — ~90 KB of
 // CSS on every page — for characters the site draws as SVG paths instead.
 const display = localFont({
