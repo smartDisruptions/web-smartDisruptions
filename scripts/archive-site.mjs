@@ -69,11 +69,12 @@ const ARCHIVES = {
       'msft-q4-fy2026',
       'goog-q2-2026',
     ],
-    // Taken off the site since this design (Josh, 2026-10-07): the archive
-    // drops them too, rather than keep showing what the live site no longer
-    // does. Apps and projects are filtered out of the old data, so no page
-    // is built for them and nothing lists them; `skills` are removed whole;
-    // `text` rewrites old copy that counted or named them.
+    // Taken off the site since this design (Josh, 2026-10-07, and Kitsune
+    // Kitchen 2026-10-11): the archive drops them too, rather than keep
+    // showing what the live site no longer does. Apps and projects are
+    // filtered out of the old data, so no page is built for them and nothing
+    // lists them; `skills` are removed whole; `text` rewrites old copy that
+    // counted or named them, and removes what the old code listed by hand.
     drop: {
       apps: ['field-office', 'grove', 'pebble-kart', 'going-traveling'],
       projects: ['pembroke-file'],
@@ -88,6 +89,13 @@ const ARCHIVES = {
           'src/app/built/page.tsx',
           'Six games. All of them free, and all of them play in your browser.',
           'Three games. All of them free, and all of them play in your browser.',
+        ],
+        // Kitsune Kitchen had no entry in the apps data: the old /built
+        // appended it to its catalogue by hand.
+        [
+          'src/app/built/page.tsx',
+          /\n  \{\n    key: 'kitsune-kitchen',[\s\S]*?\n  \},/,
+          '',
         ],
       ],
     },

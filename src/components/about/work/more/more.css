@@ -746,31 +746,55 @@
     scroll-snap-align: center;
   }
 }
-/* Tablet: two rails of two. */
+/* Tablet: rails of two. An odd one out hangs alone on the last rail,
+   centred under the rest: the area spans both tracks and the plaque takes
+   half of it, one track's width. */
 @media (min-width: 40rem) and (max-width: 63.99rem) {
   .wk-mr-row {
     grid-template-columns: repeat(2, minmax(0, 19rem));
     justify-content: center;
     row-gap: 4rem;
   }
+  .wk-mr-item:nth-child(odd):last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 50%;
+  }
 }
-/* Desktop: two rails of three (the websites, then the apps). The slots
-   touch, so each rail's beam runs unbroken from post to post; the rack is
-   three quarters of the page's width, so a slot is the width it was in a
-   row of four and the plaques stay their size. */
+/* Desktop: rails of three, filled from the bottom, so a short rail sits on
+   top, centred over the full ones. With the five it hangs today that is
+   the two websites over the three apps. The slots touch, so each rail's
+   beam runs unbroken from post to post; the rack is three quarters of the
+   page's width, so a slot (two of its six tracks) is the width it was in
+   a row of four and the plaques stay their size. */
 @media (min-width: 64rem) {
   .wk-mr-row {
     --wk-mr-kiru-h: 92px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     max-width: 75%;
     margin-inline: auto;
     row-gap: 4.5rem;
     padding-top: 80px;
   }
+  .wk-mr-item {
+    grid-column: span 2;
+  }
+  /* Where a full rail starts: three from the end, six from the end… */
+  .wk-mr-item:nth-last-child(3n) {
+    grid-column: 1 / span 2;
+  }
+  /* …and the short rail, two plaques or one, in the middle. */
+  .wk-mr-item:first-child:nth-last-child(3n + 2) {
+    grid-column: 2 / span 2;
+  }
+  .wk-mr-item:first-child:nth-last-child(3n + 1) {
+    grid-column: 3 / span 2;
+  }
 }
 
-/* Where each row of the rack starts and ends: the phone's one rail, and
-   the desktop's rails of three. */
+/* Where each rail of the rack starts and ends: the phone's one rail, the
+   desktop's rails of three (counted from the end, as they are laid out)
+   and the tablet's rails of two. */
 @media (max-width: 39.99rem) {
   .wk-mr-item:first-child > .wk-mr-beam {
     --wk-mr-s: 1;
@@ -780,11 +804,11 @@
   }
 }
 @media (min-width: 64rem) {
-  .wk-mr-item:nth-child(3n + 1) > .wk-mr-beam {
+  .wk-mr-item:first-child > .wk-mr-beam,
+  .wk-mr-item:nth-last-child(3n) > .wk-mr-beam {
     --wk-mr-s: 1;
   }
-  .wk-mr-item:nth-child(3n) > .wk-mr-beam,
-  .wk-mr-item:last-child > .wk-mr-beam {
+  .wk-mr-item:nth-last-child(3n + 1) > .wk-mr-beam {
     --wk-mr-e: 1;
   }
 }
@@ -851,8 +875,8 @@
 @media (min-width: 40rem) and (max-width: 63.99rem) and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     /* More than one rail: a lower one swings in when it, not the rack's
-       top, comes up the screen (a tablet's rails of two, then a desktop's
-       of three). */
+       top, comes up the screen (a tablet's rails of two here, a desktop's
+       of three below). */
     .wk-mr-item:nth-child(n + 3) .wk-mr-hang {
       animation-range: cover calc(24% + var(--wk-mr-i) * 3%) cover
         calc(44% + var(--wk-mr-i) * 3%);
@@ -869,13 +893,9 @@
 }
 @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    /* A desktop's rails hold three: the third plaque is on the upper rail
-       (the first range), the lower rail starts at the fourth. */
-    .wk-mr-item:nth-child(3) .wk-mr-hang {
-      animation-range: cover calc(4% + var(--wk-mr-i) * 3%) cover
-        calc(28% + var(--wk-mr-i) * 3%);
-    }
-    .wk-mr-item:nth-child(n + 4) .wk-mr-hang {
+    /* A desktop's lower rail is the last three plaques; the short rail
+       over it keeps the first range. */
+    .wk-mr-item:nth-last-child(-n + 3) .wk-mr-hang {
       animation-range: cover calc(18% + var(--wk-mr-i) * 3%) cover
         calc(38% + var(--wk-mr-i) * 3%);
     }

@@ -20,11 +20,11 @@ import './more.css';
  * on one face, hung by a cord on a long wooden rack beside everybody else's.
  * Here each build that isn't one of the four is one: its screenshot painted
  * on the face inside a thin ink line, its name brushed under the picture,
- * its brush kanji stamped across the corner as a seal. The six hang from two
- * rails of three on a desktop (the websites, then the apps) and from rails
- * of two on a tablet, and slide past on a swipe rail on a phone. What each
- * one is, and the two ways in (how I built it, and the thing itself), sit
- * under its plaque as plain text, so nothing waits on a hover.
+ * its brush kanji stamped across the corner as a seal. On a desktop the five
+ * hang from two rails, the websites over the apps; on a tablet from rails of
+ * two; on a phone they slide past on a swipe rail. What each one is, and the
+ * two ways in (how I built it, and the thing itself), sit under its plaque
+ * as plain text, so nothing waits on a hover.
  *
  * MOTION is CSS only (./more.css): each plaque swings into place on its cord
  * as the rack scrolls into view (a scroll timeline), sways like a hung thing
@@ -36,10 +36,10 @@ import './more.css';
  *
  * The picture opens the thing's own page through the "How I built it" link,
  * stretched over the plaque, so the plaque is one target and no link sits
- * inside another. Kitsune Kitchen has no page of its own, so its picture
- * opens the live demo. A picture with a page carries the same
- * view-transition name as that page's hero, so opening it carries the
- * picture across instead of cutting to it.
+ * inside another (a thing without a page of its own would open the thing
+ * itself). A picture with a page carries the same view-transition name as
+ * that page's hero, so opening it carries the picture across instead of
+ * cutting to it.
  *
  * A tall screenshot (AI Diary's are 1024×1520) cannot fill a wide plaque
  * without losing most of itself, but three of them side by side make almost

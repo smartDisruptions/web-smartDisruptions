@@ -1,6 +1,6 @@
 import { apps, GAME_SLUGS, getAppBySlug, type App } from '@/data/apps';
 import { getProjectBySlug, projects, type Project } from '@/data/projects';
-import { BUILT_COVERED, BUILT_SITES, builtCatalogueApps } from '@/data/built';
+import { BUILT_COVERED, builtCatalogueApps } from '@/data/built';
 import {
   FEATURED_SLUGS,
   SHOWCASE,
@@ -122,7 +122,6 @@ const otherProjects: CatalogueEntry[] = projects
 /** Everything else, in this order: the websites first, then the apps. */
 const MORE_ORDER = [
   'samurai-kitchen',
-  'kitsune-kitchen',
   'notebook',
   'pomodoro-timer',
   'spacex-mars',
@@ -134,10 +133,9 @@ const rank = (key: string) => {
 };
 
 /**
- * Everything else: the projects that aren't among the four, the apps that
- * are neither a game nor a project, and the sites with no entry in the apps
- * data (Kitsune Kitchen). Anything new that MORE_ORDER doesn't name yet goes
- * last, in data order.
+ * Everything else: the projects that aren't among the four and the apps that
+ * are neither a game nor a project. Anything new that MORE_ORDER doesn't name
+ * yet goes last, in data order.
  */
 export const catalogue: CatalogueEntry[] = [
   ...otherProjects,
@@ -151,16 +149,6 @@ export const catalogue: CatalogueEntry[] = [
     status: app.status,
     category: app.category,
     tech: app.techStack.slice(0, 3),
-  })),
-  ...BUILT_SITES.map((site) => ({
-    key: site.key,
-    name: site.name,
-    description: site.description,
-    thumbnail: site.thumbnail,
-    liveUrl: site.liveUrl,
-    status: site.status,
-    category: 'Website',
-    tech: site.tech,
   })),
 ].sort((a, b) => rank(a.key) - rank(b.key));
 
@@ -178,8 +166,8 @@ export const games: App[] = GAME_SLUGS.filter(
 
 /**
  * Everything on one wall: the four, everything else, then the games. Each
- * plaque opens the thing's own page; Kitsune Kitchen has none, so it opens
- * the live demo.
+ * plaque opens the thing's own page (one without a page would open the
+ * thing itself, in a new tab).
  */
 export const wall: WallItem[] = [
   ...featured.map((f) => ({

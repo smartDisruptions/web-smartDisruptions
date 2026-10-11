@@ -81,7 +81,6 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/websites/broom-blade.webp': [1200, 750],
   '/images/websites/kiru.webp': [1200, 750],
   '/images/websites/kiru-cast.webp': [1200, 750],
-  '/images/websites/kitsune-kitchen.webp': [1200, 750],
   '/images/websites/notebook.webp': [1200, 750],
   '/images/websites/samurai-kitchen.webp': [1200, 750],
   '/images/websites/voltic.webp': [1200, 750],
@@ -150,7 +149,6 @@ const MARKS: Record<string, string> = {
   'cloth-simulator': '風', // wind
   'ai-diary': '心', // heart, mind
   'aureum-snake': '遊', // play
-  'kitsune-kitchen': '作', // made
   'lantern-night': '光', // light: "Light the night"
   'night-parade': '斬', // cut: Kiru cuts each yokai in two
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道
