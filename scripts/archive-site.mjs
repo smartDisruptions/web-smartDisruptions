@@ -70,7 +70,7 @@ const ARCHIVES = {
       'goog-q2-2026',
     ],
     // Taken off the site since this design (Josh, 2026-10-07, and Kitsune
-    // Kitchen 2026-10-11): the archive drops them too, rather than keep
+    // Kitchen 2026-10-10): the archive drops them too, rather than keep
     // showing what the live site no longer does. Apps and projects are
     // filtered out of the old data, so no page is built for them and nothing
     // lists them; `skills` are removed whole; `text` rewrites old copy that

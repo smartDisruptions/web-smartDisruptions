@@ -1,7 +1,7 @@
 /**
  * The four I'd show you first, on /about: what they are, in order.
  *
- * WHY THIS EXISTS: Josh's call, 2026-10-11. The four are the Arcade, Kiru,
+ * WHY THIS EXISTS: Josh's call, 2026-10-10. The four are the Arcade, Kiru,
  * Broom & Blade and VOLTIC, in that order. Two of them are projects with a
  * write-up under /built (src/data/projects.ts); the Arcade and Kiru are
  * parts of this site, and their own pages (/games, /kiru) are where you meet

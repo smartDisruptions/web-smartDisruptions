@@ -86,7 +86,7 @@ export type CatalogueEntry = {
 
 /**
  * The projects with a write-up that are not among the four (Samurai Kitchen
- * and The Notebook design, since 2026-10-11). Their category and three tech
+ * and The Notebook design, since 2026-10-10). Their category and three tech
  * names come from the apps data where they have an entry; The Notebook
  * design is this site's own past design, kept as a static export of its
  * commit (scripts/archive-site.mjs).

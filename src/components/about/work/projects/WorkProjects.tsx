@@ -21,7 +21,7 @@ import './projects.css';
  *
  * WHAT YOU SEE: the section pins, and a long washi hand-scroll unrolls from
  * right to left between two wooden rollers, one scene per project: the
- * Arcade, Kiru, Broom & Blade and VOLTIC, in Josh's order (2026-10-11,
+ * Arcade, Kiru, Broom & Blade and VOLTIC, in Josh's order (2026-10-10,
  * src/data/showcase.ts). Each scene is the thing itself in CSS devices (a
  * laptop for its page, and a second device beside it: the Arcade's first
  * game, Kiru's crew, Broom & Blade's game), with its number, name, one line
