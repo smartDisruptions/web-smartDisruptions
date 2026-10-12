@@ -33,10 +33,6 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/ai-diary-2.png': [1024, 1520],
   '/images/apps/ai-diary-3.png': [1024, 1520],
   '/images/apps/ai-diary-thumbnail.png': [1024, 1520],
-  '/images/apps/aureum-snake-1.png': [800, 400],
-  '/images/apps/aureum-snake-2.png': [800, 400],
-  '/images/apps/aureum-snake-3.png': [800, 600],
-  '/images/apps/aureum-snake-thumbnail.webp': [800, 400],
   '/images/apps/broom-blade-1.webp': [1200, 753],
   '/images/apps/broom-blade-2.webp': [1200, 753],
   '/images/apps/broom-blade-3.webp': [1200, 753],
@@ -148,7 +144,6 @@ const MARKS: Record<string, string> = {
   'spacex-mars': '探', // explore
   'cloth-simulator': '風', // wind
   'ai-diary': '心', // heart, mind
-  'aureum-snake': '遊', // play
   'lantern-night': '光', // light: "Light the night"
   'night-parade': '斬', // cut: Kiru cuts each yokai in two
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道

@@ -8,7 +8,7 @@ import '../arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade archive',
   description:
-    "The Arcade's older cabinets, all still free to play: a cloth simulator, chores turned into a game, and Snake in gold.",
+    "The Arcade's older cabinets, both still free to play: a cloth simulator and chores turned into a game.",
   alternates: { canonical: '/games/archive' },
 };
 
@@ -19,8 +19,10 @@ export const metadata: Metadata = {
  * Dojo Survivors, and every other game moved here, behind the door at the
  * bottom of that page. The line-up is ARCADE_ARCHIVE_SLUGS in
  * src/data/apps.ts, in its old cabinet order, and the cabinets are the same
- * component as the front room's, so the two can't drift. Nothing here was
- * taken down: each game still has its own page, and its links still work.
+ * component as the front room's, so the two can't drift. Each game here still
+ * has its own page, and its links still work. AUREUM Snake was the third
+ * cabinet until it came off the site (Josh's call, 2026-10-12); its old
+ * addresses redirect (next.config.ts).
  */
 
 const games = ARCADE_ARCHIVE_SLUGS.map((slug) => apps.find((app) => app.slug === slug)).filter(

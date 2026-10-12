@@ -115,9 +115,10 @@ const nextConfig: NextConfig = {
     return [
       // What I Built's index, folded into About.
       { source: '/built', destination: '/about', permanent: true },
-      // Pages taken off the site on 2026-10-07 (Josh's call): their old
-      // addresses land on the work, on About, instead of a 404.
-      ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling'].flatMap((slug) => [
+      // Pages taken off the site (Josh's call): five on 2026-10-07 and AUREUM
+      // Snake on 2026-10-12. Their old addresses land on the work, on About,
+      // instead of a 404.
+      ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling', 'aureum-snake'].flatMap((slug) => [
         { source: `/built/${slug}`, destination: '/about', permanent: true },
         { source: `/apps/${slug}`, destination: '/about', permanent: true },
         // the frozen Notebook archive dropped them too (scripts/archive-site.mjs)

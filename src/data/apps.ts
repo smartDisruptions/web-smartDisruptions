@@ -178,33 +178,6 @@ export const apps: App[] = [
     liveUrl: 'https://app-ai-diary.vercel.app',
   },
   {
-    slug: 'aureum-snake',
-    name: 'AUREUM Snake',
-    description:
-      'The snake game you already know, in gold and black. Eat, grow, and do not hit anything.',
-    longDescription:
-      'The snake game you already know, dressed in gold and black. You steer a snake around a board eighteen squares across, eating to grow, and it ends when you run into a wall or into yourself. Catching food without pausing builds a chain that is worth more points, and there are ten ranks to climb across however many games you play. It remembers your best score. There is a pad of arrows on screen for phones, and every sound is made by the game as you play, so nothing extra has to load. The whole thing is one file.',
-    thumbnailUrl: '/images/apps/aureum-snake-thumbnail.webp',
-    screenshotUrls: [
-      '/images/apps/aureum-snake-1.png',
-      '/images/apps/aureum-snake-2.png',
-      '/images/apps/aureum-snake-3.png',
-    ],
-    techStack: ['HTML5', 'CSS3', 'Vanilla JavaScript', 'Web Audio API'],
-    category: 'Game',
-    status: 'live',
-    outcomes: [
-      'Eating without a break builds a chain worth more points, so there is a reason to keep moving.',
-      'Ten ranks to climb, counted across every game you play rather than just this one.',
-      'A pad of arrows on screen means it plays properly on a phone.',
-      'Every sound is made by the game as you play, so nothing extra has to load.',
-    ],
-    buildDate: '2026-03',
-    hasFullBreakdown: false,
-    buildPlanAvailable: false,
-    liveUrl: 'https://app-snake-smoky.vercel.app',
-  },
-  {
     slug: 'broom-blade',
     name: 'Broom & Blade',
     description:
@@ -535,7 +508,7 @@ export const BROOM_BLADE_ARCADE_SLUGS = [
 ];
 
 /** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
-export const ARCADE_ARCHIVE_SLUGS = ['cloth-simulator', 'broom-blade', 'aureum-snake'];
+export const ARCADE_ARCHIVE_SLUGS = ['cloth-simulator', 'broom-blade'];
 
 /**
  * Every game on the site, the front room, the Broom & Blade Arcade and the
