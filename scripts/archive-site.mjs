@@ -69,26 +69,32 @@ const ARCHIVES = {
       'msft-q4-fy2026',
       'goog-q2-2026',
     ],
-    // Taken off the site since this design (Josh, 2026-10-07, and Kitsune
-    // Kitchen 2026-10-10): the archive drops them too, rather than keep
-    // showing what the live site no longer does. Apps and projects are
-    // filtered out of the old data, so no page is built for them and nothing
-    // lists them; `skills` are removed whole; `text` rewrites old copy that
-    // counted or named them, and removes what the old code listed by hand.
+    // Taken off the site since this design (Josh, 2026-10-07, Kitsune
+    // Kitchen 2026-10-10 and AUREUM Snake 2026-10-12): the archive drops them
+    // too, rather than keep showing what the live site no longer does. Apps
+    // and projects are filtered out of the old data, so no page is built for
+    // them and nothing lists them; `skills` are removed whole; `text` rewrites
+    // old copy that counted or named them, and removes what the old code
+    // listed by hand.
     drop: {
-      apps: ['field-office', 'grove', 'pebble-kart', 'going-traveling'],
+      apps: ['field-office', 'grove', 'pebble-kart', 'going-traveling', 'aureum-snake'],
       projects: ['pembroke-file'],
       skills: ['teaching'],
       text: [
         [
           'src/data/skills.ts',
           "The arcade is six cabinets. The Pembroke File is the one I would point at first: a five-act mystery where every clue is an object you pick up and read, puzzle boards checked by a program that solves each one before shipping, wires that really swing, and a pencil-rubbing canvas where the answer is never drawn — only revealed by shading around it. The newest cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear. Two of the cabinets are my son's.",
-          'The arcade is three cabinets. The newest is a chore-tracker my family actually uses, chores as quests with gold and gear.',
+          'The arcade is two cabinets. The newest is a chore-tracker my family actually uses, chores as quests with gold and gear.',
+        ],
+        [
+          'src/data/skills.ts',
+          'all six, playable in the browser',
+          'two games, playable in the browser',
         ],
         [
           'src/app/built/page.tsx',
           'Six games. All of them free, and all of them play in your browser.',
-          'Three games. All of them free, and all of them play in your browser.',
+          'Two games. Both of them free, and both of them play in your browser.',
         ],
         // Kitsune Kitchen had no entry in the apps data: the old /built
         // appended it to its catalogue by hand.

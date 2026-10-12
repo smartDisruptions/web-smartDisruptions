@@ -357,7 +357,7 @@ export const skillGroups: SkillGroup[] = [
         plain:
           'Game loops, collision, input, audio and the feel work that separates a demo from something worth playing.',
         used: "The arcade's front room is Kiru's games, Neo Dojo Survivors, a horde game ten AI agents built side by side and an autopilot then rebalanced by playing whole runs in fast-forward, and Path Not Taken, a rhythm duel in pre-alpha whose every tile sits on a measured hit in its song. Downstairs is the Broom & Blade Arcade, Pip the guild mouse's room: five carnival games from the chore game I built for my family, where a finished chore earns the ticket for a round. The older cabinets are in its archive. One cabinet is a chore-tracker my family actually uses, chores as quests with gold and gear.",
-        apps: ['neo-dojo-survivors', 'path-not-taken', 'hoop-quest', 'whack-a-dust-bunny', 'broom-blade', 'aureum-snake'],
+        apps: ['lantern-night', 'neo-dojo-survivors', 'path-not-taken', 'hoop-quest', 'whack-a-dust-bunny', 'broom-blade'],
         links: [
           {
             kind: 'site',
