@@ -123,6 +123,7 @@ const otherProjects: CatalogueEntry[] = projects
 const MORE_ORDER = [
   'samurai-kitchen',
   'notebook',
+  'portfolio-ledger',
   'pomodoro-timer',
   'spacex-mars',
   'ai-diary',

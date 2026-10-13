@@ -59,6 +59,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.4,
     },
+    {
+      url: `${BASE}/demo/portfolio-ledger`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
     // The Broom & Blade Arcade's five machines.
     ...BROOM_BLADE_ARCADE_SLUGS.map((slug) => ({
       url: `${BASE}/games/${slug}`,
