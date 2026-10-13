@@ -2,7 +2,9 @@
  * The four I'd show you first, on /about: what they are, in order.
  *
  * WHY THIS EXISTS: Josh's call, 2026-10-10. The four are the Arcade, Kiru,
- * Broom & Blade and VOLTIC, in that order. Two of them are projects with a
+ * Broom & Blade and Moonbowl Ramen, in that order (Moonbowl Ramen took
+ * VOLTIC's place on 2026-10-12, Josh's call; VOLTIC keeps its page and hangs
+ * with the other websites). Two of them are projects with a
  * write-up under /built (src/data/projects.ts); the Arcade and Kiru are
  * parts of this site, and their own pages (/games, /kiru) are where you meet
  * them, so they are described here instead. Samurai Kitchen and The Notebook
@@ -46,7 +48,7 @@ export type Showcase = {
 };
 
 /** The four, by slug, in order. A slug not in SHOWCASE is a project's. */
-export const FEATURED_SLUGS = ['arcade', 'kiru', 'broom-blade', 'voltic'];
+export const FEATURED_SLUGS = ['arcade', 'kiru', 'broom-blade', 'moonbowl'];
 
 /** The two of the four that are parts of this site rather than projects. */
 export const SHOWCASE: Showcase[] = [
