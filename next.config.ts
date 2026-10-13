@@ -91,6 +91,14 @@ const nextConfig: NextConfig = {
           source: '/games/path-not-taken',
           destination: '/games/path-not-taken/index.html',
         },
+        // Portfolio Ledger: the public demo of my net-worth tracker, one file in
+        // public/demo on made-up data (built from my private ledger's source
+        // with --public, which leaves its real settings out). Its Home Screen
+        // icon sits beside it as a real file.
+        {
+          source: '/demo/portfolio-ledger',
+          destination: '/demo/portfolio-ledger/index.html',
+        },
         // The Broom & Blade Arcade's five machines: the same, one file each.
         ...['hoop-quest', 'kid-volt-knockout', 'whack-a-dust-bunny', 'ring-toss', 'milk-bottle-knockdown'].map((name) => ({
           source: `/games/${name}`,

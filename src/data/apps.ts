@@ -177,6 +177,40 @@ export const apps: App[] = [
     liveUrl: 'https://app-ai-diary.vercel.app',
   },
   {
+    slug: 'portfolio-ledger',
+    name: 'Portfolio Ledger',
+    description:
+      'The net-worth tracker I use for my own money. The copy here runs on a made-up portfolio, so you can try every screen.',
+    longDescription:
+      'I built this to keep track of my own money: every account, every holding, the cash and everything else I own, added up into one net worth. The copy on this site runs on a made-up portfolio, so none of the numbers are mine, and nothing you change is saved. The home screen shows today’s total, how much it moved and a map of every holding, sized by what it’s worth. Trends lets you drag back through a year and a half of history and watch the figure change under your finger. Plan projects the next thirty years and gives the odds of reaching a target. Patch, the hacker from the Neo Dojo Cast, says what changed in plain words. My own copy fills itself from a private GitHub repo, and every evening a scheduled script prices everything and saves the day’s total.',
+    thumbnailUrl: '/images/apps/portfolio-ledger-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/portfolio-ledger-1.webp',
+      '/images/apps/portfolio-ledger-2.webp',
+      '/images/apps/portfolio-ledger-3.webp',
+    ],
+    techStack: [
+      'Vanilla JavaScript',
+      'SVG',
+      'CSS3',
+      'esbuild',
+      'GitHub API',
+      'GitHub Actions',
+    ],
+    category: 'Finance',
+    status: 'live',
+    outcomes: [
+      'Drag across the history chart to go back to any day in the last year and a half. The total, the change and the mix all follow your finger.',
+      'Plan runs 400 versions of the next thirty years and shows the odds of reaching a target by each year. Lab replays crashes like 2008 and 2020 against the portfolio.',
+      'The whole app is one file with no server behind it. In a test that slowed the processor six times over, like an old phone, the first screen still showed in about a second.',
+      'One tap hides every dollar amount, so a screenshot never gives the numbers away.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/demo/portfolio-ledger',
+  },
+  {
     slug: 'broom-blade',
     name: 'Broom & Blade',
     description:

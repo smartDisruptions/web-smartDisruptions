@@ -129,6 +129,7 @@ const MORE_ORDER = [
   'samurai-kitchen',
   'notebook',
   'voltic',
+  'portfolio-ledger',
   'pomodoro-timer',
   'spacex-mars',
   'ai-diary',
