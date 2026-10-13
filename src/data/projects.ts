@@ -215,6 +215,56 @@ export const projects: Project[] = [
     ],
   },
   {
+    // A restaurant that does not exist, built to show a small food business's
+    // whole website working. Facts from the Moonbowl repo (its README and
+    // docs/IMAGES.md) and its checks on 2026-10-12: axe on every page at
+    // phone and desktop sizes, and the demo order walked end to end.
+    slug: 'moonbowl',
+    name: 'Moonbowl Ramen',
+    eyebrow: 'A demo website · online now',
+    summary:
+      'A website for a ramen truck that does not exist, where you can try ordering.',
+    image: '/images/websites/moonbowl.webp',
+    imageAlt:
+      'The Moonbowl Ramen website. The words Slurp After Dark beside a grid of night-lit food photos: tonkotsu ramen, pan-fried gyoza, noodles lifted on chopsticks, spicy miso ramen and fried chicken.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    parts: [
+      {
+        kind: 'Website',
+        heading: 'The website',
+        href: 'https://web-moonbowl.vercel.app',
+        linkLabel: 'See the website',
+        image: '/images/websites/moonbowl.webp',
+        imageAlt:
+          'The Moonbowl Ramen website. The words Slurp After Dark beside a grid of night-lit food photos: tonkotsu ramen, pan-fried gyoza, noodles lifted on chopsticks, spicy miso ramen and fried chicken.',
+        imageWidth: 1200,
+        imageHeight: 750,
+        what: 'A whole restaurant website, with a menu, ordering, rewards and catering, for a business I made up.',
+        body: 'Nothing on it is real, and the site says so. The menu, the prices, the address and the phone number are all invented, so you can try every part of it and nothing happens.',
+        bullets: [
+          'You can order a full meal. Pick a size, choose how firm the noodles are, add toppings and a tip, and get a receipt at the end. There is no card form, and nothing is charged.',
+          'The rewards page works with two demo phone numbers, so you can see what a points balance looks like.',
+          'The location page opens by saying this is a demo. The map is a drawing of a place that does not exist, and the phone number is a 555 number that cannot ring anyone.',
+          'Every photo was made with AI. Before making them, I gave three AI image tools the same bowl of ramen to draw and used the one that came back sharpest for its price.',
+          'Three AI agents built it side by side. One wrote the code, one made the pictures, and one tested the speed and checked for accessibility problems.',
+          'Every page is built ahead of time, so it opens fast, and nothing you type on it leaves your browser.',
+        ],
+        receipts: [
+          {
+            value: '0',
+            label: 'Card numbers it asks for. The checkout is a demo',
+          },
+          { value: '17', label: 'Pictures made with AI for it' },
+          {
+            value: '0',
+            label: 'Problems found by the automatic accessibility check',
+          },
+        ],
+      },
+    ],
+  },
+  {
     // The look this site had before Kiru, kept online as a working copy built
     // from its own code (scripts/archive-site.mjs → public/archive/notebook).
     // Facts from the Notebook pull request (#105) and its DESIGN.md.

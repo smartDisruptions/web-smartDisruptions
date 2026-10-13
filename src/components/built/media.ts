@@ -77,6 +77,7 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/websites/broom-blade.webp': [1200, 750],
   '/images/websites/kiru.webp': [1200, 750],
   '/images/websites/kiru-cast.webp': [1200, 750],
+  '/images/websites/moonbowl.webp': [1200, 750],
   '/images/websites/notebook.webp': [1200, 750],
   '/images/websites/samurai-kitchen.webp': [1200, 750],
   '/images/websites/voltic.webp': [1200, 750],
@@ -139,6 +140,7 @@ const MARKS: Record<string, string> = {
   'broom-blade': '遊', // play: chores turned into a game
   'samurai-kitchen': '侍', // samurai
   voltic: '雷', // thunder: "liquid lightning"
+  moonbowl: '月', // moon: the egg yolk is the moon in the bowl
   notebook: '書', // writing: the notebook this site used to be
   'pomodoro-timer': '技', // technique: the Pomodoro technique
   'spacex-mars': '探', // explore
