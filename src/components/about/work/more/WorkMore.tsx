@@ -20,8 +20,8 @@ import './more.css';
  * on one face, hung by a cord on a long wooden rack beside everybody else's.
  * Here each build that isn't one of the four is one: its screenshot painted
  * on the face inside a thin ink line, its name brushed under the picture,
- * its brush kanji stamped across the corner as a seal. On a desktop the six
- * hang from two rails of three, websites first; on a tablet from rails of
+ * its brush kanji stamped across the corner as a seal. On a desktop the seven
+ * hang from rails of three, websites first; on a tablet from rails of
  * two; on a phone they slide past on a swipe rail. What each one is, and the
  * two ways in (how I built it, and the thing itself), sit under its plaque
  * as plain text, so nothing waits on a hover.

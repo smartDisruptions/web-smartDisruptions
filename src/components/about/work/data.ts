@@ -58,7 +58,7 @@ function fromProject(p: Project): Showcase {
 
 /**
  * The four I'd show you first, in Josh's order (src/data/showcase.ts): the
- * Arcade and Kiru, then Broom & Blade and VOLTIC from their write-ups.
+ * Arcade and Kiru, then Broom & Blade and Moonbowl Ramen from their write-ups.
  */
 export const featured: Showcase[] = FEATURED_SLUGS.map((slug) => {
   const own = SHOWCASE.find((s) => s.slug === slug);
@@ -86,15 +86,20 @@ export type CatalogueEntry = {
 
 /**
  * The projects with a write-up that are not among the four (Samurai Kitchen
- * and The Notebook design, since 2026-10-10). Their category and three tech
- * names come from the apps data where they have an entry; The Notebook
- * design is this site's own past design, kept as a static export of its
- * commit (scripts/archive-site.mjs).
+ * and The Notebook design since 2026-10-10, VOLTIC since 2026-10-12). Their
+ * category and three tech names come from the apps data where they have an
+ * entry; The Notebook design is this site's own past design, kept as a
+ * static export of its commit (scripts/archive-site.mjs), and VOLTIC has no
+ * apps entry, so both are given here.
  */
 const OWN_FACTS: Record<string, { category: string; tech: string[] }> = {
   notebook: {
     category: 'Website',
     tech: ['Next.js', 'Tailwind CSS', 'Static export'],
+  },
+  voltic: {
+    category: 'Website',
+    tech: ['Vite', 'three.js'],
   },
 };
 
@@ -123,6 +128,7 @@ const otherProjects: CatalogueEntry[] = projects
 const MORE_ORDER = [
   'samurai-kitchen',
   'notebook',
+  'voltic',
   'portfolio-ledger',
   'pomodoro-timer',
   'spacex-mars',
