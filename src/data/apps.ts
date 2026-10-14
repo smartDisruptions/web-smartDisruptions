@@ -143,6 +143,32 @@ export const apps: App[] = [
     liveUrl: 'https://app-cloth-simulator.vercel.app',
   },
   {
+    slug: 'tether-ball',
+    name: 'Tether Ball',
+    description:
+      'A demo: swipe to hit a ball on a rope and wind it all the way up the pole as fast as you can.',
+    longDescription:
+      'A ball hangs from a pole on a rope, and you swipe across it to hit it. How fast you swipe and where you catch it, dead centre or a glancing blow, decide how hard it flies. The rope winds around the pole as the ball circles, so the orbit shrinks and speeds up, and the goal is to wind it all the way up in the best time you can. Hit with the ball’s travel to wind it faster; hit against it and it unwinds. Every hit freezes time for a beat, then lets it crawl and speed back up. It is a greybox demo: flat greys and one amber accent, built to get the feel of the hit right before any art goes on.',
+    thumbnailUrl: '/images/apps/tether-ball-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/tether-ball-1.webp',
+      '/images/apps/tether-ball-2.webp',
+      '/images/apps/tether-ball-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas 2D', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'beta',
+    outcomes: [
+      'The ball is a real physical thing on a rope, not an animation: it swings like a pendulum, and the rope wraps around the pole and shortens as it goes.',
+      'A hit stops time for a moment, slows it right down, then ramps it back to full speed, so every hit lands.',
+      'One self-contained file with no game engine and no libraries, built for a phone.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/tether-ball',
+  },
+  {
     slug: 'ai-diary',
     name: 'AI Diary',
     description:
@@ -542,6 +568,15 @@ export const BROOM_BLADE_ARCADE_SLUGS = [
 
 /** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
 export const ARCADE_ARCHIVE_SLUGS = ['cloth-simulator', 'broom-blade'];
+
+/**
+ * The archive's Demo section, /games/archive (Josh's call, 2026-10-14):
+ * experiments and greybox builds that can be played but aren't finished
+ * things. Deliberately NOT in GAME_SLUGS, and kept out of the catalogue
+ * (src/data/built.ts), so /about's list of what I've built, the home page's
+ * counts and the search index's games never include them.
+ */
+export const ARCADE_DEMO_SLUGS = ['tether-ball'];
 
 /**
  * Every game on the site, the front room, the Broom & Blade Arcade and the
