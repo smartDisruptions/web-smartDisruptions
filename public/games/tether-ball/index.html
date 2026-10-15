@@ -1443,6 +1443,7 @@ CFG.audio = {
   thumpHz: 140, // where the thump starts before it falls to ~45
   whirr: 1, // ambient whirr / whoosh while the ball moves
   release: 1, // the rising whoosh as time speeds back up
+  flash: 1, // Kiru's flash step: the swish as he blinks across the court
   haptics: 1, // 1 = vibrate where the browser can
   maxNodes: 60, // voice-node cap: past it the quiet effects are skipped, so a pile-up can never swamp a phone (a rapid round peaks near 40)
   seed: 20260713, // variation between hits is seeded, so renders repeat
@@ -1454,6 +1455,7 @@ CFG_SCHEMA.push(
   { path: 'audio.thumpHz', label: 'Thump pitch', min: 90, max: 220, step: 5, group: 'Audio', unit: 'Hz' },
   { path: 'audio.whirr', label: 'Whirr while moving', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.release', label: 'Speed-up whoosh', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.flash', label: "Kiru's flash step", min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.haptics', label: 'Haptics', min: 0, max: 1, step: 1, group: 'Audio', unit: '' }
 );
 
@@ -1698,6 +1700,19 @@ function createAudio(opts) {
     reap(v);
   }
 
+  // ---- Kiru's flash step: an airy swish that sweeps down, longer for a longer step (level: under a hit, or on its own) ----
+  function flash(dist, level) {
+    const d = dist > 0 ? (dist < 3 ? dist : 3) : 0, peak = 0.3 * (level > 0 ? (level < 1 ? level : 1) : 0.5) * CFG.audio.flash;
+    if (S.muted || !(peak > 0) || !ready() || !room(3, false)) return;
+    const t = at(), v = begin(), dur = 0.07 + 0.035 * d;
+    const s = noiseSrc(v, t, dur + 0.06), b = filt('bandpass', 6500, 1.6), g = ctx.createGain();
+    v.n.push(b, g);
+    b.frequency.setValueAtTime(6500, t); b.frequency.exponentialRampToValueAtTime(1500, t + dur);
+    env(g, t, peak, 0.012, dur);
+    s.connect(b); b.connect(g); g.connect(bus);
+    reap(v);
+  }
+
   // ---- the rest of the sounds ----
   function snap(strength) { // the rope jerks taut: a plucked, twangy click
     if (!ready()) return;
@@ -1833,7 +1848,7 @@ function createAudio(opts) {
 
   return {
     unlock: safe(unlock), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
-    wound: safe(wound), wrapTick: safe(wrapTick), vibrate, stats,
+    wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), vibrate, stats,
     tick(dt, p) { try { tickBody(dt, p); } catch (e) { fail(e); } },
     get muted() { return S.muted; },
     get state() { return ctx ? ctx.state : 'none'; },
@@ -2740,8 +2755,9 @@ function createFX(seed) {
 // cam.setInsetBottom, rebakes on the next draw) and blitted under the camera's zoom / roll / shake; everything that moves
 // is drawn live, in the contract's order:
 //   court → fx.drawUnder → floor shadows → [behind the pole] → pole → [in front of the pole] → fx.drawOver → finger.
-// An opponent (view.actor: Kage) is depth-sorted into that order against the pole and the ball by its z, and its speech goes
-// over everything. view.halves (−1 / +1: the side his half is on, 0 none) paints the two halves into the baked court.
+// The characters (view.actors: Kage, Kiru) are depth-sorted into that order against the pole, the ball and each other by
+// their z, and their speech goes over everything. view.halves (−1 / +1: the side Kage's half is on, 0 none) paints the two
+// halves into the baked court.
 // Depth rule: the pole is the y axis and the camera sits on +z, so "behind the pole" is simply z < 0. A rope that crosses
 // z = 0 is split there (it can pass in front of the pole at one end and behind it at the other); fx.drawTrail goes just
 // before the ball. Reads CFG.pal when it bakes (resize() re-skins); nothing allocates per frame.
@@ -2784,6 +2800,7 @@ function createScene(canvas) {
   const DF = { sx: 1, sy: 1, ang: 0 };
   const RM = new Float64Array(9);
   const rX = new Float64Array(NS + 1), rY = new Float64Array(NS + 1), rS = new Float64Array(NS + 1), rZ = new Float64Array(NS + 1);
+  const ORD = [], ORDZ = new Float64Array(8), ORDB = new Int8Array(8), NO_ACTORS = []; // this frame's characters, far to near
   let rn = 2, ropeTaut = true, ropeTension = 0;
   const fX = new Float64Array(NF), fY = new Float64Array(NF), fA = new Float64Array(NF), fNx = new Float64Array(NF), fNy = new Float64Array(NF);
 
@@ -3303,27 +3320,40 @@ function createScene(canvas) {
     if (fx && fx.drawUnder) fx.drawUnder(ctx, cam, world);
     base(ctx);
     drawShadows(ctx, cam, world);
-    const act = view && view.actor ? view.actor : null;
-    if (act) { act.drawShadow(ctx, cam, kx, ky); base(ctx); }
+    const acts = view && view.actors ? view.actors : NO_ACTORS;
+    for (let i = 0; i < acts.length; i++) { acts[i].drawShadow(ctx, cam, kx, ky); base(ctx); }
     preparePole(cam, world);
     prepareBall(cam, world, view, fx);
     buildRope(cam, world);
-    // the actor goes behind the ball when it is further from the camera (smaller z), in its own half of the pole's plane
-    const az = act ? act.z : 0, bz = world.ball.p.z, back = az < 0, beyond = (bz < 0) === back && az >= bz;
-    if (act && back && !beyond) actor(ctx, cam, world, act);
+    sortActors(acts, world.ball.p.z);
+    // a character goes behind the ball when it is further from the camera (smaller z), in its own half of the pole's plane
+    actors(ctx, cam, world, 0);
     layer(ctx, cam, world, fx, -1);
-    if (act && back && beyond) actor(ctx, cam, world, act);
+    actors(ctx, cam, world, 1);
     drawPole(ctx, cam, world);
-    if (act && !back && !beyond) actor(ctx, cam, world, act);
+    actors(ctx, cam, world, 2);
     layer(ctx, cam, world, fx, 1);
-    if (act && !back && beyond) actor(ctx, cam, world, act);
+    actors(ctx, cam, world, 3);
     base(ctx);
     if (fx && fx.drawOver) fx.drawOver(ctx, cam, world);
     base(ctx);
     drawFinger(ctx, cam, view ? view.input : null);
     base(ctx);
-    if (act) { act.drawSay(ctx, cam, kx, ky); base(ctx); }
+    for (let i = 0; i < acts.length; i++) if (acts[i].drawSay) { acts[i].drawSay(ctx, cam, kx, ky); base(ctx); }
   }
+  // far to near (an insertion sort: there are two of them), each with its slot in the draw order:
+  // 0 behind the pole and the ball, 1 behind the pole in front of the ball, 2 in front of the pole behind the ball, 3 in front of both
+  function sortActors(acts, bz) {
+    ORD.length = 0;
+    for (let i = 0; i < acts.length && i < 8; i++) {
+      const a = acts[i], z = a.z, back = z < 0, beyond = (bz < 0) === back && z >= bz;
+      let j = ORD.length;
+      ORD.push(a);
+      while (j > 0 && ORDZ[j - 1] > z) { ORD[j] = ORD[j - 1]; ORDZ[j] = ORDZ[j - 1]; ORDB[j] = ORDB[j - 1]; j--; }
+      ORD[j] = a; ORDZ[j] = z; ORDB[j] = back ? (beyond ? 1 : 0) : (beyond ? 3 : 2);
+    }
+  }
+  function actors(ctx, cam, world, slot) { for (let i = 0; i < ORD.length; i++) if (ORDB[i] === slot) actor(ctx, cam, world, ORD[i]); }
   function actor(ctx, cam, world, act) { base(ctx); act.draw(ctx, cam, kx, ky, world); base(ctx); }
 
   return { resize, setQuality, draw, stats }; // stats: bake / backing-store counters the tests read
@@ -3878,15 +3908,227 @@ function createVersus() {
   return { mode: 'versus', players, snap, get state() { return snap.state; }, setSides, onHit, onEvent, update, reset, nextRound, replay };
 }
 
+// ════════ ninja.js ════════
+// ninja.js — the Neo Dojo rig: Kiru's own body, which the cast sheet (Tools/neo-dojo-cast) draws every character on, in the
+// sheet's units (x 0..200, the hood centred on (100, 90), the soles on y = 231.5). A "look" says what goes on it: Kage-X's
+// dark gi and magenta neon (kage.js), Kiru's blue gi and vermilion headband (kiru.js).
+//
+// The parts that never bend (the head in each of the look's expressions, the torso, the katana on the back) are baked once per
+// size into small canvases, glow included (shadowBlur at bake time only, never per frame). What moves is drawn live with plain
+// strokes: the headband tails, both arms, both legs and the shoes. So a frame of a character is three drawImage calls and ~20
+// strokes. A look that needs them also gets whole-body silhouettes of named poses in its ghost colour (afterimages: one
+// drawImage each) and a scratch canvas for a one-colour pass over any pose (the white flash of an arrival).
+//
+// look = { colors: { armF, armB, legF, legB, fist, fistS, shoe, stripe|null, smear, ghost },
+//          heads: ['open', 'blink', ...],          the expressions to bake (pose.face picks one; 'open' is the fallback)
+//          key(): a number that rebakes the art when it changes (Kage's neon slider),  glow(): the bake's glow strength,
+//          smearA(): the strike smear's strength (optional),
+//          head(H, g, k, face), torso(H, g, k), back(H, g, k)   bake into g (already in sheet units),
+//          tails(H, ctx, P)                         live, in the head's frame,
+//          sil: { name: pose fields }               silhouettes to bake (optional),  tint: true  keep the scratch canvas }
+
+const NINJA = {
+  SOLE: 231.5, CX: 100, // the sheet point between the feet
+  NECK_X: 100, NECK_Y: 150, // the head turns about this
+  SH_F: { x: 73, y: 156 }, SH_B: { x: 127, y: 156 }, // shoulders: front (toward the target) and back
+  HIP_F: { x: 90, y: 196 }, HIP_B: { x: 110, y: 196 },
+  ARM_LEN: 36, // shoulder → fist at rest
+  ARM_MAX: 2.5, // a strike stretches the arm this far (a smear frame reads as speed, not as a rubber arm)
+  L: '#3d4c95', // Kiru's moonlit sticker outline: every character wears it
+  HOOD: 'M26 90a74 66 0 1 0 148 0a74 66 0 1 0 -148 0Z',
+  FACE: 'M44 80 C70 68 130 68 156 80 C168 85 168 104 156 109 C130 121 70 121 44 109 C32 104 32 85 44 80 Z',
+  TORSO: 'M64 158 Q66 146 82 143 L118 143 Q134 146 136 158 L133 199 Q100 205 67 199 Z',
+  TORSO_SH: 'M112 144 L118 143 Q134 146 136 158 L133 199 Q123 202 112 203 Z',
+};
+
+function createNinja(doc, look) {
+  const TAU = Math.PI * 2, N = NINJA, C = look.colors;
+  const SIL_K = 0.6, TINT_K = 0.75; // afterimages and flashes are translucent and brief: baked under full size
+  const art = { k: 0, key: NaN, heads: {}, torso: null, back: null, sil: {}, tint: null };
+  const hasCanvas = !!(doc && doc.createElement && typeof Path2D !== 'undefined');
+
+  function part(x0, y0, x1, y1, k) {
+    const c = doc.createElement('canvas');
+    c.width = Math.max(1, Math.ceil((x1 - x0) * k)); c.height = Math.max(1, Math.ceil((y1 - y0) * k));
+    const g = c.getContext('2d');
+    g.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    return { c, g, k, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  // the sheet's helpers, on a canvas: sp = a fill with the sticker outline under it, ln = a round stroke, fl = a fill,
+  // se = an ellipse with the outline (rot in degrees)
+  const H = {
+    L: N.L,
+    sp(g, d, fill, w) { const p = new Path2D(d); g.lineWidth = w; g.strokeStyle = N.L; g.stroke(p); g.fillStyle = fill; g.fill(p); },
+    ln(g, d, col, w, a, dash) {
+      const p = new Path2D(d);
+      g.save(); g.globalAlpha = a == null ? 1 : a; g.lineWidth = w; g.strokeStyle = col;
+      if (dash) g.setLineDash(dash);
+      g.stroke(p); g.restore();
+    },
+    fl(g, d, col, a) { g.save(); g.globalAlpha = a == null ? 1 : a; g.fillStyle = col; g.fill(new Path2D(d)); g.restore(); },
+    ell(cx, cy, rx, ry, rot) { const p = new Path2D(); p.ellipse(cx, cy, rx, ry, rot || 0, 0, TAU); return p; },
+    se(g, cx, cy, rx, ry, fill, w, rotDeg) { const p = H.ell(cx, cy, rx, ry, (rotDeg || 0) * Math.PI / 180); g.lineWidth = w; g.strokeStyle = N.L; g.stroke(p); g.fillStyle = fill; g.fill(p); },
+    rrect(x, y, w, h, r) {
+      const p = new Path2D();
+      p.moveTo(x + r, y); p.arcTo(x + w, y, x + w, y + h, r); p.arcTo(x + w, y + h, x, y + h, r); p.arcTo(x, y + h, x, y, r); p.arcTo(x, y, x + w, y, r); p.closePath();
+      return p;
+    },
+    // the sheet's #glow (a 3.2-unit gaussian blur merged twice under the shape): two shadow passes, then the shape clean
+    glow(g, k, col, draw) {
+      const s = look.glow ? look.glow() : 0;
+      if (s > 0) { g.save(); g.shadowColor = col; g.shadowBlur = 6.4 * k * s; draw(); if (s > 0.5) draw(); g.restore(); }
+      draw();
+    },
+    grad(g, x1, y1, x2, y2, stops) {
+      const gr = g.createLinearGradient(x1, y1, x2, y2);
+      for (let i = 0; i < stops.length; i++) gr.addColorStop(i / (stops.length - 1), stops[i]);
+      return gr;
+    },
+  };
+
+  // ───────────────────────── the rig, in sheet units ─────────────────────────
+  // limb(): the sheet's two-stroke capsule, shoulder → fist, bowed by `bend` (units, sideways)
+  function limb(ctx, sx, sy, hx, hy, bend, col, w) {
+    const dx = hx - sx, dy = hy - sy, d = Math.sqrt(dx * dx + dy * dy) || 1;
+    const mx = (sx + hx) / 2 - (dy / d) * bend, my = (sy + hy) / 2 + (dx / d) * bend;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, hx, hy);
+    ctx.strokeStyle = N.L; ctx.lineWidth = w + 7; ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke();
+  }
+  function fist(ctx, x, y, r) {
+    ctx.beginPath(); ctx.ellipse(x, y, r, r, 0, 0, TAU);
+    ctx.lineWidth = 4; ctx.strokeStyle = N.L; ctx.stroke(); ctx.fillStyle = C.fist; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x - 6, y - 2.5); ctx.quadraticCurveTo(x, y + 0.5, x + 6, y - 2.5);
+    ctx.lineWidth = 2; ctx.strokeStyle = C.fistS; ctx.stroke();
+  }
+  function leg(ctx, hx, hy, ax, ay, knee, col) {
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo((hx + ax) / 2 - knee, (hy + ay) / 2); ctx.lineTo(ax, ay);
+    ctx.strokeStyle = N.L; ctx.lineWidth = 24; ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = 18; ctx.stroke();
+  }
+  function shoe(ctx, x, y, rot) { // 'M-14 8 q0 -10 12 -10 h8 q6 0 6 6 v4 z' at the ankle, and the look's sole stripe if it has one
+    ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot);
+    ctx.beginPath(); ctx.moveTo(-14, 8); ctx.quadraticCurveTo(-14, -2, -2, -2); ctx.lineTo(6, -2); ctx.quadraticCurveTo(12, -2, 12, 4); ctx.lineTo(12, 8); ctx.closePath();
+    ctx.lineWidth = 5; ctx.strokeStyle = N.L; ctx.stroke(); ctx.fillStyle = C.shoe; ctx.fill();
+    if (C.stripe) { ctx.beginPath(); ctx.moveTo(-13, 7.5); ctx.lineTo(5, 7.5); ctx.lineWidth = 2; ctx.strokeStyle = C.stripe; ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // pose: everything one frame needs, in sheet units unless named otherwise
+  const pose = {
+    x: 0, y: 0, s: 1, mir: 1, tilt: 0, sqx: 1, sqy: 1, // screen foot point (CSS px), px per sheet unit, facing, lean, squash
+    headTilt: 0, headDy: 0, face: 'open', t: 0, wind: 0, lift: 0,
+    fx: 50, fy: 184, fBend: 10, // front fist
+    bx: 151, by: 193, bBend: -9, // back fist
+    lax: 85, lay: 223.5, lrot: 0, lknee: 3, rax: 115, ray: 223.5, rrot: 0, rknee: 3, // ankles (front leg = l)
+    smear: 0, // 0..1 a strike's speed: a ghost of the arm trails it
+    sx0: 0, sy0: 0, // where the fist was a moment ago (smear)
+  };
+  const REST = { x: 0, y: 0, s: 1, mir: 1, tilt: 0, sqx: 1, sqy: 1, headTilt: 0, headDy: 0, face: 'open', t: 0, wind: 0, lift: 0, fx: 50, fy: 184, fBend: 10, bx: 151, by: 193, bBend: -9, lax: 85, lay: 223.5, lrot: 0, lknee: 3, rax: 115, ray: 223.5, rrot: 0, rknee: 3, smear: 0, sx0: 0, sy0: 0 };
+
+  const blit = (ctx, P) => ctx.drawImage(P.c, P.x, P.y, P.w, P.h);
+  function headFrame(ctx, P) { ctx.translate(N.NECK_X, N.NECK_Y + P.headDy); ctx.rotate(P.headTilt); ctx.translate(-N.NECK_X, -N.NECK_Y); }
+
+  // the body in sheet units, under whatever transform the caller set
+  function body(ctx, P) {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.save(); headFrame(ctx, P); look.tails(H, ctx, P); ctx.restore(); // the tails ride the head, behind everything
+    blit(ctx, art.back);
+    limb(ctx, N.SH_B.x, N.SH_B.y, P.bx, P.by, P.bBend, C.armB, 15); fist(ctx, P.bx, P.by, 9.5);
+    leg(ctx, N.HIP_B.x, N.HIP_B.y, P.rax, P.ray, P.rknee, C.legB); leg(ctx, N.HIP_F.x, N.HIP_F.y, P.lax, P.lay, P.lknee, C.legF);
+    shoe(ctx, P.rax, P.ray, P.rrot); shoe(ctx, P.lax, P.lay, P.lrot);
+    blit(ctx, art.torso);
+    ctx.save(); headFrame(ctx, P); blit(ctx, art.heads[P.face] || art.heads.open); ctx.restore();
+    if (P.smear > 0.05) { // a strike: a ghost of the arm, in the look's colour, behind the fist
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5 * P.smear * (look.smearA ? look.smearA() : 1);
+      ctx.beginPath(); ctx.moveTo(P.sx0, P.sy0); ctx.lineTo(P.fx, P.fy);
+      ctx.strokeStyle = C.smear; ctx.lineWidth = 22; ctx.stroke();
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    }
+    limb(ctx, N.SH_F.x, N.SH_F.y, P.fx, P.fy, P.fBend, C.armF, 15); fist(ctx, P.fx, P.fy, 9.5 + 2 * P.smear);
+  }
+  function frame(ctx, kx, ky, P) {
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+    ctx.translate(P.x, P.y); if (P.tilt) ctx.rotate(P.tilt); ctx.scale(P.mir * P.s * P.sqx, P.s * P.sqy); ctx.translate(-N.CX, -N.SOLE);
+  }
+
+  // ───────────────────────── bake ─────────────────────────
+  // one pose of the whole body in one colour, into a part canvas (cleared first)
+  function solid(P, Q, col) {
+    const g = P.g;
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+    g.clearRect(0, 0, P.c.width, P.c.height);
+    g.setTransform(P.k, 0, 0, P.k, -P.x * P.k, -P.y * P.k);
+    body(g, Q);
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-in';
+    g.fillStyle = col; g.fillRect(0, 0, P.c.width, P.c.height);
+    g.globalCompositeOperation = 'source-over';
+  }
+  // bake at k device px per sheet unit: when the shown size grows past what is baked, shrinks well under it, or the look changed
+  function ensureArt(k) {
+    if (!hasCanvas) return false;
+    k = U.clamp(k, 0.3, 6);
+    const key = look.key ? look.key() : 0;
+    if (art.torso && k <= art.k * 1.02 && k >= art.k * 0.5 && art.key === key) return true;
+    art.k = k; art.key = key;
+    for (let i = 0; i < look.heads.length; i++) { const p = part(8, 6, 196, 168, k); look.head(H, p.g, k, look.heads[i]); art.heads[look.heads[i]] = p; }
+    let p = part(54, 134, 146, 214, k); look.torso(H, p.g, k); art.torso = p;
+    p = part(16, 102, 172, 236, k); look.back(H, p.g, k); art.back = p;
+    if (look.sil) for (const name in look.sil) { p = part(-6, 0, 290, 244, k * SIL_K); solid(p, Object.assign({}, REST, look.sil[name]), C.ghost); art.sil[name] = p; }
+    art.tint = look.tint ? part(-34, -24, 294, 250, k * TINT_K) : null; // wide enough for a fist at full stretch
+    return true;
+  }
+
+  function drawRig(ctx, kx, ky, P) {
+    frame(ctx, kx, ky, P);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    body(ctx, P);
+  }
+  // an afterimage: a baked silhouette (look.sil[name]) placed by P's position, size, facing, lean and squash
+  function drawSil(ctx, kx, ky, P, name, alpha, lighter) {
+    const S = art.sil[name];
+    if (!S || !(alpha > 0.004)) return;
+    frame(ctx, kx, ky, P);
+    ctx.globalAlpha = Math.min(1, alpha); ctx.globalCompositeOperation = lighter ? 'lighter' : 'source-over';
+    blit(ctx, S);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+  // the whole body in P's pose as one colour (look.tint): rendered into the scratch canvas, then placed like the rig
+  function drawTint(ctx, kx, ky, P, col, alpha, lighter) {
+    const T = art.tint;
+    if (!T || !(alpha > 0.004)) return;
+    solid(T, P, col);
+    frame(ctx, kx, ky, P);
+    ctx.globalAlpha = Math.min(1, alpha); ctx.globalCompositeOperation = lighter ? 'lighter' : 'source-over';
+    blit(ctx, T);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // screen point → sheet units, through the pose's rig transform (the inverse of drawRig's)
+  function toSheet(sx, sy, out) {
+    let dx = sx - pose.x, dy = sy - pose.y;
+    if (pose.tilt) { const c = Math.cos(-pose.tilt), s = Math.sin(-pose.tilt), ex = dx * c - dy * s; dy = dx * s + dy * c; dx = ex; }
+    out.x = dx / (pose.mir * pose.s * pose.sqx) + N.CX; out.y = dy / (pose.s * pose.sqy) + N.SOLE;
+    return out;
+  }
+  // keep a fist within the stretched arm's length of its shoulder
+  function limitArm(sh, p) {
+    const dx = p.x - sh.x, dy = p.y - sh.y, d = Math.sqrt(dx * dx + dy * dy), m = N.ARM_LEN * N.ARM_MAX;
+    if (d > m) { p.x = sh.x + (dx / d) * m; p.y = sh.y + (dy / d) * m; }
+  }
+
+  return { art, pose, REST, hasCanvas, ensureArt, drawRig, drawSil, drawTint, toSheet, limitArm, H };
+}
+
 // ════════ kage.js ════════
 // kage.js — Kage-X, Kiru's rival from 2099 (Neo Dojo Cast, ND-03), as the computer opponent: his art, his rig and the brain
 // that plays the other half of the court.
 //
 // ART. Drawn from the cast sheet's own path data (Tools/neo-dojo-cast/index.html: Kiru's hood, face, torso and shoe, Kage's
-// colours and his magenta neon), in the sheet's units: x 0..200, the hood centred on (100, 90), the soles on y = 231.5. The
-// parts that never bend (hood and face, torso and belt, the katana on his back) are baked once into small canvases at the
-// size they are shown, glow included (shadowBlur at bake time only, never per frame). What moves is drawn live with plain
-// strokes: the headband tails, both arms, both legs and the shoes. So a frame is three drawImage calls and ~20 strokes.
+// colours and his magenta neon) on the Neo Dojo rig in ninja.js, which Kiru (kiru.js) shares: KAGE_LOOK below is what goes
+// on it. Hood and face, torso and belt and the katana on his back are baked at the size they are shown, glow included; the
+// headband tails, arms, legs and shoes are drawn live.
 //
 // BRAIN. He never cheats the physics: a swing is a `hand` (owner 'cpu') handed to the same applyHit a finger uses. To pick
 // where to swing he runs a private copy of the world forward (the real physics, 1.2 s ahead, re-run after every hit and
@@ -3958,210 +4200,91 @@ const KAGE_LINES = {
   serve: ['Ready?', 'Watch closely.', 'Try to keep up.'],
 };
 
-function createKage(doc) {
-  const TAU = Math.PI * 2;
-  const SOLE = 231.5, CX = 100; // the sheet point between his feet
-  const NECK_X = 100, NECK_Y = 150; // the head turns about this
-  const SH_F = { x: 73, y: 156 }, SH_B = { x: 127, y: 156 }; // shoulders: front (toward his target) and back
-  const HIP_F = { x: 90, y: 196 }, HIP_B = { x: 110, y: 196 };
-  const ARM_LEN = 36; // sheet units, shoulder → fist at rest
-  const ARM_MAX = 2.5; // a strike stretches the arm this far (a smear frame reads as speed, not as a rubber arm)
-  const C = {
-    L: '#3d4c95', RIM: '#a9bcff', NEON: '#e93dff', NEON_D: '#b52bd1', INK: '#13152a',
-    ARM_F: '#3a3f5c', ARM_B: '#121427', LEG_F: '#22253a', LEG_B: '#121427', FIST: '#8d95ab', FIST_S: '#5a6280',
-  };
-
-  // ───────────────────────── art: the baked parts ─────────────────────────
-  const art = { k: 0, head: null, blink: null, torso: null, back: null };
-  const hasCanvas = !!(doc && doc.createElement && typeof Path2D !== 'undefined');
-
-  function part(x0, y0, x1, y1, k) {
-    const c = doc.createElement('canvas');
-    c.width = Math.max(1, Math.ceil((x1 - x0) * k)); c.height = Math.max(1, Math.ceil((y1 - y0) * k));
-    const g = c.getContext('2d');
-    g.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
-    g.lineCap = 'round'; g.lineJoin = 'round';
-    return { c, g, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
-  }
-  // the sheet's helpers, on a canvas: sp = fill with a sticker outline under it, ln = a round stroke, fl = a fill
-  function sp(g, d, fill, w) { const p = new Path2D(d); g.lineWidth = w; g.strokeStyle = C.L; g.stroke(p); g.fillStyle = fill; g.fill(p); }
-  function ln(g, d, col, w, a, dash) {
-    const p = new Path2D(d);
-    g.save(); g.globalAlpha = a == null ? 1 : a; g.lineWidth = w; g.strokeStyle = col;
-    if (dash) g.setLineDash(dash);
-    g.stroke(p); g.restore();
-  }
-  function fl(g, d, col, a) { g.save(); g.globalAlpha = a == null ? 1 : a; g.fillStyle = col; g.fill(new Path2D(d)); g.restore(); }
-  function ell(cx, cy, rx, ry, rot) { const p = new Path2D(); p.ellipse(cx, cy, rx, ry, rot || 0, 0, TAU); return p; }
-  function rrect(x, y, w, h, r) {
-    const p = new Path2D();
-    p.moveTo(x + r, y); p.arcTo(x + w, y, x + w, y + h, r); p.arcTo(x + w, y + h, x, y + h, r); p.arcTo(x, y + h, x, y, r); p.arcTo(x, y, x + w, y, r); p.closePath();
-    return p;
-  }
-  // the sheet's #glow (a 3.2-unit gaussian blur merged twice under the shape): two shadow passes, then the shape clean
-  function glow(g, k, col, draw) {
-    const s = CFG.kage.glow;
-    if (s > 0) { g.save(); g.shadowColor = col; g.shadowBlur = 6.4 * k * s; draw(); if (s > 0.5) draw(); g.restore(); }
-    draw();
-  }
-  function grad(g, x1, y1, x2, y2, stops) {
-    const gr = g.createLinearGradient(x1, y1, x2, y2);
-    for (let i = 0; i < stops.length; i++) gr.addColorStop(i / (stops.length - 1), stops[i]);
-    return gr;
-  }
-
-  const HOOD = 'M26 90a74 66 0 1 0 148 0a74 66 0 1 0 -148 0Z';
-  const FACE = 'M44 80 C70 68 130 68 156 80 C168 85 168 104 156 109 C130 121 70 121 44 109 C32 104 32 85 44 80 Z';
-  const TORSO = 'M64 158 Q66 146 82 143 L118 143 Q134 146 136 158 L133 199 Q100 205 67 199 Z';
-  const TORSO_SH = 'M112 144 L118 143 Q134 146 136 158 L133 199 Q123 202 112 203 Z';
-  const EYE_L = 'M62 94 L90 90 L88 101 L64 102 Z', EYE_R = 'M138 94 L110 90 L112 101 L136 102 Z';
-  const EYE_LH = 'M64 95 L88 92 L87 95 L65 97 Z', EYE_RH = 'M136 95 L112 92 L113 95 L135 97 Z';
-
-  function bakeHead(k, closed) {
-    const P = part(8, 6, 196, 168, k), g = P.g, hood = new Path2D(HOOD);
-    g.lineWidth = 6; g.strokeStyle = C.L; g.stroke(hood);
-    g.fillStyle = grad(g, 48, 24, 152, 156, ['#555b7e', '#262a42', '#0e1020']); g.fill(hood);
-    g.save(); g.clip(hood);
-    g.globalAlpha = 0.5; g.fillStyle = '#05060f'; g.fill(ell(132, 128, 82, 62));
-    g.globalAlpha = 0.14; g.fillStyle = '#fff'; g.fill(ell(66, 40, 38, 15, -24 * Math.PI / 180));
-    g.globalAlpha = 1;
-    ln(g, 'M14 78 Q100 34 186 78', '#2a0a33', 14);
-    glow(g, k, C.NEON, () => ln(g, 'M14 78 Q100 34 186 78', C.NEON, 5));
-    ln(g, 'M30 70 Q100 44 172 70', '#fff', 1.4, 0.8, [3, 9]);
-    g.restore();
-    glow(g, k, C.NEON, () => { const p = ell(170, 68, 7, 7); g.lineWidth = 3; g.strokeStyle = C.L; g.stroke(p); g.fillStyle = C.NEON; g.fill(p); }); // the knot
-    const plate = rrect(81, 43, 38, 20, 4.5);
-    g.lineWidth = 3.5; g.strokeStyle = C.L; g.stroke(plate); g.fillStyle = '#2a2e48'; g.fill(plate);
-    g.lineWidth = 1.2; g.strokeStyle = '#5a6280'; g.stroke(rrect(83.5, 45.5, 33, 15, 3));
-    glow(g, k, C.NEON, () => ln(g, 'M92 48 L108 58 M108 48 L92 58', C.NEON, 3));
-    fl(g, FACE, '#0a0c1c');
-    fl(g, 'M48 84 C74 74 126 74 152 84 C126 79 74 79 48 90 Z', '#fff', 0.16);
-    g.save();
-    if (closed) { g.translate(100, 96); g.scale(1, 0.1); g.translate(-100, -96); }
-    glow(g, k, C.NEON, () => { fl(g, EYE_L, C.NEON); fl(g, EYE_R, C.NEON); });
-    fl(g, EYE_LH, '#fff', 0.85); fl(g, EYE_RH, '#fff', 0.85);
-    g.restore();
-    ln(g, 'M47 50 Q33 68 31 95', C.RIM, 3.2, 0.8);
-    return P;
-  }
-  function bakeTorso(k) {
-    const P = part(54, 134, 146, 214, k), g = P.g;
-    sp(g, TORSO, grad(g, 64, 143, 136, 200, ['#3a3f5c', '#22253a', '#121427']), 6);
-    fl(g, TORSO_SH, '#0a0b18', 0.55);
-    fl(g, 'M88 145 L100 166 L112 145 Z', '#8d95ab');
-    ln(g, 'M84 145 L100 170 L116 145', '#4a4f6e', 4.5);
-    ln(g, 'M82 160 L94 172 L94 182 M118 160 L106 172 L106 182', C.NEON, 1.6, 0.7);
-    glow(g, k, C.NEON, () => fl(g, 'M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z', C.NEON));
-    fl(g, 'M68 188 Q100 194 132 188 L132 191 Q100 197 68 191 Z', '#fff', 0.6);
-    return P;
-  }
-  function bakeBack(k) { // the katana across his back: hilt over his left shoulder, scabbard tip by his right leg
-    const P = part(16, 102, 172, 236, k), g = P.g;
-    ln(g, 'M134 188 L157 224', C.L, 13); ln(g, 'M134 188 L157 224', '#2a2e48', 8);
-    glow(g, k, C.NEON, () => ln(g, 'M136 191 L155 221', C.NEON, 2));
-    ln(g, 'M33 116 L57 150', C.L, 15); ln(g, 'M33 116 L57 150', '#c9d2e8', 9.5);
-    ln(g, 'M31 120 L38 117 M35 126 L42 123 M39 132 L46 129 M43 138 L50 135', C.NEON, 2.6);
-    const gd = ell(57, 150, 11, 4.2, -55 * Math.PI / 180);
-    g.lineWidth = 3; g.strokeStyle = C.L; g.stroke(gd); g.fillStyle = '#8d95ab'; g.fill(gd);
-    return P;
-  }
-  // bake at k device px per sheet unit; only when the shown size moved by more than a quarter (or the neon changed)
-  let bakedGlow = -1;
-  function ensureArt(k) {
-    if (!hasCanvas) return false;
-    k = U.clamp(k, 0.3, 6);
-    if (art.head && k <= art.k * 1.02 && k >= art.k * 0.5 && bakedGlow === CFG.kage.glow) return true;
-    art.k = k; bakedGlow = CFG.kage.glow;
-    art.head = bakeHead(k, false); art.blink = bakeHead(k, true); art.torso = bakeTorso(k); art.back = bakeBack(k);
-    return true;
-  }
-  const blit = (ctx, P) => ctx.drawImage(P.c, P.x, P.y, P.w, P.h);
-
-  // ───────────────────────── rig: one frame of Kage, in sheet units ─────────────────────────
-  // limb(): the sheet's two-stroke capsule, shoulder → fist, bowed by `bend` (units, sideways)
-  function limb(ctx, sx, sy, hx, hy, bend, col, w) {
-    const dx = hx - sx, dy = hy - sy, d = Math.sqrt(dx * dx + dy * dy) || 1;
-    const mx = (sx + hx) / 2 - (dy / d) * bend, my = (sy + hy) / 2 + (dx / d) * bend;
-    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, hx, hy);
-    ctx.strokeStyle = C.L; ctx.lineWidth = w + 7; ctx.stroke();
-    ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke();
-  }
-  function fist(ctx, x, y, r) {
-    ctx.beginPath(); ctx.ellipse(x, y, r, r, 0, 0, TAU);
-    ctx.lineWidth = 4; ctx.strokeStyle = C.L; ctx.stroke(); ctx.fillStyle = C.FIST; ctx.fill();
-    ctx.beginPath(); ctx.moveTo(x - 6, y - 2.5); ctx.quadraticCurveTo(x, y + 0.5, x + 6, y - 2.5);
-    ctx.lineWidth = 2; ctx.strokeStyle = C.FIST_S; ctx.stroke();
-  }
-  function leg(ctx, hx, hy, ax, ay, knee, col) {
-    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo((hx + ax) / 2 - knee, (hy + ay) / 2); ctx.lineTo(ax, ay);
-    ctx.strokeStyle = C.L; ctx.lineWidth = 24; ctx.stroke();
-    ctx.strokeStyle = col; ctx.lineWidth = 18; ctx.stroke();
-  }
-  function shoe(ctx, x, y, rot) { // 'M-14 8 q0 -10 12 -10 h8 q6 0 6 6 v4 z' at the ankle, plus his magenta sole stripe
-    ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot);
-    ctx.beginPath(); ctx.moveTo(-14, 8); ctx.quadraticCurveTo(-14, -2, -2, -2); ctx.lineTo(6, -2); ctx.quadraticCurveTo(12, -2, 12, 4); ctx.lineTo(12, 8); ctx.closePath();
-    ctx.lineWidth = 5; ctx.strokeStyle = C.L; ctx.stroke(); ctx.fillStyle = C.INK; ctx.fill();
-    ctx.beginPath(); ctx.moveTo(-13, 7.5); ctx.lineTo(5, 7.5); ctx.lineWidth = 2; ctx.strokeStyle = C.NEON; ctx.stroke();
-    ctx.restore();
-  }
+// Kage-X on the Neo Dojo rig (ninja.js): the sheet's dark gi and visor, and his magenta neon
+const KAGE_ART = {
+  RIM: '#a9bcff', NEON: '#e93dff', NEON_D: '#b52bd1', INK: '#13152a',
+  EYE_L: 'M62 94 L90 90 L88 101 L64 102 Z', EYE_R: 'M138 94 L110 90 L112 101 L136 102 Z',
+  EYE_LH: 'M64 95 L88 92 L87 95 L65 97 Z', EYE_RH: 'M136 95 L112 92 L113 95 L135 97 Z',
   // the headband tails: two ribbons off the knot that stream away from his motion and ripple
-  const DASH = [4, 7], NODASH = [];
-  const TAIL = [[166, 66, 196, 56, 214, 70, 230, 82, 250, 74, 5, C.NEON], [166, 76, 190, 82, 204, 98, 216, 112, 236, 112, 4, C.NEON_D]];
-  function tailPath(ctx, T, t, i, wind, lift) {
-    const ph = t * 7 + i * 1.7, a1 = Math.sin(ph) * 4, a2 = Math.sin(ph + 1.4) * 7, k = 1 + 0.3 * wind, x0 = T[0], y0 = T[1];
-    ctx.beginPath(); ctx.moveTo(x0, y0);
-    ctx.quadraticCurveTo(x0 + (T[2] - x0) * k, T[3] + a1 - lift * 6, x0 + (T[4] - x0) * k, T[5] + a1 * 0.6 - lift * 10);
-    ctx.quadraticCurveTo(x0 + (T[6] - x0) * k, T[7] + a2 - lift * 14, x0 + (T[8] - x0) * k, T[9] + a2 * 1.2 - lift * 20);
-  }
-  function tails(ctx, t, wind, lift) {
-    const g = CFG.kage.glow;
+  TAIL: [[166, 66, 196, 56, 214, 70, 230, 82, 250, 74, 5, '#e93dff'], [166, 76, 190, 82, 204, 98, 216, 112, 236, 112, 4, '#b52bd1']],
+  DASH: [4, 7], NODASH: [],
+};
+const KAGE_LOOK = {
+  colors: { armF: '#3a3f5c', armB: '#121427', legF: '#22253a', legB: '#121427', fist: '#8d95ab', fistS: '#5a6280', shoe: '#13152a', stripe: '#e93dff', smear: '#e93dff', ghost: '#e93dff' },
+  heads: ['open', 'blink'],
+  key: () => CFG.kage.glow, // his neon slider rebakes him
+  glow: () => CFG.kage.glow,
+  smearA: () => Math.min(1, CFG.kage.glow + 0.3),
+  head(H, g, k, face) {
+    const A = KAGE_ART, hood = new Path2D(NINJA.HOOD);
+    g.lineWidth = 6; g.strokeStyle = H.L; g.stroke(hood);
+    g.fillStyle = H.grad(g, 48, 24, 152, 156, ['#555b7e', '#262a42', '#0e1020']); g.fill(hood);
+    g.save(); g.clip(hood);
+    g.globalAlpha = 0.5; g.fillStyle = '#05060f'; g.fill(H.ell(132, 128, 82, 62));
+    g.globalAlpha = 0.14; g.fillStyle = '#fff'; g.fill(H.ell(66, 40, 38, 15, -24 * Math.PI / 180));
+    g.globalAlpha = 1;
+    H.ln(g, 'M14 78 Q100 34 186 78', '#2a0a33', 14);
+    H.glow(g, k, A.NEON, () => H.ln(g, 'M14 78 Q100 34 186 78', A.NEON, 5));
+    H.ln(g, 'M30 70 Q100 44 172 70', '#fff', 1.4, 0.8, [3, 9]);
+    g.restore();
+    H.glow(g, k, A.NEON, () => { const p = H.ell(170, 68, 7, 7); g.lineWidth = 3; g.strokeStyle = H.L; g.stroke(p); g.fillStyle = A.NEON; g.fill(p); }); // the knot
+    const plate = H.rrect(81, 43, 38, 20, 4.5);
+    g.lineWidth = 3.5; g.strokeStyle = H.L; g.stroke(plate); g.fillStyle = '#2a2e48'; g.fill(plate);
+    g.lineWidth = 1.2; g.strokeStyle = '#5a6280'; g.stroke(H.rrect(83.5, 45.5, 33, 15, 3));
+    H.glow(g, k, A.NEON, () => H.ln(g, 'M92 48 L108 58 M108 48 L92 58', A.NEON, 3));
+    H.fl(g, NINJA.FACE, '#0a0c1c');
+    H.fl(g, 'M48 84 C74 74 126 74 152 84 C126 79 74 79 48 90 Z', '#fff', 0.16);
+    g.save();
+    if (face === 'blink') { g.translate(100, 96); g.scale(1, 0.1); g.translate(-100, -96); }
+    H.glow(g, k, A.NEON, () => { H.fl(g, A.EYE_L, A.NEON); H.fl(g, A.EYE_R, A.NEON); });
+    H.fl(g, A.EYE_LH, '#fff', 0.85); H.fl(g, A.EYE_RH, '#fff', 0.85);
+    g.restore();
+    H.ln(g, 'M47 50 Q33 68 31 95', A.RIM, 3.2, 0.8);
+  },
+  torso(H, g, k) {
+    const A = KAGE_ART;
+    H.sp(g, NINJA.TORSO, H.grad(g, 64, 143, 136, 200, ['#3a3f5c', '#22253a', '#121427']), 6);
+    H.fl(g, NINJA.TORSO_SH, '#0a0b18', 0.55);
+    H.fl(g, 'M88 145 L100 166 L112 145 Z', '#8d95ab');
+    H.ln(g, 'M84 145 L100 170 L116 145', '#4a4f6e', 4.5);
+    H.ln(g, 'M82 160 L94 172 L94 182 M118 160 L106 172 L106 182', A.NEON, 1.6, 0.7);
+    H.glow(g, k, A.NEON, () => H.fl(g, 'M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z', A.NEON));
+    H.fl(g, 'M68 188 Q100 194 132 188 L132 191 Q100 197 68 191 Z', '#fff', 0.6);
+  },
+  back(H, g, k) { // the katana across his back: hilt over his left shoulder, scabbard tip by his right leg
+    const A = KAGE_ART;
+    H.ln(g, 'M134 188 L157 224', H.L, 13); H.ln(g, 'M134 188 L157 224', '#2a2e48', 8);
+    H.glow(g, k, A.NEON, () => H.ln(g, 'M136 191 L155 221', A.NEON, 2));
+    H.ln(g, 'M33 116 L57 150', H.L, 15); H.ln(g, 'M33 116 L57 150', '#c9d2e8', 9.5);
+    H.ln(g, 'M31 120 L38 117 M35 126 L42 123 M39 132 L46 129 M43 138 L50 135', A.NEON, 2.6);
+    const gd = H.ell(57, 150, 11, 4.2, -55 * Math.PI / 180);
+    g.lineWidth = 3; g.strokeStyle = H.L; g.stroke(gd); g.fillStyle = '#8d95ab'; g.fill(gd);
+  },
+  tails(H, ctx, P) { // neon strokes with a glow pass, and the sheet's white dashes down the upper one
+    const A = KAGE_ART, g = CFG.kage.glow, path = (T, i) => {
+      const ph = P.t * 7 + i * 1.7, a1 = Math.sin(ph) * 4, a2 = Math.sin(ph + 1.4) * 7, k = 1 + 0.3 * P.wind, x0 = T[0], y0 = T[1], lift = P.lift;
+      ctx.beginPath(); ctx.moveTo(x0, y0);
+      ctx.quadraticCurveTo(x0 + (T[2] - x0) * k, T[3] + a1 - lift * 6, x0 + (T[4] - x0) * k, T[5] + a1 * 0.6 - lift * 10);
+      ctx.quadraticCurveTo(x0 + (T[6] - x0) * k, T[7] + a2 - lift * 14, x0 + (T[8] - x0) * k, T[9] + a2 * 1.2 - lift * 20);
+    };
     for (let i = 0; i < 2; i++) {
-      const T = TAIL[i];
-      tailPath(ctx, T, t, i, wind, lift);
+      const T = A.TAIL[i];
+      path(T, i);
       ctx.strokeStyle = T[11];
       if (g > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.min(1, 0.3 * g); ctx.lineWidth = T[10] * 2.3; ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; }
       ctx.globalAlpha = 1; ctx.lineWidth = T[10]; ctx.stroke();
     }
-    tailPath(ctx, TAIL[0], t, 0, wind, lift); // the sheet's white dashes down the upper tail
-    ctx.setLineDash(DASH); ctx.globalAlpha = 0.9; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash(NODASH);
+    path(A.TAIL[0], 0);
+    ctx.setLineDash(A.DASH); ctx.globalAlpha = 0.9; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash(A.NODASH);
     ctx.globalAlpha = 1;
-  }
+  },
+};
 
-  // pose: everything one frame needs, in sheet units unless named otherwise. Filled by the brain each frame (see poseFor).
-  const pose = {
-    x: 0, y: 0, s: 1, mir: 1, tilt: 0, sqx: 1, sqy: 1, // screen foot point (CSS px), px per sheet unit, facing, lean, squash
-    headTilt: 0, headDy: 0, blink: false, t: 0, wind: 0, lift: 0,
-    fx: 50, fy: 184, fBend: 10, // front fist
-    bx: 151, by: 193, bBend: -9, // back fist
-    lax: 85, lay: 223.5, lrot: 0, lknee: 3, rax: 115, ray: 223.5, rrot: 0, rknee: 3, // ankles (front leg = l)
-    smear: 0, // 0..1 a strike's speed: a ghost of the arm trails it
-    sx0: 0, sy0: 0, // where the fist was a moment ago (smear)
-  };
-
-  function drawRig(ctx, kx, ky, P) {
-    ctx.setTransform(kx, 0, 0, ky, 0, 0);
-    ctx.translate(P.x, P.y); if (P.tilt) ctx.rotate(P.tilt); ctx.scale(P.mir * P.s * P.sqx, P.s * P.sqy); ctx.translate(-CX, -SOLE);
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-    // tails and the katana sit behind everything; the tails ride the head
-    ctx.save(); ctx.translate(NECK_X, NECK_Y + P.headDy); ctx.rotate(P.headTilt); ctx.translate(-NECK_X, -NECK_Y);
-    tails(ctx, P.t, P.wind, P.lift);
-    ctx.restore();
-    blit(ctx, art.back);
-    limb(ctx, SH_B.x, SH_B.y, P.bx, P.by, P.bBend, C.ARM_B, 15); fist(ctx, P.bx, P.by, 9.5);
-    leg(ctx, HIP_B.x, HIP_B.y, P.rax, P.ray, P.rknee, C.LEG_B); leg(ctx, HIP_F.x, HIP_F.y, P.lax, P.lay, P.lknee, C.LEG_F);
-    shoe(ctx, P.rax, P.ray, P.rrot); shoe(ctx, P.lax, P.lay, P.lrot);
-    blit(ctx, art.torso);
-    ctx.save(); ctx.translate(NECK_X, NECK_Y + P.headDy); ctx.rotate(P.headTilt); ctx.translate(-NECK_X, -NECK_Y);
-    blit(ctx, P.blink ? art.blink : art.head);
-    ctx.restore();
-    if (P.smear > 0.05) { // a strike: a magenta ghost of the arm behind the fist
-      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5 * P.smear * Math.min(1, CFG.kage.glow + 0.3);
-      ctx.beginPath(); ctx.moveTo(P.sx0, P.sy0); ctx.lineTo(P.fx, P.fy);
-      ctx.strokeStyle = C.NEON; ctx.lineWidth = 22; ctx.stroke();
-      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-    }
-    limb(ctx, SH_F.x, SH_F.y, P.fx, P.fy, P.fBend, C.ARM_F, 15); fist(ctx, P.fx, P.fy, 9.5 + 2 * P.smear);
-  }
+function createKage(doc) {
+  const TAU = Math.PI * 2, N = NINJA;
+  const SOLE = N.SOLE, CX = N.CX, SH_F = N.SH_F, ARM_LEN = N.ARM_LEN, ARM_MAX = N.ARM_MAX;
+  const R = createNinja(doc, KAGE_LOOK), pose = R.pose, hasCanvas = R.hasCanvas, toSheet = R.toSheet, limitArm = R.limitArm;
+  const NEON = KAGE_ART.NEON;
 
   // ───────────────────────── brain ─────────────────────────
   const SK = {}; // this frame's skill (kageSkill)
@@ -4453,19 +4576,6 @@ function createKage(doc) {
   const T1 = { x: 0, y: 0 }, T2 = { x: 0, y: 0 };
   let shadowG = null, shadowCtx = null;
 
-  // screen point → sheet units, through this frame's rig transform (the inverse of drawRig's)
-  function toSheet(sx, sy, out) {
-    let dx = sx - pose.x, dy = sy - pose.y;
-    if (pose.tilt) { const c = Math.cos(-pose.tilt), s = Math.sin(-pose.tilt), ex = dx * c - dy * s; dy = dx * s + dy * c; dx = ex; }
-    out.x = dx / (pose.mir * pose.s * pose.sqx) + CX; out.y = dy / (pose.s * pose.sqy) + SOLE;
-    return out;
-  }
-  // keep a fist within the stretched arm's length of its shoulder
-  function limitArm(sh, p) {
-    const dx = p.x - sh.x, dy = p.y - sh.y, d = Math.sqrt(dx * dx + dy * dy), m = ARM_LEN * ARM_MAX;
-    if (d > m) { p.x = sh.x + (dx / d) * m; p.y = sh.y + (dy / d) * m; }
-  }
-
   function poseFor(cam, w) {
     const P = pose, K = CFG.kage, t = st.t;
     cam.project(st.x, st.y, st.z, A);
@@ -4480,7 +4590,7 @@ function createKage(doc) {
     const svx = (Cc.x - A.x) * 20; // screen px/s
     P.tilt = U.clamp(svx * 0.0006, -0.22, 0.22);
     P.sqx = 1; P.sqy = 1; P.headTilt = Math.sin(t * 1.3) * 0.03; P.headDy = Math.sin(t * 2.2) * 1.2; P.lift = 0;
-    P.wind = U.clamp01(sp / 4 + (st.y > 0.05 ? 0.6 : 0)); P.blink = t > st.blinkAt - 0.12 && t < st.blinkAt; P.smear = 0;
+    P.wind = U.clamp01(sp / 4 + (st.y > 0.05 ? 0.6 : 0)); P.face = t > st.blinkAt - 0.12 && t < st.blinkAt ? 'blink' : 'open'; P.smear = 0;
     const land = t - st.tLand; // a landing squashes, then springs back
     if (land >= 0 && land < 0.25) { const k = Math.exp(-land * 14) * Math.cos(land * 30) * 0.12; P.sqy = 1 - k; P.sqx = 1 + k * 0.7; }
     else { const br = Math.sin(t * 2.4) * 0.012; P.sqy = 1 + br; P.sqx = 1 - br * 0.5; }
@@ -4532,14 +4642,14 @@ function createKage(doc) {
     ctx.globalAlpha = 0.55 * (1 - 0.5 * U.clamp01(st.y / 1.5)); ctx.fillStyle = shadowG;
     ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.fill();
     // his neon on the floor
-    if (K.glow > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.1 * K.glow * (1 - U.clamp01(st.y)); ctx.fillStyle = C.NEON; ctx.beginPath(); ctx.arc(0, 0, 1.25, 0, TAU); ctx.fill(); ctx.globalCompositeOperation = 'source-over'; }
+    if (K.glow > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.1 * K.glow * (1 - U.clamp01(st.y)); ctx.fillStyle = NEON; ctx.beginPath(); ctx.arc(0, 0, 1.25, 0, TAU); ctx.fill(); ctx.globalCompositeOperation = 'source-over'; }
     ctx.globalAlpha = 1;
     if (K.showReach > 0) drawReach(ctx, cam, kx, ky);
   }
 
   function drawReach(ctx, cam, kx, ky) {
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
-    ctx.strokeStyle = C.NEON; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.6;
+    ctx.strokeStyle = NEON; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.6;
     ctx.beginPath();
     for (let i = 0; i <= 32; i++) { const a = (i / 32) * TAU; cam.project(st.x + Math.cos(a) * G.so, 0, st.z + Math.sin(a) * G.so, A); if (i) ctx.lineTo(A.x, A.y); else ctx.moveTo(A.x, A.y); }
     ctx.stroke();
@@ -4562,7 +4672,7 @@ function createKage(doc) {
     const tw = ctx.measureText(st.say).width, pw = tw + fs * 1.3, ph = fs * 1.9;
     const x = U.clamp(A.x - pw / 2, 6, cam.w - pw - 6), y = Math.max(cam.safe.top - ph * 0.4, A.y - ph - 10);
     ctx.globalAlpha = a;
-    ctx.fillStyle = 'rgba(24,12,34,0.92)'; ctx.strokeStyle = C.NEON; ctx.lineWidth = 1.5;
+    ctx.fillStyle = 'rgba(24,12,34,0.92)'; ctx.strokeStyle = NEON; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, pw, ph, ph / 2) : ctx.rect(x, y, pw, ph); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(U.clamp(A.x, x + ph / 2, x + pw - ph / 2) - 6, y + ph - 0.5); ctx.lineTo(U.clamp(A.x, x + ph / 2, x + pw - ph / 2), y + ph + 8); ctx.lineTo(U.clamp(A.x, x + ph / 2, x + pw - ph / 2) + 6, y + ph - 0.5); ctx.fill();
     ctx.fillStyle = '#fbeaff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -4574,8 +4684,8 @@ function createKage(doc) {
     if (!hasCanvas) return;
     poseFor(cam, w);
     const need = pose.s * Math.max(kx, ky);
-    if (!ensureArt(need * 1.15)) return;
-    drawRig(ctx, kx, ky, pose);
+    if (!R.ensureArt(need * 1.15)) return;
+    R.drawRig(ctx, kx, ky, pose);
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
   }
 
@@ -4589,7 +4699,453 @@ function createKage(doc) {
   return {
     st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, predict: (w) => { predict(w); return np; },
     get side() { return st.side; }, get dir() { return st.dir; },
-    ensureArt, drawRig, hasCanvas, art, C,
+    ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
+  };
+}
+
+// ════════ kiru.js ════════
+// kiru.js — Kiru (Neo Dojo Cast), your avatar on your half of the court. You still swipe. The moment your swipe lands he
+// flash-steps to the ball, a dash along the floor or a leap when it is high, and his fist is on it, with afterimages strung
+// back to where he stood. Then he drives through, drops, lands, and flashes back to his spot.
+//
+// He is the picture, not the physics: the hit is your swipe's (the same applyHit as ever) and nothing he does touches the
+// world, so switching him off leaves the game exactly as it was.
+//
+// ART. As the cast sheet draws him (Tools/neo-dojo-cast/index.html kiru()), on the rig in ninja.js: blue hood and gi, the
+// vermilion headband and its two ribbons (drawn live here, so they ripple and stream), the steel plate with the bolt, the
+// katana on his back, wrapped fists. Five faces are baked: open, blink, fierce (a strike or a finger down), happy (a round
+// won) and sad (a round lost). Afterimages are baked silhouettes of a dash and a leap, in a cool blue.
+//
+// Clocks: the flash (afterimages, speed lines, the white flash he arrives in, the ring he kicks off from) runs on REAL time,
+// so it plays out inside a hit's freeze; his body (the follow-through, the fall, the landing, his moods) runs on SIM time, so
+// a big hit holds him in the strike with his fist on the ball, which is the hit-stop the game is built on.
+
+CFG.kiru = {
+  on: 1, // 1 = Kiru plays your half (0: just your finger, as before)
+  move: 0, // 0 auto (a dash for a ball in his reach, a leap for a high one), 1 always dash in, 2 always leap in
+  ghosts: 4, // afterimages a flash step leaves behind
+  flashBack: 1, // 1 = after a hit he flashes back to his spot; 0 = he runs back
+  size: 1.75, // m tall
+};
+CFG_SCHEMA.push(
+  { path: 'kiru.on', label: 'Play as Kiru', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kiru', rank: -2.5, unit: '' },
+  { path: 'kiru.move', label: 'Flash move', type: 'choice', options: ['Auto', 'Dash', 'Leap'], min: 0, max: 2, step: 1, group: 'Kiru', rank: -2.5, unit: '' },
+  { path: 'kiru.ghosts', label: 'Afterimages', min: 0, max: 8, step: 1, group: 'Kiru', rank: -2.5, unit: '' },
+  { path: 'kiru.flashBack', label: 'Flashes back to his spot', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kiru', rank: -2.5, unit: '' },
+  { path: 'kiru.size', label: 'Height', min: 1.1, max: 2.2, step: 0.05, group: 'Kiru', rank: -2.5, unit: 'm' }
+);
+
+// Kiru on the Neo Dojo rig (ninja.js): the sheet's colours, paths and faces
+const KIRU_ART = {
+  RED: '#e8432a', RED_D: '#bd3019', SKIN: '#f6d0a8', SKIN_S: '#e2b083', BLUSH: '#f08a78', RIM: '#a9bcff', INK: '#13152a',
+  STEEL: '#cfd5e2', STEEL_E: '#8d95ab', GOLD: '#dcae4e',
+  FACE_SH: 'M44 80 C70 68 130 68 156 80 C160 82 162 85 163 88 C130 77 70 77 37 88 C38 85 40 82 44 80 Z',
+  // the headband ribbons as the sheet draws them, as points: the top edge (start, control, mid, control, end), the tip,
+  // then the bottom edge back (control, mid, control, start). Lower one first (it sits behind).
+  TAIL_LO: [166, 74, 192, 78, 206, 94, 218, 108, 238, 108, 234, 117, 212, 120, 199, 103, 188, 89, 166, 83],
+  TAIL_HI: [166, 61, 194, 50, 213, 63, 229, 75, 248, 68, 247, 79, 227, 90, 208, 77, 193, 67, 167, 71],
+  PT: new Float64Array(20), // the ribbon being drawn, rippled
+};
+const KIRU_LOOK = {
+  colors: { armF: '#2e3970', armB: '#1a2044', legF: '#252d56', legB: '#1a2044', fist: '#e4e7f0', fistS: '#b6bccf', shoe: '#13152a', stripe: null, smear: '#ff6a3d', ghost: '#78b4ff' },
+  heads: ['open', 'blink', 'fierce', 'happy', 'sad'],
+  // afterimages: a dash (the lean comes from where it is placed) and a leap, tucked
+  sil: {
+    dash: { lax: 62, lay: 221, lknee: 10, lrot: -0.15, rax: 142, ray: 216, rknee: -6, rrot: 0.4, fx: 60, fy: 176, bx: 172, by: 174, bBend: -4, wind: 1, lift: 0.2 },
+    leap: { lax: 86, lay: 204, lknee: 16, lrot: 0.4, rax: 122, ray: 212, rknee: 12, rrot: 0.2, fx: 36, fy: 140, fBend: 4, bx: 150, by: 168, wind: 0.8, lift: 0.8 },
+  },
+  tint: true, // the white flash he arrives in
+  head(H, g, k, face) {
+    const A = KIRU_ART, hood = new Path2D(NINJA.HOOD);
+    g.lineWidth = 6; g.strokeStyle = H.L; g.stroke(hood);
+    g.fillStyle = H.grad(g, 48, 24, 152, 156, ['#34417c', '#252d56', '#181d3b']); g.fill(hood);
+    g.save(); g.clip(hood);
+    g.globalAlpha = 0.55; g.fillStyle = '#1a2044'; g.fill(H.ell(132, 128, 82, 62));
+    g.globalAlpha = 0.08; g.fillStyle = '#fff'; g.fill(H.ell(66, 40, 38, 15, -24 * Math.PI / 180));
+    g.globalAlpha = 1;
+    H.ln(g, 'M14 78 Q100 34 186 78', A.RED, 18);
+    H.ln(g, 'M14 87 Q100 43 186 87', A.RED_D, 2.5, 0.9);
+    g.restore();
+    H.se(g, 171, 64, 7.5, 5, A.RED_D, 3, -32); H.se(g, 172, 79, 6.5, 5, A.RED_D, 3, 30); H.se(g, 166, 71, 6, 6, A.RED, 3); // the knot
+    const plate = H.rrect(81, 43, 38, 20, 4.5);
+    g.lineWidth = 3.5; g.strokeStyle = H.L; g.stroke(plate); g.fillStyle = A.STEEL; g.fill(plate);
+    g.lineWidth = 1.2; g.strokeStyle = A.STEEL_E; g.stroke(H.rrect(83.5, 45.5, 33, 15, 3));
+    H.fl(g, 'M103.5 46.5 L94 55.5 L100.5 55.5 L96.5 60.5 L107 51.5 L100.5 51.5 Z', A.RED); // the bolt
+    H.fl(g, NINJA.FACE, A.SKIN); H.fl(g, A.FACE_SH, A.SKIN_S, 0.75);
+    H.ln(g, 'M47 50 Q33 68 31 95', A.RIM, 3.2, 0.75);
+    // the face: cheeks, eyes (white ovals, ink pupils a touch forward and down, a catch-light), brows
+    const cheeks = (a, y) => { g.save(); g.globalAlpha = a; g.fillStyle = A.BLUSH; g.fill(H.ell(57, y, 7, 3.4)); g.fill(H.ell(143, y, 7, 3.4)); g.restore(); };
+    const eyes = (ry, y, lx, ly) => {
+      for (let i = 0; i < 2; i++) {
+        const cx = i ? 124 : 76;
+        g.fillStyle = '#fff'; g.fill(H.ell(cx, y, 12.5, ry));
+        g.fillStyle = A.INK; g.fill(H.ell(cx + lx, y + ly, 8, 8));
+        g.fillStyle = '#fff'; g.fill(H.ell(cx + lx + 3, y + ly - 4, 2.96, 2.96));
+        g.globalAlpha = 0.8; g.fill(H.ell(cx + lx - 3, y + ly + 4, 1.28, 1.28)); g.globalAlpha = 1;
+      }
+    };
+    const brows = (bo, bi, w) => { const bm = (bo + bi) / 2; H.ln(g, `M61 ${bo}Q74 ${bm} 87 ${bi}M139 ${bo}Q126 ${bm} 113 ${bi}`, A.INK, w); };
+    if (face === 'blink') { cheeks(0.5, 107); H.ln(g, 'M64 96 Q76 101 88 96 M112 96 Q124 101 136 96', A.INK, 3.5); brows(78, 84, 5); }
+    else if (face === 'fierce') { cheeks(0.35, 108); eyes(11, 97.5, -3.5, 1); brows(73, 89, 6); }
+    else if (face === 'happy') { cheeks(0.85, 105); H.ln(g, 'M65 100 Q76 87 87 100 M113 100 Q124 87 135 100', A.INK, 4.5); brows(73, 75, 4.5); }
+    else if (face === 'sad') { cheeks(0.3, 108); eyes(13, 96.5, -1, 4); brows(84, 75, 4.5); }
+    else { cheeks(0.5, 107); eyes(14, 95.5, -2, 1.5); brows(78, 84, 5); }
+  },
+  torso(H, g) {
+    const A = KIRU_ART;
+    H.sp(g, NINJA.TORSO, H.grad(g, 64, 143, 136, 200, ['#2e3970', '#252d56', '#1b2146']), 6);
+    H.fl(g, NINJA.TORSO_SH, '#1a2044', 0.55);
+    H.fl(g, 'M88 145 L100 166 L112 145 Z', '#c9cfe3');
+    H.ln(g, 'M84 145 L100 170 L116 145', '#2e3970', 4.5);
+    H.fl(g, 'M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z', A.RED); // the belt, its tails and knot
+    H.sp(g, 'M81 193 l-6 15 l8 -3 z M86 193 l2 15 l5 -5 z', A.RED_D, 2);
+    H.se(g, 84, 192, 5, 5, A.RED_D, 2.5);
+  },
+  back(H, g) { // the katana: hilt over his left shoulder in red wraps, scabbard tip by his right leg
+    const A = KIRU_ART;
+    H.ln(g, 'M134 188 L157 224', H.L, 13); H.ln(g, 'M134 188 L157 224', '#3a1f2a', 8);
+    H.ln(g, 'M33 116 L57 150', H.L, 15); H.ln(g, 'M33 116 L57 150', A.INK, 9.5);
+    H.ln(g, 'M31 120 L38 117 M35 126 L42 123 M39 132 L46 129 M43 138 L50 135', A.RED, 2.6);
+    H.se(g, 57, 150, 11, 4.2, A.GOLD, 3, -55);
+  },
+  // the ribbons: the sheet's two filled bands, rippled along their length, stretched by speed and lifted in the air
+  tails(H, ctx, P) {
+    const A = KIRU_ART, PT = A.PT, ph = P.t * 6.5, k = 0.3 * P.wind, lift = P.lift;
+    for (let i = 0; i < 2; i++) {
+      const T = i === 0 ? A.TAIL_LO : A.TAIL_HI, q = ph + i * 1.9;
+      for (let j = 0; j < 20; j += 2) {
+        const d = T[j] - 166, f = d / 82;
+        PT[j] = 166 + d * (1 + k); PT[j + 1] = T[j + 1] + Math.sin(q - f * 2.2) * (1 + 6 * f) - lift * 20 * f;
+      }
+      ctx.beginPath(); ctx.moveTo(PT[0], PT[1]);
+      ctx.quadraticCurveTo(PT[2], PT[3], PT[4], PT[5]); ctx.quadraticCurveTo(PT[6], PT[7], PT[8], PT[9]);
+      ctx.lineTo(PT[10], PT[11]);
+      ctx.quadraticCurveTo(PT[12], PT[13], PT[14], PT[15]); ctx.quadraticCurveTo(PT[16], PT[17], PT[18], PT[19]);
+      ctx.closePath();
+      ctx.lineWidth = 4; ctx.strokeStyle = H.L; ctx.stroke(); ctx.fillStyle = i === 0 ? A.RED_D : A.RED; ctx.fill();
+    }
+  },
+};
+
+function createKiru(doc) {
+  const TAU = Math.PI * 2, N = NINJA;
+  const R = createNinja(doc, KIRU_LOOK), pose = R.pose, hasCanvas = R.hasCanvas;
+  const NF = 3; // flash steps drawn at once (a quick second hit while the last one's afterimages still fade)
+  const FADE = 0.36; // s (real): an afterimage chain fades out over this, the oldest image first
+  const ARRIVE = 0.11; // s (real): the white flash he arrives in
+  const LINES = 0.2; // s (real): the speed lines along a strike's step
+  const RING = 0.28; // s (real): the ring on the floor where he kicked off
+  const FOLLOW = 0.11; // s (sim): the fist drives on through the ball
+  const RECOIL = 0.28; // s (sim): then draws back to guard
+  const GRAV = 15; // m/s²: his fall from a leap (snappier than the ball's)
+  const POP = 1.2; // m/s: the strike's recoil lifts him a little before he drops
+  const HOME_AFTER = 0.42; // s (sim) after a strike on the ground, or after landing, that he heads back
+  const STEP_TH = [0, Math.PI / 6, -Math.PI / 6, Math.PI / 3, -Math.PI / 3, Math.PI / 2, -Math.PI / 2]; // stances round the ball: straight behind it to side-on
+  const rnd = U.rng(20260715);
+
+  const st = {
+    side: 1, // the half he plays (+1 right, −1 left)
+    x: 0.7, z: -0.6, y: 0, vx: 0, vz: 0, vy: 0, homeX: 0.7, homeZ: -0.6, // feet (m), velocities (m/s), his spot
+    phase: 'idle', // idle | strike | land | run | won | lost
+    t: 0, rt: 0, // his sim clock and his real clock (s)
+    ts: -9, tLand: -9, moodT: 0, blinkAt: 2, run: 0, face: -1, ready: 0, // ready: 0..1, a finger is down
+    leap: false, fx: 0, fy: 0, fz: 0, nx: 0, nz: -1, power: 0, // the strike: where his fist meets the ball, the way it goes
+    arriveRt: -9, arriveA: 0, // the white flash: when, how bright
+    strikes: 0, returns: 0, // counted for the tests
+  };
+
+  // a flash step: from → to, when (real time), the path's shape (0 dash along the floor, 1 leap in an arc, 2 dash then
+  // rise to a high ball), its afterimages and their strength, and whether it gets speed lines and the kick-off ring
+  const FL = [];
+  for (let i = 0; i < NF; i++) FL.push({ rt: -9, x0: 0, y0: 0, z0: 0, x1: 0, y1: 0, z1: 0, kind: 0, n: 0, a: 1, strike: false });
+  let fi = 0;
+  function addFlash(x0, y0, z0, x1, y1, z1, kind, a, strike) {
+    const f = FL[fi]; fi = (fi + 1) % NF;
+    f.rt = st.rt; f.x0 = x0; f.y0 = y0; f.z0 = z0; f.x1 = x1; f.y1 = y1; f.z1 = z1; f.kind = kind; f.a = a; f.strike = strike;
+    f.n = Math.round(U.clamp(CFG.kiru.ghosts, 0, 8));
+    const dx = x1 - x0, dz = z1 - z0;
+    return Math.sqrt(dx * dx + dz * dz) + Math.abs(y1 - y0) * 0.5; // how far it went (the sound scales with it)
+  }
+  function pathAt(f, s, out) {
+    if (f.kind === 2) {
+      const a = Math.min(1, s / 0.7), b = s > 0.7 ? (s - 0.7) / 0.3 : 0;
+      out.x = f.x0 + (f.x1 - f.x0) * a; out.z = f.z0 + (f.z1 - f.z0) * a; out.y = f.y0 * (1 - a) + f.y1 * b;
+    } else {
+      out.x = f.x0 + (f.x1 - f.x0) * s; out.z = f.z0 + (f.z1 - f.z0) * s; out.y = f.y0 + (f.y1 - f.y0) * s;
+      if (f.kind === 1) { const dx = f.x1 - f.x0, dz = f.z1 - f.z0; out.y += (0.25 + 0.22 * Math.sqrt(dx * dx + dz * dz)) * 4 * s * (1 - s); }
+    }
+    return out;
+  }
+
+  // his body in metres, from his height (the sheet's units: 207.5 from the hood's top to his soles)
+  const G = { k: 1, u: 0, shoulder: 0, shOff: 0, arm: 0, so: 0, reach: 0 };
+  function geom() {
+    const sz = CFG.kiru.size, u = sz / 207.5, r = CFG.world.ballR;
+    G.k = sz / 1.75; G.u = u; G.shoulder = (N.SOLE - N.SH_F.y) * u; G.shOff = (N.CX - N.SH_F.x) * u; G.arm = N.ARM_LEN * N.ARM_MAX * u;
+    G.so = G.shOff + G.arm * 0.5 + r * 0.75; // feet → ball centre when his fist lands on it
+    // the highest ball centre he meets standing: his fist up at 90 % of his arm, out to the ball's near side
+    const out = G.so - G.shOff - r * 0.7, a = G.arm * 0.9;
+    G.reach = G.shoulder + Math.sqrt(Math.max(0, a * a - out * out));
+    return G;
+  }
+
+  function setSide(side) { st.side = side < 0 ? -1 : 1; home(); }
+  // his spot: toward the back of his half, out to the side (clear of a served ball and of Kage by the line), inside the orbit
+  function home() {
+    const a = -Math.PI / 2 + st.side * 1.05, r = CFG.world.ropeL * 0.72;
+    st.homeX = Math.cos(a) * r; st.homeZ = Math.sin(a) * r;
+  }
+
+  // Your swipe landed: flash to the ball. Where he lands is picked so the strike reads: beside the ball (at its depth, so the
+  // camera sees the fist meet it) rather than in front of it, never in its path, on his own half, on the court, clear of the
+  // pole and of Kage. Returns how far he went. info: { half: the court has halves, kage: Kage's feet { x, z } or null }
+  function onHit(res, w, info) {
+    if (!res || !w || !res.normal) return 0;
+    geom();
+    const p = w.ball.p, r = w.ball.r, nl = Math.sqrt(res.normal.x * res.normal.x + res.normal.z * res.normal.z);
+    if (!(nl > 1e-6)) return 0;
+    const nx = res.normal.x / nl, nz = res.normal.z / nl, half = !!(info && info.half), kg = info && info.kage, ring = CFG.world.groundR;
+    let best = 1e9, ux = nx, uz = nz, sx = p.x - nx * G.so, sz = p.z - nz * G.so;
+    for (let i = 0; i < STEP_TH.length; i++) {
+      const c = Math.cos(STEP_TH[i]), s = Math.sin(STEP_TH[i]), cx = nx * c - nz * s, cz = nx * s + nz * c; // him → the ball
+      const x = p.x - cx * G.so, z = p.z - cz * G.so, rr = Math.sqrt(x * x + z * z), dz = z - p.z;
+      let sc = (dz < 0 ? -dz : dz * 1.3) + 0.05 * Math.abs(STEP_TH[i]) + 0.04 * Math.sqrt((x - st.x) * (x - st.x) + (z - st.z) * (z - st.z));
+      if (half && x * st.side < 0.12) sc += 1.5;
+      if (rr > ring) sc += 0.8 * (rr - ring);
+      if (rr < 0.3) sc += 1;
+      if (kg && (x - kg.x) * (x - kg.x) + (z - kg.z) * (z - kg.z) < 0.6) sc += 1;
+      if (sc < best) { best = sc; ux = cx; uz = cz; sx = x; sz = z; }
+    }
+    // a ball over his reach is a leap, just high enough for his fist to come up into it (as Kage does: leaping until his
+    // shoulder is under the ball put his hood off the top of a landscape screen for a high ball at the back)
+    const mode = Math.round(CFG.kiru.move);
+    let h = p.y > G.reach ? p.y - G.reach + 0.03 * G.k : 0;
+    if (mode === 2) h = Math.max(h, 0.4 * G.k);
+    h = U.clamp(h, 0, 3);
+    const kind = mode === 2 ? 1 : mode === 1 ? (h > 0.05 ? 2 : 0) : (h > 0.05 ? 1 : 0);
+    const dist = addFlash(st.x, st.y, st.z, sx, h, sz, kind, 1, true);
+    st.x = sx; st.z = sz; st.y = h; st.vx = 0; st.vz = 0; st.vy = h > 0.05 ? POP : 0; st.leap = h > 0.05;
+    st.fx = p.x - ux * r * 0.7; st.fy = p.y; st.fz = p.z - uz * r * 0.7; st.nx = nx; st.nz = nz; st.power = res.power || 0;
+    st.phase = 'strike'; st.ts = st.t; st.arriveRt = st.rt; st.arriveA = 0.38; st.strikes++;
+    return dist;
+  }
+
+  // back to his spot: a flash step (returns how far), or a run
+  function goHome() {
+    const dx = st.homeX - st.x, dz = st.homeZ - st.z;
+    if (dx * dx + dz * dz < 0.04) { st.phase = 'idle'; return 0; }
+    if (!(CFG.kiru.flashBack > 0)) { st.phase = 'run'; return 0; }
+    const d = addFlash(st.x, 0, st.z, st.homeX, 0, st.homeZ, 0, 0.55, false);
+    st.x = st.homeX; st.z = st.homeZ; st.vx = 0; st.vz = 0; st.arriveRt = st.rt; st.arriveA = 0.3; st.phase = 'idle'; st.returns++;
+    return d;
+  }
+
+  // info: { ready: a finger is down and may hit }. Returns how far a flash back home went this frame (0 = none).
+  let lastW = null;
+  function update(dt, realDt, w, info) {
+    lastW = w;
+    let out = 0;
+    if (realDt > 0) { st.rt += realDt; st.ready += ((info && info.ready ? 1 : 0) - st.ready) * Math.min(1, realDt * 16); }
+    if (!(dt > 0)) return 0;
+    geom();
+    st.t += dt; st.moodT += dt;
+    if (st.t > st.blinkAt) st.blinkAt = st.t + 2.2 + rnd() * 3.5;
+    if (st.y > 0 || st.vy > 0) { // in the air
+      st.vy -= GRAV * dt; st.y += st.vy * dt;
+      if (st.y <= 0) { st.y = 0; st.vy = 0; st.leap = false; st.tLand = st.t; if (st.phase === 'strike') st.phase = 'land'; }
+    }
+    if (st.phase === 'strike') { if (st.y <= 0 && st.t - st.ts > HOME_AFTER) out = goHome(); }
+    else if (st.phase === 'land') { if (st.t - st.tLand > HOME_AFTER * 0.6) out = goHome(); }
+    else if (st.phase === 'run') {
+      const dx = st.homeX - st.x, dz = st.homeZ - st.z, d = Math.sqrt(dx * dx + dz * dz);
+      if (d < 0.03) { st.phase = 'idle'; st.vx = 0; st.vz = 0; }
+      else { const v = Math.min(4.2 * G.k, d * 6); st.vx = (dx / d) * v; st.vz = (dz / d) * v; st.x += st.vx * dt; st.z += st.vz * dt; }
+    } else if (st.phase === 'won') { if (st.y <= 0 && st.moodT < 1.2) st.vy = 2 * Math.sqrt(G.k); } // he hops
+    if (st.phase !== 'run') { st.vx = 0; st.vz = 0; }
+    st.run += Math.sqrt(st.vx * st.vx + st.vz * st.vz) * dt * 4.2;
+    return out;
+  }
+
+  function onRoundEnd(won) { st.phase = won ? 'won' : 'lost'; st.moodT = 0; st.vx = 0; st.vz = 0; }
+
+  // a new rally: on his spot, still
+  function reset() {
+    geom(); home();
+    st.phase = 'idle'; st.x = st.homeX; st.z = st.homeZ; st.y = 0; st.vx = 0; st.vz = 0; st.vy = 0; st.leap = false;
+    st.moodT = 0; st.ts = -9; st.tLand = -9; st.arriveRt = -9;
+    for (let i = 0; i < NF; i++) FL[i].rt = -9;
+  }
+
+  // ───────────────────────── one frame of him ─────────────────────────
+  const A = { x: 0, y: 0, s: 0, d: 0 }, B = { x: 0, y: 0, s: 0, d: 0 }, Cc = { x: 0, y: 0, s: 0, d: 0 };
+  const T1 = { x: 0, y: 0 }, Q = { x: 0, y: 0, z: 0 };
+  const GP = Object.assign({}, R.REST); // where an afterimage goes
+  let shadowG = null, shadowCtx = null;
+
+  function poseFor(cam, w) {
+    const P = pose, K = CFG.kiru, t = st.t, u = t - st.ts;
+    cam.project(st.x, st.y, st.z, A);
+    P.x = A.x; P.y = A.y; P.s = (A.s * K.size) / 207.5; P.t = t;
+    const striking = st.phase === 'strike' && u < FOLLOW + RECOIL;
+    // facing: where his fist goes in a strike, the way he runs, else the ball (with hysteresis, so he does not flicker)
+    if (striking) {
+      cam.project(st.fx, st.fy, st.fz, B);
+      if (B.x > A.x + 2) st.face = 1; else if (B.x < A.x - 2) st.face = -1;
+      else { cam.project(st.fx + st.nx, st.fy, st.fz + st.nz, Cc); st.face = Cc.x >= B.x ? 1 : -1; }
+    } else if (st.phase === 'run') {
+      cam.project(st.x + st.vx * 0.05, st.y, st.z + st.vz * 0.05, Cc);
+      if (Cc.x > A.x + 0.3) st.face = 1; else if (Cc.x < A.x - 0.3) st.face = -1;
+    } else {
+      cam.project(w.ball.p.x, w.ball.p.y, w.ball.p.z, B);
+      if (B.x > A.x + 14) st.face = 1; else if (B.x < A.x - 14) st.face = -1;
+    }
+    P.mir = st.face > 0 ? -1 : 1;
+    // at rest: breathing, a bob of the head, a blink now and then
+    const br = Math.sin(t * 2.4) * 0.012;
+    P.tilt = 0; P.sqy = 1 + br; P.sqx = 1 - br * 0.5; P.lift = 0; P.wind = 0; P.smear = 0;
+    P.headTilt = Math.sin(t * 1.3) * 0.03; P.headDy = Math.sin(t * 2.2) * 1.2;
+    P.face = t > st.blinkAt - 0.12 && t < st.blinkAt ? 'blink' : 'open';
+    P.fx = 50 + Math.sin(t * 2.4) * 1.5; P.fy = 184; P.fBend = 10; P.bx = 151; P.by = 193; P.bBend = -9;
+    P.lax = 85; P.lay = 223.5; P.lrot = 0; P.lknee = 3; P.rax = 115; P.ray = 223.5; P.rrot = 0; P.rknee = 3;
+    const land = t - st.tLand; // a landing squashes, then springs back
+    if (land >= 0 && land < 0.25) { const k = Math.exp(-land * 14) * Math.cos(land * 30) * 0.14; P.sqy = 1 - k; P.sqx = 1 + k * 0.7; P.lknee += 40 * k; P.rknee += 40 * k; }
+    const ar = st.rt - st.arriveRt; // the arrival: a quick stretch along the step that settles (real time: it plays inside the freeze)
+    if (ar >= 0 && ar < 0.12) { const q = 1 - ar / 0.12; P.sqx *= 1 + 0.1 * q; P.sqy *= 1 - 0.07 * q; }
+
+    if (st.phase === 'won') {
+      const k = Math.min(1, st.moodT * 5), pump = Math.abs(Math.sin(st.moodT * 7));
+      P.face = 'happy'; P.fx = U.lerp(50, 34, k); P.fy = U.lerp(184, 118 + 12 * (1 - pump), k); P.fBend = 6;
+      P.bx = U.lerp(151, 146, k); P.by = U.lerp(193, 186, k); P.lift = 0.8; P.wind = 0.3; P.headTilt = -0.05 + Math.sin(st.moodT * 7) * 0.04;
+    } else if (st.phase === 'lost') {
+      const k = Math.min(1, st.moodT * 3);
+      P.face = 'sad'; P.fx = 56; P.fy = U.lerp(184, 198, k); P.bx = 146; P.by = U.lerp(193, 200, k);
+      P.headDy = 7 * k; P.headTilt = 0.08 * k; P.sqy *= 1 - 0.03 * k;
+    } else if (st.phase === 'run') {
+      const sp = Math.sqrt(st.vx * st.vx + st.vz * st.vz), runK = U.clamp01(sp / 3), s1 = Math.sin(st.run), c1 = Math.cos(st.run);
+      P.lax = 85 - s1 * 14 * runK; P.lay = 223.5 - Math.max(0, c1) * 9 * runK; P.rax = 115 + s1 * 14 * runK; P.ray = 223.5 - Math.max(0, -c1) * 9 * runK;
+      P.lknee = 3 + 6 * runK; P.rknee = 3 + 6 * runK; P.lrot = -s1 * 0.2 * runK; P.rrot = s1 * 0.2 * runK;
+      P.fx = 50 + c1 * 10 * runK; P.fy = 182 - Math.abs(s1) * 4; P.bx = 151 - c1 * 10 * runK; P.by = 190 - Math.abs(c1) * 4;
+      P.tilt = U.clamp((Cc.x - A.x) * 20 * 0.0006, -0.22, 0.22); P.wind = U.clamp01(sp / 4);
+    } else if (striking) strikePose(cam, P, u);
+    else if (st.phase === 'strike' || st.phase === 'land') { P.fx = 60; P.fy = 160; P.fBend = 7; P.bx = 140; P.by = 168; if (st.phase === 'strike') P.face = 'fierce'; }
+
+    if (st.y > 0.04 && !striking) { // in the air: tucked, reaching down for the floor as it comes
+      const low = st.vy < 0 && st.y < 0.35 * G.k;
+      P.lax = 90; P.lay = low ? 218 : 208; P.rax = 116; P.ray = low ? 220 : 213; P.lknee = low ? 7 : 13; P.rknee = low ? 6 : 10; P.lrot = 0.2; P.rrot = 0.1;
+      P.lift = Math.max(P.lift, 0.6); P.wind = Math.max(P.wind, 0.5);
+    }
+    // a finger is down: he crouches, fists up, eyes narrowed
+    const rk = st.ready;
+    if (rk > 0.01 && !striking && (st.phase === 'idle' || st.phase === 'land' || st.phase === 'strike')) {
+      P.sqy *= 1 - 0.05 * rk; P.sqx *= 1 + 0.03 * rk; P.lax -= 7 * rk; P.rax += 7 * rk; P.lknee += 6 * rk; P.rknee += 6 * rk;
+      P.fx = U.lerp(P.fx, 58, rk); P.fy = U.lerp(P.fy, 158, rk); P.fBend = U.lerp(P.fBend, 6, rk); P.bx = U.lerp(P.bx, 138, rk); P.by = U.lerp(P.by, 165, rk);
+      P.headDy += 3 * rk; P.tilt += -P.mir * 0.05 * rk; P.wind = Math.max(P.wind, 0.25 * rk);
+      if (rk > 0.5) P.face = 'fierce';
+    }
+  }
+
+  // the strike: his fist on the ball, driving on through it the way the ball goes, then back to guard
+  function strikePose(cam, P, u) {
+    if (st.y > 0.04) { P.lax = 86; P.lay = 205; P.lknee = 15; P.lrot = 0.35; P.rax = 122; P.ray = 213; P.rknee = 11; P.rrot = 0.2; P.lift = 0.6; }
+    else { P.lax = 66; P.lay = 223.5; P.lknee = 11; P.lrot = -0.12; P.rax = 136; P.ray = 222; P.rknee = -3; P.rrot = 0.3; P.sqy *= 0.96; P.sqx *= 1.04; } // a lunge
+    const e = U.easeOut(U.clamp01(u / FOLLOW), 2), back = U.easeInOut(U.clamp01((u - FOLLOW) / RECOIL)), ext = 0.4 * G.k * e;
+    Q.x = st.fx + st.nx * ext; Q.y = st.fy; Q.z = st.fz + st.nz * ext;
+    cam.project(Q.x, Q.y, Q.z, B);
+    // he leans into a level punch: find the arm with no lean, lean, then find it again
+    R.toSheet(B.x, B.y, T1);
+    let ax = T1.x - N.SH_F.x, ay = T1.y - N.SH_F.y, al = Math.sqrt(ax * ax + ay * ay) || 1;
+    P.tilt = -P.mir * U.clamp(-ax / al, 0, 1) * 0.16 * (1 - back);
+    R.toSheet(B.x, B.y, T1); R.limitArm(N.SH_F, T1);
+    ax = T1.x - N.SH_F.x; ay = T1.y - N.SH_F.y; al = Math.sqrt(ax * ax + ay * ay) || 1;
+    P.fx = U.lerp(T1.x, 60, back); P.fy = U.lerp(T1.y, 160, back); P.fBend = U.lerp(3, 7, back);
+    P.smear = (1 - 0.65 * e) * (1 - back); P.sx0 = N.SH_F.x + ax * 0.12; P.sy0 = N.SH_F.y + ay * 0.12;
+    P.bx = 156 + (ax / al) * 10; P.by = 178 - (ay / al) * 8; P.bBend = -6; // the back arm pulls the other way
+    P.face = 'fierce'; P.wind = 1 - 0.6 * back; P.headTilt = 0.05 * (ay < 0 ? -1 : 1);
+  }
+
+  // the steps still fading: speed lines, then the afterimages (oldest step first, oldest image first), in his ghost blue
+  function drawFlashes(ctx, cam, kx, ky) {
+    const sz = CFG.kiru.size;
+    for (let j = 0; j < NF; j++) {
+      const f = FL[(fi + j) % NF], age = st.rt - f.rt;
+      if (!(age >= 0 && age < FADE)) continue;
+      cam.project(f.x0, f.y0, f.z0, A); cam.project(f.x1, f.y1, f.z1, B);
+      // as many images as the step has room for on screen (about a third of his width apart), so a short step does not
+      // pile them into one blob
+      const mir = B.x > A.x ? -1 : 1, span = Math.sqrt((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)), wide = 150 * (A.s * sz) / 207.5;
+      const n = Math.min(f.n, Math.floor(span / Math.max(1, wide * 0.3)) + 1);
+      if (f.strike && age < LINES) speedLines(ctx, cam, kx, ky, f, 0.5 * (1 - age / LINES));
+      for (let i = 0; i < n; i++) {
+        const s = i / n, a = f.a * (0.16 + 0.34 * s) * U.clamp01(1 - age / (FADE * (0.45 + 0.55 * s)));
+        if (a <= 0.004) continue;
+        pathAt(f, s, Q); cam.project(Q.x, Q.y, Q.z, Cc);
+        GP.x = Cc.x; GP.y = Cc.y; GP.s = (Cc.s * sz) / 207.5; GP.mir = mir; GP.tilt = -mir * 0.2; GP.sqx = 1.06; GP.sqy = 0.96;
+        R.drawSil(ctx, kx, ky, GP, f.kind === 1 || (f.kind === 2 && s > 0.7) ? 'leap' : 'dash', a, true);
+      }
+    }
+  }
+  // three streaks along the step at foot, belt and head height, brightening toward where he arrived
+  function speedLines(ctx, cam, kx, ky, f, a) {
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+    ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = '#d8ecff'; ctx.lineCap = 'round';
+    for (let l = 0; l < 3; l++) {
+      const hy = (l === 0 ? 0.18 : l === 1 ? 0.55 : 1.05) * G.k;
+      pathAt(f, 0, Q); cam.project(Q.x, Q.y + hy, Q.z, A);
+      for (let i = 1; i <= 8; i++) {
+        pathAt(f, i / 8, Q); cam.project(Q.x, Q.y + hy, Q.z, B);
+        ctx.globalAlpha = a * (i / 8); ctx.lineWidth = Math.max(1, B.s * 0.016);
+        ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+        A.x = B.x; A.y = B.y;
+      }
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // a flat ellipse on the floor at (x, z): the transform maps metres on the floor to the screen around that point
+  function onFloor(ctx, cam, kx, ky, x, z, m) {
+    cam.project(x, 0, z, A); cam.project(x + m, 0, z, B); cam.project(x, 0, z + m, Cc);
+    ctx.setTransform(kx * (B.x - A.x), ky * (B.y - A.y), kx * (Cc.x - A.x), ky * (Cc.y - A.y), kx * A.x, ky * A.y);
+  }
+  function drawShadow(ctx, cam, kx, ky) {
+    const K = CFG.kiru, lift = U.clamp01(st.y / 1.5), rr = 0.3 * K.size / 1.6 * (1 - 0.35 * lift);
+    if (shadowCtx !== ctx) { shadowCtx = ctx; shadowG = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); shadowG.addColorStop(0, 'rgba(0,0,0,0.85)'); shadowG.addColorStop(0.6, 'rgba(0,0,0,0.6)'); shadowG.addColorStop(1, 'rgba(0,0,0,0)'); }
+    onFloor(ctx, cam, kx, ky, st.x, st.z, rr);
+    ctx.globalAlpha = 0.55 * (1 - 0.5 * lift); ctx.fillStyle = shadowG;
+    ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.fill();
+    // where a strike kicked off: a ring that opens on the floor
+    for (let j = 0; j < NF; j++) {
+      const f = FL[j], age = st.rt - f.rt;
+      if (!f.strike || !(age >= 0 && age < RING)) continue;
+      const q = age / RING;
+      onFloor(ctx, cam, kx, ky, f.x0, f.z0, 0.25 + 0.4 * U.easeOut(q, 2));
+      ctx.globalAlpha = 0.6 * (1 - q); ctx.strokeStyle = '#bfe0ff'; ctx.lineWidth = 0.09;
+      ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function draw(ctx, cam, kx, ky, w) {
+    if (!hasCanvas) return;
+    poseFor(cam, w);
+    if (!R.ensureArt(pose.s * Math.max(kx, ky) * 1.15)) return;
+    drawFlashes(ctx, cam, kx, ky);
+    R.drawRig(ctx, kx, ky, pose);
+    const ar = st.rt - st.arriveRt;
+    if (ar >= 0 && ar < ARRIVE) R.drawTint(ctx, kx, ky, pose, '#ffffff', st.arriveA * (1 - ar / ARRIVE), true);
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+  }
+
+  const actor = {
+    // depth for the scene's sort: through a strike he goes behind the ball, so his fist never hides the contact
+    get z() { return st.phase === 'strike' && lastW && st.t - st.ts < 0.25 ? Math.min(st.z, lastW.ball.p.z - 0.02) : st.z; },
+    drawShadow,
+    draw(ctx, cam, kx, ky, w) { draw(ctx, cam, kx, ky, w); },
+  };
+
+  return {
+    st, G, actor, pose, flashes: FL, setSide, reset, update, onHit, onRoundEnd,
+    get side() { return st.side; },
+    ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
 }
 
@@ -5060,6 +5616,9 @@ function createUI(root, opts) {
 // drives the physics and Kage. A freeze is scale 0, so the world (and Kage) hold perfectly still while the impact
 // animates; slow-mo is smooth because advance() substeps the already-scaled dt.
 //
+// Kiru (kiru.js, the Feel panel's Kiru group) is your avatar in both modes: every hit of yours flashes him to the ball. He is
+// drawn, not simulated, so with him switched off the game is the same game.
+//
 // Two rule sets: the solo time trial (game.js) and versus Kage (versus.js), picked by CFG.match.opponent (the Feel
 // panel's Match group; "#solo" or "#versus" in the URL picks one for this page load without touching saved settings).
 (function boot() {
@@ -5076,6 +5635,7 @@ function createUI(root, opts) {
   const game = createGame();
   const versus = createVersus();
   const kage = createKage(document);
+  const kiru = createKiru(document);
   const audio = createAudio();
   cfgFreezeDefaults(); // every module has declared its CFG section by now
   let rules = game;
@@ -5115,11 +5675,14 @@ function createUI(root, opts) {
   let kageSide = -1, sidePick = NaN; // Kage's half this match (−1 left, +1 right), and the setting it was resolved from
   const NEUTRAL = 0.06; // m either side of the centre line where either player may hit
   const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you' };
-  const view = { fx, input, time: tw, now: 0, actor: null, halves: 0, world };
+  const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1 };
   const info = { state: 'ready', server: 'you' };
+  const kinfo = { ready: false }, kiruHit = { half: false, kage: null };
+  let kiruWas = false; // was Kiru on last frame (switching him on puts him on his spot)
   const vs = () => rules === versus;
+  const kiruOn = () => CFG.kiru.on > 0;
 
   function pickRules() {
     const want = (forced >= 0 ? forced : CFG.match.opponent) > 0 ? versus : game;
@@ -5132,6 +5695,7 @@ function createUI(root, opts) {
     sidePick = CFG.kage.side;
     kageSide = s === 1 ? 1 : s === 2 ? (Math.random() < 0.5 ? -1 : 1) : -1;
     versus.setSides(kageSide); kage.setSide(kageSide);
+    kiru.setSide(vs() ? -kageSide : 1); // your half, or the right in a time trial
   }
 
   function hintText() {
@@ -5147,6 +5711,7 @@ function createUI(root, opts) {
       resetWorld(world, { phi: Math.PI / 2 - 1.45 * sx });
       kage.reset(world, { server: versus.snap.server });
     } else resetWorld(world);
+    kiru.reset();
     tw.cancel();
     fx.reset();
     ui.hideResult();
@@ -5180,6 +5745,11 @@ function createUI(root, opts) {
     audio.hit(res);
     if (you) audio.vibrate(res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
     if (vs()) kage.onWorldHit(res, who);
+    if (you && kiruOn()) { // Kiru flash-steps to the ball your swipe just hit
+      kiruHit.half = vs(); kiruHit.kage = vs() ? kage.st : null;
+      const d = kiru.onHit(res, world, kiruHit);
+      if (d > 0.05) audio.flash(d, 0.6);
+    }
     ui.hint(null); hintUntil = 0;
     return res;
   }
@@ -5235,6 +5805,7 @@ function createUI(root, opts) {
         tw.trigger(Math.min(1, Math.max(0.85, ev.speed / CFG.hit.vMax)), 'perfect', true); // the finish is always a big moment: forced past the re-hit window and the rally pacing
         woundAt = now;
         if (vs() && versus.snap.winner) kage.onRoundEnd(versus.snap.winner);
+        if (kiruOn()) kiru.onRoundEnd(!vs() || versus.snap.winner === 'you');
       }
     }
   }
@@ -5284,6 +5855,13 @@ function createUI(root, opts) {
       const hand = kage.update(simDt, realDt, world, info);
       if (hand) kage.onSwing(tryHit(hand, now, 'kage'));
     }
+    if (kiruOn()) {
+      if (!kiruWas) { kiru.setSide(vs() ? -kageSide : 1); kiru.reset(); }
+      kinfo.ready = input.active && world.state === 'live' && tw.canHit() && mayHit();
+      const back = kiru.update(simDt, realDt, world, kinfo);
+      if (back > 0.05) audio.flash(back, 0.4);
+    }
+    kiruWas = kiruOn();
     if (simDt > 0) advance(world, simDt);
     onEvents(now);
     if (prevPhase !== 'ramp' && tw.phase === 'ramp') audio.release(tw.seq.power); // the running sequence's power, so the whoosh fits the ramp tw plays (a wound slam can replace it)
@@ -5305,7 +5883,10 @@ function createUI(root, opts) {
     syncPanel(false);
 
     if (draw) {
-      view.now = now; view.actor = vs() ? kage.actor : null; view.halves = vs() ? kageSide : 0;
+      view.now = now; view.halves = vs() ? kageSide : 0;
+      view.actors.length = 0;
+      if (vs()) view.actors.push(kage.actor);
+      if (kiruOn()) view.actors.push(kiru.actor);
       scene.draw(ctx, cam, world, view);
     }
   }
@@ -5342,7 +5923,7 @@ function createUI(root, opts) {
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, versus, kage, input, scene, audio, ui, perf,
+    CFG, world, cam, tw, fx, game, versus, kage, kiru, input, scene, audio, ui, perf,
     get rules() { return rules; },
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)

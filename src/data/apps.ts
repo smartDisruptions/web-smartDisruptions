@@ -146,9 +146,9 @@ export const apps: App[] = [
     slug: 'tether-ball',
     name: 'Tether Ball',
     description:
-      'A demo: you against Kage-X on a tether ball court. Swipe up on your half to wind the rope your way before he winds it his.',
+      'A demo: Kiru against Kage-X on a tether ball court. Swipe up on your half and Kiru flash-steps in to hit it, winding the rope your way before Kage winds it his.',
     longDescription:
-      'A ball hangs from a pole on a rope, and the court is split down the middle. You play one half and Kage-X, the cyber ninja from Kiru’s Neo Dojo Cast, plays the other. You each wind the rope your own way by hitting the ball away from you on your half, so a swipe up is all it takes. How fast you swipe and where you catch the ball, dead centre or a glancing blow, decide how hard it flies, and every hit freezes time for a beat before it whips back to speed. The rope wraps round the pole as the ball circles, the orbit shrinks and speeds up, and the first to wind it all the way up takes the round. Kage reads the ball, runs to meet it and leaps for the high ones, trash-talking as he goes. A settings panel opens to fill the screen: his difficulty and accuracy, how fast he reacts and how high he jumps, how many rounds a match lasts and who serves, and the pole, rope and ball themselves. There is a solo time trial too. It is a greybox demo: flat greys, his magenta neon and one amber accent, built to get the feel right before the art.',
+      'A ball hangs from a pole on a rope, and the court is split down the middle. You play one half as Kiru, and Kage-X, the cyber ninja from Kiru’s Neo Dojo Cast, plays the other. You each wind the rope your own way by hitting the ball away from you on your half, so a swipe up is all it takes. The swipe is still yours: the moment it hits the ball, Kiru flash-steps onto it, a dash along the floor or a leap for a high one, with afterimages strung back to where he stood, then flashes back to his spot. How fast you swipe and where you catch the ball, dead centre or a glancing blow, decide how hard it flies, and every hit freezes time for a beat before it whips back to speed. The rope wraps round the pole as the ball circles, the orbit shrinks and speeds up, and the first to wind it all the way up takes the round. Kage reads the ball, runs to meet it and leaps for the high ones, trash-talking as he goes. A settings panel opens to fill the screen: Kiru’s flash moves, Kage’s difficulty and accuracy, how fast he reacts and how high he jumps, how many rounds a match lasts and who serves, and the pole, rope and ball themselves. There is a solo time trial too. It is a greybox demo: flat greys, Kage’s magenta neon, Kiru’s red headband and one amber accent, built to get the feel right before the art.',
     thumbnailUrl: '/images/apps/tether-ball-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/tether-ball-1.webp',
@@ -161,8 +161,9 @@ export const apps: App[] = [
     outcomes: [
       'The ball is a real physical thing on a rope, not an animation: it swings like a pendulum, and the rope wraps around the pole and shortens as it goes.',
       'Kage plays by the same rules as your finger. To decide where to swing, he runs the game’s own physics 1.2 seconds ahead, then has to get there on his own feet, with a reaction delay after each of your hits.',
+      'Kiru is drawn, not simulated. The hit is your swipe’s, and he lands beside the ball in that same frame with his fist on it, so the camera sees the contact. His flash plays out inside the hit’s freeze, which holds him in the strike with the ball.',
       'His difficulty and accuracy are settings, not tricks: a harder Kage reacts faster, runs and jumps further and misses less, and the panel shows every number.',
-      'One self-contained file with no game engine and no libraries. Kage is drawn from the cast sheet’s own shapes, so he looks the way he does everywhere else.',
+      'One self-contained file with no game engine and no libraries. Kiru and Kage are drawn from the cast sheet’s own shapes on one shared rig, so they look the way they do everywhere else.',
     ],
     buildDate: '2026-10',
     hasFullBreakdown: false,
