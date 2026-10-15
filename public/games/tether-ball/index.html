@@ -139,7 +139,7 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .ek[data-st="full"] { color: var(--kage); box-shadow: inset 0 0 0 1px rgba(233,61,255,.55), 0 0 16px rgba(233,61,255,.45); }
 .ek[data-st="armed"] { background: var(--kage); color: var(--kage-ink); box-shadow: 0 0 0 3px rgba(233,61,255,.3), 0 0 26px rgba(233,61,255,.75); }
 .ek[data-st="armed"] .fl { stroke: #fff1ff; }
-#hud[data-state="wound"] .ey { pointer-events: none; }
+#hud[data-state="wound"] .ey, #hud[data-trigger="curve"] .ey[data-st] { pointer-events: none; } /* a curved swipe is the trigger: the ring only shows it */
 @keyframes egPulse { 0%, 100% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.5), 0 0 6px rgba(90,209,255,.3); transform: scale(1); } 50% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.9), 0 0 24px rgba(90,209,255,.75); transform: scale(1.07); } }
 #hud[data-energy="on"] #hint { padding: 0 76px; }
 #hud[data-energy="on"] #hintText { text-align: center; line-height: 1.25; }
@@ -3581,7 +3581,8 @@ function createScene(canvas) {
   }
 
   // ---- the finger ----
-  function drawFinger(ctx, cam, input) {
+  // charged: the swing has curved enough to unleash a full energy bar (energy.js), so it burns storm blue, wider and brighter
+  function drawFinger(ctx, cam, input, charged) {
     const tr = input && input.trail;
     if (!tr || !tr.length) return;
     const n = tr.length, S = CFG.scene, life = S.fingerMs;
@@ -3597,8 +3598,8 @@ function createScene(canvas) {
     }
     ctx.globalCompositeOperation = 'lighter';
     for (let pass = 0; pass < 2; pass++) {
-      const wm = pass ? 4.2 : 11, am = pass ? 0.9 : 0.2;
-      ctx.fillStyle = pass ? P.text : P.cool;
+      const wm = pass ? (charged ? 5.5 : 4.2) : charged ? 20 : 11, am = pass ? 0.9 : charged ? 0.55 : 0.2;
+      ctx.fillStyle = pass ? (charged ? '#eaffff' : P.text) : P.cool;
       for (let k = 0; k < m - 1; k++) {
         const w0 = fA[k] * wm, w1 = fA[k + 1] * wm;
         ctx.globalAlpha = Math.min(1, (fA[k] + fA[k + 1]) * 0.5 * am);
@@ -3611,8 +3612,8 @@ function createScene(canvas) {
     base(ctx);
     if (input.active) { // a ring at the finger, as wide as the swipe actually reaches
       const t = tr[n - 1], Hc = CFG.hit, rr = Hc ? Math.max(Hc.handR * cam.pxPerM, Hc.minReachPx || 0) : 24;
-      ctx.strokeStyle = P.text; ctx.fillStyle = P.text;
-      ctx.globalAlpha = 0.5; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(t.x, t.y, rr, 0, TAU); ctx.stroke();
+      ctx.strokeStyle = charged ? P.cool : P.text; ctx.fillStyle = P.text;
+      ctx.globalAlpha = charged ? 0.95 : 0.5; ctx.lineWidth = charged ? 3 : 1.6; ctx.beginPath(); ctx.arc(t.x, t.y, rr, 0, TAU); ctx.stroke();
       ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(t.x, t.y, 3, 0, TAU); ctx.fill();
       ctx.globalAlpha = 1;
     }
@@ -3646,7 +3647,7 @@ function createScene(canvas) {
     base(ctx);
     if (fx && fx.drawOver) fx.drawOver(ctx, cam, world);
     base(ctx);
-    drawFinger(ctx, cam, view ? view.input : null);
+    drawFinger(ctx, cam, view ? view.input : null, !!(view && view.charged));
     base(ctx);
     for (let i = 0; i < acts.length; i++) if (acts[i].drawSay) { acts[i].drawSay(ctx, cam, kx, ky); base(ctx); }
   }
@@ -3685,6 +3686,9 @@ function createScene(canvas) {
 //    land as a soft tap. Each segment says whether its stroke is still speeding up (`rising`); shouldHold() lets main wait ~2 frames
 //    for the peak, only for a weak, rising stroke that began on the ball. Fast swipes and swipes from afar are never delayed.
 //  · A thumb that rests on the screen and never lifts does not own the input: a new touch takes over once it has been still ~250 ms.
+//  · Each swing measures its shape as it goes: how far its direction has turned (net, signed: the angle swept from its first heading
+//    to its latest), how much it turned in all (a zigzag turns a lot and nets little), and how long it is. Every segment carries the
+//    values as of its end, so a curved swipe (energy.js: the special's trigger) is known at the moment it meets the ball.
 //
 // Allocation: V8 boxes a double every time it is written to a closure variable or passed to a function that is not inlined, so
 // the hot path keeps its doubles in typed arrays and in fields of one state object, and passes queue indexes instead of values.
@@ -3721,7 +3725,8 @@ function createTouchInput(canvas, cam) {
   const S = { boxL: 0, boxT: 0, bkx: 1, bky: 1, lx: NaN, ly: NaN, lt: 0, hdx: NaN, hdy: NaN, tlast: -1e9, pendX: NaN, pendY: NaN, pendT: NaN,
     ax: NaN, ay: NaN, at: 0, // where the followed finger last moved from, and since when it has stayed within STILL_PX of there
     sp1: 0, sp2: 0, spn: 0, rising: true, // the last two smoothed speeds of this swing, how many there are, and whether it is still speeding up
-    heldStroke: -1, heldFrom: 0, onStroke: -1, onBall: false }; // shouldHold(): the stroke it is waiting on / since when, and whether the stroke began on the ball
+    heldStroke: -1, heldFrom: 0, onStroke: -1, onBall: false, // shouldHold(): the stroke it is waiting on / since when, and whether the stroke began on the ball
+    turn: 0, turnAbs: 0, arc: 0, cvx: 0, cvy: 0, cvSet: false }; // this swing's shape: net turn (rad, signed), total turn (rad), length (px), the last chord heading
 
   // ---- event side: validate, timestamp, queue ----
   const qx = new Float64Array(QN), qy = new Float64Array(QN), qt = new Float64Array(QN), qk = new Uint8Array(QN);
@@ -3800,7 +3805,7 @@ function createTouchInput(canvas, cam) {
   let hasHead = false; // S.hdx/hdy: the swing's heading (unit)
   const pool = [], segments = [];
   let nseg = 0;
-  for (let i = 0; i < PN; i++) pool.push({ x0: NaN, y0: NaN, x1: NaN, y1: NaN, t0: NaN, t1: NaN, speedPx: NaN, vxPx: NaN, vyPx: NaN, stroke: 0, first: false, spent: false, rising: false });
+  for (let i = 0; i < PN; i++) pool.push({ x0: NaN, y0: NaN, x1: NaN, y1: NaN, t0: NaN, t1: NaN, speedPx: NaN, vxPx: NaN, vyPx: NaN, stroke: 0, first: false, spent: false, rising: false, turn: 0, turnAbs: 0, arc: 0 });
   const tpool = [], trail = [];
   let th = 0, tn = 0, pendSet = false;
   for (let i = 0; i < TN; i++) tpool.push({ x: NaN, y: NaN, t: NaN, age: NaN, real: true }); // real: a finger sample, not a bridge point
@@ -3841,8 +3846,9 @@ function createTouchInput(canvas, cam) {
     S.pendX = x2; S.pendY = y2; S.pendT = t2;
   }
 
+  function shape0() { S.turn = 0; S.turnAbs = 0; S.arc = 0; S.cvSet = false; } // a new swing: no shape yet
   function begin(q) {
-    open = true; sid = ++sidSeq; swallow = false; isFirst = true; hasHead = false; S.spn = 0;
+    open = true; sid = ++sidSeq; swallow = false; isFirst = true; hasHead = false; S.spn = 0; shape0();
     rx[0] = qx[q]; ry[0] = qy[q]; rtm[0] = qt[q]; rn = 1; rlo = 0;
     th = 0; tn = 0; // a new touch must not be joined to the old tail by a straight line
     S.pendX = qx[q]; S.pendY = qy[q]; S.pendT = qt[q]; putTrail();
@@ -3864,13 +3870,21 @@ function createTouchInput(canvas, cam) {
       cx /= cl; cy /= cl;
       if (!hasHead) { S.hdx = cx; S.hdy = cy; hasHead = true; }
       else if (S.hdx * cx + S.hdy * cy < Math.cos(C.turnDeg * Math.PI / 180)) { // turned back: a new swing from the turn
-        S.hdx = cx; S.hdy = cy; rlo = lo2 = k; S.spn = 0; // a new swing starts from rest again
+        S.hdx = cx; S.hdy = cy; rlo = lo2 = k; S.spn = 0; shape0(); // a new swing starts from rest again, with no shape
         if (swallow) { swallow = false; sid = ++sidSeq; isFirst = true; } // re-armed
       } else if (!swallow) { // follow a curving swipe, so only a real turn trips the test (after a hit the heading stays at the hit's)
         const bx = S.hdx + (cx - S.hdx) * 0.25, by = S.hdy + (cy - S.hdy) * 0.25, bl = Math.sqrt(bx * bx + by * by);
         S.hdx = bx / bl; S.hdy = by / bl;
       }
+      // the shape: each new chord heading against the last. The net sum telescopes to the angle swept since the swing began (past
+      // 180° too); jitter cancels out of it, and only adds to the total
+      if (S.cvSet) {
+        const d = Math.atan2(S.cvx * cy - S.cvy * cx, S.cvx * cx + S.cvy * cy);
+        S.turn += d; S.turnAbs += d < 0 ? -d : d;
+      }
+      S.cvx = cx; S.cvy = cy; S.cvSet = true;
     }
+    { const ex = x - ox, ey = y - oy; S.arc += Math.sqrt(ex * ex + ey * ey); }
 
     // Smoothed velocity: the chord over the window (Vw). That reads the finger's average over the last 50 ms, which lags a swipe
     // that is still speeding up (by ~15 % at the peak of a typical 120 ms swipe, by a third early in one). If the speed changes
@@ -3916,6 +3930,7 @@ function createTouchInput(canvas, cam) {
       s.x0 = ox; s.y0 = oy; s.t0 = ot; s.stroke = sid; s.first = isFirst; s.spent = false;
     } else s = pool[PN - 1]; // a stall delivered more than a pool of segments: fold the rest into the last one
     s.x1 = x; s.y1 = y; s.t1 = t; s.vxPx = vx; s.vyPx = vy; s.speedPx = sp; s.rising = S.rising;
+    s.turn = S.turn; s.turnAbs = S.turnAbs; s.arc = S.arc;
     isFirst = false;
   }
 
@@ -4011,7 +4026,13 @@ function createTouchInput(canvas, cam) {
     segments.length = 0; trail.length = 0; gestures.length = 0;
   }
 
-  return { segments, trail, poll, toHand, shouldHold, consumeStroke, onGesture(fn) { if (typeof fn === 'function') gestures.push(fn); }, dispose, get active() { return down; } };
+  return {
+    segments, trail, poll, toHand, shouldHold, consumeStroke, onGesture(fn) { if (typeof fn === 'function') gestures.push(fn); }, dispose,
+    get active() { return down; },
+    // the finger's swing so far: its shape (as on its segments), and whether it already hit (spent until it turns back or lifts)
+    get turn() { return open ? S.turn : 0; }, get turnAbs() { return open ? S.turnAbs : 0; }, get arc() { return open ? S.arc : 0; },
+    get spent() { return swallow; },
+  };
 }
 
 // ════════ game.js ════════
@@ -4220,8 +4241,10 @@ function createVersus() {
 // ════════ energy.js ════════
 // energy.js — the energy bars and the special move (versus only). Rally with your opponent and both bars fill together: one
 // step for every volley (a hit that answers the other player's last one), `volleys` steps to fill. A full bar is one special
-// for its owner. You arm yours with the special button (or E); Kage weighs his as each swing starts (kage.wantsSpecial). The
-// armed player's next hit is the special:
+// for its owner. You unleash yours with a curved swipe: a swing that has turned `curve` degrees one way (input.js measures it)
+// when it meets the ball is the special, and the moment it has turned that far the stroke shows it is charged. The trigger
+// setting can make it a tap on your ring (or E) instead, which arms the next hit, or either. Kage weighs his as each swing
+// starts (kage.wantsSpecial). The special:
 //   · it leaves the hand `boost` times harder (the soft speed cap rises by as much, so a weak swipe stays a weak special), and
 //   · the ball carries the special's charge until the OTHER player's next touch, or `charge` seconds of game time: that touch
 //     lands at `damp` of its strength (they can still turn it, it is just heavy in their hands).
@@ -4237,6 +4260,9 @@ CFG.energy = {
   charge: 1.5, // s of game time the ball carries a special's charge, if the other player does not touch it first
   damp: 0.7, // the other player's next touch lands at this share of its strength
   kage: 1, // 1 = Kage uses his specials
+  trigger: 0, // how you unleash yours: 0 a curved swipe, 1 a tap on your ring (or E) arms the next hit, 2 either
+  curve: 40, // degrees a swing must have turned, one way, when it meets the ball. Measured at contact (tests/energy.mjs): a natural
+  // thumb arc 4-20°, a half-circle through the ball 54-71°, a 150° arc with the ball mid-way 35-58°
 };
 CFG_SCHEMA.push(
   { path: 'energy.on', label: 'Energy and specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' },
@@ -4244,7 +4270,9 @@ CFG_SCHEMA.push(
   { path: 'energy.boost', label: 'Special hit power', min: 1, max: 1.5, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
   { path: 'energy.charge', label: 'Charge lasts', min: 0.3, max: 3, step: 0.1, group: 'Energy', rank: -2.8, unit: 's' },
   { path: 'energy.damp', label: 'Their next touch lands at', min: 0.2, max: 1, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
-  { path: 'energy.kage', label: 'Kage uses specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' }
+  { path: 'energy.kage', label: 'Kage uses specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' },
+  { path: 'energy.trigger', label: 'Unleash yours with', type: 'choice', options: ['Curved swipe', 'Tap the ring', 'Either'], min: 0, max: 2, step: 1, group: 'Energy', rank: -2.8, unit: '' },
+  { path: 'energy.curve', label: 'Curve it takes', min: 20, max: 150, step: 5, group: 'Energy', rank: -2.8, unit: '°' }
 );
 
 function createEnergy() {
@@ -4273,6 +4301,14 @@ function createEnergy() {
 
   function full(who) { return on() && (who === 'kage' ? snap.kage : snap.you) >= 1; }
   function armed(who) { return who === 'kage' ? snap.armedKage : snap.armedYou; }
+  // the curve test, on a swing's shape as input.js measures it: turned at least CFG.energy.curve, mostly one way, over a real length
+  function curved(turn, turnAbs, arc) {
+    const t = turn < 0 ? -turn : turn, need = (Math.max(1, CFG.energy.curve) * Math.PI) / 180;
+    return t >= need && turnAbs <= 1.8 * t + 0.5 && arc >= 50;
+  }
+  const curveOn = () => (CFG.energy.trigger | 0) !== 1;
+  const tapOn = () => (CFG.energy.trigger | 0) !== 0;
+
   // a full bar can be armed (and disarmed again, by asking twice); returns whether it is armed now
   function arm(who, want) {
     if (!full(who)) return false;
@@ -4327,7 +4363,7 @@ function createEnergy() {
   }
 
   reset();
-  return { snap, reset, newRally, full, armed, arm, prepare, onHit, update, get on() { return on(); } };
+  return { snap, reset, newRally, full, armed, arm, prepare, onHit, update, curved, get on() { return on(); }, get curveOn() { return curveOn(); }, get tapOn() { return tapOn(); } };
 }
 
 // ════════ ninja.js ════════
@@ -5769,20 +5805,23 @@ function createUI(root, opts) {
 
   // ───────────── energy (versus): your special button and Kage's gauge, filled round their rings ─────────────
   const enBtn = $('bSpecial'), enY = $('eYouR'), enK = $('eKageR'), enKEl = $('eKage');
-  let enOn = -1, enYQ = -1, enKQ = -1, enYS = '', enKS = '';
-  function energy(es, show) {
+  let enOn = -1, enYQ = -1, enKQ = -1, enYS = '', enKS = '', enTrig = -1;
+  // charged: your swing has curved enough to unleash it (it shows as armed). The trigger setting decides whether the ring is a button.
+  function energy(es, show, charged) {
     const on = show && es && es.on ? 1 : 0;
     if (on !== enOn) { enOn = on; hud.setAttribute('data-energy', on ? 'on' : ''); }
     if (!on) return;
+    const trig = CFG.energy ? CFG.energy.trigger | 0 : 1;
+    if (trig !== enTrig) { enTrig = trig; enYS = ''; hud.setAttribute('data-trigger', trig === 0 ? 'curve' : trig === 1 ? 'tap' : 'both'); }
     const yq = Math.round(U.clamp01(es.you) * 100), kq = Math.round(U.clamp01(es.kage) * 100);
     // an empty ring hides its stroke: a round cap would still draw a dot
     if (yq !== enYQ) { enYQ = yq; enY.style.strokeDashoffset = String(100 - yq); enY.style.opacity = yq > 0 ? '1' : '0'; }
     if (kq !== enKQ) { enKQ = kq; enK.style.strokeDashoffset = String(100 - kq); enK.style.opacity = kq > 0 ? '1' : '0'; }
-    const ys = es.armedYou ? 'armed' : yq >= 100 ? 'full' : 'fill', ks = es.armedKage ? 'armed' : kq >= 100 ? 'full' : 'fill';
+    const ys = es.armedYou || charged ? 'armed' : yq >= 100 ? 'full' : 'fill', ks = es.armedKage ? 'armed' : kq >= 100 ? 'full' : 'fill';
     if (ys !== enYS) {
-      enYS = ys; enBtn.setAttribute('data-st', ys); enBtn.disabled = ys === 'fill';
+      enYS = ys; enBtn.setAttribute('data-st', ys); enBtn.disabled = ys === 'fill' || trig === 0;
       enBtn.setAttribute('aria-pressed', ys === 'armed' ? 'true' : 'false');
-      enBtn.setAttribute('aria-label', ys === 'armed' ? 'Special armed: your next hit is the special' : ys === 'full' ? 'Special ready: arm it' : 'Special: charging');
+      enBtn.setAttribute('aria-label', ys === 'armed' ? 'Special armed: your next hit is the special' : ys === 'fill' ? 'Special: charging' : trig === 0 ? 'Special ready: swipe in a curve to unleash it' : 'Special ready: arm it');
     }
     if (ks !== enKS) { enKS = ks; enKEl.setAttribute('data-st', ks); enKEl.setAttribute('aria-label', ks === 'armed' ? 'Kage has armed his special' : ks === 'full' ? "Kage's special is ready" : "Kage's energy"); }
   }
@@ -6155,8 +6194,9 @@ function createUI(root, opts) {
 // drawn, not simulated, so with him switched off the game is the same game.
 //
 // Against Kage, volleys fill both players' energy bars (energy.js, the Feel panel's Energy group): a full bar is a special,
-// armed with the special button or E (Kage arms his as a swing starts). Every hit goes through energy.prepare first, which
-// is all the physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
+// unleashed by a curved swipe (the stroke shows it is charged the moment it has curved enough; a tap on your ring or E can do it
+// instead, by the setting). Kage arms his as a swing starts. Every hit goes through energy.prepare first, which is all the
+// physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
 //
 // Two rule sets: the solo time trial (game.js) and versus Kage (versus.js), picked by CFG.match.opponent (the Feel
 // panel's Match group; "#solo" or "#versus" in the URL picks one for this page load without touching saved settings).
@@ -6215,8 +6255,8 @@ function createUI(root, opts) {
   let lastHitAt = -1e9, woundAt = -1, resultShown = false, prevPhase = 'idle', hintUntil = 0, sideWarnAt = -1e9;
   let kageSide = -1, sidePick = NaN; // Kage's half this match (−1 left, +1 right), and the setting it was resolved from
   const NEUTRAL = 0.06; // m either side of the centre line where either player may hit
-  const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you' };
-  const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world };
+  const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you', curved: false };
+  const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world, charged: false };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1 };
   const info = { state: 'ready', server: 'you', armed: false };
@@ -6224,6 +6264,8 @@ function createUI(root, opts) {
   let kiruWas = false; // was Kiru on last frame (switching him on puts him on his spot)
   let kageSwing = -1; // the swing (his st.ts) Kage last weighed his special for
   let fullWas = false, toldSpecial = false; // your bar was full last frame; the "special ready" hint was shown this match
+  let chargedWas = false; // the finger's swing was charged (curved enough, on a full bar) last frame
+  const swing = { turn: 0, turnAbs: 0, arc: 0, curved: false }; // the shape of the swing that last hit, as it met the ball (tests, tuning)
   const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
   const vs = () => rules === versus;
   const kiruOn = () => CFG.kiru.on > 0;
@@ -6281,9 +6323,11 @@ function createUI(root, opts) {
     if (world.state !== 'live' || !tw.canHit()) return null;
     const you = who !== 'kage';
     if (you && now - lastHitAt < CFG.hit.cooldownMs) return null;
+    // a curved swipe on a full bar is your special: armed for this one touch (a miss leaves it unarmed again)
+    const auto = you && vs() && hand.curved === true && energy.curveOn && energy.full('you') && !energy.armed('you') && energy.arm('you', true);
     if (vs()) energy.prepare(you ? 'you' : 'kage', hand); else { hand.boost = 1; hand.gain = 1; }
     const res = applyHit(world, hand);
-    if (!res) return null;
+    if (!res) { if (auto) energy.arm('you', false); return null; }
     if (you) lastHitAt = now;
     res.owner = you ? 'you' : 'cpu';
     res.charged = hand.gain < 1; // it answered the other player's special: it landed heavy
@@ -6309,10 +6353,17 @@ function createUI(root, opts) {
     return res;
   }
 
-  // the special button (or E): arm a full bar, or disarm it again
+  // how to use a full bar, by the trigger setting and the device
+  function readyHint() {
+    const m = CFG.energy.trigger | 0;
+    if (m === 1) return coarse ? 'Special ready · tap ⚡' : 'Special ready · press E';
+    return coarse || m === 0 ? 'Curve your swipe ⚡' : 'Curve a swipe or press E'; // short: it sits between the two rings
+  }
+
+  // the special button (or E), when the trigger setting allows a tap: arm a full bar, or disarm it again
   function armSpecial() {
     audio.unlock();
-    if (!vs() || versus.state === 'wound' || !energy.full('you')) return false;
+    if (!vs() || !energy.tapOn || versus.state === 'wound' || !energy.full('you')) return false;
     const a = energy.arm('you');
     audio.energy(a ? 'arm' : 'disarm');
     return a;
@@ -6347,9 +6398,13 @@ function createUI(root, opts) {
       const hand = input.toHand(seg, world.ball.p.y, handBuf);
       if (!hand) continue;
       hand.owner = 'you';
+      hand.curved = energy.curved(seg.turn, seg.turnAbs, seg.arc); // its swing's shape when it reached the ball
       if (!mayHit()) { sideWarn(hand, now); continue; }
       if (input.shouldHold(seg, hand, world.ball)) continue; // a finger that landed ON the ball: its first contact is the slowest part of the swipe, so wait ~2 frames for the peak
-      if (tryHit(hand, now, 'you')) input.consumeStroke(seg.stroke);
+      if (tryHit(hand, now, 'you')) {
+        input.consumeStroke(seg.stroke);
+        swing.turn = seg.turn; swing.turnAbs = seg.turnAbs; swing.arc = seg.arc; swing.curved = hand.curved;
+      }
     }
   }
 
@@ -6428,13 +6483,17 @@ function createUI(root, opts) {
     const fullNow = vs() && energy.full('you');
     if (fullNow && !fullWas) {
       audio.energy('full');
-      if (!toldSpecial && versus.state !== 'wound') { toldSpecial = true; ui.hint(coarse ? 'Special ready · tap ⚡' : 'Special ready · press E'); hintUntil = now + 1800; }
+      if (!toldSpecial && versus.state !== 'wound') { toldSpecial = true; ui.hint(readyHint()); hintUntil = now + 2200; }
     }
     fullWas = fullNow;
+    // a swing that has curved enough on a full bar is charged: the trail turns storm blue, Kiru lights up, and its hit is the special
+    const charged = fullNow && energy.curveOn && input.active && !input.spent && versus.state !== 'wound' && energy.curved(input.turn, input.turnAbs, input.arc);
+    if (charged && !chargedWas) audio.energy('arm');
+    chargedWas = charged; view.charged = charged;
     if (kiruOn()) {
       if (!kiruWas) { kiru.setSide(vs() ? -kageSide : 1); kiru.reset(); }
       kinfo.ready = input.active && world.state === 'live' && tw.canHit() && mayHit();
-      kinfo.armed = vs() && energy.armed('you');
+      kinfo.armed = vs() && (energy.armed('you') || charged);
       const back = kiru.update(simDt, realDt, world, kinfo);
       if (back > 0.05) audio.flash(back, 0.4);
     }
@@ -6458,7 +6517,7 @@ function createUI(root, opts) {
     if (hintUntil && now > hintUntil) { hintUntil = 0; ui.hint(hintText()); }
     if (rules.state === 'wound' && !resultShown && woundAt >= 0 && now - woundAt > 900) { resultShown = true; ui.showResult(rules.snap); }
     ui.update(rules.snap, realDt);
-    ui.energy(energy.snap, vs());
+    ui.energy(energy.snap, vs(), charged);
     syncPanel(false);
 
     if (draw) {
@@ -6504,7 +6563,7 @@ function createUI(root, opts) {
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, versus, energy, kage, kiru, input, scene, audio, ui, perf, special: armSpecial,
+    CFG, world, cam, tw, fx, game, versus, energy, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial,
     get rules() { return rules; },
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)
@@ -6513,14 +6572,15 @@ function createUI(root, opts) {
       const n = Math.max(1, Math.round(ms / 16.667));
       for (let i = 0; i < n; i++) { t += 16.667; step(1 / 60, t, i === n - 1, 1 / 60); }
     },
-    // a synthetic swipe through the ball along (dx,dz) at `speed` m/s, via the real hit path (the half rule is the finger's, not this hook's)
-    hit(dx, dz, speed) {
+    // a synthetic swipe through the ball along (dx,dz) at `speed` m/s, via the real hit path (the half rule is the finger's, not this hook's);
+    // curved: as if its swing had curved enough for a special
+    hit(dx, dz, speed, curved) {
       lastHitAt = -1e9; // tests may chain hits freely; the real cooldown still guards fingers
       const l = Math.hypot(dx, dz) || 1, ux = dx / l, uz = dz / l, b = world.ball.p;
       const h = handBuf;
       h.p0.x = b.x - ux * 0.5; h.p0.y = b.y; h.p0.z = b.z - uz * 0.5;
       h.p1.x = b.x + ux * 0.05; h.p1.y = b.y; h.p1.z = b.z + uz * 0.05;
-      h.vx = ux * speed; h.vz = uz * speed; h.speed = speed; h.r = CFG.hit.handR; h.stroke = -1; h.owner = 'you';
+      h.vx = ux * speed; h.vz = uz * speed; h.speed = speed; h.r = CFG.hit.handR; h.stroke = -1; h.owner = 'you'; h.curved = curved === true;
       return tryHit(h, performance.now(), 'you');
     },
     reset: resetAll,
