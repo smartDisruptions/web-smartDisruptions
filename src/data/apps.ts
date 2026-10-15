@@ -146,9 +146,9 @@ export const apps: App[] = [
     slug: 'tether-ball',
     name: 'Tether Ball',
     description:
-      'A demo: swipe to hit a ball on a rope and wind it all the way up the pole as fast as you can.',
+      'A demo: you against Kage-X on a tether ball court. Swipe up on your half to wind the rope your way before he winds it his.',
     longDescription:
-      'A ball hangs from a pole on a rope, and you swipe across it to hit it. How fast you swipe and where you catch it, dead centre or a glancing blow, decide how hard it flies. The rope winds around the pole as the ball circles, so the orbit shrinks and speeds up, and the goal is to wind it all the way up in the best time you can. Hit with the ball’s travel to wind it faster; hit against it and it unwinds. Every hit freezes time for a beat, then lets it crawl and speed back up. It is a greybox demo: flat greys and one amber accent, built to get the feel of the hit right before any art goes on.',
+      'A ball hangs from a pole on a rope, and the court is split down the middle. You play one half and Kage-X, the cyber ninja from Kiru’s Neo Dojo Cast, plays the other. You each wind the rope your own way by hitting the ball away from you on your half, so a swipe up is all it takes. How fast you swipe and where you catch the ball, dead centre or a glancing blow, decide how hard it flies, and every hit freezes time for a beat before it whips back to speed. The rope wraps round the pole as the ball circles, the orbit shrinks and speeds up, and the first to wind it all the way up takes the round. Kage reads the ball, runs to meet it and leaps for the high ones, trash-talking as he goes. A settings panel opens to fill the screen: his difficulty and accuracy, how fast he reacts and how high he jumps, how many rounds a match lasts and who serves, and the pole, rope and ball themselves. There is a solo time trial too. It is a greybox demo: flat greys, his magenta neon and one amber accent, built to get the feel right before the art.',
     thumbnailUrl: '/images/apps/tether-ball-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/tether-ball-1.webp',
@@ -160,8 +160,9 @@ export const apps: App[] = [
     status: 'beta',
     outcomes: [
       'The ball is a real physical thing on a rope, not an animation: it swings like a pendulum, and the rope wraps around the pole and shortens as it goes.',
-      'A hit stops time for a moment, slows it right down, then ramps it back to full speed, so every hit lands.',
-      'One self-contained file with no game engine and no libraries, built for a phone.',
+      'Kage plays by the same rules as your finger. To decide where to swing, he runs the game’s own physics 1.2 seconds ahead, then has to get there on his own feet, with a reaction delay after each of your hits.',
+      'His difficulty and accuracy are settings, not tricks: a harder Kage reacts faster, runs and jumps further and misses less, and the panel shows every number.',
+      'One self-contained file with no game engine and no libraries. Kage is drawn from the cast sheet’s own shapes, so he looks the way he does everywhere else.',
     ],
     buildDate: '2026-10',
     hasFullBreakdown: false,

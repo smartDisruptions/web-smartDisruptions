@@ -25,6 +25,7 @@
   --st: env(safe-area-inset-top, 0px); --sr: env(safe-area-inset-right, 0px);
   --sb: env(safe-area-inset-bottom, 0px); --sl: env(safe-area-inset-left, 0px);
   --ink: #1a1100; /* text on amber */
+  --kage: #e93dff; --kage-ink: #1a0322; /* Kage-X's neon (Neo Dojo Cast), and text on it */
   --glass: rgba(26,32,48,.78); --line: rgba(255,255,255,.1);
   --ui: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -87,6 +88,30 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .hits { display: flex; align-items: baseline; gap: 5px; white-space: nowrap; }
 #hHits { display: inline-block; min-width: 2ch; font-size: 15px; font-weight: 800; text-align: right; transform-origin: 100% 60%; }
 
+/* versus: the score takes the clock's place and a tug of war for the rope takes the winding row. Kage's side of each sits on
+   his side of the screen (data-ks), and the tug fills from the middle toward whoever the rope is winding for. */
+.score, .tug { display: none; }
+#hud[data-mode="versus"] .clock, #hud[data-mode="versus"] .wind, #hud[data-mode="versus"] .bar, #hud[data-mode="versus"] .hits { display: none; }
+#hud[data-mode="versus"] .score { flex: 1; display: flex; align-items: baseline; justify-content: center; gap: 7px; white-space: nowrap; }
+#hud[data-mode="versus"] .tug { flex: 1; display: flex; align-items: center; gap: 8px; }
+#hud[data-ks="r"] .score, #hud[data-ks="r"] .tug, #hud[data-ks="r"] .tl { flex-direction: row-reverse; }
+#hud[data-ks="r"] .tbar { transform: scaleX(-1); }
+.score b { min-width: 1.2ch; font-size: 25px; font-weight: 800; line-height: 1; text-align: center; }
+.score .who { font: 800 11px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; }
+.score .kage, #hKage { color: var(--kage); }
+.score .you, #hYou { color: var(--accent); }
+.score .dash { font-size: 18px; font-weight: 700; color: var(--dim); }
+.tl { display: flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+.tl b { min-width: 3ch; font-size: 14px; font-weight: 800; text-align: center; color: var(--dim); transition: color .2s; }
+.tk .k { color: #c98bd6; } .ty .k { color: #e7c58a; }
+#hud[data-lead="y"] .ty b { color: var(--accent); }
+#hud[data-lead="k"] .tk b { color: var(--kage); }
+.tbar { position: relative; flex: 1; min-width: 40px; height: 8px; border-radius: 4px; overflow: hidden; background: rgba(233,237,246,.13); box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); }
+.tbar::after { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(233,237,246,.6); }
+#hTugK, #hTugY { position: absolute; top: 0; bottom: 0; width: 50%; transform: scaleX(0); will-change: transform; }
+#hTugK { right: 50%; transform-origin: 100% 50%; background: linear-gradient(270deg, #b52bd1, var(--kage)); }
+#hTugY { left: 50%; transform-origin: 0 50%; background: linear-gradient(90deg, #ff9a1f, var(--accent)); }
+
 #hint { position: absolute; left: 0; right: 0; bottom: calc(var(--sb) + 16px); display: flex; justify-content: center; opacity: 0; transition: opacity .45s ease; text-shadow: none; }
 #hint.on { opacity: 1; }
 #hintText { padding: 10px 20px; border-radius: 99px; background: var(--glass); border: 1px solid var(--line); font: 800 14px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text); animation: hintPulse 2.2s ease-in-out infinite; }
@@ -113,14 +138,24 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .go { width: 100%; height: 52px; margin-top: 16px; border: 0; border-radius: 14px; background: var(--accent); color: var(--ink); font: 800 17px/1 var(--ui); letter-spacing: .02em; box-shadow: 0 6px 18px rgba(255,176,32,.28); transition: transform .1s; }
 .go:active { transform: scale(.97); }
 .tap { margin: 10px 0 0; font: 600 12px/1 var(--ui); color: var(--dim); }
+/* versus: who took the round, and the score, in place of the time */
+.vres { display: none; margin-top: 12px; }
+#result[data-mode="versus"] .vres { display: block; }
+#result[data-mode="versus"] .rtime, #result[data-mode="versus"] .delta { display: none; }
+#rWho { display: block; font-size: 32px; font-weight: 800; line-height: 1.08; letter-spacing: -.01em; }
+#result[data-winner="you"] #rWho { color: var(--accent); }
+#result[data-winner="kage"] #rWho { color: var(--kage); }
+#rScore { margin: 10px 0 2px; font: 800 15px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text); }
+#result[data-winner="kage"] .kick { color: var(--kage); }
+#result[data-winner="kage"] .go { background: var(--kage); color: var(--kage-ink); box-shadow: 0 6px 18px rgba(233,61,255,.3); }
 
 /* ───────────── Feel panel: bottom drawer (~45 %) on tall screens, side drawer on wide ones ───────────── */
 #panel { position: absolute; z-index: 5; left: 0; right: 0; bottom: 0; height: 45%; max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; padding-bottom: var(--sb); border-radius: 18px 18px 0 0; background: rgba(16,20,30,.99); border: 1px solid var(--line); border-bottom: 0; box-shadow: 0 -12px 40px rgba(0,0,0,.5); transform: translateY(100%); visibility: hidden; pointer-events: none; transition: transform .26s cubic-bezier(.2,.8,.2,1), visibility 0s .26s; }
 #panel.open { transform: none; visibility: visible; pointer-events: auto; transition: transform .26s cubic-bezier(.2,.8,.2,1); }
 .grab { flex: none; display: block; width: 36px; height: 4px; margin: 6px auto 0; border-radius: 2px; background: rgba(255,255,255,.2); }
-.ph { flex: none; display: flex; align-items: center; gap: 6px; padding: 2px 4px 6px 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.ph { flex: none; display: flex; align-items: center; gap: 4px; padding: 2px 2px 6px 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .ph h2 { margin: 0 auto 0 0; font: 800 18px/1 var(--ui); letter-spacing: .02em; }
-.pb-btn { flex: none; height: 36px; padding: 0 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); font: 700 13px/1 var(--ui); white-space: nowrap; }
+.pb-btn { flex: none; height: 36px; padding: 0 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); font: 700 13px/1 var(--ui); white-space: nowrap; }
 .pb-btn:active { background: rgba(255,255,255,.14); }
 .pb-btn.warn { color: #ff9a7a; }
 .pb-btn.go { width: auto; height: 36px; margin: 0; padding: 0 16px; background: var(--accent); border-color: transparent; color: var(--ink); box-shadow: none; font-size: 13px; }
@@ -156,6 +191,19 @@ input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius
 input[type="range"]:focus-visible { outline: none; }
 input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="range"]::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(255,176,32,.32), 0 1px 5px rgba(0,0,0,.55); }
 
+/* a switch (0/1) at the end of its label, and a row of choices under its label */
+.row.tg { grid-template-columns: 1fr auto auto; padding: 7px 0; }
+.sw { position: relative; flex: none; width: 50px; height: 30px; padding: 0; border: 0; border-radius: 15px; background: rgba(255,255,255,.16); transition: background .15s; }
+.sw::after { content: ''; position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.5); transition: transform .15s; }
+.sw[aria-checked="true"] { background: var(--accent); }
+.sw[aria-checked="true"]::after { transform: translateX(20px); }
+.sw:focus-visible, .opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row.ch { grid-template-columns: 1fr auto; row-gap: 6px; padding: 7px 0 5px; }
+.seg { grid-column: 1 / -1; display: flex; gap: 3px; padding: 3px; border-radius: 11px; background: rgba(255,255,255,.07); }
+.opt { flex: 1 1 0; min-width: 0; height: 34px; padding: 0 6px; border: 0; border-radius: 8px; background: none; color: var(--dim); font: 700 13px/1 var(--ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.opt[aria-checked="true"] { background: var(--accent); color: var(--ink); }
+.row.chg .opt[aria-checked="true"] { box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+
 .io { padding: 10px 0 12px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .io-hint { margin: 0 0 8px; font: 600 13px/1.3 var(--ui); color: var(--dim); }
 .io-hint.err { color: var(--hot); }
@@ -165,13 +213,47 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 .toast { position: absolute; left: 50%; bottom: calc(var(--sb) + 14px); padding: 9px 16px; border-radius: 99px; background: var(--accent); color: var(--ink); font: 800 13px/1 var(--ui); white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,.45); opacity: 0; transform: translate(-50%, 8px); pointer-events: none; transition: opacity .18s, transform .18s; }
 .toast.on { opacity: 1; transform: translate(-50%, 0); }
 
+/* ───────────── expanded: the panel fills the screen, the groups flow into columns, and a filter row appears ───────────── */
+.pb-full { width: 34px; margin-left: 0; }
+.pb-full svg { width: 19px; height: 19px; }
+.pb-full .i { display: none; }
+#panel.full .pb-full { color: var(--accent); }
+#panel.full .pb-full .o { display: none; }
+#panel.full .pb-full .i { display: inline; }
+.pfind { display: none; }
+#panel.full { left: 0; right: 0; top: 0; bottom: 0; width: auto; height: auto; max-width: none; margin: 0; padding: var(--st) var(--sr) var(--sb) var(--sl); border-radius: 0; border: 0; background: rgba(12,15,24,.975); box-shadow: none; }
+#panel.full .grab { display: none; }
+#panel.full .ph { padding-top: 8px; }
+#panel.full .pfind { flex: none; display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.pfind input { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.35); color: var(--text); font: 600 16px/1 var(--ui); user-select: text; -webkit-user-select: text; touch-action: manipulation; -webkit-appearance: none; appearance: none; }
+.pfind input:focus { outline: none; border-color: var(--accent); }
+#panel.full #feelGroups { columns: 290px auto; column-gap: 16px; padding-top: 10px; }
+#panel.full .grp { display: block; break-inside: avoid; margin: 0 0 12px; padding: 0 12px 6px; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; background: rgba(255,255,255,.025); }
+#panel.full .sl { height: 30px; }
+/* each group a container: wherever its column is wide enough a slider row is one line (label · value · slider), so a phone
+   shows twice the rows; labels wrap rather than truncate. Browsers without container queries keep the two-line rows. */
+#panel.full .grp { container-type: inline-size; }
+@container (min-width: 300px) {
+  .row { grid-template-columns: minmax(0, 1fr) 26px auto minmax(96px, 40%); column-gap: 6px; padding: 2px 0; }
+  .row .sl { grid-column: auto; height: 30px; }
+  .row .lab { font-size: 13.5px; line-height: 1.15; }
+  .row .val { font-size: 13px; }
+  .row.tg { grid-template-columns: minmax(0, 1fr) 26px auto; padding: 4px 0; }
+  .row.ch { grid-template-columns: minmax(0, 1fr) 26px; padding: 4px 0; }
+  .grp > summary { min-height: 40px; }
+}
+
 /* ───────────── wide screens: the panel docks right, the strip stays centred over the court ───────────── */
 @media (min-aspect-ratio: 1/1) {
   #panel { left: auto; top: 0; bottom: 0; right: 0; width: min(320px, 46vw); height: auto; max-width: none; margin: 0; padding: var(--st) var(--sr) var(--sb) 0; border-radius: 0; border: 0; border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgba(0,0,0,.5); transform: translateX(100%); }
   #panel.open { transform: none; }
   .grab { display: none; }
-  .ph { padding-top: 8px; }
+  .ph { padding-top: 8px; padding-left: 10px; }
+  .pb-btn { padding: 0 6px; font-size: 12px; } /* the docked drawer is 300 px: the header keeps ~20 px to spare */
 }
+
+/* a phone is too narrow for the names in the score: the tug row under it carries them */
+@media (max-width: 429px) { .score .who { display: none; } .score { gap: 9px; } }
 
 /* ───────────── narrow phones (320 px): the same strip, one size down so nothing outgrows the screen ───────────── */
 @media (max-width: 359px) {
@@ -191,6 +273,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   .r1, .r2 { display: contents; }
   .speed { order: 1; }
   .clock { order: 2; flex: none; }
+  #hud[data-mode="versus"] .score { order: 2; flex: none; }
+  #hud[data-mode="versus"] .tug { order: 3; }
   .wind { order: 3; }
   .bar { order: 4; }
   .hits { order: 5; }
@@ -203,6 +287,9 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   .card { padding: 12px 16px 10px; }
   .rtime { margin-top: 6px; }
   #rTime { font-size: 54px; }
+  #rWho { font-size: 24px; }
+  .vres { margin-top: 6px; }
+  #rScore { margin-top: 6px; }
   #rUnit { font-size: 20px; }
   .delta { margin-top: 4px; min-height: 22px; }
   .stats { margin-top: 8px; }
@@ -227,6 +314,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
       <div class="r1">
         <div class="speed" aria-label="Ball speed in miles per hour"><b id="hSpeed" data-heat="0">0</b><span class="u">mph</span></div>
         <div class="clock" aria-label="Stopwatch"><b id="hTime">0:00.00</b></div>
+        <div class="score" aria-label="Score"><span class="who kage">Kage</span><b id="hKage">0</b><span class="dash">:</span><b id="hYou">0</b><span class="who you">You</span></div>
         <div class="btns">
           <button id="bSound" class="ib" type="button" aria-label="Mute sound">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.6L12.5 5.5v13l-4.9-4H4z" fill="currentColor" stroke-width="1.4"/><path class="w" d="M16.2 9a4.4 4.4 0 0 1 0 6M18.9 6.4a8.2 8.2 0 0 1 0 11.2"/><path class="x" d="M16.3 9.6l5 5m0-5l-5 5"/></svg>
@@ -243,6 +331,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
         <div class="wind"><span class="k">Winding</span><b id="hTurns">0.0</b><span class="of">/ <span id="hGoal">6.3</span> turns</span></div>
         <div class="bar" aria-hidden="true"><i id="hBar"></i></div>
         <div class="hits"><b id="hHits">0</b><span class="k">hits</span></div>
+        <div class="tug" aria-label="Rope: who it is winding for"><span class="tl tk"><b id="hTK">0.0</b><span class="k">Kage</span></span><div class="tbar" aria-hidden="true"><i id="hTugK"></i><i id="hTugY"></i></div><span class="tl ty"><span class="k">You</span><b id="hTY">0.0</b></span></div>
       </div>
     </div>
     <div id="hint" role="status"><span id="hintText">Swipe the ball</span></div>
@@ -251,12 +340,13 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   <div id="result" aria-hidden="true">
     <div class="card" role="dialog" aria-modal="true" aria-labelledby="rTitle">
       <p class="kick" id="rTitle">Rope wound</p>
+      <div class="vres"><b id="rWho">You win</b><p id="rScore">1 – 0</p></div>
       <div class="rtime"><b id="rTime">0.00</b><i id="rUnit">s</i></div>
       <p class="delta"><span class="badge" id="rNew" hidden>New best</span><span id="rDelta"></span></p>
       <div class="stats">
         <div class="stat"><b id="rHits">0</b><span>Hits</span></div>
         <div class="stat"><b id="rTop">0</b><span>Top mph</span></div>
-        <div class="stat"><b id="rBest">-</b><span>Best</span></div>
+        <div class="stat"><b id="rBest">-</b><span id="rBestK">Best</span></div>
       </div>
       <button id="rAgain" class="go" type="button">Go again</button>
       <p class="tap">or tap anywhere</p>
@@ -267,6 +357,9 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
     <span class="grab" aria-hidden="true"></span>
     <header class="ph">
       <h2>Feel</h2>
+      <button id="feelFull" class="pb-x pb-full" type="button" aria-label="Expand settings to full screen" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="o" d="M14.5 4.5h5v5M9.5 19.5h-5v-5M19.5 4.5l-6 6M4.5 19.5l6-6"/><path class="i" d="M19.5 10.5h-6v-6M4.5 13.5h6v6M13.5 10.5l6-6M10.5 13.5l-6 6"/></svg>
+      </button>
       <button id="feelCopy" class="pb-btn" type="button" aria-label="Copy settings"><span>Copy</span><span class="more"> settings</span></button>
       <button id="feelPaste" class="pb-btn" type="button" aria-label="Paste settings"><span>Paste</span><span class="more"> settings</span></button>
       <button id="feelReset" class="pb-btn warn" type="button" aria-label="Reset all settings to defaults">Reset</button>
@@ -274,6 +367,11 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11m0-11l-11 11"/></svg>
       </button>
     </header>
+    <div class="pfind" id="feelFind">
+      <input id="feelFilter" type="search" placeholder="Find a setting" autocomplete="off" spellcheck="false" aria-label="Find a setting">
+      <button id="feelOpenAll" class="pb-btn" type="button">Open all</button>
+      <button id="feelCloseAll" class="pb-btn" type="button">Close all</button>
+    </div>
     <div class="pbody" id="feelBody">
       <div class="io" id="feelIOWrap" hidden>
         <p class="io-hint" id="feelIOHint"></p>
@@ -646,7 +744,7 @@ function createCamera() {
 //
 // MODEL
 //  · Ball = point mass with a radius. Rope = inextensible, one-sided (pulls, never pushes), tied at the pole top.
-//  · Rope + pole: φu is the ball's UNWRAPPED azimuth, ψ0 the tie azimuth. While the ball is within γ = acos(R/ρ)
+//  · Rope + pole: φu is the ball's UNWRAPPED azimuth, ψ0 the tie azimuth (the front, unless resetWorld was given a side). While the ball is within γ = acos(R/ρ)
 //    of the tie point the rope runs straight from the tie point (deadband, wrap 0). Past that it lies on the pole
 //    and leaves at the tangent point ψ = φ − s·γ, so wrap W = φu − ψ0 − s·γ, free length = L0 − R·|W|, and the
 //    pivot descends a coil pitch per turn. W is a pure function of the ball's position + winding number, so the
@@ -706,6 +804,11 @@ Object.assign(CFG, {
   },
 });
 CFG_SCHEMA.push(
+  // the court itself: main.js re-ties the rope (tie point under the pole top, court ring outside the rope) and replays the round
+  { path: 'world.poleH', label: 'Pole height', min: 1.9, max: 3.8, step: 0.05, group: 'Court', rank: -1, unit: 'm' },
+  { path: 'world.ropeL', label: 'Rope length', min: 0.8, max: 2.4, step: 0.05, group: 'Court', rank: -1, unit: 'm' },
+  { path: 'world.ballR', label: 'Ball size (radius)', min: 0.1, max: 0.42, step: 0.01, group: 'Court', rank: -1, unit: 'm' },
+  { path: 'world.poleR', label: 'Pole thickness (fewer turns)', min: 0.02, max: 0.09, step: 0.002, group: 'Court', rank: -1, unit: 'm' },
   { path: 'physics.gravity', label: 'Gravity', min: 3, max: 20, step: 0.01, group: 'Physics', unit: 'm/s²' },
   { path: 'physics.dragQuad', label: 'Air drag (speed²)', min: 0, max: 0.2, step: 0.005, group: 'Physics', unit: '1/m' },
   { path: 'physics.dragLin', label: 'Air drag (linear)', min: 0, max: 0.6, step: 0.01, group: 'Physics', unit: '1/s' },
@@ -744,11 +847,11 @@ let createWorld, resetWorld, advance, applyHit, drainEvents;
     else {
       const rho = Math.sqrt(p.x * p.x + p.z * p.z);
       const g = Math.acos(R / (rho > R * 1.001 ? rho : R * 1.001));
-      const D = S.phiU - PSI0, aD = D < 0 ? -D : D;
+      const D = S.phiU - S.psi0, aD = D < 0 ? -D : D;
       W = aD > g ? (D > 0 ? aD - g : g - aD) : 0;
       S.W = W;
     }
-    const psi = PSI0 + W, aw = W < 0 ? -W : W;
+    const psi = S.psi0 + W, aw = W < 0 ? -W : W;
     S.pvx = R * Math.cos(psi); S.pvz = R * Math.sin(psi); S.pvy = K.ay - K.pitch * aw / TAU;
     S.A = S.frozen ? S.Af : K.L0 - R * aw;
   }
@@ -924,7 +1027,7 @@ let createWorld, resetWorld, advance, applyHit, drainEvents;
     rp.L0 = K.L0; rp.free = S.A; rp.wrap = S.W; rp.turns = (S.W < 0 ? -S.W : S.W) / TAU;
     rp.pivot.x = S.pvx; rp.pivot.y = S.pvy; rp.pivot.z = S.pvz;
     rp.dist = S.dist; rp.slack = Math.max(0, S.A - S.dist); rp.taut = S.A - S.dist < 0.002;
-    w.phi = S.phiU; w.laps = (S.phiU - PSI0) / TAU;
+    w.phi = S.phiU; w.laps = (S.phiU - S.psi0) / TAU;
     w.pole.r = K.R; w.pole.h = K.poleH; w.pole.attachY = K.ay;
   }
 
@@ -933,18 +1036,21 @@ let createWorld, resetWorld, advance, applyHit, drainEvents;
     const W = CFG.world, b = w.ball, R = W.poleR, r = W.ballR;
     // The pole is solid, so the resting ball hangs just in front of it, leaning on it. A fresh ball starts a little
     // out from the pole and swings back to tap it: alive for a moment, then settled (it sleeps).
+    // opts.phi: the side of the pole the rope is tied on and the ball hangs (a serve starts on the server's half); the
+    // default is the front, where the camera sees it.
     const sway = opts.sway == null ? W.swayD : opts.sway;
-    const rho = R + r + sway;
+    const rho = R + r + sway, a0 = typeof opts.phi === 'number' && isFinite(opts.phi) ? opts.phi : PSI0;
     w.t = 0; w.state = 'live'; w.events = [];
     b.r = r;
-    b.p.x = 0; b.p.z = rho; b.p.y = W.attachY - Math.sqrt(W.ropeL * W.ropeL - (rho - R) * (rho - R));
+    if (a0 === PSI0) { b.p.x = 0; b.p.z = rho; } else { b.p.x = rho * Math.cos(a0); b.p.z = rho * Math.sin(a0); }
+    b.p.y = W.attachY - Math.sqrt(W.ropeL * W.ropeL - (rho - R) * (rho - R));
     b.prevP.x = b.p.x; b.prevP.y = b.p.y; b.prevP.z = b.p.z;
     b.v.x = 0; b.v.y = 0; b.v.z = 0;
     b.spin.x = 0; b.spin.y = 0; b.spin.z = 0;
     b.q.w = 1; b.q.x = 0; b.q.y = 0; b.q.z = 0;
     w.stats.maxSpeed = 0; w.stats.hits = 0; w.stats.lastHit = null;
     const S = w._s;
-    S.phiU = PSI0; S.aPrev = PSI0; S.W = 0; S.turnsInt = 0; S.frozen = false; S.Af = 0;
+    S.psi0 = a0; S.phiU = a0; S.aPrev = a0 === PSI0 ? PSI0 : Math.atan2(b.p.z, b.p.x); S.W = 0; S.turnsInt = 0; S.frozen = false; S.Af = 0;
     S.hx = 0; S.hy = 0; S.hz = 0; S.swirl = 1; S.drive = 0; S.kick = false; S.asleep = false; S.slowT = 0; S.tens = 0; S.tG = 0; S.tP = 0;
     S.pnx = 0; S.pnz = 1; S.nx = 0; S.ny = 1; S.nz = 0; S.cRope = 0; S.cPole = 0; S.cGnd = 0; S.cLid = 0;
     readConfig(w);
@@ -1790,17 +1896,19 @@ function createFX(seed) {
   // ---- palette: rebuilt only if CFG.pal changes ----
   let pa = null, ph = null, pc = null;
   const N_HEAT = 16, heat = [];
-  const themes = [0, 1, 2].map(() => ({ sp: [], glow: null, flash: null }));
+  const themes = [0, 1, 2, 3].map(() => ({ sp: [], glow: null, flash: null }));
   function buildThemes() {
     const P = CFG.pal, W = '#ffffff', mix = U.mix;
     pa = P.accent; ph = P.hot; pc = P.cool;
-    // 0 amber (every hit), 1 cool (reversal), 2 hot (perfect, wound)
+    // 0 amber (every hit), 1 cool (reversal), 2 hot (perfect, wound), 3 Kage's neon magenta (every hit of his)
+    const KN = '#e93dff';
     const d = [
       { b0: P.hot, b1: P.accent, b2: mix(P.accent, W, 0.72), ring: mix(P.accent, W, 0.5), ring2: mix(P.cool, W, 0.55), line: mix(P.accent, W, 0.82), veil: '#fff1d0', tFill: '#fff6de', tOut: P.hot, mph: P.accent, k: [P.accent, mix(P.accent, P.hot, 0.5), P.hot] },
       { b0: mix(P.cool, '#0b3a8a', 0.6), b1: P.cool, b2: mix(P.cool, W, 0.75), ring: mix(P.cool, W, 0.3), ring2: W, line: mix(P.cool, W, 0.72), veil: '#d6f3ff', tFill: '#ecfaff', tOut: mix(P.cool, '#0b3a8a', 0.45), mph: P.cool, k: [mix(P.cool, W, 0.5), P.cool, mix(P.cool, '#1e50e0', 0.6)] },
       { b0: mix(P.hot, '#8a1004', 0.45), b1: P.hot, b2: mix(P.accent, W, 0.15), ring: mix(P.accent, W, 0.55), ring2: mix(P.cool, W, 0.6), line: mix(P.accent, W, 0.85), veil: '#fff0cc', tFill: '#fff8e4', tOut: mix(P.hot, '#c01800', 0.3), mph: mix(P.accent, W, 0.3), k: [mix(P.accent, W, 0.35), P.accent, P.hot] },
+      { b0: mix(KN, '#2a0640', 0.55), b1: KN, b2: mix(KN, W, 0.72), ring: mix(KN, W, 0.45), ring2: mix(P.cool, W, 0.5), line: mix(KN, W, 0.78), veil: '#fbe6ff', tFill: '#fff1ff', tOut: mix(KN, '#3a0057', 0.45), mph: mix(KN, W, 0.35), k: [mix(KN, W, 0.5), KN, mix(KN, '#5a10c0', 0.5)] },
     ];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       const t = themes[i], s = d[i];
       Object.assign(t, s);
       t.glow = null; t.flash = null;
@@ -2039,6 +2147,7 @@ function createFX(seed) {
 
   // ---- the hit ----
   function textFor(hit, I) {
+    if (hit.owner === 'cpu') return hit.quality === 'perfect' ? 'KAGE CUT' : hit.reversed && I > 0.3 ? 'COUNTER' : I > 0.7 ? 'SMASH' : ''; // his words, in his colour
     if (hit.quality === 'perfect') return 'PERFECT';
     if (hit.reversed) return I > 0.3 ? 'REVERSE' : '';
     if (hit.quality === 'graze') return I > 0.2 ? 'GRAZE' : '';
@@ -2058,7 +2167,7 @@ function createFX(seed) {
     if (ul > 1e-3) { ux /= ul; uy /= ul; } else { ux = 1; uy = 0; }
 
     const k = U.smoothstep(0.05, 0.45, I), hot = perfect || I > 0.82;
-    resetSpec(rev ? 1 : hot ? 2 : 0, I, S);
+    resetSpec(hit.owner === 'cpu' ? 3 : rev ? 1 : hot ? 2 : 0, I, S);
     const sp = spec;
     sp.wx = pt.x; sp.wy = pt.y; sp.wz = pt.z; sp.ux = ux; sp.uy = uy;
     sp.nRay = k > 0.02 ? 8 + Math.round(6 * I) : 0;
@@ -2631,6 +2740,8 @@ function createFX(seed) {
 // cam.setInsetBottom, rebakes on the next draw) and blitted under the camera's zoom / roll / shake; everything that moves
 // is drawn live, in the contract's order:
 //   court → fx.drawUnder → floor shadows → [behind the pole] → pole → [in front of the pole] → fx.drawOver → finger.
+// An opponent (view.actor: Kage) is depth-sorted into that order against the pole and the ball by its z, and its speech goes
+// over everything. view.halves (−1 / +1: the side his half is on, 0 none) paints the two halves into the baked court.
 // Depth rule: the pole is the y axis and the camera sits on +z, so "behind the pole" is simply z < 0. A rope that crosses
 // z = 0 is split there (it can pass in front of the pole at one end and behind it at the other); fx.drawTrail goes just
 // before the ball. Reads CFG.pal when it bakes (resize() re-skins); nothing allocates per frame.
@@ -2658,8 +2769,8 @@ function createScene(canvas) {
   const NS = 12; // segments of a sagging rope
   const NF = 48; // finger-trail points kept
 
-  let W = 390, H = 844, kx = 1, ky = 1, quality = 1, wantDpr = 1, sized = false;
-  const NK = 16;
+  let W = 390, H = 844, kx = 1, ky = 1, quality = 1, wantDpr = 1, sized = false, halves = 0;
+  const NK = 17;
   const L = { cv: null, cx: null, key: new Float64Array(NK), mPx: 0, mx: 0, my: 0, cw: 0, ch: 0 }; // the baked layer
   const kn = new Float64Array(NK);
   const P = {}, G = {}; // palette strings and unit gradients, built at bake time
@@ -2820,6 +2931,30 @@ function createScene(canvas) {
     }
     c.stroke(); c.globalAlpha = 1;
 
+    // versus: his half washed in his neon, yours in amber, a dashed line between them through the pole
+    if (halves) {
+      const R = Wd.groundR;
+      for (let k = 0; k < 2; k++) {
+        const sg = k === 0 ? halves : -halves; // +1 = the +x half
+        c.beginPath();
+        for (let i = 0; i <= 40; i++) { const a = -HALF_PI + (i / 40) * Math.PI, x = sg * Math.cos(a) * R, z = Math.sin(a) * R; cam.project(x, 0, z, A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+        c.closePath();
+        c.globalAlpha = k === 0 ? 0.12 : 0.09; c.fillStyle = k === 0 ? '#e93dff' : pal.accent; c.fill();
+      }
+      c.globalAlpha = 0.5; c.strokeStyle = U.mix(pal.groundRim, '#ffffff', 0.35); c.lineWidth = 2; c.setLineDash([9, 8]);
+      cam.project(0, 0, -R, A); cam.project(0, 0, R, B);
+      c.beginPath(); c.moveTo(A.x, A.y); c.lineTo(B.x, B.y); c.stroke(); c.setLineDash([]);
+      // who plays where, painted on the floor at the front of each half
+      const label = (txt, sg, col) => {
+        c.save(); onFloor(sg * R * 0.62, R * 0.62, 1); c.scale(0.01, 0.01); // floor metres → centimetres, so the font is a normal size
+        c.globalAlpha = 0.22; c.fillStyle = col; c.font = '900 22px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+        c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(txt, 0, 0);
+        c.restore();
+      };
+      label('KAGE', halves, '#f08cff'); label('YOU', -halves, pal.accent);
+      c.globalAlpha = 1;
+    }
+
     // under the pole: contact shadow, the shadow it throws, and its base plate
     c.save(); onFloor(0, 0, 0.3); c.globalAlpha = 0.4; c.fillStyle = G.shadow; c.beginPath(); c.arc(0, 0, 1, 0, TAU); c.fill(); c.restore();
     const tx = THROW_X * Wd.poleH, tz = THROW_Z * Wd.poleH, tl = Math.sqrt(tx * tx + tz * tz), hw = Wd.poleR * 1.15;
@@ -2850,7 +2985,7 @@ function createScene(canvas) {
   function sync(cam) {
     const w = CFG.world;
     kn[0] = W; kn[1] = H; kn[2] = kx; kn[3] = ky; kn[4] = cam.F; kn[5] = cam.cx; kn[6] = cam.cy; kn[7] = cam.w; kn[8] = cam.h;
-    kn[9] = cam.pitchDeg; kn[10] = cam.pos.y; kn[11] = cam.pos.z; kn[12] = w.groundR; kn[13] = w.poleH; kn[14] = w.ropeL; kn[15] = w.poleR;
+    kn[9] = cam.pitchDeg; kn[10] = cam.pos.y; kn[11] = cam.pos.z; kn[12] = w.groundR; kn[13] = w.poleH; kn[14] = w.ropeL; kn[15] = w.poleR; kn[16] = halves;
     let i = 0;
     while (i < NK && kn[i] === L.key[i]) i++;
     if (i < NK || !L.cv) { bake(cam); L.key.set(kn); }
@@ -3160,6 +3295,7 @@ function createScene(canvas) {
   function draw(ctx, cam, world, view) {
     const fx = view ? view.fx : null;
     if (!sized) resize(cam.w, cam.h, cam.dpr);
+    halves = view && view.halves ? (view.halves < 0 ? -1 : 1) : 0;
     if (cam.sync) cam.sync(); // a retuned camera knob refits before anything is projected this frame
     sync(cam);
     blit(ctx, cam);
@@ -3167,18 +3303,28 @@ function createScene(canvas) {
     if (fx && fx.drawUnder) fx.drawUnder(ctx, cam, world);
     base(ctx);
     drawShadows(ctx, cam, world);
+    const act = view && view.actor ? view.actor : null;
+    if (act) { act.drawShadow(ctx, cam, kx, ky); base(ctx); }
     preparePole(cam, world);
     prepareBall(cam, world, view, fx);
     buildRope(cam, world);
+    // the actor goes behind the ball when it is further from the camera (smaller z), in its own half of the pole's plane
+    const az = act ? act.z : 0, bz = world.ball.p.z, back = az < 0, beyond = (bz < 0) === back && az >= bz;
+    if (act && back && !beyond) actor(ctx, cam, world, act);
     layer(ctx, cam, world, fx, -1);
+    if (act && back && beyond) actor(ctx, cam, world, act);
     drawPole(ctx, cam, world);
+    if (act && !back && !beyond) actor(ctx, cam, world, act);
     layer(ctx, cam, world, fx, 1);
+    if (act && !back && beyond) actor(ctx, cam, world, act);
     base(ctx);
     if (fx && fx.drawOver) fx.drawOver(ctx, cam, world);
     base(ctx);
     drawFinger(ctx, cam, view ? view.input : null);
     base(ctx);
+    if (act) { act.drawSay(ctx, cam, kx, ky); base(ctx); }
   }
+  function actor(ctx, cam, world, act) { base(ctx); act.draw(ctx, cam, kx, ky, world); base(ctx); }
 
   return { resize, setQuality, draw, stats }; // stats: bake / backing-store counters the tests read
 }
@@ -3605,6 +3751,848 @@ function createGame() {
   return { mode: 'solo', players, snap, get state() { return snap.state; }, onHit, onEvent, update, reset };
 }
 
+// ════════ versus.js ════════
+// versus.js — the rules against Kage: two halves of the court, two ways round the pole, first to N rounds.
+//
+// Each player owns half the court (Kage the half CFG.kage.side gives him, you the other) and winds the rope the way a hit
+// AWAY from the camera on their own half sends it: the right half winds counter-clockwise (−1 along φ), the left half
+// clockwise (+1). A round ends when the rope is fully wound; whoever's way it is wound wins it. Rules only, like game.js:
+// no physics, no DOM. It reads the world for the winding (the sign of rope.wrap says whose way it went).
+
+CFG.match = {
+  opponent: 1, // 0 = solo time trial (game.js), 1 = versus Kage (this file)
+  rounds: 3, // first to this many rounds wins the match
+  serve: 0, // 0 alternate (you first), 1 always you, 2 always Kage, 3 whoever lost the last round
+  crossHits: 0, // 1 = your swipes count on Kage's half too
+};
+CFG_SCHEMA.push(
+  { path: 'match.opponent', label: 'Mode', type: 'choice', options: ['Solo time trial', 'Versus Kage'], min: 0, max: 1, step: 1, group: 'Match', rank: -3, unit: '' },
+  { path: 'match.rounds', label: 'First to', min: 1, max: 7, step: 1, group: 'Match', rank: -3, unit: 'rounds' },
+  { path: 'match.serve', label: 'Who serves', type: 'choice', options: ['Turns', 'You', 'Kage', 'Loser'], min: 0, max: 3, step: 1, group: 'Match', rank: -3, unit: '' },
+  { path: 'match.crossHits', label: 'You may hit on his half', type: 'toggle', min: 0, max: 1, step: 1, group: 'Match', rank: -3, unit: '' }
+);
+
+function createVersus() {
+  const TAU = Math.PI * 2;
+  const snap = {
+    mode: 'versus', state: 'ready', // 'ready' | 'playing' | 'wound'
+    timeMs: 0, hits: 0, kageHits: 0, topMph: 0,
+    lead: 0, turns: 0, turnsGoal: 1, // lead: turns wound YOUR way (negative = his way); turns = |lead|
+    you: 0, kage: 0, round: 1, rounds: 3, // the score
+    winner: null, matchOver: false, server: 'you',
+    kageSide: -1, // −1 Kage plays the left half, +1 the right
+    dir: -1, // the way YOU wind along φ (Kage winds −dir)
+  };
+  const players = [{ id: 'you', side: -1 }, { id: 'kage', side: 1 }];
+  let wrap = 0, fresh = false, lastWinner = null;
+
+  // the same full-pole turn count as game.js (physics' wound test, in turns)
+  function goal() {
+    const W = CFG.world, P = CFG.physics;
+    const need = Math.sqrt(W.ballR * W.ballR + 2 * W.poleR * W.ballR) + (P && P.woundMargin > 0 ? P.woundMargin : 0);
+    const g = (W.ropeL - need) / (2 * Math.PI * W.poleR);
+    return g > 0 && isFinite(g) ? g : 1;
+  }
+
+  // Kage on the left → you play the right half and wind counter-clockwise; on the right → you wind clockwise
+  function setSides(kageSide) {
+    snap.kageSide = kageSide < 0 ? -1 : 1;
+    snap.dir = snap.kageSide < 0 ? -1 : 1;
+    players[0].side = snap.dir; players[1].side = -snap.dir;
+  }
+
+  function serverFor(round) {
+    const s = CFG.match.serve | 0;
+    if (s === 1) return 'you';
+    if (s === 2) return 'kage';
+    if (s === 3) return lastWinner === 'you' ? 'kage' : 'you'; // the loser serves; you open the match
+    return round % 2 === 1 ? 'you' : 'kage';
+  }
+
+  function clearRound() {
+    snap.state = 'ready'; snap.timeMs = 0; snap.hits = 0; snap.kageHits = 0; snap.topMph = 0;
+    snap.lead = 0; snap.turns = 0; snap.turnsGoal = goal(); snap.winner = null;
+    wrap = 0; fresh = false;
+  }
+
+  function reset() { // a new match
+    snap.you = 0; snap.kage = 0; snap.round = 1; snap.matchOver = false; lastWinner = null;
+    snap.rounds = Math.max(1, Math.round(CFG.match.rounds) || 1);
+    clearRound();
+    snap.server = serverFor(1);
+  }
+
+  // the same round again (the court changed mid-round): the score and the server stay
+  function replay() { if (snap.state !== 'wound') clearRound(); }
+
+  function nextRound() {
+    if (snap.matchOver) { reset(); return; }
+    snap.round++;
+    clearRound();
+    snap.server = serverFor(snap.round);
+  }
+
+  // who: 'you' | 'kage'
+  function onHit(res, who) {
+    if (!res || snap.state === 'wound') return;
+    if (snap.state === 'ready') {
+      if (!(res.power >= CFG.game.startPower)) return;
+      snap.state = 'playing'; snap.timeMs = 0; fresh = true;
+    }
+    if (who === 'kage') snap.kageHits++; else snap.hits++;
+    const mph = U.mph(res.speedAfter);
+    if (mph > snap.topMph) snap.topMph = mph;
+  }
+
+  function onEvent(ev, world) {
+    if (!ev || ev.type !== 'wound' || snap.state !== 'playing') return;
+    if (world && world.rope && world.rope.wrap !== 0) wrap = world.rope.wrap;
+    snap.state = 'wound';
+    snap.timeMs = Math.round(snap.timeMs);
+    snap.turnsGoal = goal(); snap.turns = snap.turnsGoal;
+    snap.winner = (wrap > 0 ? 1 : -1) === snap.dir ? 'you' : 'kage';
+    snap.lead = snap.winner === 'you' ? snap.turnsGoal : -snap.turnsGoal;
+    if (snap.winner === 'you') snap.you++; else snap.kage++;
+    lastWinner = snap.winner;
+    snap.rounds = Math.max(1, Math.round(CFG.match.rounds) || 1);
+    snap.matchOver = snap.you >= snap.rounds || snap.kage >= snap.rounds;
+  }
+
+  // the rally clock runs on real time, like the solo stopwatch
+  function update(realDt, world) {
+    snap.turnsGoal = goal();
+    if (snap.state === 'playing') {
+      if (realDt > 0 && isFinite(realDt)) { if (fresh) fresh = false; else snap.timeMs += realDt * 1000; }
+      if (world && world.ball) { const mph = U.mph(world.ball.speed); if (mph > snap.topMph) snap.topMph = mph; }
+    }
+    if (snap.state !== 'wound' && world && world.rope) {
+      wrap = world.rope.wrap;
+      const l = (wrap / TAU) * snap.dir, g = snap.turnsGoal;
+      snap.lead = l > g ? g : l < -g ? -g : l;
+      snap.turns = snap.lead < 0 ? -snap.lead : snap.lead;
+    }
+  }
+
+  setSides(-1);
+  reset();
+  return { mode: 'versus', players, snap, get state() { return snap.state; }, setSides, onHit, onEvent, update, reset, nextRound, replay };
+}
+
+// ════════ kage.js ════════
+// kage.js — Kage-X, Kiru's rival from 2099 (Neo Dojo Cast, ND-03), as the computer opponent: his art, his rig and the brain
+// that plays the other half of the court.
+//
+// ART. Drawn from the cast sheet's own path data (Tools/neo-dojo-cast/index.html: Kiru's hood, face, torso and shoe, Kage's
+// colours and his magenta neon), in the sheet's units: x 0..200, the hood centred on (100, 90), the soles on y = 231.5. The
+// parts that never bend (hood and face, torso and belt, the katana on his back) are baked once into small canvases at the
+// size they are shown, glow included (shadowBlur at bake time only, never per frame). What moves is drawn live with plain
+// strokes: the headband tails, both arms, both legs and the shoes. So a frame is three drawImage calls and ~20 strokes.
+//
+// BRAIN. He never cheats the physics: a swing is a `hand` (owner 'cpu') handed to the same applyHit a finger uses. To pick
+// where to swing he runs a private copy of the world forward (the real physics, 1.2 s ahead, re-run after every hit and
+// a few times a second), then takes the first moment the ball is in his half, in reach (a ninja jumps for high balls) and
+// somewhere his legs can get him in time. Skill is time and error, not foreknowledge: a reaction delay after every hit
+// (he cannot read a ball nobody has seen yet), top foot speed, jump height, and how clean the contact is (accuracy).
+//
+// He plays the half given by setSide(−1 left / +1 right) and winds the rope the way that half's player does: a hit AWAY
+// from the camera on your own half. Left → clockwise (+1 along φ), right → counter-clockwise (−1).
+//
+// Clocks: everything he does runs on SIM time, so a hit's freeze and slow-mo hold him too (fair, and it reads as drama).
+
+CFG.kage = {
+  side: 0, // 0 left, 1 right, 2 a coin flip each match
+  difficulty: 5, // 1..10: reaction, foot speed, wind-up, jump and hand speed (kageSkill)
+  accuracy: 0.7, // 0..1: how clean his contact is (whiffs, grazes and wild aim fall as it rises)
+  power: 1, // × his hand speed
+  reaction: 1, // × his reaction time (lower = sharper)
+  speed: 1, // × his foot speed
+  jump: 1, // × his jump height (0 = he never leaves the ground)
+  size: 1.75, // m tall
+  glow: 1, // his neon
+  boost: 1, // 1 = he also hits a ball already going his way, to speed it up
+  taunts: 1, // 1 = he talks
+  warp: 1, // 1 = his hits get the slow-mo too (at reduced strength)
+  warpScale: 0.7, // how much of a hit's slow-mo his hits get
+  showReach: 0, // 1 = draw his reach and his planned contact (tuning aid)
+};
+CFG_SCHEMA.push(
+  { path: 'kage.side', label: 'Kage plays', type: 'choice', options: ['Left', 'Right', 'Random'], min: 0, max: 2, step: 1, group: 'Kage', rank: -2, unit: '' },
+  { path: 'kage.difficulty', label: 'Difficulty', min: 1, max: 10, step: 1, group: 'Kage', rank: -2, unit: '' },
+  { path: 'kage.accuracy', label: 'Accuracy', min: 0, max: 1, step: 0.05, group: 'Kage', rank: -2, unit: '' },
+  { path: 'kage.power', label: 'Hit power', min: 0.4, max: 1.6, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.reaction', label: 'Reaction time', min: 0.25, max: 3, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.speed', label: 'Foot speed', min: 0.3, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.jump', label: 'Jump height', min: 0, max: 1.6, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.boost', label: 'Speeds up balls going his way', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' },
+  { path: 'kage.taunts', label: 'Trash talk', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' },
+  { path: 'kage.warp', label: 'Slow-mo on his hits', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' },
+  { path: 'kage.size', label: 'Height', min: 1.1, max: 2.2, step: 0.05, group: 'Kage', rank: -2, unit: 'm' },
+  { path: 'kage.glow', label: 'Neon', min: 0, max: 1.5, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.showReach', label: 'Show his reach', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' }
+);
+
+// What a difficulty level means, end to end (t = 0 at level 1, 1 at level 10). The multipliers above scale these.
+function kageSkill(out) {
+  const K = CFG.kage, t = U.clamp01((K.difficulty - 1) / 9);
+  out.t = t;
+  out.reaction = U.lerp(0.38, 0.06, t) * K.reaction; // s from a hit until he can read the new trajectory
+  out.foot = U.lerp(3, 7.5, t) * K.speed; // m/s
+  out.accel = U.lerp(16, 40, t); // m/s²
+  out.windup = U.lerp(0.16, 0.08, t); // s his fist needs from guard to contact
+  out.hop = U.lerp(0.15, 0.1, t); // s to leave the ground (a leap's apex comes this + 0.07·√height after takeoff)
+  out.jump = U.lerp(1.1, 1.75, t) * K.jump; // m of leap: a hard hit rides up near the pole top, so a ninja has to fly
+  out.hand = U.lerp(7, 14, t) * K.power; // m/s of fist
+  const a = U.clamp01(K.accuracy);
+  out.whiff = 0.32 * (1 - a) * (1 - a * 0.5); // chance a swing finds nothing (0.32 at 0, ~0.06 at 0.7, 0 at 1); fast balls add to it
+  out.offSd = 0.08 + 0.55 * (1 - a); // sd of where the fist meets the ball, in (ball + fist) radii: 0 = dead centre
+  out.aimSd = (2 + 24 * (1 - a)) * Math.PI / 180; // sd of his aim
+  return out;
+}
+
+const KAGE_LINES = {
+  hit: ['Too slow.', 'From 2099.', 'Predictable.', 'Firewall: cut.', 'Again.', 'Patched.', 'Read you.'],
+  smash: ['Hah!', 'Feel that?', 'Overclocked.', 'Cut clean.'],
+  whiff: ['Lag spike.', 'Glitch.', 'Tch.', '...Lucky.'],
+  won: ['Upgrade yourself.', 'Cut clean.', 'Next.', 'Too easy.'],
+  lost: ['Rematch. Now.', 'Not bad... for 2026.', 'Hmph.', 'Bug in my code.'],
+  serve: ['Ready?', 'Watch closely.', 'Try to keep up.'],
+};
+
+function createKage(doc) {
+  const TAU = Math.PI * 2;
+  const SOLE = 231.5, CX = 100; // the sheet point between his feet
+  const NECK_X = 100, NECK_Y = 150; // the head turns about this
+  const SH_F = { x: 73, y: 156 }, SH_B = { x: 127, y: 156 }; // shoulders: front (toward his target) and back
+  const HIP_F = { x: 90, y: 196 }, HIP_B = { x: 110, y: 196 };
+  const ARM_LEN = 36; // sheet units, shoulder → fist at rest
+  const ARM_MAX = 2.5; // a strike stretches the arm this far (a smear frame reads as speed, not as a rubber arm)
+  const C = {
+    L: '#3d4c95', RIM: '#a9bcff', NEON: '#e93dff', NEON_D: '#b52bd1', INK: '#13152a',
+    ARM_F: '#3a3f5c', ARM_B: '#121427', LEG_F: '#22253a', LEG_B: '#121427', FIST: '#8d95ab', FIST_S: '#5a6280',
+  };
+
+  // ───────────────────────── art: the baked parts ─────────────────────────
+  const art = { k: 0, head: null, blink: null, torso: null, back: null };
+  const hasCanvas = !!(doc && doc.createElement && typeof Path2D !== 'undefined');
+
+  function part(x0, y0, x1, y1, k) {
+    const c = doc.createElement('canvas');
+    c.width = Math.max(1, Math.ceil((x1 - x0) * k)); c.height = Math.max(1, Math.ceil((y1 - y0) * k));
+    const g = c.getContext('2d');
+    g.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    return { c, g, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  // the sheet's helpers, on a canvas: sp = fill with a sticker outline under it, ln = a round stroke, fl = a fill
+  function sp(g, d, fill, w) { const p = new Path2D(d); g.lineWidth = w; g.strokeStyle = C.L; g.stroke(p); g.fillStyle = fill; g.fill(p); }
+  function ln(g, d, col, w, a, dash) {
+    const p = new Path2D(d);
+    g.save(); g.globalAlpha = a == null ? 1 : a; g.lineWidth = w; g.strokeStyle = col;
+    if (dash) g.setLineDash(dash);
+    g.stroke(p); g.restore();
+  }
+  function fl(g, d, col, a) { g.save(); g.globalAlpha = a == null ? 1 : a; g.fillStyle = col; g.fill(new Path2D(d)); g.restore(); }
+  function ell(cx, cy, rx, ry, rot) { const p = new Path2D(); p.ellipse(cx, cy, rx, ry, rot || 0, 0, TAU); return p; }
+  function rrect(x, y, w, h, r) {
+    const p = new Path2D();
+    p.moveTo(x + r, y); p.arcTo(x + w, y, x + w, y + h, r); p.arcTo(x + w, y + h, x, y + h, r); p.arcTo(x, y + h, x, y, r); p.arcTo(x, y, x + w, y, r); p.closePath();
+    return p;
+  }
+  // the sheet's #glow (a 3.2-unit gaussian blur merged twice under the shape): two shadow passes, then the shape clean
+  function glow(g, k, col, draw) {
+    const s = CFG.kage.glow;
+    if (s > 0) { g.save(); g.shadowColor = col; g.shadowBlur = 6.4 * k * s; draw(); if (s > 0.5) draw(); g.restore(); }
+    draw();
+  }
+  function grad(g, x1, y1, x2, y2, stops) {
+    const gr = g.createLinearGradient(x1, y1, x2, y2);
+    for (let i = 0; i < stops.length; i++) gr.addColorStop(i / (stops.length - 1), stops[i]);
+    return gr;
+  }
+
+  const HOOD = 'M26 90a74 66 0 1 0 148 0a74 66 0 1 0 -148 0Z';
+  const FACE = 'M44 80 C70 68 130 68 156 80 C168 85 168 104 156 109 C130 121 70 121 44 109 C32 104 32 85 44 80 Z';
+  const TORSO = 'M64 158 Q66 146 82 143 L118 143 Q134 146 136 158 L133 199 Q100 205 67 199 Z';
+  const TORSO_SH = 'M112 144 L118 143 Q134 146 136 158 L133 199 Q123 202 112 203 Z';
+  const EYE_L = 'M62 94 L90 90 L88 101 L64 102 Z', EYE_R = 'M138 94 L110 90 L112 101 L136 102 Z';
+  const EYE_LH = 'M64 95 L88 92 L87 95 L65 97 Z', EYE_RH = 'M136 95 L112 92 L113 95 L135 97 Z';
+
+  function bakeHead(k, closed) {
+    const P = part(8, 6, 196, 168, k), g = P.g, hood = new Path2D(HOOD);
+    g.lineWidth = 6; g.strokeStyle = C.L; g.stroke(hood);
+    g.fillStyle = grad(g, 48, 24, 152, 156, ['#555b7e', '#262a42', '#0e1020']); g.fill(hood);
+    g.save(); g.clip(hood);
+    g.globalAlpha = 0.5; g.fillStyle = '#05060f'; g.fill(ell(132, 128, 82, 62));
+    g.globalAlpha = 0.14; g.fillStyle = '#fff'; g.fill(ell(66, 40, 38, 15, -24 * Math.PI / 180));
+    g.globalAlpha = 1;
+    ln(g, 'M14 78 Q100 34 186 78', '#2a0a33', 14);
+    glow(g, k, C.NEON, () => ln(g, 'M14 78 Q100 34 186 78', C.NEON, 5));
+    ln(g, 'M30 70 Q100 44 172 70', '#fff', 1.4, 0.8, [3, 9]);
+    g.restore();
+    glow(g, k, C.NEON, () => { const p = ell(170, 68, 7, 7); g.lineWidth = 3; g.strokeStyle = C.L; g.stroke(p); g.fillStyle = C.NEON; g.fill(p); }); // the knot
+    const plate = rrect(81, 43, 38, 20, 4.5);
+    g.lineWidth = 3.5; g.strokeStyle = C.L; g.stroke(plate); g.fillStyle = '#2a2e48'; g.fill(plate);
+    g.lineWidth = 1.2; g.strokeStyle = '#5a6280'; g.stroke(rrect(83.5, 45.5, 33, 15, 3));
+    glow(g, k, C.NEON, () => ln(g, 'M92 48 L108 58 M108 48 L92 58', C.NEON, 3));
+    fl(g, FACE, '#0a0c1c');
+    fl(g, 'M48 84 C74 74 126 74 152 84 C126 79 74 79 48 90 Z', '#fff', 0.16);
+    g.save();
+    if (closed) { g.translate(100, 96); g.scale(1, 0.1); g.translate(-100, -96); }
+    glow(g, k, C.NEON, () => { fl(g, EYE_L, C.NEON); fl(g, EYE_R, C.NEON); });
+    fl(g, EYE_LH, '#fff', 0.85); fl(g, EYE_RH, '#fff', 0.85);
+    g.restore();
+    ln(g, 'M47 50 Q33 68 31 95', C.RIM, 3.2, 0.8);
+    return P;
+  }
+  function bakeTorso(k) {
+    const P = part(54, 134, 146, 214, k), g = P.g;
+    sp(g, TORSO, grad(g, 64, 143, 136, 200, ['#3a3f5c', '#22253a', '#121427']), 6);
+    fl(g, TORSO_SH, '#0a0b18', 0.55);
+    fl(g, 'M88 145 L100 166 L112 145 Z', '#8d95ab');
+    ln(g, 'M84 145 L100 170 L116 145', '#4a4f6e', 4.5);
+    ln(g, 'M82 160 L94 172 L94 182 M118 160 L106 172 L106 182', C.NEON, 1.6, 0.7);
+    glow(g, k, C.NEON, () => fl(g, 'M66 184 Q100 191 134 184 L133 196 Q100 203 67 196 Z', C.NEON));
+    fl(g, 'M68 188 Q100 194 132 188 L132 191 Q100 197 68 191 Z', '#fff', 0.6);
+    return P;
+  }
+  function bakeBack(k) { // the katana across his back: hilt over his left shoulder, scabbard tip by his right leg
+    const P = part(16, 102, 172, 236, k), g = P.g;
+    ln(g, 'M134 188 L157 224', C.L, 13); ln(g, 'M134 188 L157 224', '#2a2e48', 8);
+    glow(g, k, C.NEON, () => ln(g, 'M136 191 L155 221', C.NEON, 2));
+    ln(g, 'M33 116 L57 150', C.L, 15); ln(g, 'M33 116 L57 150', '#c9d2e8', 9.5);
+    ln(g, 'M31 120 L38 117 M35 126 L42 123 M39 132 L46 129 M43 138 L50 135', C.NEON, 2.6);
+    const gd = ell(57, 150, 11, 4.2, -55 * Math.PI / 180);
+    g.lineWidth = 3; g.strokeStyle = C.L; g.stroke(gd); g.fillStyle = '#8d95ab'; g.fill(gd);
+    return P;
+  }
+  // bake at k device px per sheet unit; only when the shown size moved by more than a quarter (or the neon changed)
+  let bakedGlow = -1;
+  function ensureArt(k) {
+    if (!hasCanvas) return false;
+    k = U.clamp(k, 0.3, 6);
+    if (art.head && k <= art.k * 1.02 && k >= art.k * 0.5 && bakedGlow === CFG.kage.glow) return true;
+    art.k = k; bakedGlow = CFG.kage.glow;
+    art.head = bakeHead(k, false); art.blink = bakeHead(k, true); art.torso = bakeTorso(k); art.back = bakeBack(k);
+    return true;
+  }
+  const blit = (ctx, P) => ctx.drawImage(P.c, P.x, P.y, P.w, P.h);
+
+  // ───────────────────────── rig: one frame of Kage, in sheet units ─────────────────────────
+  // limb(): the sheet's two-stroke capsule, shoulder → fist, bowed by `bend` (units, sideways)
+  function limb(ctx, sx, sy, hx, hy, bend, col, w) {
+    const dx = hx - sx, dy = hy - sy, d = Math.sqrt(dx * dx + dy * dy) || 1;
+    const mx = (sx + hx) / 2 - (dy / d) * bend, my = (sy + hy) / 2 + (dx / d) * bend;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, hx, hy);
+    ctx.strokeStyle = C.L; ctx.lineWidth = w + 7; ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke();
+  }
+  function fist(ctx, x, y, r) {
+    ctx.beginPath(); ctx.ellipse(x, y, r, r, 0, 0, TAU);
+    ctx.lineWidth = 4; ctx.strokeStyle = C.L; ctx.stroke(); ctx.fillStyle = C.FIST; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x - 6, y - 2.5); ctx.quadraticCurveTo(x, y + 0.5, x + 6, y - 2.5);
+    ctx.lineWidth = 2; ctx.strokeStyle = C.FIST_S; ctx.stroke();
+  }
+  function leg(ctx, hx, hy, ax, ay, knee, col) {
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo((hx + ax) / 2 - knee, (hy + ay) / 2); ctx.lineTo(ax, ay);
+    ctx.strokeStyle = C.L; ctx.lineWidth = 24; ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = 18; ctx.stroke();
+  }
+  function shoe(ctx, x, y, rot) { // 'M-14 8 q0 -10 12 -10 h8 q6 0 6 6 v4 z' at the ankle, plus his magenta sole stripe
+    ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot);
+    ctx.beginPath(); ctx.moveTo(-14, 8); ctx.quadraticCurveTo(-14, -2, -2, -2); ctx.lineTo(6, -2); ctx.quadraticCurveTo(12, -2, 12, 4); ctx.lineTo(12, 8); ctx.closePath();
+    ctx.lineWidth = 5; ctx.strokeStyle = C.L; ctx.stroke(); ctx.fillStyle = C.INK; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-13, 7.5); ctx.lineTo(5, 7.5); ctx.lineWidth = 2; ctx.strokeStyle = C.NEON; ctx.stroke();
+    ctx.restore();
+  }
+  // the headband tails: two ribbons off the knot that stream away from his motion and ripple
+  const DASH = [4, 7], NODASH = [];
+  const TAIL = [[166, 66, 196, 56, 214, 70, 230, 82, 250, 74, 5, C.NEON], [166, 76, 190, 82, 204, 98, 216, 112, 236, 112, 4, C.NEON_D]];
+  function tailPath(ctx, T, t, i, wind, lift) {
+    const ph = t * 7 + i * 1.7, a1 = Math.sin(ph) * 4, a2 = Math.sin(ph + 1.4) * 7, k = 1 + 0.3 * wind, x0 = T[0], y0 = T[1];
+    ctx.beginPath(); ctx.moveTo(x0, y0);
+    ctx.quadraticCurveTo(x0 + (T[2] - x0) * k, T[3] + a1 - lift * 6, x0 + (T[4] - x0) * k, T[5] + a1 * 0.6 - lift * 10);
+    ctx.quadraticCurveTo(x0 + (T[6] - x0) * k, T[7] + a2 - lift * 14, x0 + (T[8] - x0) * k, T[9] + a2 * 1.2 - lift * 20);
+  }
+  function tails(ctx, t, wind, lift) {
+    const g = CFG.kage.glow;
+    for (let i = 0; i < 2; i++) {
+      const T = TAIL[i];
+      tailPath(ctx, T, t, i, wind, lift);
+      ctx.strokeStyle = T[11];
+      if (g > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.min(1, 0.3 * g); ctx.lineWidth = T[10] * 2.3; ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; }
+      ctx.globalAlpha = 1; ctx.lineWidth = T[10]; ctx.stroke();
+    }
+    tailPath(ctx, TAIL[0], t, 0, wind, lift); // the sheet's white dashes down the upper tail
+    ctx.setLineDash(DASH); ctx.globalAlpha = 0.9; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash(NODASH);
+    ctx.globalAlpha = 1;
+  }
+
+  // pose: everything one frame needs, in sheet units unless named otherwise. Filled by the brain each frame (see poseFor).
+  const pose = {
+    x: 0, y: 0, s: 1, mir: 1, tilt: 0, sqx: 1, sqy: 1, // screen foot point (CSS px), px per sheet unit, facing, lean, squash
+    headTilt: 0, headDy: 0, blink: false, t: 0, wind: 0, lift: 0,
+    fx: 50, fy: 184, fBend: 10, // front fist
+    bx: 151, by: 193, bBend: -9, // back fist
+    lax: 85, lay: 223.5, lrot: 0, lknee: 3, rax: 115, ray: 223.5, rrot: 0, rknee: 3, // ankles (front leg = l)
+    smear: 0, // 0..1 a strike's speed: a ghost of the arm trails it
+    sx0: 0, sy0: 0, // where the fist was a moment ago (smear)
+  };
+
+  function drawRig(ctx, kx, ky, P) {
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+    ctx.translate(P.x, P.y); if (P.tilt) ctx.rotate(P.tilt); ctx.scale(P.mir * P.s * P.sqx, P.s * P.sqy); ctx.translate(-CX, -SOLE);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    // tails and the katana sit behind everything; the tails ride the head
+    ctx.save(); ctx.translate(NECK_X, NECK_Y + P.headDy); ctx.rotate(P.headTilt); ctx.translate(-NECK_X, -NECK_Y);
+    tails(ctx, P.t, P.wind, P.lift);
+    ctx.restore();
+    blit(ctx, art.back);
+    limb(ctx, SH_B.x, SH_B.y, P.bx, P.by, P.bBend, C.ARM_B, 15); fist(ctx, P.bx, P.by, 9.5);
+    leg(ctx, HIP_B.x, HIP_B.y, P.rax, P.ray, P.rknee, C.LEG_B); leg(ctx, HIP_F.x, HIP_F.y, P.lax, P.lay, P.lknee, C.LEG_F);
+    shoe(ctx, P.rax, P.ray, P.rrot); shoe(ctx, P.lax, P.lay, P.lrot);
+    blit(ctx, art.torso);
+    ctx.save(); ctx.translate(NECK_X, NECK_Y + P.headDy); ctx.rotate(P.headTilt); ctx.translate(-NECK_X, -NECK_Y);
+    blit(ctx, P.blink ? art.blink : art.head);
+    ctx.restore();
+    if (P.smear > 0.05) { // a strike: a magenta ghost of the arm behind the fist
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5 * P.smear * Math.min(1, CFG.kage.glow + 0.3);
+      ctx.beginPath(); ctx.moveTo(P.sx0, P.sy0); ctx.lineTo(P.fx, P.fy);
+      ctx.strokeStyle = C.NEON; ctx.lineWidth = 22; ctx.stroke();
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    }
+    limb(ctx, SH_F.x, SH_F.y, P.fx, P.fy, P.fBend, C.ARM_F, 15); fist(ctx, P.fx, P.fy, 9.5 + 2 * P.smear);
+  }
+
+  // ───────────────────────── brain ─────────────────────────
+  const SK = {}; // this frame's skill (kageSkill)
+  const NP = 72, DTP = 1 / 60; // a read: 1.2 s of the real physics, sampled at 60 Hz
+  const PX = new Float64Array(NP), PY = new Float64Array(NP), PZ = new Float64Array(NP);
+  const VX = new Float64Array(NP), VZ = new Float64Array(NP);
+  const NEUTRAL = 0.06; // m either side of the centre line where either player may hit
+  const LINE = 0.16; // his feet stay this far off the centre line
+  const FRONT = 0.65; // and no nearer the camera than this (z): he never stands right in front of you
+  const HAND_R = 0.15; // m: his fist's reach radius (a finger's is 0.13 + the screen's generosity)
+  const SERVE_WAIT = 0.9; // s he lets the round breathe before he serves
+  let ghost = null, np = 0, strokes = 0, lastW = null;
+  const dbg = { n: 0, mine: 0, high: 0, aim: 0, stance: 0, late: 0, ok: 0 }; // why reads fail (tests and tuning)
+  const rnd = U.rng(20990311);
+  const gauss = () => { const u = Math.max(1e-12, rnd()); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * rnd()); };
+  const pick = (a) => a[Math.floor(rnd() * a.length) % a.length];
+
+  const st = {
+    side: -1, dir: 1, // his half (−1 left, +1 right) and the way he winds along φ
+    x: -0.8, z: -0.8, vx: 0, vz: 0, y: 0, // feet (m), ground velocity (m/s), height off the ground (m)
+    t: 0, phase: 'ready', // ready | swing | won | lost
+    blind: 0, cool: 0, reread: 0, serveT: 0, homeX: -0.8, homeZ: -0.8,
+    has: false, tc: 0, cx: 0, cy: 0, cz: 0, sx: 0, sz: 0, dx: 0, dz: 0, jump: 0, lead: 0, // the plan
+    ts: 0, up: 0, h: 0, struck: false, res: 0, fdx: 1, fdz: 0, // the swing: start, time to apex, jump height, outcome (1 hit, −1 whiff)
+    tLand: -9, run: 0, face: 1, moodT: 0, blinkAt: 2.5,
+    say: '', sayT: 0, sayCool: 0,
+  };
+  const hand = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: HAND_R, stroke: -2, owner: 'cpu' };
+  const OUT = { dx: 0, dz: 0, sx: 0, sz: 0 };
+
+  // his body in metres, from his height. He meets the ball beside him (it clears his hood), fist from the front shoulder.
+  const G = { unit: 0, shoulder: 0, shOff: 0, arm: 0, reachC: 0, standY: 0, so: 0, rIn: 0, rOut: 0 };
+  function geom() {
+    const u = CFG.kage.size / 207.5, W = CFG.world;
+    G.unit = u; G.shoulder = (SOLE - SH_F.y) * u; G.shOff = (CX - SH_F.x) * u; G.arm = ARM_LEN * ARM_MAX * u;
+    G.reachC = G.arm + 10 * u + W.ballR * 0.5; // front shoulder → ball centre when the fist lands on it
+    G.so = G.shOff + G.arm * 0.55 + W.ballR; // feet → ball centre, sideways, when he plans a contact
+    const gap = G.so - G.shOff;
+    G.standY = G.shoulder + Math.sqrt(Math.max(0, G.reachC * G.reachC - gap * gap)) * 0.85; // the highest ball centre he meets standing
+    G.rIn = W.poleR + Math.max(0.3, G.arm * 0.6);
+    G.rOut = Math.max(G.rIn + 0.3, W.ropeL * 0.9);
+    return G;
+  }
+
+  function setSide(side) {
+    st.side = side < 0 ? -1 : 1; st.dir = st.side < 0 ? 1 : -1;
+    home();
+  }
+  // home: the back of his half, near the line, where a ball you send his way comes over
+  function home() {
+    const a = -Math.PI / 2 + st.side * 0.85, r = CFG.world.ropeL * 0.6;
+    st.homeX = Math.cos(a) * r; st.homeZ = Math.sin(a) * r;
+  }
+
+  function clampRegion() {
+    geom();
+    if (st.x * st.side < LINE) { st.x = st.side * LINE; if (st.vx * st.side < 0) st.vx = 0; }
+    if (st.z > FRONT) { st.z = FRONT; if (st.vz > 0) st.vz = 0; }
+    const r = Math.sqrt(st.x * st.x + st.z * st.z);
+    if (r < G.rIn || r > G.rOut) {
+      const k = (r < G.rIn ? G.rIn : G.rOut) / Math.max(r, 1e-6);
+      st.x *= k; st.z *= k;
+      const ux = st.x / Math.max(r * k, 1e-6), uz = st.z / Math.max(r * k, 1e-6), vr = st.vx * ux + st.vz * uz;
+      if ((r < G.rIn && vr < 0) || (r > G.rOut && vr > 0)) { st.vx -= vr * ux; st.vz -= vr * uz; }
+    }
+  }
+  const inRegion = (x, z) => { const r = Math.sqrt(x * x + z * z); return x * st.side >= LINE && z <= FRONT && r >= G.rIn && r <= G.rOut; };
+
+  // ---- the read: the real physics, run forward on a private copy of the world ----
+  function predict(w) {
+    if (!ghost) ghost = createWorld();
+    const a = w.ball, b = ghost.ball;
+    b.p.x = a.p.x; b.p.y = a.p.y; b.p.z = a.p.z; b.v.x = a.v.x; b.v.y = a.v.y; b.v.z = a.v.z;
+    b.prevP.x = a.prevP.x; b.prevP.y = a.prevP.y; b.prevP.z = a.prevP.z;
+    b.spin.x = a.spin.x; b.spin.y = a.spin.y; b.spin.z = a.spin.z; b.q.w = a.q.w; b.q.x = a.q.x; b.q.y = a.q.y; b.q.z = a.q.z;
+    b.r = a.r; b.speed = a.speed; ghost.t = w.t; ghost.state = w.state;
+    const S = w._s, D = ghost._s;
+    for (const k in S) D[k] = S[k];
+    np = 0;
+    for (let i = 0; i < NP; i++) {
+      advance(ghost, DTP); ghost.events.length = 0;
+      PX[i] = b.p.x; PY[i] = b.p.y; PZ[i] = b.p.z; VX[i] = b.v.x; VZ[i] = b.v.z;
+      np++;
+      if (ghost.state !== 'live') break;
+    }
+  }
+
+  // the way he sends a ball at (x, z) moving (vx, vz): along the orbit his way, opened a little outward when it is flying (a
+  // ball driven at the pole glances round it anyway, see physics). False when it is not worth a swing.
+  function aim(x, z, vx, vz, force) {
+    const rho = Math.sqrt(x * x + z * z);
+    let tx = -st.dir, tz = 0;
+    if (rho > 1e-3) { tx = (-z / rho) * st.dir; tz = (x / rho) * st.dir; }
+    const vt = vx * tx + vz * tz, sp = Math.sqrt(vx * vx + vz * vz);
+    if (!force) {
+      if (vt > 0.5 && !(CFG.kage.boost > 0)) return false; // already going his way: let it run
+      if (vt > SK.hand * 0.8) return false; // going his way faster than his fist could add to
+    }
+    let dx = tx, dz = tz;
+    if (sp > 2.5 && rho > 1e-3) { dx += (0.18 * x) / rho; dz += (0.18 * z) / rho; }
+    const l = Math.sqrt(dx * dx + dz * dz) || 1;
+    OUT.dx = dx / l; OUT.dz = dz / l;
+    return true;
+  }
+
+  // where to plant his feet to meet a ball at (x, z) going OUT.d: behind it (punch straight through), or beside its path.
+  // The candidate in his region nearest to him wins; none in reach of his region means no.
+  function stance(x, z) {
+    const so = G.so, rho = Math.sqrt(x * x + z * z) || 1, ex = x / rho, ez = z / rho;
+    let best = 1e9, bx = 0, bz = 0;
+    for (let c = 0; c < 3; c++) {
+      const sx = c === 0 ? x - OUT.dx * so : c === 1 ? x - ex * so : x + ex * so;
+      const sz = c === 0 ? z - OUT.dz * so : c === 1 ? z - ez * so : z + ez * so;
+      if (!inRegion(sx, sz)) continue;
+      const d = (sx - st.x) * (sx - st.x) + (sz - st.z) * (sz - st.z) + (c === 0 ? 0 : 0.04); // a slight lean toward the straight punch
+      if (d < best) { best = d; bx = sx; bz = sz; }
+    }
+    if (best === 1e9) { // pull the straight-punch spot into his region, if it does not move far
+      const sx0 = x - OUT.dx * so, sz0 = z - OUT.dz * so, ox = st.x, oz = st.z, ovx = st.vx, ovz = st.vz;
+      st.x = sx0; st.z = sz0; clampRegion();
+      bx = st.x; bz = st.z; st.x = ox; st.z = oz; st.vx = ovx; st.vz = ovz;
+      if ((bx - sx0) * (bx - sx0) + (bz - sz0) * (bz - sz0) > 0.3 * 0.3) return false;
+    }
+    OUT.sx = bx; OUT.sz = bz;
+    return true;
+  }
+
+  // a ninja's leap: jump boots put him at the top in about a fifth of a second, however high (a real 1.3 m jump takes half a second)
+  const upFor = (jump) => (jump > 0 ? SK.hop + 0.07 * Math.sqrt(jump) : 0);
+  const leadFor = (jump) => Math.max(SK.windup, upFor(jump));
+  // how far he can run in t seconds from where he is (accelerating from his current speed)
+  function reach(t) {
+    if (!(t > 0)) return 0;
+    const v0 = Math.sqrt(st.vx * st.vx + st.vz * st.vz), ta = Math.max(0, (SK.foot - v0) / SK.accel);
+    return t <= ta ? v0 * t + 0.5 * SK.accel * t * t : v0 * ta + 0.5 * SK.accel * ta * ta + SK.foot * (t - ta);
+  }
+
+  function read(w, serving) {
+    predict(w);
+    geom();
+    const r = w.ball.r;
+    st.has = false;
+    const D = dbg; D.n++; D.mine = 0;
+    let lateX = NaN, lateZ = NaN;
+    for (let i = 0; i < np; i++) {
+      const t = (i + 1) * DTP, x = PX[i], y = PY[i], z = PZ[i];
+      if (x * st.side < -NEUTRAL) continue; // your half
+      if (y + r < 0.12) continue;
+      D.mine++;
+      const jump = y > G.standY ? y - G.standY + 0.04 : 0;
+      if (jump > SK.jump) { D.high++; continue; } // too high even for a ninja
+      if (!aim(x, z, VX[i], VZ[i], serving)) { D.aim++; continue; }
+      if (!stance(x, z)) { D.stance++; continue; }
+      const lead = leadFor(jump), d = Math.sqrt((OUT.sx - st.x) * (OUT.sx - st.x) + (OUT.sz - st.z) * (OUT.sz - st.z));
+      if (d > reach(t - lead) + 0.25) { D.late++; if (lateX !== lateX) { lateX = OUT.sx; lateZ = OUT.sz; } continue; }
+      D.ok++;
+      st.has = true; st.tc = st.t + t; st.cx = x; st.cy = y; st.cz = z; st.sx = OUT.sx; st.sz = OUT.sz;
+      st.dx = OUT.dx; st.dz = OUT.dz; st.jump = jump; st.lead = lead;
+      return;
+    }
+    // nothing he can make: run at the first spot anyway (he may still get a late hand on it), else stand guard
+    if (lateX === lateX) { st.sx = lateX; st.sz = lateZ; } else guardSpot(w);
+  }
+
+  // Where to wait when there is nothing to read: inside the orbit, a little into his half from the back crossing, which is where
+  // a ball you reverse comes back over. It follows the orbit in as the rope winds.
+  function guardSpot(w) {
+    geom();
+    const p = w.ball.p, rho = Math.sqrt(p.x * p.x + p.z * p.z), orbit = w.ball.speed > 2 ? rho : CFG.world.ropeL * 0.85;
+    const a = -Math.PI / 2 + st.side * 0.75, r = U.clamp(orbit - G.so, G.rIn, G.rOut);
+    st.sx = Math.cos(a) * r; st.sz = Math.sin(a) * r;
+  }
+
+  function steer(tx, tz, dt) {
+    const dx = tx - st.x, dz = tz - st.z, d = Math.sqrt(dx * dx + dz * dz);
+    const want = d > 1e-4 ? Math.min(SK.foot, d * 5) : 0, wx = d > 1e-4 ? (dx / d) * want : 0, wz = d > 1e-4 ? (dz / d) * want : 0;
+    const ax = wx - st.vx, az = wz - st.vz, al = Math.sqrt(ax * ax + az * az), am = SK.accel * dt * (st.y > 0.02 ? 0.35 : 1);
+    if (al > am) { st.vx += (ax / al) * am; st.vz += (az / al) * am; } else { st.vx = wx; st.vz = wz; }
+    st.x += st.vx * dt; st.z += st.vz * dt;
+    clampRegion();
+  }
+
+  function quip(kind, chance) {
+    if (!(CFG.kage.taunts > 0) || st.sayCool > 0 || rnd() > chance) return;
+    st.say = pick(KAGE_LINES[kind]); st.sayT = kind === 'won' || kind === 'lost' ? 2.6 : 1.5; st.sayCool = 2.2;
+  }
+
+  // the moment of contact: a hand through the ball where his fist actually is, with his errors on it
+  function strike(w, serving) {
+    const b = w.ball, p = b.p;
+    let hx = p.x - st.x, hz = p.z - st.z;
+    const hl = Math.sqrt(hx * hx + hz * hz) || 1, sx = st.x + (hx / hl) * G.shOff, sz = st.z + (hz / hl) * G.shOff; // his front shoulder
+    hx = p.x - sx; hz = p.z - sz;
+    const dy = p.y - (st.y + G.shoulder);
+    if (Math.sqrt(hx * hx + dy * dy + hz * hz) > G.reachC + 0.12 || (p.x * st.side < -NEUTRAL && !serving)) return null;
+    aim(p.x, p.z, b.v.x, b.v.z, true);
+    const a = gauss() * SK.aimSd, ca = Math.cos(a), sa = Math.sin(a);
+    const ux = OUT.dx * ca - OUT.dz * sa, uz = OUT.dx * sa + OUT.dz * ca;
+    // a fast ball is harder to meet clean, as it is for you: the pressure fades as his level rises
+    const q = U.clamp01(b.speed / CFG.hit.vMax), pressure = q * q * (1.1 - SK.t);
+    let off = gauss() * SK.offSd * (1 + pressure);
+    if (rnd() < SK.whiff + 0.4 * pressure) off = (off < 0 ? -1 : 1) * (1.15 + 0.5 * rnd());
+    off = U.clamp(off, -1.9, 1.9);
+    const rs = b.r + HAND_R, cx = p.x - uz * off * rs, cz = p.z + ux * off * rs;
+    hand.p0.x = cx - ux * 0.55; hand.p0.y = p.y; hand.p0.z = cz - uz * 0.55;
+    hand.p1.x = cx + ux * 0.08; hand.p1.y = p.y; hand.p1.z = cz + uz * 0.08;
+    const u = SK.hand * (0.9 + 0.2 * rnd()) * (serving ? 0.8 : 1);
+    hand.vx = ux * u; hand.vz = uz * u; hand.speed = u; hand.r = HAND_R; hand.stroke = -2 - (++strokes % 1e6); hand.owner = 'cpu';
+    st.fdx = ux; st.fdz = uz;
+    return hand;
+  }
+
+  // info: { state: the rules' state ('ready' | 'playing' | 'wound'), server: 'you' | 'kage' }. Returns a hand to try, or null.
+  function update(dt, realDt, w, info) {
+    kageSkill(SK); lastW = w;
+    if (realDt > 0) { st.sayT -= realDt; st.sayCool -= realDt; }
+    if (!(dt > 0)) return null;
+    st.t += dt; st.blind -= dt; st.cool -= dt; st.reread -= dt; st.moodT += dt;
+    if (st.t > st.blinkAt) st.blinkAt = st.t + 2.2 + rnd() * 3.5;
+    geom();
+    let out = null;
+    const serving = info.state === 'ready' && info.server === 'kage';
+
+    if (st.phase === 'won' || st.phase === 'lost' || info.state === 'wound' || w.state !== 'live') {
+      st.has = false;
+      const hop = st.phase === 'won' ? Math.max(0, Math.sin(st.moodT * 9)) * 0.16 : 0;
+      st.y = hop;
+      steer(st.x, st.z, dt);
+    } else if (st.phase === 'swing') {
+      const tp = st.tc; // the apex is the contact
+      if (st.h > 0) { const q = (st.t - tp) / st.up; st.y = Math.abs(q) < 1 ? st.h * (1 - q * q) : 0; } else st.y = 0;
+      steer(st.sx, st.sz, dt);
+      if (!st.struck && st.t >= st.tc) { st.struck = true; out = strike(w, serving); if (!out) { st.res = -1; quip('whiff', 0.35); } }
+      if (st.t >= st.tc + Math.max(0.26, st.up) && st.y <= 0) { st.phase = 'ready'; st.tLand = st.h > 0.05 ? st.t : st.tLand; st.y = 0; st.cool = 0.12; st.reread = 0; }
+    } else {
+      st.y = 0;
+      if (info.state === 'ready' && !serving) { st.has = false; steer(st.homeX, st.homeZ, dt); } // your serve: he waits at home
+      else {
+        if (serving) st.serveT += dt;
+        const may = serving ? st.serveT > SERVE_WAIT : st.blind <= 0;
+        if (may && st.reread <= 0) { read(w, serving); st.reread = U.lerp(0.32, 0.1, U.clamp01((CFG.kage.difficulty - 1) / 9)); }
+        if (st.has && st.t > st.tc + 0.03) st.has = false;
+        steer(st.has || st.sx || st.sz ? st.sx : st.homeX, st.has || st.sx || st.sz ? st.sz : st.homeZ, dt);
+        if (st.has && st.cool <= 0 && st.t >= st.tc - st.lead) {
+          st.phase = 'swing'; st.ts = st.t; st.struck = false; st.res = 0;
+          st.h = st.jump > 0 ? st.jump : 0; st.up = upFor(st.h);
+          if (serving) quip('serve', 0.5);
+        }
+      }
+    }
+    // a run cycle that follows his feet
+    st.run += Math.sqrt(st.vx * st.vx + st.vz * st.vz) * dt * 4.2;
+    return out;
+  }
+
+  // a hit landed (or not) — his, or yours
+  function onSwing(res) {
+    st.res = res ? 1 : -1;
+    st.cool = 0.25;
+    if (res) quip(res.power > 0.7 ? 'smash' : 'hit', res.power > 0.7 ? 0.55 : 0.25);
+    else quip('whiff', 0.35);
+  }
+  function onWorldHit(res, who) {
+    if (who === 'kage') { st.blind = 0.12; st.has = false; return; } // he knows where he sent it
+    kageSkill(SK);
+    st.blind = SK.reaction; st.has = false; st.reread = 0;
+    if (lastW) guardSpot(lastW); // he cannot read it yet, but he knows where reversals come back
+    if (st.phase === 'swing' && !st.struck) { st.phase = 'ready'; st.y = 0; } // he was set for a different ball
+  }
+  function onRoundEnd(winner) {
+    st.phase = winner === 'kage' ? 'won' : 'lost'; st.moodT = 0; st.has = false; st.vx = 0; st.vz = 0;
+    st.sayCool = 0; quip(winner === 'kage' ? 'won' : 'lost', 0.95);
+  }
+
+  // a new rally: home (or by the ball when he serves), still, reading again
+  function reset(w, info) {
+    geom(); home();
+    st.phase = 'ready'; st.has = false; st.blind = 0.3; st.cool = 0; st.reread = 0; st.serveT = 0;
+    st.vx = 0; st.vz = 0; st.y = 0; st.struck = false; st.res = 0; st.moodT = 0; st.sx = 0; st.sz = 0;
+    st.x = st.homeX; st.z = st.homeZ;
+    if (info && info.server === 'kage' && w) { const b = w.ball.p; st.x = b.x + st.side * 0.5; st.z = b.z + 0.45; }
+    clampRegion();
+    st.say = ''; st.sayT = 0;
+    if (info && info.server === 'kage') quip('serve', 0.6);
+  }
+
+  // ───────────────────────── the actor the scene draws ─────────────────────────
+  const A = { x: 0, y: 0, s: 0, d: 0 }, B = { x: 0, y: 0, s: 0, d: 0 }, Cc = { x: 0, y: 0, s: 0, d: 0 };
+  const T1 = { x: 0, y: 0 }, T2 = { x: 0, y: 0 };
+  let shadowG = null, shadowCtx = null;
+
+  // screen point → sheet units, through this frame's rig transform (the inverse of drawRig's)
+  function toSheet(sx, sy, out) {
+    let dx = sx - pose.x, dy = sy - pose.y;
+    if (pose.tilt) { const c = Math.cos(-pose.tilt), s = Math.sin(-pose.tilt), ex = dx * c - dy * s; dy = dx * s + dy * c; dx = ex; }
+    out.x = dx / (pose.mir * pose.s * pose.sqx) + CX; out.y = dy / (pose.s * pose.sqy) + SOLE;
+    return out;
+  }
+  // keep a fist within the stretched arm's length of its shoulder
+  function limitArm(sh, p) {
+    const dx = p.x - sh.x, dy = p.y - sh.y, d = Math.sqrt(dx * dx + dy * dy), m = ARM_LEN * ARM_MAX;
+    if (d > m) { p.x = sh.x + (dx / d) * m; p.y = sh.y + (dy / d) * m; }
+  }
+
+  function poseFor(cam, w) {
+    const P = pose, K = CFG.kage, t = st.t;
+    cam.project(st.x, st.y, st.z, A);
+    P.x = A.x; P.y = A.y; P.s = (A.s * K.size) / 207.5; P.t = t;
+    // facing: toward what he is about to hit, else the ball (hysteresis so he does not flicker)
+    const tx = st.phase === 'swing' || st.has ? st.cx : w.ball.p.x, ty = st.phase === 'swing' || st.has ? st.cy : w.ball.p.y, tz = st.phase === 'swing' || st.has ? st.cz : w.ball.p.z;
+    cam.project(tx, ty, tz, B);
+    if (st.phase !== 'swing') { if (B.x > A.x + 14) st.face = 1; else if (B.x < A.x - 14) st.face = -1; }
+    P.mir = st.face > 0 ? -1 : 1;
+    const sp = Math.sqrt(st.vx * st.vx + st.vz * st.vz), runK = U.clamp01(sp / 3);
+    cam.project(st.x + st.vx * 0.05, st.y, st.z + st.vz * 0.05, Cc);
+    const svx = (Cc.x - A.x) * 20; // screen px/s
+    P.tilt = U.clamp(svx * 0.0006, -0.22, 0.22);
+    P.sqx = 1; P.sqy = 1; P.headTilt = Math.sin(t * 1.3) * 0.03; P.headDy = Math.sin(t * 2.2) * 1.2; P.lift = 0;
+    P.wind = U.clamp01(sp / 4 + (st.y > 0.05 ? 0.6 : 0)); P.blink = t > st.blinkAt - 0.12 && t < st.blinkAt; P.smear = 0;
+    const land = t - st.tLand; // a landing squashes, then springs back
+    if (land >= 0 && land < 0.25) { const k = Math.exp(-land * 14) * Math.cos(land * 30) * 0.12; P.sqy = 1 - k; P.sqx = 1 + k * 0.7; }
+    else { const br = Math.sin(t * 2.4) * 0.012; P.sqy = 1 + br; P.sqx = 1 - br * 0.5; }
+    // legs: a run cycle, tucked in the air
+    const s1 = Math.sin(st.run), c1 = Math.cos(st.run);
+    if (st.y > 0.04) { P.lax = 90; P.lay = 210; P.rax = 116; P.ray = 214; P.lknee = 12; P.rknee = 10; P.lrot = 0.2; P.rrot = 0.1; P.lift = 0.6; }
+    else {
+      P.lax = 85 - s1 * 13 * runK; P.lay = 223.5 - Math.max(0, c1) * 9 * runK; P.rax = 115 + s1 * 13 * runK; P.ray = 223.5 - Math.max(0, -c1) * 9 * runK;
+      P.lknee = 3 + 6 * runK; P.rknee = 3 + 6 * runK; P.lrot = -s1 * 0.2 * runK; P.rrot = s1 * 0.2 * runK;
+    }
+    // arms: rest, guard (the ball is his), the swing, and the moods
+    const guard = st.has || (w.ball.p.x * st.side > 0 && w.ball.speed > 1);
+    P.fx = guard ? 58 : 50 + Math.sin(t * 2.4) * 1.5; P.fy = guard ? 162 : 184; P.fBend = 10;
+    P.bx = guard ? 142 : 151; P.by = guard ? 170 : 193; P.bBend = -9;
+    if (sp > 0.6 && !guard) { P.fx = 50 + c1 * 10 * runK; P.fy = 182 - Math.abs(s1) * 4; P.bx = 151 - c1 * 10 * runK; P.by = 190 - Math.abs(c1) * 4; }
+    if (st.phase === 'won') { const k = Math.min(1, st.moodT * 5); P.fx = U.lerp(50, 64, k); P.fy = U.lerp(184, 112, k); P.bx = U.lerp(151, 138, k); P.by = U.lerp(193, 112, k); P.lift = 1; P.headTilt = -0.06 + Math.sin(st.moodT * 9) * 0.05; }
+    else if (st.phase === 'lost') { const k = Math.min(1, st.moodT * 3); P.fx = 56; P.fy = U.lerp(184, 198, k); P.bx = 146; P.by = U.lerp(193, 200, k); P.headDy = 7 * k; P.sqy *= 1 - 0.03 * k; P.headTilt = 0.08 * k; }
+    else if (st.phase === 'swing') swingArm(cam, w, P);
+  }
+
+  // the striking arm: wind back, whip through the contact point at the moment of contact, follow through, recover
+  function swingArm(cam, w, P) {
+    const t = st.t, tc = st.tc, ts = st.ts, r = w.ball.r;
+    cam.project(st.cx - st.dx * r, st.cy, st.cz - st.dz * r, B); toSheet(B.x, B.y, T1); // where the fist meets the ball
+    limitArm(SH_F, T1);
+    const ax = T1.x - SH_F.x, ay = T1.y - SH_F.y, al = Math.sqrt(ax * ax + ay * ay) || 1, ux = ax / al, uy = ay / al;
+    const bkx = SH_F.x - ux * 30 + 6, bky = SH_F.y - uy * 30 - 12; // wound back, away from the ball
+    let fx, fy, k0x, k0y;
+    if (t < tc) {
+      const u = U.clamp01((t - ts) / Math.max(0.05, tc - ts));
+      if (u < 0.55) { const e = U.easeOut(u / 0.55, 2); fx = U.lerp(58, bkx, e); fy = U.lerp(162, bky, e); k0x = fx; k0y = fy; }
+      else { const e = U.easeIn((u - 0.55) / 0.45, 2.2); fx = U.lerp(bkx, T1.x, e); fy = U.lerp(bky, T1.y, e); P.smear = e; const e0 = U.easeIn(Math.max(0, (u - 0.62) / 0.45), 2.2); k0x = U.lerp(bkx, T1.x, e0); k0y = U.lerp(bky, T1.y, e0); }
+      P.headTilt += 0.06 * (uy < 0 ? -1 : 1);
+    } else {
+      const v = (t - tc) / 0.11;
+      cam.project(st.cx + st.fdx * 0.6, st.cy, st.cz + st.fdz * 0.6, Cc); toSheet(Cc.x, Cc.y, T2); limitArm(SH_F, T2);
+      if (v < 1) { const e = U.easeOut(v, 2); fx = U.lerp(T1.x, T2.x, e); fy = U.lerp(T1.y, T2.y, e); P.smear = st.res >= 0 ? 1 - e * 0.7 : 0.5 * (1 - e); k0x = T1.x; k0y = T1.y; }
+      else { const e = U.easeInOut(U.clamp01((v - 1) * 0.11 / 0.24)); fx = U.lerp(T2.x, 58, e); fy = U.lerp(T2.y, 162, e); k0x = fx; k0y = fy; P.smear = 0.3 * (1 - e); }
+    }
+    P.fx = fx; P.fy = fy; P.sx0 = k0x; P.sy0 = k0y; P.fBend = 4;
+    P.bx = 150 + ux * 8; P.by = 176 - uy * 10; // the back arm counter-swings
+  }
+
+  function drawShadow(ctx, cam, kx, ky) {
+    const K = CFG.kage, rr = 0.3 * K.size / 1.6 * (1 - 0.35 * U.clamp01(st.y / 1.5));
+    cam.project(st.x, 0, st.z, A); cam.project(st.x + rr, 0, st.z, B); cam.project(st.x, 0, st.z + rr, Cc);
+    if (shadowCtx !== ctx) { shadowCtx = ctx; shadowG = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); shadowG.addColorStop(0, 'rgba(0,0,0,0.85)'); shadowG.addColorStop(0.6, 'rgba(0,0,0,0.6)'); shadowG.addColorStop(1, 'rgba(0,0,0,0)'); }
+    ctx.setTransform(kx * (B.x - A.x), ky * (B.y - A.y), kx * (Cc.x - A.x), ky * (Cc.y - A.y), kx * A.x, ky * A.y);
+    ctx.globalAlpha = 0.55 * (1 - 0.5 * U.clamp01(st.y / 1.5)); ctx.fillStyle = shadowG;
+    ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.fill();
+    // his neon on the floor
+    if (K.glow > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.1 * K.glow * (1 - U.clamp01(st.y)); ctx.fillStyle = C.NEON; ctx.beginPath(); ctx.arc(0, 0, 1.25, 0, TAU); ctx.fill(); ctx.globalCompositeOperation = 'source-over'; }
+    ctx.globalAlpha = 1;
+    if (K.showReach > 0) drawReach(ctx, cam, kx, ky);
+  }
+
+  function drawReach(ctx, cam, kx, ky) {
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+    ctx.strokeStyle = C.NEON; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    for (let i = 0; i <= 32; i++) { const a = (i / 32) * TAU; cam.project(st.x + Math.cos(a) * G.so, 0, st.z + Math.sin(a) * G.so, A); if (i) ctx.lineTo(A.x, A.y); else ctx.moveTo(A.x, A.y); }
+    ctx.stroke();
+    if (st.has || st.phase === 'swing') { // the planned contact, and where he will stand for it
+      cam.project(st.cx, st.cy, st.cz, A); ctx.beginPath(); ctx.arc(A.x, A.y, 10, 0, TAU); ctx.moveTo(A.x - 14, A.y); ctx.lineTo(A.x + 14, A.y); ctx.moveTo(A.x, A.y - 14); ctx.lineTo(A.x, A.y + 14); ctx.stroke();
+      cam.project(st.sx, 0, st.sz, A); ctx.beginPath(); ctx.arc(A.x, A.y, 4, 0, TAU); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawSay(ctx, cam, kx, ky) {
+    if (!(st.sayT > 0) || !st.say) return;
+    const a = U.clamp01(st.sayT / 0.25) * U.clamp01((st.sayT > 1.4 ? 1.6 - st.sayT : 1) * 6);
+    if (a <= 0.01) return;
+    // over the hood as drawn (he is an upright billboard; a projected head-top point would sit on his face at this pitch)
+    A.x = pose.x; A.y = pose.y - (SOLE - 16) * pose.s * pose.sqy;
+    const fs = U.clamp(cam.pxPerM * 0.15, 12, 19);
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+    ctx.font = '800 ' + fs + 'px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    const tw = ctx.measureText(st.say).width, pw = tw + fs * 1.3, ph = fs * 1.9;
+    const x = U.clamp(A.x - pw / 2, 6, cam.w - pw - 6), y = Math.max(cam.safe.top - ph * 0.4, A.y - ph - 10);
+    ctx.globalAlpha = a;
+    ctx.fillStyle = 'rgba(24,12,34,0.92)'; ctx.strokeStyle = C.NEON; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, pw, ph, ph / 2) : ctx.rect(x, y, pw, ph); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(U.clamp(A.x, x + ph / 2, x + pw - ph / 2) - 6, y + ph - 0.5); ctx.lineTo(U.clamp(A.x, x + ph / 2, x + pw - ph / 2), y + ph + 8); ctx.lineTo(U.clamp(A.x, x + ph / 2, x + pw - ph / 2) + 6, y + ph - 0.5); ctx.fill();
+    ctx.fillStyle = '#fbeaff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(st.say, x + pw / 2, y + ph / 2 + 0.5);
+    ctx.globalAlpha = 1;
+  }
+
+  function draw(ctx, cam, kx, ky, w) {
+    if (!hasCanvas) return;
+    poseFor(cam, w);
+    const need = pose.s * Math.max(kx, ky);
+    if (!ensureArt(need * 1.15)) return;
+    drawRig(ctx, kx, ky, pose);
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+  }
+
+  const actor = {
+    // depth for the scene's sort: through a strike he goes behind the ball, so the contact is never hidden by his hood
+    get z() { return st.phase === 'swing' && lastW && Math.abs(st.t - st.tc) < 0.2 ? Math.min(st.z, lastW.ball.p.z - 0.02) : st.z; },
+    drawShadow, drawSay,
+    draw(ctx, cam, kx, ky, w) { draw(ctx, cam, kx, ky, w); },
+  };
+
+  return {
+    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, predict: (w) => { predict(w); return np; },
+    get side() { return st.side; }, get dir() { return st.dir; },
+    ensureArt, drawRig, hasCanvas, art, C,
+  };
+}
+
 // ════════ ui.js ════════
 // ui.js — everything in the DOM: the HUD numbers, the round card, the bottom hint and the Feel panel.
 //
@@ -3613,7 +4601,11 @@ function createGame() {
 // handful of compares and no allocation. The canvas owns every swipe: only the HUD buttons take the pointer (CSS).
 //
 // The Feel panel persists only the numbers you moved off their defaults, so retuning a default in code reaches every
-// slider you never touched instead of being masked by a stale snapshot. Copy/Paste speak the full snapshot.
+// slider you never touched instead of being masked by a stale snapshot. Copy/Paste speak the full snapshot. A schema entry
+// is a slider unless it says `type: 'toggle'` (a 0/1 switch) or `type: 'choice'` (an index into `options`): every value is
+// still a number, so saving, resetting and Copy/Paste treat them all alike. Groups are listed by their entries' `rank`
+// (lowest first, default 0), then in the order modules declared them. The panel opens as a drawer and expands to fill the
+// screen (columns of groups, a filter, open/close all), remembered.
 
 CFG.ui = {
   ease: 18, // 1/s: how fast the big mph number chases the ball as it speeds up (it settles down at 30 % of this)
@@ -3645,9 +4637,12 @@ function createUI(root, opts) {
   const clock = (cs) => Math.floor(cs / 6000) + ':' + pad2(Math.floor(cs / 100) % 60) + '.' + pad2(cs % 100);
   const setSpeed = field('hSpeed', String), setHits = field('hHits', String), setTime = field('hTime', clock);
   const setTurns = field('hTurns', (k) => (k / 10).toFixed(1)), setGoal = field('hGoal', (k) => (k / 10).toFixed(1));
+  const setYou = field('hYou', String), setKage = field('hKage', String);
+  const setTY = field('hTY', (k) => (k / 10).toFixed(1)), setTK = field('hTK', (k) => (k / 10).toFixed(1));
+  const tugY = $('hTugY'), tugK = $('hTugK');
 
   // ───────────── HUD ─────────────
-  let shown = 0, lastHits = 0, heat = -1, barQ = -1, tickQ = -1, state = '';
+  let shown = 0, lastHits = 0, heat = -1, barQ = -1, tickQ = -1, state = '', mode = '', ks = 0, lead = '-', tyQ = -1, tkQ = -1;
 
   // a hit: the number swells and flashes white-hot, then settles (the counter follows at half strength)
   function pop() {
@@ -3670,6 +4665,9 @@ function createUI(root, opts) {
     if (h !== heat) { heat = h; speedEl.setAttribute('data-heat', h); }
 
     if (snap.state !== state) { state = snap.state; hud.setAttribute('data-state', state); }
+    const m = snap.mode === 'versus' ? 'versus' : 'solo';
+    if (m !== mode) { mode = m; hud.setAttribute('data-mode', m); }
+    if (m === 'versus') { versusHud(snap); return; }
     const goal = snap.turnsGoal > 0 ? snap.turnsGoal : 1, turns = snap.turns > 0 ? snap.turns : 0;
     setTurns(Math.round(turns * 10));
     setGoal(Math.round(goal * 10));
@@ -3680,6 +4678,22 @@ function createUI(root, opts) {
     const tq = Math.round(goal * 10);
     if (tq !== tickQ) { tickQ = tq; barWrap.style.setProperty('--tick', 1000 / tq + '%'); }
 
+    if (snap.hits !== lastHits) { if (snap.hits > lastHits) pop(); lastHits = snap.hits; }
+  }
+
+  // versus: the score (Kage's on his side of the screen), and a tug of war for the rope, filling from the middle toward
+  // whoever it is winding for, with that many turns on their end
+  function versusHud(snap) {
+    const k = snap.kageSide < 0 ? -1 : 1;
+    if (k !== ks) { ks = k; hud.setAttribute('data-ks', k < 0 ? 'l' : 'r'); }
+    setYou(snap.you | 0); setKage(snap.kage | 0);
+    const g = snap.turnsGoal > 0 ? snap.turnsGoal : 1, l = snap.lead || 0;
+    const yq = l > 0 ? Math.round(U.clamp01(l / g) * 500) : 0, kq = l < 0 ? Math.round(U.clamp01(-l / g) * 500) : 0;
+    if (yq !== tyQ) { tyQ = yq; tugY.style.transform = 'scaleX(' + yq / 500 + ')'; }
+    if (kq !== tkQ) { tkQ = kq; tugK.style.transform = 'scaleX(' + kq / 500 + ')'; }
+    setTY(l > 0 ? Math.round(l * 10) : 0); setTK(l < 0 ? Math.round(-l * 10) : 0);
+    const ld = l > 0.05 ? 'y' : l < -0.05 ? 'k' : '';
+    if (ld !== lead) { lead = ld; hud.setAttribute('data-lead', ld); }
     if (snap.hits !== lastHits) { if (snap.hits > lastHits) pop(); lastHits = snap.hits; }
   }
 
@@ -3707,6 +4721,24 @@ function createUI(root, opts) {
 
   function showResult(s) {
     if (!s) return;
+    const vs = s.mode === 'versus';
+    resultEl.setAttribute('data-mode', vs ? 'versus' : 'solo');
+    resultEl.setAttribute('data-winner', vs ? s.winner || '' : '');
+    if (vs) {
+      $('rTitle').textContent = s.matchOver ? 'Match over' : 'Round ' + s.round + ' · first to ' + s.rounds;
+      $('rWho').textContent = s.winner === 'you' ? (s.matchOver ? 'You win the match' : 'You win the round') : s.matchOver ? 'Kage wins the match' : 'Kage takes the round';
+      $('rScore').textContent = 'You ' + s.you + ' – ' + s.kage + ' Kage';
+      $('rHits').textContent = s.hits;
+      $('rTop').textContent = Math.round(s.topMph);
+      $('rBest').textContent = span(Math.max(0, s.timeMs)); $('rBestK').textContent = 'Rally';
+      $('rAgain').textContent = s.matchOver ? 'Rematch' : 'Next round';
+      $('rNew').hidden = true; $('rDelta').textContent = '';
+      armedAt = performance.now() + CFG.ui.resultArmMs;
+      resultEl.classList.add('on'); resultEl.setAttribute('aria-hidden', 'false');
+      try { $('rAgain').focus({ preventScroll: true }); } catch (e) { /* nothing to focus */ }
+      return;
+    }
+    $('rTitle').textContent = 'Rope wound'; $('rBestK').textContent = 'Best'; $('rAgain').textContent = 'Go again';
     const ms = Math.max(0, s.timeMs), slow = ms >= 60000;
     $('rTime').textContent = slow ? clock(Math.floor(ms / 10)) : (ms / 1000).toFixed(2);
     $('rUnit').hidden = slow;
@@ -3725,13 +4757,15 @@ function createUI(root, opts) {
   resultEl.addEventListener('click', () => {
     if (!resultEl.classList.contains('on') || performance.now() < armedAt) return;
     hideResult();
-    if (opts.onReset) opts.onReset();
+    const go = opts.onNext || opts.onReset;
+    if (go) go();
   });
 
   // ───────────── Feel panel ─────────────
   const tuner = (function () {
-    const FEEL = 'tetherball.feel.v1', GROUPS = 'tetherball.feel.groups.v1';
+    const FEEL = 'tetherball.feel.v1', GROUPS = 'tetherball.feel.groups.v1', FULL = 'tetherball.feel.full.v1';
     const panel = $('panel'), listEl = $('feelGroups'), body = $('feelBody');
+    const fullBtn = $('feelFull'), filterEl = $('feelFilter');
     const ioWrap = $('feelIOWrap'), ta = $('feelIO'), ioHint = $('feelIOHint'), applyBtn = $('feelApply'), toastEl = $('feelToast');
     const RESET_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.3-5.4"/><path d="M19.8 4.2v4.6h-4.6"/></svg>';
     const rows = [], badges = {}, known = new Set();
@@ -3774,9 +4808,13 @@ function createUI(root, opts) {
 
     function paint(r, dragging) {
       const v = cfgGet(r.s.path), num = typeof v === 'number' && isFinite(v) ? v : r.s.min;
-      if (!dragging) r.inp.value = String(num);
-      r.inp.style.setProperty('--f', String(U.clamp01((num - r.s.min) / (r.s.max - r.s.min || 1))));
-      r.num.data = num.toFixed(r.dec);
+      if (r.kind === 'toggle') r.sw.setAttribute('aria-checked', num >= 0.5 ? 'true' : 'false');
+      else if (r.kind === 'choice') { const k = Math.round(num); for (let i = 0; i < r.opts.length; i++) r.opts[i].setAttribute('aria-checked', i === k ? 'true' : 'false'); }
+      else {
+        if (!dragging) r.inp.value = String(num);
+        r.inp.style.setProperty('--f', String(U.clamp01((num - r.s.min) / (r.s.max - r.s.min || 1))));
+        r.num.data = num.toFixed(r.dec);
+      }
       r.row.classList.toggle('chg', moved(r.s.path, num));
     }
     function badge() {
@@ -3816,9 +4854,42 @@ function createUI(root, opts) {
       sl.addEventListener('pointercancel', end);
     }
 
+    // a switch (0/1) or a row of choices (an index): same row, same reset, same storage as a slider
+    function setNum(r, v) { cfgSet(r.s.path, v); paint(r, false); badge(); save(); }
+    function makeToggle(r, id) {
+      const s = r.s, lab = el('span', 'lab'), rst = el('button', 'rst'), sw = r.sw = el('button', 'sw');
+      lab.id = id + '-l'; lab.textContent = s.label;
+      rst.type = 'button'; rst.setAttribute('aria-label', 'Reset ' + s.label); rst.innerHTML = RESET_SVG;
+      sw.type = 'button'; sw.id = id; sw.setAttribute('role', 'switch'); sw.setAttribute('aria-labelledby', lab.id);
+      sw.addEventListener('click', () => setNum(r, cfgGet(s.path) >= 0.5 ? 0 : 1));
+      rst.addEventListener('click', () => { const d = dflt(s.path); if (d !== undefined) setNum(r, d); });
+      r.row.classList.add('tg'); r.row.append(lab, rst, sw);
+      return r;
+    }
+    function makeChoice(r, id) {
+      const s = r.s, lab = el('span', 'lab'), rst = el('button', 'rst'), seg = el('div', 'seg');
+      lab.id = id + '-l'; lab.textContent = s.label;
+      rst.type = 'button'; rst.setAttribute('aria-label', 'Reset ' + s.label); rst.innerHTML = RESET_SVG;
+      seg.setAttribute('role', 'radiogroup'); seg.setAttribute('aria-labelledby', lab.id); seg.id = id;
+      r.opts = [];
+      const names = s.options || [];
+      for (let i = 0; i < names.length; i++) {
+        const b = el('button', 'opt');
+        b.type = 'button'; b.textContent = names[i]; b.setAttribute('role', 'radio');
+        b.addEventListener('click', () => setNum(r, i));
+        r.opts.push(b); seg.appendChild(b);
+      }
+      rst.addEventListener('click', () => { const d = dflt(s.path); if (d !== undefined) setNum(r, d); });
+      r.row.classList.add('ch'); r.row.append(lab, rst, seg);
+      return r;
+    }
+
     function makeRow(s) {
-      const r = { s, g: s.group || 'Other', dec: decimals(s), row: el('div', 'row'), num: doc.createTextNode('') };
+      const r = { s, g: s.group || 'Other', dec: decimals(s), row: el('div', 'row'), num: doc.createTextNode(''), kind: s.type === 'toggle' || s.type === 'choice' ? s.type : 'range' };
       const id = 'f-' + s.path.replace(/\W/g, '-');
+      r.row.dataset.find = (s.label + ' ' + r.g).toLowerCase();
+      if (r.kind === 'toggle') return makeToggle(r, id);
+      if (r.kind === 'choice') return makeChoice(r, id);
       const lab = el('label', 'lab'); lab.htmlFor = id; lab.textContent = s.label;
       const val = el('output', 'val'); val.htmlFor = id; val.appendChild(r.num);
       if (s.unit) { const u = el('small'); u.textContent = s.unit; val.appendChild(u); }
@@ -3835,6 +4906,7 @@ function createUI(root, opts) {
 
     function openGroups() { try { const a = JSON.parse(lsGet(GROUPS)); return Array.isArray(a) ? a : null; } catch (e) { return null; } }
     function saveGroups() {
+      if (listEl.classList.contains('filtering')) return; // a filter opens groups for itself: not a choice to remember
       const open = [];
       for (let i = 0; i < listEl.children.length; i++) if (listEl.children[i].open) open.push(listEl.children[i].dataset.g);
       lsSet(GROUPS, JSON.stringify(open));
@@ -3842,14 +4914,16 @@ function createUI(root, opts) {
     function build() {
       listEl.textContent = ''; rows.length = 0;
       for (const g in badges) delete badges[g];
-      const byGroup = new Map(), remembered = openGroups();
+      const byGroup = new Map(), remembered = openGroups(), rank = new Map();
       for (let i = 0; i < CFG_SCHEMA.length; i++) {
-        const g = CFG_SCHEMA[i].group || 'Other';
-        if (!byGroup.has(g)) byGroup.set(g, []);
+        const g = CFG_SCHEMA[i].group || 'Other', rk = typeof CFG_SCHEMA[i].rank === 'number' ? CFG_SCHEMA[i].rank : 0;
+        if (!byGroup.has(g)) { byGroup.set(g, []); rank.set(g, rk); } else if (rk < rank.get(g)) rank.set(g, rk);
         byGroup.get(g).push(CFG_SCHEMA[i]);
       }
+      const order = Array.from(byGroup.keys()).map((g, i) => [g, i]).sort((a, b) => rank.get(a[0]) - rank.get(b[0]) || a[1] - b[1]);
       let first = true;
-      byGroup.forEach((items, name) => {
+      order.forEach(([name]) => {
+        const items = byGroup.get(name);
         const d = el('details', 'grp'), sum = el('summary'), n = badges[name] = el('span', 'n');
         d.dataset.g = name;
         d.open = remembered ? remembered.indexOf(name) >= 0 : first;
@@ -3912,9 +4986,37 @@ function createUI(root, opts) {
     function reset() { cfgResetTuned(); lsSet(FEEL, null); paintAll(); toast('Reset to defaults'); }
 
     function isOpen() { return panel.classList.contains('open'); }
+    function isFull() { return panel.classList.contains('full'); }
+    // full screen: the groups flow into as many columns as fit, and the filter row shows
+    function setFull(on) {
+      panel.classList.toggle('full', !!on);
+      fullBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      fullBtn.setAttribute('aria-label', on ? 'Shrink settings back to a drawer' : 'Expand settings to full screen');
+      lsSet(FULL, on ? '1' : null);
+      if (!on && filterEl.value) { filterEl.value = ''; filter(); }
+    }
+    // a filter shows only the rows whose label (or group) has every word typed, and opens their groups for as long as it runs
+    function filter() {
+      const words = filterEl.value.toLowerCase().split(/\s+/).filter(Boolean), groupsOpen = openGroups();
+      for (let i = 0; i < listEl.children.length; i++) {
+        const d = listEl.children[i];
+        let any = false;
+        for (const row of d.querySelectorAll('.row')) {
+          const hit = words.every((w) => row.dataset.find.indexOf(w) >= 0);
+          row.hidden = !hit; if (hit) any = true;
+        }
+        d.hidden = !any;
+        if (words.length) { if (any) d.open = true; } else d.open = groupsOpen ? groupsOpen.indexOf(d.dataset.g) >= 0 : i === 0;
+      }
+      listEl.classList.toggle('filtering', words.length > 0);
+    }
+    function openAll(on) {
+      for (let i = 0; i < listEl.children.length; i++) listEl.children[i].open = on;
+      saveGroups();
+    }
     function open() {
       adopt();
-      if (built !== CFG_SCHEMA.length) build();
+      if (built !== CFG_SCHEMA.length) { build(); if (filterEl.value) filter(); }
       paintAll();
       panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); gearBtn.setAttribute('aria-expanded', 'true');
     }
@@ -3925,6 +5027,11 @@ function createUI(root, opts) {
     const toggle = () => (isOpen() ? close() : open());
 
     $('feelClose').addEventListener('click', close);
+    fullBtn.addEventListener('click', () => setFull(!isFull()));
+    filterEl.addEventListener('input', filter);
+    filterEl.addEventListener('keydown', (e) => { if (e.key !== 'Escape') e.stopPropagation(); else if (filterEl.value) { e.stopPropagation(); filterEl.value = ''; filter(); } });
+    $('feelOpenAll').addEventListener('click', () => openAll(true));
+    $('feelCloseAll').addEventListener('click', () => openAll(false));
     $('feelCopy').addEventListener('click', copy);
     $('feelPaste').addEventListener('click', () => showIO('paste', '', 'Paste settings JSON, then tap Apply.'));
     $('feelReset').addEventListener('click', reset);
@@ -3940,8 +5047,9 @@ function createUI(root, opts) {
     // frozen first or "reset" and "changed" have nothing to compare with (main.js already does it; this covers a bare page).
     if (!CFG_DEFAULT) cfgFreezeDefaults();
     adopt();
+    if (lsGet(FULL) === '1') setFull(true);
 
-    return { open, close, toggle, isOpen, copy, paste, reset, save };
+    return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save };
   })();
 
   return { update, showResult, hideResult, hint, setMuted, tuner };
@@ -3949,11 +5057,15 @@ function createUI(root, opts) {
 
 // ════════ main.js ════════
 // main.js — the loop. REAL time drives input, FX, the camera and the HUD; SIM time (real × time-warp scale)
-// drives the physics. A freeze is scale 0, so the world holds perfectly still while the impact animates; slow-mo
-// is smooth because advance() substeps the already-scaled dt.
+// drives the physics and Kage. A freeze is scale 0, so the world (and Kage) hold perfectly still while the impact
+// animates; slow-mo is smooth because advance() substeps the already-scaled dt.
+//
+// Two rule sets: the solo time trial (game.js) and versus Kage (versus.js), picked by CFG.match.opponent (the Feel
+// panel's Match group; "#solo" or "#versus" in the URL picks one for this page load without touching saved settings).
 (function boot() {
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d', { alpha: false });
+  const hash = (location.hash || '').toLowerCase();
 
   const cam = createCamera();
   const world = createWorld();
@@ -3962,15 +5074,20 @@ function createUI(root, opts) {
   const scene = createScene(canvas);
   const input = createTouchInput(canvas, cam);
   const game = createGame();
+  const versus = createVersus();
+  const kage = createKage(document);
   const audio = createAudio();
   cfgFreezeDefaults(); // every module has declared its CFG section by now
+  let rules = game;
   const ui = createUI(document.getElementById('app') || document.body, {
-    game,
     getWorld: () => world,
     onReset: resetAll,
+    onNext: nextRound,
     onMuteToggle: () => { audio.unlock(); audio.setMuted(!audio.muted); return audio.muted; },
     audio,
   });
+  // after createUI: the panel has applied the saved settings, and the URL wins over them for this load only
+  const forced = hash.indexOf('solo') >= 0 ? 0 : hash.indexOf('versus') >= 0 ? 1 : -1;
   input.onGesture(() => audio.unlock());
 
   // ---- size ----
@@ -3994,35 +5111,97 @@ function createUI(root, opts) {
   resize();
 
   // ---- state ----
-  let lastHitAt = -1e9, woundAt = -1, resultShown = false, prevPhase = 'idle';
+  let lastHitAt = -1e9, woundAt = -1, resultShown = false, prevPhase = 'idle', hintUntil = 0, sideWarnAt = -1e9;
+  let kageSide = -1, sidePick = NaN; // Kage's half this match (−1 left, +1 right), and the setting it was resolved from
+  const NEUTRAL = 0.06; // m either side of the centre line where either player may hit
   const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you' };
-  const view = { fx, input, time: tw, now: 0 };
+  const view = { fx, input, time: tw, now: 0, actor: null, halves: 0, world };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1 };
+  const info = { state: 'ready', server: 'you' };
+  const vs = () => rules === versus;
 
-  function resetAll() {
-    resetWorld(world);
-    tw.cancel();
-    fx.reset();
-    game.reset();
-    ui.hideResult();
-    ui.hint('Swipe the ball');
-    resultShown = false; woundAt = -1; lastHitAt = -1e9; prevPhase = 'idle';
+  function pickRules() {
+    const want = (forced >= 0 ? forced : CFG.match.opponent) > 0 ? versus : game;
+    if (want === rules) return false;
+    rules = want;
+    return true;
+  }
+  function pickSide() {
+    const s = Math.round(CFG.kage.side);
+    sidePick = CFG.kage.side;
+    kageSide = s === 1 ? 1 : s === 2 ? (Math.random() < 0.5 ? -1 : 1) : -1;
+    versus.setSides(kageSide); kage.setSide(kageSide);
   }
 
-  // ---- a hit, from any source (touch now; a CPU or a peer later) ----
-  function tryHit(hand, now) {
-    if (world.state !== 'live' || !tw.canHit() || now - lastHitAt < CFG.hit.cooldownMs) return null;
+  function hintText() {
+    if (!vs()) return 'Swipe the ball';
+    if (versus.state !== 'ready') return null;
+    return versus.snap.server === 'you' ? 'Your serve · swipe up' : 'Kage serves';
+  }
+
+  // a fresh ball: the start of a round. Against Kage it hangs on the server's half (the rope tied on that side of the pole).
+  function startRally() {
+    if (vs()) {
+      const sx = versus.snap.server === 'kage' ? kageSide : -kageSide; // which side of the pole (+1 = +x) the server plays
+      resetWorld(world, { phi: Math.PI / 2 - 1.45 * sx });
+      kage.reset(world, { server: versus.snap.server });
+    } else resetWorld(world);
+    tw.cancel();
+    fx.reset();
+    ui.hideResult();
+    ui.hint(hintText());
+    resultShown = false; woundAt = -1; lastHitAt = -1e9; prevPhase = 'idle'; hintUntil = 0;
+  }
+  // a new match (or a new solo round)
+  function resetAll() {
+    pickRules();
+    pickSide();
+    if (vs()) versus.reset(); else game.reset();
+    startRally();
+  }
+  // the round card was tapped: next round, or a new match once it is over
+  function nextRound() {
+    if (vs() && versus.state === 'wound' && !versus.snap.matchOver) { versus.nextRound(); startRally(); } else resetAll();
+  }
+
+  // ---- a hit, from either player: a finger's swipe, or Kage's fist ----
+  function tryHit(hand, now, who) {
+    if (world.state !== 'live' || !tw.canHit()) return null;
+    const you = who !== 'kage';
+    if (you && now - lastHitAt < CFG.hit.cooldownMs) return null;
     const res = applyHit(world, hand);
     if (!res) return null;
-    lastHitAt = now;
-    game.onHit(res);
-    tw.trigger(res.power, res.quality);
+    if (you) lastHitAt = now;
+    res.owner = you ? 'you' : 'cpu';
+    rules.onHit(res, who);
+    if (you || CFG.kage.warp > 0) tw.trigger(you ? res.power : res.power * CFG.kage.warpScale, res.quality);
     fx.impact(res, cam, world);
     audio.hit(res);
-    audio.vibrate(res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
-    ui.hint(null);
+    if (you) audio.vibrate(res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
+    if (vs()) kage.onWorldHit(res, who);
+    ui.hint(null); hintUntil = 0;
     return res;
+  }
+
+  // Against Kage your swipes count on your half and on the line, and on a ball that has died anywhere; only the server opens
+  // a round. "You may hit on his half" lifts the half rule.
+  function mayHit() {
+    if (!vs()) return true;
+    if (versus.state === 'ready') return versus.snap.server === 'you';
+    if (CFG.match.crossHits > 0) return true;
+    const b = world.ball;
+    return b.speed < 1.2 || b.p.x * kageSide <= NEUTRAL;
+  }
+  // a swipe through the ball on his half: say why nothing happened (once in a while, not every segment)
+  function sideWarn(hand, now) {
+    if (now - sideWarnAt < 1400) return;
+    const b = world.ball.p, ax = hand.p1.x - hand.p0.x, az = hand.p1.z - hand.p0.z, l2 = ax * ax + az * az;
+    const t = l2 > 1e-9 ? Math.max(0, Math.min(1, ((b.x - hand.p0.x) * ax + (b.z - hand.p0.z) * az) / l2)) : 0;
+    const dx = hand.p0.x + ax * t - b.x, dz = hand.p0.z + az * t - b.z, rs = world.ball.r + hand.r;
+    if (dx * dx + dz * dz > rs * rs) return;
+    sideWarnAt = now;
+    ui.hint(versus.state === 'ready' ? 'Kage serves' : "Kage's half"); hintUntil = now + 1100;
   }
 
   function pumpInput(now) {
@@ -4034,8 +5213,9 @@ function createUI(root, opts) {
       const hand = input.toHand(seg, world.ball.p.y, handBuf);
       if (!hand) continue;
       hand.owner = 'you';
+      if (!mayHit()) { sideWarn(hand, now); continue; }
       if (input.shouldHold(seg, hand, world.ball)) continue; // a finger that landed ON the ball: its first contact is the slowest part of the swipe, so wait ~2 frames for the peak
-      if (tryHit(hand, now)) input.consumeStroke(seg.stroke);
+      if (tryHit(hand, now, 'you')) input.consumeStroke(seg.stroke);
     }
   }
 
@@ -4044,7 +5224,7 @@ function createUI(root, opts) {
     for (let i = 0; i < evs.length; i++) {
       const ev = evs[i];
       fx.event(ev, cam, world);
-      game.onEvent(ev);
+      rules.onEvent(ev, world);
       if (ev.type === 'snap') audio.snap(ev.strength);
       else if (ev.type === 'ground') audio.ground(ev.speed);
       else if (ev.type === 'pole') audio.pole(ev.speed);
@@ -4054,29 +5234,56 @@ function createUI(root, opts) {
         audio.vibrate([25, 40, 45]);
         tw.trigger(Math.min(1, Math.max(0.85, ev.speed / CFG.hit.vMax)), 'perfect', true); // the finish is always a big moment: forced past the re-hit window and the rally pacing
         woundAt = now;
+        if (vs() && versus.snap.winner) kage.onRoundEnd(versus.snap.winner);
       }
     }
   }
 
+  // The court's size is on the Feel panel (pole, rope, ball): a change re-ties the rope and replays the round. The tie point
+  // stays just under the pole top and the court ring just outside the rope's reach.
+  const court = { poleH: NaN, ropeL: NaN, ballR: NaN, poleR: NaN };
+  function watchCourt() {
+    const W = CFG.world;
+    if (W.poleH === court.poleH && W.ropeL === court.ropeL && W.ballR === court.ballR && W.poleR === court.poleR) return false;
+    const first = court.poleH !== court.poleH;
+    court.poleH = W.poleH; court.ropeL = W.ropeL; court.ballR = W.ballR; court.poleR = W.poleR;
+    W.attachY = W.poleH - 0.1;
+    W.groundR = Math.max(1.2, W.ropeL + 0.3);
+    if (!first) { if (vs() && versus.state !== 'wound') versus.replay(); else if (!vs()) game.reset(); startRally(); }
+    return true;
+  }
+  // the mode and Kage's half come from the panel too: either change starts a new match
+  function watchRules() {
+    if (pickRules() || (vs() && CFG.kage.side !== sidePick)) resetAll();
+  }
+
   // The Feel panel is a bottom drawer on tall phones: lift the court above it while it is open so the ball stays in view.
+  // Expanded to the whole screen it covers the court anyway, so the court keeps its full-height fit then.
   // offsetHeight is layout size (the slide-in transform does not change it), so the camera refits once, not every frame.
   const panelEl = document.getElementById('panel');
-  let panelInset = 0, panelOpen = false;
-  function syncPanel() {
-    const open = ui.tuner.isOpen();
-    if (open === panelOpen) return;
-    panelOpen = open;
-    const inset = open && panelEl.offsetWidth > cam.w * 0.8 ? panelEl.offsetHeight + 8 : 0;
+  let panelInset = 0, panelKey = -1;
+  function syncPanel(force) {
+    const open = ui.tuner.isOpen(), full = ui.tuner.isFull(), key = (open ? 1 : 0) + (full ? 2 : 0);
+    if (key === panelKey && !force) return;
+    panelKey = key;
+    const inset = open && !full && panelEl.offsetWidth > cam.w * 0.8 ? panelEl.offsetHeight + 8 : 0;
     if (inset !== panelInset) { panelInset = inset; cam.setInsetBottom(inset); }
   }
-  window.addEventListener('resize', () => { panelOpen = !panelOpen; syncPanel(); }); // a rotation can turn the drawer into a side panel (and back)
+  window.addEventListener('resize', () => syncPanel(true)); // a rotation can turn the drawer into a side panel (and back)
 
   // ---- one frame of the whole game ----
   // realDt drives the sim (clamped by the caller); clockDt is the true elapsed time, which is all the stopwatch should count
   function step(realDt, now, draw, clockDt) {
+    watchRules();
+    watchCourt();
     pumpInput(now);
     const scale = tw.update(realDt);
     const simDt = realDt * scale;
+    if (vs()) {
+      info.state = versus.state; info.server = versus.snap.server;
+      const hand = kage.update(simDt, realDt, world, info);
+      if (hand) kage.onSwing(tryHit(hand, now, 'kage'));
+    }
     if (simDt > 0) advance(world, simDt);
     onEvents(now);
     if (prevPhase !== 'ramp' && tw.phase === 'ramp') audio.release(tw.seq.power); // the running sequence's power, so the whoosh fits the ramp tw plays (a wound slam can replace it)
@@ -4084,7 +5291,7 @@ function createUI(root, opts) {
 
     fx.update(realDt, simDt, tw, world);
     fx.applyCamera(cam);
-    game.update(clockDt, world);
+    rules.update(clockDt, world);
 
     cam.project(world.ball.p.x, world.ball.p.y, world.ball.p.z, ballScr);
     tick.speed01 = Math.min(1, world.ball.speed / CFG.hit.vMax);
@@ -4092,11 +5299,15 @@ function createUI(root, opts) {
     tick.timeScale = scale;
     audio.tick(realDt, tick);
 
-    if (game.state === 'wound' && !resultShown && woundAt >= 0 && now - woundAt > 900) { resultShown = true; ui.showResult(game.snap); }
-    ui.update(game.snap, realDt);
-    syncPanel();
+    if (hintUntil && now > hintUntil) { hintUntil = 0; ui.hint(hintText()); }
+    if (rules.state === 'wound' && !resultShown && woundAt >= 0 && now - woundAt > 900) { resultShown = true; ui.showResult(rules.snap); }
+    ui.update(rules.snap, realDt);
+    syncPanel(false);
 
-    if (draw) { view.now = now; scene.draw(ctx, cam, world, view); }
+    if (draw) {
+      view.now = now; view.actor = vs() ? kage.actor : null; view.halves = vs() ? kageSide : 0;
+      scene.draw(ctx, cam, world, view);
+    }
   }
 
   // ---- the frame loop, with a governor that watches main-thread WORK (not frame interval:
@@ -4131,7 +5342,8 @@ function createUI(root, opts) {
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, input, scene, audio, ui, perf,
+    CFG, world, cam, tw, fx, game, versus, kage, input, scene, audio, ui, perf,
+    get rules() { return rules; },
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)
     advance(ms) {
@@ -4139,7 +5351,7 @@ function createUI(root, opts) {
       const n = Math.max(1, Math.round(ms / 16.667));
       for (let i = 0; i < n; i++) { t += 16.667; step(1 / 60, t, i === n - 1, 1 / 60); }
     },
-    // a synthetic swipe through the ball along (dx,dz) at `speed` m/s, via the real hit path
+    // a synthetic swipe through the ball along (dx,dz) at `speed` m/s, via the real hit path (the half rule is the finger's, not this hook's)
     hit(dx, dz, speed) {
       lastHitAt = -1e9; // tests may chain hits freely; the real cooldown still guards fingers
       const l = Math.hypot(dx, dz) || 1, ux = dx / l, uz = dz / l, b = world.ball.p;
@@ -4147,11 +5359,13 @@ function createUI(root, opts) {
       h.p0.x = b.x - ux * 0.5; h.p0.y = b.y; h.p0.z = b.z - uz * 0.5;
       h.p1.x = b.x + ux * 0.05; h.p1.y = b.y; h.p1.z = b.z + uz * 0.05;
       h.vx = ux * speed; h.vz = uz * speed; h.speed = speed; h.r = CFG.hit.handR; h.stroke = -1; h.owner = 'you';
-      return tryHit(h, performance.now());
+      return tryHit(h, performance.now(), 'you');
     },
     reset: resetAll,
+    next: nextRound,
   };
 
+  watchCourt();
   resetAll();
   requestAnimationFrame(frame);
 })();
