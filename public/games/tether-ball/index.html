@@ -117,6 +117,34 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 #hintText { padding: 10px 20px; border-radius: 99px; background: var(--glass); border: 1px solid var(--line); font: 800 14px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text); animation: hintPulse 2.2s ease-in-out infinite; }
 @keyframes hintPulse { 0%, 100% { opacity: .62; } 50% { opacity: 1; } }
 
+/* ───────────── energy (versus): your special button in your bottom corner, Kage's gauge in his. The ring fills with volleys
+   (amber yours, magenta his); a full one glows, and yours takes a tap: armed, it fills storm blue. The hint keeps between them. */
+#energy { display: none; }
+#hud[data-energy="on"] #energy { display: block; }
+.eg { position: absolute; bottom: calc(var(--sb) + 10px); width: 52px; height: 52px; padding: 0; border: 0; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--dim); pointer-events: none; text-shadow: none; transition: background .15s, color .15s, box-shadow .2s, transform .1s; }
+#hud[data-ks="l"] .ek, #hud[data-ks="r"] .ey { left: calc(var(--sl) + 12px); }
+#hud[data-ks="l"] .ey, #hud[data-ks="r"] .ek { right: calc(var(--sr) + 12px); }
+.eg svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.eg .tr { fill: none; stroke: rgba(233,237,246,.13); stroke-width: 4; }
+.eg .fl { fill: none; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset .25s ease-out, stroke .15s; }
+.eg .ic { fill: currentColor; }
+.ey .fl { stroke: var(--accent); }
+.ek .fl { stroke: var(--kage); }
+.ey[data-st="full"], .ey[data-st="armed"] { pointer-events: auto; }
+.ey[data-st="full"] { color: var(--cool); animation: egPulse 1.1s ease-in-out infinite; }
+.ey[data-st="full"] .fl { stroke: var(--cool); }
+.ey[data-st="armed"] { background: var(--cool); color: #04121c; box-shadow: 0 0 0 3px rgba(90,209,255,.35), 0 0 26px rgba(90,209,255,.75); }
+.ey[data-st="armed"] .fl { stroke: #f2fdff; }
+.ey:active { transform: scale(.92); }
+.ek[data-st="full"] { color: var(--kage); box-shadow: inset 0 0 0 1px rgba(233,61,255,.55), 0 0 16px rgba(233,61,255,.45); }
+.ek[data-st="armed"] { background: var(--kage); color: var(--kage-ink); box-shadow: 0 0 0 3px rgba(233,61,255,.3), 0 0 26px rgba(233,61,255,.75); }
+.ek[data-st="armed"] .fl { stroke: #fff1ff; }
+#hud[data-state="wound"] .ey { pointer-events: none; }
+@keyframes egPulse { 0%, 100% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.5), 0 0 6px rgba(90,209,255,.3); transform: scale(1); } 50% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.9), 0 0 24px rgba(90,209,255,.75); transform: scale(1.07); } }
+#hud[data-energy="on"] #hint { padding: 0 76px; }
+#hud[data-energy="on"] #hintText { text-align: center; line-height: 1.25; }
+@media (max-width: 429px) { #hud[data-energy="on"] #hintText { padding: 8px 14px; font-size: 12px; letter-spacing: .05em; } }
+
 /* ───────────── result card ───────────── */
 #result { position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center; padding: calc(var(--st) + 84px) calc(var(--sr) + 20px) calc(var(--sb) + 20px) calc(var(--sl) + 20px); background: rgba(14,17,25,.62); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .25s ease, visibility 0s .25s; cursor: pointer; }
 #result.on { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .25s ease; }
@@ -283,6 +311,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   #hTime { font-size: 19px; }
   #hint { bottom: calc(var(--sb) + 2px); }
   #hintText { padding: 6px 14px; font-size: 11px; }
+  .eg { bottom: calc(var(--sb) + 4px); width: 44px; height: 44px; }
   #result { padding-top: calc(var(--st) + 48px); padding-bottom: calc(var(--sb) + 8px); }
   .card { padding: 12px 16px 10px; }
   .rtime { margin-top: 6px; }
@@ -301,7 +330,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 
 @media (prefers-reduced-motion: reduce) {
   #panel, #panel.open, #result, #result.on, #hint, .toast, #hSpeed { transition: none; }
-  #hintText, #result.on .card, #result.on .badge { animation: none; }
+  #hintText, #result.on .card, #result.on .badge, .ey[data-st="full"] { animation: none; }
+  .eg, .eg .fl { transition: none; }
 }
 </style>
 </head>
@@ -335,6 +365,14 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
       </div>
     </div>
     <div id="hint" role="status"><span id="hintText">Swipe the ball</span></div>
+    <div id="energy">
+      <div id="eKage" class="eg ek" role="img" aria-label="Kage's energy" data-st="fill">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tr" cx="24" cy="24" r="20"/><circle id="eKageR" class="fl" cx="24" cy="24" r="20" pathLength="100" transform="rotate(-90 24 24)"/><path class="ic" d="M14.5 34.5 Q18.5 17.5 34.5 12.5 Q24.5 20.5 19.5 35.5 Z"/></svg>
+      </div>
+      <button id="bSpecial" class="eg ey" type="button" aria-label="Special: charging" aria-pressed="false" data-st="fill" disabled>
+        <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tr" cx="24" cy="24" r="20"/><circle id="eYouR" class="fl" cx="24" cy="24" r="20" pathLength="100" transform="rotate(-90 24 24)"/><path class="ic" d="M26.8 11.5 L16.5 26.2 H23.2 L21.2 36.5 L31.5 21.8 H24.8 Z"/></svg>
+      </button>
+    </div>
   </div>
 
   <div id="result" aria-hidden="true">
@@ -1195,7 +1233,8 @@ let createWorld, resetWorld, advance, applyHit, drainEvents;
     const uh = hs * (vxn * nx + vzn * nz), ub = v.x * nx + v.z * nz, rel = uh - ub;
     if (!(rel > 0.05)) return null; // the ball is already moving away from the hand faster than the hand follows
     const sb = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-    const dv = (1 + H.restitution) * rel;
+    // hand.gain < 1: a touch on a ball the other player charged with a special (energy.js) lands at that share of its push
+    const dv = (1 + H.restitution) * rel * (hand.gain > 0 && hand.gain < 1 ? hand.gain : 1);
     let wx = v.x + dv * nx, wy = v.y, wz = v.z + dv * nz;
 
     // driven into the pole: glance off it. The inward part of the velocity becomes tangential at constant speed, in the
@@ -1211,8 +1250,11 @@ let createWorld, resetWorld, advance, applyHit, drainEvents;
         wx = -ez * sg; wz = ex * sg;
       }
     }
-    const raw = Math.sqrt(wx * wx + wy * wy + wz * wz), sa = softCap(raw, H.vMax, H.softKnee);
-    const k = raw > 1e-9 ? sa / raw : 0;
+    // hand.boost > 1: a special leaves the hand that much harder, and the soft cap rises with it (softCap scales: a weak swipe
+    // stays a weak special)
+    const bo = hand.boost > 1 ? (hand.boost < 2 ? hand.boost : 2) : 1;
+    const mag = Math.sqrt(wx * wx + wy * wy + wz * wz), sa = softCap(mag * bo, H.vMax * bo, H.softKnee);
+    const k = mag > 1e-9 ? sa / mag : 0;
     wx *= k; wy *= k; wz *= k;
     const ddx = wx - v.x, ddy = wy - v.y, ddz = wz - v.z, deltaV = Math.sqrt(ddx * ddx + ddy * ddy + ddz * ddz);
 
@@ -1461,6 +1503,7 @@ CFG.audio = {
   whirr: 1, // ambient whirr / whoosh while the ball moves
   release: 1, // the rising whoosh as time speeds back up
   flash: 1, // Kiru's flash step: the swish as he blinks across the court
+  special: 1, // the specials (energy.js): Raijin's thunderclap, Kage's shadow cut, and the energy bar's cues
   hitVoice: 0, // the hit: 0 the synth below, 1.. a sampled voice from hitsounds.js (Thump, Smack, Boom, Taiko: deeper)
   hitPitch: 1, // × a sampled voice's pitch: under 1 is deeper still
   haptics: 1, // 1 = vibrate where the browser can
@@ -1478,6 +1521,7 @@ CFG_SCHEMA.push(
   { path: 'audio.whirr', label: 'Whirr while moving', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.release', label: 'Speed-up whoosh', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.flash', label: "Kiru's flash step", min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.special', label: 'Special moves', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.haptics', label: 'Haptics', min: 0, max: 1, step: 1, group: 'Audio', unit: '' }
 );
 
@@ -1799,6 +1843,47 @@ function createAudio(opts) {
     reap(v);
   }
 
+  // ---- the specials (energy.js), on top of the hit itself: Raijin's thunderclap (yours), or Kage's shadow cut ----
+  function special(who) {
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0;
+    if (S.muted || !(lv > 0) || !ready() || !room(12, true)) return;
+    const t = at(), v = begin();
+    if (who === 'kage') {
+      const fs = 2650 * (0.98 + rnd() * 0.04); // the blade: two inharmonic partials that sing on after the cut
+      tone(v, t, null, fs, fs * 0.985, 0.4, 0.13 * lv, 0.001, 1.15);
+      tone(v, t, null, fs * 1.567, fs * 1.55, 0.4, 0.07 * lv, 0.001, 0.8);
+      const s = noiseSrc(v, t, 0.3), b = filt('bandpass', 4200, 1.4), g = ctx.createGain(); // the cut: a dark whoosh falling through the air
+      v.n.push(b, g);
+      b.frequency.setValueAtTime(4200, t); b.frequency.exponentialRampToValueAtTime(450, t + 0.2);
+      env(g, t, 0.34 * lv, 0.006, 0.22);
+      s.connect(b); b.connect(g); g.connect(bus);
+      tone(v, t, W.thump, 82, 30, 0.07, 0.55 * lv, 0.002, 0.5);
+    } else {
+      const ns = noiseSrc(v, t, 1.6);
+      burst(v, t, ns, 'highpass', 1800, 0.7, 0.5 * lv, 0.0005, 0.08); // the crack
+      burst(v, t + 0.02, ns, 'lowpass', 260, 0.8, 0.5 * lv, 0.04, 1.3); // the thunder rolls on,
+      burst(v, t + 0.26, ns, 'lowpass', 170, 0.9, 0.34 * lv, 0.09, 1.0); // and rumbles again
+      const o = osc(t, 2400, 'sawtooth'), b = filt('bandpass', 1600, 2), g = ctx.createGain(), end = t + 0.16; // the zap
+      v.n.push(o, b, g);
+      o.frequency.setTargetAtTime(220, t, 0.03);
+      env(g, t, 0.16 * lv, 0.0008, 0.13);
+      o.connect(b); b.connect(g); g.connect(bus); o.start(t); o.stop(end);
+      keep(v, o, end);
+      tone(v, t, W.thump, 92, 34, 0.06, 0.6 * lv, 0.002, 0.55);
+    }
+    reap(v);
+  }
+  // the energy bar: 'full' (a rising pair of chimes), 'arm' (a charge-up sweep), 'disarm' (the sweep back down)
+  function energy(kind) {
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0;
+    if (S.muted || !(lv > 0) || !ready() || !room(4, false)) return;
+    const t = at(), v = begin();
+    if (kind === 'full') { tone(v, t, W.chime, 783.99, 783.99, 1, 0.15 * lv, 0.003, 0.25); tone(v, t + 0.075, W.chime, 1174.66, 1174.66, 1, 0.15 * lv, 0.003, 0.4); }
+    else if (kind === 'arm') tone(v, t, 'triangle', 330, 1250, 0.06, 0.16 * lv, 0.004, 0.3);
+    else tone(v, t, 'triangle', 900, 300, 0.04, 0.1 * lv, 0.003, 0.12);
+    reap(v);
+  }
+
   // ---- the rest of the sounds ----
   function snap(strength) { // the rope jerks taut: a plucked, twangy click
     if (!ready()) return;
@@ -1934,7 +2019,7 @@ function createAudio(opts) {
 
   return {
     unlock: safe(unlock), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
-    wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), vibrate, stats,
+    wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), special: safe(special), energy: safe(energy), vibrate, stats,
     voices: { get ready() { return HV.ready || Promise.resolve(); }, get loaded() { return HV.loaded; }, get failed() { return HV.failed; } },
     tick(dt, p) { try { tickBody(dt, p); } catch (e) { fail(e); } },
     get muted() { return S.muted; },
@@ -1954,6 +2039,9 @@ function createAudio(opts) {
 //   the ball would hide it). If the scene never calls drawUnder, drawOver paints that layer itself.
 //   The ball is drawn through fx.deform(out): translate(ball) · rotate(out.ang) · scale(out.sx, out.sy) · rotate(-out.ang) · draw.
 //   After fx.applyCamera(cam) every cam.project / unproject already includes zoom, shake and roll.
+// Specials (energy.js). A hit with `special` set ('you' | 'kage') is drawn as one of power 0.85 at least, under its name, and
+//   brings its own layer: Raijin's lightning out of the sky onto the ball, or Kage's shadow cut across it. setCharge(owner, k)
+//   each frame puts the charge the ball carries round it (crackling arcs, or a ring of shadow), fading out with k.
 
 CFG.fx = {
   seed: 20260713,
@@ -2145,9 +2233,44 @@ function createFX(seed) {
     sq: 0, sqv: 0, sqHold: 0, sqStretch: 0, sqT: 0, sqRel: 0, sqAx: 1, sqAy: 0, sqBx: 1, sqBy: 0,
     vig: 0, ballHeat: 0, relI: 0, relS: 1, relUx: 1, relUy: 0,
     windAcc: 0, windK: 0, bX: 0, bY: 0, bZ: 0, bVX: 0, bVY: 0, bVZ: 0, hX: 0, hY: 0, hZ: 0, hSp: 0,
+    spAge: 9, spS: 1, spUx: 1, spUy: 0, spJag: 9, chK: 0, chT: 0, chJag: 9, // the special's layer, and the ball's charge
   };
   const vg = { w: 0, h: 0, g: null };
   const stats = { sparks: 0, lines: 0, wind: 0, trail: 0, total: 0 };
+
+  // ---- the special's layer and the ball's charge (real time): fixed pools, their own dice so the bursts' shapes never shift ----
+  const SPECIAL_LIFE = 0.34, N_BOLT = 3, N_SEG = 14, N_FORK = 5, N_ARC = 4, N_ASEG = 6;
+  const bJag = new Float32Array(N_BOLT * (N_SEG + 1)), bX0 = new Float32Array(N_BOLT); // each bolt's zigzag (a random walk, unit), and where it leaves the sky (px × S off the ball)
+  const fAt = new Uint8Array(N_BOLT), fAng = new Float32Array(N_BOLT), fJag = new Float32Array(N_BOLT * (N_FORK + 1)); // each bolt's fork: the vertex it leaves from, its angle off the bolt, its zigzag
+  const aA0 = new Float32Array(N_ARC), aSpan = new Float32Array(N_ARC), aR = new Float32Array(N_ARC * (N_ASEG + 1)); // the charge's arcs: start, sweep, radii (× ball r)
+  const rndC = U.rng(20261015);
+  let spOwner = '', spAn = null, chOwner = '';
+  function jagBolts() {
+    for (let b = 0; b < N_BOLT; b++) {
+      let j = 0;
+      for (let k = 0; k <= N_SEG; k++) { j = k === 0 ? 0 : j * 0.55 + rndC() * 2 - 1; bJag[b * (N_SEG + 1) + k] = j; }
+      fAt[b] = 3 + ((rndC() * 6) | 0); fAng[b] = (rndC() < 0.5 ? -1 : 1) * (0.35 + 0.4 * rndC());
+      for (let k = 0; k <= N_FORK; k++) fJag[b * (N_FORK + 1) + k] = k === 0 ? 0 : rndC() * 2 - 1;
+    }
+    st.spJag = 0;
+  }
+  function jagArcs() {
+    for (let i = 0; i < N_ARC; i++) {
+      aA0[i] = rndC() * TAU; aSpan[i] = 0.7 + 0.9 * rndC();
+      for (let j = 0; j <= N_ASEG; j++) aR[i * (N_ASEG + 1) + j] = j === 0 || j === N_ASEG ? 1.04 : 1.14 + 0.4 * rndC();
+    }
+    st.chJag = 0;
+  }
+  function startSpecial(owner, x, y, z, ux, uy, S) {
+    spOwner = owner; spAn = newAnchor(x, y, z); st.spAge = 0; st.spS = S; st.spUx = ux; st.spUy = uy;
+    for (let b = 0; b < N_BOLT; b++) bX0[b] = (b - 1) * 70 + (rndC() * 2 - 1) * 30;
+    jagBolts();
+  }
+  // the charge a special left on the ball: whose ('you' | 'kage' | ''), and how much of it is left (0..1). Call every frame.
+  function setCharge(owner, k) {
+    chOwner = owner === 'you' || owner === 'kage' ? owner : '';
+    st.chK = chOwner && k > 0 ? (k < 1 ? k : 1) : 0;
+  }
 
   const spec = {
     th: 0, I: 0, S: 1, wx: 0, wy: 0, wz: 0, ux: 1, uy: 0, spread: 0,
@@ -2249,6 +2372,8 @@ function createFX(seed) {
 
   // ---- the hit ----
   function textFor(hit, I) {
+    if (hit.special) return hit.special === 'kage' ? 'SHADOW CUT' : 'RAIJIN!';
+    if (hit.charged && I > 0.12) return 'HEAVY'; // it answered the other player's special
     if (hit.owner === 'cpu') return hit.quality === 'perfect' ? 'KAGE CUT' : hit.reversed && I > 0.3 ? 'COUNTER' : I > 0.7 ? 'SMASH' : ''; // his words, in his colour
     if (hit.quality === 'perfect') return 'PERFECT';
     if (hit.reversed) return I > 0.3 ? 'REVERSE' : '';
@@ -2259,7 +2384,7 @@ function createFX(seed) {
   function impact(hit, cam, world) {
     if (!hit) return;
     if (pa !== CFG.pal.accent || ph !== CFG.pal.hot || pc !== CFG.pal.cool) buildThemes();
-    const F = CFG.fx, I = U.clamp01(hit.power || 0), S = unit(cam), perfect = hit.quality === 'perfect', rev = !!hit.reversed;
+    const F = CFG.fx, I = hit.special ? Math.max(0.85, U.clamp01(hit.power || 0)) : U.clamp01(hit.power || 0), S = unit(cam), perfect = hit.quality === 'perfect', rev = !!hit.reversed;
     const b = world && world.ball, pt = hit.point || (b ? b.p : ORIGIN), d = hit.dir || FORWARD, sf = cam.safe || NO_SAFE;
     neutral(cam, pt.x, pt.y, pt.z, tmp);
     const cx = tmp.x, cy = tmp.y;
@@ -2269,7 +2394,7 @@ function createFX(seed) {
     if (ul > 1e-3) { ux /= ul; uy /= ul; } else { ux = 1; uy = 0; }
 
     const k = U.smoothstep(0.05, 0.45, I), hot = perfect || I > 0.82;
-    resetSpec(hit.owner === 'cpu' ? 3 : rev ? 1 : hot ? 2 : 0, I, S);
+    resetSpec(hit.owner === 'cpu' ? 3 : hit.special || rev ? 1 : hot ? 2 : 0, I, S);
     const sp = spec;
     sp.wx = pt.x; sp.wy = pt.y; sp.wz = pt.z; sp.ux = ux; sp.uy = uy;
     sp.nRay = k > 0.02 ? 8 + Math.round(6 * I) : 0;
@@ -2285,13 +2410,14 @@ function createFX(seed) {
     sp.word = textFor(hit, I);
     const mph = Math.round(U.mph(hit.speedAfter != null ? hit.speedAfter : b ? b.speed : 0));
     sp.mph = mph + ' MPH';
-    sp.tSize = I > 0.12 ? S * (20 + 24 * I) * F.textSize : S * 24 * F.textSize;
+    sp.tSize = (I > 0.12 ? S * (20 + 24 * I) * F.textSize : S * 24 * F.textSize) * (hit.special ? 1.2 : 1);
     sp.tilt = (ux >= 0 ? -1 : 1) * (0.06 + 0.05 * I);
     // text rides above the star, or below it when the launch heads up the screen; kept inside the safe area
     const up = uy > -0.45, gap = sp.starR * 0.8 + S * 26;
     sp.tx = cx;
     sp.ty = U.clamp(up ? cy - gap : cy + gap, sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize * 1.4);
     startBurst();
+    if (hit.special) startSpecial(hit.special === 'kage' ? 'kage' : 'you', pt.x, pt.y, pt.z, ux, uy, S);
 
     addTrauma(0.35 + 0.55 * I + (perfect ? 0.1 : 0));
     st.shS = S;
@@ -2448,6 +2574,8 @@ function createFX(seed) {
     st.vig = U.damp(st.vig, vt, vt > st.vig ? 30 : 10, realDt);
     if (st.vig < 0.004 && vt === 0) st.vig = 0;
     if (st.ballHeat > 0) st.ballHeat = Math.max(0, st.ballHeat - realDt / 0.16);
+    if (st.spAge < SPECIAL_LIFE) { st.spAge += realDt; st.spJag += realDt; if (st.spJag > 0.045) jagBolts(); } // the lightning flickers between shapes
+    if (st.chK > 0) { st.chT += realDt; st.chJag += realDt; if (st.chJag > 0.06) jagArcs(); }
 
     // ball trail + ambient wind (sim time)
     if (world && world.ball) {
@@ -2474,7 +2602,7 @@ function createFX(seed) {
     let nL = 0;
     for (let i = 0; i < N_SLOT; i++) if (slots[i].on && slots[i].age < slots[i].lineLife + 0.05) nL += slots[i].nLine;
     stats.lines = nL; stats.total = nSp + nL + nW + nT;
-    live = any || nSp > 0 || nW > 0 || sqMode !== 0 || st.vig > 0 || st.ballHeat > 0 || st.trauma > 0 || st.zOff !== 0 || st.kickT < 0.6 || st.rollT < 0.8 || st.zSince < 1.2;
+    live = any || nSp > 0 || nW > 0 || sqMode !== 0 || st.vig > 0 || st.ballHeat > 0 || st.trauma > 0 || st.zOff !== 0 || st.kickT < 0.6 || st.rollT < 0.8 || st.zSince < 1.2 || st.chK > 0 || st.spAge < SPECIAL_LIFE;
   }
 
   function applyCamera(cam) {
@@ -2694,6 +2822,96 @@ function createFX(seed) {
   }
   const dfm = { sx: 1, sy: 1, ang: 0 };
 
+  // the charge round the ball: storm-blue arcs crackling off it (yours), or a ring of shadow with neon blades circling it (his)
+  function drawCharge(ctx, cam, world) {
+    const k = st.chK;
+    if (!(k > 0) || !chOwner || !world || !world.ball) return;
+    const b = world.ball;
+    cam.project(b.p.x, b.p.y, b.p.z, tmp);
+    const r = b.r * tmp.s, cx = tmp.x, cy = tmp.y;
+    if (!(r > 0.5)) return;
+    if (chOwner === 'kage') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 0.4 * k; ctx.fillStyle = '#14001f';
+      ctx.beginPath(); ctx.arc(cx, cy, r * 1.6, 0, TAU); ctx.arc(cx, cy, r * 0.98, 0, TAU, true); ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = '#e93dff'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1.2, r * 0.16); ctx.globalAlpha = 0.75 * k;
+      ctx.beginPath();
+      for (let i = 0; i < 3; i++) { const a0 = st.chT * 6 + i * TAU / 3; ctx.moveTo(cx + Math.cos(a0) * r * 1.32, cy + Math.sin(a0) * r * 1.32); ctx.arc(cx, cy, r * 1.32, a0, a0 + 1.2); }
+      ctx.stroke();
+      ctx.lineCap = 'butt';
+      return;
+    }
+    ctx.strokeStyle = '#5ad1ff'; ctx.globalAlpha = 0.3 * k; ctx.lineWidth = r * 0.3;
+    ctx.beginPath(); ctx.arc(cx, cy, r * 1.22, 0, TAU); ctx.stroke();
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.strokeStyle = pass ? '#f2fdff' : '#5ad1ff';
+      ctx.globalAlpha = (pass ? 0.9 : 0.45) * k; ctx.lineWidth = Math.max(1, r * (pass ? 0.07 : 0.2));
+      ctx.beginPath();
+      for (let i = 0; i < N_ARC; i++) {
+        for (let j = 0; j <= N_ASEG; j++) {
+          const ang = aA0[i] + (aSpan[i] * j) / N_ASEG, rr = r * aR[i * (N_ASEG + 1) + j];
+          if (j) ctx.lineTo(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr); else ctx.moveTo(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr);
+        }
+      }
+      ctx.stroke();
+    }
+  }
+
+  // the special itself: three bolts out of the top of the screen onto the ball (Raijin), or two crescent cuts crossing on it
+  // along his strike over a breath of shadow (Kage). Left in 'lighter'.
+  function drawSpecial(ctx, cam) {
+    const a = st.spAge;
+    if (!(a < SPECIAL_LIFE) || !spAn) return;
+    const q = a / SPECIAL_LIFE, S = st.spS, cx = spAn.sx, cy = spAn.sy, f = (1 - q) * (1 - q);
+    if (spOwner === 'kage') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 0.45 * f; ctx.fillStyle = '#12001c';
+      ctx.beginPath(); ctx.arc(cx, cy, S * 62 * (0.8 + 0.4 * q), 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+      const L = S * 160 * (0.7 + 0.3 * U.easeOut(Math.min(1, a / 0.06), 2)), a0 = Math.atan2(st.spUy, st.spUx);
+      for (let pass = 0; pass < 2; pass++) {
+        const m = S * 6, h = S * (pass ? 1.8 : 6);
+        ctx.globalAlpha = (pass ? 0.95 : 0.5) * f; ctx.fillStyle = pass ? '#fff1ff' : '#e93dff';
+        ctx.beginPath();
+        for (let i = 0; i < 2; i++) {
+          const g = a0 + (i ? 0.75 : -0.75), c = Math.cos(g), sn = Math.sin(g), nx = -sn, ny = c;
+          const x0 = cx - (c * L) / 2, y0 = cy - (sn * L) / 2, x1 = cx + (c * L) / 2, y1 = cy + (sn * L) / 2;
+          ctx.moveTo(x0, y0);
+          ctx.quadraticCurveTo(cx + nx * 2 * (m + h), cy + ny * 2 * (m + h), x1, y1);
+          ctx.quadraticCurveTo(cx + nx * 2 * (m - h), cy + ny * 2 * (m - h), x0, y0);
+          ctx.closePath();
+        }
+        ctx.fill();
+      }
+      return;
+    }
+    const fl = a < 0.05 ? 1 : a < 0.085 ? 0.3 : a < 0.15 ? 1 : 0.85; // a strobe: strike, flicker, strike again, fade
+    ctx.lineJoin = 'round';
+    for (let pass = 0; pass < 3; pass++) { // a wide glow, the bolt, its white-hot core
+      ctx.strokeStyle = pass === 2 ? '#ffffff' : pass === 1 ? '#8fe3ff' : '#5ad1ff';
+      ctx.lineWidth = S * (pass === 2 ? 1.8 : pass === 1 ? 4.5 : 11) * (1 - 0.35 * q);
+      ctx.globalAlpha = (pass === 2 ? 1 : pass === 1 ? 0.5 : 0.2) * f * fl;
+      ctx.beginPath();
+      for (let b = 0; b < N_BOLT; b++) {
+        const x0 = cx + bX0[b] * S, y0 = -12, dx = cx - x0, dy = cy - y0, l = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / l, ny = dx / l, amp = Math.min(22 * S, l * 0.06);
+        let fx = x0, fy = y0;
+        for (let k = 0; k <= N_SEG; k++) {
+          const t = k / N_SEG, j = bJag[b * (N_SEG + 1) + k] * amp * Math.sin(Math.PI * t), x = x0 + dx * t + nx * j, y = y0 + dy * t + ny * j;
+          if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+          if (k === fAt[b]) { fx = x; fy = y; }
+        }
+        const c = Math.cos(fAng[b]), sn = Math.sin(fAng[b]), ux = dx / l, uy = dy / l, gx = ux * c - uy * sn, gy = ux * sn + uy * c, fl2 = l * 0.22;
+        for (let k = 0; k <= N_FORK; k++) { // the fork: a short branch off the bolt, angled away from it
+          const t = k / N_FORK, j = fJag[b * (N_FORK + 1) + k] * amp * 0.6 * t, x = fx + gx * fl2 * t - gy * j, y = fy + gy * fl2 * t + gx * j;
+          if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+        }
+      }
+      ctx.stroke();
+    }
+    ctx.lineJoin = 'miter';
+  }
+
   // white-hot core: a small spiky blob that cools out of existence as the amber body takes over
   function drawCore(ctx, s) {
     const a = s.age;
@@ -2722,12 +2940,13 @@ function createFX(seed) {
       s.tw = Math.max(w1 + s.fs1 * 0.3, w2 + s.fs2 * 0.3, 1);
     }
     const pop = a < 0.13 ? 0.25 + 0.75 * U.easeOutBack(a / 0.13, 2.6) : 1;
-    const out = t > 0.72 ? (t - 0.72) / 0.28 : 0, hw = s.tw * 0.5 * 1.12 * Math.cos(s.tilt) + 6;
+    const fit = Math.min(1, (cam.w - 16) / (s.tw * 1.12 + 1)); // a long word (a special's name) is scaled to fit the screen
+    const out = t > 0.72 ? (t - 0.72) / 0.28 : 0, hw = s.tw * 0.5 * 1.12 * Math.cos(s.tilt) * fit + 6;
     const jx = a < 0.12 ? Math.sin(a * 300) * S * 1.8 * (1 - a / 0.12) : 0;
     ctx.save();
     ctx.translate(Math.max(Math.min(hw, cam.w * 0.5), Math.min(s.tx, Math.max(cam.w - hw, cam.w * 0.5))) + jx, s.ty - S * 14 * out * out);
     ctx.rotate(s.tilt);
-    ctx.scale(pop, pop);
+    ctx.scale(pop * fit, pop * fit);
     ctx.globalAlpha = 1 - out * out;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.miterLimit = 2;
     let y = 0;
@@ -2763,6 +2982,8 @@ function createFX(seed) {
     drawSparks(ctx);
     drawWind(ctx, cam);
     drawBallHeat(ctx, cam, world);
+    drawCharge(ctx, cam, world);
+    drawSpecial(ctx, cam);
     ctx.globalCompositeOperation = 'source-over';
     for (let i = 0; i < N_SLOT; i++) if (slots[i].on) drawCore(ctx, slots[i]);
     for (let i = 0; i < N_SLOT; i++) if (slots[i].on) drawText(ctx, cam, slots[i]);
@@ -2831,10 +3052,11 @@ function createFX(seed) {
     tHead = 0; tCount = 0; hOn = false; st.windAcc = 0; sparkCur = 0; anchorCur = 0;
     rel = 0; st.trauma = 0; st.kickT = 9; st.rollT = 9; st.kickA = 0; st.rollA = 0; st.zOff = 0; st.zHold = 0; st.zSnap = 0; st.zSince = 9; hasFocus = false;
     st.sq = 0; st.sqv = 0; sqMode = 0; st.vig = 0; st.ballHeat = 0; st.shT = 0; st.windK = 0; live = false; underDone = false;
+    st.spAge = 9; spAn = null; st.chK = 0; st.chT = 0; chOwner = '';
     stats.sparks = stats.lines = stats.wind = stats.trail = stats.total = 0;
   }
 
-  return { impact, event, update, applyCamera, deform, drawUnder, drawOver, drawTrail, reset, stats };
+  return { impact, event, update, applyCamera, deform, drawUnder, drawOver, drawTrail, reset, setCharge, stats };
 }
 
 // ════════ scene.js ════════
@@ -3995,6 +4217,119 @@ function createVersus() {
   return { mode: 'versus', players, snap, get state() { return snap.state; }, setSides, onHit, onEvent, update, reset, nextRound, replay };
 }
 
+// ════════ energy.js ════════
+// energy.js — the energy bars and the special move (versus only). Rally with your opponent and both bars fill together: one
+// step for every volley (a hit that answers the other player's last one), `volleys` steps to fill. A full bar is one special
+// for its owner. You arm yours with the special button (or E); Kage weighs his as each swing starts (kage.wantsSpecial). The
+// armed player's next hit is the special:
+//   · it leaves the hand `boost` times harder (the soft speed cap rises by as much, so a weak swipe stays a weak special), and
+//   · the ball carries the special's charge until the OTHER player's next touch, or `charge` seconds of game time: that touch
+//     lands at `damp` of its strength (they can still turn it, it is just heavy in their hands).
+// Then it is a plain ball again: nothing about the ball itself changes, and nothing carries past that one touch.
+//
+// Bars keep their energy from round to round (you earned it) and empty only when spent or at a new match; an armed special
+// that never lands is disarmed when the round ends, and the bar stays full. Rules only, like versus.js: no physics, no DOM.
+
+CFG.energy = {
+  on: 1, // 1 = energy bars and specials (versus only)
+  volleys: 16, // volleys that fill a bar (tuned in tests/energy.mjs: 2–3 specials a side in a long round, never the match)
+  boost: 1.2, // a special hit leaves the hand this much harder
+  charge: 1.5, // s of game time the ball carries a special's charge, if the other player does not touch it first
+  damp: 0.7, // the other player's next touch lands at this share of its strength
+  kage: 1, // 1 = Kage uses his specials
+};
+CFG_SCHEMA.push(
+  { path: 'energy.on', label: 'Energy and specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' },
+  { path: 'energy.volleys', label: 'Volleys to fill a bar', min: 4, max: 40, step: 1, group: 'Energy', rank: -2.8, unit: '' },
+  { path: 'energy.boost', label: 'Special hit power', min: 1, max: 1.5, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
+  { path: 'energy.charge', label: 'Charge lasts', min: 0.3, max: 3, step: 0.1, group: 'Energy', rank: -2.8, unit: 's' },
+  { path: 'energy.damp', label: 'Their next touch lands at', min: 0.2, max: 1, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
+  { path: 'energy.kage', label: 'Kage uses specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' }
+);
+
+function createEnergy() {
+  const snap = {
+    on: true, // CFG.energy.on, as of the last update
+    you: 0, kage: 0, // the bars, 0..1
+    armedYou: false, armedKage: false,
+    charge: '', chargeT: 0, chargeK: 0, // the ball's charge: whose ('you' | 'kage' | ''), seconds left, and the share left (0..1)
+    volleys: 0, // volleys this rally
+    used: { you: 0, kage: 0 }, // specials landed this match
+  };
+  let last = ''; // who hit last this rally
+
+  const on = () => CFG.energy.on > 0;
+  const step = () => 1 / Math.max(1, Math.round(CFG.energy.volleys) || 1);
+  const fill = (v) => (v > 1 - 1e-6 ? 1 : v); // six sixths are 0.9999999999999999: a full bar is exactly 1
+
+  function reset() { // a new match
+    snap.you = 0; snap.kage = 0; snap.used.you = 0; snap.used.kage = 0;
+    newRally();
+  }
+  function newRally() { // a round starts (or the court changed): the bars stay, nothing else does
+    last = ''; snap.volleys = 0; snap.armedYou = false; snap.armedKage = false;
+    snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0;
+  }
+
+  function full(who) { return on() && (who === 'kage' ? snap.kage : snap.you) >= 1; }
+  function armed(who) { return who === 'kage' ? snap.armedKage : snap.armedYou; }
+  // a full bar can be armed (and disarmed again, by asking twice); returns whether it is armed now
+  function arm(who, want) {
+    if (!full(who)) return false;
+    const a = want === undefined ? !armed(who) : !!want;
+    if (who === 'kage') snap.armedKage = a; else snap.armedYou = a;
+    return a;
+  }
+
+  // what this touch carries, before the physics sees it: an armed special's boost, or the other player's charge
+  function prepare(who, hand) {
+    hand.boost = 1; hand.gain = 1;
+    if (!on()) return hand;
+    if (armed(who)) hand.boost = Math.max(1, CFG.energy.boost);
+    if (snap.charge && snap.charge !== who && snap.chargeT > 0) hand.gain = U.clamp(CFG.energy.damp, 0, 1);
+    return hand;
+  }
+
+  // a hit landed (live: it counts in a rally, rather than a serve that did not open the round). Returns 'special' (an armed
+  // special went off), 'heavy' (a touch on the other player's charged ball: it was damped, and the charge is spent), 'volley'
+  // (an answer: both bars stepped), or ''.
+  function onHit(who, live) {
+    if (!on()) { if (live) last = who; return ''; }
+    let out = '';
+    if (snap.charge) { out = snap.charge !== who ? 'heavy' : ''; snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; } // any touch spends a charge
+    if (armed(who)) { // an armed special goes off on whatever it boosted, a serve included
+      if (who === 'kage') { snap.armedKage = false; snap.kage = 0; } else { snap.armedYou = false; snap.you = 0; }
+      snap.used[who === 'kage' ? 'kage' : 'you']++;
+      snap.charge = who === 'kage' ? 'kage' : 'you'; snap.chargeT = Math.max(0, CFG.energy.charge); snap.chargeK = 1;
+      out = 'special';
+    }
+    if (!live) return out;
+    if (last && last !== who) { // an answer steps both bars, bar the one a special just spent
+      snap.volleys++;
+      const s = step(), spent = out === 'special' ? who : '';
+      if (spent !== 'kage') snap.kage = fill(snap.kage + s);
+      if (spent !== 'you') snap.you = fill(snap.you + s);
+      if (!out) out = 'volley';
+    }
+    last = who;
+    return out;
+  }
+
+  // game time: the charge runs down (a hit's freeze and slow-mo hold it too)
+  function update(simDt) {
+    snap.on = on();
+    if (!snap.on) { snap.armedYou = false; snap.armedKage = false; snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; return; }
+    if (snap.charge && simDt > 0) {
+      snap.chargeT -= simDt;
+      const T = Math.max(1e-3, CFG.energy.charge);
+      if (snap.chargeT <= 0) { snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; } else snap.chargeK = U.clamp01(snap.chargeT / T);
+    }
+  }
+
+  reset();
+  return { snap, reset, newRally, full, armed, arm, prepare, onHit, update, get on() { return on(); } };
+}
+
 // ════════ ninja.js ════════
 // ninja.js — the Neo Dojo rig: Kiru's own body, which the cast sheet (Tools/neo-dojo-cast) draws every character on, in the
 // sheet's units (x 0..200, the hood centred on (100, 90), the soles on y = 231.5). A "look" says what goes on it: Kage-X's
@@ -4004,7 +4339,7 @@ function createVersus() {
 // size into small canvases, glow included (shadowBlur at bake time only, never per frame). What moves is drawn live with plain
 // strokes: the headband tails, both arms, both legs and the shoes. So a frame of a character is three drawImage calls and ~20
 // strokes. A look that needs them also gets whole-body silhouettes of named poses in its ghost colour (afterimages: one
-// drawImage each) and a scratch canvas for a one-colour pass over any pose (the white flash of an arrival).
+// drawImage each) and a scratch canvas for a one-colour pass over any pose (the white flash of an arrival, a glow, clones).
 //
 // look = { colors: { armF, armB, legF, legB, fist, fistS, shoe, stripe|null, smear, ghost },
 //          heads: ['open', 'blink', ...],          the expressions to bake (pose.face picks one; 'open' is the fallback)
@@ -4192,6 +4527,39 @@ function createNinja(doc, look) {
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   }
 
+  // a soft glow round the whole body (an armed special): one radial fill, in sheet units so it fits the character at any size
+  let auraG = null, auraCtx = null, auraCol = '';
+  function drawAura(ctx, kx, ky, P, col, alpha) {
+    if (!(alpha > 0.004)) return;
+    if (auraCtx !== ctx || auraCol !== col) {
+      auraCtx = ctx; auraCol = col;
+      auraG = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+      auraG.addColorStop(0, U.rgba(col, 0.85)); auraG.addColorStop(0.45, U.rgba(col, 0.4)); auraG.addColorStop(1, U.rgba(col, 0));
+    }
+    frame(ctx, kx, ky, P);
+    ctx.translate(N.CX, 128); ctx.scale(122, 136);
+    ctx.globalAlpha = Math.min(1, alpha); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = auraG;
+    ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // the same one-colour pass, rendered once and placed n times, each (dx, dy) CSS px further from P and fainter (clones)
+  function drawTints(ctx, kx, ky, P, col, n, dx, dy, alpha, lighter) {
+    const T = art.tint;
+    if (!T || !(alpha > 0.004) || !(n > 0)) return;
+    solid(T, P, col);
+    const x0 = P.x, y0 = P.y;
+    ctx.globalCompositeOperation = lighter ? 'lighter' : 'source-over';
+    for (let i = 1; i <= n; i++) {
+      P.x = x0 + dx * i; P.y = y0 + dy * i;
+      frame(ctx, kx, ky, P);
+      ctx.globalAlpha = Math.min(1, alpha * (1 - (i - 1) / n));
+      blit(ctx, T);
+    }
+    P.x = x0; P.y = y0;
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+
   // screen point → sheet units, through the pose's rig transform (the inverse of drawRig's)
   function toSheet(sx, sy, out) {
     let dx = sx - pose.x, dy = sy - pose.y;
@@ -4205,7 +4573,7 @@ function createNinja(doc, look) {
     if (d > m) { p.x = sh.x + (dx / d) * m; p.y = sh.y + (dy / d) * m; }
   }
 
-  return { art, pose, REST, hasCanvas, ensureArt, drawRig, drawSil, drawTint, toSheet, limitArm, H };
+  return { art, pose, REST, hasCanvas, ensureArt, drawRig, drawSil, drawTint, drawTints, drawAura, toSheet, limitArm, H };
 }
 
 // ════════ kage.js ════════
@@ -4226,7 +4594,11 @@ function createNinja(doc, look) {
 // He plays the half given by setSide(−1 left / +1 right) and winds the rope the way that half's player does: a hit AWAY
 // from the camera on your own half. Left → clockwise (+1 along φ), right → counter-clockwise (−1).
 //
-// Clocks: everything he does runs on SIM time, so a hit's freeze and slow-mo hold him too (fair, and it reads as drama).
+// SPECIAL (energy.js). When his bar is full he weighs it as each swing starts: often when you are winding the rope, now and
+// then when it is level, rarely when he is winding it. Armed, he glows; his special leaves shadow clones along the strike.
+//
+// Clocks: everything he does runs on SIM time, so a hit's freeze and slow-mo hold him too (fair, and it reads as drama). The
+// glow and the clones run on REAL time, so they play out inside the freeze.
 
 CFG.kage = {
   side: 0, // 0 left, 1 right, 2 a coin flip each match
@@ -4285,6 +4657,7 @@ const KAGE_LINES = {
   won: ['Upgrade yourself.', 'Cut clean.', 'Next.', 'Too easy.'],
   lost: ['Rematch. Now.', 'Not bad... for 2026.', 'Hmph.', 'Bug in my code.'],
   serve: ['Ready?', 'Watch closely.', 'Try to keep up.'],
+  special: ['Overdrive.', 'Shadow protocol.', 'Execute.', 'Delete.'],
 };
 
 // Kage-X on the Neo Dojo rig (ninja.js): the sheet's dark gi and visor, and his magenta neon
@@ -4302,6 +4675,7 @@ const KAGE_LOOK = {
   key: () => CFG.kage.glow, // his neon slider rebakes him
   glow: () => CFG.kage.glow,
   smearA: () => Math.min(1, CFG.kage.glow + 0.3),
+  tint: true, // the armed glow and the shadow clones of his special
   head(H, g, k, face) {
     const A = KAGE_ART, hood = new Path2D(NINJA.HOOD);
     g.lineWidth = 6; g.strokeStyle = H.L; g.stroke(hood);
@@ -4386,6 +4760,8 @@ function createKage(doc) {
   let ghost = null, np = 0, strokes = 0, lastW = null;
   const dbg = { n: 0, mine: 0, high: 0, aim: 0, stance: 0, late: 0, ok: 0 }; // why reads fail (tests and tuning)
   const rnd = U.rng(20990311);
+  const rndE = U.rng(20991231); // his special: its own dice, so arming one never changes how he plays the ball
+  const CLONE = 0.42; // s (real): his special's shadow clones fade over this
   const gauss = () => { const u = Math.max(1e-12, rnd()); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * rnd()); };
   const pick = (a) => a[Math.floor(rnd() * a.length) % a.length];
 
@@ -4398,6 +4774,7 @@ function createKage(doc) {
     ts: 0, up: 0, h: 0, struck: false, res: 0, fdx: 1, fdz: 0, // the swing: start, time to apex, jump height, outcome (1 hit, −1 whiff)
     tLand: -9, run: 0, face: 1, moodT: 0, blinkAt: 2.5,
     say: '', sayT: 0, sayCool: 0,
+    rt: 0, armK: 0, specialRt: -9, specials: 0, // real clock; the armed glow 0..1; his last special (real time); counted for the tests
   };
   const hand = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: HAND_R, stroke: -2, owner: 'cpu' };
   const OUT = { dx: 0, dz: 0, sx: 0, sz: 0 };
@@ -4587,7 +4964,7 @@ function createKage(doc) {
   // info: { state: the rules' state ('ready' | 'playing' | 'wound'), server: 'you' | 'kage' }. Returns a hand to try, or null.
   function update(dt, realDt, w, info) {
     kageSkill(SK); lastW = w;
-    if (realDt > 0) { st.sayT -= realDt; st.sayCool -= realDt; }
+    if (realDt > 0) { st.sayT -= realDt; st.sayCool -= realDt; st.rt += realDt; st.armK += ((info && info.armed ? 1 : 0) - st.armK) * Math.min(1, realDt * 12); }
     if (!(dt > 0)) return null;
     st.t += dt; st.blind -= dt; st.cool -= dt; st.reread -= dt; st.moodT += dt;
     if (st.t > st.blinkAt) st.blinkAt = st.t + 2.2 + rnd() * 3.5;
@@ -4641,6 +5018,14 @@ function createKage(doc) {
     if (lastW) guardSpot(lastW); // he cannot read it yet, but he knows where reversals come back
     if (st.phase === 'swing' && !st.struck) { st.phase = 'ready'; st.y = 0; } // he was set for a different ball
   }
+  // his bar is full and a swing is starting: does he cut loose? lead: turns wound YOUR way (+) or his (−)
+  function wantsSpecial(lead) {
+    const p = lead > 0.4 ? 0.8 : lead > -0.4 ? 0.4 : 0.2;
+    if (!(rndE() < p)) return false;
+    if (CFG.kage.taunts > 0) { const L = KAGE_LINES.special; st.say = L[Math.floor(rndE() * L.length) % L.length]; st.sayT = 1.5; st.sayCool = 2.2; }
+    return true;
+  }
+  function onSpecial() { st.specialRt = st.rt; st.specials++; }
   function onRoundEnd(winner) {
     st.phase = winner === 'kage' ? 'won' : 'lost'; st.moodT = 0; st.has = false; st.vx = 0; st.vz = 0;
     st.sayCool = 0; quip(winner === 'kage' ? 'won' : 'lost', 0.95);
@@ -4654,7 +5039,7 @@ function createKage(doc) {
     st.x = st.homeX; st.z = st.homeZ;
     if (info && info.server === 'kage' && w) { const b = w.ball.p; st.x = b.x + st.side * 0.5; st.z = b.z + 0.45; }
     clampRegion();
-    st.say = ''; st.sayT = 0;
+    st.say = ''; st.sayT = 0; st.specialRt = -9;
     if (info && info.server === 'kage') quip('serve', 0.6);
   }
 
@@ -4772,7 +5157,19 @@ function createKage(doc) {
     poseFor(cam, w);
     const need = pose.s * Math.max(kx, ky);
     if (!R.ensureArt(need * 1.15)) return;
+    // his special: shadow clones of the strike, strung back along it (a dark body, then a neon edge)
+    const ca = st.rt - st.specialRt;
+    if (ca >= 0 && ca < CLONE) {
+      const q = ca / CLONE, d = (0.16 + 0.5 * U.easeOut(q, 2)) * CFG.kage.size / 1.75;
+      cam.project(st.x, st.y + G.shoulder, st.z, A); cam.project(st.x - st.fdx * d, st.y + G.shoulder, st.z - st.fdz * d, B);
+      const dx = (B.x - A.x) / 3, dy = (B.y - A.y) / 3;
+      R.drawTints(ctx, kx, ky, pose, '#2a0a3d', 3, dx, dy, 0.55 * (1 - q), false);
+      R.drawTints(ctx, kx, ky, pose, NEON, 3, dx, dy, 0.35 * (1 - q) * Math.max(0.4, CFG.kage.glow), true);
+    }
+    const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15), gl = Math.max(0.4, CFG.kage.glow); // armed: an aura behind him and his neon over him
+    if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, NEON, st.armK * (0.35 + 0.25 * pulse) * gl);
     R.drawRig(ctx, kx, ky, pose);
+    if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, NEON, st.armK * (0.18 + 0.18 * pulse) * gl, true);
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
   }
 
@@ -4784,7 +5181,7 @@ function createKage(doc) {
   };
 
   return {
-    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, predict: (w) => { predict(w); return np; },
+    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, predict: (w) => { predict(w); return np; },
     get side() { return st.side; }, get dir() { return st.dir; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
@@ -4802,6 +5199,9 @@ function createKage(doc) {
 // vermilion headband and its two ribbons (drawn live here, so they ripple and stream), the steel plate with the bolt, the
 // katana on his back, wrapped fists. Five faces are baked: open, blink, fierce (a strike or a finger down), happy (a round
 // won) and sad (a round lost). Afterimages are baked silhouettes of a dash and a leap, in a cool blue.
+//
+// SPECIAL (energy.js). Armed, he glows storm blue. His special (Raijin) closes a ring of afterimages on the ball from every
+// side as his fist lands; the lightning itself is fx.js's.
 //
 // Clocks: the flash (afterimages, speed lines, the white flash he arrives in, the ring he kicks off from) runs on REAL time,
 // so it plays out inside a hit's freeze; his body (the follow-through, the fall, the landing, his moods) runs on SIM time, so
@@ -4922,6 +5322,7 @@ function createKiru(doc) {
   const ARRIVE = 0.11; // s (real): the white flash he arrives in
   const LINES = 0.2; // s (real): the speed lines along a strike's step
   const RING = 0.28; // s (real): the ring on the floor where he kicked off
+  const RAIJIN = 0.34; // s (real): his special's ring of afterimages closes on the ball over this
   const FOLLOW = 0.11; // s (sim): the fist drives on through the ball
   const RECOIL = 0.28; // s (sim): then draws back to guard
   const GRAV = 15; // m/s²: his fall from a leap (snappier than the ball's)
@@ -4939,6 +5340,7 @@ function createKiru(doc) {
     leap: false, fx: 0, fy: 0, fz: 0, nx: 0, nz: -1, power: 0, // the strike: where his fist meets the ball, the way it goes
     arriveRt: -9, arriveA: 0, // the white flash: when, how bright
     strikes: 0, returns: 0, // counted for the tests
+    armK: 0, specialRt: -9, spX: 0, spY: 0, spZ: 0, specials: 0, // the armed glow 0..1; his last special: when (real), where the ball was
   };
 
   // a flash step: from → to, when (real time), the path's shape (0 dash along the floor, 1 leap in an arc, 2 dash then
@@ -4985,7 +5387,8 @@ function createKiru(doc) {
 
   // Your swipe landed: flash to the ball. Where he lands is picked so the strike reads: beside the ball (at its depth, so the
   // camera sees the fist meet it) rather than in front of it, never in its path, on his own half, on the court, clear of the
-  // pole and of Kage. Returns how far he went. info: { half: the court has halves, kage: Kage's feet { x, z } or null }
+  // pole and of Kage. Returns how far he went. info: { half: the court has halves, kage: Kage's feet { x, z } or null,
+  // special: this hit was your special }
   function onHit(res, w, info) {
     if (!res || !w || !res.normal) return 0;
     geom();
@@ -5014,6 +5417,7 @@ function createKiru(doc) {
     st.x = sx; st.z = sz; st.y = h; st.vx = 0; st.vz = 0; st.vy = h > 0.05 ? POP : 0; st.leap = h > 0.05;
     st.fx = p.x - ux * r * 0.7; st.fy = p.y; st.fz = p.z - uz * r * 0.7; st.nx = nx; st.nz = nz; st.power = res.power || 0;
     st.phase = 'strike'; st.ts = st.t; st.arriveRt = st.rt; st.arriveA = 0.38; st.strikes++;
+    if (info && info.special) { st.specialRt = st.rt; st.spX = p.x; st.spY = p.y; st.spZ = p.z; st.specials++; } // (the arrival flash stays as it is: any brighter and the burst hides him)
     return dist;
   }
 
@@ -5027,12 +5431,16 @@ function createKiru(doc) {
     return d;
   }
 
-  // info: { ready: a finger is down and may hit }. Returns how far a flash back home went this frame (0 = none).
+  // info: { ready: a finger is down and may hit, armed: your special is armed }. Returns how far a flash back home went this
+  // frame (0 = none).
   let lastW = null;
   function update(dt, realDt, w, info) {
     lastW = w;
     let out = 0;
-    if (realDt > 0) { st.rt += realDt; st.ready += ((info && info.ready ? 1 : 0) - st.ready) * Math.min(1, realDt * 16); }
+    if (realDt > 0) {
+      st.rt += realDt; st.ready += ((info && info.ready ? 1 : 0) - st.ready) * Math.min(1, realDt * 16);
+      st.armK += ((info && info.armed ? 1 : 0) - st.armK) * Math.min(1, realDt * 12);
+    }
     if (!(dt > 0)) return 0;
     geom();
     st.t += dt; st.moodT += dt;
@@ -5059,7 +5467,7 @@ function createKiru(doc) {
   function reset() {
     geom(); home();
     st.phase = 'idle'; st.x = st.homeX; st.z = st.homeZ; st.y = 0; st.vx = 0; st.vz = 0; st.vy = 0; st.leap = false;
-    st.moodT = 0; st.ts = -9; st.tLand = -9; st.arriveRt = -9;
+    st.moodT = 0; st.ts = -9; st.tLand = -9; st.arriveRt = -9; st.specialRt = -9;
     for (let i = 0; i < NF; i++) FL[i].rt = -9;
   }
 
@@ -5171,6 +5579,20 @@ function createKiru(doc) {
       }
     }
   }
+  // Raijin: five afterimages on the floor round the ball, closing in on it from every side and facing it, as his fist lands
+  function drawRaijin(ctx, cam, kx, ky) {
+    const age = st.rt - st.specialRt;
+    if (!(age >= 0 && age < RAIJIN)) return;
+    const q = age / RAIJIN, sz = CFG.kiru.size, rr = (1.25 - 0.7 * U.easeOut(q, 2)) * G.k, a0 = st.specials * 0.9;
+    cam.project(st.spX, st.spY, st.spZ, B);
+    for (let i = 0; i < 5; i++) {
+      const th = a0 + (i / 5) * TAU, x = st.spX + Math.cos(th) * rr, z = st.spZ + Math.sin(th) * rr;
+      cam.project(x, 0, z, Cc);
+      const mir = B.x > Cc.x ? -1 : 1;
+      GP.x = Cc.x; GP.y = Cc.y; GP.s = (Cc.s * sz) / 207.5; GP.mir = mir; GP.tilt = -mir * 0.25; GP.sqx = 1.06; GP.sqy = 0.96;
+      R.drawSil(ctx, kx, ky, GP, 'dash', 0.3 * (1 - q) * (0.6 + 0.4 * U.clamp01(q * 4)), true);
+    }
+  }
   // three streaks along the step at foot, belt and head height, brightening toward where he arrived
   function speedLines(ctx, cam, kx, ky, f, a) {
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
@@ -5215,8 +5637,12 @@ function createKiru(doc) {
     if (!hasCanvas) return;
     poseFor(cam, w);
     if (!R.ensureArt(pose.s * Math.max(kx, ky) * 1.15)) return;
+    drawRaijin(ctx, cam, kx, ky);
     drawFlashes(ctx, cam, kx, ky);
+    const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15); // armed: an aura behind him and a storm-blue charge over him
+    if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, '#5ad1ff', st.armK * (0.4 + 0.25 * pulse));
     R.drawRig(ctx, kx, ky, pose);
+    if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, '#8fd2ff', st.armK * (0.22 + 0.2 * pulse), true);
     const ar = st.rt - st.arriveRt;
     if (ar >= 0 && ar < ARRIVE) R.drawTint(ctx, kx, ky, pose, '#ffffff', st.arriveA * (1 - ar / ARRIVE), true);
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
@@ -5237,7 +5663,8 @@ function createKiru(doc) {
 }
 
 // ════════ ui.js ════════
-// ui.js — everything in the DOM: the HUD numbers, the round card, the bottom hint and the Feel panel.
+// ui.js — everything in the DOM: the HUD numbers, the energy rings and the special button, the round card, the bottom hint
+// and the Feel panel.
 //
 // The markup lives in shell.html (ids below) and the look in style.css; this file binds to them and keeps them current.
 // HUD text is written only when the number it shows changes (last-value cache per field), so a steady frame costs a
@@ -5339,6 +5766,27 @@ function createUI(root, opts) {
     if (ld !== lead) { lead = ld; hud.setAttribute('data-lead', ld); }
     if (snap.hits !== lastHits) { if (snap.hits > lastHits) pop(); lastHits = snap.hits; }
   }
+
+  // ───────────── energy (versus): your special button and Kage's gauge, filled round their rings ─────────────
+  const enBtn = $('bSpecial'), enY = $('eYouR'), enK = $('eKageR'), enKEl = $('eKage');
+  let enOn = -1, enYQ = -1, enKQ = -1, enYS = '', enKS = '';
+  function energy(es, show) {
+    const on = show && es && es.on ? 1 : 0;
+    if (on !== enOn) { enOn = on; hud.setAttribute('data-energy', on ? 'on' : ''); }
+    if (!on) return;
+    const yq = Math.round(U.clamp01(es.you) * 100), kq = Math.round(U.clamp01(es.kage) * 100);
+    // an empty ring hides its stroke: a round cap would still draw a dot
+    if (yq !== enYQ) { enYQ = yq; enY.style.strokeDashoffset = String(100 - yq); enY.style.opacity = yq > 0 ? '1' : '0'; }
+    if (kq !== enKQ) { enKQ = kq; enK.style.strokeDashoffset = String(100 - kq); enK.style.opacity = kq > 0 ? '1' : '0'; }
+    const ys = es.armedYou ? 'armed' : yq >= 100 ? 'full' : 'fill', ks = es.armedKage ? 'armed' : kq >= 100 ? 'full' : 'fill';
+    if (ys !== enYS) {
+      enYS = ys; enBtn.setAttribute('data-st', ys); enBtn.disabled = ys === 'fill';
+      enBtn.setAttribute('aria-pressed', ys === 'armed' ? 'true' : 'false');
+      enBtn.setAttribute('aria-label', ys === 'armed' ? 'Special armed: your next hit is the special' : ys === 'full' ? 'Special ready: arm it' : 'Special: charging');
+    }
+    if (ks !== enKS) { enKS = ks; enKEl.setAttribute('data-st', ks); enKEl.setAttribute('aria-label', ks === 'armed' ? 'Kage has armed his special' : ks === 'full' ? "Kage's special is ready" : "Kage's energy"); }
+  }
+  enBtn.addEventListener('click', () => { if (opts.onSpecial) opts.onSpecial(); });
 
   function hint(text) {
     if (text) { $('hintText').textContent = text; hintEl.classList.add('on'); } else hintEl.classList.remove('on');
@@ -5695,7 +6143,7 @@ function createUI(root, opts) {
     return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save };
   })();
 
-  return { update, showResult, hideResult, hint, setMuted, tuner };
+  return { update, energy, showResult, hideResult, hint, setMuted, tuner };
 }
 
 // ════════ main.js ════════
@@ -5705,6 +6153,10 @@ function createUI(root, opts) {
 //
 // Kiru (kiru.js, the Feel panel's Kiru group) is your avatar in both modes: every hit of yours flashes him to the ball. He is
 // drawn, not simulated, so with him switched off the game is the same game.
+//
+// Against Kage, volleys fill both players' energy bars (energy.js, the Feel panel's Energy group): a full bar is a special,
+// armed with the special button or E (Kage arms his as a swing starts). Every hit goes through energy.prepare first, which
+// is all the physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
 //
 // Two rule sets: the solo time trial (game.js) and versus Kage (versus.js), picked by CFG.match.opponent (the Feel
 // panel's Match group; "#solo" or "#versus" in the URL picks one for this page load without touching saved settings).
@@ -5721,6 +6173,7 @@ function createUI(root, opts) {
   const input = createTouchInput(canvas, cam);
   const game = createGame();
   const versus = createVersus();
+  const energy = createEnergy();
   const kage = createKage(document);
   const kiru = createKiru(document);
   const audio = createAudio();
@@ -5731,6 +6184,7 @@ function createUI(root, opts) {
     onReset: resetAll,
     onNext: nextRound,
     onMuteToggle: () => { audio.unlock(); audio.setMuted(!audio.muted); return audio.muted; },
+    onSpecial: armSpecial,
     audio,
   });
   // after createUI: the panel has applied the saved settings, and the URL wins over them for this load only
@@ -5765,9 +6219,12 @@ function createUI(root, opts) {
   const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1 };
-  const info = { state: 'ready', server: 'you' };
-  const kinfo = { ready: false }, kiruHit = { half: false, kage: null };
+  const info = { state: 'ready', server: 'you', armed: false };
+  const kinfo = { ready: false, armed: false }, kiruHit = { half: false, kage: null, special: false };
   let kiruWas = false; // was Kiru on last frame (switching him on puts him on his spot)
+  let kageSwing = -1; // the swing (his st.ts) Kage last weighed his special for
+  let fullWas = false, toldSpecial = false; // your bar was full last frame; the "special ready" hint was shown this match
+  const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
   const vs = () => rules === versus;
   const kiruOn = () => CFG.kiru.on > 0;
 
@@ -5799,6 +6256,7 @@ function createUI(root, opts) {
       kage.reset(world, { server: versus.snap.server });
     } else resetWorld(world);
     kiru.reset();
+    energy.newRally(); kageSwing = -1;
     tw.cancel();
     fx.reset();
     ui.hideResult();
@@ -5810,6 +6268,7 @@ function createUI(root, opts) {
     pickRules();
     pickSide();
     if (vs()) versus.reset(); else game.reset();
+    energy.reset(); fullWas = false; toldSpecial = false;
     startRally();
   }
   // the round card was tapped: next round, or a new match once it is over
@@ -5822,23 +6281,41 @@ function createUI(root, opts) {
     if (world.state !== 'live' || !tw.canHit()) return null;
     const you = who !== 'kage';
     if (you && now - lastHitAt < CFG.hit.cooldownMs) return null;
+    if (vs()) energy.prepare(you ? 'you' : 'kage', hand); else { hand.boost = 1; hand.gain = 1; }
     const res = applyHit(world, hand);
     if (!res) return null;
     if (you) lastHitAt = now;
     res.owner = you ? 'you' : 'cpu';
+    res.charged = hand.gain < 1; // it answered the other player's special: it landed heavy
     rules.onHit(res, who);
-    if (you || CFG.kage.warp > 0) tw.trigger(you ? res.power : res.power * CFG.kage.warpScale, res.quality);
+    const e = vs() && versus.state !== 'wound' ? energy.onHit(you ? 'you' : 'kage', versus.state === 'playing') : '';
+    res.special = e === 'special' ? (you ? 'you' : 'kage') : '';
+    if (you || CFG.kage.warp > 0) {
+      if (res.special) tw.trigger(Math.max(0.9, res.power), 'perfect', true); // a special is always a big moment
+      else tw.trigger(you ? res.power : res.power * CFG.kage.warpScale, res.quality);
+    }
     fx.impact(res, cam, world);
     audio.hit(res);
-    if (you) audio.vibrate(res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
+    if (res.special) audio.special(res.special);
+    if (you) audio.vibrate(res.special ? [30, 40, 60] : res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
     if (vs()) kage.onWorldHit(res, who);
+    if (res.special === 'kage') kage.onSpecial();
     if (you && kiruOn()) { // Kiru flash-steps to the ball your swipe just hit
-      kiruHit.half = vs(); kiruHit.kage = vs() ? kage.st : null;
+      kiruHit.half = vs(); kiruHit.kage = vs() ? kage.st : null; kiruHit.special = res.special === 'you';
       const d = kiru.onHit(res, world, kiruHit);
       if (d > 0.05) audio.flash(d, 0.6);
     }
     ui.hint(null); hintUntil = 0;
     return res;
+  }
+
+  // the special button (or E): arm a full bar, or disarm it again
+  function armSpecial() {
+    audio.unlock();
+    if (!vs() || versus.state === 'wound' || !energy.full('you')) return false;
+    const a = energy.arm('you');
+    audio.energy(a ? 'arm' : 'disarm');
+    return a;
   }
 
   // Against Kage your swipes count on your half and on the line, and on a ball that has died anywhere; only the server opens
@@ -5937,14 +6414,27 @@ function createUI(root, opts) {
     pumpInput(now);
     const scale = tw.update(realDt);
     const simDt = realDt * scale;
+    energy.update(simDt);
     if (vs()) {
-      info.state = versus.state; info.server = versus.snap.server;
+      info.state = versus.state; info.server = versus.snap.server; info.armed = energy.armed('kage');
       const hand = kage.update(simDt, realDt, world, info);
+      if (kage.st.phase === 'swing' && kage.st.ts !== kageSwing) { // he weighs his special as a swing starts, so it shows on him before the fist lands
+        kageSwing = kage.st.ts;
+        if (CFG.energy.kage > 0 && energy.full('kage') && !energy.armed('kage') && kage.wantsSpecial(versus.snap.lead)) energy.arm('kage', true);
+      }
       if (hand) kage.onSwing(tryHit(hand, now, 'kage'));
     }
+    // your bar filling: a chime, and the first time in a match, a word on how to use it
+    const fullNow = vs() && energy.full('you');
+    if (fullNow && !fullWas) {
+      audio.energy('full');
+      if (!toldSpecial && versus.state !== 'wound') { toldSpecial = true; ui.hint(coarse ? 'Special ready · tap ⚡' : 'Special ready · press E'); hintUntil = now + 1800; }
+    }
+    fullWas = fullNow;
     if (kiruOn()) {
       if (!kiruWas) { kiru.setSide(vs() ? -kageSide : 1); kiru.reset(); }
       kinfo.ready = input.active && world.state === 'live' && tw.canHit() && mayHit();
+      kinfo.armed = vs() && energy.armed('you');
       const back = kiru.update(simDt, realDt, world, kinfo);
       if (back > 0.05) audio.flash(back, 0.4);
     }
@@ -5954,6 +6444,7 @@ function createUI(root, opts) {
     if (prevPhase !== 'ramp' && tw.phase === 'ramp') audio.release(tw.seq.power); // the running sequence's power, so the whoosh fits the ramp tw plays (a wound slam can replace it)
     prevPhase = tw.phase;
 
+    fx.setCharge(vs() ? energy.snap.charge : '', energy.snap.chargeK);
     fx.update(realDt, simDt, tw, world);
     fx.applyCamera(cam);
     rules.update(clockDt, world);
@@ -5967,6 +6458,7 @@ function createUI(root, opts) {
     if (hintUntil && now > hintUntil) { hintUntil = 0; ui.hint(hintText()); }
     if (rules.state === 'wound' && !resultShown && woundAt >= 0 && now - woundAt > 900) { resultShown = true; ui.showResult(rules.snap); }
     ui.update(rules.snap, realDt);
+    ui.energy(energy.snap, vs());
     syncPanel(false);
 
     if (draw) {
@@ -6005,12 +6497,14 @@ function createUI(root, opts) {
 
   document.addEventListener('visibilitychange', () => { last = performance.now(); });
   window.addEventListener('keydown', (e) => { // not while a Feel-panel slider or the paste box has focus
-    if ((e.key === 'r' || e.key === 'R') && !(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) resetAll();
+    if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.key === 'r' || e.key === 'R') resetAll();
+    else if ((e.key === 'e' || e.key === 'E') && !e.repeat) armSpecial();
   });
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, versus, kage, kiru, input, scene, audio, ui, perf,
+    CFG, world, cam, tw, fx, game, versus, energy, kage, kiru, input, scene, audio, ui, perf, special: armSpecial,
     get rules() { return rules; },
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)
