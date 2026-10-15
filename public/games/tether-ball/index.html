@@ -141,6 +141,29 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .ek[data-st="armed"] .fl { stroke: #fff1ff; }
 #hud[data-state="wound"] .ey, #hud[data-trigger="curve"] .ey[data-st] { pointer-events: none; } /* a curved swipe is the trigger: the ring only shows it */
 @keyframes egPulse { 0%, 100% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.5), 0 0 6px rgba(90,209,255,.3); transform: scale(1); } 50% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.9), 0 0 24px rgba(90,209,255,.75); transform: scale(1.07); } }
+/* ───────────── fire volleys (versus): each player's second power-up, a flame over their energy ring (it shows once won, burns
+   while armed), and the streak toward a fire volley, a pip a hit in the hitter's colour, all ablaze once the ball is on fire. ── */
+#fireHud { display: none; }
+#hud[data-fire="on"] #fireHud { display: block; }
+.fb { position: absolute; bottom: calc(var(--sb) + 72px); width: 36px; height: 36px; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--fire-mid, #ffae1f); opacity: 0; transform: scale(.6); transition: opacity .2s, transform .2s, background .15s, box-shadow .2s; pointer-events: none; }
+#hud[data-ks="l"] .fk, #hud[data-ks="r"] .fy { left: calc(var(--sl) + 20px); }
+#hud[data-ks="l"] .fy, #hud[data-ks="r"] .fk { right: calc(var(--sr) + 20px); }
+.fb svg { display: block; width: 100%; height: 100%; }
+.fb .ic { fill: currentColor; }
+.fb .ibo, #hud[data-power="special"] .fb .ifl { display: none; }
+#hud[data-power="special"] .fb .ibo { display: inline; }
+.fb[data-st="held"], .fb[data-st="armed"] { opacity: 1; transform: scale(1); }
+.fb[data-st="held"] { box-shadow: inset 0 0 0 1.5px var(--fire-mid, #ffae1f), 0 0 14px var(--fire-glow, #ff7a1a); }
+.fy[data-st="held"] { animation: fbPulse 1.2s ease-in-out infinite; }
+.fb[data-st="armed"] { background: var(--fire-outer, #ff4a10); color: var(--fire-core, #fff4c2); box-shadow: 0 0 0 3px var(--fire-mid, #ffae1f), 0 0 26px var(--fire-glow, #ff7a1a); }
+@keyframes fbPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+#streak { position: absolute; left: 50%; bottom: calc(var(--sb) + 62px); transform: translateX(-50%); display: flex; gap: 5px; opacity: 0; transition: opacity .25s; pointer-events: none; }
+#streak[data-st="build"], #streak[data-st="fire"] { opacity: 1; }
+#streak i { display: block; width: 9px; height: 9px; border-radius: 50%; background: rgba(233,237,246,.16); transition: background .15s, box-shadow .15s; }
+#streak i.y { background: var(--accent); }
+#streak i.k { background: var(--kage); }
+#streak i.f { background: var(--fire-mid, #ffae1f); box-shadow: 0 0 8px var(--fire-glow, #ff7a1a); animation: pipFire .5s ease-in-out infinite alternate; }
+@keyframes pipFire { from { box-shadow: 0 0 4px var(--fire-glow, #ff7a1a); } to { box-shadow: 0 0 12px var(--fire-glow, #ff7a1a), 0 0 2px var(--fire-core, #fff4c2); } }
 #hud[data-energy="on"] #hint { padding: 0 76px; }
 #hud[data-energy="on"] #hintText { text-align: center; line-height: 1.25; }
 @media (max-width: 429px) { #hud[data-energy="on"] #hintText { padding: 8px 14px; font-size: 12px; letter-spacing: .05em; } }
@@ -333,7 +356,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 
 @media (prefers-reduced-motion: reduce) {
   #panel, #panel.open, #result, #result.on, #hint, .toast, #hSpeed { transition: none; }
-  #hintText, #result.on .card, #result.on .badge, .ey[data-st="full"] { animation: none; }
+  #hintText, #result.on .card, #result.on .badge, .ey[data-st="full"], .fy[data-st="held"], #streak i.f { animation: none; }
   .eg, .eg .fl { transition: none; }
 }
 </style>
@@ -375,6 +398,15 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
       <button id="bSpecial" class="eg ey" type="button" aria-label="Special: charging" aria-pressed="false" data-st="fill" disabled>
         <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tr" cx="24" cy="24" r="20"/><circle id="eYouR" class="fl" cx="24" cy="24" r="20" pathLength="100" transform="rotate(-90 24 24)"/><path class="ic" d="M26.8 11.5 L16.5 26.2 H23.2 L21.2 36.5 L31.5 21.8 H24.8 Z"/></svg>
       </button>
+    </div>
+    <div id="fireHud">
+      <div id="fKage" class="fb fk" role="img" aria-label="Kage's fireball: none" data-st="">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path class="ic ifl" d="M24 6 C25.5 13 34 17.5 34 28 C34 36 29.5 41.5 24 41.5 C18.5 41.5 14 36 14 28.5 C14 22.5 17.5 19.5 19 14.5 C20.8 18 22.2 19.8 24.2 21 C24.4 15.5 22.4 11.5 24 6 Z M24 26.5 C25.8 29 28.2 31 28.2 34.2 C28.2 37 26.3 39 24 39 C21.7 39 19.8 37 19.8 34.2 C19.8 31 22.2 29 24 26.5 Z" fill-rule="evenodd"/><path class="ic ibo" d="M26.8 11.5 L16.5 26.2 H23.2 L21.2 36.5 L31.5 21.8 H24.8 Z"/></svg>
+      </div>
+      <div id="fYou" class="fb fy" role="img" aria-label="Fireball: win a fire volley" data-st="">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path class="ic ifl" d="M24 6 C25.5 13 34 17.5 34 28 C34 36 29.5 41.5 24 41.5 C18.5 41.5 14 36 14 28.5 C14 22.5 17.5 19.5 19 14.5 C20.8 18 22.2 19.8 24.2 21 C24.4 15.5 22.4 11.5 24 6 Z M24 26.5 C25.8 29 28.2 31 28.2 34.2 C28.2 37 26.3 39 24 39 C21.7 39 19.8 37 19.8 34.2 C19.8 31 22.2 29 24 26.5 Z" fill-rule="evenodd"/><path class="ic ibo" d="M26.8 11.5 L16.5 26.2 H23.2 L21.2 36.5 L31.5 21.8 H24.8 Z"/></svg>
+      </div>
+      <div id="streak" aria-hidden="true" data-st=""></div>
     </div>
   </div>
 
@@ -1507,7 +1539,7 @@ CFG.audio = {
   release: 1, // the rising whoosh as time speeds back up
   flash: 1, // Kiru's flash step: the swish as he blinks across the court
   special: 1, // the specials (energy.js): Raijin's thunderclap, Kage's shadow cut, and the energy bar's cues
-  fire: 1, // the fire power-up (fire.js): an orb flaring up, the ball catching fire and crackling, a burn, a fire going out
+  fire: 1, // fire volleys and the fireball (fire.js): the ball catching fire and crackling, a volley won, a swing charging, a burn, a fire going out
   hitVoice: 0, // the hit: 0 the synth below, 1.. a sampled voice from hitsounds.js (Thump, Smack, Boom, Taiko: deeper)
   hitPitch: 1, // × a sampled voice's pitch: under 1 is deeper still
   haptics: 1, // 1 = vibrate where the browser can
@@ -1889,19 +1921,29 @@ function createAudio(opts) {
     reap(v);
   }
 
-  // ---- the fire power-up (fire.js): 'spawn' (an orb flares up), 'ignite' (the ball catches fire), 'burn' (a burned touch: the
-  //      sizzle, then the thud of the fall), 'out' (a fire hisses out) ----
+  // ---- fire volleys and the fireball (fire.js): 'ignite' (the ball catches fire, or a fireball is thrown), 'won' (a fire volley
+  //      won: the power-up's whump and chime), 'arm' (a swing charged with the fireball), 'burn' (a burned touch: the sizzle, then
+  //      the thud of the fall), 'out' (a fire hisses out) ----
   function fire(kind) {
     const lv = CFG.audio.fire > 0 ? CFG.audio.fire : 0, big = kind === 'ignite' || kind === 'burn';
     if (S.muted || !(lv > 0) || !ready() || !room(big ? 9 : 4, big)) return;
     const t = at(), v = begin();
-    if (kind === 'spawn') { // a soft whump, opening up
+    if (kind === 'won') { // a soft whump, opening up, and a rising pair of chimes
       const s = noiseSrc(v, t, 0.6), b = filt('lowpass', 220, 0.9), g = ctx.createGain();
       v.n.push(b, g);
       b.frequency.setValueAtTime(220, t); b.frequency.exponentialRampToValueAtTime(1400, t + 0.25);
       env(g, t, 0.24 * lv, 0.08, 0.45);
       s.connect(b); b.connect(g); g.connect(bus);
       tone(v, t, null, 70, 110, 0.15, 0.12 * lv, 0.05, 0.4);
+      tone(v, t + 0.06, W.chime, 659.25, 659.25, 1, 0.13 * lv, 0.003, 0.3);
+      tone(v, t + 0.14, W.chime, 987.77, 987.77, 1, 0.13 * lv, 0.003, 0.45);
+    } else if (kind === 'arm') { // a crackling whoosh that rises
+      const s = noiseSrc(v, t, 0.4), b = filt('bandpass', 600, 1.4), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueAtTime(600, t); b.frequency.exponentialRampToValueAtTime(3200, t + 0.25);
+      env(g, t, 0.2 * lv, 0.02, 0.3);
+      s.connect(b); b.connect(g); g.connect(bus);
+      tone(v, t, 'triangle', 220, 880, 0.08, 0.1 * lv, 0.004, 0.28);
     } else if (kind === 'ignite') { // a roar that flares and falls back, a crackle on its front, a low thump under it
       const s = noiseSrc(v, t, 1), b = filt('bandpass', 350, 0.8), g = ctx.createGain();
       v.n.push(b, g);
@@ -2102,8 +2144,9 @@ function createAudio(opts) {
 // Specials (energy.js). A hit with `special` set ('you' | 'kage') is drawn as one of power 0.85 at least, under its name, and
 //   brings its own layer: Raijin's lightning out of the sky onto the ball, or Kage's shadow cut across it. setCharge(owner, k)
 //   each frame puts the charge the ball carries round it (crackling arcs, or a ring of shadow), fading out with k.
-// Fire (fire.js), in the Feel panel's fire colour: a hit with `burned` set is BURNED!, and event({ type: 'fire', at }) is the
-//   ball catching fire (a burst of flame under FIREBALL!). The flames themselves are fire.js's.
+// Fire (fire.js), in the Feel panel's fire colour: a hit with `burned` set is BURNED!, one with `fireball` set is FIREBALL!, and
+//   event({ type: 'fire', at, word }) is the ball catching fire (a burst of flame under the word: ON FIRE! for a fire volley).
+//   The flames themselves are fire.js's.
 
 CFG.fx = {
   seed: 20260713,
@@ -2438,6 +2481,7 @@ function createFX(seed) {
   // ---- the hit ----
   function textFor(hit, I) {
     if (hit.burned) return 'BURNED!'; // it answered the other player's fireball (fire.js)
+    if (hit.fireball) return 'FIREBALL!'; // it threw one
     if (hit.special) return hit.special === 'kage' ? 'SHADOW CUT' : 'RAIJIN!';
     if (hit.charged && I > 0.12) return 'HEAVY'; // it answered the other player's special
     if (hit.owner === 'cpu') return hit.quality === 'perfect' ? 'KAGE CUT' : hit.reversed && I > 0.3 ? 'COUNTER' : I > 0.7 ? 'SMASH' : ''; // his words, in his colour
@@ -2460,7 +2504,7 @@ function createFX(seed) {
     if (ul > 1e-3) { ux /= ul; uy /= ul; } else { ux = 1; uy = 0; }
 
     const k = U.smoothstep(0.05, 0.45, I), hot = perfect || I > 0.82;
-    resetSpec(hit.burned ? 4 : hit.owner === 'cpu' ? 3 : hit.special || rev ? 1 : hot ? 2 : 0, I, S);
+    resetSpec(hit.burned || hit.fireball ? 4 : hit.owner === 'cpu' ? 3 : hit.special || rev ? 1 : hot ? 2 : 0, I, S);
     const sp = spec;
     sp.wx = pt.x; sp.wy = pt.y; sp.wz = pt.z; sp.ux = ux; sp.uy = uy;
     sp.nRay = k > 0.02 ? 8 + Math.round(6 * I) : 0;
@@ -2544,7 +2588,7 @@ function createFX(seed) {
       sp.ring0 = S * 110 * F.ringSize; sp.ringW = S * 5;
       sp.glow = 0.8 * F.flashAlpha; sp.glowR = S * 100; sp.veil = 0.22 * F.flashAlpha;
       sp.nSpark = Math.round(34 * F.sparkCount); sp.sparkV = S * 650;
-      sp.word = 'FIREBALL!'; sp.mph = ''; sp.tSize = S * 34 * F.textSize; sp.tilt = -0.06;
+      sp.word = ev.word || 'FIREBALL!'; sp.mph = ''; sp.tSize = S * 34 * F.textSize; sp.tilt = -0.06;
       sp.tx = cx; sp.ty = U.clamp(cy - S * 86, sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize);
       startBurst();
       addTrauma(0.22); st.shS = S;
@@ -3144,7 +3188,7 @@ function createFX(seed) {
 // cam.setInsetBottom, rebakes on the next draw) and blitted under the camera's zoom / roll / shake; everything that moves
 // is drawn live, in the contract's order:
 //   court → fx.drawUnder → floor shadows → [behind the pole] → pole → [in front of the pole] → fx.drawOver → finger.
-// The characters (view.actors: Kage, Kiru, and the fire power-up's orb) are depth-sorted into that order against the pole, the
+// The characters (view.actors: Kage and Kiru) are depth-sorted into that order against the pole, the
 // ball and each other by their z, and their speech goes over everything. view.overBall (fire.js: a burning ball) draws round the
 // ball in the ball's layer, its tail just before the ball and its heat just after, so the pole hides them with it. view.halves (−1 / +1: the side Kage's half is on, 0 none) paints the two
 // halves into the baked court.
@@ -3665,7 +3709,8 @@ function createScene(canvas) {
   }
 
   // ---- the finger ----
-  // charged: the swing has curved enough to unleash a full energy bar (energy.js), so it burns storm blue, wider and brighter
+  // charged: the swing has curved enough to unleash a power-up, so it burns wider and brighter: storm blue for the special
+  // ('special', or true: energy.js), the fire's colour for a fireball ('fire': fire.js)
   function drawFinger(ctx, cam, input, charged) {
     const tr = input && input.trail;
     if (!tr || !tr.length) return;
@@ -3680,10 +3725,11 @@ function createScene(canvas) {
       const a = fX[Math.min(m - 1, k + 1)] - fX[Math.max(0, k - 1)], b = fY[Math.min(m - 1, k + 1)] - fY[Math.max(0, k - 1)], l = Math.sqrt(a * a + b * b) || 1;
       fNx[k] = -b / l; fNy[k] = a / l;
     }
+    const fp = charged === 'fire' && typeof firePal === 'function' ? firePal() : null;
     ctx.globalCompositeOperation = 'lighter';
     for (let pass = 0; pass < 2; pass++) {
       const wm = pass ? (charged ? 5.5 : 4.2) : charged ? 20 : 11, am = pass ? 0.9 : charged ? 0.55 : 0.2;
-      ctx.fillStyle = pass ? (charged ? '#eaffff' : P.text) : P.cool;
+      ctx.fillStyle = fp ? (pass ? fp.core : fp.outer) : pass ? (charged ? '#eaffff' : P.text) : P.cool;
       for (let k = 0; k < m - 1; k++) {
         const w0 = fA[k] * wm, w1 = fA[k + 1] * wm;
         ctx.globalAlpha = Math.min(1, (fA[k] + fA[k + 1]) * 0.5 * am);
@@ -3696,7 +3742,7 @@ function createScene(canvas) {
     base(ctx);
     if (input.active) { // a ring at the finger, as wide as the swipe actually reaches
       const t = tr[n - 1], Hc = CFG.hit, rr = Hc ? Math.max(Hc.handR * cam.pxPerM, Hc.minReachPx || 0) : 24;
-      ctx.strokeStyle = charged ? P.cool : P.text; ctx.fillStyle = P.text;
+      ctx.strokeStyle = fp ? fp.mid : charged ? P.cool : P.text; ctx.fillStyle = P.text;
       ctx.globalAlpha = charged ? 0.95 : 0.5; ctx.lineWidth = charged ? 3 : 1.6; ctx.beginPath(); ctx.arc(t.x, t.y, rr, 0, TAU); ctx.stroke();
       ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(t.x, t.y, 3, 0, TAU); ctx.fill();
       ctx.globalAlpha = 1;
@@ -3732,7 +3778,7 @@ function createScene(canvas) {
     base(ctx);
     if (fx && fx.drawOver) fx.drawOver(ctx, cam, world);
     base(ctx);
-    drawFinger(ctx, cam, view ? view.input : null, !!(view && view.charged));
+    drawFinger(ctx, cam, view ? view.input : null, view && view.charged ? view.charged : '');
     base(ctx);
     for (let i = 0; i < acts.length; i++) if (acts[i].drawSay) { acts[i].drawSay(ctx, cam, kx, ky); base(ctx); }
   }
@@ -4326,17 +4372,19 @@ function createVersus() {
 // ════════ energy.js ════════
 // energy.js — the energy bars and the special move (versus only). Rally with your opponent and both bars fill together: one
 // step for every volley (a hit that answers the other player's last one), `volleys` steps to fill. A full bar is one special
-// for its owner. You unleash yours with a curved swipe: a swing that has turned `curve` degrees one way (input.js measures it)
-// when it meets the ball is the special, and the moment it has turned that far the stroke shows it is charged. The trigger
-// setting can make it a tap on your ring (or E) instead, which arms the next hit, or either. Kage weighs his as each swing
-// starts (kage.wantsSpecial). The special:
+// for its owner. You unleash yours with a counter-clockwise curved swipe: a swing that has turned `curve` degrees that way
+// (input.js measures it) when it meets the ball is the special, and the moment it has turned that far the stroke shows it is
+// charged. A clockwise one unleashes the second power-up a fire volley wins (fire.js). The trigger setting can make the special a
+// tap on your ring (or E) instead, which arms the next hit, or either. Kage weighs his as each swing starts
+// (kage.wantsSpecial). The special:
 //   · it leaves the hand `boost` times harder (the soft speed cap rises by as much, so a weak swipe stays a weak special), and
 //   · the ball carries the special's charge until the OTHER player's next touch, or `charge` seconds of game time: that touch
 //     lands at `damp` of its strength (they can still turn it, it is just heavy in their hands).
 // Then it is a plain ball again: nothing about the ball itself changes, and nothing carries past that one touch.
 //
 // Bars keep their energy from round to round (you earned it) and empty only when spent or at a new match; an armed special
-// that never lands is disarmed when the round ends, and the bar stays full. Rules only, like versus.js: no physics, no DOM.
+// that never lands is disarmed when the round ends, and the bar stays full. A FREE special (arm(who, true, true): the second
+// power-up set to a special, fire.js) needs no full bar and spends none. Rules only, like versus.js: no physics, no DOM.
 
 CFG.energy = {
   on: 1, // 1 = energy bars and specials (versus only)
@@ -4365,6 +4413,7 @@ function createEnergy() {
     on: true, // CFG.energy.on, as of the last update
     you: 0, kage: 0, // the bars, 0..1
     armedYou: false, armedKage: false,
+    freeYou: false, freeKage: false, // a free special armed (fire.js's second power-up): no bar needed, none spent
     charge: '', chargeT: 0, chargeK: 0, // the ball's charge: whose ('you' | 'kage' | ''), seconds left, and the share left (0..1)
     volleys: 0, // volleys this rally
     used: { you: 0, kage: 0 }, // specials landed this match
@@ -4380,24 +4429,33 @@ function createEnergy() {
     newRally();
   }
   function newRally() { // a round starts (or the court changed): the bars stay, nothing else does
-    last = ''; snap.volleys = 0; snap.armedYou = false; snap.armedKage = false;
+    last = ''; snap.volleys = 0; snap.armedYou = false; snap.armedKage = false; snap.freeYou = false; snap.freeKage = false;
     snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0;
   }
 
   function full(who) { return on() && (who === 'kage' ? snap.kage : snap.you) >= 1; }
-  function armed(who) { return who === 'kage' ? snap.armedKage : snap.armedYou; }
-  // the curve test, on a swing's shape as input.js measures it: turned at least CFG.energy.curve, mostly one way, over a real length
-  function curved(turn, turnAbs, arc) {
+  function armed(who) { return who === 'kage' ? snap.armedKage || snap.freeKage : snap.armedYou || snap.freeYou; }
+  // The curve test, on a swing's shape as input.js measures it: turned at least CFG.energy.curve, mostly one way, over a real
+  // length. curl() says which way: +1 clockwise on the screen (the heading turning right: input.js's turn is positive, the
+  // screen's y running down), −1 counter-clockwise, 0 not curved enough.
+  function curl(turn, turnAbs, arc) {
     const t = turn < 0 ? -turn : turn, need = (Math.max(1, CFG.energy.curve) * Math.PI) / 180;
-    return t >= need && turnAbs <= 1.8 * t + 0.5 && arc >= 50;
+    return t >= need && turnAbs <= 1.8 * t + 0.5 && arc >= 50 ? (turn > 0 ? 1 : -1) : 0;
   }
+  const curved = (turn, turnAbs, arc) => curl(turn, turnAbs, arc) !== 0;
   const curveOn = () => (CFG.energy.trigger | 0) !== 1;
   const tapOn = () => (CFG.energy.trigger | 0) !== 0;
 
-  // a full bar can be armed (and disarmed again, by asking twice); returns whether it is armed now
-  function arm(who, want) {
+  // a full bar can be armed (and disarmed again, by asking twice); returns whether it is armed now. free: a special that needs no
+  // full bar and spends none (the second power-up, fire.js)
+  function arm(who, want, free) {
+    if (free) {
+      const a = on() && !!want;
+      if (who === 'kage') snap.freeKage = a; else snap.freeYou = a;
+      return a;
+    }
     if (!full(who)) return false;
-    const a = want === undefined ? !armed(who) : !!want;
+    const a = want === undefined ? !(who === 'kage' ? snap.armedKage : snap.armedYou) : !!want;
     if (who === 'kage') snap.armedKage = a; else snap.armedYou = a;
     return a;
   }
@@ -4418,8 +4476,10 @@ function createEnergy() {
     if (!on()) { if (live) last = who; return ''; }
     let out = '';
     if (snap.charge) { out = snap.charge !== who ? 'heavy' : ''; snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; } // any touch spends a charge
-    if (armed(who)) { // an armed special goes off on whatever it boosted, a serve included
-      if (who === 'kage') { snap.armedKage = false; snap.kage = 0; } else { snap.armedYou = false; snap.you = 0; }
+    if (armed(who)) { // an armed special goes off on whatever it boosted, a serve included (a free one leaves the bar as it was)
+      const free = who === 'kage' ? snap.freeKage : snap.freeYou;
+      if (who === 'kage') { if (free) snap.freeKage = false; else { snap.armedKage = false; snap.kage = 0; } }
+      else if (free) snap.freeYou = false; else { snap.armedYou = false; snap.you = 0; }
       snap.used[who === 'kage' ? 'kage' : 'you']++;
       snap.charge = who === 'kage' ? 'kage' : 'you'; snap.chargeT = Math.max(0, CFG.energy.charge); snap.chargeK = 1;
       out = 'special';
@@ -4439,7 +4499,7 @@ function createEnergy() {
   // game time: the charge runs down (a hit's freeze and slow-mo hold it too)
   function update(simDt) {
     snap.on = on();
-    if (!snap.on) { snap.armedYou = false; snap.armedKage = false; snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; return; }
+    if (!snap.on) { snap.armedYou = false; snap.armedKage = false; snap.freeYou = false; snap.freeKage = false; snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; return; }
     if (snap.charge && simDt > 0) {
       snap.chargeT -= simDt;
       const T = Math.max(1e-3, CFG.energy.charge);
@@ -4448,25 +4508,31 @@ function createEnergy() {
   }
 
   reset();
-  return { snap, reset, newRally, full, armed, arm, prepare, onHit, update, curved, get on() { return on(); }, get curveOn() { return curveOn(); }, get tapOn() { return tapOn(); } };
+  return { snap, reset, newRally, full, armed, arm, prepare, onHit, update, curved, curl, get on() { return on(); }, get curveOn() { return curveOn(); }, get tapOn() { return tapOn(); } };
 }
 
 // ════════ fire.js ════════
-// fire.js — the fire power-up (versus only). Now and then a flame orb hangs over the court, on the ball's orbit and ahead of
-// it; when the ball flies through the orb it catches fire, and the fire belongs to whoever hit the ball last. The other
-// player's next touch on it, the immediate return, is a burn: it lands at `hit` of its strength and knocks them down, on
-// fire, for `down` seconds (no hits), and their recovery stays slow through one more turn: Kage reads and runs `slow` times
-// slower until his next hit lands, and your next hit lands at `youHit`. The fire threatens that one return only: let the
-// fireball go by, and once it has crossed the other player's half and left it untouched it goes out (`burn` seconds at most
-// however it goes). Nothing about the ball changes for good. Kage, with `dodge` on, sometimes lets a fireball go by (kage.js).
+// fire.js — fire volleys and the fireball (versus only).
 //
-// Why one pass and not a timer: with a fire that burns on for seconds, letting it go by hands its owner free laps of rope
-// (~2 turns in 2.5 s, measured), so taking the burn was always the better play and the fire was nothing to fear. One pass
-// costs the half lap it crosses; the burn costs more. tests/fire.mjs measures both.
+// A FIRE VOLLEY. Rally without a miss and the ball catches fire: `hits` hits in a row (6: three each), each one answering the
+// other player's. The volley burns on until someone misses (lets the ball cross their half and come back out of it untouched),
+// and whoever hit it last wins it: they get the SECOND POWER-UP, held until they use it (it carries from round to round, not
+// into a new match). A round wound in the middle of a volley goes to the round's winner. The volley's fire burns nobody.
+//
+// THE SECOND POWER-UP is the fireball by default (`power`; or a second special, energy.js's, spent without the bar, while energy
+// is on: with it off, the fireball). You unleash it with a clockwise curved swipe, as the energy special takes a
+// counter-clockwise one (main.js). Not during a fire volley: it would win the volley for nothing.
+//
+// THE FIREBALL. The hit sets the ball alight for its owner. The other player's next touch on it, the immediate return, is a
+// burn: it lands at `hit` of its strength and knocks them down, on fire, for `down` seconds (no hits), and their recovery
+// stays slow through one more turn: Kage reads and runs `slow` times slower until his next hit lands, and your next hit lands
+// at `youHit`. Let it go by instead: once it has crossed the other player's half and come back out untouched it goes out
+// (`burn` seconds at most however it goes). A fireball is no rally shot: the count toward a fire volley starts again after it.
+// Kage, with `dodge` on, sometimes lets one go by (kage.js).
 //
 // Rules on game time (a hit's freeze holds them), like energy.js; no physics (a burned touch is a hand.gain, as a charged
-// one is). The flames are drawn here too: the orb (an actor the scene depth-sorts), the ball's fire (tongues on it and a
-// trail of embers, real time, so they flicker through a freeze), and fireCluster(), which Kage and Kiru burn with.
+// one is). The flames are drawn here too: the burning ball (a tail of flame behind it, its heat and embers over it, real time,
+// so they flicker through a freeze), and fireCluster(), which Kage and Kiru burn with.
 
 const FIRE_COLORS = [ // core, body, edge, glow
   { name: 'Orange', core: '#fff4c2', mid: '#ffae1f', outer: '#ff4a10', glow: '#ff7a1a' },
@@ -4478,28 +4544,30 @@ const FIRE_COLORS = [ // core, body, edge, glow
 ];
 
 CFG.fire = {
-  on: 1, // 1 = fire power-ups (versus only)
-  every: 12, // s of live rally from one orb (or fire) to the next orb
-  life: 8, // s an orb hangs there before it goes out
-  burn: 3, // s of game time a fire burns at most (it goes out sooner, once it has crossed the other player's half untouched)
+  on: 1, // 1 = fire volleys and the second power-up (versus only)
+  hits: 6, // hits in a row, each answering the other player's, that set the ball on fire (three each)
+  power: 0, // the second power-up a fire volley wins: 0 the fireball, 1 a second special (energy.js's, without the bar)
+  kage: 1, // 1 = Kage uses his
   hit: 0.5, // the burned touch lands at this share of its strength
   down: 1.1, // s of game time the burned player is down: no hits
   slow: 1.7, // then, through one more turn, Kage reacts, runs and leaps this many times slower...
   youHit: 0.7, // ...and your next hit lands at this share
+  burn: 3, // s of game time a fireball burns at most (it goes out sooner, once it has crossed the other player's half untouched)
   dodge: 1, // 1 = Kage sometimes lets a fireball go by (more often the sharper he is)
   size: 1, // × the flames
   color: 0, // FIRE_COLORS
 };
 CFG_SCHEMA.push(
-  { path: 'fire.on', label: 'Fire power-ups', type: 'toggle', min: 0, max: 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
+  { path: 'fire.on', label: 'Fire volleys', type: 'toggle', min: 0, max: 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
   { path: 'fire.color', label: 'Fire color', type: 'choice', options: FIRE_COLORS.map((c) => c.name), swatches: FIRE_COLORS.map((c) => [c.core, c.mid, c.outer]), min: 0, max: FIRE_COLORS.length - 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
-  { path: 'fire.every', label: 'A power-up every', min: 4, max: 40, step: 1, group: 'Fire', rank: -2.7, unit: 's' },
-  { path: 'fire.life', label: 'It hangs there for', min: 2, max: 20, step: 0.5, group: 'Fire', rank: -2.7, unit: 's' },
-  { path: 'fire.burn', label: 'A fire burns at most', min: 0.5, max: 6, step: 0.1, group: 'Fire', rank: -2.7, unit: 's' },
+  { path: 'fire.hits', label: 'Hits to catch fire', min: 2, max: 20, step: 1, group: 'Fire', rank: -2.7, unit: '' },
+  { path: 'fire.power', label: 'Second power-up', type: 'choice', options: ['Fireball', 'Special'], min: 0, max: 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
+  { path: 'fire.kage', label: 'Kage uses his', type: 'toggle', min: 0, max: 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
   { path: 'fire.hit', label: 'A burned touch lands at', min: 0.1, max: 1, step: 0.05, group: 'Fire', rank: -2.7, unit: 'x' },
   { path: 'fire.down', label: 'Knocked down for', min: 0.2, max: 3, step: 0.1, group: 'Fire', rank: -2.7, unit: 's' },
   { path: 'fire.slow', label: 'Kage slowed next turn', min: 1, max: 3, step: 0.05, group: 'Fire', rank: -2.7, unit: 'x' },
   { path: 'fire.youHit', label: 'Your next hit lands at', min: 0.2, max: 1, step: 0.05, group: 'Fire', rank: -2.7, unit: 'x' },
+  { path: 'fire.burn', label: 'A fireball burns at most', min: 0.5, max: 6, step: 0.1, group: 'Fire', rank: -2.7, unit: 's' },
   { path: 'fire.dodge', label: 'Kage dodges fireballs', type: 'toggle', min: 0, max: 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
   { path: 'fire.size', label: 'Flame size', min: 0.5, max: 2, step: 0.05, group: 'Fire', rank: -2.7, unit: 'x' }
 );
@@ -4599,54 +4667,48 @@ function fireSmoke(ctx, x, y, s, t, a) {
 
 function createFire() {
   const TAU = Math.PI * 2;
+  const NEUTRAL = 0.06; // m either side of the centre line, as versus.js draws it
   const st = {
     on: true,
-    orb: false, ox: 0, oy: 0, oz: 0, orbPhi: 0, orbR: 0, orbAge: 0, // the orb: where (m), its angle and radius round the pole, its age (s)
-    next: 0, // s of live rally until the next orb
-    lit: '', litT: 0, litK: 0, fireId: 0, litIn: false, // the ball's fire: whose ('you' | 'kage' | ''), s left, the share left, which fire this is, been on the other half yet
+    // the rally: hits in a row each answering the other's (no miss), who hit last, the ball has been on the other half since
+    streak: 0, last: '', crossed: false,
+    volley: false, volleyId: 0, wonBy: '', // the ball is burning for a fire volley; which one; who won the last
+    held: { you: false, kage: false }, armed: { you: false, kage: false }, // the second power-up: won and not yet used; armed for the next hit
+    lit: '', litT: 0, litK: 0, fireId: 0, litIn: false, // a fireball: whose ('you' | 'kage' | ''), s left, the share left, which, been on the other half yet
     down: { you: 0, kage: 0 }, // s each is still down
     slow: { you: false, kage: false }, slowT: { you: 0, kage: 0 }, // recovering through one more turn (the time is a cap)
     burnRt: { you: -9, kage: -9 }, // when each was last burned (real clock, for the effects)
-    rt: 0, // real clock
-    stats: { spawned: 0, taken: { you: 0, kage: 0 }, burned: { you: 0, kage: 0 }, out: 0, gone: 0 },
+    rt: 0, heat: 0, // real clock; how hard the ball burns (0..1, eased: a volley's fire, a fireball's)
+    stats: { volleys: 0, won: { you: 0, kage: 0 }, used: { you: 0, kage: 0 }, burned: { you: 0, kage: 0 }, out: 0, misses: 0, best: 0 },
   };
+  const HIT = { burned: false, fireball: false, special: false, ignite: false, won: '' }; // what the last landed hit did (one object, reused)
   const rnd = U.rng(20261015);
   const on = () => CFG.fire.on > 0;
-  const every = () => Math.max(1, CFG.fire.every);
+  const need = () => Math.max(2, Math.round(CFG.fire.hits) || 2);
+  const fireballPower = () => (CFG.fire.power | 0) !== 1 || !(CFG.energy && CFG.energy.on > 0); // a special needs energy.js on
+  const key = (who) => (who === 'kage' ? 'kage' : 'you');
 
-  function clear() {
-    st.orb = false; st.orbAge = 0; st.lit = ''; st.litT = 0; st.litK = 0; st.litIn = false;
+  function clearBall() { st.lit = ''; st.litT = 0; st.litK = 0; st.litIn = false; }
+  function clear() { // a new round: the rally, the fires, the knock-downs and any arming go (what was won stays)
+    st.streak = 0; st.last = ''; st.crossed = false; st.volley = false; clearBall();
+    st.armed.you = false; st.armed.kage = false;
     st.down.you = 0; st.down.kage = 0; st.slow.you = false; st.slow.kage = false; st.slowT.you = 0; st.slowT.kage = 0;
   }
-  function reset() { clear(); st.next = every(); st.stats.spawned = 0; st.stats.taken.you = 0; st.stats.taken.kage = 0; st.stats.burned.you = 0; st.stats.burned.kage = 0; st.stats.out = 0; st.stats.gone = 0; }
-  function newRally() { clear(); st.next = every(); pn = 0; pon.fill(0); hasLast = false; } // a round starts: no fire carries over
-
-  // the orb sits on the ball's orbit ring, ahead of the ball, and keeps to the ring as the rope winds
-  function ring(w, out) {
-    const b = w.ball, p = b.p, rho = Math.sqrt(p.x * p.x + p.z * p.z);
-    out.r = b.speed > 1.5 && rho > 0.3 ? rho : CFG.world.ropeL * 0.72;
-    out.y = b.speed > 1.5 ? Math.max(b.r + 0.12, p.y) : Math.max(b.r + 0.12, Math.min(p.y + 0.4, CFG.world.poleH * 0.55));
-    return out;
+  function reset() { // a new match: nothing won yet
+    clear(); st.held.you = false; st.held.kage = false; st.wonBy = '';
+    const S = st.stats;
+    S.volleys = 0; S.won.you = 0; S.won.kage = 0; S.used.you = 0; S.used.kage = 0; S.burned.you = 0; S.burned.kage = 0; S.out = 0; S.misses = 0; S.best = 0;
   }
-  const RG = { r: 0, y: 0 };
-  function place() { st.ox = Math.cos(st.orbPhi) * st.orbR; st.oz = Math.sin(st.orbPhi) * st.orbR; }
-  function spawn(w) {
-    const b = w.ball, p = b.p, L = p.x * b.v.z - p.z * b.v.x, dir = L >= 0 ? 1 : -1; // the way it goes round, φ = atan2(z, x)
-    st.orbPhi = Math.atan2(p.z, p.x) + dir * Math.PI * (0.7 + 0.4 * rnd());
-    ring(w, RG); st.orbR = RG.r; st.oy = RG.y; place();
-    st.orb = true; st.orbAge = 0; st.stats.spawned++;
-  }
-  const reach = (w) => 0.24 * CFG.fire.size + w.ball.r + 0.06; // the ball takes the orb inside this (m, centre to centre)
+  function newRally() { clear(); pn = 0; pon.fill(0); hasLast = false; }
+  function win(k) { st.volley = false; st.wonBy = k; st.held[k] = true; st.stats.won[k]++; } // a fire volley goes to k
 
-  // Game time. live: the rally is in play (the orb only hangs over a live rally); last: who hit the ball last; half: the side
-  // Kage's half is on (−1 / +1), so a fire knows when it has crossed the other player's half. Returns what happened: 'spawn'
-  // (an orb appeared), 'lit' (the ball flew through it: st.lit says whose), 'out' (a fire went out untouched), 'gone' (an orb
-  // went out untaken) or ''.
-  const NEUTRAL = 0.06; // m either side of the centre line, as versus.js draws it
-  function update(simDt, realDt, w, live, last, half) {
-    if (realDt > 0) st.rt += realDt;
+  // Game time. live: the rally is in play; half: the side Kage's half is on (−1 / +1). Returns 'won' (a fire volley was decided:
+  // st.wonBy has the power-up now), 'miss' (a ball crossed a half and came back out untouched: the count starts again), 'out'
+  // (a fireball went out untouched), or ''.
+  function update(simDt, realDt, w, live, half) {
+    if (realDt > 0) { st.rt += realDt; const h = st.lit ? 1 : st.volley ? 0.75 : 0; st.heat += (h - st.heat) * Math.min(1, realDt * 8); }
     st.on = on();
-    if (!st.on) { clear(); return ''; }
+    if (!st.on) { clear(); st.held.you = false; st.held.kage = false; return ''; }
     let out = '';
     const dt = simDt > 0 ? simDt : 0;
     if (dt > 0) {
@@ -4654,30 +4716,25 @@ function createFire() {
       if (st.down.kage > 0) st.down.kage = Math.max(0, st.down.kage - dt);
       if (st.slow.you && (st.slowT.you -= dt) <= 0) st.slow.you = false;
       if (st.slow.kage && (st.slowT.kage -= dt) <= 0) st.slow.kage = false;
-      if (st.lit) {
-        st.litT -= dt;
-        // where the ball is: on the half of the player the fire threatens, or back on its owner's
-        const x = half ? w.ball.p.x * (half < 0 ? -1 : 1) : 0, kageHalf = x > NEUTRAL, yourHalf = x < -NEUTRAL;
-        const theirs = st.lit === 'you' ? kageHalf : yourHalf, owners = st.lit === 'you' ? yourHalf : kageHalf;
-        if (theirs) st.litIn = true;
-        if (st.litT <= 0 || (st.litIn && owners)) { st.lit = ''; st.litT = 0; st.litK = 0; st.litIn = false; st.stats.out++; out = 'out'; }
-        else st.litK = U.clamp01(st.litT / Math.max(0.1, CFG.fire.burn));
-      }
     }
-    if (!live) { st.orb = false; return out; }
-    if (st.orb) {
-      st.orbAge += dt;
-      if (st.orbAge >= Math.max(0.5, CFG.fire.life)) { st.orb = false; st.next = every(); st.stats.gone++; return 'gone'; }
-      ring(w, RG); const k = 1 - Math.exp(-dt / 0.12); // it keeps to the ball's orbit as that rises, sinks and winds in
-      st.orbR += (RG.r - st.orbR) * k; st.oy += (RG.y - st.oy) * k; place();
-      const p = w.ball.p, dx = p.x - st.ox, dy = p.y - st.oy, dz = p.z - st.oz, R = reach(w);
-      if (last && dx * dx + dy * dy + dz * dz < R * R) {
-        st.orb = false; st.lit = last; st.litT = Math.max(0.1, CFG.fire.burn); st.litK = 1; st.litIn = false; st.fireId++; st.stats.taken[last]++; st.next = every();
-        return 'lit';
+    if (!live || !w || !w.ball || !(dt > 0)) return out;
+    const x = half ? w.ball.p.x * (half < 0 ? -1 : 1) : 0, onKage = x > NEUTRAL, onYou = x < -NEUTRAL; // whose half the ball is on
+    if (st.lit) { // a fireball: one pass of the other player's half, untouched, and it goes out
+      st.litT -= dt;
+      const theirs = st.lit === 'you' ? onKage : onYou, owners = st.lit === 'you' ? onYou : onKage;
+      if (theirs) st.litIn = true;
+      if (st.litT <= 0 || (st.litIn && owners)) { clearBall(); st.stats.out++; out = 'out'; }
+      else st.litK = U.clamp01(st.litT / Math.max(0.1, CFG.fire.burn));
+    }
+    if (st.last) { // a miss: the ball has been on the other player's half since the last hit and comes back out of it untouched
+      const theirs = st.last === 'you' ? onKage : onYou, mine = st.last === 'you' ? onYou : onKage;
+      if (theirs) st.crossed = true;
+      else if (st.crossed && mine) { // the next touch, whoever's, starts a rally of its own
+        const k = st.last;
+        st.crossed = false; st.streak = 0; st.last = ''; st.stats.misses++;
+        if (st.volley) { win(k); return 'won'; }
+        if (!out) out = 'miss';
       }
-    } else if (!st.lit && dt > 0) {
-      st.next -= dt;
-      if (st.next <= 0) { spawn(w); return 'spawn'; }
     }
     return out;
   }
@@ -4686,31 +4743,70 @@ function createFire() {
   function prepare(who, hand) {
     if (!on()) return hand;
     let g = hand.gain > 0 && hand.gain < 1 ? hand.gain : 1;
-    if (st.lit && st.lit !== who) g *= U.clamp(CFG.fire.hit, 0.05, 1);
-    if (who === 'you' && st.slow.you) g *= U.clamp(CFG.fire.youHit, 0.05, 1);
+    if (st.lit && st.lit !== key(who)) g *= U.clamp(CFG.fire.hit, 0.05, 1);
+    if (key(who) === 'you' && st.slow.you) g *= U.clamp(CFG.fire.youHit, 0.05, 1);
     hand.gain = g;
     return hand;
   }
-  // a hit landed. Returns 'burned' when it was the immediate return on the other player's fireball (they are down now), else ''.
-  function onHit(who) {
-    if (!on()) return '';
-    const you = who !== 'kage', k = you ? 'you' : 'kage';
+  // A hit landed (live: it counts in the rally, a serve that opened the round included). Fills and returns HIT: burned (the
+  // immediate return on the other player's fireball: they are down now), fireball (an armed fireball went off: the ball burns
+  // for its owner), special (an armed second power-up of the Special kind was spent: energy.js boosted the hit), ignite (the
+  // count reached `hits`: a fire volley), won (a volley decided by this hit: the same player twice, so the other let it go).
+  function onHit(who, live) {
+    HIT.burned = false; HIT.fireball = false; HIT.special = false; HIT.ignite = false; HIT.won = '';
+    if (!on()) return HIT;
+    const k = key(who);
     if (st.slow[k]) { st.slow[k] = false; st.slowT[k] = 0; } // that was their one more turn
-    if (!st.lit || st.lit === k) return '';
-    st.lit = ''; st.litT = 0; st.litK = 0; st.litIn = false;
-    st.down[k] = Math.max(0, CFG.fire.down); st.slow[k] = true; st.slowT[k] = 6; st.burnRt[k] = st.rt; st.stats.burned[k]++;
-    return 'burned';
+    if (st.lit && st.lit !== k) {
+      clearBall();
+      st.down[k] = Math.max(0, CFG.fire.down); st.slow[k] = true; st.slowT[k] = 6; st.burnRt[k] = st.rt; st.stats.burned[k]++;
+      HIT.burned = true;
+    }
+    if (st.armed[k]) { // the second power-up goes off on this hit
+      st.armed[k] = false; st.held[k] = false; st.stats.used[k]++;
+      if (fireballPower()) { st.lit = k; st.litT = Math.max(0.1, CFG.fire.burn); st.litK = 1; st.litIn = false; st.fireId++; HIT.fireball = true; }
+      else HIT.special = true;
+    }
+    if (!live) return HIT;
+    if (st.last && st.last !== k) st.streak++; // an answer
+    else if (!st.last) st.streak = 1; // the first hit of a rally
+    else if (st.crossed) { st.stats.misses++; st.streak = 1; if (st.volley) { win(k); HIT.won = k; } } // the same player again, after it reached the other
+    st.last = k; st.crossed = false;
+    if (HIT.fireball) st.streak = 0; // a fireball is no rally shot: the count starts again (so it can never win a volley)
+    if (st.streak > st.stats.best) st.stats.best = st.streak;
+    if (!st.volley && !st.lit && st.streak >= need()) {
+      st.volley = true; st.volleyId++; st.stats.volleys++; HIT.ignite = true;
+      st.armed.you = false; st.armed.kage = false; // a power-up armed for the next hit stands down (still held): never in a volley
+    }
+    return HIT;
   }
-  const isDown = (who) => st.down[who === 'kage' ? 'kage' : 'you'] > 0;
+  // the round was wound: a fire volley still burning goes to the round's winner. Returns 'won' then, else ''.
+  function onRoundEnd(winner) {
+    if (!on() || !st.volley) return '';
+    win(key(winner));
+    return 'won';
+  }
+
+  const held = (who) => on() && st.held[key(who)];
+  const armed = (who) => st.armed[key(who)];
+  // a held power-up can be armed for the next hit (and disarmed again); never during a fire volley. Returns whether it is armed.
+  function arm(who, want) {
+    const k = key(who);
+    if (!on() || !st.held[k] || st.volley) { st.armed[k] = false; return false; }
+    st.armed[k] = want === undefined ? !st.armed[k] : !!want;
+    return st.armed[k];
+  }
+  const isDown = (who) => st.down[key(who)] > 0;
 
   // ───────────────────────── drawing ─────────────────────────
-  // embers off the burning ball: screen px, real time, a fixed pool
+  // the ball burns for a fire volley and for a fireball (a volley's fire a little lower); embers: screen px, real time, a fixed pool
+  const burning = () => !!(st.lit || st.volley);
   const NP = 120;
   const px = new Float32Array(NP), py = new Float32Array(NP), pvx = new Float32Array(NP), pvy = new Float32Array(NP);
   const pAge = new Float32Array(NP), pLife = new Float32Array(NP), pSize = new Float32Array(NP), pon = new Uint8Array(NP);
   let pn = 0, pCur = 0, hasLast = false;
   const E = { lx: 0, ly: 0, acc: 0, vx: 0, vy: 0 }; // where the ball was last frame (screen), the emission carried over, its screen velocity (smoothed)
-  const A = { x: 0, y: 0, s: 0, d: 0 }, B = { x: 0, y: 0, s: 0, d: 0 }, C = { x: 0, y: 0, s: 0, d: 0 };
+  const A = { x: 0, y: 0, s: 0, d: 0 };
   function emit(x, y, vx, vy, size, life) {
     const i = pCur; pCur = (pCur + 1) % NP;
     px[i] = x; py[i] = y; pvx[i] = vx; pvy[i] = vy; pAge[i] = 0; pLife[i] = life; pSize[i] = size; pon[i] = 1;
@@ -4726,13 +4822,13 @@ function createFire() {
       pvx[i] *= 1 - Math.min(1, dt * 2.5); pvy[i] -= 120 * dt; px[i] += pvx[i] * dt; py[i] += pvy[i] * dt; n++;
     }
     pn = n;
-    if (!st.lit || !w || !w.ball) { hasLast = false; E.vx = 0; E.vy = 0; return; }
+    if (!burning() || !w || !w.ball) { hasLast = false; E.vx = 0; E.vy = 0; return; }
     cam.project(w.ball.p.x, w.ball.p.y, w.ball.p.z, A);
     const r = w.ball.r * A.s, S = CFG.fire.size;
     if (!hasLast) { E.lx = A.x; E.ly = A.y; hasLast = true; }
     const vx = dt > 0 ? (A.x - E.lx) / dt : 0, vy = dt > 0 ? (A.y - E.ly) / dt : 0, kv = Math.min(1, dt * 14);
     if (dt > 0) { E.vx += (vx - E.vx) * kv; E.vy += (vy - E.vy) * kv; }
-    E.acc += dt * 70 * S;
+    E.acc += dt * (st.lit ? 70 : 45) * S;
     const m = Math.min(8, Math.floor(E.acc));
     E.acc -= m;
     for (let k = 0; k < m; k++) { // small sparks shed along the way it came, drifting up
@@ -4745,18 +4841,18 @@ function createFire() {
   // The ball's fire, in two layers the scene puts round the ball: behind it (drawBehind) a glow and the tail of flame; over it
   // (drawBall) its heat and the embers. kx, ky: the scene's backing scale.
   function drawBehind(ctx, cam, w, kx, ky) {
-    if (!st.lit || !w || !w.ball) return;
+    if (!(st.heat > 0.02) || !w || !w.ball) return;
     const P = firePal();
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
     cam.project(w.ball.p.x, w.ball.p.y, w.ball.p.z, A);
-    const r = w.ball.r * A.s, S = CFG.fire.size, k = 0.55 + 0.45 * st.litK;
+    const r = w.ball.r * A.s, S = CFG.fire.size * (0.8 + 0.2 * st.heat), k = st.heat * (st.lit ? 0.55 + 0.45 * st.litK : 1);
     // the tail streams back the way it came and rises: a ball held still in a freeze burns straight up
     const tx = -E.vx, ty = -E.vy - 160, tl = Math.sqrt(tx * tx + ty * ty) || 1, sp = Math.sqrt(E.vx * E.vx + E.vy * E.vy);
     fireGlow(ctx, A.x, A.y, r * 2.8 * S, r * 2.8 * S, P.glow, 0.6 * k);
     fireComet(ctx, A.x, A.y, -tx / tl, -ty / tl, r * 1.1 * S, r * S * (1.6 + 3.4 * U.clamp01(sp / 900)), st.rt, 0.95 * k);
   }
   function drawBall(ctx, cam, w, kx, ky) {
-    if (!pn && !st.lit) return;
+    if (!pn && !(st.heat > 0.02)) return;
     const P = firePal();
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
     ctx.globalCompositeOperation = 'lighter';
@@ -4768,43 +4864,14 @@ function createFire() {
       ctx.beginPath(); ctx.arc(px[i], py[i], Math.max(0.6, pSize[i] * (1 - 0.5 * q)), 0, TAU); ctx.fill();
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-    if (!st.lit || !w || !w.ball) return;
+    if (!(st.heat > 0.02) || !w || !w.ball) return;
     cam.project(w.ball.p.x, w.ball.p.y, w.ball.p.z, A);
-    const r = w.ball.r * A.s, k = 0.55 + 0.45 * st.litK;
+    const r = w.ball.r * A.s, k = st.heat * (st.lit ? 0.55 + 0.45 * st.litK : 1);
     fireGlow(ctx, A.x, A.y, r * 1.15, r * 1.15, P.mid, (0.45 + 0.12 * Math.sin(st.rt * 31)) * k); // the ball glows with the heat
   }
 
-  // the orb: a floating ball of flame with its glow on the floor. It swells in, and gutters out over its last second.
-  function drawOrbShadow(ctx, cam, kx, ky) {
-    if (!st.orb) return;
-    const P = firePal(), rr = 0.42 * CFG.fire.size;
-    cam.project(st.ox, 0, st.oz, A); cam.project(st.ox + rr, 0, st.oz, B); cam.project(st.ox, 0, st.oz + rr, C);
-    ctx.setTransform(kx * (B.x - A.x), ky * (B.y - A.y), kx * (C.x - A.x), ky * (C.y - A.y), kx * A.x, ky * A.y);
-    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = P.glow; ctx.globalAlpha = 0.22 * orbFade();
-    ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.fill();
-    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-  }
-  function orbFade() {
-    const L = Math.max(0.5, CFG.fire.life), a = st.orbAge, inn = U.clamp01(a / 0.3), left = L - a;
-    return inn * (left < 1 ? (left > 0 ? 0.35 + 0.65 * left * (0.5 + 0.5 * Math.sin(a * 30)) : 0) : 1);
-  }
-  function drawOrb(ctx, cam, kx, ky) {
-    if (!st.orb) return;
-    const P = firePal(), S = CFG.fire.size, f = orbFade();
-    cam.project(st.ox, st.oy + Math.sin(st.rt * 3) * 0.03, st.oz, A);
-    const r = 0.2 * S * A.s;
-    ctx.setTransform(kx, 0, 0, ky, 0, 0);
-    fireGlow(ctx, A.x, A.y, r * 3, r * 3, P.glow, 0.7 * f);
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = P.outer; ctx.globalAlpha = 0.75 * f; ctx.beginPath(); ctx.arc(A.x, A.y, r, 0, TAU); ctx.fill();
-    ctx.fillStyle = P.core; ctx.globalAlpha = 0.85 * f; ctx.beginPath(); ctx.arc(A.x, A.y + r * 0.15, r * 0.55, 0, TAU); ctx.fill();
-    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-    fireCluster(ctx, A.x, A.y + r * 0.35, r * 1.6, r * 3.2, st.rt + 0.37, f, 5);
-  }
-  const orbActor = { get z() { return st.oz; }, drawShadow: drawOrbShadow, draw(ctx, cam, kx, ky) { drawOrb(ctx, cam, kx, ky); } };
-
   reset();
-  return { snap: st, reset, newRally, update, tick, prepare, onHit, isDown, orbActor, drawBehind, drawBall, get on() { return on(); }, get embers() { return pn; } };
+  return { snap: st, reset, newRally, update, tick, prepare, onHit, onRoundEnd, held, armed, arm, isDown, drawBehind, drawBall, get on() { return on(); }, get volley() { return st.volley; }, get need() { return need(); }, get fireball() { return fireballPower(); }, get embers() { return pn; } };
 }
 
 // ════════ ninja.js ════════
@@ -5138,10 +5205,12 @@ function createNinja(doc, look) {
 // SPECIAL (energy.js). When his bar is full he weighs it as each swing starts: often when you are winding the rope, now and
 // then when it is level, rarely when he is winding it. Armed, he glows; his special leaves shadow clones along the strike.
 //
-// FIRE (fire.js). Burned (his touch answered your fireball) he is knocked down, on fire, for the burn's `down` time, and gets up
-// slow: until his next hit lands he reads, runs and leaps `slow` times slower. With dodging on he weighs each of your fireballs
-// once, as it lights (the sharper he is, the likelier), and may let it go by rather than touch it. Main hands him all of it in
-// update()'s info: { down, slow, hot, fireId, dodge }.
+// FIRE (fire.js). When he wins a fire volley he holds the second power-up, and weighs it as each swing starts, as he does his
+// special (wantsFire: more often when you are winding the rope); armed with a fireball he burns in the fire's colour. Burned (his
+// touch answered your fireball) he is knocked down, on fire, for the burn's `down` time, and gets up slow: until his next hit
+// lands he reads, runs and leaps `slow` times slower. With dodging on he weighs each of your fireballs once, as it lights (the
+// sharper he is, the likelier), and may let it go by rather than touch it. Main hands him all of it in update()'s info:
+// { down, slow, hot, fireId, dodge, fireArmed }.
 //
 // Clocks: everything he does runs on SIM time, so a hit's freeze and slow-mo hold him too (fair, and it reads as drama). The
 // glow, the clones and the flames run on REAL time, so they play out inside the freeze.
@@ -5207,6 +5276,9 @@ const KAGE_LINES = {
   burned: ['Hot—!', 'Thermal error.', 'Overheating.', 'Who lit that?'],
   dodge: ['Not touching that.', 'Nice try.', 'Too hot.', 'Pass.'],
   fire: ['Burn.', 'Catch that.', 'Hot delivery.'],
+  ignite: ['Heat check.', 'Now it gets hot.', 'Keep up.'],
+  prize: ['Mine.', 'Loaded.', 'Thanks for that.'],
+  lose: ['Tch.', 'Enjoy it while it lasts.', 'Lucky.'],
 };
 
 // Kage-X on the Neo Dojo rig (ninja.js): the sheet's dark gi and visor, and his magenta neon
@@ -5332,6 +5404,7 @@ function createKage(doc) {
     tLand: -9, run: 0, face: 1, moodT: 0, blinkAt: 2.5,
     say: '', sayT: 0, sayCool: 0,
     rt: 0, armK: 0, specialRt: -9, specials: 0, // real clock; the armed glow 0..1; his last special (real time); counted for the tests
+    fireK: 0, // armed with a fireball: its glow 0..1
     vy: 0, downT: -9, upT: -9, downLeft: 0, slowK: 1, // burned: falling (m/s), when he went down and got up (sim), s still down, how much slower he is now
     fireSeen: 0, dodge: false, dodges: 0, burns: 0, // the last fireball he weighed, whether he is letting it go by; counted for the tests
   };
@@ -5531,7 +5604,10 @@ function createKage(doc) {
   function update(dt, realDt, w, info) {
     st.slowK = info && info.slow > 1 ? info.slow : 1; st.downLeft = info && info.down > 0 ? info.down : 0;
     skill(); lastW = w;
-    if (realDt > 0) { st.sayT -= realDt; st.sayCool -= realDt; st.rt += realDt; st.armK += ((info && info.armed ? 1 : 0) - st.armK) * Math.min(1, realDt * 12); }
+    if (realDt > 0) {
+      st.sayT -= realDt; st.sayCool -= realDt; st.rt += realDt; st.armK += ((info && info.armed ? 1 : 0) - st.armK) * Math.min(1, realDt * 12);
+      st.fireK += ((info && info.fireArmed ? 1 : 0) - st.fireK) * Math.min(1, realDt * 12);
+    }
     if (!(dt > 0)) return null;
     st.t += dt; st.blind -= dt; st.cool -= dt; st.reread -= dt; st.moodT += dt;
     if (st.t > st.blinkAt) st.blinkAt = st.t + 2.2 + rnd() * 3.5;
@@ -5617,8 +5693,14 @@ function createKage(doc) {
     st.vx = -st.fdx * 1.0; st.vz = -st.fdz * 1.0; st.vy = st.y > 0.05 ? 0 : 1.2;
     st.sayCool = 0; quipF('burned', 0.9);
   }
-  // he set the ball alight (it flew through the orb off his hit)
-  function onFire() { if (st.sayCool <= 0) quipF('fire', 0.5); }
+  // he holds the second power-up and a swing is starting: does he use it? Like his special, by the rope (fire's dice)
+  function wantsFire(lead) {
+    const p = lead > 0.4 ? 0.7 : lead > -0.4 ? 0.45 : 0.25;
+    return rndF() < p;
+  }
+  // he threw his fireball; a fire volley lit, or went to him (won) or to you (lost)
+  function onFire() { st.sayCool = 0; quipF('fire', 0.7); }
+  function onVolley(kind) { if (st.sayCool <= 0 || kind !== 'ignite') { st.sayCool = 0; quipF(kind === 'won' ? 'prize' : kind === 'lost' ? 'lose' : 'ignite', kind === 'ignite' ? 0.4 : 0.6); } }
   function onRoundEnd(winner) {
     if (st.phase === 'down') st.upT = st.t; // he gets up for it
     st.phase = winner === 'kage' ? 'won' : 'lost'; st.moodT = 0; st.has = false; st.vx = 0; st.vz = 0;
@@ -5773,10 +5855,13 @@ function createKage(doc) {
     }
     const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15), gl = Math.max(0.4, CFG.kage.glow); // armed: an aura behind him and his neon over him
     if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, NEON, st.armK * (0.35 + 0.25 * pulse) * gl);
+    const fp = st.fireK > 0.01 && typeof firePal === 'function' ? firePal() : null; // armed with a fireball: he burns in its colour
+    if (fp) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
     const fa = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
     if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, NEON, st.armK * (0.18 + 0.18 * pulse) * gl, true);
+    if (fp) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.18 + 0.16 * pulse), true);
     if (fa > 0) { R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1); R.drawDizzy(ctx, kx, ky, pose, st.rt, fa); }
     else if (st.slowK > 1) R.drawSmoke(ctx, kx, ky, pose, st.rt, 0.9); // and smoking until his next hit lands
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
@@ -5790,7 +5875,7 @@ function createKage(doc) {
   };
 
   return {
-    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, onBurn, onFire, predict: (w) => { predict(w); return np; },
+    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, onBurn, onFire, wantsFire, onVolley, predict: (w) => { predict(w); return np; },
     get side() { return st.side; }, get dir() { return st.dir; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
@@ -5810,7 +5895,8 @@ function createKage(doc) {
 // won) and sad (a round lost). Afterimages are baked silhouettes of a dash and a leap, in a cool blue.
 //
 // SPECIAL (energy.js). Armed, he glows storm blue. His special (Raijin) closes a ring of afterimages on the ball from every
-// side as his fist lands; the lightning itself is fx.js's.
+// side as his fist lands; the lightning itself is fx.js's. Charged with a fireball (a clockwise swing, fire.js), he burns in
+// the fire's colour instead.
 //
 // FIRE (fire.js). When your swipe answers Kage's fireball, Kiru's fist still lands, and then the fire knocks him down, burning,
 // for as long as fire.js keeps you down (your swipes do nothing then: main.js). He gets up singed and smokes
@@ -5955,6 +6041,7 @@ function createKiru(doc) {
     arriveRt: -9, arriveA: 0, // the white flash: when, how bright
     strikes: 0, returns: 0, // counted for the tests
     armK: 0, specialRt: -9, spX: 0, spY: 0, spZ: 0, specials: 0, // the armed glow 0..1; his last special: when (real), where the ball was
+    fireK: 0, // your swing is charged with the fireball (fire.js): its glow 0..1
     downT: -9, upT: -9, downLeft: 0, slowed: false, burns: 0, // burned: when he went down and got up (sim), s still down, smouldering on; counted for the tests
   };
 
@@ -6053,8 +6140,9 @@ function createKiru(doc) {
     return d;
   }
 
-  // info: { ready: a finger is down and may hit, armed: your special is armed, down: s you are still down (fire.js), slowed:
-  // your next hit is a weak one }. Returns how far a flash back home went this frame (0 = none).
+  // info: { ready: a finger is down and may hit, armed: your special is armed, fire: your swing is charged with the fireball,
+  // down: s you are still down (fire.js), slowed: your next hit is a weak one }. Returns how far a flash back home went this frame
+  // (0 = none).
   let lastW = null;
   function update(dt, realDt, w, info) {
     lastW = w;
@@ -6062,6 +6150,7 @@ function createKiru(doc) {
     if (realDt > 0) {
       st.rt += realDt; st.ready += ((info && info.ready ? 1 : 0) - st.ready) * Math.min(1, realDt * 16);
       st.armK += ((info && info.armed ? 1 : 0) - st.armK) * Math.min(1, realDt * 12);
+      st.fireK += ((info && info.fire ? 1 : 0) - st.fireK) * Math.min(1, realDt * 12);
     }
     st.slowed = !!(info && info.slowed); st.downLeft = info && info.down > 0 ? info.down : 0;
     if (!(dt > 0)) return 0;
@@ -6284,10 +6373,13 @@ function createKiru(doc) {
     drawFlashes(ctx, cam, kx, ky);
     const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15); // armed: an aura behind him and a storm-blue charge over him
     if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, '#5ad1ff', st.armK * (0.4 + 0.25 * pulse));
+    const fp = st.fireK > 0.01 && typeof firePal === 'function' ? firePal() : null; // charged with the fireball: he burns in its colour
+    if (fp) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
     const fa = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
     if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, '#8fd2ff', st.armK * (0.22 + 0.2 * pulse), true);
+    if (fp) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.2 + 0.18 * pulse), true);
     const ar = st.rt - st.arriveRt;
     if (ar >= 0 && ar < ARRIVE) R.drawTint(ctx, kx, ky, pose, '#ffffff', st.arriveA * (1 - ar / ARRIVE), true);
     if (fa > 0) { R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1); R.drawDizzy(ctx, kx, ky, pose, st.rt, fa); }
@@ -6310,7 +6402,8 @@ function createKiru(doc) {
 }
 
 // ════════ ui.js ════════
-// ui.js — everything in the DOM: the HUD numbers, the energy rings and the special button, the round card, the bottom hint
+// ui.js — everything in the DOM: the HUD numbers, the energy rings and the special button, the fire badges and the streak toward a
+// fire volley, the round card, the bottom hint
 // and the Feel panel.
 //
 // The markup lives in shell.html (ids below) and the look in style.css; this file binds to them and keeps them current.
@@ -6438,6 +6531,38 @@ function createUI(root, opts) {
     if (ks !== enKS) { enKS = ks; enKEl.setAttribute('data-st', ks); enKEl.setAttribute('aria-label', ks === 'armed' ? 'Kage has armed his special' : ks === 'full' ? "Kage's special is ready" : "Kage's energy"); }
   }
   enBtn.addEventListener('click', () => { if (opts.onSpecial) opts.onSpecial(); });
+
+  // ───────────── fire volleys (versus): each player's second power-up, a flame over their energy ring (it shows once won, burns
+  // while armed), and the streak toward a fire volley: a pip a hit in the hitter's colour, all ablaze once the ball is on fire ─────
+  const fY = $('fYou'), fK = $('fKage'), stEl = $('streak');
+  let fOn = -1, fYS = '#', fKS = '#', fCol = -1, fPow = -1, sN = -1, sKey = -1;
+  // fs: fire.snap. charged: your swing has curved enough, clockwise, to throw it (it shows as armed).
+  function fire(fs, show, charged) {
+    const on = show && fs && fs.on ? 1 : 0;
+    if (on !== fOn) { fOn = on; hud.setAttribute('data-fire', on ? 'on' : ''); }
+    if (!on) return;
+    const col = CFG.fire.color | 0;
+    if (col !== fCol && typeof firePal === 'function') {
+      fCol = col; const P = firePal();
+      hud.style.setProperty('--fire-core', P.core); hud.style.setProperty('--fire-mid', P.mid); hud.style.setProperty('--fire-outer', P.outer); hud.style.setProperty('--fire-glow', P.glow);
+    }
+    const pow = (CFG.fire.power | 0) === 1 && CFG.energy && CFG.energy.on > 0 ? 1 : 0, word = pow === 1 ? 'Second special' : 'Fireball'; // (as fire.js: no energy, no special)
+    if (pow !== fPow) { fPow = pow; hud.setAttribute('data-power', pow === 1 ? 'special' : 'fireball'); fYS = '#'; fKS = '#'; }
+    const ys = fs.armed.you || charged ? 'armed' : fs.held.you ? 'held' : '', ks = fs.armed.kage ? 'armed' : fs.held.kage ? 'held' : '';
+    if (ys !== fYS) { fYS = ys; fY.setAttribute('data-st', ys); fY.setAttribute('aria-label', ys === 'armed' ? word + ' armed: your next hit throws it' : ys === 'held' ? word + ' ready: swipe in a clockwise curve' : word + ': win a fire volley'); }
+    if (ks !== fKS) { fKS = ks; fK.setAttribute('data-st', ks); fK.setAttribute('aria-label', ks === 'armed' ? 'Kage has armed his ' + word.toLowerCase() : ks === 'held' ? 'Kage holds a ' + word.toLowerCase() : "Kage's " + word.toLowerCase() + ': none'); }
+    const n = Math.max(2, Math.round(CFG.fire.hits) || 2);
+    if (n !== sN) { sN = n; stEl.textContent = ''; for (let i = 0; i < n; i++) stEl.appendChild(doc.createElement('i')); sKey = -1; }
+    const k = fs.streak < n ? fs.streak | 0 : n, key = (fs.volley ? 1000 : 0) + k * 10 + (fs.last === 'you' ? 1 : fs.last === 'kage' ? 2 : 0);
+    if (key !== sKey) {
+      sKey = key;
+      stEl.setAttribute('data-st', fs.volley ? 'fire' : k > 0 ? 'build' : '');
+      for (let i = 0; i < n; i++) { // the latest hit is the last player's, the ones before it alternate
+        const you = ((k - 1 - i) % 2 === 0) === (fs.last === 'you');
+        stEl.children[i].className = fs.volley ? 'f' : i < k ? (you ? 'y' : 'k') : '';
+      }
+    }
+  }
 
   function hint(text) {
     if (text) { $('hintText').textContent = text; hintEl.classList.add('on'); } else hintEl.classList.remove('on');
@@ -6799,7 +6924,7 @@ function createUI(root, opts) {
     return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save };
   })();
 
-  return { update, energy, showResult, hideResult, hint, setMuted, tuner };
+  return { update, energy, fire, showResult, hideResult, hint, setMuted, tuner };
 }
 
 // ════════ main.js ════════
@@ -6811,14 +6936,15 @@ function createUI(root, opts) {
 // drawn, not simulated, so with him switched off the game is the same game.
 //
 // Against Kage, volleys fill both players' energy bars (energy.js, the Feel panel's Energy group): a full bar is a special,
-// unleashed by a curved swipe (the stroke shows it is charged the moment it has curved enough; a tap on your ring or E can do it
-// instead, by the setting). Kage arms his as a swing starts. Every hit goes through energy.prepare first, which is all the
-// physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
+// unleashed by a counter-clockwise curved swipe (the stroke shows it is charged the moment it has curved enough; a tap on your ring
+// or E can do it instead, by the setting). Kage arms his as a swing starts. Every hit goes through energy.prepare first, which is
+// all the physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
 //
-// The fire power-up (fire.js, the Feel panel's Fire group) is versus only too. Now and then an orb hangs on the ball's orbit; the
-// ball that flies through it catches fire for whoever hit it last, and the other player's touch on it is burned: it lands weak
-// (fire.prepare, after energy.prepare), and they are down, swinging at nothing, for a moment (tryHit refuses them), then slow for
-// one more turn. Let it cross your half untouched and it goes out. Kage weighs whether to let your fireball go by; you can let his.
+// Fire volleys (fire.js, the Feel panel's Fire group) are versus only too. Six hits in a row, three each with no miss, and the
+// ball catches fire; whoever wins that volley (the other player misses) holds the second power-up, the fireball by default,
+// unleashed with a CLOCKWISE curved swipe (or F; Kage weighs his as a swing starts). The other player's touch on a fireball is
+// burned: it lands weak (fire.prepare, after energy.prepare), and they are down, swinging at nothing, for a moment (tryHit refuses
+// them), then slow for one more turn. Let it cross your half untouched and it goes out. Kage weighs whether to let yours go by.
 //
 // Two rule sets: the solo time trial (game.js) and versus Kage (versus.js), picked by CFG.match.opponent (the Feel
 // panel's Match group; "#solo" or "#versus" in the URL picks one for this page load without touching saved settings).
@@ -6878,20 +7004,19 @@ function createUI(root, opts) {
   let lastHitAt = -1e9, woundAt = -1, resultShown = false, prevPhase = 'idle', hintUntil = 0, sideWarnAt = -1e9;
   let kageSide = -1, sidePick = NaN; // Kage's half this match (−1 left, +1 right), and the setting it was resolved from
   const NEUTRAL = 0.06; // m either side of the centre line where either player may hit
-  const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you', curved: false };
-  const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world, charged: false, overBall: null };
+  const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you', curl: 0, curved: false };
+  const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world, charged: '', overBall: null };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1, fire: 0 };
-  const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false };
-  const kinfo = { ready: false, armed: false, down: 0, slowed: false }, kiruHit = { half: false, kage: null, special: false };
-  let lastHitter = ''; // who touched the ball last this rally ('you' | 'kage'): a fire it flies into is theirs
-  let toldHot = false; // the "let it pass" hint for Kage's fireball was shown this match
-  const FIRE_EV = { type: 'fire', at: world.ball.p }; // the burst as the ball catches fire (fx.event)
+  const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false, fireArmed: false };
+  const kinfo = { ready: false, armed: false, fire: false, down: 0, slowed: false }, kiruHit = { half: false, kage: null, special: false };
+  let toldHot = false, toldVolley = false; // shown this match: the "let it pass" hint for Kage's fireball, the first fire volley's
+  const FIRE_EV = { type: 'fire', at: world.ball.p, word: '' }; // the burst as the ball catches fire (fx.event)
   let kiruWas = false; // was Kiru on last frame (switching him on puts him on his spot)
   let kageSwing = -1; // the swing (his st.ts) Kage last weighed his special for
   let fullWas = false, toldSpecial = false; // your bar was full last frame; the "special ready" hint was shown this match
-  let chargedWas = false; // the finger's swing was charged (curved enough, on a full bar) last frame
-  const swing = { turn: 0, turnAbs: 0, arc: 0, curved: false }; // the shape of the swing that last hit, as it met the ball (tests, tuning)
+  let chargedWas = ''; // the finger's swing was charged last frame: 'special' (counter-clockwise on a full bar), 'fire' (clockwise, a power-up held), ''
+  const swing = { turn: 0, turnAbs: 0, arc: 0, curl: 0, curved: false }; // the shape of the swing that last hit, as it met the ball (tests, tuning)
   const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
   const vs = () => rules === versus;
   const kiruOn = () => CFG.kiru.on > 0;
@@ -6925,7 +7050,7 @@ function createUI(root, opts) {
     } else resetWorld(world);
     kiru.reset();
     energy.newRally(); kageSwing = -1;
-    fire.newRally(); lastHitter = '';
+    fire.newRally();
     tw.cancel();
     fx.reset();
     ui.hideResult();
@@ -6938,7 +7063,7 @@ function createUI(root, opts) {
     pickSide();
     if (vs()) versus.reset(); else game.reset();
     energy.reset(); fullWas = false; toldSpecial = false;
-    fire.reset(); toldHot = false;
+    fire.reset(); toldHot = false; toldVolley = false;
     startRally();
   }
   // the round card was tapped: next round, or a new match once it is over
@@ -6952,65 +7077,84 @@ function createUI(root, opts) {
     const you = who !== 'kage', k = you ? 'you' : 'kage';
     if (you && now - lastHitAt < CFG.hit.cooldownMs) return null;
     if (vs() && fire.isDown(k)) return null; // burned: down, and nothing they swing at counts until they are up
-    // a curved swipe on a full bar is your special: armed for this one touch (a miss leaves it unarmed again)
-    const auto = you && vs() && hand.curved === true && energy.curveOn && energy.full('you') && !energy.armed('you') && energy.arm('you', true);
-    if (vs()) energy.prepare(k, hand); else { hand.boost = 1; hand.gain = 1; }
+    // your curved swipe, armed for this one touch (a miss leaves it unarmed again): counter-clockwise on a full bar is your special,
+    // clockwise with a power-up held is the power-up
+    const curl = you && vs() ? hand.curl | 0 : 0;
+    const autoS = curl < 0 && energy.curveOn && energy.full('you') && !energy.armed('you') && energy.arm('you', true);
+    const autoF = curl > 0 && fire.held('you') && !fire.armed('you') && fire.arm('you', true);
+    if (vs()) {
+      if (fire.armed(k) && !fire.fireball) energy.arm(k, true, true); // the second power-up set to a special: a free one
+      energy.prepare(k, hand);
+    } else { hand.boost = 1; hand.gain = 1; }
     const heavy = hand.gain < 1; // it answers the other player's special: it lands heavy
     if (vs()) fire.prepare(k, hand); // a touch on their fireball, or your first hit after a burn, lands weak
     const res = applyHit(world, hand);
-    if (!res) { if (auto) energy.arm('you', false); return null; }
+    if (!res) {
+      if (autoS) energy.arm('you', false);
+      if (autoF) { fire.arm('you', false); energy.arm('you', false, true); }
+      return null;
+    }
     if (you) lastHitAt = now;
-    lastHitter = k;
     res.owner = you ? 'you' : 'cpu';
     res.charged = heavy;
-    const burned = vs() && fire.onHit(k) === 'burned';
-    res.burned = burned;
     rules.onHit(res, who);
+    const fh = vs() ? fire.onHit(k, versus.state === 'playing') : null;
+    res.burned = !!(fh && fh.burned); res.fireball = !!(fh && fh.fireball);
     const e = vs() && versus.state !== 'wound' ? energy.onHit(k, versus.state === 'playing') : '';
     res.special = e === 'special' ? k : '';
     if (you || CFG.kage.warp > 0) {
       if (res.special) tw.trigger(Math.max(0.9, res.power), 'perfect', true); // a special is always a big moment
-      else if (burned) tw.trigger(Math.max(0.75, res.power), res.quality, true); // so is a burn
+      else if (res.burned || res.fireball) tw.trigger(Math.max(0.75, res.power), res.quality, true); // so are a fireball and a burn
       else tw.trigger(you ? res.power : res.power * CFG.kage.warpScale, res.quality);
     }
     fx.impact(res, cam, world);
     audio.hit(res);
     if (res.special) audio.special(res.special);
-    if (burned) audio.fire('burn');
-    if (you) audio.vibrate(burned ? [40, 30, 80] : res.special ? [30, 40, 60] : res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
+    if (res.fireball) audio.fire('ignite');
+    if (res.burned) audio.fire('burn');
+    if (you) audio.vibrate(res.burned ? [40, 30, 80] : res.special || res.fireball ? [30, 40, 60] : res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
     if (vs()) kage.onWorldHit(res, who);
     if (res.special === 'kage') kage.onSpecial();
-    if (burned && !you) kage.onBurn();
+    if (res.fireball && !you) kage.onFire();
+    if (res.burned && !you) kage.onBurn();
     if (you && kiruOn()) { // Kiru flash-steps to the ball your swipe just hit
       kiruHit.half = vs(); kiruHit.kage = vs() ? kage.st : null; kiruHit.special = res.special === 'you';
       const d = kiru.onHit(res, world, kiruHit);
       if (d > 0.05) audio.flash(d, 0.6);
-      if (burned) kiru.onBurn();
+      if (res.burned) kiru.onBurn();
     }
     ui.hint(null); hintUntil = 0;
-    if (burned && you) { ui.hint('Burned! 🔥'); hintUntil = now + 1000 * Math.max(0.6, CFG.fire.down) + 400; }
+    if (fh && fh.ignite) volleyLit(now);
+    if (fh && fh.won) volleyWon(fh.won, now);
+    if (res.burned && you) { ui.hint('Burned! 🔥'); hintUntil = now + 1000 * Math.max(0.6, CFG.fire.down) + 400; }
+    else if (res.fireball && !you && !toldHot) { toldHot = true; ui.hint('Hot! Let it pass 🔥'); hintUntil = now + 2200; }
     return res;
   }
 
-  // the fire power-up's moments: an orb appears, the ball catches fire (Kage's, the first time in a match: a word on letting it
-  // pass), a fire or an orb goes out
+  // Fire volleys (fire.js): the rally caught fire (the first time in a match, a word on it); a volley was won (the power-up's
+  // chime, and a word on how to use yours); a fireball went out untouched.
+  function volleyLit(now) {
+    energy.arm('you', false, true); energy.arm('kage', false, true); // a power-up armed as a special stood down with it (fire.js)
+    FIRE_EV.word = 'ON FIRE!'; fx.event(FIRE_EV, cam, world);
+    audio.fire('ignite');
+    kage.onVolley('ignite');
+    if (!toldVolley) { toldVolley = true; ui.hint("On fire! Don't miss 🔥"); hintUntil = now + 2200; }
+  }
+  function volleyWon(k, now, roundEnd) {
+    audio.fire('won');
+    if (k === 'you') { audio.vibrate([20, 30, 20]); ui.hint(fire.fireball ? 'Fireball! Curve ↻ 🔥' : 'Special! Curve ↻ ⚡'); hintUntil = now + 2400; }
+    if (!roundEnd) kage.onVolley(k === 'you' ? 'lost' : 'won'); // at a round's end he has his own words
+  }
   function onFire(fe, now) {
-    if (fe === 'spawn') audio.fire('spawn');
-    else if (fe === 'lit') {
-      fx.event(FIRE_EV, cam, world);
-      audio.fire('ignite');
-      if (fire.snap.lit === 'kage') {
-        kage.onFire();
-        if (!toldHot) { toldHot = true; ui.hint('Hot! Let it pass 🔥'); hintUntil = now + 2200; }
-      } else audio.vibrate([15]);
-    } else if (fe === 'out' || fe === 'gone') audio.fire('out');
+    if (fe === 'won') volleyWon(fire.snap.wonBy, now);
+    else if (fe === 'out') audio.fire('out');
   }
 
   // how to use a full bar, by the trigger setting and the device
   function readyHint() {
     const m = CFG.energy.trigger | 0;
     if (m === 1) return coarse ? 'Special ready · tap ⚡' : 'Special ready · press E';
-    return coarse || m === 0 ? 'Curve your swipe ⚡' : 'Curve a swipe or press E'; // short: it sits between the two rings
+    return coarse || m === 0 ? 'Curve ↺ to unleash ⚡' : 'Curve ↺ or press E ⚡'; // short: it sits between the two rings
   }
 
   // the special button (or E), when the trigger setting allows a tap: arm a full bar, or disarm it again
@@ -7019,6 +7163,15 @@ function createUI(root, opts) {
     if (!vs() || !energy.tapOn || versus.state === 'wound' || !energy.full('you')) return false;
     const a = energy.arm('you');
     audio.energy(a ? 'arm' : 'disarm');
+    return a;
+  }
+  // F, on a keyboard: arm the power-up a fire volley won you (or disarm it again)
+  function armFire() {
+    audio.unlock();
+    if (!vs() || versus.state === 'wound' || !fire.held('you')) return false;
+    const a = fire.arm('you');
+    if (!fire.fireball) energy.arm('you', a, true);
+    if (a && fire.fireball) audio.fire('arm'); else audio.energy(a ? 'arm' : 'disarm');
     return a;
   }
 
@@ -7051,12 +7204,12 @@ function createUI(root, opts) {
       const hand = input.toHand(seg, world.ball.p.y, handBuf);
       if (!hand) continue;
       hand.owner = 'you';
-      hand.curved = energy.curved(seg.turn, seg.turnAbs, seg.arc); // its swing's shape when it reached the ball
+      hand.curl = energy.curl(seg.turn, seg.turnAbs, seg.arc); hand.curved = hand.curl !== 0; // its swing's shape when it reached the ball
       if (!mayHit()) { sideWarn(hand, now); continue; }
       if (input.shouldHold(seg, hand, world.ball)) continue; // a finger that landed ON the ball: its first contact is the slowest part of the swipe, so wait ~2 frames for the peak
       if (tryHit(hand, now, 'you')) {
         input.consumeStroke(seg.stroke);
-        swing.turn = seg.turn; swing.turnAbs = seg.turnAbs; swing.arc = seg.arc; swing.curved = hand.curved;
+        swing.turn = seg.turn; swing.turnAbs = seg.turnAbs; swing.arc = seg.arc; swing.curl = hand.curl; swing.curved = hand.curved;
       }
     }
   }
@@ -7077,6 +7230,7 @@ function createUI(root, opts) {
         tw.trigger(Math.min(1, Math.max(0.85, ev.speed / CFG.hit.vMax)), 'perfect', true); // the finish is always a big moment: forced past the re-hit window and the rally pacing
         woundAt = now;
         if (vs() && versus.snap.winner) kage.onRoundEnd(versus.snap.winner);
+        if (vs() && versus.snap.winner && fire.onRoundEnd(versus.snap.winner) === 'won') volleyWon(fire.snap.wonBy, now, true); // a fire volley still burning goes to the round's winner
         if (kiruOn()) kiru.onRoundEnd(!vs() || versus.snap.winner === 'you');
       }
     }
@@ -7126,11 +7280,15 @@ function createUI(root, opts) {
     if (vs()) {
       info.state = versus.state; info.server = versus.snap.server; info.armed = energy.armed('kage');
       info.down = fire.snap.down.kage; info.slow = fire.snap.slow.kage ? Math.max(1, CFG.fire.slow) : 1;
-      info.hot = fire.snap.lit === 'you'; info.fireId = fire.snap.fireId; info.dodge = CFG.fire.dodge > 0;
+      info.hot = fire.snap.lit === 'you'; info.fireId = fire.snap.fireId; info.dodge = CFG.fire.dodge > 0; info.fireArmed = fire.armed('kage') && fire.fireball;
       const hand = kage.update(simDt, realDt, world, info);
       if (kage.st.phase === 'swing' && kage.st.ts !== kageSwing) { // he weighs his special as a swing starts, so it shows on him before the fist lands
         kageSwing = kage.st.ts;
         if (CFG.energy.kage > 0 && energy.full('kage') && !energy.armed('kage') && kage.wantsSpecial(versus.snap.lead)) energy.arm('kage', true);
+        else if (CFG.fire.kage > 0 && fire.held('kage') && !fire.armed('kage') && !fire.volley && !energy.armed('kage') && kage.wantsFire(versus.snap.lead)) {
+          fire.arm('kage', true); // his power-up, the same way (one or the other on a swing)
+          if (!fire.fireball) energy.arm('kage', true, true);
+        }
       }
       if (hand) kage.onSwing(tryHit(hand, now, 'kage'));
     }
@@ -7141,14 +7299,18 @@ function createUI(root, opts) {
       if (!toldSpecial && versus.state !== 'wound') { toldSpecial = true; ui.hint(readyHint()); hintUntil = now + 2200; }
     }
     fullWas = fullNow;
-    // a swing that has curved enough on a full bar is charged: the trail turns storm blue, Kiru lights up, and its hit is the special
-    const charged = fullNow && energy.curveOn && input.active && !input.spent && versus.state !== 'wound' && energy.curved(input.turn, input.turnAbs, input.arc);
-    if (charged && !chargedWas) audio.energy('arm');
+    // A swing that has curved enough is charged: counter-clockwise on a full bar, the trail turns storm blue, Kiru lights up and its
+    // hit is the special; clockwise with a power-up held, it burns in the fire's colour (a special power-up: storm blue again).
+    const curl = vs() && input.active && !input.spent && versus.state !== 'wound' ? energy.curl(input.turn, input.turnAbs, input.arc) : 0;
+    const chargedS = curl < 0 && fullNow && energy.curveOn, chargedF = curl > 0 && fire.held('you') && !fire.volley;
+    const charged = chargedS ? 'special' : chargedF ? (fire.fireball ? 'fire' : 'special') : '';
+    if (charged && charged !== chargedWas) { if (charged === 'fire') audio.fire('arm'); else audio.energy('arm'); }
     chargedWas = charged; view.charged = charged;
     if (kiruOn()) {
       if (!kiruWas) { kiru.setSide(vs() ? -kageSide : 1); kiru.reset(); }
       kinfo.ready = input.active && world.state === 'live' && tw.canHit() && mayHit();
-      kinfo.armed = vs() && (energy.armed('you') || charged);
+      kinfo.armed = vs() && (energy.armed('you') || charged === 'special');
+      kinfo.fire = vs() && (charged === 'fire' || (fire.armed('you') && fire.fireball));
       kinfo.down = vs() ? fire.snap.down.you : 0; kinfo.slowed = vs() && fire.snap.slow.you;
       const back = kiru.update(simDt, realDt, world, kinfo);
       if (back > 0.05) audio.flash(back, 0.4);
@@ -7156,8 +7318,8 @@ function createUI(root, opts) {
     kiruWas = kiruOn();
     if (simDt > 0) advance(world, simDt);
     onEvents(now);
-    if (vs()) { // the fire power-up: an orb over a live rally; the ball that flies through it burns for whoever hit it last
-      const fe = fire.update(simDt, realDt, world, versus.state === 'playing' && world.state === 'live', lastHitter, kageSide);
+    if (vs()) { // fire volleys: a miss decides one; a fireball let go by goes out
+      const fe = fire.update(simDt, realDt, world, versus.state === 'playing' && world.state === 'live', kageSide);
       if (fe) onFire(fe, now);
     }
     if (prevPhase !== 'ramp' && tw.phase === 'ramp') audio.release(tw.seq.power); // the running sequence's power, so the whoosh fits the ramp tw plays (a wound slam can replace it)
@@ -7173,13 +7335,14 @@ function createUI(root, opts) {
     tick.speed01 = Math.min(1, world.ball.speed / CFG.hit.vMax);
     tick.pan = Math.max(-1, Math.min(1, (ballScr.x / cam.w) * 2 - 1));
     tick.timeScale = scale;
-    tick.fire = vs() && fire.snap.lit ? fire.snap.litK : 0;
+    tick.fire = vs() ? (fire.snap.lit ? fire.snap.litK : fire.snap.volley ? 0.6 : 0) : 0;
     audio.tick(realDt, tick);
 
     if (hintUntil && now > hintUntil) { hintUntil = 0; ui.hint(hintText()); }
     if (rules.state === 'wound' && !resultShown && woundAt >= 0 && now - woundAt > 900) { resultShown = true; ui.showResult(rules.snap); }
     ui.update(rules.snap, realDt);
-    ui.energy(energy.snap, vs(), charged);
+    ui.energy(energy.snap, vs(), chargedS);
+    ui.fire(fire.snap, vs(), chargedF);
     syncPanel(false);
 
     if (draw) {
@@ -7187,7 +7350,6 @@ function createUI(root, opts) {
       view.actors.length = 0;
       if (vs()) view.actors.push(kage.actor);
       if (kiruOn()) view.actors.push(kiru.actor);
-      if (vs() && fire.snap.orb) view.actors.push(fire.orbActor);
       view.overBall = vs() ? fire : null;
       scene.draw(ctx, cam, world, view);
     }
@@ -7223,11 +7385,12 @@ function createUI(root, opts) {
     if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
     if (e.key === 'r' || e.key === 'R') resetAll();
     else if ((e.key === 'e' || e.key === 'E') && !e.repeat) armSpecial();
+    else if ((e.key === 'f' || e.key === 'F') && !e.repeat) armFire();
   });
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, versus, energy, fire, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial,
+    CFG, world, cam, tw, fx, game, versus, energy, fire, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial, fireball: armFire,
     get rules() { return rules; },
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)
@@ -7237,14 +7400,15 @@ function createUI(root, opts) {
       for (let i = 0; i < n; i++) { t += 16.667; step(1 / 60, t, i === n - 1, 1 / 60); }
     },
     // a synthetic swipe through the ball along (dx,dz) at `speed` m/s, via the real hit path (the half rule is the finger's, not this hook's);
-    // curved: as if its swing had curved enough for a special
-    hit(dx, dz, speed, curved) {
+    // curl: as if its swing had curved enough, −1 counter-clockwise (the special; true means the same) or +1 clockwise (the power-up)
+    hit(dx, dz, speed, curl) {
       lastHitAt = -1e9; // tests may chain hits freely; the real cooldown still guards fingers
       const l = Math.hypot(dx, dz) || 1, ux = dx / l, uz = dz / l, b = world.ball.p;
       const h = handBuf;
       h.p0.x = b.x - ux * 0.5; h.p0.y = b.y; h.p0.z = b.z - uz * 0.5;
       h.p1.x = b.x + ux * 0.05; h.p1.y = b.y; h.p1.z = b.z + uz * 0.05;
-      h.vx = ux * speed; h.vz = uz * speed; h.speed = speed; h.r = CFG.hit.handR; h.stroke = -1; h.owner = 'you'; h.curved = curved === true;
+      h.vx = ux * speed; h.vz = uz * speed; h.speed = speed; h.r = CFG.hit.handR; h.stroke = -1; h.owner = 'you';
+      h.curl = curl === true ? -1 : curl === 1 || curl === -1 ? curl : 0; h.curved = h.curl !== 0;
       return tryHit(h, performance.now(), 'you');
     },
     reset: resetAll,
