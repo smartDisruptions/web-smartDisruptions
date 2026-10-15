@@ -253,6 +253,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 .seg { grid-column: 1 / -1; display: flex; gap: 3px; padding: 3px; border-radius: 11px; background: rgba(255,255,255,.07); }
 .opt { flex: 1 1 0; min-width: 0; height: 34px; padding: 0 6px; border: 0; border-radius: 8px; background: none; color: var(--dim); font: 700 13px/1 var(--ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .opt[aria-checked="true"] { background: var(--accent); color: var(--ink); }
+.seg.wrap { flex-wrap: wrap; }
+.seg.wrap .opt { flex: 1 1 30%; }
 .row.chg .opt[aria-checked="true"] { box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
 .opt.swatch { display: flex; align-items: center; justify-content: center; }
 .opt.swatch .chip { width: 22px; height: 22px; border-radius: 50%; box-shadow: 0 0 0 1.5px rgba(0,0,0,.35); }
@@ -1538,7 +1540,7 @@ CFG.audio = {
   whirr: 1, // ambient whirr / whoosh while the ball moves
   release: 1, // the rising whoosh as time speeds back up
   flash: 1, // Kiru's flash step: the swish as he blinks across the court
-  special: 1, // the specials (energy.js): Raijin's thunderclap, Kage's shadow cut, and the energy bar's cues
+  special: 1, // the specials (energy.js): Raijin's thunderclap, Kage's shadow cut, the supers' (supers.js), and the energy bar's cues
   fire: 1, // fire volleys and the fireball (fire.js): the ball catching fire and crackling, a volley won, a swing charging, a burn, a fire going out
   hitVoice: 0, // the hit: 0 the synth below, 1.. a sampled voice from hitsounds.js (Thump, Smack, Boom, Taiko: deeper)
   hitPitch: 1, // × a sampled voice's pitch: under 1 is deeper still
@@ -1910,6 +1912,77 @@ function createAudio(opts) {
     }
     reap(v);
   }
+  // ---- the supers (supers.js: 1 swerve, 2 spike, 3 phantom, 4 decoys, 5 slip), on top of the special's hit ----
+  function superCast(kind) {
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0;
+    if (S.muted || !(lv > 0) || !ready() || !room(10, true)) return;
+    const t = at(), v = begin();
+    if (kind === 1) { // swerve: a whoosh that weaves up and down, and a low push under it
+      const s = noiseSrc(v, t, 0.75), b = filt('bandpass', 900, 2.4), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueCurveAtTime(curve((u) => 900 * Math.pow(2.4, Math.sin(u * 7 * Math.PI) * 0.9 + 0.5 * u)), t, 0.7);
+      env(g, t, 0.36 * lv, 0.02, 0.7);
+      s.connect(b); b.connect(g); g.connect(bus);
+      tone(v, t, W.thump, 90, 40, 0.06, 0.4 * lv, 0.002, 0.4);
+    } else if (kind === 2) { // spike: a whip crack, a whistle diving down, a hard thump
+      const ns = noiseSrc(v, t, 0.5);
+      burst(v, t, ns, 'highpass', 2600, 0.8, 0.55 * lv, 0.0004, 0.07);
+      const o = osc(t, 2200, 'triangle'), g = ctx.createGain(), end = t + 0.32;
+      v.n.push(o, g);
+      o.frequency.setTargetAtTime(380, t, 0.07);
+      env(g, t, 0.16 * lv, 0.002, 0.28);
+      o.connect(g); g.connect(bus); o.start(t); o.stop(end);
+      keep(v, o, end);
+      tone(v, t, W.thump, 110, 36, 0.05, 0.62 * lv, 0.001, 0.45);
+    } else if (kind === 3) { // phantom: a breath that falls away, and a ghostly glide
+      const s = noiseSrc(v, t, 0.9), b = filt('lowpass', 3000, 0.7), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueAtTime(3000, t); b.frequency.exponentialRampToValueAtTime(300, t + 0.8);
+      env(g, t, 0.24 * lv, 0.05, 0.8);
+      s.connect(b); b.connect(g); g.connect(bus);
+      tone(v, t, null, 880, 220, 0.25, 0.1 * lv, 0.06, 0.75);
+      tone(v, t, null, 1318.5, 330, 0.25, 0.05 * lv, 0.06, 0.6);
+    } else if (kind === 4) { // decoys: three quick puffs, and a bright tick for the split
+      const ns = noiseSrc(v, t, 0.5);
+      for (let i = 0; i < 3; i++) burst(v, t + i * 0.055, ns, 'lowpass', 900 + 300 * i, 0.7, 0.34 * lv, 0.004, 0.12);
+      tone(v, t, W.chime, 1567.98, 1567.98, 1, 0.08 * lv, 0.002, 0.22);
+      tone(v, t, W.thump, 85, 40, 0.06, 0.4 * lv, 0.002, 0.35);
+    } else if (kind === 5) { // slip: a slick zip up, a squeak
+      const s = noiseSrc(v, t, 0.3), b = filt('bandpass', 1200, 2), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueAtTime(1200, t); b.frequency.exponentialRampToValueAtTime(6000, t + 0.18);
+      env(g, t, 0.28 * lv, 0.008, 0.2);
+      s.connect(b); b.connect(g); g.connect(bus);
+      tone(v, t, 'triangle', 500, 1700, 0.05, 0.1 * lv, 0.003, 0.18);
+      tone(v, t, W.thump, 95, 42, 0.05, 0.38 * lv, 0.002, 0.32);
+    }
+    reap(v);
+  }
+  // a super's moment away from the hit: 'hit' (a spike landing on a player), 'pop' (a decoy), 'slip' (a touch slipped off),
+  // 'reveal' (a phantom shows again)
+  function superFx(kind) {
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, big = kind === 'hit';
+    if (S.muted || !(lv > 0) || !ready() || !room(big ? 8 : 4, big)) return;
+    const t = at(), v = begin();
+    if (kind === 'hit') { // a body blow: a slap, a deep thud, a bonk
+      const ns = noiseSrc(v, t, 0.4);
+      burst(v, t, ns, 'bandpass', 1500, 0.9, 0.5 * lv, 0.0005, 0.09);
+      tone(v, t, W.thump, 75, 30, 0.07, 0.75 * lv, 0.001, 0.55);
+      tone(v, t + 0.01, 'triangle', 320, 110, 0.05, 0.22 * lv, 0.002, 0.2);
+    } else if (kind === 'pop') { // a soft puff of smoke
+      const ns = noiseSrc(v, t, 0.3);
+      burst(v, t, ns, 'lowpass', 1100, 0.7, 0.3 * lv, 0.004, 0.14);
+      tone(v, t, 'triangle', 700, 300, 0.04, 0.06 * lv, 0.002, 0.08);
+    } else if (kind === 'slip') { // the hand slides off: a swish and a little rising zip
+      const s = noiseSrc(v, t, 0.25), b = filt('bandpass', 1800, 1.6), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueAtTime(1800, t); b.frequency.exponentialRampToValueAtTime(5200, t + 0.12);
+      env(g, t, 0.24 * lv, 0.005, 0.13);
+      s.connect(b); b.connect(g); g.connect(bus);
+      tone(v, t, 'triangle', 600, 1800, 0.04, 0.09 * lv, 0.002, 0.12);
+    } else if (kind === 'reveal') tone(v, t, W.chime, 1318.5, 1318.5, 1, 0.07 * lv, 0.004, 0.3);
+    reap(v);
+  }
   // the energy bar: 'full' (a rising pair of chimes), 'arm' (a charge-up sweep), 'disarm' (the sweep back down)
   function energy(kind) {
     const lv = CFG.audio.special > 0 ? CFG.audio.special : 0;
@@ -2121,7 +2194,7 @@ function createAudio(opts) {
 
   return {
     unlock: safe(unlock), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
-    wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), special: safe(special), energy: safe(energy), fire: safe(fire), vibrate, stats,
+    wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), special: safe(special), superCast: safe(superCast), superFx: safe(superFx), energy: safe(energy), fire: safe(fire), vibrate, stats,
     voices: { get ready() { return HV.ready || Promise.resolve(); }, get loaded() { return HV.loaded; }, get failed() { return HV.failed; } },
     tick(dt, p) { try { tickBody(dt, p); } catch (e) { fail(e); } },
     get muted() { return S.muted; },
@@ -2143,7 +2216,9 @@ function createAudio(opts) {
 //   After fx.applyCamera(cam) every cam.project / unproject already includes zoom, shake and roll.
 // Specials (energy.js). A hit with `special` set ('you' | 'kage') is drawn as one of power 0.85 at least, under its name, and
 //   brings its own layer: Raijin's lightning out of the sky onto the ball, or Kage's shadow cut across it. setCharge(owner, k)
-//   each frame puts the charge the ball carries round it (crackling arcs, or a ring of shadow), fading out with k.
+//   each frame puts the charge the ball carries round it (crackling arcs, or a ring of shadow), fading out with k. A special
+//   that is one of the supers (supers.js: `superKind` 1..5) says the super's name in its colours instead (themes 5..9), and an
+//   event { type: 'super', kind, word, size } is its moment away from a hit (a spike landing on a player, a slip).
 // Fire (fire.js), in the Feel panel's fire colour: a hit with `burned` set is BURNED!, one with `fireball` set is FIREBALL!, and
 //   event({ type: 'fire', at, word }) is the ball catching fire (a burst of flame under the word: ON FIRE! for a fire volley).
 //   The flames themselves are fire.js's.
@@ -2191,7 +2266,7 @@ function createFX(seed) {
   // ---- palette: rebuilt only if CFG.pal changes ----
   let pa = null, ph = null, pc = null, pf = -2;
   const N_HEAT = 16, heat = [];
-  const themes = [0, 1, 2, 3, 4].map(() => ({ sp: [], glow: null, flash: null }));
+  const themes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => ({ sp: [], glow: null, flash: null }));
   const fireKey = () => (typeof firePal === 'function' && CFG.fire ? CFG.fire.color : -1); // the fire colour (fire.js), if it is in the build
   const stale = () => pa !== CFG.pal.accent || ph !== CFG.pal.hot || pc !== CFG.pal.cool || pf !== fireKey();
   function buildThemes() {
@@ -2206,7 +2281,12 @@ function createFX(seed) {
       { b0: mix(KN, '#2a0640', 0.55), b1: KN, b2: mix(KN, W, 0.72), ring: mix(KN, W, 0.45), ring2: mix(P.cool, W, 0.5), line: mix(KN, W, 0.78), veil: '#fbe6ff', tFill: '#fff1ff', tOut: mix(KN, '#3a0057', 0.45), mph: mix(KN, W, 0.35), k: [mix(KN, W, 0.5), KN, mix(KN, '#5a10c0', 0.5)] },
       { b0: mix(FP.outer, '#200400', 0.35), b1: FP.outer, b2: FP.mid, ring: mix(FP.mid, W, 0.35), ring2: mix(FP.core, W, 0.5), line: mix(FP.mid, W, 0.7), veil: mix(FP.core, W, 0.5), tFill: mix(FP.core, W, 0.4), tOut: mix(FP.outer, '#200400', 0.45), mph: FP.mid, k: [FP.core, FP.mid, FP.outer] },
     ];
-    for (let i = 0; i < 5; i++) {
+    // 5..9: the supers (supers.js), each in its own colours whoever throws it
+    for (let k = 1; k <= 5; k++) {
+      const Q = typeof SUPERS !== 'undefined' && SUPERS[k] && SUPERS[k].mid ? SUPERS[k] : { core: '#ffffff', mid: '#c9cfdd', outer: '#7c8395' };
+      d.push({ b0: mix(Q.outer, '#0a0612', 0.4), b1: Q.outer, b2: Q.mid, ring: mix(Q.mid, W, 0.35), ring2: mix(Q.core, W, 0.5), line: mix(Q.mid, W, 0.7), veil: mix(Q.core, W, 0.5), tFill: mix(Q.core, W, 0.3), tOut: mix(Q.outer, '#0a0612', 0.45), mph: Q.mid, k: [Q.core, Q.mid, Q.outer] });
+    }
+    for (let i = 0; i < d.length; i++) {
       const t = themes[i], s = d[i];
       Object.assign(t, s);
       t.glow = null; t.flash = null;
@@ -2482,7 +2562,7 @@ function createFX(seed) {
   function textFor(hit, I) {
     if (hit.burned) return 'BURNED!'; // it answered the other player's fireball (fire.js)
     if (hit.fireball) return 'FIREBALL!'; // it threw one
-    if (hit.special) return hit.special === 'kage' ? 'SHADOW CUT' : 'RAIJIN!';
+    if (hit.special) return hit.superKind && typeof SUPERS !== 'undefined' && SUPERS[hit.superKind] ? SUPERS[hit.superKind].word : hit.special === 'kage' ? 'SHADOW CUT' : 'RAIJIN!'; // a super says its own name (supers.js)
     if (hit.charged && I > 0.12) return 'HEAVY'; // it answered the other player's special
     if (hit.owner === 'cpu') return hit.quality === 'perfect' ? 'KAGE CUT' : hit.reversed && I > 0.3 ? 'COUNTER' : I > 0.7 ? 'SMASH' : ''; // his words, in his colour
     if (hit.quality === 'perfect') return 'PERFECT';
@@ -2504,7 +2584,7 @@ function createFX(seed) {
     if (ul > 1e-3) { ux /= ul; uy /= ul; } else { ux = 1; uy = 0; }
 
     const k = U.smoothstep(0.05, 0.45, I), hot = perfect || I > 0.82;
-    resetSpec(hit.burned || hit.fireball ? 4 : hit.owner === 'cpu' ? 3 : hit.special || rev ? 1 : hot ? 2 : 0, I, S);
+    resetSpec(hit.superKind > 0 && hit.special ? 4 + hit.superKind : hit.burned || hit.fireball ? 4 : hit.owner === 'cpu' ? 3 : hit.special || rev ? 1 : hot ? 2 : 0, I, S);
     const sp = spec;
     sp.wx = pt.x; sp.wy = pt.y; sp.wz = pt.z; sp.ux = ux; sp.uy = uy;
     sp.nRay = k > 0.02 ? 8 + Math.round(6 * I) : 0;
@@ -2527,7 +2607,7 @@ function createFX(seed) {
     sp.tx = cx;
     sp.ty = U.clamp(up ? cy - gap : cy + gap, sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize * 1.4);
     startBurst();
-    if (hit.special) startSpecial(hit.special === 'kage' ? 'kage' : 'you', pt.x, pt.y, pt.z, ux, uy, S);
+    if (hit.special && !(hit.superKind > 0)) startSpecial(hit.special === 'kage' ? 'kage' : 'you', pt.x, pt.y, pt.z, ux, uy, S); // Raijin's bolts, his cuts: the signatures only
 
     addTrauma(0.35 + 0.55 * I + (perfect ? 0.1 : 0));
     st.shS = S;
@@ -2593,6 +2673,20 @@ function createFX(seed) {
       startBurst();
       addTrauma(0.22); st.shS = S;
       st.ballHeat = 1;
+    } else if (ev.type === 'super') {
+      // a super's moment away from a hit (supers.js): a spike landing on a player (big), a slip, a decoy popping (small)
+      const big = ev.size !== 'small';
+      resetSpec(4 + (ev.kind > 0 && ev.kind <= 5 ? ev.kind : 4), big ? 0.9 : 0.4, S);
+      const sp = spec;
+      sp.wx = at.x; sp.wy = at.y; sp.wz = at.z; sp.ux = ev.ux || 0; sp.uy = ev.uy || -1; sp.spread = ev.ux || ev.uy ? 0.5 : 1; sp.fwd = 0;
+      sp.nRay = big ? 12 : 6; sp.starR = S * (big ? 90 : 34); sp.starLife = big ? 0.32 : 0.18; sp.sparkMode = 1;
+      sp.ring0 = S * (big ? 150 : 60) * F.ringSize; sp.ringW = S * (big ? 6 : 3);
+      sp.glow = (big ? 0.9 : 0.4) * F.flashAlpha; sp.glowR = S * (big ? 120 : 50); sp.veil = big ? 0.3 * F.flashAlpha : 0;
+      sp.nSpark = Math.round((big ? 40 : 10) * F.sparkCount); sp.sparkV = S * (big ? 800 : 380);
+      sp.word = ev.word || ''; sp.mph = ''; sp.tSize = S * (big ? 40 : 24) * F.textSize; sp.tilt = -0.06;
+      sp.tx = cx; sp.ty = U.clamp(cy - S * (big ? 96 : 52), sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize);
+      startBurst();
+      if (big) { addTrauma(0.5); st.shS = S; kick(F.shake * S * 0.4, ev.ux || 0, ev.uy || 1, 0.01); punch(F.punch * 0.7, F.snap * 0.6, 0.12, cx, cy); }
     } else if (ev.type === 'pole') {
       k = U.clamp01((ev.speed || 0) / vmax);
       if (k < 0.04) return;
@@ -3236,6 +3330,9 @@ function createScene(canvas) {
   const rX = new Float64Array(NS + 1), rY = new Float64Array(NS + 1), rS = new Float64Array(NS + 1), rZ = new Float64Array(NS + 1);
   const ORD = [], ORDZ = new Float64Array(8), ORDB = new Int8Array(8), NO_ACTORS = []; // this frame's characters, far to near
   let over = null; // this frame's view.overBall
+  // this frame's view: how much of the ball, its rope and its shadow shows (a phantom super fades them, supers.js), and whether
+  // its heat trail is drawn
+  const VIS = { ball: 1, rope: 1, shadow: 1, trail: true };
   let rn = 2, ropeTaut = true, ropeTension = 0;
   const fX = new Float64Array(NF), fY = new Float64Array(NF), fA = new Float64Array(NF), fNx = new Float64Array(NF), fNy = new Float64Array(NF);
 
@@ -3479,10 +3576,10 @@ function createScene(canvas) {
     const S = CFG.scene, b = world.ball, p = b.p;
     if (!(S.shadow > 0)) return;
     const k = U.smoothstep(0, 2.4, Math.max(0, p.y - b.r));
-    floorDisc(ctx, cam, p.x + THROW_X * p.y, p.z + THROW_Z * p.y, b.r * (1.5 - 0.6 * k), Math.min(1, S.shadow * (0.85 - 0.4 * k)));
+    floorDisc(ctx, cam, p.x + THROW_X * p.y, p.z + THROW_Z * p.y, b.r * (1.5 - 0.6 * k), Math.min(1, S.shadow * (0.85 - 0.4 * k)) * VIS.shadow);
     base(ctx);
     cam.project(p.x, 0, p.z, A); cam.project(p.x, p.y - b.r, p.z, B);
-    ctx.globalAlpha = 0.2 * S.shadow; ctx.strokeStyle = P.white; ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.2 * S.shadow * VIS.ball; ctx.strokeStyle = P.white; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
     ctx.beginPath(); ctx.ellipse(A.x, A.y, Math.max(0, 0.07 * A.s), Math.max(0, 0.07 * A.s * Math.abs(cam.up.z)), 0, 0, TAU); ctx.stroke();
     // the live orbit: a faint floor ring at the ball's current radius (it tightens as the rope winds in)
@@ -3601,9 +3698,12 @@ function createScene(canvas) {
   }
   function ropePass(ctx, side) {
     base(ctx);
-    if (ropeTaut && ropeTension > 0.35) { ctx.globalAlpha = 0.28 * ropeTension; ctx.strokeStyle = P.ropeGlow; ropeStrokes(ctx, side, 0); ctx.globalAlpha = 1; } // a whip-taut rope glows
+    const ra = VIS.rope;
+    if (ropeTaut && ropeTension > 0.35) { ctx.globalAlpha = 0.28 * ropeTension * ra; ctx.strokeStyle = P.ropeGlow; ropeStrokes(ctx, side, 0); } // a whip-taut rope glows
+    ctx.globalAlpha = ra;
     ctx.strokeStyle = P.ropeLo; ropeStrokes(ctx, side, 1);
     ctx.strokeStyle = ropeTaut ? P.rope : P.ropeSlack; ropeStrokes(ctx, side, 2);
+    ctx.globalAlpha = 1;
   }
 
   // The visible half of one great circle of the ball, body normal (bx,by,bz): in the ball's unit frame it is a half-ellipse.
@@ -3616,10 +3716,11 @@ function createScene(canvas) {
     ctx.ellipse(0, 0, Math.abs(c), 1, rot, s > 0 ? HALF_PI : -HALF_PI, s > 0 ? 3 * HALF_PI : HALF_PI);
   }
 
-  function drawBall(ctx, cam) {
-    const rp = BL.rp;
+  function drawBall(ctx, cam, alpha) {
+    const rp = BL.rp, ga = alpha >= 0 && alpha < 1 ? alpha : 1;
+    if (!(ga > 0.003)) return;
     ctx.setTransform(kx * rp * BL.m00, ky * rp * BL.m10, kx * rp * BL.m01, ky * rp * BL.m11, kx * BL.x, ky * BL.y);
-    ctx.globalAlpha = 1; ctx.fillStyle = G.ball;
+    ctx.globalAlpha = ga; ctx.fillStyle = G.ball;
     ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.fill();
     ctx.save();
     ctx.clip(); // the path above: markings that straddle the limb are cut by the silhouette
@@ -3632,24 +3733,38 @@ function createScene(canvas) {
     }
     ctx.fillStyle = G.ballOv; ctx.fillRect(-1, -1, 2, 2);
     ctx.restore();
-    ctx.globalAlpha = 0.5; ctx.fillStyle = P.white; // soft highlight
+    ctx.globalAlpha = 0.5 * ga; ctx.fillStyle = P.white; // soft highlight
     ctx.beginPath(); ctx.ellipse(-0.38, -0.44, 0.2, 0.11, -0.75, 0, TAU); ctx.fill();
-    ctx.globalAlpha = 0.55; ctx.strokeStyle = P.ropeLo; ctx.lineWidth = 0.07; // a thin dark outline separates the ball from rope and pole
+    ctx.globalAlpha = 0.55 * ga; ctx.strokeStyle = P.ropeLo; ctx.lineWidth = 0.07; // a thin dark outline separates the ball from rope and pole
     ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.stroke();
     base(ctx);
     if (BL.facing) { // the eyelet where the rope ties on
-      ctx.fillStyle = P.ropeLo; ctx.beginPath(); ctx.arc(BL.ax, BL.ay, Math.max(1.5, PG.ropePx * 0.8), 0, TAU); ctx.fill();
+      ctx.globalAlpha = ga; ctx.fillStyle = P.ropeLo; ctx.beginPath(); ctx.arc(BL.ax, BL.ay, Math.max(1.5, PG.ropePx * 0.8), 0, TAU); ctx.fill();
+      ctx.globalAlpha = 1;
     }
+  }
+  // The ball itself drawn at another point (a decoy, supers.js): the same markings turned the same way, no squash, no rope.
+  const BLS = { x: 0, y: 0, rp: 0, m00: 1, m01: 0, m10: 0, m11: 1, facing: false };
+  let ballR = 0.17;
+  function ballAt(ctx, cam, x, y, z, alpha) {
+    cam.project(x, y, z, C);
+    BLS.x = BL.x; BLS.y = BL.y; BLS.rp = BL.rp; BLS.m00 = BL.m00; BLS.m01 = BL.m01; BLS.m10 = BL.m10; BLS.m11 = BL.m11; BLS.facing = BL.facing;
+    BL.x = C.x; BL.y = C.y; BL.rp = Math.max(0, ballR * C.s); BL.m00 = 1; BL.m01 = 0; BL.m10 = 0; BL.m11 = 1; BL.facing = false;
+    drawBall(ctx, cam, alpha);
+    BL.x = BLS.x; BL.y = BLS.y; BL.rp = BLS.rp; BL.m00 = BLS.m00; BL.m01 = BLS.m01; BL.m10 = BLS.m10; BL.m11 = BLS.m11; BL.facing = BLS.facing;
+    base(ctx);
   }
 
   // everything on one side of the pole. The rope goes under the ball when its tie point is hidden, over it when in view.
   function layer(ctx, cam, world, fx, side) {
     const hasBall = (side > 0) === (world.ball.p.z >= 0);
+    ballR = world.ball.r;
+    if (over && over.drawSide) { base(ctx); over.drawSide(ctx, cam, world, side, ballAt); base(ctx); } // decoys on this side
     if (!hasBall) { ropePass(ctx, side); return; }
     if (!BL.facing) ropePass(ctx, side);
-    if (fx && fx.drawTrail) { base(ctx); fx.drawTrail(ctx, cam); }
+    if (fx && fx.drawTrail && VIS.trail) { base(ctx); fx.drawTrail(ctx, cam); }
     if (over) { base(ctx); over.drawBehind(ctx, cam, world, kx, ky); base(ctx); }
-    drawBall(ctx, cam);
+    drawBall(ctx, cam, VIS.ball);
     if (BL.facing) ropePass(ctx, side);
     if (over) { base(ctx); over.drawBall(ctx, cam, world, kx, ky); base(ctx); }
   }
@@ -3711,7 +3826,7 @@ function createScene(canvas) {
   // ---- the finger ----
   // charged: the swing has curved enough to unleash a power-up, so it burns wider and brighter: storm blue for the special
   // ('special', or true: energy.js), the fire's colour for a fireball ('fire': fire.js)
-  function drawFinger(ctx, cam, input, charged) {
+  function drawFinger(ctx, cam, input, charged, pal) {
     const tr = input && input.trail;
     if (!tr || !tr.length) return;
     const n = tr.length, S = CFG.scene, life = S.fingerMs;
@@ -3725,7 +3840,8 @@ function createScene(canvas) {
       const a = fX[Math.min(m - 1, k + 1)] - fX[Math.max(0, k - 1)], b = fY[Math.min(m - 1, k + 1)] - fY[Math.max(0, k - 1)], l = Math.sqrt(a * a + b * b) || 1;
       fNx[k] = -b / l; fNy[k] = a / l;
     }
-    const fp = charged === 'fire' && typeof firePal === 'function' ? firePal() : null;
+    // charged: in the fire's colours (fire.js), or a super's (supers.js: pal); a signature special is storm blue
+    const fp = charged === 'fire' && typeof firePal === 'function' ? firePal() : charged === 'special' && pal && pal.mid ? pal : null;
     ctx.globalCompositeOperation = 'lighter';
     for (let pass = 0; pass < 2; pass++) {
       const wm = pass ? (charged ? 5.5 : 4.2) : charged ? 20 : 11, am = pass ? 0.9 : charged ? 0.55 : 0.2;
@@ -3754,6 +3870,8 @@ function createScene(canvas) {
     if (!sized) resize(cam.w, cam.h, cam.dpr);
     halves = view && view.halves ? (view.halves < 0 ? -1 : 1) : 0;
     over = view && view.overBall ? view.overBall : null;
+    VIS.ball = view && view.ballA >= 0 ? view.ballA : 1; VIS.rope = view && view.ropeA >= 0 ? view.ropeA : 1;
+    VIS.shadow = view && view.shadowA >= 0 ? view.shadowA : 1; VIS.trail = !(view && view.noTrail);
     if (cam.sync) cam.sync(); // a retuned camera knob refits before anything is projected this frame
     sync(cam);
     blit(ctx, cam);
@@ -3778,7 +3896,7 @@ function createScene(canvas) {
     base(ctx);
     if (fx && fx.drawOver) fx.drawOver(ctx, cam, world);
     base(ctx);
-    drawFinger(ctx, cam, view ? view.input : null, view && view.charged ? view.charged : '');
+    drawFinger(ctx, cam, view ? view.input : null, view && view.charged ? view.charged : '', view ? view.chargedPal : null);
     base(ctx);
     for (let i = 0; i < acts.length; i++) if (acts[i].drawSay) { acts[i].drawSay(ctx, cam, kx, ky); base(ctx); }
   }
@@ -4507,8 +4625,511 @@ function createEnergy() {
     }
   }
 
+  // the special that just landed was a super of another kind (supers.js): it carries no charge
+  function dropCharge() { snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; }
+
   reset();
-  return { snap, reset, newRally, full, armed, arm, prepare, onHit, update, curved, curl, get on() { return on(); }, get curveOn() { return curveOn(); }, get tapOn() { return tapOn(); } };
+  return { snap, reset, newRally, full, armed, arm, prepare, onHit, update, curved, curl, dropCharge, get on() { return on(); }, get curveOn() { return curveOn(); }, get tapOn() { return tapOn(); } };
+}
+
+// ════════ supers.js ════════
+// supers.js — the supers (versus only): what a special does to the ball, for one turn.
+//
+// A full energy bar is a special (energy.js), unleashed with a counter-clockwise curved swipe. Each player's special is their
+// SUPER, picked in the Feel panel's Supers group: yours is Raijin and Kage's Shadow cut by default (the signatures: the
+// other player's next touch is heavy, energy.js's charge), or one of five that change what the ball DOES for that turn, and so
+// make it harder to hit:
+//   SWERVE   it weaves as it flies, dipping and rising and surging and easing along its path, so it is never quite where its
+//            line says it will be. Kage reads the ball by running the physics, and the physics never sees the weave: he reads
+//            it wrong, and re-reads late.
+//   SPIKE    it leaves the hand harder (`spike` ×, instead of the special's boost) and homes in on the other player. Reach them
+//            before they hit it and it hits THEM: knocked down for `stun` seconds (no hits), and the ball rebounds off them.
+//   PHANTOM  the ball and its rope fade to `phantom` of themselves; its shadow on the floor still shows. Kage cannot read a
+//            phantom until it is close (the sharper he is, the further off he sees it).
+//   DECOYS   it splits: `decoys` fakes fly with it, ahead and behind, high and low. Any of them may be the real one, and only
+//            the real one has the rope. A swipe (or Kage's swing) through a fake pops it. Kage goes for one of them: the real
+//            one likelier the sharper he is.
+//   SLIP     the other player's first `slips` touches slip off it: the ball ducks or hops away from the hand, and for a beat
+//            (0.12 s) nothing can touch it. A follow-through or a quick second swipe still can.
+// A super lasts the other player's turn: until they touch the ball (or it hits them), or `turn` seconds (2: about as long as a
+// signature's charge lasts); any touch of its owner's ends it too. A pass they let go by does not: it comes round at them
+// again, still the super it was. (Ended at the first pass, the supers wound less rope than Raijin while Kage returned half as
+// many of them: the signature's heavy touch reaches across passes.) Rules on game time. A super's forces go into the
+// ball's velocity before the physics step: physics.js never sees a super, and so neither does Kage's look-ahead, which runs it.
+// Drawing on the real clock: each super in its own colour, whoever throws it.
+
+const SUPERS = [ // the setting's value is the index. Colours as fire.js's: core, body, edge, glow
+  { key: 'signature', name: 'Signature', word: '' }, // Raijin or Shadow cut: energy.js and fx.js draw them, as before
+  { key: 'swerve', name: 'Swerve', word: 'SWERVE!', core: '#eafff8', mid: '#36f2b4', outer: '#0d9474', glow: '#2be0b0', hint: 'Swerve! It weaves' },
+  { key: 'spike', name: 'Spike', word: 'SPIKE!', core: '#fff0f2', mid: '#ff4b6e', outer: '#b0102e', glow: '#ff3358', hint: 'Spike! Hit it first' },
+  { key: 'phantom', name: 'Phantom', word: 'PHANTOM!', core: '#f6f2ff', mid: '#b9a6ff', outer: '#6a4fd8', glow: '#a88cff', hint: 'Watch its shadow 👻' },
+  { key: 'decoys', name: 'Decoys', word: 'DECOYS!', core: '#ffffff', mid: '#d5d9e3', outer: '#7c8395', glow: '#c9cfdd', hint: 'Decoys! Follow the rope' },
+  { key: 'slip', name: 'Slip', word: 'SLIP!', core: '#f9ffe8', mid: '#c4ff4d', outer: '#5fae12', glow: '#b5ff3a', hint: 'Slip! Swing again' },
+];
+
+CFG.supers = {
+  you: 0, // your super: 0 your signature (Raijin), 1 Swerve, 2 Spike, 3 Phantom, 4 Decoys, 5 Slip
+  kage: 0, // Kage's: 0 his signature (Shadow cut), then the same five
+  turn: 2, // s a super lasts at most
+  swerve: 1, // how hard a swerve weaves
+  spike: 1.35, // a spike leaves the hand this much harder (in place of the special's boost)
+  stun: 0.9, // s a spike that reaches the other player knocks them down
+  phantom: 0.12, // what is left to see of a phantom ball (and its rope)
+  decoys: 2, // fakes a decoys super throws
+  slips: 1, // touches a slip super slips off
+};
+CFG_SCHEMA.push(
+  { path: 'supers.you', label: 'Your super', type: 'choice', options: ['Raijin', 'Swerve', 'Spike', 'Phantom', 'Decoys', 'Slip'], min: 0, max: 5, step: 1, group: 'Supers', rank: -2.75, unit: '' },
+  { path: 'supers.kage', label: "Kage's super", type: 'choice', options: ['Shadow cut', 'Swerve', 'Spike', 'Phantom', 'Decoys', 'Slip'], min: 0, max: 5, step: 1, group: 'Supers', rank: -2.75, unit: '' },
+  { path: 'supers.turn', label: 'A super lasts at most', min: 1, max: 5, step: 0.1, group: 'Supers', rank: -2.75, unit: 's' },
+  { path: 'supers.swerve', label: 'Swerve strength', min: 0.3, max: 2, step: 0.05, group: 'Supers', rank: -2.75, unit: 'x' },
+  { path: 'supers.spike', label: 'A spike leaves the hand at', min: 1, max: 1.7, step: 0.05, group: 'Supers', rank: -2.75, unit: 'x' },
+  { path: 'supers.stun', label: 'A spike knocks down for', min: 0.3, max: 2, step: 0.1, group: 'Supers', rank: -2.75, unit: 's' },
+  { path: 'supers.phantom', label: 'A phantom shows at', min: 0, max: 0.6, step: 0.02, group: 'Supers', rank: -2.75, unit: 'x' },
+  { path: 'supers.decoys', label: 'Decoys', min: 1, max: 4, step: 1, group: 'Supers', rank: -2.75, unit: '' },
+  { path: 'supers.slips', label: 'Slips', min: 1, max: 3, step: 1, group: 'Supers', rank: -2.75, unit: '' }
+);
+
+function createSupers() {
+  const TAU = Math.PI * 2, NEUTRAL = 0.06; // m either side of the centre line, as versus.js draws it
+  const SWERVE = 1, SPIKE = 2, PHANTOM = 3, DECOYS = 4, SLIP = 5, MAXK = 5, MAXN = 5;
+  const SW_HZ = 2.3, SW_V = 19, SW_T = 5.5, SW_FWD = 0.5; // the weave: cycles a second, up-and-down and along-the-path pushes (m/s² at ×1), and the share of the latter that drives it on
+  const SP_RATE = 4.2; // rad/s a spike turns toward its target
+  const st = {
+    on: true,
+    kind: 0, owner: '', id: 0, t: 0, crossed: false, passes: 0, // the live super: which, whose ('you' | 'kage' | ''), which one, game s since thrown, on the other half this pass, passes they let go by
+    homing: 0, // spike: how hard it turned this frame (0..1, for the drawing)
+    spiked: '', hx: 0, hy: 0, hz: 0, hnx: 0, hnz: 0, // spike: whom it hit last, where, and the way it pushed them
+    n: 0, real: 0, kPick: -1, sgn: 1, // decoys: balls in all, the real one's slot, the slot Kage goes for (−1 none), the way it circulates
+    slotPhi: new Float32Array(MAXN), slotY: new Float32Array(MAXN), popped: new Uint8Array(MAXN), popRt: new Float32Array(MAXN),
+    slips: 0, slipT: 0, slX: 0, slY: 0, slZ: 0, slRt: -9, // slip: slips left, game s it can't be touched, where the last slip left from, when (real)
+    down: { you: 0, kage: 0 }, // s each player is still knocked down by a spike
+    rt: 0, fade: 0, endKind: 0, endRt: -9, endWhy: '', castRt: -9, // real clock; phantom fade 0..1; the last super that ended, when, why; when this one was thrown
+    stats: { thrown: { you: [0, 0, 0, 0, 0, 0], kage: [0, 0, 0, 0, 0, 0] }, spiked: { you: 0, kage: 0 }, slips: 0, popped: 0, missed: 0, answered: 0, timeout: 0 },
+  };
+  const rnd = U.rng(20261016);
+  let lastW = null; // the world, as last seen (a decoy that pops in a touch's code path needs its place)
+  const on = () => CFG.energy.on > 0; // a super is a special: no energy, no supers
+  const key = (who) => (who === 'kage' ? 'kage' : 'you');
+  const other = (who) => (key(who) === 'kage' ? 'you' : 'kage');
+  function kindOf(who) {
+    const v = Math.round(key(who) === 'kage' ? CFG.supers.kage : CFG.supers.you);
+    return v >= 0 && v <= MAXK ? v : 0;
+  }
+  const skill = () => U.clamp01(((CFG.kage && CFG.kage.difficulty) - 1) / 9) || 0;
+
+  // the turn is over: why ('answered' the other player touched it, 'timeout', 'hit' a spike reached them, 'again' its owner
+  // touched it, '' a new round or a new super)
+  function endTurn(why) {
+    if (!st.owner) return;
+    if (st.kind === DECOYS) for (let i = 0; i < st.n; i++) if (i !== st.real && !st.popped[i]) pop(i, 2); // the rest go up in smoke
+    if (st.kind === PHANTOM && lastW && why) puff(lastW.ball.p.x, lastW.ball.p.y, lastW.ball.p.z, PHANTOM); // it shows again
+    st.endKind = st.kind; st.endRt = st.rt; st.endWhy = why;
+    if (why === 'answered' || why === 'timeout') st.stats[why]++;
+    st.owner = ''; st.kind = 0; st.t = 0; st.crossed = false; st.kPick = -1; st.slips = 0; st.homing = 0;
+  }
+  function newRally() { endTurn(''); st.down.you = 0; st.down.kage = 0; st.slipT = 0; st.fade = 0; st.endRt = -9; pn = 0; tn = 0; }
+  function reset() {
+    newRally();
+    const S = st.stats;
+    for (let i = 0; i <= MAXK; i++) { S.thrown.you[i] = 0; S.thrown.kage[i] = 0; }
+    S.spiked.you = 0; S.spiked.kage = 0; S.slips = 0; S.popped = 0; S.missed = 0; S.answered = 0; S.timeout = 0;
+  }
+
+  // before the physics: a special about to go off as a spike leaves the hand harder (in place of energy.js's boost)
+  function prepare(who, hand, armed) {
+    if (armed && on() && kindOf(who) === SPIKE) hand.boost = Math.max(1, CFG.supers.spike);
+    return hand;
+  }
+
+  // A special landed for `who`: their super takes the ball for this turn. Returns the kind (0: the signature, energy.js's).
+  function launch(who, w) {
+    const k = kindOf(who), o = key(who);
+    endTurn('');
+    if (!on()) return 0;
+    st.stats.thrown[o][k]++;
+    if (k === 0) return 0;
+    st.kind = k; st.owner = o; st.id++; st.t = 0; st.crossed = false; st.passes = 0; st.castRt = st.rt; st.spiked = ''; tn = 0; lastW = w;
+    const b = w.ball, p = b.p, v = b.v, rho = Math.sqrt(p.x * p.x + p.z * p.z);
+    st.sgn = rho > 1e-3 && v.z * p.x - v.x * p.z < 0 ? -1 : 1;
+    if (k === DECOYS) {
+      const n = 1 + U.clamp(Math.round(CFG.supers.decoys), 1, MAXN - 1);
+      st.n = n; st.real = Math.floor(rnd() * n) % n;
+      for (let i = 0; i < n; i++) {
+        const c = i - (n - 1) / 2;
+        st.slotPhi[i] = c * 0.42 * st.sgn; // ahead along the way it goes, and behind
+        st.slotY[i] = 0.26 * Math.sin(1.7 * c + 0.5); // high and low
+        st.popped[i] = 0; st.popRt[i] = -9;
+      }
+      puff(p.x, p.y, p.z, DECOYS); // the split
+      // Kage goes for one of them: the real one at a level-1 guess, likelier the sharper he is (he can follow the rope)
+      if (o === 'you') {
+        if (rnd() < U.lerp(1 / n, 0.6, skill())) st.kPick = st.real;
+        else { let j = Math.floor(rnd() * (n - 1)) % (n - 1); if (j >= st.real) j++; st.kPick = j; }
+      }
+    }
+    if (k === SLIP) { st.slips = U.clamp(Math.round(CFG.supers.slips), 1, 3); st.slipT = 0; }
+    return k;
+  }
+
+  // a touch landed (any): it ends the live super, whoever it was
+  function onTouch(who) {
+    if (!st.owner) return;
+    endTurn(key(who) === st.owner ? 'again' : 'answered');
+  }
+
+  // ───────────────────────── forces and the turn (game time) ─────────────────────────
+  // Before the physics step: the swerve's weave, the spike's homing. B: the players' bodies, { you, kage }: { x, y, z, h }.
+  function force(w, simDt, B) {
+    const dt = simDt > 0 ? simDt : 0;
+    st.homing = 0; lastW = w;
+    if (!st.owner || !(dt > 0) || !on()) return;
+    const b = w.ball, p = b.p, v = b.v, ramp = U.smoothstep(0, 0.12, st.t);
+    if (st.kind === SWERVE) {
+      const s = Math.max(0, CFG.supers.swerve) * ramp, ph = TAU * SW_HZ * st.t, rho = Math.sqrt(p.x * p.x + p.z * p.z);
+      if (rho > 1e-3) {
+        const tx = (-p.z / rho) * st.sgn, tz = (p.x / rho) * st.sgn, av = SW_V * s * Math.sin(ph), at = SW_T * s * (Math.cos(ph) + SW_FWD);
+        v.y += av * dt; v.x += tx * at * dt; v.z += tz * at * dt;
+      }
+    } else if (st.kind === SPIKE) {
+      const o = other(st.owner), body = B && B[o];
+      if (body && !(st.down[o] > 0) && st.t > 0.06) steer(v, p, body, dt);
+    }
+  }
+  // turn the ball toward the body's chest, speed kept (the rope keeps it honest): only while they are ahead of it
+  function steer(v, p, body, dt) {
+    const sp = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    if (sp < 1) return;
+    const tx = body.x - p.x, ty = body.y + 0.6 * body.h - p.y, tz = body.z - p.z, d = Math.sqrt(tx * tx + ty * ty + tz * tz);
+    if (d < 1e-3) return;
+    const ux = v.x / sp, uy = v.y / sp, uz = v.z / sp, gx = tx / d, gy = ty / d, gz = tz / d, c = ux * gx + uy * gy + uz * gz;
+    if (c < 0.05) return; // past them
+    let px = gx - c * ux, py = gy - c * uy, pz = gz - c * uz;
+    const s = Math.sqrt(px * px + py * py + pz * pz);
+    if (s < 1e-4) return;
+    const th = Math.atan2(s, c), a = Math.min(th, SP_RATE * dt), ca = Math.cos(a), sa = Math.sin(a);
+    px /= s; py /= s; pz /= s;
+    st.homing = a / (SP_RATE * dt);
+    v.x = (ux * ca + px * sa) * sp; v.y = (uy * ca + py * sa) * sp; v.z = (uz * ca + pz * sa) * sp;
+  }
+  // does the ball touch a body (a capsule standing at x, z: radius by its height)?
+  function reaches(w, body) {
+    const p = w.ball.p, r = w.ball.r, rb = (0.28 * body.h) / 1.75, bot = body.y, top = body.y + 0.95 * body.h;
+    const cy = p.y < bot ? bot : p.y > top ? top : p.y, dx = p.x - body.x, dy = p.y - cy, dz = p.z - body.z, rr = rb + r;
+    return dx * dx + dy * dy + dz * dz <= rr * rr;
+  }
+  // a spike reached them: down they go, and the ball rebounds off them
+  function spikeHit(w, o, body) {
+    const b = w.ball, p = b.p, v = b.v;
+    st.down[o] = Math.max(0.1, CFG.supers.stun); st.spiked = o; st.stats.spiked[o]++;
+    let nx = p.x - body.x, nz = p.z - body.z;
+    const nl = Math.sqrt(nx * nx + nz * nz) || 1;
+    nx /= nl; nz /= nl;
+    st.hx = p.x; st.hy = p.y; st.hz = p.z; st.hnx = -nx; st.hnz = -nz;
+    const vn = v.x * nx + v.z * nz;
+    if (vn < 0) { v.x -= 1.45 * vn * nx; v.z -= 1.45 * vn * nz; }
+    v.x *= 0.85; v.y *= 0.85; v.z *= 0.85;
+    endTurn('hit');
+  }
+
+  // After the physics step. live: the rally is in play; half: the side Kage's half is on (−1 / +1); B as for force(). Returns
+  // 'spiked' (a spike reached the other player: st.spiked, st.hx..), 'end' (the turn is over), or ''.
+  function update(simDt, realDt, w, live, half, B) {
+    if (w) lastW = w;
+    if (realDt > 0) {
+      st.rt += realDt;
+      const want = st.owner && st.kind === PHANTOM && st.t > 0.05 ? 1 : 0;
+      st.fade += (want - st.fade) * Math.min(1, realDt * (want ? 14 : 9));
+    }
+    st.on = on();
+    if (!st.on) { endTurn(''); st.down.you = 0; st.down.kage = 0; return ''; }
+    const dt = simDt > 0 ? simDt : 0;
+    if (dt > 0) {
+      if (st.down.you > 0) st.down.you = Math.max(0, st.down.you - dt);
+      if (st.down.kage > 0) st.down.kage = Math.max(0, st.down.kage - dt);
+      if (st.slipT > 0) st.slipT = Math.max(0, st.slipT - dt);
+    }
+    if (!st.owner || !(dt > 0)) return '';
+    if (!live || !w || !w.ball) { endTurn(''); return 'end'; }
+    st.t += dt;
+    if (st.kind === SPIKE) {
+      const o = other(st.owner), body = B && B[o];
+      if (body && !(st.down[o] > 0) && reaches(w, body)) { spikeHit(w, o, body); return 'spiked'; }
+    }
+    // a pass of their half let go by: counted (it comes round at them again, still the super it was)
+    const x = half ? w.ball.p.x * (half < 0 ? -1 : 1) : 0, onKage = x > NEUTRAL, onYou = x < -NEUTRAL;
+    const theirs = st.owner === 'you' ? onKage : onYou, mine = st.owner === 'you' ? onYou : onKage;
+    if (theirs) st.crossed = true;
+    else if (st.crossed && mine) { st.crossed = false; st.passes++; st.stats.missed++; }
+    if (st.t > Math.max(0.5, CFG.supers.turn)) { endTurn('timeout'); return 'end'; }
+    return '';
+  }
+
+  // ───────────────────────── touches: the slip, the decoys ─────────────────────────
+  const SS = { d2: 0 };
+  // closest approach of segments a→b and c→d (squared), into SS.d2 (Ericson, as physics.js)
+  function segSeg(ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz) {
+    const ux = bx - ax, uy = by - ay, uz = bz - az, vx = dx - cx, vy = dy - cy, vz = dz - cz, rx = ax - cx, ry = ay - cy, rz = az - cz;
+    const a = ux * ux + uy * uy + uz * uz, e = vx * vx + vy * vy + vz * vz, f = vx * rx + vy * ry + vz * rz;
+    let s = 0, t = 0;
+    if (a <= 1e-12 && e <= 1e-12) { s = 0; t = 0; }
+    else if (a <= 1e-12) t = U.clamp01(f / e);
+    else {
+      const c = ux * rx + uy * ry + uz * rz;
+      if (e <= 1e-12) s = U.clamp01(-c / a);
+      else {
+        const bb = ux * vx + uy * vy + uz * vz, den = a * e - bb * bb;
+        s = den > 1e-12 ? U.clamp01((bb * f - c * e) / den) : 0;
+        t = (bb * s + f) / e;
+        if (t < 0) { t = 0; s = U.clamp01(-c / a); } else if (t > 1) { t = 1; s = U.clamp01((bb - c) / a); }
+      }
+    }
+    const qx = ax + ux * s - (cx + vx * t), qy = ay + uy * s - (cy + vy * t), qz = az + uz * s - (cz + vz * t);
+    SS.d2 = qx * qx + qy * qy + qz * qz;
+  }
+  // would this hand touch the ball? (applyHit's test: its sweep this frame against the hand's)
+  function touches(w, hand) {
+    const b = w.ball, a = b.prevP, p = b.p, h0 = hand.p0, h1 = hand.p1, rs = b.r + (hand.r || 0);
+    if (!(hand.speed >= CFG.hit.minHandSpeed)) return false;
+    segSeg(a.x, a.y, a.z, p.x, p.y, p.z, h0.x, h0.y, h0.z, h1.x, h1.y, h1.z);
+    return SS.d2 <= rs * rs;
+  }
+  // Before a touch reaches the physics: 'slip' (it slipped off: the ball hopped, nothing hit), 'ghost' (it can't be touched
+  // just after a slip), or '' (go ahead).
+  function intercept(who, hand, w) {
+    if (!st.owner || st.kind !== SLIP || key(who) === st.owner || !on()) return '';
+    if (!touches(w, hand)) return '';
+    if (st.slipT > 0) return 'ghost';
+    if (st.slips <= 0) return '';
+    const b = w.ball, p = b.p, v = b.v, lid = CFG.world.attachY - 0.55;
+    st.slips--; st.slipT = 0.12; st.stats.slips++;
+    st.slX = p.x; st.slY = p.y; st.slZ = p.z; st.slRt = st.rt;
+    v.y += p.y > lid ? -2.8 : 2.6; // under the hand when it is high, over it when it is low: still in reach of a second swing
+    return 'slip';
+  }
+
+  // a decoy's world position (slot i), into out; spreading out of the real ball over its first 0.18 s
+  function decoyAt(i, w, out) {
+    const p = w.ball.p, e = U.easeOut(U.clamp01(st.t / 0.18), 2), dphi = (st.slotPhi[i] - st.slotPhi[st.real]) * e;
+    const c = Math.cos(dphi), s = Math.sin(dphi);
+    out.x = p.x * c - p.z * s; out.z = p.x * s + p.z * c;
+    out.y = U.clamp(p.y + (st.slotY[i] - st.slotY[st.real]) * e, w.ball.r, CFG.world.attachY);
+    return out;
+  }
+  // a decoy pops (1: something went through it; 2: the turn ended), in a puff of smoke where it was
+  function pop(i, how) {
+    if (st.popped[i]) return;
+    st.popped[i] = how || 1; st.popRt[i] = st.rt;
+    if (how !== 2) st.stats.popped++;
+    if (lastW) { decoyAt(i, lastW, DP); puff(DP.x, DP.y, DP.z, DECOYS); }
+  }
+  const live = (i) => !!st.owner && st.kind === DECOYS && i !== st.real && !st.popped[i];
+  // your swipe this segment, through Kage's decoys: each one it passes through pops. Returns how many did.
+  const DP = { x: 0, y: 0, z: 0 }, HB = {};
+  function swipe(seg, input, w) {
+    if (st.owner !== 'kage' || st.kind !== DECOYS || !input || !input.toHand) return 0;
+    let n = 0;
+    for (let i = 0; i < st.n; i++) {
+      if (!live(i)) continue;
+      decoyAt(i, w, DP);
+      const h = input.toHand(seg, DP.y, HB);
+      if (!h) continue;
+      segSeg(DP.x, DP.y, DP.z, DP.x, DP.y, DP.z, h.p0.x, h.p0.y, h.p0.z, h.p1.x, h.p1.y, h.p1.z);
+      const rs = w.ball.r + (h.r || 0);
+      if (SS.d2 <= rs * rs) { pop(i); n++; }
+    }
+    return n;
+  }
+  // his swing went through the decoy he chose: it pops, and now he sees the real one
+  function kageWhiffed() {
+    if (st.owner !== 'you' || st.kind !== DECOYS || st.kPick < 0 || st.kPick === st.real || st.popped[st.kPick]) return false;
+    pop(st.kPick); st.kPick = st.real;
+    return true;
+  }
+  // What Kage can see of your super, into out: blindBall (a phantom still too far off for him to read), fakePhi / fakeY (the
+  // decoy he is going for, as an offset round the pole and up from the real ball).
+  function kageView(out, w, kx, kz) {
+    out.blindBall = false; out.fakePhi = 0; out.fakeY = 0;
+    if (st.owner !== 'you' || !w) return out;
+    if (st.kind === PHANTOM) {
+      const p = w.ball.p, dx = p.x - kx, dz = p.z - kz;
+      out.blindBall = st.t > 0.05 && dx * dx + dz * dz > Math.pow(U.lerp(1.35, 2.5, skill()), 2);
+    } else if (st.kind === DECOYS && st.kPick >= 0 && st.kPick !== st.real && !st.popped[st.kPick]) {
+      const e = U.easeOut(U.clamp01(st.t / 0.18), 2);
+      out.fakePhi = (st.slotPhi[st.kPick] - st.slotPhi[st.real]) * e; out.fakeY = (st.slotY[st.kPick] - st.slotY[st.real]) * e;
+    }
+    return out;
+  }
+
+  // ───────────────────────── seeing it (real time) ─────────────────────────
+  // What the scene draws of the ball: its alpha, its rope's, its shadow's, and whether its heat trail shows (a phantom has none,
+  // and nor do decoys: a trail would say which one is real).
+  const ballAlpha = () => 1 - st.fade * (1 - U.clamp(CFG.supers.phantom, 0, 1));
+  const ropeAlpha = () => 1 - st.fade * (1 - Math.max(0.15, U.clamp(CFG.supers.phantom, 0, 1)));
+  const shadowAlpha = () => 1 - st.fade * 0.45;
+  const noTrail = () => st.fade > 0.3 || (!!st.owner && st.kind === DECOYS);
+
+  // the path it took: world points, sampled each frame while a super is live
+  const NT = 22;
+  const tx = new Float32Array(NT), ty = new Float32Array(NT), tz = new Float32Array(NT);
+  let tn = 0, tc = 0;
+  const NP = 14; // puffs of smoke: a decoy popping, a phantom showing again
+  const px = new Float32Array(NP), py = new Float32Array(NP), pz = new Float32Array(NP), pRt = new Float32Array(NP), pK = new Uint8Array(NP);
+  let pn = 0, pc = 0;
+  function puff(x, y, z, k) { const i = pc; pc = (pc + 1) % NP; px[i] = x; py[i] = y; pz[i] = z; pRt[i] = st.rt; pK[i] = k; if (pn < NP) pn++; }
+  // each frame: the path it takes while a super is live
+  function tick(realDt, cam, w) {
+    if (!w || !w.ball) return;
+    const p = w.ball.p;
+    if (st.owner) { tx[tc] = p.x; ty[tc] = p.y; tz[tc] = p.z; tc = (tc + 1) % NT; if (tn < NT) tn++; }
+    else if (tn > 0 && st.rt - st.endRt > 0.25) tn = 0;
+  }
+
+  const A = { x: 0, y: 0, s: 0, d: 0 }, B2 = { x: 0, y: 0, s: 0, d: 0 };
+  // behind the ball, in its layer: the swerve's ribbon, the spike's streak, the phantom's wisps, the slip's glint and afterimage
+  function drawBehind(ctx, cam, w) {
+    const k = st.owner ? st.kind : st.rt - st.endRt < 0.25 ? st.endKind : 0;
+    const P = SUPERS[k];
+    if (k && tn > 1) {
+      const fadeOut = st.owner ? 1 : 1 - (st.rt - st.endRt) / 0.25;
+      if (k === SWERVE) ribbon(ctx, cam, w, P, fadeOut);
+      else if (k === PHANTOM) wisps(ctx, cam, w, P, fadeOut);
+    }
+    if (k === SPIKE && st.owner) streak(ctx, cam, w, P);
+    if (k === SLIP) glint(ctx, cam, w, P);
+    const sa = st.rt - st.slRt; // the slip's afterimage: an outline where it was, a smear to where it went
+    if (sa >= 0 && sa < 0.32) {
+      const q = 1 - sa / 0.32, Q = SUPERS[SLIP], r = w.ball.r;
+      cam.project(st.slX, st.slY, st.slZ, A); cam.project(w.ball.p.x, w.ball.p.y, w.ball.p.z, B2);
+      const rp = r * A.s;
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = Q.mid; ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.5 * q; ctx.lineWidth = rp * 1.1;
+      ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B2.x, B2.y); ctx.stroke();
+      ctx.globalAlpha = 0.9 * q; ctx.lineWidth = Math.max(1.5, rp * 0.16);
+      ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 0.5 * (1 - q)), 0, TAU); ctx.stroke();
+      ctx.lineCap = 'butt';
+    }
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  }
+  // the weave: a ribbon along the path it took, in its colour, thinning to nothing behind it
+  function ribbon(ctx, cam, w, P, f) {
+    const r = w.ball.r;
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.strokeStyle = pass ? P.core : P.mid;
+      for (let j = 1; j < tn; j++) {
+        const i0 = (tc - tn + j - 1 + NT * 2) % NT, i1 = (tc - tn + j + NT * 2) % NT, u = j / tn;
+        cam.project(tx[i0], ty[i0], tz[i0], A); cam.project(tx[i1], ty[i1], tz[i1], B2);
+        const rp = r * B2.s;
+        ctx.globalAlpha = (pass ? 0.75 : 0.4) * u * f; ctx.lineWidth = Math.max(1, rp * (pass ? 0.28 : 0.9) * u);
+        ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B2.x, B2.y); ctx.stroke();
+      }
+    }
+    ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+  }
+  // the phantom: a few faint rings of itself strung back along its path
+  function wisps(ctx, cam, w, P, f) {
+    const r = w.ball.r;
+    ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = P.mid;
+    for (let j = 1; j <= 3; j++) {
+      const back = Math.min(tn - 1, j * 4), i = (tc - 1 - back + NT * 2) % NT;
+      cam.project(tx[i], ty[i], tz[i], A);
+      ctx.globalAlpha = 0.13 * (1 - j / 4) * f * st.fade; ctx.lineWidth = Math.max(1, r * A.s * 0.1);
+      ctx.beginPath(); ctx.arc(A.x, A.y, r * A.s * (1 + 0.15 * j), 0, TAU); ctx.stroke();
+    }
+  }
+  // the spike: a hard wedge of its colour back along the way it flies, white-hot down the middle, and speed lines
+  function streak(ctx, cam, w, P) {
+    const b = w.ball, p = b.p, v = b.v, sp = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    if (sp < 2) return;
+    cam.project(p.x, p.y, p.z, A); cam.project(p.x - (v.x / sp) * 0.5, p.y - (v.y / sp) * 0.5, p.z - (v.z / sp) * 0.5, B2);
+    let ux = A.x - B2.x, uy = A.y - B2.y;
+    const ul = Math.sqrt(ux * ux + uy * uy);
+    if (ul < 1e-3) return;
+    ux /= ul; uy /= ul;
+    const rp = b.r * A.s, L = rp * U.lerp(3, 6.5, U.clamp01((sp - 6) / 14)), nx = -uy, ny = ux;
+    ctx.globalCompositeOperation = 'lighter';
+    for (let pass = 0; pass < 2; pass++) {
+      const hw = rp * (pass ? 0.38 : 0.95);
+      ctx.globalAlpha = pass ? 0.9 : 0.5; ctx.fillStyle = pass ? P.core : P.mid;
+      ctx.beginPath(); ctx.moveTo(A.x + nx * hw, A.y + ny * hw); ctx.lineTo(A.x - ux * L * (pass ? 0.7 : 1), A.y - uy * L * (pass ? 0.7 : 1)); ctx.lineTo(A.x - nx * hw, A.y - ny * hw); ctx.closePath(); ctx.fill();
+    }
+    ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(1, rp * 0.08);
+    for (let i = 0; i < 4; i++) {
+      const o = (i - 1.5) * rp * 0.75, ph = (st.rt * 9 + i * 0.37) % 1, l0 = L * (0.5 + 0.9 * ph), l1 = l0 + L * 0.5;
+      ctx.globalAlpha = 0.45 * (1 - ph);
+      ctx.beginPath(); ctx.moveTo(A.x + nx * o - ux * l0, A.y + ny * o - uy * l0); ctx.lineTo(A.x + nx * o - ux * l1, A.y + ny * o - uy * l1); ctx.stroke();
+    }
+  }
+  // a slippery ball: two little arcs of its colour orbiting it while it has slips left
+  function glint(ctx, cam, w, P) {
+    if (!(st.owner && st.slips > 0)) return;
+    const p = w.ball.p;
+    cam.project(p.x, p.y, p.z, A);
+    const rp = w.ball.r * A.s, a0 = st.rt * 7;
+    ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = P.mid; ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.85; ctx.lineWidth = Math.max(1.5, rp * 0.14);
+    ctx.beginPath();
+    for (let i = 0; i < 2; i++) { const a = a0 + i * Math.PI; ctx.moveTo(A.x + Math.cos(a) * rp * 1.35, A.y + Math.sin(a) * rp * 1.35); ctx.arc(A.x, A.y, rp * 1.35, a, a + 0.9); }
+    ctx.stroke();
+    ctx.lineCap = 'butt';
+  }
+  // over the ball: the spike's white-hot rim, the phantom's shimmer
+  function drawBall(ctx, cam, w) {
+    if (!st.owner) return;
+    const p = w.ball.p, P = SUPERS[st.kind];
+    cam.project(p.x, p.y, p.z, A);
+    const rp = w.ball.r * A.s;
+    if (!(rp > 0.5)) return;
+    ctx.globalCompositeOperation = 'lighter';
+    if (st.kind === SPIKE) {
+      ctx.globalAlpha = 0.35 + 0.25 * st.homing; ctx.fillStyle = P.glow;
+      ctx.beginPath(); ctx.arc(A.x, A.y, rp * 1.45, 0, TAU); ctx.arc(A.x, A.y, rp * 0.98, 0, TAU, true); ctx.fill();
+      ctx.globalAlpha = 0.9; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.2, rp * 0.12);
+      ctx.beginPath(); ctx.arc(A.x, A.y, rp * 1.04, 0, TAU); ctx.stroke();
+    } else if (st.kind === PHANTOM) {
+      ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(1, rp * 0.1); ctx.globalAlpha = 0.35 * st.fade;
+      ctx.beginPath();
+      for (let i = 0; i <= 40; i++) { const a = (i / 40) * TAU, rr = rp * (1.08 + 0.04 * Math.sin(a * 5 + st.rt * 9)); if (i) ctx.lineTo(A.x + Math.cos(a) * rr, A.y + Math.sin(a) * rr); else ctx.moveTo(A.x + Math.cos(a) * rr, A.y + Math.sin(a) * rr); }
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  }
+  // On one side of the pole's plane (side −1 behind, +1 in front): the decoys there, drawn as the ball itself (ballAt: the
+  // scene's own ball at a point), and the puffs.
+  function drawSide(ctx, cam, w, side, ballAt) {
+    if (st.owner && st.kind === DECOYS && ballAt) {
+      for (let i = 0; i < st.n; i++) {
+        if (!live(i)) continue;
+        decoyAt(i, w, DP);
+        if ((DP.z < 0 ? -1 : 1) !== side) continue;
+        ballAt(ctx, cam, DP.x, DP.y, DP.z, 1);
+      }
+    }
+    for (let j = 0; j < pn; j++) {
+      const a = st.rt - pRt[j];
+      if (!(a >= 0 && a < 0.5) || (pz[j] < 0 ? -1 : 1) !== side) continue;
+      const q = a / 0.5, P = SUPERS[pK[j]] || SUPERS[DECOYS], r = w.ball.r;
+      cam.project(px[j], py[j], pz[j], A);
+      const rp = r * A.s;
+      ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = pK[j] === DECOYS ? '#d9dde6' : P.mid;
+      for (let i = 0; i < 5; i++) {
+        const ang = i * 1.2566 + j, d = rp * (0.3 + 1.1 * U.easeOut(q, 2)), s = rp * (0.55 + 0.4 * q) * (i % 2 ? 0.8 : 1);
+        ctx.globalAlpha = 0.55 * (1 - q) * (1 - q);
+        ctx.beginPath(); ctx.arc(A.x + Math.cos(ang) * d, A.y + Math.sin(ang) * d - rp * 0.4 * q, s, 0, TAU); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  reset();
+  return {
+    snap: st, reset, newRally, prepare, launch, onTouch, force, update, intercept, swipe, kageWhiffed, kageView, tick,
+    drawBehind, drawBall, drawSide, ballAlpha, ropeAlpha, shadowAlpha, noTrail, decoyAt, kindOf,
+    isDown: (who) => st.down[key(who)] > 0,
+    get live() { return st.owner ? st.kind : 0; }, get owner() { return st.owner; },
+  };
 }
 
 // ════════ fire.js ════════
@@ -5212,6 +5833,13 @@ function createNinja(doc, look) {
 // sharper he is, the likelier), and may let it go by rather than touch it. Main hands him all of it in update()'s info:
 // { down, slow, hot, fireId, dodge, fireArmed }.
 //
+// SUPERS (supers.js). Your super fools him the way it would a person, through what he sees, never through his dice: a swerve's
+// weave and a spike's homing are forces his look-ahead (the physics) never sees, so he reads them wrong; a phantom gives him
+// nothing to read until it is close (info.blindBall), then a startled beat; with decoys he chases the one he picked
+// (info.fakePhi / fakeY: his read turned round the pole to it) until his swing goes through it; a slip slips off his fist
+// (main.js). A spike that reaches him knocks him down seeing stars (onSpiked). His own super glows on him in its colours
+// (info.armCol), and he has a line for each.
+//
 // Clocks: everything he does runs on SIM time, so a hit's freeze and slow-mo hold him too (fair, and it reads as drama). The
 // glow, the clones and the flames run on REAL time, so they play out inside the freeze.
 
@@ -5279,6 +5907,14 @@ const KAGE_LINES = {
   ignite: ['Heat check.', 'Now it gets hot.', 'Keep up.'],
   prize: ['Mine.', 'Loaded.', 'Thanks for that.'],
   lose: ['Tch.', 'Enjoy it while it lasts.', 'Lucky.'],
+  // the supers (supers.js): his own as he throws it, a spike of yours landing on him, one of his landing on you
+  sup1: ['Read that.', 'Follow it.', 'Wobble.'],
+  sup2: ['Incoming.', 'Duck.', 'Target locked.'],
+  sup3: ['Now you see it.', 'Ghost protocol.', 'Where did it go?'],
+  sup4: ['Pick one.', 'Which is real?', 'Clone run.'],
+  sup5: ['Too slippery.', 'Catch me.', 'Greased.'],
+  spiked: ['Oof—', 'System hit.', 'Cheap shot.', 'Ow.'],
+  spikedYou: ['Bullseye.', 'Got you.', 'Direct hit.'],
 };
 
 // Kage-X on the Neo Dojo rig (ninja.js): the sheet's dark gi and visor, and his magenta neon
@@ -5390,6 +6026,7 @@ function createKage(doc) {
   const rnd = U.rng(20990311);
   const rndE = U.rng(20991231); // his special: its own dice, so arming one never changes how he plays the ball
   const rndF = U.rng(20991015); // the fire power-up's: whether he lets a fireball go by, and what he says about it
+  const rndS = U.rng(20991016); // the supers' lines (supers.js), so a word about one never shifts how he plays
   const CLONE = 0.42; // s (real): his special's shadow clones fade over this
   const gauss = () => { const u = Math.max(1e-12, rnd()); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * rnd()); };
   const pick = (a) => a[Math.floor(rnd() * a.length) % a.length];
@@ -5407,7 +6044,11 @@ function createKage(doc) {
     fireK: 0, // armed with a fireball: its glow 0..1
     vy: 0, downT: -9, upT: -9, downLeft: 0, slowK: 1, // burned: falling (m/s), when he went down and got up (sim), s still down, how much slower he is now
     fireSeen: 0, dodge: false, dodges: 0, burns: 0, // the last fireball he weighed, whether he is letting it go by; counted for the tests
+    downKind: 'burn', spiked: 0, // what put him down ('burn' fire.js, 'stun' a spike, supers.js); spikes that landed on him
+    wasBlind: false, armCol: '', armCol2: '', // your phantom was too far off to read last frame; his armed glow's colours ('' his neon)
+    reStrike: 0, // your slip super slipped off his fist: when he swings again (sim s; 0 none)
   };
+  const FAKE = { phi: 0, y: 0 }; // the decoy he is going for (supers.js): an offset round the pole and up from the real ball
   const hand = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: HAND_R, stroke: -2, owner: 'cpu' };
   const OUT = { dx: 0, dz: 0, sx: 0, sz: 0 };
 
@@ -5468,6 +6109,16 @@ function createKage(doc) {
     }
   }
 
+  // he is going for one of your decoys (supers.js): the path he read is the real one's, turned round the pole and lifted to it
+  function fake(w) {
+    const c = Math.cos(FAKE.phi), sn = Math.sin(FAKE.phi), r = w.ball.r;
+    for (let i = 0; i < np; i++) {
+      const x = PX[i], z = PZ[i], vx = VX[i], vz = VZ[i];
+      PX[i] = x * c - z * sn; PZ[i] = x * sn + z * c; VX[i] = vx * c - vz * sn; VZ[i] = vx * sn + vz * c;
+      PY[i] = Math.max(r, PY[i] + FAKE.y);
+    }
+  }
+
   // the way he sends a ball at (x, z) moving (vx, vz): along the orbit his way, opened a little outward when it is flying (a
   // ball driven at the pole glances round it anyway, see physics). False when it is not worth a swing.
   function aim(x, z, vx, vz, force) {
@@ -5520,6 +6171,7 @@ function createKage(doc) {
 
   function read(w, serving) {
     predict(w);
+    if (FAKE.phi || FAKE.y) fake(w);
     geom();
     const r = w.ball.r;
     st.has = false;
@@ -5567,10 +6219,11 @@ function createKage(doc) {
     if (!(CFG.kage.taunts > 0) || st.sayCool > 0 || rnd() > chance) return;
     st.say = pick(KAGE_LINES[kind]); st.sayT = kind === 'won' || kind === 'lost' ? 2.6 : 1.5; st.sayCool = 2.2;
   }
-  function quipF(kind, chance) { // the same, on the fire's dice (a line about a fireball never shifts how he plays)
-    if (!(CFG.kage.taunts > 0) || rndF() > chance) return;
+  function quipF(kind, chance, dice) { // the same, on the fire's dice (a line about a fireball never shifts how he plays), or the supers'
+    const d = dice || rndF;
+    if (!(CFG.kage.taunts > 0) || d() > chance) return;
     const L = KAGE_LINES[kind];
-    st.say = L[Math.floor(rndF() * L.length) % L.length]; st.sayT = 1.5; st.sayCool = 2.2;
+    st.say = L[Math.floor(d() * L.length) % L.length]; st.sayT = 1.5; st.sayCool = 2.2;
   }
 
   // the moment of contact: a hand through the ball where his fist actually is, with his errors on it
@@ -5603,6 +6256,8 @@ function createKage(doc) {
   // fireId (which fire it is), dodge (he may let one go by) }. Returns a hand to try, or null.
   function update(dt, realDt, w, info) {
     st.slowK = info && info.slow > 1 ? info.slow : 1; st.downLeft = info && info.down > 0 ? info.down : 0;
+    FAKE.phi = info && info.fakePhi ? info.fakePhi : 0; FAKE.y = info && info.fakeY ? info.fakeY : 0;
+    st.armCol = info && info.armCol ? info.armCol : ''; st.armCol2 = info && info.armCol2 ? info.armCol2 : '';
     skill(); lastW = w;
     if (realDt > 0) {
       st.sayT -= realDt; st.sayCool -= realDt; st.rt += realDt; st.armK += ((info && info.armed ? 1 : 0) - st.armK) * Math.min(1, realDt * 12);
@@ -5626,7 +6281,7 @@ function createKage(doc) {
     }
     if (!hot) st.dodge = false;
 
-    if (st.phase === 'down') { // burned: down on the floor, sliding to a stop where the burn threw him, until the fire's time is up
+    if (st.phase === 'down') { // burned or spiked: down on the floor, sliding to a stop where it threw him, until his time is up
       st.has = false;
       if (st.y > 0 || st.vy > 0) { st.vy -= 15 * dt; st.y += st.vy * dt; if (st.y <= 0) { st.y = 0; st.vy = 0; st.tLand = st.t; } }
       const f = Math.exp(-5 * dt);
@@ -5642,13 +6297,19 @@ function createKage(doc) {
       if (st.h > 0) { const q = (st.t - tp) / st.up; st.y = Math.abs(q) < 1 ? st.h * (1 - q * q) : 0; } else st.y = 0;
       steer(st.sx, st.sz, dt);
       if (!st.struck && st.t >= st.tc) { st.struck = true; out = strike(w, serving); if (!out) { st.res = -1; quip('whiff', 0.35); } }
-      if (st.t >= st.tc + Math.max(0.26, st.up) && st.y <= 0) { st.phase = 'ready'; st.tLand = st.h > 0.05 ? st.t : st.tLand; st.y = 0; st.cool = 0.12; st.reread = 0; }
+      else if (st.reStrike > 0 && st.t >= st.reStrike) { st.reStrike = 0; out = strike(w, serving); } // a slip: the reflex swing after it
+      if (st.t >= st.tc + Math.max(0.26, st.up) && st.y <= 0 && !(st.reStrike > 0)) { st.phase = 'ready'; st.tLand = st.h > 0.05 ? st.t : st.tLand; st.y = 0; st.cool = 0.12; st.reread = 0; }
     } else {
       st.y = 0;
       if (info.state === 'ready' && !serving) { st.has = false; steer(st.homeX, st.homeZ, dt); } // your serve: he waits at home
       else {
         if (serving) st.serveT += dt;
-        const may = serving ? st.serveT > SERVE_WAIT : st.blind <= 0 && !st.dodge;
+        // your phantom (supers.js): nothing to read until it is close enough to see, and then a startled beat before he does
+        const blindBall = !!(info && info.blindBall) && !serving;
+        if (st.wasBlind && !blindBall) { st.blind = Math.max(st.blind, SK.reaction * 0.5); st.reread = 0; }
+        st.wasBlind = blindBall;
+        if (blindBall) st.has = false;
+        const may = serving ? st.serveT > SERVE_WAIT : st.blind <= 0 && !st.dodge && !blindBall;
         if (st.dodge && !serving) { st.has = false; st.sx = st.homeX; st.sz = st.homeZ; } // out of its way, back where he waits
         else if (may && st.reread <= 0) { read(w, serving); st.reread = U.lerp(0.32, 0.1, U.clamp01((CFG.kage.difficulty - 1) / 9)); }
         if (st.has && st.t > st.tc + 0.03) st.has = false;
@@ -5689,10 +6350,21 @@ function createKage(doc) {
   function onSpecial() { st.specialRt = st.rt; st.specials++; }
   // his touch answered your fireball: knocked down, thrown back from the strike (fire.js keeps the time he stays down)
   function onBurn() {
-    st.phase = 'down'; st.downT = st.t; st.has = false; st.burns++;
+    st.phase = 'down'; st.downT = st.t; st.has = false; st.burns++; st.downKind = 'burn';
     st.vx = -st.fdx * 1.0; st.vz = -st.fdz * 1.0; st.vy = st.y > 0.05 ? 0 : 1.2;
     st.sayCool = 0; quipF('burned', 0.9);
   }
+  // your spike reached him (supers.js): knocked down where it struck, thrown back along its push (nx, nz), seeing stars
+  function onSpiked(nx, nz) {
+    st.phase = 'down'; st.downT = st.t; st.has = false; st.spiked++; st.downKind = 'stun';
+    st.vx = (nx || 0) * 1.6; st.vz = (nz || 0) * 1.6; st.vy = st.y > 0.05 ? 0 : 1.4;
+    st.sayCool = 0; quipF('spiked', 0.85, rndS);
+  }
+  // he threw a super (supers.js: 1..5), or his spike landed on you
+  function onSuper(kind) { st.specials++; st.sayCool = 0; quipF('sup' + kind, 0.75, rndS); }
+  function onSpikedYou() { st.sayCool = 0; quipF('spikedYou', 0.8, rndS); }
+  // your slip super slipped off his fist (main.js): a reflex second swing a beat later, as your finger's follow-through gets
+  function onSlip() { if (st.phase === 'swing' && !st.reStrike) st.reStrike = st.t + 0.12; }
   // he holds the second power-up and a swing is starting: does he use it? Like his special, by the rope (fire's dice)
   function wantsFire(lead) {
     const p = lead > 0.4 ? 0.7 : lead > -0.4 ? 0.45 : 0.25;
@@ -5712,7 +6384,7 @@ function createKage(doc) {
     geom(); home();
     st.phase = 'ready'; st.has = false; st.blind = 0.3; st.cool = 0; st.reread = 0; st.serveT = 0;
     st.vx = 0; st.vz = 0; st.y = 0; st.vy = 0; st.struck = false; st.res = 0; st.moodT = 0; st.sx = 0; st.sz = 0;
-    st.downT = -9; st.upT = -9; st.slowK = 1; st.dodge = false;
+    st.downT = -9; st.upT = -9; st.slowK = 1; st.dodge = false; st.downKind = 'burn'; st.wasBlind = false; st.reStrike = 0;
     st.x = st.homeX; st.z = st.homeZ;
     if (info && info.server === 'kage' && w) { const b = w.ball.p; st.x = b.x + st.side * 0.5; st.z = b.z + 0.45; }
     clampRegion();
@@ -5854,15 +6526,18 @@ function createKage(doc) {
       R.drawTints(ctx, kx, ky, pose, NEON, 3, dx, dy, 0.35 * (1 - q) * Math.max(0.4, CFG.kage.glow), true);
     }
     const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15), gl = Math.max(0.4, CFG.kage.glow); // armed: an aura behind him and his neon over him
-    if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, NEON, st.armK * (0.35 + 0.25 * pulse) * gl);
+    const ac = st.armCol || NEON, ac2 = st.armCol2 || NEON; // (a super of another kind: in its colours, supers.js)
+    if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, ac, st.armK * (0.35 + 0.25 * pulse) * gl);
     const fp = st.fireK > 0.01 && typeof firePal === 'function' ? firePal() : null; // armed with a fireball: he burns in its colour
     if (fp) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
-    const fa = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // burned: on fire while he is down
+    const da = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // down: seeing stars
+    const fa = st.downKind === 'stun' ? 0 : da; // and burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
-    if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, NEON, st.armK * (0.18 + 0.18 * pulse) * gl, true);
+    if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, ac2, st.armK * (0.18 + 0.18 * pulse) * gl, true);
     if (fp) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.18 + 0.16 * pulse), true);
-    if (fa > 0) { R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1); R.drawDizzy(ctx, kx, ky, pose, st.rt, fa); }
+    if (fa > 0) R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1);
+    if (da > 0) R.drawDizzy(ctx, kx, ky, pose, st.rt, da);
     else if (st.slowK > 1) R.drawSmoke(ctx, kx, ky, pose, st.rt, 0.9); // and smoking until his next hit lands
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
   }
@@ -5875,7 +6550,8 @@ function createKage(doc) {
   };
 
   return {
-    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, onBurn, onFire, wantsFire, onVolley, predict: (w) => { predict(w); return np; },
+    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, onBurn, onFire, wantsFire, onVolley,
+    onSpiked, onSuper, onSpikedYou, onSlip, predict: (w) => { predict(w); return np; },
     get side() { return st.side; }, get dir() { return st.dir; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
@@ -5901,6 +6577,10 @@ function createKage(doc) {
 // FIRE (fire.js). When your swipe answers Kage's fireball, Kiru's fist still lands, and then the fire knocks him down, burning,
 // for as long as fire.js keeps you down (your swipes do nothing then: main.js). He gets up singed and smokes
 // until your next hit lands. update()'s info carries { down: s you are still down, slowed: your next hit is a weak one }.
+//
+// SUPERS (supers.js). Armed with a super of another kind than Raijin he glows in its colours (info.armCol). Kage's spike, if
+// it reaches him before your swipe does, knocks him down wherever he stands, seeing stars (onSpiked), for as long as
+// supers.js keeps you down.
 //
 // Clocks: the flash (afterimages, speed lines, the white flash he arrives in, the ring he kicks off from) runs on REAL time,
 // so it plays out inside a hit's freeze; his body (the follow-through, the fall, the landing, his moods) runs on SIM time, so
@@ -6043,6 +6723,7 @@ function createKiru(doc) {
     armK: 0, specialRt: -9, spX: 0, spY: 0, spZ: 0, specials: 0, // the armed glow 0..1; his last special: when (real), where the ball was
     fireK: 0, // your swing is charged with the fireball (fire.js): its glow 0..1
     downT: -9, upT: -9, downLeft: 0, slowed: false, burns: 0, // burned: when he went down and got up (sim), s still down, smouldering on; counted for the tests
+    downKind: 'burn', spiked: 0, armCol: '', armCol2: '', // what put him down ('burn', or 'stun': Kage's spike, supers.js); counted; his armed glow's colours ('' storm blue)
   };
 
   // a flash step: from → to, when (real time), the path's shape (0 dash along the floor, 1 leap in an arc, 2 dash then
@@ -6126,8 +6807,14 @@ function createKiru(doc) {
   // your swipe answered Kage's fireball: the strike stands, then the fire throws him back from the ball, down
   function onBurn() {
     if (st.phase !== 'strike') return;
-    st.phase = 'down'; st.downT = st.t; st.burns++;
+    st.phase = 'down'; st.downT = st.t; st.burns++; st.downKind = 'burn';
     st.vx = -st.nx * 1.0; st.vz = -st.nz * 1.0;
+  }
+  // Kage's spike reached him (supers.js), wherever he was: knocked down, thrown along its push (nx, nz), seeing stars
+  function onSpiked(nx, nz) {
+    if (st.phase === 'won' || st.phase === 'lost') return;
+    st.phase = 'down'; st.downT = st.t; st.spiked++; st.downKind = 'stun';
+    st.vx = (nx || 0) * 1.6; st.vz = (nz || 0) * 1.6;
   }
 
   // back to his spot: a flash step (returns how far), or a run
@@ -6153,6 +6840,7 @@ function createKiru(doc) {
       st.fireK += ((info && info.fire ? 1 : 0) - st.fireK) * Math.min(1, realDt * 12);
     }
     st.slowed = !!(info && info.slowed); st.downLeft = info && info.down > 0 ? info.down : 0;
+    st.armCol = info && info.armCol ? info.armCol : ''; st.armCol2 = info && info.armCol2 ? info.armCol2 : '';
     if (!(dt > 0)) return 0;
     geom();
     st.t += dt; st.moodT += dt;
@@ -6184,7 +6872,7 @@ function createKiru(doc) {
   function reset() {
     geom(); home();
     st.phase = 'idle'; st.x = st.homeX; st.z = st.homeZ; st.y = 0; st.vx = 0; st.vz = 0; st.vy = 0; st.leap = false;
-    st.moodT = 0; st.ts = -9; st.tLand = -9; st.arriveRt = -9; st.specialRt = -9; st.downT = -9; st.upT = -9; st.slowed = false;
+    st.moodT = 0; st.ts = -9; st.tLand = -9; st.arriveRt = -9; st.specialRt = -9; st.downT = -9; st.upT = -9; st.slowed = false; st.downKind = 'burn';
     for (let i = 0; i < NF; i++) FL[i].rt = -9;
   }
 
@@ -6371,18 +7059,20 @@ function createKiru(doc) {
     if (!R.ensureArt(pose.s * Math.max(kx, ky) * 1.15)) return;
     drawRaijin(ctx, cam, kx, ky);
     drawFlashes(ctx, cam, kx, ky);
-    const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15); // armed: an aura behind him and a storm-blue charge over him
-    if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, '#5ad1ff', st.armK * (0.4 + 0.25 * pulse));
+    const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15); // armed: an aura behind him and a storm-blue charge over him (a super: its colours)
+    if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, st.armCol || '#5ad1ff', st.armK * (0.4 + 0.25 * pulse));
     const fp = st.fireK > 0.01 && typeof firePal === 'function' ? firePal() : null; // charged with the fireball: he burns in its colour
     if (fp) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
-    const fa = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // burned: on fire while he is down
+    const da = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // down: seeing stars
+    const fa = st.downKind === 'stun' ? 0 : da; // and burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
-    if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, '#8fd2ff', st.armK * (0.22 + 0.2 * pulse), true);
+    if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, st.armCol2 || '#8fd2ff', st.armK * (0.22 + 0.2 * pulse), true);
     if (fp) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.2 + 0.18 * pulse), true);
     const ar = st.rt - st.arriveRt;
     if (ar >= 0 && ar < ARRIVE) R.drawTint(ctx, kx, ky, pose, '#ffffff', st.arriveA * (1 - ar / ARRIVE), true);
-    if (fa > 0) { R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1); R.drawDizzy(ctx, kx, ky, pose, st.rt, fa); }
+    if (fa > 0) R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1);
+    if (da > 0) R.drawDizzy(ctx, kx, ky, pose, st.rt, da);
     else if (st.slowed) R.drawSmoke(ctx, kx, ky, pose, st.rt, 0.9); // and smoking until your next hit lands
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
   }
@@ -6395,7 +7085,7 @@ function createKiru(doc) {
   };
 
   return {
-    st, G, actor, pose, flashes: FL, setSide, reset, update, onHit, onBurn, onRoundEnd,
+    st, G, actor, pose, flashes: FL, setSide, reset, update, onHit, onBurn, onSpiked, onRoundEnd,
     get side() { return st.side; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
@@ -6740,6 +7430,7 @@ function createUI(root, opts) {
       seg.setAttribute('role', 'radiogroup'); seg.setAttribute('aria-labelledby', lab.id); seg.id = id;
       r.opts = [];
       const names = s.options || [];
+      if (names.length > 4 && !s.swatches) seg.classList.add('wrap'); // a long list of words: three a line, never squeezed to an ellipsis
       for (let i = 0; i < names.length; i++) {
         const b = el('button', 'opt'), sw = s.swatches && s.swatches[i];
         b.type = 'button'; b.setAttribute('role', 'radio');
@@ -6940,6 +7631,11 @@ function createUI(root, opts) {
 // or E can do it instead, by the setting). Kage arms his as a swing starts. Every hit goes through energy.prepare first, which is
 // all the physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
 //
+// What a special does is each player's SUPER (supers.js, the Feel panel's Supers group): Raijin and Shadow cut by default, or
+// one of five that change what the ball does for one turn: swerve, spike (it homes in on the other player and knocks them down
+// if it reaches them), phantom, decoys, slip. Its forces go into the ball before each physics step; a slip is caught in
+// tryHit before the physics; a spike that lands knocks its target down (tryHit refuses them, as for a burn).
+//
 // Fire volleys (fire.js, the Feel panel's Fire group) are versus only too. Six hits in a row, three each with no miss, and the
 // ball catches fire; whoever wins that volley (the other player misses) holds the second power-up, the fireball by default,
 // unleashed with a CLOCKWISE curved swipe (or F; Kage weighs his as a swing starts). The other player's touch on a fireball is
@@ -6962,6 +7658,7 @@ function createUI(root, opts) {
   const game = createGame();
   const versus = createVersus();
   const energy = createEnergy();
+  const supers = createSupers();
   const fire = createFire();
   const kage = createKage(document);
   const kiru = createKiru(document);
@@ -7012,6 +7709,18 @@ function createUI(root, opts) {
   const kinfo = { ready: false, armed: false, fire: false, down: 0, slowed: false }, kiruHit = { half: false, kage: null, special: false };
   let toldHot = false, toldVolley = false; // shown this match: the "let it pass" hint for Kage's fireball, the first fire volley's
   const FIRE_EV = { type: 'fire', at: world.ball.p, word: '' }; // the burst as the ball catches fire (fx.event)
+  // the supers (supers.js): the players' bodies (where a spike homes in, and what it hits), a super's moment for fx, the first
+  // time each of Kage's is seen in a match (a word on how to beat it), the swing of his already checked for a decoy
+  const bodies = { you: { x: 0, y: 0, z: 0, h: 1.75 }, kage: { x: 0, y: 0, z: 0, h: 1.75 } };
+  const SUPER_EV = { type: 'super', kind: 0, word: '', size: '', at: { x: 0, y: 0, z: 0 }, ux: 0, uy: 0 };
+  const toldSuper = new Uint8Array(6);
+  let kageStruck = -1;
+  // round the ball: the fire's flames, then the supers' (and the decoys, on their side of the pole)
+  const OVER = {
+    drawBehind(c, cm, w, kx, ky) { fire.drawBehind(c, cm, w, kx, ky); supers.drawBehind(c, cm, w); },
+    drawBall(c, cm, w, kx, ky) { fire.drawBall(c, cm, w, kx, ky); supers.drawBall(c, cm, w); },
+    drawSide(c, cm, w, side, ballAt) { supers.drawSide(c, cm, w, side, ballAt); },
+  };
   let kiruWas = false; // was Kiru on last frame (switching him on puts him on his spot)
   let kageSwing = -1; // the swing (his st.ts) Kage last weighed his special for
   let fullWas = false, toldSpecial = false; // your bar was full last frame; the "special ready" hint was shown this match
@@ -7049,7 +7758,8 @@ function createUI(root, opts) {
       kage.reset(world, { server: versus.snap.server });
     } else resetWorld(world);
     kiru.reset();
-    energy.newRally(); kageSwing = -1;
+    energy.newRally(); kageSwing = -1; kageStruck = -1;
+    supers.newRally();
     fire.newRally();
     tw.cancel();
     fx.reset();
@@ -7063,6 +7773,7 @@ function createUI(root, opts) {
     pickSide();
     if (vs()) versus.reset(); else game.reset();
     energy.reset(); fullWas = false; toldSpecial = false;
+    supers.reset(); toldSuper.fill(0);
     fire.reset(); toldHot = false; toldVolley = false;
     startRally();
   }
@@ -7076,7 +7787,7 @@ function createUI(root, opts) {
     if (world.state !== 'live' || !tw.canHit()) return null;
     const you = who !== 'kage', k = you ? 'you' : 'kage';
     if (you && now - lastHitAt < CFG.hit.cooldownMs) return null;
-    if (vs() && fire.isDown(k)) return null; // burned: down, and nothing they swing at counts until they are up
+    if (vs() && (fire.isDown(k) || supers.isDown(k))) return null; // burned or spiked: down, and nothing they swing at counts until they are up
     // your curved swipe, armed for this one touch (a miss leaves it unarmed again): counter-clockwise on a full bar is your special,
     // clockwise with a power-up held is the power-up
     const curl = you && vs() ? hand.curl | 0 : 0;
@@ -7085,10 +7796,13 @@ function createUI(root, opts) {
     if (vs()) {
       if (fire.armed(k) && !fire.fireball) energy.arm(k, true, true); // the second power-up set to a special: a free one
       energy.prepare(k, hand);
+      supers.prepare(k, hand, energy.armed(k)); // a spike leaves the hand harder still
     } else { hand.boost = 1; hand.gain = 1; }
     const heavy = hand.gain < 1; // it answers the other player's special: it lands heavy
     if (vs()) fire.prepare(k, hand); // a touch on their fireball, or your first hit after a burn, lands weak
-    const res = applyHit(world, hand);
+    const slip = vs() ? supers.intercept(k, hand, world) : ''; // a slip super: this touch slips off (or can't touch it yet)
+    if (slip === 'slip') { onSlip(now); if (!you) kage.onSlip(); } // he gets a reflex second swing, as your follow-through does
+    const res = slip ? null : applyHit(world, hand);
     if (!res) {
       if (autoS) energy.arm('you', false);
       if (autoF) { fire.arm('you', false); energy.arm('you', false, true); }
@@ -7102,6 +7816,9 @@ function createUI(root, opts) {
     res.burned = !!(fh && fh.burned); res.fireball = !!(fh && fh.fireball);
     const e = vs() && versus.state !== 'wound' ? energy.onHit(k, versus.state === 'playing') : '';
     res.special = e === 'special' ? k : '';
+    if (vs()) supers.onTouch(k); // any touch ends a super's turn
+    res.superKind = res.special && vs() ? supers.launch(k, world) : 0; // which super it was (0: the signature, Raijin or Shadow cut)
+    if (res.superKind) energy.dropCharge(); // the others carry no charge: what they do is the ball's
     if (you || CFG.kage.warp > 0) {
       if (res.special) tw.trigger(Math.max(0.9, res.power), 'perfect', true); // a special is always a big moment
       else if (res.burned || res.fireball) tw.trigger(Math.max(0.75, res.power), res.quality, true); // so are a fireball and a burn
@@ -7109,16 +7826,16 @@ function createUI(root, opts) {
     }
     fx.impact(res, cam, world);
     audio.hit(res);
-    if (res.special) audio.special(res.special);
+    if (res.special) { if (res.superKind) audio.superCast(res.superKind); else audio.special(res.special); }
     if (res.fireball) audio.fire('ignite');
     if (res.burned) audio.fire('burn');
     if (you) audio.vibrate(res.burned ? [40, 30, 80] : res.special || res.fireball ? [30, 40, 60] : res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
     if (vs()) kage.onWorldHit(res, who);
-    if (res.special === 'kage') kage.onSpecial();
+    if (res.special === 'kage') { if (res.superKind) kage.onSuper(res.superKind); else kage.onSpecial(); }
     if (res.fireball && !you) kage.onFire();
     if (res.burned && !you) kage.onBurn();
     if (you && kiruOn()) { // Kiru flash-steps to the ball your swipe just hit
-      kiruHit.half = vs(); kiruHit.kage = vs() ? kage.st : null; kiruHit.special = res.special === 'you';
+      kiruHit.half = vs(); kiruHit.kage = vs() ? kage.st : null; kiruHit.special = res.special === 'you' && !res.superKind; // Raijin's ring: the signature only
       const d = kiru.onHit(res, world, kiruHit);
       if (d > 0.05) audio.flash(d, 0.6);
       if (res.burned) kiru.onBurn();
@@ -7128,7 +7845,30 @@ function createUI(root, opts) {
     if (fh && fh.won) volleyWon(fh.won, now);
     if (res.burned && you) { ui.hint('Burned! 🔥'); hintUntil = now + 1000 * Math.max(0.6, CFG.fire.down) + 400; }
     else if (res.fireball && !you && !toldHot) { toldHot = true; ui.hint('Hot! Let it pass 🔥'); hintUntil = now + 2200; }
+    else if (res.superKind && !you && !toldSuper[res.superKind]) { toldSuper[res.superKind] = 1; ui.hint(SUPERS[res.superKind].hint); hintUntil = now + 2200; } // the first time he throws each one: how to beat it
     return res;
+  }
+
+  // The supers' moments away from a hit (supers.js): a touch slipped off a slip; a spike reached a player: down they go.
+  function onSlip(now) {
+    const p = world.ball.p;
+    SUPER_EV.kind = 5; SUPER_EV.word = 'SLIP!'; SUPER_EV.size = 'small'; SUPER_EV.at.x = p.x; SUPER_EV.at.y = p.y; SUPER_EV.at.z = p.z; SUPER_EV.ux = 0; SUPER_EV.uy = 0;
+    fx.event(SUPER_EV, cam, world);
+    audio.superFx('slip');
+  }
+  function onSpiked(now) {
+    const S = supers.snap, o = S.spiked;
+    SUPER_EV.kind = 2; SUPER_EV.word = 'HIT!'; SUPER_EV.size = ''; SUPER_EV.at.x = S.hx; SUPER_EV.at.y = S.hy; SUPER_EV.at.z = S.hz; SUPER_EV.ux = 0; SUPER_EV.uy = 0;
+    fx.event(SUPER_EV, cam, world);
+    audio.superFx('hit');
+    tw.trigger(0.8, 'perfect', true); // a body blow is a big moment
+    if (o === 'kage') kage.onSpiked(S.hnx, S.hnz);
+    else {
+      if (kiruOn()) kiru.onSpiked(S.hnx, S.hnz);
+      kage.onSpikedYou();
+      audio.vibrate([40, 30, 80]);
+      ui.hint('Spiked! 💥'); hintUntil = now + 1000 * Math.max(0.6, CFG.supers.stun) + 300;
+    }
   }
 
   // Fire volleys (fire.js): the rally caught fire (the first time in a match, a word on it); a volley was won (the power-up's
@@ -7205,6 +7945,7 @@ function createUI(root, opts) {
       if (!hand) continue;
       hand.owner = 'you';
       hand.curl = energy.curl(seg.turn, seg.turnAbs, seg.arc); hand.curved = hand.curl !== 0; // its swing's shape when it reached the ball
+      if (vs() && supers.swipe(seg, input, world)) audio.superFx('pop'); // Kage's decoys: a swipe through one pops it
       if (!mayHit()) { sideWarn(hand, now); continue; }
       if (input.shouldHold(seg, hand, world.ball)) continue; // a finger that landed ON the ball: its first contact is the slowest part of the swipe, so wait ~2 frames for the peak
       if (tryHit(hand, now, 'you')) {
@@ -7281,7 +8022,11 @@ function createUI(root, opts) {
       info.state = versus.state; info.server = versus.snap.server; info.armed = energy.armed('kage');
       info.down = fire.snap.down.kage; info.slow = fire.snap.slow.kage ? Math.max(1, CFG.fire.slow) : 1;
       info.hot = fire.snap.lit === 'you'; info.fireId = fire.snap.fireId; info.dodge = CFG.fire.dodge > 0; info.fireArmed = fire.armed('kage') && fire.fireball;
+      if (supers.snap.down.kage > info.down) info.down = supers.snap.down.kage;
+      supers.kageView(info, world, kage.st.x, kage.st.z); // what he can see of your super: a phantom too far off, the decoy he chose
+      const kk = supers.kindOf('kage'); info.armCol = kk ? SUPERS[kk].glow : ''; info.armCol2 = kk ? SUPERS[kk].mid : '';
       const hand = kage.update(simDt, realDt, world, info);
+      if (kage.st.struck && kage.st.ts !== kageStruck) { kageStruck = kage.st.ts; if (!hand && supers.kageWhiffed()) audio.superFx('pop'); } // his swing went through your decoy
       if (kage.st.phase === 'swing' && kage.st.ts !== kageSwing) { // he weighs his special as a swing starts, so it shows on him before the fist lands
         kageSwing = kage.st.ts;
         if (CFG.energy.kage > 0 && energy.full('kage') && !energy.armed('kage') && kage.wantsSpecial(versus.snap.lead)) energy.arm('kage', true);
@@ -7306,21 +8051,34 @@ function createUI(root, opts) {
     const charged = chargedS ? 'special' : chargedF ? (fire.fireball ? 'fire' : 'special') : '';
     if (charged && charged !== chargedWas) { if (charged === 'fire') audio.fire('arm'); else audio.energy('arm'); }
     chargedWas = charged; view.charged = charged;
+    const yk = vs() ? supers.kindOf('you') : 0; // your super, if it is not Raijin: the charge and Kiru's glow are in its colours
+    view.chargedPal = yk ? SUPERS[yk] : null;
     if (kiruOn()) {
       if (!kiruWas) { kiru.setSide(vs() ? -kageSide : 1); kiru.reset(); }
       kinfo.ready = input.active && world.state === 'live' && tw.canHit() && mayHit();
       kinfo.armed = vs() && (energy.armed('you') || charged === 'special');
       kinfo.fire = vs() && (charged === 'fire' || (fire.armed('you') && fire.fireball));
-      kinfo.down = vs() ? fire.snap.down.you : 0; kinfo.slowed = vs() && fire.snap.slow.you;
+      kinfo.down = vs() ? Math.max(fire.snap.down.you, supers.snap.down.you) : 0; kinfo.slowed = vs() && fire.snap.slow.you;
+      kinfo.armCol = yk ? SUPERS[yk].glow : ''; kinfo.armCol2 = yk ? SUPERS[yk].mid : '';
       const back = kiru.update(simDt, realDt, world, kinfo);
       if (back > 0.05) audio.flash(back, 0.4);
     }
     kiruWas = kiruOn();
+    if (vs()) { // a super's forces go into the ball before the physics (which never sees them, nor does Kage's look-ahead)
+      const kb = bodies.kage, yb = bodies.you, ks = kiru.st;
+      kb.x = kage.st.x; kb.y = kage.st.y; kb.z = kage.st.z; kb.h = CFG.kage.size;
+      yb.x = kiruOn() ? ks.x : ks.homeX; yb.y = kiruOn() ? ks.y : 0; yb.z = kiruOn() ? ks.z : ks.homeZ; yb.h = CFG.kiru.size;
+      supers.force(world, simDt, bodies);
+    }
     if (simDt > 0) advance(world, simDt);
     onEvents(now);
     if (vs()) { // fire volleys: a miss decides one; a fireball let go by goes out
       const fe = fire.update(simDt, realDt, world, versus.state === 'playing' && world.state === 'live', kageSide);
       if (fe) onFire(fe, now);
+      // a super's turn: a spike reaching a player, or the turn over (a phantom shows again)
+      const se = supers.update(simDt, realDt, world, versus.state === 'playing' && world.state === 'live', kageSide, bodies);
+      if (se === 'spiked') onSpiked(now);
+      else if (se === 'end' && supers.snap.endKind === 3) audio.superFx('reveal');
     }
     if (prevPhase !== 'ramp' && tw.phase === 'ramp') audio.release(tw.seq.power); // the running sequence's power, so the whoosh fits the ramp tw plays (a wound slam can replace it)
     prevPhase = tw.phase;
@@ -7329,6 +8087,7 @@ function createUI(root, opts) {
     fx.update(realDt, simDt, tw, world);
     fx.applyCamera(cam);
     fire.tick(realDt, cam, world); // the burning ball's embers (real time)
+    supers.tick(realDt, cam, world); // the path a super's ball takes (real time)
     rules.update(clockDt, world);
 
     cam.project(world.ball.p.x, world.ball.p.y, world.ball.p.z, ballScr);
@@ -7350,7 +8109,9 @@ function createUI(root, opts) {
       view.actors.length = 0;
       if (vs()) view.actors.push(kage.actor);
       if (kiruOn()) view.actors.push(kiru.actor);
-      view.overBall = vs() ? fire : null;
+      view.overBall = vs() ? OVER : null;
+      view.ballA = vs() ? supers.ballAlpha() : 1; view.ropeA = vs() ? supers.ropeAlpha() : 1; view.shadowA = vs() ? supers.shadowAlpha() : 1; // a phantom fades
+      view.noTrail = vs() && supers.noTrail();
       scene.draw(ctx, cam, world, view);
     }
   }
@@ -7390,7 +8151,7 @@ function createUI(root, opts) {
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, versus, energy, fire, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial, fireball: armFire,
+    CFG, world, cam, tw, fx, game, versus, energy, supers, fire, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial, fireball: armFire,
     get rules() { return rules; },
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)
