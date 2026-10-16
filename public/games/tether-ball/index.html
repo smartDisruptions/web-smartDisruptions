@@ -117,13 +117,22 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 #hintText { padding: 10px 20px; border-radius: 99px; background: var(--glass); border: 1px solid var(--line); font: 800 14px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text); animation: hintPulse 2.2s ease-in-out infinite; }
 @keyframes hintPulse { 0%, 100% { opacity: .62; } 50% { opacity: 1; } }
 
-/* ───────────── energy (versus): your special button in your bottom corner, Kage's gauge in his. The ring fills with volleys
-   (amber yours, magenta his); a full one glows, and yours takes a tap: armed, it fills storm blue. The hint keeps between them. */
+/* ───────────── the power-ups (versus): one row under the strip, yours at the top of your side, where a thumb ends its swipe up
+   (big, so it is easy to hit straight after one), Kage's in the same row on his. Each player has their energy ring in the corner
+   and, beside it toward the middle, the flame of a power-up a fire volley won. The camera keeps the ball's envelope below the row
+   (tests/buttons.mjs measures it), and the show at a round's end hides it, since its numbers go along the top. */
+#hud { --pu-mid: 132px; --pu-y: 76px; --pu-k: 52px; --pu-fy: 56px; --pu-fk: 36px; --pu-gap: 8px; --pu-edge: 12px; } /* the row's centre line under the safe inset, and the sizes: your ring, his, your flame, his */
+#energy, #fireHud { transition: opacity .25s, visibility .25s; }
+#hud[data-state="wound"] #energy, #hud[data-state="wound"] #fireHud { opacity: 0; visibility: hidden; }
+
+/* energy: the ring fills with volleys (amber yours, magenta his); a full one glows, and yours takes a tap (unless a curved swipe
+   is the only trigger): armed, it fills storm blue. */
 #energy { display: none; }
 #hud[data-energy="on"] #energy { display: block; }
-.eg { position: absolute; bottom: calc(var(--sb) + 10px); width: 52px; height: 52px; padding: 0; border: 0; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--dim); pointer-events: none; text-shadow: none; transition: background .15s, color .15s, box-shadow .2s, transform .1s; }
-#hud[data-ks="l"] .ek, #hud[data-ks="r"] .ey { left: calc(var(--sl) + 12px); }
-#hud[data-ks="l"] .ey, #hud[data-ks="r"] .ek { right: calc(var(--sr) + 12px); }
+.eg { position: absolute; top: calc(var(--st) + var(--pu-mid) - var(--pu-k) / 2); width: var(--pu-k); height: var(--pu-k); padding: 0; border: 0; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--dim); pointer-events: none; text-shadow: none; transition: background .15s, color .15s, box-shadow .2s, transform .1s; }
+.ey { top: calc(var(--st) + var(--pu-mid) - var(--pu-y) / 2); width: var(--pu-y); height: var(--pu-y); }
+#hud[data-ks="l"] .ek, #hud[data-ks="r"] .ey { left: calc(var(--sl) + var(--pu-edge)); }
+#hud[data-ks="l"] .ey, #hud[data-ks="r"] .ek { right: calc(var(--sr) + var(--pu-edge)); }
 .eg svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .eg .tr { fill: none; stroke: rgba(233,237,246,.13); stroke-width: 4; }
 .eg .fl { fill: none; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset .25s ease-out, stroke .15s; }
@@ -141,13 +150,19 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .ek[data-st="armed"] .fl { stroke: #fff1ff; }
 #hud[data-state="wound"] .ey, #hud[data-trigger="curve"] .ey[data-st] { pointer-events: none; } /* a curved swipe is the trigger: the ring only shows it */
 @keyframes egPulse { 0%, 100% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.5), 0 0 6px rgba(90,209,255,.3); transform: scale(1); } 50% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.9), 0 0 24px rgba(90,209,255,.75); transform: scale(1.07); } }
-/* ───────────── fire volleys (versus): each player's second power-up, a flame over their energy ring (it shows once won, burns
-   while armed), and the streak toward a fire volley, a pip a hit in the hitter's colour, all ablaze once the ball is on fire. ── */
+/* fire volleys: each player's second power-up, a flame beside their energy ring (it shows once won, burns while armed, and yours
+   takes a tap as your ring does), and the streak toward a fire volley at the bottom, a pip a hit in the hitter's colour, all ablaze
+   once the ball is on fire. */
 #fireHud { display: none; }
 #hud[data-fire="on"] #fireHud { display: block; }
-.fb { position: absolute; bottom: calc(var(--sb) + 72px); width: 36px; height: 36px; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--fire-mid, #ffae1f); opacity: 0; transform: scale(.6); transition: opacity .2s, transform .2s, background .15s, box-shadow .2s; pointer-events: none; }
-#hud[data-ks="l"] .fk, #hud[data-ks="r"] .fy { left: calc(var(--sl) + 20px); }
-#hud[data-ks="l"] .fy, #hud[data-ks="r"] .fk { right: calc(var(--sr) + 20px); }
+.fb { position: absolute; top: calc(var(--st) + var(--pu-mid) - var(--pu-fk) / 2); width: var(--pu-fk); height: var(--pu-fk); padding: 0; border: 0; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--fire-mid, #ffae1f); opacity: 0; transform: scale(.6); transition: opacity .2s, transform .2s, background .15s, box-shadow .2s; pointer-events: none; text-shadow: none; }
+.fy { top: calc(var(--st) + var(--pu-mid) - var(--pu-fy) / 2); width: var(--pu-fy); height: var(--pu-fy); }
+#hud[data-ks="l"] .fk { left: calc(var(--sl) + var(--pu-edge) + var(--pu-k) + var(--pu-gap)); }
+#hud[data-ks="r"] .fy { left: calc(var(--sl) + var(--pu-edge) + var(--pu-y) + var(--pu-gap)); }
+#hud[data-ks="l"] .fy { right: calc(var(--sr) + var(--pu-edge) + var(--pu-y) + var(--pu-gap)); }
+#hud[data-ks="r"] .fk { right: calc(var(--sr) + var(--pu-edge) + var(--pu-k) + var(--pu-gap)); }
+.fy[data-st="held"]:not(:disabled), .fy[data-st="armed"]:not(:disabled) { pointer-events: auto; }
+#hud[data-state="wound"] .fy { pointer-events: none; }
 .fb svg { display: block; width: 100%; height: 100%; }
 .fb .ic { fill: currentColor; }
 .fb .ibo, #hud[data-power="special"] .fb .ifl { display: none; }
@@ -164,7 +179,6 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 #streak i.k { background: var(--kage); }
 #streak i.f { background: var(--fire-mid, #ffae1f); box-shadow: 0 0 8px var(--fire-glow, #ff7a1a); animation: pipFire .5s ease-in-out infinite alternate; }
 @keyframes pipFire { from { box-shadow: 0 0 4px var(--fire-glow, #ff7a1a); } to { box-shadow: 0 0 12px var(--fire-glow, #ff7a1a), 0 0 2px var(--fire-core, #fff4c2); } }
-#hud[data-energy="on"] #hint { padding: 0 76px; }
 #hud[data-energy="on"] #hintText { text-align: center; line-height: 1.25; }
 @media (max-width: 429px) { #hud[data-energy="on"] #hintText { padding: 8px 14px; font-size: 12px; letter-spacing: .05em; } }
 
@@ -356,7 +370,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   #hTime { font-size: 19px; }
   #hint { bottom: calc(var(--sb) + 2px); }
   #hintText { padding: 6px 14px; font-size: 11px; }
-  .eg { bottom: calc(var(--sb) + 4px); width: 44px; height: 44px; }
+  #hud { --pu-mid: 86px; --pu-y: 64px; --pu-k: 44px; --pu-fy: 50px; --pu-fk: 32px; } /* the row under the slim strip, in the side bands */
   .next { bottom: calc(var(--sb) + 8px); height: 40px; font-size: 15px; }
 }
 
@@ -421,9 +435,9 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
       <div id="fKage" class="fb fk" role="img" aria-label="Kage's fireball: none" data-st="">
         <svg viewBox="0 0 48 48" aria-hidden="true"><path class="ic ifl" d="M24 6 C25.5 13 34 17.5 34 28 C34 36 29.5 41.5 24 41.5 C18.5 41.5 14 36 14 28.5 C14 22.5 17.5 19.5 19 14.5 C20.8 18 22.2 19.8 24.2 21 C24.4 15.5 22.4 11.5 24 6 Z M24 26.5 C25.8 29 28.2 31 28.2 34.2 C28.2 37 26.3 39 24 39 C21.7 39 19.8 37 19.8 34.2 C19.8 31 22.2 29 24 26.5 Z" fill-rule="evenodd"/><path class="ic ibo" d="M26.8 11.5 L16.5 26.2 H23.2 L21.2 36.5 L31.5 21.8 H24.8 Z"/></svg>
       </div>
-      <div id="fYou" class="fb fy" role="img" aria-label="Fireball: win a fire volley" data-st="">
+      <button id="fYou" class="fb fy" type="button" aria-label="Fireball: win a fire volley" aria-pressed="false" data-st="" disabled>
         <svg viewBox="0 0 48 48" aria-hidden="true"><path class="ic ifl" d="M24 6 C25.5 13 34 17.5 34 28 C34 36 29.5 41.5 24 41.5 C18.5 41.5 14 36 14 28.5 C14 22.5 17.5 19.5 19 14.5 C20.8 18 22.2 19.8 24.2 21 C24.4 15.5 22.4 11.5 24 6 Z M24 26.5 C25.8 29 28.2 31 28.2 34.2 C28.2 37 26.3 39 24 39 C21.7 39 19.8 37 19.8 34.2 C19.8 31 22.2 29 24 26.5 Z" fill-rule="evenodd"/><path class="ic ibo" d="M26.8 11.5 L16.5 26.2 H23.2 L21.2 36.5 L31.5 21.8 H24.8 Z"/></svg>
-      </div>
+      </button>
       <div id="streak" aria-hidden="true" data-st=""></div>
     </div>
   </div>
@@ -659,6 +673,9 @@ const U = {
 // unproject(sx,sy,planeY)  screen px → the world point where that pixel's ray meets the horizontal plane y=planeY
 //                          (this is how a swipe becomes a hand moving through the ball's plane)
 // setInsetBottom(px)       px of extra safe space under the court (the Feel panel covers it): the court refits above it
+// setCorners(x, y)         the top corners kept clear of the ball (the power-up buttons): x px in from each side, y px down
+//                          from the top; 0 for none. Where the fit would put the ball under one, the court comes down just
+//                          far enough to clear it (a tall phone has room above the court, so its fit does not move)
 // area                     {l,t,r,b}: the screen box the fit keeps the ball's envelope and the pole in
 // sync()                   refit if a CFG number the fit reads was retuned (the scene calls it every frame)
 //
@@ -692,11 +709,17 @@ function createCamera() {
     pos: { x: 0, y: 0, z: 0 }, fwd: { x: 0, y: 0, z: -1 }, up: { x: 0, y: 1, z: 0 },
     pxPerM: 100, // px per metre at the pole axis, mid-height (for sizing things in screen space)
     area: { l: 0, t: 0, r: 0, b: 0 }, // the screen box the fit keeps the ball's envelope and the pole in (at rest: no zoom, roll or shake)
+    corner: { x: 0, y: 0 }, // the top corners kept clear (setCorners)
+    top: 76, // the court's top edge as fitted: safe.top, or lower where a corner asked for it
   };
   const base = { top: 76, bottom: 64, left: 10, right: 10 }; // the HUD bands the caller asked for, before the inset
   const NK = 14;
   const key = new Float64Array(NK), probe = new Float64Array(NK);
   const NL = 16, NA = 64; // polar steps and azimuths sampled over the ball's envelope: the fit errs by under a pixel
+  // the corner test samples the shell finer (a gap between two samples could hide a corner), in pre-focal coords: the fit only
+  // scales and moves them, so one sampling serves every trial fit
+  const CL = 32, CA = 256, CN = (CL + 1) * CA;
+  const cXn = new Float64Array(CN), cYn = new Float64Array(CN), cEx = new Float64Array(CN), cEy = new Float64Array(CN);
 
   // the pitch follows the window's shape: a wide window is short for the orbit's width, a tall one is narrow for its height
   function pitchFor() {
@@ -753,11 +776,41 @@ function createCamera() {
     add(0, W.poleH, 0, 0.08, 0.08); // the pole cap
     add(0, 0, 0, 0.14, 0.14); // and its foot, so the pole stands on something
     const sf = cam.safe;
-    const availW = Math.max(1, cam.w - sf.left - sf.right), availH = Math.max(60, cam.h - sf.top - sf.bottom - 2 * pad);
-    cam.F = Math.min(availW / (2 * xMax), availH / (yMax - yMin));
-    cam.cx = (sf.left + (cam.w - sf.right)) / 2;
-    const bandMid = (sf.top + (cam.h - sf.bottom)) / 2;
-    cam.cy = bandMid + cam.F * (yMin + yMax) / 2; // sy = cy - yn·F  ⇒ mid of [yMin,yMax] lands on bandMid
+    const place = (top) => {
+      const availW = Math.max(1, cam.w - sf.left - sf.right), availH = Math.max(60, cam.h - top - sf.bottom - 2 * pad);
+      cam.F = Math.min(availW / (2 * xMax), availH / (yMax - yMin));
+      cam.cx = (sf.left + (cam.w - sf.right)) / 2;
+      const bandMid = (top + (cam.h - sf.bottom)) / 2;
+      cam.cy = bandMid + cam.F * (yMin + yMax) / 2; // sy = cy - yn·F  ⇒ mid of [yMin,yMax] lands on bandMid
+      cam.top = top;
+    };
+    place(sf.top);
+    const cn = cam.corner;
+    if (cn.x > 0 && cn.y > sf.top) {
+      let n = 0;
+      for (let k = 0; k <= CL; k++) {
+        const al = (aMax * k) / CL, y = Math.max(W.ballR, W.attachY - reach * Math.cos(al)), rho = reach * Math.sin(al);
+        for (let i = 0; i < CA; i++, n++) {
+          const a = (i / CA) * Math.PI * 2;
+          norm(Math.cos(a) * rho, y, Math.sin(a) * rho, t);
+          cXn[n] = t.xn; cYn[n] = t.yn; cEx[n] = W.ballR / t.d; cEy[n] = myBall / t.d;
+        }
+      }
+      // a ball under either corner (2 px to spare): the envelope is mirror-symmetric, but the insets need not be
+      const under = () => {
+        const F = cam.F, xl = cn.x + 2, xr = cam.w - cn.x - 2, yb = cn.y + 2;
+        for (let i = 0; i < CN; i++) {
+          const sx = cam.cx + F * cXn[i], rx = F * cEx[i];
+          if (cam.cy - F * (cYn[i] + cEy[i]) < yb && (sx + rx > xr || sx - rx < xl)) return true;
+        }
+        return false;
+      };
+      if (under()) { // bring the top edge down until it clears: all the way down to the corners always does
+        let lo = sf.top, hi = cn.y + 2;
+        for (let i = 0; i < 12 && hi - lo > 0.5; i++) { const m = (lo + hi) / 2; place(m); if (under()) lo = m; else hi = m; }
+        place(hi);
+      }
+    }
     cam.area.l = cam.cx - cam.F * xMax; cam.area.r = cam.cx + cam.F * xMax; cam.area.t = cam.cy - cam.F * yMax; cam.area.b = cam.cy - cam.F * yMin;
     cam.focusX = cam.w / 2; cam.focusY = cam.h / 2;
     norm(0, 1.2, 0, t);
@@ -793,6 +846,15 @@ function createCamera() {
     }
     applySafe();
     cam.refit();
+  };
+
+  // the power-up buttons in the top corners (ui: main.js reads their row off the CSS): keep the ball out from under them
+  cam.setCorners = function (x, y) {
+    const cx = x > 0 && y > 0 ? x : 0, cy = cx ? y : 0;
+    if (cx === cam.corner.x && cy === cam.corner.y) return false;
+    cam.corner.x = cx; cam.corner.y = cy;
+    cam.refit();
+    return true;
   };
 
   // the Feel panel covers the bottom of a tall phone: keep the court out from under it. 0 restores the full-height fit.
@@ -5717,8 +5779,9 @@ function createPace() {
 // step for every volley (a hit that answers the other player's last one), `volleys` steps to fill. A full bar is one special
 // for its owner. You unleash yours with a counter-clockwise curved swipe: a swing that has turned `curve` degrees that way
 // (input.js measures it) when it meets the ball is the special, and the moment it has turned that far the stroke shows it is
-// charged. A clockwise one unleashes the second power-up a fire volley wins (fire.js). The trigger setting can make the special a
-// tap on your ring (or E) instead, which arms the next hit, or either. Kage weighs his as each swing starts
+// charged. A clockwise one unleashes the second power-up a fire volley wins (fire.js). Or tap your ring (or E), at the top of your
+// side where a swipe up ends, which arms the next hit (the flame beside it does the same for the power-up). The trigger setting
+// allows either (the default), or only the curve, or only the tap. Kage weighs his as each swing starts
 // (kage.wantsSpecial). The special:
 //   · it leaves the hand `boost` times harder (the soft speed cap rises by as much, so a weak swipe stays a weak special), and
 //   · the ball carries the special's charge until the OTHER player's next touch, or `charge` seconds of game time: that touch
@@ -5736,7 +5799,8 @@ CFG.energy = {
   charge: 1.5, // s of game time the ball carries a special's charge, if the other player does not touch it first
   damp: 0.7, // the other player's next touch lands at this share of its strength
   kage: 1, // 1 = Kage uses his specials
-  trigger: 0, // how you unleash yours: 0 a curved swipe, 1 a tap on your ring (or E) arms the next hit, 2 either
+  trigger: 2, // how you unleash yours: 0 a curved swipe, 1 a tap on your ring (or E) arms the next hit, 2 either (Josh, 2026-10-16:
+  // he taps the ring right after a swipe up, so it is a button by default)
   curve: 40, // degrees a swing must have turned, one way, when it meets the ball. Measured at contact (tests/energy.mjs): a natural
   // thumb arc 4-20°, a half-circle through the ball 54-71°, a 150° arc with the ball mid-way 35-58°
 };
@@ -5747,7 +5811,7 @@ CFG_SCHEMA.push(
   { path: 'energy.charge', label: 'Charge lasts', min: 0.3, max: 3, step: 0.1, group: 'Energy', rank: -2.8, unit: 's' },
   { path: 'energy.damp', label: 'Their next touch lands at', min: 0.2, max: 1, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
   { path: 'energy.kage', label: 'Kage uses specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' },
-  { path: 'energy.trigger', label: 'Unleash yours with', type: 'choice', options: ['Curved swipe', 'Tap the ring', 'Either'], min: 0, max: 2, step: 1, group: 'Energy', rank: -2.8, unit: '' },
+  { path: 'energy.trigger', label: 'Unleash yours with', type: 'choice', options: ['Curved swipe', 'Tap the button', 'Either'], min: 0, max: 2, step: 1, group: 'Energy', rank: -2.8, unit: '' },
   { path: 'energy.curve', label: 'Curve it takes', min: 20, max: 150, step: 5, group: 'Energy', rank: -2.8, unit: '°' }
 );
 
@@ -10578,10 +10642,11 @@ function createUI(root, opts) {
   }
   enBtn.addEventListener('click', () => { if (opts.onSpecial) opts.onSpecial(); });
 
-  // ───────────── fire volleys (versus): each player's second power-up, a flame over their energy ring (it shows once won, burns
-  // while armed), and the streak toward a fire volley: a pip a hit in the hitter's colour, all ablaze once the ball is on fire ─────
+  // ───────────── fire volleys (versus): each player's second power-up, a flame beside their energy ring (it shows once won, burns
+  // while armed; yours is a button whenever the trigger setting lets your ring be one), and the streak toward a fire volley: a pip
+  // a hit in the hitter's colour, all ablaze once the ball is on fire ─────
   const fY = $('fYou'), fK = $('fKage'), stEl = $('streak');
-  let fOn = -1, fYS = '#', fKS = '#', fCol = -1, fPow = -1, sN = -1, sKey = -1;
+  let fOn = -1, fYS = '#', fKS = '#', fCol = -1, fPow = -1, fTap = -1, sN = -1, sKey = -1;
   // fs: fire.snap. charged: your swing has curved enough, clockwise, to throw it (it shows as armed).
   function fire(fs, show, charged) {
     const on = show && fs && fs.on ? 1 : 0;
@@ -10595,7 +10660,12 @@ function createUI(root, opts) {
     const pow = (CFG.fire.power | 0) === 1 && CFG.energy && CFG.energy.on > 0 ? 1 : 0, word = pow === 1 ? 'Second special' : 'Fireball'; // (as fire.js: no energy, no special)
     if (pow !== fPow) { fPow = pow; hud.setAttribute('data-power', pow === 1 ? 'special' : 'fireball'); fYS = '#'; fKS = '#'; }
     const ys = fs.armed.you || charged ? 'armed' : fs.held.you ? 'held' : '', ks = fs.armed.kage ? 'armed' : fs.held.kage ? 'held' : '';
-    if (ys !== fYS) { fYS = ys; fY.setAttribute('data-st', ys); fY.setAttribute('aria-label', ys === 'armed' ? word + ' armed: your next hit throws it' : ys === 'held' ? word + ' ready: swipe in a clockwise curve' : word + ': win a fire volley'); }
+    const tap = CFG.energy && (CFG.energy.trigger | 0) === 0 ? 0 : 1; // "Curved swipe" alone: the flame only shows it, as the ring does
+    if (ys !== fYS || tap !== fTap) {
+      fYS = ys; fTap = tap; fY.setAttribute('data-st', ys); fY.disabled = !ys || !tap;
+      fY.setAttribute('aria-pressed', ys === 'armed' ? 'true' : 'false');
+      fY.setAttribute('aria-label', ys === 'armed' ? word + ' armed: your next hit throws it' : ys === 'held' ? word + (tap ? ' ready: tap it, or swipe in a clockwise curve' : ' ready: swipe in a clockwise curve') : word + ': win a fire volley');
+    }
     if (ks !== fKS) { fKS = ks; fK.setAttribute('data-st', ks); fK.setAttribute('aria-label', ks === 'armed' ? 'Kage has armed his ' + word.toLowerCase() : ks === 'held' ? 'Kage holds a ' + word.toLowerCase() : "Kage's " + word.toLowerCase() + ': none'); }
     const n = Math.max(2, Math.round(CFG.fire.hits) || 2);
     if (n !== sN) { sN = n; stEl.textContent = ''; for (let i = 0; i < n; i++) stEl.appendChild(doc.createElement('i')); sKey = -1; }
@@ -10609,6 +10679,8 @@ function createUI(root, opts) {
       }
     }
   }
+
+  fY.addEventListener('click', () => { if (opts.onFireball) opts.onFireball(); });
 
   function hint(text) {
     if (text) { $('hintText').textContent = text; hintEl.classList.add('on'); } else hintEl.classList.remove('on');
@@ -11221,9 +11293,10 @@ function createUI(root, opts) {
 // drawn, not simulated, so with him switched off the game is the same game.
 //
 // Against Kage, volleys fill both players' energy bars (energy.js, the Feel panel's Energy group): a full bar is a special,
-// unleashed by a counter-clockwise curved swipe (the stroke shows it is charged the moment it has curved enough; a tap on your ring
-// or E can do it instead, by the setting). Kage arms his as a swing starts. Every hit goes through energy.prepare first, which is
-// all the physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
+// unleashed by a counter-clockwise curved swipe (the stroke shows it is charged the moment it has curved enough) or a tap on your
+// ring at the top of your side (or E); the setting can make it one or the other. Kage arms his as a swing starts. Every hit goes
+// through energy.prepare first, which is all the physics ever sees of it: a boost on the special itself, a damp on the touch that
+// answers it.
 //
 // What a special does is each player's SUPER (supers.js, the Feel panel's Specials group: pick one and its settings show):
 // Raijin and Shadow cut by default, or one of six that change what the ball does for one turn: swerve (it cuts in toward the
@@ -11283,6 +11356,7 @@ function createUI(root, opts) {
     onSkip: () => finale.skip(),
     onMuteToggle: () => { audio.unlock(); audio.setMuted(!audio.muted); return audio.muted; },
     onSpecial: armSpecial,
+    onFireball: armFire,
     audio,
   });
   // after createUI: the panel has applied the saved settings, and the URL wins over them for this load only
@@ -11294,14 +11368,17 @@ function createUI(root, opts) {
   const probe = document.createElement('div');
   probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
   document.body.appendChild(probe);
+  const inset = { t: 0, r: 0, b: 0, l: 0 }; // the safe-area insets, as of the last resize
+  let cornerKey = -1; // syncCorners: the power-up row's state the camera was last told (-1 before the first frame)
   function resize() {
     const vv = window.visualViewport;
     const w = Math.max(1, Math.round(vv ? vv.width : window.innerWidth)), h = Math.max(1, Math.round(vv ? vv.height : window.innerHeight));
     const cs = getComputedStyle(probe);
-    const inset = { t: parseFloat(cs.paddingTop) || 0, r: parseFloat(cs.paddingRight) || 0, b: parseFloat(cs.paddingBottom) || 0, l: parseFloat(cs.paddingLeft) || 0 };
+    inset.t = parseFloat(cs.paddingTop) || 0; inset.r = parseFloat(cs.paddingRight) || 0; inset.b = parseFloat(cs.paddingBottom) || 0; inset.l = parseFloat(cs.paddingLeft) || 0;
     const short = h < 520;
     const safe = { top: (short ? 48 : 88) + inset.t, bottom: (short ? 28 : 64) + inset.b, left: 10 + inset.l, right: 10 + inset.r };
     cam.resize(w, h, Math.min(window.devicePixelRatio || 1, 2) * quality, safe);
+    if (cornerKey >= 0) syncCorners(true); // the row's sizes follow the screen (style.css); the first frame tells it the first time
     scene.resize(w, h, Math.min(window.devicePixelRatio || 1, 2) * quality);
   }
   window.addEventListener('resize', resize);
@@ -11545,7 +11622,10 @@ function createUI(root, opts) {
   }
   function volleyWon(k, now, roundEnd) {
     audio.fire('won');
-    if (k === 'you') { audio.vibrate([20, 30, 20]); ui.hint(fire.fireball ? 'Fireball! Curve ↻ 🔥' : 'Special! Curve ↻ ⚡'); hintUntil = now + 2400; }
+    if (k === 'you') {
+      const tap = (CFG.energy.trigger | 0) !== 0 ? (coarse ? ' or tap' : ' or press F') : ''; // the flame by your ring takes a tap when the ring does
+      audio.vibrate([20, 30, 20]); ui.hint(fire.fireball ? 'Fireball! Curve ↻' + tap + ' 🔥' : 'Special! Curve ↻' + tap + ' ⚡'); hintUntil = now + 2400;
+    }
     if (!roundEnd) kage.onVolley(k === 'you' ? 'lost' : 'won'); // at a round's end he has his own words
   }
   function onFire(fe, now) {
@@ -11557,7 +11637,8 @@ function createUI(root, opts) {
   function readyHint() {
     const m = CFG.energy.trigger | 0;
     if (m === 1) return coarse ? 'Special ready · tap ⚡' : 'Special ready · press E';
-    return coarse || m === 0 ? 'Curve ↺ to unleash ⚡' : 'Curve ↺ or press E ⚡'; // short: it sits between the two rings
+    if (m === 2) return coarse ? 'Curve ↺ or tap ⚡' : 'Curve ↺ or press E ⚡';
+    return 'Curve ↺ to unleash ⚡';
   }
 
   // the special button (or E), when the trigger setting allows a tap: arm a full bar, or disarm it again
@@ -11714,6 +11795,20 @@ function createUI(root, opts) {
   }
   window.addEventListener('resize', () => syncPanel(true)); // a rotation can turn the drawer into a side panel (and back)
 
+  // The power-up buttons sit in a row under the HUD strip, in the top corners (style.css's --pu-* sizes): against Kage, with energy
+  // or fire on, the camera keeps the ball out from under them. Yours is the wider pair, and both corners keep its width, so a swap
+  // of halves needs no refit. A tall phone has room above the court already, and its fit does not move.
+  const hudEl = document.getElementById('hud');
+  function syncCorners(force) {
+    const key = vs() && (CFG.energy.on > 0 || CFG.fire.on > 0) ? 1 : 0;
+    if (key === cornerKey && !force) return;
+    cornerKey = key;
+    if (!key) { cam.setCorners(0, 0); return; }
+    const cs = getComputedStyle(hudEl), v = (n) => parseFloat(cs.getPropertyValue(n)) || 0, P = 1.1; // P: a ready button's pulse swells it up to 1.1 (egPulse, fbPulse)
+    const gap = v('--pu-gap'), wide = Math.max(v('--pu-y') + gap + v('--pu-fy') * (1 + P) / 2, v('--pu-k') + gap + v('--pu-fk') * (1 + P) / 2);
+    cam.setCorners(Math.max(inset.l, inset.r) + v('--pu-edge') + wide, inset.t + v('--pu-mid') + Math.max(v('--pu-y'), v('--pu-k')) * P / 2);
+  }
+
   // ---- one frame of the whole game ----
   // realDt drives the sim (clamped by the caller); clockDt is the true elapsed time, which is all the stopwatch should count
   // where the players stand, for the supers: what a spike goes for, and what it hits
@@ -11820,6 +11915,7 @@ function createUI(root, opts) {
     ui.energy(energy.snap, vs(), chargedS);
     ui.fire(fire.snap, vs(), chargedF);
     syncPanel(false);
+    syncCorners(false);
 
     if (draw) {
       view.now = now; view.halves = vs() ? kageSide : 0;
