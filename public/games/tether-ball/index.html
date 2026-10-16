@@ -1527,6 +1527,10 @@ const HIT_SOUNDS = [
 //   voices ─► pan ─► master (volume / mute) ─► compressor ─► soft clip ─► speakers
 //   (volume sits BEFORE the limiter, so even the loudest Feel-panel setting cannot clip the output)
 //
+// Every sound has its own level on the Feel panel's Audio group, under the master volume: turn them all down and the game is
+// silent. (The perfect hit's ring, the rope's snap and ticks, the pole, the floor and the round's sting once had none, so with
+// everything else down they still sounded, and a perfect hit beeped.) A sound at level 0 builds no nodes at all.
+//
 // Everything is scheduled on the audio clock at call time. A context that is missing, suspended or interrupted turns every call
 // into a silent no-op (a hit that lands before the browser lets us play is held for 0.6 s and sounds the moment it can).
 // createAudio({ context }) builds on a caller's context instead of its own: tests render through an OfflineAudioContext on
@@ -1536,9 +1540,15 @@ CFG.audio = {
   volume: 1, // master
   hitBody: 1, // the thump layer of a hit
   hitCrack: 1, // the crack and tick layers of a hit
+  ring: 1, // the struck-metal ring of a perfect hit
   thumpHz: 140, // where the thump starts before it falls to ~45
   whirr: 1, // ambient whirr / whoosh while the ball moves
   release: 1, // the rising whoosh as time speeds back up
+  snap: 1, // the rope jerking taut: a plucked twang, after most hits
+  wrap: 1, // a tick for every full turn of rope on the pole, climbing in pitch as it fills
+  pole: 1, // the ball touching the pole: a bright clack
+  ground: 1, // the ball bouncing on the floor
+  wound: 1, // the sting when a round is won (the rope wound all the way)
   flash: 1, // Kiru's flash step: the swish as he blinks across the court
   special: 1, // the specials (energy.js): Raijin's thunderclap, Kage's shadow cut, the supers' (supers.js), and the energy bar's cues
   fire: 1, // fire volleys and the fireball (fire.js): the ball catching fire and crackling, a volley won, a swing charging, a burn, a fire going out
@@ -1555,9 +1565,15 @@ CFG_SCHEMA.push(
   { path: 'audio.hitPitch', label: 'Sampled hit pitch', min: 0.6, max: 1.4, step: 0.02, group: 'Audio', unit: 'x' },
   { path: 'audio.hitBody', label: 'Hit thump', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.hitCrack', label: 'Hit crack', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.ring', label: 'Perfect-hit ring', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.thumpHz', label: 'Thump pitch', min: 90, max: 220, step: 5, group: 'Audio', unit: 'Hz' },
   { path: 'audio.whirr', label: 'Whirr while moving', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.release', label: 'Speed-up whoosh', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.snap', label: 'Rope snap', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.wrap', label: 'Rope tick per turn', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.pole', label: 'Pole clack', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.ground', label: 'Floor bounce', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.wound', label: 'Round-won sting', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.flash', label: "Kiru's flash step", min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.special', label: 'Special moves', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.fire', label: 'Fire sounds', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
@@ -1658,6 +1674,7 @@ function createAudio(opts) {
   }
 
   function volume() { const v = +CFG.audio.volume; return v >= 0 ? v : v < 0 ? 0 : 1; } // a NaN from the Feel panel must not mute the game
+  function level(k) { const v = +CFG.audio[k]; return v > 0 ? v : 0; } // one sound's own level (a NaN is silence, as the effect sliders' always was)
 
   function at() { const c = ctx.currentTime; return (c < WARM ? WARM : c) + LEAD; } // when a sound scheduled now begins
 
@@ -1777,7 +1794,8 @@ function createAudio(opts) {
   function hitVoice(h, p) {
     const i = (CFG.audio.hitVoice | 0) - 1, b = HV.buf[i], meta = typeof HIT_SOUNDS !== 'undefined' ? HIT_SOUNDS[i] : null;
     if (!b || !meta) return false;
-    const C = CFG.audio, rev = !!h.reversed, perfect = h.quality === 'perfect' && !rev, graze = h.quality === 'graze';
+    const C = CFG.audio, rev = !!h.reversed, perfect = h.quality === 'perfect' && !rev, graze = h.quality === 'graze', ring = perfect ? level('ring') : 0;
+    if (!(level('hitBody') > 0 || level('hitCrack') > 0 || ring > 0)) return true; // every layer turned down: nothing to build
     if (!room(perfect ? 12 : 8, true)) return true;
     const t = at(), v = begin(), dv = 0.97 + rnd() * 0.06;
     const lvl = 0.14 + 0.86 * Math.pow(p, 1.15);
@@ -1798,10 +1816,10 @@ function createAudio(opts) {
       burst(v, t, ns, 'bandpass', U.lerp(2300, 3700, p) * dv, U.lerp(0.9, 1.5, p), 0.42 * ck * (rev ? 0.4 : 1), 0.0005, U.lerp(0.04, 0.1, p));
       if (!rev) burst(v, t, ns, 'highpass', 7000, 0.7, 0.35 * ck, 0.0003, U.lerp(0.008, 0.016, p));
     }
-    if (perfect) { // the same struck-metal ring as the synth's perfect hit
+    if (ring > 0) { // the same struck-metal ring as the synth's perfect hit
       const fr = 980 * dv, dr = U.lerp(0.55, 0.95, p);
-      tone(v, t, null, fr, fr, 1, 0.17 * lvl, 0.0008, dr);
-      tone(v, t, null, fr * 2.51, fr * 2.51, 1, 0.08 * lvl, 0.0008, dr * 0.6);
+      tone(v, t, null, fr, fr, 1, 0.17 * lvl * ring, 0.0008, dr);
+      tone(v, t, null, fr * 2.51, fr * 2.51, 1, 0.08 * lvl * ring, 0.0008, dr * 0.6);
     }
     reap(v);
     return true;
@@ -1814,7 +1832,8 @@ function createAudio(opts) {
     if (S.muted) return;
     if (!ready()) { late.at = Date.now(); late.power = p; late.quality = h.quality; late.reversed = !!h.reversed; return; }
     if ((CFG.audio.hitVoice | 0) > 0 && hitVoice(h, p)) return;
-    const C = CFG.audio, rev = !!h.reversed, perfect = h.quality === 'perfect' && !rev, graze = h.quality === 'graze';
+    const C = CFG.audio, rev = !!h.reversed, perfect = h.quality === 'perfect' && !rev, graze = h.quality === 'graze', ring = perfect ? level('ring') : 0;
+    if (!(level('hitBody') > 0 || level('hitCrack') > 0 || ring > 0)) return; // every layer turned down: nothing to build
     if (!room(rev ? 7 : perfect ? 13 : 9, true)) return;
     const t = at(), v = begin();
     const lvl = 0.14 + 0.86 * Math.pow(p, 1.15), dv = 0.97 + rnd() * 0.06; // level by power; a little pitch variation hit to hit
@@ -1833,17 +1852,17 @@ function createAudio(opts) {
     // tick: the bright transient that makes the contact land
     if (!rev) burst(v, t, ns, 'highpass', 7000, 0.7, 0.35 * ck, 0.0003, U.lerp(0.008, 0.016, p));
     // ring: a struck-metal pair of inharmonic partials; it hangs through the freeze
-    if (perfect) {
+    if (ring > 0) {
       const fr = 980 * dv, dr = U.lerp(0.55, 0.95, p);
-      tone(v, t, null, fr, fr, 1, 0.17 * lvl, 0.0008, dr);
-      tone(v, t, null, fr * 2.51, fr * 2.51, 1, 0.08 * lvl, 0.0008, dr * 0.6);
+      tone(v, t, null, fr, fr, 1, 0.17 * lvl * ring, 0.0008, dr);
+      tone(v, t, null, fr * 2.51, fr * 2.51, 1, 0.08 * lvl * ring, 0.0008, dr * 0.6);
     }
     reap(v);
   }
 
   // ---- time speeds back up ----
   function release(power) {
-    if (!ready() || !room(6, true)) return;
+    if (!(level('release') > 0) || !ready() || !room(6, true)) return;
     const C = CFG.audio, T = CFG.timeWarp, p = power > 0 ? (power < 1 ? power : 1) : 0;
     const q = T && T.powerCurve !== 1 ? Math.pow(p, T.powerCurve) : p;
     const dur = Math.max(0.05, (T ? U.lerp(T.rampSoft, T.rampHard, q) : 220 + 300 * p) / 1000), ease = T ? Math.max(1, T.rampEase) : 2.2;
@@ -2085,11 +2104,12 @@ function createAudio(opts) {
 
   // ---- the rest of the sounds ----
   function snap(strength) { // the rope jerks taut: a plucked, twangy click
-    if (!ready()) return;
+    const L = level('snap');
+    if (!(L > 0) || !ready()) return;
     const s = strength > 0 ? (strength < 1 ? strength : 1) : 0, t = at();
     if (t < S.tSnap + 0.05 || !room(6, false)) return;
     S.tSnap = t;
-    const v = begin(), lvl = 0.15 + 0.85 * s, f = U.lerp(300, 520, s) * (0.97 + rnd() * 0.06);
+    const v = begin(), lvl = (0.15 + 0.85 * s) * L, f = U.lerp(300, 520, s) * (0.97 + rnd() * 0.06);
     const o = osc(t, f * 1.06, 'sawtooth'), lp = filt('lowpass', 6000, 0.8), g = ctx.createGain(), end = t + 0.16;
     o.frequency.setTargetAtTime(f, t, 0.02);
     lp.frequency.setValueAtTime(5200, t); lp.frequency.exponentialRampToValueAtTime(700, t + 0.09);
@@ -2101,22 +2121,24 @@ function createAudio(opts) {
   }
 
   function ground(speed) { // a soft rubbery bounce
-    if (!ready()) return;
+    const L = level('ground');
+    if (!(L > 0) || !ready()) return;
     const k = speed > 0 ? (speed < 7 ? speed / 7 : 1) : 0, t = at();
     if (t < S.tGround + 0.07 || k < 0.04 || !room(5, false)) return;
     S.tGround = t;
-    const v = begin(), lvl = 0.15 + 0.85 * k;
+    const v = begin(), lvl = (0.15 + 0.85 * k) * L;
     tone(v, t, W.thump, U.lerp(95, 125, k), 52, 0.018, 0.5 * lvl, 0.001, U.lerp(0.08, 0.2, k));
     burst(v, t, noiseSrc(v, t, 0.08), 'lowpass', 650, 0.7, 0.28 * lvl, 0.0008, 0.05);
     reap(v);
   }
 
   function pole(speed) { // the ball touching the pole: a bright wood-on-metal clack
-    if (!ready()) return;
+    const L = level('pole');
+    if (!(L > 0) || !ready()) return;
     const k = speed > 0 ? (speed < 10 ? speed / 10 : 1) : 0, t = at();
     if (t < S.tPole + 0.07 || k < 0.03 || !room(6, false)) return;
     S.tPole = t;
-    const v = begin(), lvl = 0.2 + 0.8 * k, f = 1450 * (0.97 + rnd() * 0.06);
+    const v = begin(), lvl = (0.2 + 0.8 * k) * L, f = 1450 * (0.97 + rnd() * 0.06);
     tone(v, t, null, f, f, 1, 0.3 * lvl, 0.0004, U.lerp(0.07, 0.16, k));
     tone(v, t, null, f * 2.42, f * 2.42, 1, 0.16 * lvl, 0.0004, U.lerp(0.035, 0.07, k));
     tone(v, t, W.thump, 230, 140, 0.02, 0.3 * lvl, 0.0006, 0.07);
@@ -2124,23 +2146,25 @@ function createAudio(opts) {
   }
 
   function wrapTick(turns) { // one tick per full turn on the pole; the pitch climbs a pentatonic ladder as the rope fills
-    if (!ready()) return;
+    const L = level('wrap');
+    if (!(L > 0) || !ready()) return;
     const t = at();
     if (t < S.tWrap + 0.06 || !room(2, false)) return;
     S.tWrap = t;
     const i = turns >= 1 ? (turns > LADDER.length ? LADDER.length : turns) - 1 : 0, f = 440 * Math.pow(2, LADDER[i] / 12), v = begin();
-    tone(v, t, 'triangle', f * 1.03, f, 0.012, 0.3, 0.001, 0.09);
+    tone(v, t, 'triangle', f * 1.03, f, 0.012, 0.3 * L, 0.001, 0.09);
     reap(v);
   }
 
   function wound() { // the finishing sting: a rising arpeggio that lands on a held chord, with a low resolve underneath
-    if (!ready() || !room(12, true)) return;
+    const L = level('wound');
+    if (!(L > 0) || !ready() || !room(12, true)) return;
     const t = at(), v = begin(), notes = [523.25, 659.25, 783.99], gap = 0.065;
-    for (let i = 0; i < notes.length; i++) tone(v, t + i * gap, W.chime, notes[i], notes[i], 1, 0.3, 0.003, 0.32);
+    for (let i = 0; i < notes.length; i++) tone(v, t + i * gap, W.chime, notes[i], notes[i], 1, 0.3 * L, 0.003, 0.32);
     const tc = t + gap * 3;
-    tone(v, tc, W.chime, 1046.5, 1046.5, 1, 0.26, 0.004, 1.0);
-    tone(v, tc, W.chime, 659.25, 659.25, 1, 0.14, 0.004, 0.9);
-    tone(v, tc, W.thump, 105, 42, 0.05, 0.55, 0.002, 0.6);
+    tone(v, tc, W.chime, 1046.5, 1046.5, 1, 0.26 * L, 0.004, 1.0);
+    tone(v, tc, W.chime, 659.25, 659.25, 1, 0.14 * L, 0.004, 0.9);
+    tone(v, tc, W.thump, 105, 42, 0.05, 0.55 * L, 0.002, 0.6);
     reap(v);
   }
 
