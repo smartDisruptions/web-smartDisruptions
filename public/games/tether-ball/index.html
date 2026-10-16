@@ -300,6 +300,39 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   .grp > summary { min-height: 40px; }
 }
 
+/* ───────────── the soundboard: the picked sound's editor pinned at the top while the pads scroll under it ───────────── */
+.sb { padding: 0 0 8px; }
+.sb-ed { position: sticky; top: 0; z-index: 2; margin: 0 0 4px; padding: 6px 9px 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,.1); background: #171c2a; box-shadow: 0 8px 14px -8px rgba(0,0,0,.7); }
+.sb-hint { margin: 2px 0; font: 600 13px/1.35 var(--ui); color: var(--dim); }
+.sb-head { display: flex; align-items: center; gap: 6px; }
+.sb-ttl { flex: 1; min-width: 0; }
+.sb-cat { display: block; font: 800 10px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.sb-name { display: block; margin-top: 2px; font: 800 15px/1.15 var(--ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-when { display: -webkit-box; margin-top: 1px; font: 600 11.5px/1.25 var(--ui); color: var(--dim); -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sb-play { display: inline-flex; align-items: center; gap: 5px; padding: 0 12px 0 9px; }
+.sb-play svg { width: 16px; height: 16px; }
+.sb-play.on { background: var(--accent); border-color: transparent; color: var(--ink); }
+.sb-var { margin-top: 5px; flex-wrap: wrap; } /* the takes keep their words: a second line when a narrow panel cannot fit them */
+.sb-var .opt { flex: 1 0 auto; height: 28px; padding: 0 7px; font-size: 12px; }
+.sb-knobs { margin-top: 2px; }
+.sb .sb-knobs .row { grid-template-columns: 54px minmax(0, 1fr) 56px 28px; grid-template-areas: "lab sl val rst"; column-gap: 4px; padding: 0; }
+.sb .sb-knobs .lab { grid-area: lab; margin: 0; font-size: 13px; }
+.sb .sb-knobs .sl { grid-area: sl; grid-column: auto; height: 30px; }
+.sb .sb-knobs .val { grid-area: val; font-size: 13px; }
+.sb .sb-knobs .rst { grid-area: rst; margin: 0; width: 28px; height: 28px; }
+.sb-note { margin: 4px 0 0; font: 600 12.5px/1.3 var(--ui); color: #ff9a7a; }
+.sb-k { margin: 12px 2px 6px; font: 800 11px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--c, var(--dim)); }
+.sb-pads { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 6px; }
+.pad { position: relative; min-width: 0; height: 44px; padding: 0 6px; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); border-bottom: 3px solid var(--c, rgba(255,255,255,.2)); background: rgba(255,255,255,.06); color: var(--text); font: 700 12.5px/1.1 var(--ui); text-align: center; white-space: normal; overflow: hidden; } /* a two-word label may wrap in a narrow column */
+.pad:active { transform: scale(.96); }
+.pad.sel { box-shadow: inset 0 0 0 2px var(--accent); }
+.pad.chg::after { content: ''; position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.pad.on { background: rgba(155,176,255,.24); border-color: var(--c, var(--accent)); }
+.pad.wait { animation: padWait .8s ease-in-out infinite alternate; }
+@keyframes padWait { from { background: rgba(255,255,255,.06); } to { background: rgba(155,176,255,.22); } }
+/* a short drawer (a small phone, or one on its side): the pinned editor gives up its description, so more pads show under it */
+@media (max-height: 700px) and (max-aspect-ratio: 1/1), (max-height: 519px) { #panel:not(.full) .sb-when { display: none; } }
+
 /* ───────────── wide screens: the panel docks right, the strip stays centred over the court ───────────── */
 @media (min-aspect-ratio: 1/1) {
   #panel { left: auto; top: 0; bottom: 0; right: 0; width: min(320px, 46vw); height: auto; max-width: none; margin: 0; padding: var(--st) var(--sr) var(--sb) 0; border-radius: 0; border: 0; border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgba(0,0,0,.5); transform: translateX(100%); }
@@ -359,7 +392,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 
 @media (prefers-reduced-motion: reduce) {
   #panel, #panel.open, #result, #result.on, #hint, .toast, #hSpeed { transition: none; }
-  #hintText, #result.on .card, #result.on .badge, .ey[data-st="full"], .fy[data-st="held"], #streak i.f { animation: none; }
+  #hintText, #result.on .card, #result.on .badge, .ey[data-st="full"], .fy[data-st="held"], #streak i.f, .pad.wait { animation: none; }
   .eg, .eg .fl { transition: none; }
 }
 </style>
@@ -526,6 +559,8 @@ const CFG = {
 };
 
 // The Feel panel's schema: [{ path:'hit.vMax', label:'Max ball speed', min, max, step, group:'Hit', unit:'m/s' }]
+// (optional: type 'toggle' / 'choice' with options, rank for the group's place, signed to show a + on positive values, sparse
+// to leave it out of a snapshot at its default, sound for the soundboard's entries: see ui.js and audio.js)
 const CFG_SCHEMA = [];
 
 // ---- helpers the panel and main.js use (pure) ----
@@ -544,10 +579,22 @@ function cfgSet(path, v) {
 // Defaults are frozen by main.js AFTER every module has declared its section.
 let CFG_DEFAULT = null;
 function cfgFreezeDefaults() { CFG_DEFAULT = JSON.parse(JSON.stringify(CFG)); }
-// Only the numbers on the panel: { 'hit.vMax': 17, ... }
+// A value as it was when the defaults were frozen (undefined before then, or for a path that was not a number)
+function cfgDefault(path) {
+  let o = CFG_DEFAULT;
+  const ks = path.split('.');
+  for (let i = 0; i < ks.length; i++) o = o && o[ks[i]];
+  return typeof o === 'number' ? o : undefined;
+}
+// Only the numbers on the panel: { 'hit.vMax': 17, ... }. An entry marked `sparse` (the soundboard's hundred-odd edits) is left
+// out while it sits at its default.
 function cfgSnapshotTuned() {
   const o = {};
-  for (let i = 0; i < CFG_SCHEMA.length; i++) o[CFG_SCHEMA[i].path] = cfgGet(CFG_SCHEMA[i].path);
+  for (let i = 0; i < CFG_SCHEMA.length; i++) {
+    const s = CFG_SCHEMA[i], v = cfgGet(s.path);
+    if (s.sparse && CFG_DEFAULT && v === cfgDefault(s.path)) continue;
+    o[s.path] = v;
+  }
   return o;
 }
 function cfgApplyTuned(o) {
@@ -1559,6 +1606,12 @@ const MUSIC_CREDIT = 'Music generated with ElevenLabs Music';
 // silent. (The perfect hit's ring, the rope's snap and ticks, the pole, the floor and the round's sting once had none, so with
 // everything else down they still sounded, and a perfect hit beeped.) A sound at level 0 builds no nodes at all.
 //
+// The Feel panel's Soundboard (the sounds below, at the top of the file) lists every sound, the music included, to play on its own (board.play) and
+// to edit: a pitch, a volume and a tone each, held wherever the game plays it. Pitch detunes a voice's oscillators and filters
+// (noise is left alone: played faster it would only end sooner, and its filters carry the pitch), and plays a recording faster
+// or slower; volume and tone are an insert the sound's voices pass through (gain ─► low-pass ─► high shelf), made the first
+// time a sound is edited. An unedited sound is the graph it always was.
+//
 // Everything is scheduled on the audio clock at call time. A context that is missing, suspended or interrupted turns every call
 // into a silent no-op (a hit that lands before the browser lets us play is held for 0.6 s and sounds the moment it can).
 // createAudio({ context }) builds on a caller's context instead of its own: tests render through an OfflineAudioContext on
@@ -1617,6 +1670,64 @@ CFG_SCHEMA.push(
   { path: 'audio.haptics', label: 'Haptics', min: 0, max: 1, step: 1, group: 'Audio', unit: '' }
 );
 
+// ---- the soundboard (the Feel panel's Soundboard group: ui.js draws it from the entries below, by their `sound`) ----
+// Every sound the game makes. A pad plays it as the game would, its edits and the mix included: a level at 0 in the Audio group
+// silences its pad too (the editor says which), and only the Music switch is not a level (a track's pad plays with the music
+// off). vars: the takes a pad can play (a hit soft or hard, the whirr's sweep or its slow-mo), def the one it starts on. vol: a
+// sound whose own level is already in the Audio group (Rope snap...) has that one as its volume, so no second slider multiplies
+// it. gate: the Audio levels it sits under (silent when all of them are at 0). when: what makes it in the game.
+// (in a block: audio.js puts only createAudio in the build's shared scope; createAudio finds the sounds again by their entries)
+{
+  const takes = ['Soft', 'Hard', 'Perfect', 'Graze', 'Reversal'];
+  const sounds = [].concat(
+    (typeof MUSIC_TRACKS !== 'undefined' ? MUSIC_TRACKS : []).map((t, i) => ({ id: t.name, cat: 'Music', label: t.short || t.label, title: t.label, when: "The game's music, when it is the Audio group's Music track", vars: ['From the top', 'The loop', 'The loop join'], music: i, gate: ['audio.music'] })),
+    [{ id: 'hit', cat: 'Hits', label: 'Synth', title: 'Synth hit', when: 'Every hit, with Hit sound on Synth', vars: takes, def: 1, gate: ['audio.hitBody', 'audio.hitCrack'] }],
+    (typeof HIT_SOUNDS !== 'undefined' ? HIT_SOUNDS : []).map((v, i) => ({ id: v.name, cat: 'Hits', label: v.label, title: v.label + ' hit', when: 'Every hit, with Hit sound on ' + v.label, vars: takes, def: 1, voice: i, gate: ['audio.hitBody', 'audio.hitCrack'] })),
+    [
+      { id: 'whirr', cat: 'Ball and rope', label: 'Whirr', title: 'Whirr', when: 'The ball in flight, higher as it speeds up; slow-mo drags it down', vars: ['Sweep', 'Slow-mo'], vol: 'audio.whirr' },
+      { id: 'release', cat: 'Ball and rope', label: 'Speed-up', title: 'Speed-up whoosh', when: 'Time speeding back up after a hit', vars: ['Soft hit', 'Hard hit'], def: 1, vol: 'audio.release' },
+      { id: 'snap', cat: 'Ball and rope', label: 'Rope snap', title: 'Rope snap', when: 'The rope jerking taut, after most hits', vars: ['Light', 'Hard'], def: 1, vol: 'audio.snap' },
+      { id: 'wrap', cat: 'Ball and rope', label: 'Wrap tick', title: 'Rope tick per turn', when: 'Every full turn of rope on the pole, higher as it fills', vars: ['Climb', 'First turn', 'Last turn'], vol: 'audio.wrap' },
+      { id: 'pole', cat: 'Ball and rope', label: 'Pole clack', title: 'Pole clack', when: 'The ball touching the pole', vars: ['Tap', 'Hard'], def: 1, vol: 'audio.pole' },
+      { id: 'ground', cat: 'Ball and rope', label: 'Floor', title: 'Floor bounce', when: 'The ball bouncing on the floor', vars: ['Soft', 'Hard'], def: 1, vol: 'audio.ground' },
+      { id: 'wound', cat: 'Ball and rope', label: 'Round won', title: 'Round-won sting', when: 'The rope wound all the way', vol: 'audio.wound' },
+      { id: 'flash', cat: 'Moves', label: 'Flash step', title: "Kiru's flash step", when: 'Kiru blinking across the court to the ball', vars: ['Short', 'Long'], def: 1, vol: 'audio.flash' },
+      { id: 'thunder', cat: 'Moves', label: 'Thunder', title: 'Thunderclap', when: 'Your special, on top of its hit', gate: ['audio.special'] },
+      { id: 'shadow', cat: 'Moves', label: 'Shadow cut', title: 'Shadow cut', when: "Kage's special, on top of its hit", gate: ['audio.special'] },
+      { id: 'energyFull', cat: 'Moves', label: 'Bar full', title: 'Energy bar full', when: 'An energy bar filling: a special is ready', gate: ['audio.special'] },
+      { id: 'energyArm', cat: 'Moves', label: 'Armed', title: 'Special armed', when: 'Arming a special, or a swing curving enough to unleash one', gate: ['audio.special'] },
+      { id: 'energyOff', cat: 'Moves', label: 'Disarmed', title: 'Special disarmed', when: 'Disarming a special again', gate: ['audio.special'] },
+    ],
+    ['Swerve', 'Spike', 'Phantom', 'Decoys', 'Slip', 'Warp'].map((n) => ({ id: n.toLowerCase(), cat: 'Supers', label: n, title: n, when: 'Casting the ' + n + ' super, on top of its hit', gate: ['audio.special'] })),
+    [
+      { id: 'cutIn', cat: 'Super moments', label: 'Cut in', title: 'Swerve cuts in', when: 'A Swerve ball cutting in', gate: ['audio.special'] },
+      { id: 'lockOn', cat: 'Super moments', label: 'Lock-on', title: 'Spike locks on', when: 'A Spike turning on its target', gate: ['audio.special'] },
+      { id: 'blow', cat: 'Super moments', label: 'Body blow', title: 'Body blow', when: 'A Spike landing on a player', gate: ['audio.special'] },
+      { id: 'reveal', cat: 'Super moments', label: 'Reveal', title: 'Phantom reveal', when: 'A Phantom ball showing again', gate: ['audio.special'] },
+      { id: 'pop', cat: 'Super moments', label: 'Decoy pop', title: 'Decoy pop', when: 'A decoy popped by a swipe or a swing', gate: ['audio.special'] },
+      { id: 'slipOff', cat: 'Super moments', label: 'Slip off', title: 'Slip off', when: 'A touch slipping off a Slip ball', gate: ['audio.special'] },
+      { id: 'blinkOut', cat: 'Super moments', label: 'Blink out', title: 'Warp blinks out', when: 'A Warp ball blinking out', gate: ['audio.special'] },
+      { id: 'blinkIn', cat: 'Super moments', label: 'Blink in', title: 'Warp blinks in', when: 'A Warp ball solid again', gate: ['audio.special'] },
+      { id: 'ignite', cat: 'Fire', label: 'Ignite', title: 'Ignite', when: 'The ball catching fire, or a fireball thrown', gate: ['audio.fire'] },
+      { id: 'fireWon', cat: 'Fire', label: 'Volley won', title: 'Fire volley won', when: 'Winning a fire volley: the power-up', gate: ['audio.fire'] },
+      { id: 'fireArm', cat: 'Fire', label: 'Charged', title: 'Fireball charged', when: 'A swing charged with the fireball', gate: ['audio.fire'] },
+      { id: 'burn', cat: 'Fire', label: 'Burn', title: 'Burned touch', when: 'A burned touch: the sizzle, then the fall', gate: ['audio.fire'] },
+      { id: 'fireOut', cat: 'Fire', label: 'Fire out', title: 'Fire out', when: 'A fire hissing out', gate: ['audio.fire'] },
+      { id: 'crackle', cat: 'Fire', label: 'Crackle', title: 'Crackle', when: 'A burning ball, a dozen pops a second', vars: ['Burning', 'One pop'], gate: ['audio.fire'] },
+    ]
+  );
+  // each sound's edits: pitch in semitones, volume (unless it has one in the Audio group), tone -10 (darker) .. +10 (brighter).
+  // Copy leaves these out while they are at their defaults (sparse): a hundred zeros would bury the rest of the snapshot.
+  CFG.board = {};
+  for (let i = 0; i < sounds.length; i++) {
+    const s = sounds[i], p = 'board.' + s.id + '.';
+    CFG.board[s.id] = s.vol ? { pitch: 0, tone: 0 } : { pitch: 0, vol: 1, tone: 0 };
+    CFG_SCHEMA.push({ path: p + 'pitch', label: 'Pitch', min: -12, max: 12, step: 1, group: 'Soundboard', unit: 'st', signed: true, sound: s, sparse: true });
+    if (!s.vol) CFG_SCHEMA.push({ path: p + 'vol', label: 'Volume', min: 0, max: 2, step: 0.05, group: 'Soundboard', unit: 'x', sound: s, sparse: true });
+    CFG_SCHEMA.push({ path: p + 'tone', label: 'Tone', min: -10, max: 10, step: 1, group: 'Soundboard', unit: '', signed: true, sound: s, sparse: true });
+  }
+}
+
 function createAudio(opts) {
   opts = opts || {};
   const LEAD = 0.003; // s: scheduled sounds start just ahead of the clock, so no envelope begins mid-block
@@ -1630,9 +1741,9 @@ function createAudio(opts) {
   const stats = { peak: 0, dropped: 0, made: 0, freed: 0, errors: 0, lastError: null, get live() { return liveNodes(); } };
   let cur = null; // the voice being built, so a failure halfway can take its nodes down with it
   const late = { at: -1, power: 0, quality: 'good', reversed: false }; // a hit that landed before the context could play
-  const S = { muted: false, gestured: false, offline: false, failed: false, nudge: 0, tSnap: -1, tGround: -1, tPole: -1, tWrap: -1 };
+  const S = { muted: false, gestured: false, offline: false, failed: false, nudge: 0, tSnap: -1, tGround: -1, tPole: -1, tWrap: -1, when: -1 }; // when: a queued take's start
   // the ambient voice (a looped noise through a band-pass and a low-pass) and the last value sent to each of its params
-  const A = { src: null, bp: null, lp: null, g: null, quiet: 0, vG: -1, vF: -1, vL: -1, vR: -1, vP: 9, vol: -1, crk: 0 }; // crk: the fire's crackle carried over
+  const A = { src: null, bp: null, lp: null, g: null, to: null, quiet: 0, vG: -1, vF: -1, vL: -1, vR: -1, vP: 9, vol: -1, crk: 0 }; // crk: the fire's crackle carried over; to: where it feeds
   let ctx = null, bus = null, master = null, pan = null, noise = null;
   const W = { thump: null, chime: null };
   const HV = { buf: [], off: [], started: false, loaded: 0, failed: 0, ready: null }; // the sampled hit voices, decoded
@@ -1641,8 +1752,19 @@ function createAudio(opts) {
   // missing); gen tells a decode that finishes after the track changed to drop its buffer; the playing source and its fade; where
   // it started (t0, at offset off); swell: how slowly the next start comes in
   const TRACKS = typeof MUSIC_TRACKS !== 'undefined' ? MUSIC_TRACKS : []; // once: tick() must not allocate, not even an empty list
-  const MU = { cur: -1, bytes: null, bytesFor: -1, buf: null, state: 'none', asked: {}, miss: {}, gen: 0, ready: null, src: null, fade: null, lp: null, g: null, t0: 0, off: 0, swell: 0.5, played: false, vG: -1, vF: -1 };
+  // (rate: the track's pitch on the soundboard, a turntable's: it plays faster too; to: where its level node feeds)
+  const MU = { cur: -1, bytes: null, bytesFor: -1, buf: null, state: 'none', asked: {}, miss: {}, gen: 0, ready: null, src: null, fade: null, lp: null, g: null, t0: 0, off: 0, rate: 1, to: null, swell: 0.5, played: false, vG: -1, vF: -1 };
   const LADDER = [0, 2, 4, 7, 9, 12, 14, 16]; // semitones above A4, one rung per turn of rope
+  // the soundboard: the sounds by id, each edited sound's insert, a track played on its own (PV: i, which take, its buffer, its
+  // state none → fetching → decoding → ready → playing, or failed / missing), the takes queued to play later (a climb of rope
+  // ticks: { at, fn, a }, by time), and a pad tapped before the context could play
+  const BOARD = Object.create(null);
+  for (let i = 0; i < CFG_SCHEMA.length; i++) if (CFG_SCHEMA[i].sound) BOARD[CFG_SCHEMA[i].sound.id] = CFG_SCHEMA[i].sound;
+  const INS = Object.create(null);
+  const PV = { i: -1, from: 0, buf: null, state: 'none', gen: 0, src: null, fade: null, to: null, vG: -1, vR: -1 };
+  const BQ = [];
+  const pend = { id: null, k: 0, at: -1 };
+  const HIT_ARGS = [{ power: 0.25, quality: 'good' }, { power: 0.9, quality: 'good' }, { power: 0.9, quality: 'perfect' }, { power: 0.5, quality: 'graze' }, { power: 0.75, quality: 'good', reversed: true }];
 
   try { S.muted = localStorage.getItem('tetherball.muted') === '1'; } catch (e) { /* private mode: start unmuted */ }
 
@@ -1720,7 +1842,10 @@ function createAudio(opts) {
   function volume() { const v = +CFG.audio.volume; return v >= 0 ? v : v < 0 ? 0 : 1; } // a NaN from the Feel panel must not mute the game
   function level(k) { const v = +CFG.audio[k]; return v > 0 ? v : 0; } // one sound's own level (a NaN is silence, as the effect sliders' always was)
 
-  function at() { const c = ctx.currentTime; return (c < WARM ? WARM : c) + LEAD; } // when a sound scheduled now begins
+  function at() { // when a sound scheduled now begins (a queued soundboard take: when it is due, unless that has passed)
+    const c = ctx.currentTime, t = (c < WARM ? WARM : c) + LEAD;
+    return S.when > t ? S.when : t;
+  }
 
   function ready() { // may sound be scheduled right now?
     if (!ctx || S.muted) return false;
@@ -1730,6 +1855,11 @@ function createAudio(opts) {
   }
 
   function flushLate() {
+    if (pend.at >= 0) { // a pad tapped while the context was waking: it plays now, if the tap was recent
+      const id = pend.id, k = pend.k, fresh = Date.now() - pend.at < 600;
+      pend.at = -1;
+      if (fresh) { try { play(id, k); } catch (e) { fail(e); } }
+    }
     if (late.at < 0) return;
     const fresh = Date.now() - late.at < 600, p = late.power, q = late.quality, r = late.reversed;
     late.at = -1;
@@ -1757,10 +1887,13 @@ function createAudio(opts) {
     if (liveNodes() + n > CFG.audio.maxNodes - (prio ? 0 : 12)) { stats.dropped++; return false; }
     return true;
   }
-  function begin() { cur = { n: [], last: null, end: 0 }; return cur; }
+  // id: the sound (the soundboard's), for its pitch and for where it connects (out: its insert, or the bus)
+  function begin(id) { cur = { n: [], last: null, end: 0, id: id, out: outFor(id, bus) }; return cur; }
   function keep(v, src, end) { if (end > v.end) { v.end = end; v.last = src; } }
   function reap(v) { // every node of the voice is disconnected when its longest source ends
-    const n = v.n;
+    const n = v.n, c = semis(v.id) * 100;
+    // the sound's pitch: its oscillators and filters, in cents (a buffer source is noise, or a recording that set its own rate)
+    if (c) for (let i = 0; i < n.length; i++) if (n[i].detune && !('buffer' in n[i])) n[i].detune.value = c;
     cur = null;
     stats.made += n.length;
     active.push(v);
@@ -1789,7 +1922,7 @@ function createAudio(opts) {
     v.n.push(o, g);
     if (f1 !== f0) o.frequency.setTargetAtTime(f1, t, tau);
     env(g, t, peak, atk, dur);
-    o.connect(g); g.connect(bus); o.start(t); o.stop(end);
+    o.connect(g); g.connect(v.out); o.start(t); o.stop(end);
     keep(v, o, end);
   }
   // a stretch of the shared noise buffer; layers (burst) hang off it, so one source can feed a crack and a tick
@@ -1804,7 +1937,42 @@ function createAudio(opts) {
     const b = filt(type, f, q), g = ctx.createGain();
     v.n.push(b, g);
     env(g, t, peak, atk, dur);
-    src.connect(b); b.connect(g); g.connect(bus);
+    src.connect(b); b.connect(g); g.connect(v.out);
+  }
+
+  // ---- the soundboard's edits (CFG.board): read at use, like every setting, so the panel retunes a sound the next time it plays ----
+  function semis(id) { const b = CFG.board && CFG.board[id], v = b ? +b.pitch : 0; return v >= -24 && v <= 24 ? v : 0; } // a NaN plays at pitch
+  function ratio(id) { const st = semis(id); return st ? Math.pow(2, st / 12) : 1; }
+  function vol(id) { // its own volume: 1 for a sound whose volume is its Audio level (that one is in the sound already)
+    const b = CFG.board && CFG.board[id];
+    if (!b || b.vol === undefined) return 1;
+    const v = +b.vol; return v > 0 ? v : 0; // a NaN is silence, as a level's is
+  }
+  function toneOf(id) { const b = CFG.board && CFG.board[id], v = b ? +b.tone : 0; return v >= -10 ? (v <= 10 ? v : 10) : v < -10 ? -10 : 0; }
+  // where a voice of `id` connects: straight to dest (the bus) while its volume and tone are at their defaults, else through the
+  // sound's insert: gain (its volume) ─► low-pass (darker: 18 kHz at -1 down to 300 Hz at -10) ─► high shelf (brighter: +1.2 dB
+  // at 2 kHz a step, +12 at +10) ─► dest. Made the first time it is needed and kept; a voice already through it follows a change.
+  function outFor(id, dest) {
+    const v = vol(id), tn = toneOf(id);
+    if (v === 1 && tn === 0) return dest;
+    let n = INS[id];
+    if (!n) {
+      n = INS[id] = { g: ctx.createGain(), lp: filt('lowpass', ctx.sampleRate / 2, -3.0103), hs: filt('highshelf', 2000, 0), vG: -1, vT: 0 };
+      n.g.connect(n.lp); n.lp.connect(n.hs); n.hs.connect(dest);
+    }
+    if (v !== n.vG || tn !== n.vT) {
+      const now = ctx.currentTime, f = tn < 0 ? 18000 * Math.pow(300 / 18000, -tn / 10) : ctx.sampleRate / 2, sh = tn > 0 ? 1.2 * tn : 0;
+      if (n.vG < 0) { n.g.gain.value = v; n.lp.frequency.value = f; n.hs.gain.value = sh; } // nothing has played through it yet
+      else { n.g.gain.setTargetAtTime(v, now, 0.01); n.lp.frequency.setTargetAtTime(f, now, 0.01); n.hs.gain.setTargetAtTime(sh, now, 0.01); }
+      n.vG = v; n.vT = tn;
+    }
+    return n.g;
+  }
+  // a voice that is always there (the whirr, a track's level node) moves to the insert, or back, when its sound is edited
+  function route(node, was, id, dest) {
+    const to = outFor(id, dest);
+    if (to !== was) { node.disconnect(); node.connect(to); }
+    return to;
   }
 
   // ---- the sampled hit voices: decoded as soon as there is a context (a few ms each); until one is, the synth plays ----
@@ -1834,24 +2002,24 @@ function createAudio(opts) {
     while (i < d.length && (d[i] < 0 ? -d[i] : d[i]) < 0.03 * pk) i++;
     return Math.max(0, i - Math.round(0.001 * b.sampleRate)) / b.sampleRate;
   }
-  // a sampled hit: false when the chosen voice is not decoded (yet), and then the synth plays it
-  function hitVoice(h, p) {
-    const i = (CFG.audio.hitVoice | 0) - 1, b = HV.buf[i], meta = typeof HIT_SOUNDS !== 'undefined' ? HIT_SOUNDS[i] : null;
+  // a sampled hit, voice i (HIT_SOUNDS): false when it is not decoded (yet), and then the synth plays it
+  function hitVoice(h, p, i) {
+    const b = HV.buf[i], meta = typeof HIT_SOUNDS !== 'undefined' ? HIT_SOUNDS[i] : null;
     if (!b || !meta) return false;
     const C = CFG.audio, rev = !!h.reversed, perfect = h.quality === 'perfect' && !rev, graze = h.quality === 'graze', ring = perfect ? level('ring') : 0;
-    if (!(level('hitBody') > 0 || level('hitCrack') > 0 || ring > 0)) return true; // every layer turned down: nothing to build
+    if (!(level('hitBody') > 0 || level('hitCrack') > 0 || ring > 0) || !(vol(meta.name) > 0)) return true; // every layer turned down: nothing to build
     if (!room(perfect ? 12 : 8, true)) return true;
-    const t = at(), v = begin(), dv = 0.97 + rnd() * 0.06;
+    const t = at(), v = begin(meta.name), dv = 0.97 + rnd() * 0.06;
     const lvl = 0.14 + 0.86 * Math.pow(p, 1.15);
     // harder is a touch lower and opens up (a tap is a muffled thud, a smash has its whole front); a reversal is lower again,
     // a graze lighter and higher
-    const rate = U.clamp((C.hitPitch > 0 ? C.hitPitch : 1) * U.lerp(1.04, 0.94, p) * dv * (rev ? 0.88 : graze ? 1.08 : 1), 0.3, 3);
+    const rate = U.clamp((C.hitPitch > 0 ? C.hitPitch : 1) * ratio(meta.name) * U.lerp(1.04, 0.94, p) * dv * (rev ? 0.88 : graze ? 1.08 : 1), 0.3, 3);
     const src = ctx.createBufferSource(), lp = filt('lowpass', U.lerp(700, 16000, Math.pow(p, 0.8)) * (graze ? 0.6 : 1), 0.7), g = ctx.createGain();
     v.n.push(src, lp, g);
     src.buffer = b; src.playbackRate.setValueAtTime(rate, t);
     g.gain.setValueAtTime(meta.gain * lvl * C.hitBody * (graze ? 0.6 : 1), t);
     const off = HV.off[i], end = t + (b.duration - off) / rate + 0.02;
-    src.connect(lp); lp.connect(g); g.connect(bus); src.start(t, off); src.stop(end);
+    src.connect(lp); lp.connect(g); g.connect(v.out); src.start(t, off); src.stop(end);
     keep(v, src, end);
     // the contact: the synth's crack and tick on top, by how soft the take's own front is (meta.click)
     const ck = lvl * C.hitCrack * meta.click;
@@ -1875,11 +2043,14 @@ function createAudio(opts) {
     const p = h.power > 0 ? (h.power < 1 ? h.power : 1) : 0;
     if (S.muted) return;
     if (!ready()) { late.at = Date.now(); late.power = p; late.quality = h.quality; late.reversed = !!h.reversed; return; }
-    if ((CFG.audio.hitVoice | 0) > 0 && hitVoice(h, p)) return;
+    if ((CFG.audio.hitVoice | 0) > 0 && hitVoice(h, p, (CFG.audio.hitVoice | 0) - 1)) return;
+    hitSynth(h, p);
+  }
+  function hitSynth(h, p) {
     const C = CFG.audio, rev = !!h.reversed, perfect = h.quality === 'perfect' && !rev, graze = h.quality === 'graze', ring = perfect ? level('ring') : 0;
-    if (!(level('hitBody') > 0 || level('hitCrack') > 0 || ring > 0)) return; // every layer turned down: nothing to build
+    if (!(level('hitBody') > 0 || level('hitCrack') > 0 || ring > 0) || !(vol('hit') > 0)) return; // every layer turned down: nothing to build
     if (!room(rev ? 7 : perfect ? 13 : 9, true)) return;
-    const t = at(), v = begin();
+    const t = at(), v = begin('hit');
     const lvl = 0.14 + 0.86 * Math.pow(p, 1.15), dv = 0.97 + rnd() * 0.06; // level by power; a little pitch variation hit to hit
     const pq = (graze ? 0.55 : 1) * lvl;
 
@@ -1910,7 +2081,7 @@ function createAudio(opts) {
     const C = CFG.audio, T = CFG.timeWarp, p = power > 0 ? (power < 1 ? power : 1) : 0;
     const q = T && T.powerCurve !== 1 ? Math.pow(p, T.powerCurve) : p;
     const dur = Math.max(0.05, (T ? U.lerp(T.rampSoft, T.rampHard, q) : 220 + 300 * p) / 1000), ease = T ? Math.max(1, T.rampEase) : 2.2;
-    const t = at(), te = t + dur, v = begin(), lvl = 0.35 + 0.65 * p;
+    const t = at(), te = t + dur, v = begin('release'), lvl = 0.35 + 0.65 * p;
     const fA = 320, fB = U.lerp(2200, 4200, p), peak = 0.7 * lvl * C.release;
 
     const s = ctx.createBufferSource(), b = filt('bandpass', fA, 1.2), g = ctx.createGain();
@@ -1919,7 +2090,7 @@ function createAudio(opts) {
     b.frequency.setValueAtTime(fA, t); b.frequency.setValueCurveAtTime(curve((u) => fA * Math.pow(fB / fA, Math.pow(u, ease * 0.55))), t, dur);
     g.gain.setValueAtTime(0, t); g.gain.setValueCurveAtTime(curve((u) => peak * (0.03 * u + 0.97 * Math.pow(u, ease * 0.8))), t, dur); // from exactly 0: no step at the start
     g.gain.setTargetAtTime(0, te + TAIL, 0.07);
-    s.connect(b); b.connect(g); g.connect(bus); s.start(t, rnd() * 0.8, dur + 0.5); s.stop(te + 0.4);
+    s.connect(b); b.connect(g); g.connect(v.out); s.start(t, rnd() * 0.8, dur + 0.5); s.stop(te + 0.4);
     keep(v, s, te + 0.4);
 
     // a tonal whine underneath gives the rise a pitch
@@ -1927,7 +2098,7 @@ function createAudio(opts) {
     v.n.push(o, og);
     o.frequency.setValueCurveAtTime(curve((u) => 70 * Math.pow(fT / 70, Math.pow(u, ease * 0.55))), t, dur);
     og.gain.setValueAtTime(0, t); og.gain.setValueCurveAtTime(curve((u) => peak * 0.35 * Math.pow(u, ease)), t, dur); og.gain.setTargetAtTime(0, te + TAIL, 0.05);
-    o.connect(og); og.connect(bus); o.start(t); o.stop(te + 0.3);
+    o.connect(og); og.connect(v.out); o.start(t); o.stop(te + 0.3);
     keep(v, o, te + 0.3);
     reap(v);
   }
@@ -1936,20 +2107,20 @@ function createAudio(opts) {
   function flash(dist, level) {
     const d = dist > 0 ? (dist < 3 ? dist : 3) : 0, peak = 0.3 * (level > 0 ? (level < 1 ? level : 1) : 0.5) * CFG.audio.flash;
     if (S.muted || !(peak > 0) || !ready() || !room(3, false)) return;
-    const t = at(), v = begin(), dur = 0.07 + 0.035 * d;
+    const t = at(), v = begin('flash'), dur = 0.07 + 0.035 * d;
     const s = noiseSrc(v, t, dur + 0.06), b = filt('bandpass', 6500, 1.6), g = ctx.createGain();
     v.n.push(b, g);
     b.frequency.setValueAtTime(6500, t); b.frequency.exponentialRampToValueAtTime(1500, t + dur);
     env(g, t, peak, 0.012, dur);
-    s.connect(b); b.connect(g); g.connect(bus);
+    s.connect(b); b.connect(g); g.connect(v.out);
     reap(v);
   }
 
   // ---- the specials (energy.js), on top of the hit itself: Raijin's thunderclap (yours), or Kage's shadow cut ----
   function special(who) {
-    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0;
-    if (S.muted || !(lv > 0) || !ready() || !room(12, true)) return;
-    const t = at(), v = begin();
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, id = who === 'kage' ? 'shadow' : 'thunder';
+    if (S.muted || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(12, true)) return;
+    const t = at(), v = begin(id);
     if (who === 'kage') {
       const fs = 2650 * (0.98 + rnd() * 0.04); // the blade: two inharmonic partials that sing on after the cut
       tone(v, t, null, fs, fs * 0.985, 0.4, 0.13 * lv, 0.001, 1.15);
@@ -1958,7 +2129,7 @@ function createAudio(opts) {
       v.n.push(b, g);
       b.frequency.setValueAtTime(4200, t); b.frequency.exponentialRampToValueAtTime(450, t + 0.2);
       env(g, t, 0.34 * lv, 0.006, 0.22);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       tone(v, t, W.thump, 82, 30, 0.07, 0.55 * lv, 0.002, 0.5);
     } else {
       const ns = noiseSrc(v, t, 1.6);
@@ -1969,23 +2140,24 @@ function createAudio(opts) {
       v.n.push(o, b, g);
       o.frequency.setTargetAtTime(220, t, 0.03);
       env(g, t, 0.16 * lv, 0.0008, 0.13);
-      o.connect(b); b.connect(g); g.connect(bus); o.start(t); o.stop(end);
+      o.connect(b); b.connect(g); g.connect(v.out); o.start(t); o.stop(end);
       keep(v, o, end);
       tone(v, t, W.thump, 92, 34, 0.06, 0.6 * lv, 0.002, 0.55);
     }
     reap(v);
   }
-  // ---- the supers (supers.js: 1 swerve, 2 spike, 3 phantom, 4 decoys, 5 slip), on top of the special's hit ----
+  // ---- the supers (supers.js: 1 swerve, 2 spike, 3 phantom, 4 decoys, 5 slip, 6 warp), on top of the special's hit ----
+  const SUPER_IDS = [null, 'swerve', 'spike', 'phantom', 'decoys', 'slip', 'warp'];
   function superCast(kind) {
-    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0;
-    if (S.muted || !(lv > 0) || !ready() || !room(10, true)) return;
-    const t = at(), v = begin();
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, id = kind >= 1 && kind <= 6 ? SUPER_IDS[kind | 0] : null;
+    if (S.muted || !id || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(10, true)) return;
+    const t = at(), v = begin(id);
     if (kind === 1) { // swerve: a whoosh that weaves up and down, and a low push under it
       const s = noiseSrc(v, t, 0.75), b = filt('bandpass', 900, 2.4), g = ctx.createGain();
       v.n.push(b, g);
       b.frequency.setValueCurveAtTime(curve((u) => 900 * Math.pow(2.4, Math.sin(u * 7 * Math.PI) * 0.9 + 0.5 * u)), t, 0.7);
       env(g, t, 0.36 * lv, 0.02, 0.7);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       tone(v, t, W.thump, 90, 40, 0.06, 0.4 * lv, 0.002, 0.4);
     } else if (kind === 2) { // spike: a whip crack, a whistle diving down, a hard thump
       const ns = noiseSrc(v, t, 0.5);
@@ -1994,7 +2166,7 @@ function createAudio(opts) {
       v.n.push(o, g);
       o.frequency.setTargetAtTime(380, t, 0.07);
       env(g, t, 0.16 * lv, 0.002, 0.28);
-      o.connect(g); g.connect(bus); o.start(t); o.stop(end);
+      o.connect(g); g.connect(v.out); o.start(t); o.stop(end);
       keep(v, o, end);
       tone(v, t, W.thump, 110, 36, 0.05, 0.62 * lv, 0.001, 0.45);
     } else if (kind === 3) { // phantom: a breath that falls away, and a ghostly glide
@@ -2002,7 +2174,7 @@ function createAudio(opts) {
       v.n.push(b, g);
       b.frequency.setValueAtTime(3000, t); b.frequency.exponentialRampToValueAtTime(300, t + 0.8);
       env(g, t, 0.24 * lv, 0.05, 0.8);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       tone(v, t, null, 880, 220, 0.25, 0.1 * lv, 0.06, 0.75);
       tone(v, t, null, 1318.5, 330, 0.25, 0.05 * lv, 0.06, 0.6);
     } else if (kind === 4) { // decoys: three quick puffs, and a bright tick for the split
@@ -2015,7 +2187,7 @@ function createAudio(opts) {
       v.n.push(b, g);
       b.frequency.setValueAtTime(1200, t); b.frequency.exponentialRampToValueAtTime(6000, t + 0.18);
       env(g, t, 0.28 * lv, 0.008, 0.2);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       tone(v, t, 'triangle', 500, 1700, 0.05, 0.1 * lv, 0.003, 0.18);
       tone(v, t, W.thump, 95, 42, 0.05, 0.38 * lv, 0.002, 0.32);
     } else if (kind === 6) { // warp: a glitch, a square tone stepping down in jumps, a crackle of noise, a low drop
@@ -2024,7 +2196,7 @@ function createAudio(opts) {
       const steps = [1400, 520, 1100, 330, 760, 210];
       for (let i = 0; i < steps.length; i++) o.frequency.setValueAtTime(steps[i], t + i * 0.045);
       env(g, t, 0.09 * lv, 0.002, 0.32);
-      o.connect(b); b.connect(g); g.connect(bus); o.start(t); o.stop(end);
+      o.connect(b); b.connect(g); g.connect(v.out); o.start(t); o.stop(end);
       keep(v, o, end);
       const ns = noiseSrc(v, t, 0.4);
       for (let i = 0; i < 3; i++) burst(v, t + i * 0.07, ns, 'bandpass', 2400 + 1400 * i, 2.5, 0.22 * lv, 0.001, 0.04);
@@ -2035,10 +2207,14 @@ function createAudio(opts) {
   // a super's moment away from the hit: 'hit' (a spike landing on a player), 'pop' (a decoy), 'slip' (a touch slipped off),
   // 'reveal' (a phantom shows again), 'break' (a swerve cuts in), 'lock' (a spike turns on them), 'warp' (it blinks out),
   // 'unwarp' (solid again)
+  function fxId(kind) { // a super moment's sound on the soundboard
+    return kind === 'hit' ? 'blow' : kind === 'pop' ? 'pop' : kind === 'slip' ? 'slipOff' : kind === 'reveal' ? 'reveal' : kind === 'break' ? 'cutIn'
+      : kind === 'lock' ? 'lockOn' : kind === 'warp' ? 'blinkOut' : kind === 'unwarp' ? 'blinkIn' : null;
+  }
   function superFx(kind) {
-    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, big = kind === 'hit';
-    if (S.muted || !(lv > 0) || !ready() || !room(big ? 8 : 4, big)) return;
-    const t = at(), v = begin();
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, big = kind === 'hit', id = fxId(kind);
+    if (S.muted || !id || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(big ? 8 : 4, big)) return;
+    const t = at(), v = begin(id);
     if (kind === 'hit') { // a body blow: a slap, a deep thud, a bonk
       const ns = noiseSrc(v, t, 0.4);
       burst(v, t, ns, 'bandpass', 1500, 0.9, 0.5 * lv, 0.0005, 0.09);
@@ -2053,7 +2229,7 @@ function createAudio(opts) {
       v.n.push(b, g);
       b.frequency.setValueAtTime(1800, t); b.frequency.exponentialRampToValueAtTime(5200, t + 0.12);
       env(g, t, 0.24 * lv, 0.005, 0.13);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       tone(v, t, 'triangle', 600, 1800, 0.04, 0.09 * lv, 0.002, 0.12);
     } else if (kind === 'reveal') tone(v, t, W.chime, 1318.5, 1318.5, 1, 0.07 * lv, 0.004, 0.3);
     else if (kind === 'break') { // a swerve cuts in: a short whoosh bending down
@@ -2061,7 +2237,7 @@ function createAudio(opts) {
       v.n.push(b, g);
       b.frequency.setValueAtTime(2600, t); b.frequency.exponentialRampToValueAtTime(700, t + 0.2);
       env(g, t, 0.22 * lv, 0.01, 0.2);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
     } else if (kind === 'lock') { // a spike turns on them: two quick high blips, a lock-on
       tone(v, t, 'square', 1760, 1760, 1, 0.05 * lv, 0.002, 0.05);
       tone(v, t + 0.06, 'square', 2349.3, 2349.3, 1, 0.05 * lv, 0.002, 0.07);
@@ -2070,7 +2246,7 @@ function createAudio(opts) {
       v.n.push(o, g, b);
       o.frequency.exponentialRampToValueAtTime(up ? 1500 : 220, t + 0.12);
       env(g, t, 0.07 * lv, 0.002, 0.13);
-      o.connect(b); b.connect(g); g.connect(bus); o.start(t); o.stop(end);
+      o.connect(b); b.connect(g); g.connect(v.out); o.start(t); o.stop(end);
       keep(v, o, end);
       const ns = noiseSrc(v, t, 0.2);
       burst(v, t, ns, 'highpass', 3600, 0.8, 0.16 * lv, 0.0005, 0.05);
@@ -2079,9 +2255,9 @@ function createAudio(opts) {
   }
   // the energy bar: 'full' (a rising pair of chimes), 'arm' (a charge-up sweep), 'disarm' (the sweep back down)
   function energy(kind) {
-    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0;
-    if (S.muted || !(lv > 0) || !ready() || !room(4, false)) return;
-    const t = at(), v = begin();
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, id = kind === 'full' ? 'energyFull' : kind === 'arm' ? 'energyArm' : 'energyOff';
+    if (S.muted || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(4, false)) return;
+    const t = at(), v = begin(id);
     if (kind === 'full') { tone(v, t, W.chime, 783.99, 783.99, 1, 0.15 * lv, 0.003, 0.25); tone(v, t + 0.075, W.chime, 1174.66, 1174.66, 1, 0.15 * lv, 0.003, 0.4); }
     else if (kind === 'arm') tone(v, t, 'triangle', 330, 1250, 0.06, 0.16 * lv, 0.004, 0.3);
     else tone(v, t, 'triangle', 900, 300, 0.04, 0.1 * lv, 0.003, 0.12);
@@ -2093,14 +2269,15 @@ function createAudio(opts) {
   //      the thud of the fall), 'out' (a fire hisses out) ----
   function fire(kind) {
     const lv = CFG.audio.fire > 0 ? CFG.audio.fire : 0, big = kind === 'ignite' || kind === 'burn';
-    if (S.muted || !(lv > 0) || !ready() || !room(big ? 9 : 4, big)) return;
-    const t = at(), v = begin();
+    const id = kind === 'won' ? 'fireWon' : kind === 'arm' ? 'fireArm' : kind === 'ignite' ? 'ignite' : kind === 'burn' ? 'burn' : 'fireOut';
+    if (S.muted || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(big ? 9 : 4, big)) return;
+    const t = at(), v = begin(id);
     if (kind === 'won') { // a soft whump, opening up, and a rising pair of chimes
       const s = noiseSrc(v, t, 0.6), b = filt('lowpass', 220, 0.9), g = ctx.createGain();
       v.n.push(b, g);
       b.frequency.setValueAtTime(220, t); b.frequency.exponentialRampToValueAtTime(1400, t + 0.25);
       env(g, t, 0.24 * lv, 0.08, 0.45);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       tone(v, t, null, 70, 110, 0.15, 0.12 * lv, 0.05, 0.4);
       tone(v, t + 0.06, W.chime, 659.25, 659.25, 1, 0.13 * lv, 0.003, 0.3);
       tone(v, t + 0.14, W.chime, 987.77, 987.77, 1, 0.13 * lv, 0.003, 0.45);
@@ -2109,21 +2286,21 @@ function createAudio(opts) {
       v.n.push(b, g);
       b.frequency.setValueAtTime(600, t); b.frequency.exponentialRampToValueAtTime(3200, t + 0.25);
       env(g, t, 0.2 * lv, 0.02, 0.3);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       tone(v, t, 'triangle', 220, 880, 0.08, 0.1 * lv, 0.004, 0.28);
     } else if (kind === 'ignite') { // a roar that flares and falls back, a crackle on its front, a low thump under it
       const s = noiseSrc(v, t, 1), b = filt('bandpass', 350, 0.8), g = ctx.createGain();
       v.n.push(b, g);
       b.frequency.setValueAtTime(350, t); b.frequency.exponentialRampToValueAtTime(2600, t + 0.18); b.frequency.exponentialRampToValueAtTime(700, t + 0.8);
       env(g, t, 0.45 * lv, 0.03, 0.8);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       burst(v, t, s, 'highpass', 3500, 0.7, 0.12 * lv, 0.002, 0.25);
       tone(v, t, W.thump, 75, 38, 0.08, 0.4 * lv, 0.003, 0.5);
     } else if (kind === 'burn') {
       const s = noiseSrc(v, t, 0.9), b = filt('highpass', 2800, 0.8), g = ctx.createGain(); // the sizzle
       v.n.push(b, g);
       env(g, t, 0.28 * lv, 0.005, 0.7);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
       burst(v, t, s, 'lowpass', 500, 0.8, 0.32 * lv, 0.01, 0.4); // a whump of flame
       tone(v, t + 0.16, W.thump, 68, 30, 0.06, 0.52 * lv, 0.002, 0.45); // the fall
     } else { // out: a hiss that sinks
@@ -2131,18 +2308,18 @@ function createAudio(opts) {
       v.n.push(b, g);
       b.frequency.setValueAtTime(2600, t); b.frequency.exponentialRampToValueAtTime(800, t + 0.35);
       env(g, t, 0.15 * lv, 0.02, 0.35);
-      s.connect(b); b.connect(g); g.connect(bus);
+      s.connect(b); b.connect(g); g.connect(v.out);
     }
     reap(v);
   }
   // one pop of a burning ball's crackle (tick() sprinkles them while it burns)
   function crackle(level) {
-    if (!room(3, false)) return;
-    const t = at() + rnd() * 0.03, v = begin(), d = 0.012 + rnd() * 0.025;
+    if (!(level > 0) || !(vol('crackle') > 0) || !room(3, false)) return;
+    const t = at() + rnd() * 0.03, v = begin('crackle'), d = 0.012 + rnd() * 0.025;
     const s = noiseSrc(v, t, d + 0.02), b = filt('bandpass', 1500 + rnd() * 3000, 2.5), g = ctx.createGain();
     v.n.push(b, g);
     env(g, t, (0.04 + 0.08 * rnd()) * level, 0.001, d);
-    s.connect(b); b.connect(g); g.connect(bus);
+    s.connect(b); b.connect(g); g.connect(v.out);
     reap(v);
   }
 
@@ -2153,12 +2330,12 @@ function createAudio(opts) {
     const s = strength > 0 ? (strength < 1 ? strength : 1) : 0, t = at();
     if (t < S.tSnap + 0.05 || !room(6, false)) return;
     S.tSnap = t;
-    const v = begin(), lvl = (0.15 + 0.85 * s) * L, f = U.lerp(300, 520, s) * (0.97 + rnd() * 0.06);
+    const v = begin('snap'), lvl = (0.15 + 0.85 * s) * L, f = U.lerp(300, 520, s) * (0.97 + rnd() * 0.06);
     const o = osc(t, f * 1.06, 'sawtooth'), lp = filt('lowpass', 6000, 0.8), g = ctx.createGain(), end = t + 0.16;
     o.frequency.setTargetAtTime(f, t, 0.02);
     lp.frequency.setValueAtTime(5200, t); lp.frequency.exponentialRampToValueAtTime(700, t + 0.09);
     env(g, t, 0.5 * lvl, 0.0008, 0.13);
-    o.connect(lp); lp.connect(g); g.connect(bus); o.start(t); o.stop(end);
+    o.connect(lp); lp.connect(g); g.connect(v.out); o.start(t); o.stop(end);
     v.n.push(o, lp, g); keep(v, o, end);
     burst(v, t, noiseSrc(v, t, 0.04), 'bandpass', 3400, 1.5, 0.4 * lvl, 0.0003, 0.012);
     reap(v);
@@ -2170,7 +2347,7 @@ function createAudio(opts) {
     const k = speed > 0 ? (speed < 7 ? speed / 7 : 1) : 0, t = at();
     if (t < S.tGround + 0.07 || k < 0.04 || !room(5, false)) return;
     S.tGround = t;
-    const v = begin(), lvl = (0.15 + 0.85 * k) * L;
+    const v = begin('ground'), lvl = (0.15 + 0.85 * k) * L;
     tone(v, t, W.thump, U.lerp(95, 125, k), 52, 0.018, 0.5 * lvl, 0.001, U.lerp(0.08, 0.2, k));
     burst(v, t, noiseSrc(v, t, 0.08), 'lowpass', 650, 0.7, 0.28 * lvl, 0.0008, 0.05);
     reap(v);
@@ -2182,7 +2359,7 @@ function createAudio(opts) {
     const k = speed > 0 ? (speed < 10 ? speed / 10 : 1) : 0, t = at();
     if (t < S.tPole + 0.07 || k < 0.03 || !room(6, false)) return;
     S.tPole = t;
-    const v = begin(), lvl = (0.2 + 0.8 * k) * L, f = 1450 * (0.97 + rnd() * 0.06);
+    const v = begin('pole'), lvl = (0.2 + 0.8 * k) * L, f = 1450 * (0.97 + rnd() * 0.06);
     tone(v, t, null, f, f, 1, 0.3 * lvl, 0.0004, U.lerp(0.07, 0.16, k));
     tone(v, t, null, f * 2.42, f * 2.42, 1, 0.16 * lvl, 0.0004, U.lerp(0.035, 0.07, k));
     tone(v, t, W.thump, 230, 140, 0.02, 0.3 * lvl, 0.0006, 0.07);
@@ -2195,7 +2372,7 @@ function createAudio(opts) {
     const t = at();
     if (t < S.tWrap + 0.06 || !room(2, false)) return;
     S.tWrap = t;
-    const i = turns >= 1 ? (turns > LADDER.length ? LADDER.length : turns) - 1 : 0, f = 440 * Math.pow(2, LADDER[i] / 12), v = begin();
+    const i = turns >= 1 ? (turns > LADDER.length ? LADDER.length : turns) - 1 : 0, f = 440 * Math.pow(2, LADDER[i] / 12), v = begin('wrap');
     tone(v, t, 'triangle', f * 1.03, f, 0.012, 0.3 * L, 0.001, 0.09);
     reap(v);
   }
@@ -2203,7 +2380,7 @@ function createAudio(opts) {
   function wound() { // the finishing sting: a rising arpeggio that lands on a held chord, with a low resolve underneath
     const L = level('wound');
     if (!(L > 0) || !ready() || !room(12, true)) return;
-    const t = at(), v = begin(), notes = [523.25, 659.25, 783.99], gap = 0.065;
+    const t = at(), v = begin('wound'), notes = [523.25, 659.25, 783.99], gap = 0.065;
     for (let i = 0; i < notes.length; i++) tone(v, t + i * gap, W.chime, notes[i], notes[i], 1, 0.3 * L, 0.003, 0.32);
     const tc = t + gap * 3;
     tone(v, tc, W.chime, 1046.5, 1046.5, 1, 0.26 * L, 0.004, 1.0);
@@ -2221,7 +2398,7 @@ function createAudio(opts) {
   function ambStart(now) {
     if (!A.g) {
       A.bp = filt('bandpass', 600, 1.2); A.lp = filt('lowpass', 12000, 0.7); A.g = ctx.createGain(); A.g.gain.value = 0;
-      A.bp.connect(A.lp); A.lp.connect(A.g); A.g.connect(bus);
+      A.bp.connect(A.lp); A.lp.connect(A.g); A.to = route(A.g, null, 'whirr', bus);
     }
     const s = ctx.createBufferSource();
     s.buffer = noise; s.loop = true; s.connect(A.bp); s.start(now, rnd() * 1.5);
@@ -2291,7 +2468,7 @@ function createAudio(opts) {
   }
   function musicAt(now) { // where in the recording it is (s), the loop folded in
     const t = tracks()[MU.cur], len = t.loopEnd - t.loopStart;
-    let p = MU.off + (now > MU.t0 ? now - MU.t0 : 0);
+    let p = MU.off + (now > MU.t0 ? (now - MU.t0) * MU.rate : 0);
     if (p >= t.loopEnd && len > 0) p = t.loopStart + ((p - t.loopStart) % len);
     return p;
   }
@@ -2300,10 +2477,12 @@ function createAudio(opts) {
       // a low-pass's Q is in dB here: -3.01 is a flat (Butterworth) one. The effects' 0.7 bumps up ~1.7 dB just under the cutoff,
       // which on music, whose energy sits in the low mids, hands back a decibel of what the slow-mo dip takes away
       MU.lp = filt('lowpass', ctx.sampleRate / 2, -3.0103); MU.g = ctx.createGain(); MU.g.gain.value = 0;
-      MU.lp.connect(MU.g); MU.g.connect(master); MU.vG = 0; MU.vF = ctx.sampleRate / 2;
+      MU.lp.connect(MU.g); MU.g.connect(master); MU.to = master; MU.vG = 0; MU.vF = ctx.sampleRate / 2;
     }
     const tr = tracks()[MU.cur], t = (now < WARM ? WARM : now) + LEAD, s = ctx.createBufferSource(), fd = ctx.createGain();
     s.buffer = MU.buf; s.loop = true; s.loopStart = tr.loopStart; s.loopEnd = tr.loopEnd;
+    MU.rate = ratio(tr.name); s.playbackRate.value = MU.rate; // its pitch on the soundboard
+    MU.to = route(MU.g, MU.to, tr.name, master); // and its volume and tone
     fd.gain.setValueAtTime(0, t); fd.gain.setTargetAtTime(1, t, MU.swell); // the first time it swells in over ~1.5 s, a new track in ~0.6 s, after a pause back in a beat
     s.connect(fd); fd.connect(MU.lp); s.start(t, MU.off);
     MU.src = s; MU.fade = fd; MU.t0 = t; MU.played = true; MU.swell = 0.08;
@@ -2324,24 +2503,219 @@ function createAudio(opts) {
     if (MU.state === 'none' || MU.state === 'missing') loadMusic(i);
     if (MU.state !== 'ready') return;
     if (!MU.src) musicStart(now);
-    // slow-mo: a low-pass from wide open (full speed) to 900 Hz (frozen), and a dip of up to 30 %, both on the time scale
-    const duck = CFG.audio.musicDuck >= 0.5 ? 1 - ts : 0, open = ctx.sampleRate / 2, gn = tracks()[MU.cur].gain;
-    const v = level('music') * (gn > 0 ? gn : 0) * (1 - 0.3 * duck);
+    const tr = tracks()[MU.cur], r = ratio(tr.name);
+    if (r !== MU.rate) { // its pitch moved on the soundboard: a turntable's, so from here it runs at the new speed
+      const t0 = now > MU.t0 ? now : MU.t0;
+      MU.off = musicAt(t0); MU.t0 = t0; MU.rate = r; MU.src.playbackRate.setValueAtTime(r, t0);
+    }
+    MU.to = route(MU.g, MU.to, tr.name, master);
+    // slow-mo: a low-pass from wide open (full speed) to 900 Hz (frozen), and a dip of up to 30 %, both on the time scale; and
+    // silence while the soundboard plays a track on its own
+    const duck = CFG.audio.musicDuck >= 0.5 ? 1 - ts : 0, open = ctx.sampleRate / 2, gn = tr.gain;
+    const v = PV.src ? 0 : level('music') * (gn > 0 ? gn : 0) * (1 - 0.3 * duck);
     if (Math.abs(v - MU.vG) > 0.0005 + MU.vG * 0.02) { MU.g.gain.setTargetAtTime(v, now, v < MU.vG ? 0.03 : 0.15); MU.vG = v; }
     const f = 900 * Math.pow(open / 900, Math.pow(1 - duck, 0.6));
     if (Math.abs(f - MU.vF) > MU.vF * 0.02) { MU.lp.frequency.setTargetAtTime(f, now, f < MU.vF ? 0.03 : 0.12); MU.vF = f; }
   }
 
+  // ---- the soundboard: any sound on its own, as the game plays it (its edits, the mix's levels) ----
+  // a whirr with no ball: the ambient voice's own mapping (see tickBody), driven by a made-up flight. 0 'Sweep': it speeds up
+  // and slows down again; 1 'Slow-mo': it flies at speed while time freezes, and ramps back
+  function whirrShot(kind) {
+    const L = level('whirr');
+    if (!(L > 0) || !ready() || !room(4, false)) return;
+    const mo = kind === 1, D = mo ? 3.2 : 2.4, N = 96, t = at(), v = begin('whirr');
+    const s = ctx.createBufferSource(), bp = filt('bandpass', 600, 1.2), lp = filt('lowpass', 12000, 0.7), g = ctx.createGain();
+    v.n.push(s, bp, lp, g);
+    const cG = new Float32Array(N), cB = new Float32Array(N), cQ = new Float32Array(N), cL = new Float32Array(N), cR = new Float32Array(N);
+    for (let i = 0; i < N; i++) {
+      const u = i / (N - 1);
+      const sp = mo ? 0.85 * U.smoothstep(0, 0.1, u) * (1 - U.smoothstep(0.9, 1, u)) : Math.pow(Math.sin(Math.PI * u), 1.5);
+      const ts = mo ? 1 - 0.97 * (U.smoothstep(0.2, 0.28, u) - U.smoothstep(0.5, 0.8, u)) : 1;
+      const gate = U.smoothstep(0.03, 0.4, sp) * U.smoothstep(0, 0.12, ts), q = 2.2 + 3.5 * sp, tsp = Math.pow(ts, 0.7);
+      cG[i] = L * gate * (0.07 + 0.22 * Math.pow(sp, 1.3)) * Math.sqrt(q) * (1 + 0.7 * (1 - ts));
+      cB[i] = (260 + 1500 * Math.pow(sp, 1.1)) * (0.3 + 0.7 * tsp); cQ[i] = q;
+      cL[i] = 380 * Math.pow(30, Math.pow(ts, 0.6)); cR[i] = 0.35 + 0.65 * Math.pow(ts, 0.6);
+    }
+    cG[0] = 0; cG[N - 1] = 0;
+    g.gain.value = 0; g.gain.setValueCurveAtTime(cG, t, D);
+    bp.frequency.setValueCurveAtTime(cB, t, D); bp.Q.setValueCurveAtTime(cQ, t, D); lp.frequency.setValueCurveAtTime(cL, t, D);
+    s.buffer = noise; s.loop = true; s.playbackRate.setValueCurveAtTime(cR, t, D);
+    s.connect(bp); bp.connect(lp); lp.connect(g); g.connect(v.out); s.start(t, rnd() * 1.5); s.stop(t + D + 0.05);
+    keep(v, s, t + D + 0.05);
+    reap(v);
+  }
+  // takes that play later (the ticks of a climb, a burning ball's pops): queued by time, and scheduled from tick() a little
+  // ahead, at their exact time
+  function later(t, fn, a) {
+    let i = BQ.length;
+    while (i > 0 && BQ[i - 1].at > t) i--;
+    BQ.splice(i, 0, { at: t, fn: fn, a: a });
+  }
+  function drain(now) {
+    while (BQ.length && BQ[0].at <= now + 0.05) {
+      const e = BQ.shift();
+      S.when = e.at;
+      try { e.fn(e.a); } finally { S.when = -1; }
+    }
+  }
+  // a track on its own (a music pad): from its top, its loop, or just before its loop joins; the game's music falls silent
+  // under it, and comes back when it stops. Its level is the game's (the track's own, Music volume, its edits), but the
+  // Music switch does not stop it: a pad always plays
+  function preview(i, from) {
+    pvStop(ctx.currentTime);
+    PV.i = i; PV.from = from; PV.gen++;
+    if (MU.cur === i && MU.buf) { PV.buf = MU.buf; PV.state = 'ready'; } // the game's own track: no second decode
+    pvTick(ctx.currentTime);
+    return PV.state === 'playing' ? 'played' : PV.state === 'missing' || PV.state === 'failed' ? PV.state : 'loading';
+  }
+  function pvTick(now) {
+    if (PV.i < 0) return;
+    const tr = tracks()[PV.i];
+    if (PV.state === 'none' || PV.state === 'fetching') {
+      const d = dataOf(tr.name);
+      if (!d) { want(PV.i); PV.state = MU.miss[tr.name] ? 'missing' : 'fetching'; return; }
+      let u = null;
+      try { u = bytesOf(d); } catch (e) { PV.state = 'failed'; return; }
+      PV.state = 'decoding';
+      const g = PV.gen;
+      decodeBytes(u.buffer).then(function (b) {
+        if (g !== PV.gen) return;
+        PV.buf = b; PV.state = 'ready';
+        try { if (ready()) pvStart(ctx.currentTime); } catch (e) { fail(e); }
+      }, function () { if (g === PV.gen) PV.state = 'failed'; });
+      return;
+    }
+    if (PV.state === 'ready') { if (!PV.src && ready()) pvStart(now); return; }
+    if (!PV.src) return;
+    const r = ratio(tr.name), lv = pvLevel(tr); // it follows its edits and Music volume while it plays
+    if (r !== PV.vR) { PV.src.playbackRate.setTargetAtTime(r, now, 0.02); PV.vR = r; }
+    if (Math.abs(lv - PV.vG) > 0.0005 + PV.vG * 0.02) { PV.fade.gain.setTargetAtTime(lv, now, 0.03); PV.vG = lv; }
+    PV.to = route(PV.fade, PV.to, tr.name, master);
+  }
+  function pvLevel(tr) { return (tr.gain > 0 ? tr.gain : 0) * level('music'); }
+  function pvStart(now) {
+    const tr = tracks()[PV.i], t = (now < WARM ? WARM : now) + LEAD, s = ctx.createBufferSource(), fd = ctx.createGain();
+    s.buffer = PV.buf; s.loop = true; s.loopStart = tr.loopStart; s.loopEnd = tr.loopEnd;
+    PV.vR = ratio(tr.name); s.playbackRate.value = PV.vR;
+    PV.vG = pvLevel(tr); fd.gain.setValueAtTime(0, t); fd.gain.setTargetAtTime(PV.vG, t, 0.02);
+    const off = PV.from === 1 ? tr.loopStart : PV.from === 2 ? Math.max(tr.loopStart, tr.loopEnd - 4) : 0;
+    s.connect(fd); PV.to = route(fd, null, tr.name, master); s.start(t, off);
+    PV.src = s; PV.fade = fd; PV.state = 'playing';
+  }
+  function pvStop(now) {
+    PV.gen++;
+    if (PV.src) {
+      const s = PV.src, fd = PV.fade;
+      fd.gain.setTargetAtTime(0, now, 0.04);
+      s.onended = function () { s.disconnect(); fd.disconnect(); };
+      s.stop(now + 0.3);
+    }
+    PV.i = -1; PV.src = null; PV.fade = null; PV.buf = null; PV.state = 'none'; PV.to = null;
+  }
+  // a pad: k is the take (vars), the sound's own first one when it is not a take it has. Returns 'played', 'loading' (a track
+  // on its way, or a sampled voice still decoding: it plays when it can), 'waiting' (the context is still waking: it plays the
+  // moment it can), 'muted', 'missing' or 'failed' (a track's file), or 'none'
+  function play(id, k) {
+    const s = typeof id === 'string' ? BOARD[id] : null;
+    if (!s) return 'none';
+    unlock();
+    if (!ctx) return 'none';
+    if (S.muted) return 'muted';
+    const n = s.vars ? (k >= 0 && k < s.vars.length ? k | 0 : s.def | 0) : 0;
+    if (s.music != null) return preview(s.music, n);
+    if (!ready()) { pend.id = id; pend.k = n; pend.at = Date.now(); return 'waiting'; }
+    const h = HIT_ARGS[n] || HIT_ARGS[1];
+    if (s.voice != null) {
+      if (!HV.buf[s.voice]) {
+        if (HV.ready) HV.ready.then(function () { // decoded: it plays now, or the moment the context can
+          try { if (!HV.buf[s.voice]) return; if (ready()) hitVoice(h, h.power, s.voice); else { pend.id = id; pend.k = n; pend.at = Date.now(); } } catch (e) { fail(e); }
+        });
+        return 'loading';
+      }
+      hitVoice(h, h.power, s.voice);
+      return 'played';
+    }
+    const t = at();
+    switch (id) {
+      case 'hit': hitSynth(h, h.power); break;
+      case 'whirr': whirrShot(n); break;
+      case 'release': release(n ? 1 : 0.3); break;
+      case 'snap': snap(n ? 1 : 0.35); break;
+      case 'wrap': // the climb: every turn from the first to the last, as a rope fills the pole
+        if (n) wrapTick(n === 1 ? 1 : LADDER.length);
+        else { for (let i = 0; i < LADDER.length; i++) later(t + i * 0.14, wrapTick, i + 1); drain(ctx.currentTime); }
+        break;
+      case 'pole': pole(n ? 10 : 3); break;
+      case 'ground': ground(n ? 7 : 2); break;
+      case 'wound': wound(); break;
+      case 'flash': flash(n ? 2.6 : 0.6, 0.6); break;
+      case 'thunder': special('you'); break;
+      case 'shadow': special('kage'); break;
+      case 'energyFull': energy('full'); break;
+      case 'energyArm': energy('arm'); break;
+      case 'energyOff': energy('disarm'); break;
+      case 'cutIn': superFx('break'); break;
+      case 'lockOn': superFx('lock'); break;
+      case 'blow': superFx('hit'); break;
+      case 'reveal': superFx('reveal'); break;
+      case 'pop': superFx('pop'); break;
+      case 'slipOff': superFx('slip'); break;
+      case 'blinkOut': superFx('warp'); break;
+      case 'blinkIn': superFx('unwarp'); break;
+      case 'ignite': fire('ignite'); break;
+      case 'fireWon': fire('won'); break;
+      case 'fireArm': fire('arm'); break;
+      case 'burn': fire('burn'); break;
+      case 'fireOut': fire('out'); break;
+      case 'crackle': { // a burning ball's two seconds of pops, as tick() sprinkles them, or one
+        const lv = level('fire');
+        if (n) crackle(lv);
+        else { let u = 0; while (u < 2) { later(t + u, crackle, lv); u += (1 + rnd() * 0.5) / 13; } drain(ctx.currentTime); }
+        break;
+      }
+      default: { const i = SUPER_IDS.indexOf(id); if (i > 0) superCast(i); }
+    }
+    return 'played';
+  }
+  // why a pad would play nothing, or '' when it sounds (the Feel panel shows it)
+  function why(id) {
+    const s = typeof id === 'string' ? BOARD[id] : null;
+    if (!s) return '';
+    if (S.muted) return 'Sound is muted: the speaker button turns it back on.';
+    if (S.failed || (!ctx && S.gestured)) return 'This browser cannot play sound.';
+    if (!(volume() > 0)) return 'Silent: Master volume is at 0.';
+    if (!((s.vol ? +cfgGet(s.vol) : vol(s.id)) > 0)) return 'Silent: its Volume is at 0.';
+    if (s.gate) {
+      const names = [];
+      let any = false;
+      for (let i = 0; i < s.gate.length; i++) {
+        if (+cfgGet(s.gate[i]) > 0) any = true;
+        for (let j = 0; j < CFG_SCHEMA.length; j++) if (CFG_SCHEMA[j].path === s.gate[i]) names.push(CFG_SCHEMA[j].label);
+      }
+      if (!any) return 'Silent: ' + names.join(' and ') + (names.length > 1 ? ' are' : ' is') + ' at 0 in Audio.';
+    }
+    if (s.music != null && PV.i === s.music && (PV.state === 'missing' || PV.state === 'failed')) return PV.state === 'missing' ? 'Its file is not beside the page.' : 'It did not decode.';
+    if (s.voice != null && HV.started && !HV.buf[s.voice] && typeof HIT_SOUNDS !== 'undefined' && HV.loaded + HV.failed >= HIT_SOUNDS.length) return 'This take did not load.';
+    return '';
+  }
+  function boardStop() { // the panel closing: a track on its own stops (the game's music comes back), and nothing more is queued
+    BQ.length = 0;
+    if (ctx && PV.i >= 0) pvStop(ctx.currentTime);
+  }
+
   function tickBody(dt, p) {
     if (!ctx) return;
-    if (S.muted) { ambStop(); musicStop(ctx.currentTime); return; }
+    if (S.muted) { ambStop(); musicStop(ctx.currentTime); if (PV.i >= 0) pvStop(ctx.currentTime); BQ.length = 0; return; }
     if (!S.offline && ctx.state !== 'running') { if (++S.nudge % 30 === 1) resume(); return; }
     const now = ctx.currentTime, C = CFG.audio;
-    const vol = volume();
-    if (master && A.vol !== vol) { A.vol = vol; master.gain.setTargetAtTime(vol, now, 0.02); } // the Feel panel retunes live
+    const mv = volume();
+    if (master && A.vol !== mv) { A.vol = mv; master.gain.setTargetAtTime(mv, now, 0.02); } // the Feel panel retunes live
     const sp = p && p.speed01 > 0 ? (p.speed01 < 1 ? p.speed01 : 1) : 0;
     const ts = p && p.timeScale >= 0 ? (p.timeScale < 1 ? p.timeScale : 1) : 1;
     musicTick(now, ts);
+    if (BQ.length) drain(now);
+    if (PV.i >= 0) pvTick(now);
     const gate = U.smoothstep(0.03, 0.4, sp) * U.smoothstep(0, 0.12, ts); // silent when the ball only sways, and while time is frozen
     const slow = 1 - ts;
     const q = 2.2 + 3.5 * sp; // a narrower band as it speeds up: the whistle of air
@@ -2352,8 +2726,9 @@ function createAudio(opts) {
     } else {
       A.quiet = 0;
       if (!A.src) ambStart(now < WARM ? WARM : now);
-      const tsp = Math.pow(ts, 0.7), fB = (260 + 1500 * Math.pow(sp, 1.1)) * (0.3 + 0.7 * tsp); // pitch by speed, dragged down by slow-mo
-      const fL = 380 * Math.pow(30, Math.pow(ts, 0.6)); // 380 Hz frozen → ~11 kHz at full speed
+      A.to = route(A.g, A.to, 'whirr', bus); // its tone and pitch on the soundboard (its volume is Whirr while moving)
+      const pr = ratio('whirr'), tsp = Math.pow(ts, 0.7), fB = (260 + 1500 * Math.pow(sp, 1.1)) * (0.3 + 0.7 * tsp) * pr; // pitch by speed, dragged down by slow-mo
+      const fL = 380 * Math.pow(30, Math.pow(ts, 0.6)) * pr; // 380 Hz frozen → ~11 kHz at full speed
       const rate = 0.35 + 0.65 * Math.pow(ts, 0.6);
       const tcG = level < A.vG ? 0.02 : 0.05;
       if (Math.abs(level - A.vG) > 0.002 + A.vG * 0.03) { A.g.gain.setTargetAtTime(level, now, tcG); A.vG = level; }
@@ -2406,6 +2781,14 @@ function createAudio(opts) {
       get ready() { return MU.ready || Promise.resolve(); }, get state() { return MU.state; }, get playing() { return !!MU.src; },
       get at() { return ctx && MU.src ? musicAt(ctx.currentTime) : MU.off; },
       get track() { const t = tracks()[MU.cur]; return t ? t.name : null; }, get label() { const t = tracks()[MU.cur]; return t ? t.label : null; },
+    },
+    // the soundboard (the Feel panel's Soundboard group): play(id, take) plays a pad, stop() ends what it started, why(id) says
+    // why a pad would be silent (or ''); playing is the track it is playing on its own (its name, or null) and state that one's
+    board: {
+      play: safe(play), stop: safe(boardStop), why: safe(why),
+      // (a track whose file is missing, or that failed to decode, is not playing: its state says which, and why() says so)
+      get playing() { const t = PV.i >= 0 && PV.state !== 'missing' && PV.state !== 'failed' ? tracks()[PV.i] : null; return t ? t.name : null; },
+      get state() { return PV.state; },
     },
     tick(dt, p) { try { if (musicOn()) want(pick()); tickBody(dt, p); } catch (e) { fail(e); } },
     get muted() { return S.muted; },
@@ -8190,12 +8573,14 @@ function createKiru(doc) {
 // handful of compares and no allocation. The canvas owns every swipe: only the HUD buttons take the pointer (CSS).
 //
 // The Feel panel persists only the numbers you moved off their defaults, so retuning a default in code reaches every
-// slider you never touched instead of being masked by a stale snapshot. Copy/Paste speak the full snapshot. A schema entry
+// slider you never touched instead of being masked by a stale snapshot. Copy/Paste speak the full snapshot (less the `sparse`
+// entries still at their defaults: the soundboard's). A schema entry
 // is a slider unless it says `type: 'toggle'` (a 0/1 switch) or `type: 'choice'` (an index into `options`; with `swatches`,
 // [[inner, mid, outer] colour] per option, the choices are colour chips): every value is still a number, so saving,
 // resetting and Copy/Paste treat them all alike. Groups are listed by their entries' `rank`
 // (lowest first, default 0), then in the order modules declared them. The panel opens as a drawer and expands to fill the
-// screen (columns of groups, a filter, open/close all), remembered.
+// screen (columns of groups, a filter, open/close all), remembered. A group whose entries carry a `sound` (audio.js's
+// soundboard) is the Soundboard: pads to play every sound, and an editor for the one picked (makeBoard below).
 
 CFG.ui = {
   ease: 18, // 1/s: how fast the big mph number chases the ball as it speeds up (it settles down at 30 % of this)
@@ -8245,6 +8630,7 @@ function createUI(root, opts) {
 
   function update(snap, dt) {
     if (!snap) return;
+    tuner.tick();
     const w = opts.getWorld ? opts.getWorld() : null;
     const target = w && w.ball ? U.mph(w.ball.speed) : 0;
     // the number chases the ball fast on the way up (it revs with the hit) and settles slower on the way down
@@ -8414,18 +8800,13 @@ function createUI(root, opts) {
     const fullBtn = $('feelFull'), filterEl = $('feelFilter');
     const ioWrap = $('feelIOWrap'), ta = $('feelIO'), ioHint = $('feelIOHint'), applyBtn = $('feelApply'), toastEl = $('feelToast');
     const RESET_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.3-5.4"/><path d="M19.8 4.2v4.6h-4.6"/></svg>';
-    const rows = [], badges = {}, known = new Set();
-    let built = -1, saveT = 0, toastT = 0;
+    const rows = [], badges = {}, known = new Set(), byPath = new Map(); // byPath: the rows showing a path (the soundboard's Volume is an Audio row's twin)
+    let built = -1, saveT = 0, toastT = 0, board = null;
 
     const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
     const lsSet = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* private window: tuning lasts the session */ } };
     const parse = (s) => { try { const o = JSON.parse(s); return o && typeof o === 'object' && !Array.isArray(o) ? o : null; } catch (e) { return null; } };
-    function dflt(path) {
-      let o = CFG_DEFAULT;
-      const ks = path.split('.');
-      for (let i = 0; i < ks.length; i++) o = o && o[ks[i]];
-      return typeof o === 'number' ? o : undefined;
-    }
+    const dflt = cfgDefault;
     const moved = (path, v) => { const d = dflt(path); return d !== undefined && Math.abs(v - d) > 1e-9 * Math.max(1, Math.abs(d)); };
 
     // only what differs from the defaults is stored (see the header comment)
@@ -8459,16 +8840,26 @@ function createUI(root, opts) {
       else {
         if (!dragging) r.inp.value = String(num);
         r.inp.style.setProperty('--f', String(U.clamp01((num - r.s.min) / (r.s.max - r.s.min || 1))));
-        r.num.data = num.toFixed(r.dec);
+        r.num.data = (r.s.signed && num > 0 ? '+' : '') + num.toFixed(r.dec);
       }
       r.row.classList.toggle('chg', moved(r.s.path, num));
     }
     function badge() {
       const count = {};
       for (let i = 0; i < rows.length; i++) if (rows[i].row.classList.contains('chg')) count[rows[i].g] = (count[rows[i].g] || 0) + 1;
+      if (board) count[board.g] = board.count(); // the soundboard counts sounds, not rows
       for (const g in badges) { badges[g].textContent = count[g] || ''; badges[g].hidden = !count[g]; }
     }
-    function paintAll() { for (let i = 0; i < rows.length; i++) paint(rows[i], false); badge(); }
+    function paintAll() { for (let i = 0; i < rows.length; i++) paint(rows[i], false); if (board) board.paint(); badge(); }
+    // a row moved: the other rows on its path follow, then the soundboard's marks and the counts
+    function changed(r) {
+      const tw = byPath.get(r.s.path);
+      if (tw) for (const o of tw) if (o !== r) paint(o, false);
+      if (board) board.marks();
+      badge();
+    }
+    function link(r) { if (!byPath.has(r.s.path)) byPath.set(r.s.path, new Set()); byPath.get(r.s.path).add(r); }
+    function unlink(r) { const tw = byPath.get(r.s.path); if (tw) tw.delete(r); }
 
     // A touch on a slider must never move it while the list is being scrolled. The native input stays for the look, the
     // keyboard and the step grid, but its wrapper takes the pointer: a horizontal drag moves it (relative to where the
@@ -8501,7 +8892,7 @@ function createUI(root, opts) {
     }
 
     // a switch (0/1) or a row of choices (an index): same row, same reset, same storage as a slider
-    function setNum(r, v) { cfgSet(r.s.path, v); paint(r, false); badge(); save(); }
+    function setNum(r, v) { cfgSet(r.s.path, v); paint(r, false); changed(r); save(); }
     function makeToggle(r, id) {
       const s = r.s, lab = el('span', 'lab'), rst = el('button', 'rst'), sw = r.sw = el('button', 'sw');
       lab.id = id + '-l'; lab.textContent = s.label;
@@ -8536,9 +8927,9 @@ function createUI(root, opts) {
       return r;
     }
 
-    function makeRow(s) {
+    function makeRow(s, pre) { // pre: the id's prefix, so a second row on one path (the soundboard's) has ids of its own
       const r = { s, g: s.group || 'Other', dec: decimals(s), row: el('div', 'row'), num: doc.createTextNode(''), kind: s.type === 'toggle' || s.type === 'choice' ? s.type : 'range' };
-      const id = 'f-' + s.path.replace(/\W/g, '-');
+      const id = (pre || 'f-') + s.path.replace(/\W/g, '-');
       r.row.dataset.find = (s.label + ' ' + r.g).toLowerCase();
       if (r.kind === 'toggle') return makeToggle(r, id);
       if (r.kind === 'choice') return makeChoice(r, id);
@@ -8549,11 +8940,153 @@ function createUI(root, opts) {
       const sl = el('div', 'sl'), inp = r.inp = el('input'); inp.type = 'range'; inp.id = id; inp.min = s.min; inp.max = s.max; inp.step = s.step;
       sl.appendChild(inp);
       dragWire(sl, inp, s);
-      inp.addEventListener('input', () => { cfgSet(s.path, +(+inp.value).toFixed(r.dec)); paint(r, true); badge(); saveSoon(); });
+      inp.addEventListener('input', () => { cfgSet(s.path, +(+inp.value).toFixed(r.dec)); paint(r, true); changed(r); saveSoon(); });
       inp.addEventListener('change', save);
-      rst.addEventListener('click', () => { const d = dflt(s.path); if (d !== undefined) { cfgSet(s.path, d); paint(r, false); badge(); save(); } });
+      rst.addEventListener('click', () => { const d = dflt(s.path); if (d !== undefined) { cfgSet(s.path, d); paint(r, false); changed(r); save(); } });
+      r.rst = rst;
       r.row.append(lab, rst, val, sl);
       return r;
+    }
+
+    // ---- the soundboard: a pad for every sound in the game (audio.js's list, by category), and an editor pinned above
+    // them for the one picked: what makes it in the game, its takes (a hit soft or hard...), and its Pitch, Volume and Tone. Those
+    // are ordinary entries (saved, reset, copied) that hold wherever the game plays the sound; a sound whose volume is its Audio
+    // level shows that row as its Volume, the same setting twice. A tap plays a pad (and picks it); a moved knob plays it again;
+    // a track's pad plays it on its own, under nothing, until it is tapped again or the panel closes.
+    const PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>';
+    const STOP_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor"/></svg>';
+    const CAT_COLOR = { Music: '#9bb0ff', Hits: '#ffb020', 'Ball and rope': '#5ad1ff', Moves: '#7be3a0', Supers: '#e93dff', 'Super moments': '#ff8ad8', Fire: '#ff5a1f' };
+    function makeBoard(d, items, group) {
+      const A = opts.audio && opts.audio.board ? opts.audio.board : null;
+      const sounds = [], knobs = new Map(); // each sound's entries: Pitch, Volume (its own, or its Audio level's), Tone
+      for (let i = 0; i < items.length; i++) {
+        const s = items[i].sound;
+        if (!knobs.has(s)) { knobs.set(s, []); sounds.push(s); }
+        const list = knobs.get(s);
+        list.push(items[i]);
+        if (s.vol && items[i].path.slice(-6) === '.pitch') {
+          for (let j = 0; j < CFG_SCHEMA.length; j++) if (CFG_SCHEMA[j].path === s.vol) list.push(Object.assign({}, CFG_SCHEMA[j], { label: 'Volume', group }));
+        }
+      }
+      const wrap = el('div', 'sb'), ed = el('div', 'sb-ed'), hint = el('p', 'sb-hint'), head = el('div', 'sb-head'), ttl = el('div', 'sb-ttl');
+      const kick = el('span', 'sb-cat'), name = el('b', 'sb-name'), when = el('span', 'sb-when'), note = el('p', 'sb-note');
+      const playB = el('button', 'pb-btn sb-play'), rstB = el('button', 'pb-btn warn sb-rst'), takes = el('div', 'seg sb-var'), knobsEl = el('div', 'sb-knobs');
+      hint.textContent = 'Tap a pad to play it. Its pitch, volume and tone show here, and hold in the game. Tone under 0 is darker, over 0 brighter.';
+      playB.type = 'button'; rstB.type = 'button'; rstB.textContent = 'Reset';
+      takes.setAttribute('role', 'radiogroup'); takes.setAttribute('aria-label', 'Takes');
+      ttl.append(kick, name, when); head.append(ttl, rstB, playB);
+      head.hidden = true; takes.hidden = true; note.hidden = true; rstB.hidden = true;
+      ed.append(hint, head, takes, knobsEl, note);
+      wrap.appendChild(ed);
+
+      const pads = new Map(), take = new Map(), edRows = [];
+      let cat = null, grid = null, sel = null, pvId = null, pvSt = '';
+      for (let i = 0; i < sounds.length; i++) {
+        const s = sounds[i];
+        if (s.cat !== cat) {
+          cat = s.cat;
+          const c = el('div', 'sb-c'), k = el('p', 'sb-k');
+          k.textContent = cat; grid = el('div', 'sb-pads');
+          c.style.setProperty('--c', CAT_COLOR[cat] || '#8c95ab');
+          c.append(k, grid); wrap.appendChild(c);
+        }
+        const b = el('button', 'pad');
+        b.type = 'button'; b.textContent = s.label; b.title = s.title;
+        b.dataset.find = (s.label + ' ' + s.title + ' ' + s.cat + ' soundboard sound').toLowerCase();
+        if (s.music != null) { b.classList.add('mus'); b.setAttribute('aria-pressed', 'false'); }
+        b.addEventListener('click', () => { pick(s); if (s.music != null && A && A.playing === s.id) stop(); else fire(s); });
+        pads.set(s, b); grid.appendChild(b);
+      }
+      d.appendChild(wrap);
+
+      const takeOf = (s) => (take.has(s) ? take.get(s) : s.def | 0);
+      const isMoved = (s) => knobs.get(s).some((e) => moved(e.path, cfgGet(e.path)));
+      function fire(s) { // play it, and say why when it cannot be heard
+        if (!A) return;
+        const r = A.play(s.id, takeOf(s)), b = pads.get(s);
+        if (s.music == null && r === 'played' && b.animate) b.animate([{ background: 'rgba(255,176,32,.55)' }, { background: 'rgba(255,255,255,.06)' }], { duration: 380, easing: 'ease-out' });
+        say(r);
+        if (r === 'loading' && s.music == null) setTimeout(() => { if (sel === s) say(''); }, 700); // a sampled voice decoding: it plays in a moment
+        sync(true);
+      }
+      function stop() { if (A) A.stop(); sync(true); }
+      function say(r) {
+        if (!sel) return;
+        const w = A ? A.why(sel.id) : '';
+        note.textContent = w || (r === 'loading' ? 'Loading…' : '');
+        note.hidden = !note.textContent;
+      }
+      function pick(s) {
+        if (sel === s) return;
+        if (sel) pads.get(sel).classList.remove('sel');
+        sel = s; pads.get(s).classList.add('sel');
+        hint.hidden = true; head.hidden = false;
+        kick.textContent = s.cat; name.textContent = s.title; when.textContent = s.when;
+        takes.textContent = '';
+        const vs = s.vars || [];
+        takes.hidden = vs.length < 2;
+        for (let i = 0; i < vs.length; i++) {
+          const o = el('button', 'opt');
+          o.type = 'button'; o.setAttribute('role', 'radio'); o.textContent = vs[i];
+          o.addEventListener('click', () => { take.set(s, i); paintTakes(); fire(s); });
+          takes.appendChild(o);
+        }
+        for (let i = 0; i < edRows.length; i++) unlink(edRows[i]);
+        edRows.length = 0; knobsEl.textContent = '';
+        const list = knobs.get(s);
+        for (let i = 0; i < list.length; i++) {
+          const r = makeRow(list[i], 'sb-');
+          delete r.row.dataset.find; // the filter looks for pads, never at the editor
+          r.inp.addEventListener('change', () => { if (sel && sel.music == null) fire(sel); }); // a moved knob: hear it (a track is live)
+          r.rst.addEventListener('click', () => { if (sel && sel.music == null) fire(sel); });
+          edRows.push(r); link(r); knobsEl.appendChild(r.row);
+        }
+        paintTakes(); paint_(); say('');
+      }
+      function paintTakes() {
+        const k = sel ? takeOf(sel) : -1;
+        for (let i = 0; i < takes.children.length; i++) takes.children[i].setAttribute('aria-checked', i === k ? 'true' : 'false');
+      }
+      function paintPlay() {
+        const on = !!(sel && sel.music != null && A && A.playing === sel.id);
+        playB.innerHTML = (on ? STOP_SVG : PLAY_SVG) + '<span>' + (on ? 'Stop' : 'Play') + '</span>';
+        playB.classList.toggle('on', on);
+        playB.setAttribute('aria-label', (on ? 'Stop ' : 'Play ') + (sel ? sel.title : ''));
+      }
+      playB.addEventListener('click', () => { if (!sel) return; if (sel.music != null && A && A.playing === sel.id) stop(); else fire(sel); });
+      rstB.addEventListener('click', () => { // this sound back to how it was made
+        if (!sel) return;
+        const list = knobs.get(sel);
+        for (let i = 0; i < list.length; i++) { const v = dflt(list[i].path); if (v !== undefined) cfgSet(list[i].path, v); }
+        paintAll(); save();
+        if (sel.music == null) fire(sel);
+      });
+      function marks() {
+        for (const [s, b] of pads) b.classList.toggle('chg', isMoved(s));
+        if (sel) rstB.hidden = !pads.get(sel).classList.contains('chg');
+      }
+      function paint_() { for (let i = 0; i < edRows.length; i++) paint(edRows[i], false); marks(); paintPlay(); }
+      // a track it is playing on its own: its pad lights (pulsing while it loads), and the editor's Play becomes Stop
+      function sync(force) {
+        if (!A) return;
+        const id = A.playing, st = A.state;
+        if (!force && id === pvId && st === pvSt) return;
+        pvId = id; pvSt = st;
+        for (const [s, b] of pads) {
+          if (s.music == null) continue;
+          const on = s.id === id;
+          b.classList.toggle('on', on && st === 'playing'); b.classList.toggle('wait', on && st !== 'playing');
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+        paintPlay();
+        if (sel && sel.music != null) say('');
+      }
+      return {
+        g: group, marks, sync, stop, paint: paint_,
+        count() { let n = 0; for (const b of pads.values()) if (b.classList.contains('chg')) n++; return n; },
+        pick(id) { for (const s of sounds) if (s.id === id) { pick(s); return true; } return false; }, // tests, and a way in from elsewhere
+        get picked() { return sel ? sel.id : null; },
+      };
     }
 
     function openGroups() { try { const a = JSON.parse(lsGet(GROUPS)); return Array.isArray(a) ? a : null; } catch (e) { return null; } }
@@ -8564,7 +9097,8 @@ function createUI(root, opts) {
       lsSet(GROUPS, JSON.stringify(open));
     }
     function build() {
-      listEl.textContent = ''; rows.length = 0;
+      if (board) board.stop();
+      listEl.textContent = ''; rows.length = 0; byPath.clear(); board = null;
       for (const g in badges) delete badges[g];
       const byGroup = new Map(), remembered = openGroups(), rank = new Map();
       for (let i = 0; i < CFG_SCHEMA.length; i++) {
@@ -8582,7 +9116,8 @@ function createUI(root, opts) {
         first = false;
         sum.append(doc.createTextNode(name), n);
         d.appendChild(sum);
-        for (let i = 0; i < items.length; i++) { const r = makeRow(items[i]); rows.push(r); d.appendChild(r.row); }
+        if (items[0].sound) board = makeBoard(d, items, name);
+        else for (let i = 0; i < items.length; i++) { const r = makeRow(items[i]); rows.push(r); link(r); d.appendChild(r.row); }
         d.addEventListener('toggle', saveGroups);
         listEl.appendChild(d);
       });
@@ -8653,10 +9188,11 @@ function createUI(root, opts) {
       for (let i = 0; i < listEl.children.length; i++) {
         const d = listEl.children[i];
         let any = false;
-        for (const row of d.querySelectorAll('.row')) {
+        for (const row of d.querySelectorAll('[data-find]')) { // a row, or a soundboard pad (the editor's rows are never hidden)
           const hit = words.every((w) => row.dataset.find.indexOf(w) >= 0);
           row.hidden = !hit; if (hit) any = true;
         }
+        for (const c of d.querySelectorAll('.sb-c')) c.hidden = !c.querySelector('.pad:not([hidden])');
         d.hidden = !any;
         if (words.length) { if (any) d.open = true; } else d.open = groupsOpen ? groupsOpen.indexOf(d.dataset.g) >= 0 : i === 0;
       }
@@ -8674,6 +9210,7 @@ function createUI(root, opts) {
     }
     function close() {
       save();
+      if (board) board.stop(); // a track playing on its own stops, and the game's music comes back
       panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); gearBtn.setAttribute('aria-expanded', 'false');
     }
     const toggle = () => (isOpen() ? close() : open());
@@ -8701,7 +9238,10 @@ function createUI(root, opts) {
     adopt();
     if (lsGet(FULL) === '1') setFull(true);
 
-    return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save };
+    // every frame (from update): the soundboard's pads follow a track it is playing (loading, playing, stopped)
+    function tick() { if (board && isOpen()) board.sync(false); }
+
+    return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save, tick, get board() { return board; } };
   })();
 
   return { update, energy, fire, showResult, hideResult, hint, setMuted, tuner };
