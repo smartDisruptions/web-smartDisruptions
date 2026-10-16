@@ -455,7 +455,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
         <div class="io-row"><button id="feelApply" class="pb-btn go" type="button">Apply</button><button id="feelDone" class="pb-btn" type="button">Done</button></div>
       </div>
       <div id="feelGroups"></div>
-      <p class="credit">Music: Recess Overture, generated with ElevenLabs Music</p>
+      <p class="credit">Music generated with ElevenLabs Music</p>
     </div>
     <div class="toast" id="feelToast" role="status"></div>
   </aside>
@@ -1519,6 +1519,23 @@ const HIT_SOUNDS = [
   { name: 'taiko', label: 'Taiko', gain: 0.6, click: 0.6, data: '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' },
 ];
 
+// ════════ musictracks.js ════════
+// musictracks.js — GENERATED by tools/music.mjs from assets/music/music.json. Do not edit by hand: change the recipe and run the
+// tool again.
+//
+// The background music's tracks, in the Feel panel's "Music track" order: ElevenLabs Music takes, each in music/<name>.js beside
+// the page (base64 MP3), loaded only once it is picked. A track plays from its start once, then loopStart → loopEnd (s) repeats
+// (its seam is baked into the file); gain levels it under the hits at Music volume 1. trimmed: the seconds of digital silence cut
+// from the take's start (its loop points are in the file's time, the take's less that).
+const MUSIC_TRACKS = [
+  {name: 'first-bell', label: 'First Bell', short: 'First Bell', file: 'music/first-bell.js', take: 1, bpm: 127.946, trimmed: 1.8386875, loopStart: 29.143875, loopEnd: 74.16285416666666, seconds: 74.4629, gain: 0.3758},
+  {name: 'recess-overture', label: 'Recess Overture', short: 'Overture', file: 'music/recess-overture.js', take: 2, bpm: 127.998, trimmed: 0, loopStart: 30.044458333333335, loopEnd: 75.04516666666666, seconds: 75.3452, gain: 0.2265},
+  {name: 'field-day', label: 'Field Day', short: 'Field Day', file: 'music/field-day.js', take: 3, bpm: 127.974, trimmed: 0, loopStart: 25.834479166666668, loopEnd: 70.843625, seconds: 71.1436, gain: 0.2371},
+  {name: 'showdown', label: 'Showdown', short: 'Showdown', file: 'music/showdown.js', take: 4, bpm: 128.014, trimmed: 0, loopStart: 45.04708333333333, loopEnd: 75.04379166666666, seconds: 75.3438, gain: 0.2213},
+];
+const MUSIC_DEFAULT = 1; // recess-overture
+const MUSIC_CREDIT = 'Music generated with ElevenLabs Music';
+
 // ════════ audio.js ════════
 // audio.js — synthesised sound and haptics. No files: oscillators, filtered noise and envelopes, so a hit can be shaped by
 // power, quality and direction, and slow-mo can be HEARD (the whirr falls in pitch and muffles, then climbs back with the ramp).
@@ -1530,11 +1547,13 @@ const HIT_SOUNDS = [
 //   music ─► fade ─► low-pass ─► level ─┘ (straight into the master: the ball's pan is not the music's)
 //   (volume sits BEFORE the limiter, so even the loudest Feel-panel setting cannot clip the output)
 //
-// The music is a recording too: "Recess Overture", an epic violin and piano take from ElevenLabs Music (music.js beside the page,
-// made by tools/music.mjs from assets/music/). The page asks for it (createAudio({ musicSrc })) and the game starts without waiting:
-// it is decoded at the first gesture and swells in, plays its intro once, then loops on the recording's points (the seam is baked
-// into the file). It sits under the hits, and in slow-mo it muffles and dips with the time scale, so the hit cuts through. Muted,
-// switched off or at 0 it stops and remembers where; it picks up from there.
+// The music is a recording too: four epic violin and piano takes from ElevenLabs Music, picked on the Feel panel's "Music track"
+// (MUSIC_TRACKS, from musictracks.js; each take is music/<name>.js beside the page, made by tools/music.mjs from assets/music/).
+// The page asks for the picked track's file (createAudio({ musicFetch: true })) and the game starts without waiting: it is decoded
+// at the first gesture and swells in, plays its intro once, then loops on the take's points (the seam is baked into the file).
+// It sits under the hits, and in slow-mo it muffles and dips with the time scale, so the hit cuts through. Muted, switched off or
+// at 0 it stops and remembers where; it picks up from there. Another track picked: the old one fades out and is let go, and the
+// new one is fetched (only now), decoded and played from its top.
 //
 // Every sound has its own level on the Feel panel's Audio group, under the master volume: turn them all down and the game is
 // silent. (The perfect hit's ring, the rope's snap and ticks, the pole, the floor and the round's sting once had none, so with
@@ -1548,6 +1567,7 @@ const HIT_SOUNDS = [
 CFG.audio = {
   volume: 1, // master
   musicOn: 1, // the background music at all
+  musicTrack: typeof MUSIC_DEFAULT !== 'undefined' ? MUSIC_DEFAULT : 0, // which take (MUSIC_TRACKS, musictracks.js)
   music: 1, // its level: 1 is the recording's own (music.js levels it under the hits), 2 is 6 dB louder, 0 is none
   musicDuck: 1, // slow-mo muffles it and dips it a little, with the time scale
   hitBody: 1, // the thump layer of a hit
@@ -1573,6 +1593,8 @@ CFG.audio = {
 CFG_SCHEMA.push(
   { path: 'audio.volume', label: 'Master volume', min: 0, max: 1.5, step: 0.05, group: 'Audio', unit: '' },
   { path: 'audio.musicOn', label: 'Music', type: 'toggle', min: 0, max: 1, step: 1, group: 'Audio', unit: '' },
+  // the takes come from musictracks.js when it is in the build; without it there is no music to pick
+  ...(typeof MUSIC_TRACKS !== 'undefined' && MUSIC_TRACKS.length > 1 ? [{ path: 'audio.musicTrack', label: 'Music track', type: 'choice', options: MUSIC_TRACKS.map((t) => t.short || t.label), min: 0, max: MUSIC_TRACKS.length - 1, step: 1, group: 'Audio', unit: '' }] : []),
   { path: 'audio.music', label: 'Music volume', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.musicDuck', label: 'Slow-mo muffles the music', type: 'toggle', min: 0, max: 1, step: 1, group: 'Audio', unit: '' },
   // the voices come from hitsounds.js when it is in the build; without it the choice is the synth alone
@@ -1614,9 +1636,12 @@ function createAudio(opts) {
   let ctx = null, bus = null, master = null, pan = null, noise = null;
   const W = { thump: null, chime: null };
   const HV = { buf: [], off: [], started: false, loaded: 0, failed: 0, ready: null }; // the sampled hit voices, decoded
-  // the music: the recording (opts.music in tests, else window.TETHER_MUSIC once music.js has run), its bytes and its buffer;
-  // state none → decoding → ready (or failed / missing); the playing source and its fade; where it started (t0, at offset off)
-  const MU = { meta: opts.music || null, bytes: null, buf: null, state: 'none', asked: false, ready: null, src: null, fade: null, lp: null, g: null, t0: 0, off: 0, first: true, vG: -1, vF: -1 };
+  // the music: cur is the track (index into MUSIC_TRACKS) whose buffer this is; its recording comes from opts.musicData (tests)
+  // or window.TETHER_MUSIC once its file has run; bytes are made ahead for bytesFor; state none → decoding → ready (or failed /
+  // missing); gen tells a decode that finishes after the track changed to drop its buffer; the playing source and its fade; where
+  // it started (t0, at offset off); swell: how slowly the next start comes in
+  const TRACKS = typeof MUSIC_TRACKS !== 'undefined' ? MUSIC_TRACKS : []; // once: tick() must not allocate, not even an empty list
+  const MU = { cur: -1, bytes: null, bytesFor: -1, buf: null, state: 'none', asked: {}, miss: {}, gen: 0, ready: null, src: null, fade: null, lp: null, g: null, t0: 0, off: 0, swell: 0.5, played: false, vG: -1, vF: -1 };
   const LADDER = [0, 2, 4, 7, 9, 12, 14, 16]; // semitones above A4, one rung per turn of rope
 
   try { S.muted = localStorage.getItem('tetherball.muted') === '1'; } catch (e) { /* private mode: start unmuted */ }
@@ -1664,7 +1689,7 @@ function createAudio(opts) {
       W.thump = wave([1, 0.42, 0.2, 0.08]); // a sine with overtones: phone speakers cannot make 45 Hz, but they can make its harmonics
       W.chime = wave([1, 0, 0.22, 0, 0.08]); // soft and bell-like
       loadVoices();
-      loadMusic();
+      if (musicOn()) loadMusic(pick()); // a recording already here starts decoding with the context
 
       ctx.onstatechange = function () { if (ctx.state === 'running') flushLate(); };
       keepAlive();
@@ -2203,48 +2228,71 @@ function createAudio(opts) {
     A.src = s;
   }
 
-  // ---- the music: the recording on its own bus, under every effect ----
+  // ---- the music: the picked track on its own bus, under every effect ----
   //   source (looped) ─► fade (in, out, pause) ─► low-pass (slow-mo) ─► level (Music volume × its gain, the slow-mo dip) ─► master
   function musicOn() { return CFG.audio.musicOn >= 0.5 && level('music') > 0; }
-  // music.js is a script beside the page, so it loads from disk as well as from a server. The site serves the game at
-  // /games/tether-ball (no trailing slash), where a bare relative path means /games/music.js: the page's own folder is tried
-  // first, then the bare path (wherever else the page is served). Only the page asks (opts.musicSrc): a test page never does.
-  function askMusic() {
-    MU.asked = true;
-    if (!opts.musicSrc || typeof document === 'undefined' || typeof window === 'undefined' || typeof location === 'undefined') return;
-    if (window.TETHER_MUSIC) { gotMusic(); return; }
-    const name = String(opts.musicSrc), p = location.pathname || '/';
+  function tracks() { return TRACKS; }
+  function pick() { // the picked track, or -1 with none in the build
+    const n = tracks().length, v = +CFG.audio.musicTrack, i = v >= 0 ? Math.floor(v) : 0;
+    return n ? (i < n ? i : n - 1) : -1;
+  }
+  function dataOf(name) { // a track's recording (base64), once it is here
+    const from = opts.musicData || (typeof window !== 'undefined' ? window.TETHER_MUSIC : null);
+    return (from && from[name]) || null;
+  }
+  // A track's file is a script beside the page, so it loads from disk as well as from a server. The site serves the game at
+  // /games/tether-ball (no trailing slash), where a bare relative path means /games/music/...: the page's own folder is tried
+  // first, then the bare path (wherever else the page is served). Only the page asks (opts.musicFetch): a test page never does.
+  function want(i) {
+    const t = tracks()[i];
+    if (!t || !opts.musicFetch || MU.asked[t.name] || dataOf(t.name)) return;
+    MU.asked[t.name] = true;
+    if (typeof document === 'undefined' || typeof location === 'undefined') return;
+    const name = String(t.file), p = location.pathname || '/';
     const dir = p.charAt(p.length - 1) === '/' ? p : /\.html?$/i.test(p) ? p.replace(/[^/]*$/, '') : p + '/';
     const tries = [dir + name];
     let same = false;
     try { same = new URL(tries[0], location.href).href === new URL(name, location.href).href; } catch (e) { /* an address URL cannot read: try both */ }
     if (!same) tries.push(name);
-    let i = 0;
+    let k = 0;
     (function next() {
-      if (i >= tries.length) { if (MU.state === 'none') MU.state = 'missing'; return; }
+      if (k >= tries.length) { MU.miss[t.name] = true; return; }
       const s = document.createElement('script');
-      s.async = true; s.src = tries[i++];
-      s.onload = function () { if (window.TETHER_MUSIC) gotMusic(); else next(); };
+      s.async = true; s.src = tries[k++];
+      s.onload = function () { if (dataOf(t.name)) arrived(i); else next(); };
       s.onerror = function () { if (s.parentNode) s.parentNode.removeChild(s); next(); };
       (document.head || document.documentElement).appendChild(s);
     })();
   }
-  function gotMusic() { // its 1.6 MB of base64 become bytes while the page idles, so the first swipe never waits on them
-    MU.meta = window.TETHER_MUSIC;
-    setTimeout(function () { try { if (!MU.bytes && MU.state === 'none') MU.bytes = bytesOf(MU.meta.data); } catch (e) { MU.state = 'failed'; } }, 0);
-    if (ctx) loadMusic();
+  function arrived(i) { // its 1.5 MB of base64 become bytes while the page idles, so the first swipe never waits on them
+    setTimeout(function () {
+      const t = tracks()[i];
+      if (pick() !== i || MU.bytesFor === i || (MU.cur === i && MU.state !== 'none')) return;
+      try { MU.bytes = bytesOf(dataOf(t.name)); MU.bytesFor = i; } catch (e) { /* loadMusic tries again, and fails it */ }
+    }, 0);
   }
-  function loadMusic() { // decode once there is a context and the bytes (the browser decodes off the main thread)
-    if (MU.state !== 'none' || !ctx || !MU.meta) return;
-    if (!MU.bytes) { if (!opts.music) return; try { MU.bytes = bytesOf(MU.meta.data); } catch (e) { MU.state = 'failed'; return; } }
-    const u = MU.bytes;
-    MU.bytes = null; MU.state = 'decoding';
-    MU.ready = decodeBytes(u.buffer).then(function (b) { MU.buf = b; MU.state = 'ready'; }, function () { MU.state = 'failed'; });
+  function select(i, now) { // another track: let the old one go (its buffer too), and start the new one from its top
+    if (now != null) musicStop(now);
+    MU.cur = i; MU.buf = null; MU.state = 'none'; MU.off = 0; MU.gen++;
+    MU.swell = MU.played ? 0.2 : 0.5;
+    if (MU.bytesFor !== i) { MU.bytes = null; MU.bytesFor = -1; }
+  }
+  function loadMusic(i) { // decode once there is a context and the recording (the browser decodes off the main thread)
+    if (!ctx || i < 0) return;
+    if (MU.cur !== i) select(i, MU.src ? ctx.currentTime : null);
+    if (MU.state !== 'none' && MU.state !== 'missing') return;
+    const t = tracks()[i], d = dataOf(t.name);
+    if (!d) { if (MU.miss[t.name]) MU.state = 'missing'; return; }
+    let u = MU.bytesFor === i ? MU.bytes : null;
+    if (!u) { try { u = bytesOf(d); } catch (e) { MU.state = 'failed'; return; } }
+    MU.bytes = null; MU.bytesFor = -1; MU.state = 'decoding';
+    const g = MU.gen;
+    MU.ready = decodeBytes(u.buffer).then(function (b) { if (g === MU.gen) { MU.buf = b; MU.state = 'ready'; } }, function () { if (g === MU.gen) MU.state = 'failed'; });
   }
   function musicAt(now) { // where in the recording it is (s), the loop folded in
-    const m = MU.meta, len = m.loopEnd - m.loopStart;
+    const t = tracks()[MU.cur], len = t.loopEnd - t.loopStart;
     let p = MU.off + (now > MU.t0 ? now - MU.t0 : 0);
-    if (p >= m.loopEnd && len > 0) p = m.loopStart + ((p - m.loopStart) % len);
+    if (p >= t.loopEnd && len > 0) p = t.loopStart + ((p - t.loopStart) % len);
     return p;
   }
   function musicStart(now) {
@@ -2254,11 +2302,11 @@ function createAudio(opts) {
       MU.lp = filt('lowpass', ctx.sampleRate / 2, -3.0103); MU.g = ctx.createGain(); MU.g.gain.value = 0;
       MU.lp.connect(MU.g); MU.g.connect(master); MU.vG = 0; MU.vF = ctx.sampleRate / 2;
     }
-    const m = MU.meta, t = (now < WARM ? WARM : now) + LEAD, s = ctx.createBufferSource(), fd = ctx.createGain();
-    s.buffer = MU.buf; s.loop = true; s.loopStart = m.loopStart; s.loopEnd = m.loopEnd;
-    fd.gain.setValueAtTime(0, t); fd.gain.setTargetAtTime(1, t, MU.first ? 0.5 : 0.08); // the first time it swells in over ~1.5 s; after a pause, back in a beat
+    const tr = tracks()[MU.cur], t = (now < WARM ? WARM : now) + LEAD, s = ctx.createBufferSource(), fd = ctx.createGain();
+    s.buffer = MU.buf; s.loop = true; s.loopStart = tr.loopStart; s.loopEnd = tr.loopEnd;
+    fd.gain.setValueAtTime(0, t); fd.gain.setTargetAtTime(1, t, MU.swell); // the first time it swells in over ~1.5 s, a new track in ~0.6 s, after a pause back in a beat
     s.connect(fd); fd.connect(MU.lp); s.start(t, MU.off);
-    MU.src = s; MU.fade = fd; MU.t0 = t; MU.first = false;
+    MU.src = s; MU.fade = fd; MU.t0 = t; MU.played = true; MU.swell = 0.08;
   }
   function musicStop(now) {
     if (!MU.src) return;
@@ -2269,13 +2317,16 @@ function createAudio(opts) {
     s.stop(now + 0.3);
   }
   function musicTick(now, ts) {
-    if (MU.state === 'none') loadMusic();
-    if (MU.state !== 'ready') return;
+    const i = pick();
+    if (i < 0) return;
+    if (i !== MU.cur) select(i, now);
     if (!musicOn()) { musicStop(now); return; }
+    if (MU.state === 'none' || MU.state === 'missing') loadMusic(i);
+    if (MU.state !== 'ready') return;
     if (!MU.src) musicStart(now);
     // slow-mo: a low-pass from wide open (full speed) to 900 Hz (frozen), and a dip of up to 30 %, both on the time scale
-    const duck = CFG.audio.musicDuck >= 0.5 ? 1 - ts : 0, open = ctx.sampleRate / 2;
-    const v = level('music') * (MU.meta.gain > 0 ? MU.meta.gain : 0) * (1 - 0.3 * duck);
+    const duck = CFG.audio.musicDuck >= 0.5 ? 1 - ts : 0, open = ctx.sampleRate / 2, gn = tracks()[MU.cur].gain;
+    const v = level('music') * (gn > 0 ? gn : 0) * (1 - 0.3 * duck);
     if (Math.abs(v - MU.vG) > 0.0005 + MU.vG * 0.02) { MU.g.gain.setTargetAtTime(v, now, v < MU.vG ? 0.03 : 0.15); MU.vG = v; }
     const f = 900 * Math.pow(open / 900, Math.pow(1 - duck, 0.6));
     if (Math.abs(f - MU.vF) > MU.vF * 0.02) { MU.lp.frequency.setTargetAtTime(f, now, f < MU.vF ? 0.03 : 0.12); MU.vF = f; }
@@ -2349,12 +2400,14 @@ function createAudio(opts) {
     unlock: safe(unlock), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
     wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), special: safe(special), superCast: safe(superCast), superFx: safe(superFx), energy: safe(energy), fire: safe(fire), vibrate, stats,
     voices: { get ready() { return HV.ready || Promise.resolve(); }, get loaded() { return HV.loaded; }, get failed() { return HV.failed; } },
-    // the music: state none / decoding / ready / failed / missing, whether it is playing, and where in the recording (s)
+    // the music: the track it holds (its name and label), state none / decoding / ready / failed / missing, whether it is playing,
+    // and where in the recording (s)
     music: {
       get ready() { return MU.ready || Promise.resolve(); }, get state() { return MU.state; }, get playing() { return !!MU.src; },
-      get at() { return ctx && MU.src ? musicAt(ctx.currentTime) : MU.off; }, get label() { return MU.meta ? MU.meta.label : null; },
+      get at() { return ctx && MU.src ? musicAt(ctx.currentTime) : MU.off; },
+      get track() { const t = tracks()[MU.cur]; return t ? t.name : null; }, get label() { const t = tracks()[MU.cur]; return t ? t.label : null; },
     },
-    tick(dt, p) { try { if (!MU.asked && musicOn()) askMusic(); tickBody(dt, p); } catch (e) { fail(e); } },
+    tick(dt, p) { try { if (musicOn()) want(pick()); tickBody(dt, p); } catch (e) { fail(e); } },
     get muted() { return S.muted; },
     get state() { return ctx ? ctx.state : 'none'; },
   };
@@ -8706,7 +8759,7 @@ function createUI(root, opts) {
   const pace = createPace();
   const kage = createKage(document);
   const kiru = createKiru(document);
-  const audio = createAudio({ musicSrc: 'music.js' }); // the music is a file beside the page (audio.js asks for it on the first frame)
+  const audio = createAudio({ musicFetch: true }); // the music: the picked track's file beside the page (audio.js asks for it on the first frame)
   cfgFreezeDefaults(); // every module has declared its CFG section by now
   let rules = game;
   const ui = createUI(document.getElementById('app') || document.body, {
