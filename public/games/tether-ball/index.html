@@ -263,6 +263,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 .io { padding: 10px 0 12px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .io-hint { margin: 0 0 8px; font: 600 13px/1.3 var(--ui); color: var(--dim); }
 .io-hint.err { color: var(--hot); }
+.pbody .credit { margin: 16px 2px 4px; font: 600 11px/1.4 var(--ui); color: var(--dim); opacity: .8; }
 .io textarea { display: block; width: 100%; height: 100px; padding: 8px 10px; resize: none; border-radius: 10px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.4); color: var(--text); font: 16px/1.3 var(--mono); user-select: text; -webkit-user-select: text; touch-action: pan-y; }
 .io textarea:focus { outline: none; border-color: var(--accent); }
 .io-row { display: flex; gap: 8px; margin-top: 8px; }
@@ -454,6 +455,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
         <div class="io-row"><button id="feelApply" class="pb-btn go" type="button">Apply</button><button id="feelDone" class="pb-btn" type="button">Done</button></div>
       </div>
       <div id="feelGroups"></div>
+      <p class="credit">Music: Recess Overture, generated with ElevenLabs Music</p>
     </div>
     <div class="toast" id="feelToast" role="status"></div>
   </aside>
@@ -1525,7 +1527,14 @@ const HIT_SOUNDS = [
 // low-pass that opens up), still rings when it is perfect, and gets the synth's contact tick on top so it lands on a phone.
 //
 //   voices ─► pan ─► master (volume / mute) ─► compressor ─► soft clip ─► speakers
+//   music ─► fade ─► low-pass ─► level ─┘ (straight into the master: the ball's pan is not the music's)
 //   (volume sits BEFORE the limiter, so even the loudest Feel-panel setting cannot clip the output)
+//
+// The music is a recording too: "Recess Overture", an epic violin and piano take from ElevenLabs Music (music.js beside the page,
+// made by tools/music.mjs from assets/music/). The page asks for it (createAudio({ musicSrc })) and the game starts without waiting:
+// it is decoded at the first gesture and swells in, plays its intro once, then loops on the recording's points (the seam is baked
+// into the file). It sits under the hits, and in slow-mo it muffles and dips with the time scale, so the hit cuts through. Muted,
+// switched off or at 0 it stops and remembers where; it picks up from there.
 //
 // Every sound has its own level on the Feel panel's Audio group, under the master volume: turn them all down and the game is
 // silent. (The perfect hit's ring, the rope's snap and ticks, the pole, the floor and the round's sting once had none, so with
@@ -1538,6 +1547,9 @@ const HIT_SOUNDS = [
 
 CFG.audio = {
   volume: 1, // master
+  musicOn: 1, // the background music at all
+  music: 1, // its level: 1 is the recording's own (music.js levels it under the hits), 2 is 6 dB louder, 0 is none
+  musicDuck: 1, // slow-mo muffles it and dips it a little, with the time scale
   hitBody: 1, // the thump layer of a hit
   hitCrack: 1, // the crack and tick layers of a hit
   ring: 1, // the struck-metal ring of a perfect hit
@@ -1560,6 +1572,9 @@ CFG.audio = {
 };
 CFG_SCHEMA.push(
   { path: 'audio.volume', label: 'Master volume', min: 0, max: 1.5, step: 0.05, group: 'Audio', unit: '' },
+  { path: 'audio.musicOn', label: 'Music', type: 'toggle', min: 0, max: 1, step: 1, group: 'Audio', unit: '' },
+  { path: 'audio.music', label: 'Music volume', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.musicDuck', label: 'Slow-mo muffles the music', type: 'toggle', min: 0, max: 1, step: 1, group: 'Audio', unit: '' },
   // the voices come from hitsounds.js when it is in the build; without it the choice is the synth alone
   { path: 'audio.hitVoice', label: 'Hit sound', type: 'choice', options: ['Synth'].concat(typeof HIT_SOUNDS !== 'undefined' ? HIT_SOUNDS.map((v) => v.label) : []), min: 0, max: typeof HIT_SOUNDS !== 'undefined' ? HIT_SOUNDS.length : 0, step: 1, group: 'Audio', unit: '' },
   { path: 'audio.hitPitch', label: 'Sampled hit pitch', min: 0.6, max: 1.4, step: 0.02, group: 'Audio', unit: 'x' },
@@ -1599,6 +1614,9 @@ function createAudio(opts) {
   let ctx = null, bus = null, master = null, pan = null, noise = null;
   const W = { thump: null, chime: null };
   const HV = { buf: [], off: [], started: false, loaded: 0, failed: 0, ready: null }; // the sampled hit voices, decoded
+  // the music: the recording (opts.music in tests, else window.TETHER_MUSIC once music.js has run), its bytes and its buffer;
+  // state none → decoding → ready (or failed / missing); the playing source and its fade; where it started (t0, at offset off)
+  const MU = { meta: opts.music || null, bytes: null, buf: null, state: 'none', asked: false, ready: null, src: null, fade: null, lp: null, g: null, t0: 0, off: 0, first: true, vG: -1, vF: -1 };
   const LADDER = [0, 2, 4, 7, 9, 12, 14, 16]; // semitones above A4, one rung per turn of rope
 
   try { S.muted = localStorage.getItem('tetherball.muted') === '1'; } catch (e) { /* private mode: start unmuted */ }
@@ -1646,6 +1664,7 @@ function createAudio(opts) {
       W.thump = wave([1, 0.42, 0.2, 0.08]); // a sine with overtones: phone speakers cannot make 45 Hz, but they can make its harmonics
       W.chime = wave([1, 0, 0.22, 0, 0.08]); // soft and bell-like
       loadVoices();
+      loadMusic();
 
       ctx.onstatechange = function () { if (ctx.state === 'running') flushLate(); };
       keepAlive();
@@ -1771,16 +1790,16 @@ function createAudio(opts) {
       return decode(v.data).then(function (b) { HV.buf[i] = b; HV.off[i] = onsetOf(b); HV.loaded++; }, function () { HV.failed++; });
     }));
   }
-  function decode(b64) {
+  function bytesOf(b64) { const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+  function decodeBytes(ab) {
     return new Promise(function (res, rej) {
       try {
-        const bin = atob(b64), u = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
-        const pr = ctx.decodeAudioData(u.buffer, res, rej); // older Safari only calls back; the rest also return a promise
+        const pr = ctx.decodeAudioData(ab, res, rej); // older Safari only calls back; the rest also return a promise
         if (pr && pr.then) pr.then(res, rej);
       } catch (e) { rej(e); }
     });
   }
+  function decode(b64) { try { return decodeBytes(bytesOf(b64).buffer); } catch (e) { return Promise.reject(e); } }
   // where the sound starts in a decoded buffer: MP3 decoders differ on the encoder's lead-in silence, so look for it
   function onsetOf(b) {
     const d = b.getChannelData(0);
@@ -2184,15 +2203,94 @@ function createAudio(opts) {
     A.src = s;
   }
 
+  // ---- the music: the recording on its own bus, under every effect ----
+  //   source (looped) ─► fade (in, out, pause) ─► low-pass (slow-mo) ─► level (Music volume × its gain, the slow-mo dip) ─► master
+  function musicOn() { return CFG.audio.musicOn >= 0.5 && level('music') > 0; }
+  // music.js is a script beside the page, so it loads from disk as well as from a server. The site serves the game at
+  // /games/tether-ball (no trailing slash), where a bare relative path means /games/music.js: the page's own folder is tried
+  // first, then the bare path (wherever else the page is served). Only the page asks (opts.musicSrc): a test page never does.
+  function askMusic() {
+    MU.asked = true;
+    if (!opts.musicSrc || typeof document === 'undefined' || typeof window === 'undefined' || typeof location === 'undefined') return;
+    if (window.TETHER_MUSIC) { gotMusic(); return; }
+    const name = String(opts.musicSrc), p = location.pathname || '/';
+    const dir = p.charAt(p.length - 1) === '/' ? p : /\.html?$/i.test(p) ? p.replace(/[^/]*$/, '') : p + '/';
+    const tries = [dir + name];
+    let same = false;
+    try { same = new URL(tries[0], location.href).href === new URL(name, location.href).href; } catch (e) { /* an address URL cannot read: try both */ }
+    if (!same) tries.push(name);
+    let i = 0;
+    (function next() {
+      if (i >= tries.length) { if (MU.state === 'none') MU.state = 'missing'; return; }
+      const s = document.createElement('script');
+      s.async = true; s.src = tries[i++];
+      s.onload = function () { if (window.TETHER_MUSIC) gotMusic(); else next(); };
+      s.onerror = function () { if (s.parentNode) s.parentNode.removeChild(s); next(); };
+      (document.head || document.documentElement).appendChild(s);
+    })();
+  }
+  function gotMusic() { // its 1.6 MB of base64 become bytes while the page idles, so the first swipe never waits on them
+    MU.meta = window.TETHER_MUSIC;
+    setTimeout(function () { try { if (!MU.bytes && MU.state === 'none') MU.bytes = bytesOf(MU.meta.data); } catch (e) { MU.state = 'failed'; } }, 0);
+    if (ctx) loadMusic();
+  }
+  function loadMusic() { // decode once there is a context and the bytes (the browser decodes off the main thread)
+    if (MU.state !== 'none' || !ctx || !MU.meta) return;
+    if (!MU.bytes) { if (!opts.music) return; try { MU.bytes = bytesOf(MU.meta.data); } catch (e) { MU.state = 'failed'; return; } }
+    const u = MU.bytes;
+    MU.bytes = null; MU.state = 'decoding';
+    MU.ready = decodeBytes(u.buffer).then(function (b) { MU.buf = b; MU.state = 'ready'; }, function () { MU.state = 'failed'; });
+  }
+  function musicAt(now) { // where in the recording it is (s), the loop folded in
+    const m = MU.meta, len = m.loopEnd - m.loopStart;
+    let p = MU.off + (now > MU.t0 ? now - MU.t0 : 0);
+    if (p >= m.loopEnd && len > 0) p = m.loopStart + ((p - m.loopStart) % len);
+    return p;
+  }
+  function musicStart(now) {
+    if (!MU.g) {
+      // a low-pass's Q is in dB here: -3.01 is a flat (Butterworth) one. The effects' 0.7 bumps up ~1.7 dB just under the cutoff,
+      // which on music, whose energy sits in the low mids, hands back a decibel of what the slow-mo dip takes away
+      MU.lp = filt('lowpass', ctx.sampleRate / 2, -3.0103); MU.g = ctx.createGain(); MU.g.gain.value = 0;
+      MU.lp.connect(MU.g); MU.g.connect(master); MU.vG = 0; MU.vF = ctx.sampleRate / 2;
+    }
+    const m = MU.meta, t = (now < WARM ? WARM : now) + LEAD, s = ctx.createBufferSource(), fd = ctx.createGain();
+    s.buffer = MU.buf; s.loop = true; s.loopStart = m.loopStart; s.loopEnd = m.loopEnd;
+    fd.gain.setValueAtTime(0, t); fd.gain.setTargetAtTime(1, t, MU.first ? 0.5 : 0.08); // the first time it swells in over ~1.5 s; after a pause, back in a beat
+    s.connect(fd); fd.connect(MU.lp); s.start(t, MU.off);
+    MU.src = s; MU.fade = fd; MU.t0 = t; MU.first = false;
+  }
+  function musicStop(now) {
+    if (!MU.src) return;
+    const s = MU.src, fd = MU.fade;
+    MU.off = musicAt(now); MU.src = null; MU.fade = null;
+    fd.gain.setTargetAtTime(0, now, 0.04);
+    s.onended = function () { s.disconnect(); fd.disconnect(); };
+    s.stop(now + 0.3);
+  }
+  function musicTick(now, ts) {
+    if (MU.state === 'none') loadMusic();
+    if (MU.state !== 'ready') return;
+    if (!musicOn()) { musicStop(now); return; }
+    if (!MU.src) musicStart(now);
+    // slow-mo: a low-pass from wide open (full speed) to 900 Hz (frozen), and a dip of up to 30 %, both on the time scale
+    const duck = CFG.audio.musicDuck >= 0.5 ? 1 - ts : 0, open = ctx.sampleRate / 2;
+    const v = level('music') * (MU.meta.gain > 0 ? MU.meta.gain : 0) * (1 - 0.3 * duck);
+    if (Math.abs(v - MU.vG) > 0.0005 + MU.vG * 0.02) { MU.g.gain.setTargetAtTime(v, now, v < MU.vG ? 0.03 : 0.15); MU.vG = v; }
+    const f = 900 * Math.pow(open / 900, Math.pow(1 - duck, 0.6));
+    if (Math.abs(f - MU.vF) > MU.vF * 0.02) { MU.lp.frequency.setTargetAtTime(f, now, f < MU.vF ? 0.03 : 0.12); MU.vF = f; }
+  }
+
   function tickBody(dt, p) {
     if (!ctx) return;
-    if (S.muted) { ambStop(); return; }
+    if (S.muted) { ambStop(); musicStop(ctx.currentTime); return; }
     if (!S.offline && ctx.state !== 'running') { if (++S.nudge % 30 === 1) resume(); return; }
     const now = ctx.currentTime, C = CFG.audio;
     const vol = volume();
     if (master && A.vol !== vol) { A.vol = vol; master.gain.setTargetAtTime(vol, now, 0.02); } // the Feel panel retunes live
     const sp = p && p.speed01 > 0 ? (p.speed01 < 1 ? p.speed01 : 1) : 0;
     const ts = p && p.timeScale >= 0 ? (p.timeScale < 1 ? p.timeScale : 1) : 1;
+    musicTick(now, ts);
     const gate = U.smoothstep(0.03, 0.4, sp) * U.smoothstep(0, 0.12, ts); // silent when the ball only sways, and while time is frozen
     const slow = 1 - ts;
     const q = 2.2 + 3.5 * sp; // a narrower band as it speeds up: the whistle of air
@@ -2231,7 +2329,7 @@ function createAudio(opts) {
     if (!master) return;
     const now = ctx.currentTime;
     master.gain.cancelScheduledValues(now);
-    if (S.muted) { master.gain.setTargetAtTime(0, now, 0.008); master.gain.setValueAtTime(0, now + 0.08); ambStop(); } // a click-free fade, then exactly zero
+    if (S.muted) { master.gain.setTargetAtTime(0, now, 0.008); master.gain.setValueAtTime(0, now + 0.08); ambStop(); musicStop(now); } // a click-free fade, then exactly zero
     else { A.vol = volume(); master.gain.setValueAtTime(0, now); master.gain.setTargetAtTime(A.vol, now, 0.01); }
   }
 
@@ -2251,7 +2349,12 @@ function createAudio(opts) {
     unlock: safe(unlock), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
     wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), special: safe(special), superCast: safe(superCast), superFx: safe(superFx), energy: safe(energy), fire: safe(fire), vibrate, stats,
     voices: { get ready() { return HV.ready || Promise.resolve(); }, get loaded() { return HV.loaded; }, get failed() { return HV.failed; } },
-    tick(dt, p) { try { tickBody(dt, p); } catch (e) { fail(e); } },
+    // the music: state none / decoding / ready / failed / missing, whether it is playing, and where in the recording (s)
+    music: {
+      get ready() { return MU.ready || Promise.resolve(); }, get state() { return MU.state; }, get playing() { return !!MU.src; },
+      get at() { return ctx && MU.src ? musicAt(ctx.currentTime) : MU.off; }, get label() { return MU.meta ? MU.meta.label : null; },
+    },
+    tick(dt, p) { try { if (!MU.asked && musicOn()) askMusic(); tickBody(dt, p); } catch (e) { fail(e); } },
     get muted() { return S.muted; },
     get state() { return ctx ? ctx.state : 'none'; },
   };
@@ -8603,7 +8706,7 @@ function createUI(root, opts) {
   const pace = createPace();
   const kage = createKage(document);
   const kiru = createKiru(document);
-  const audio = createAudio();
+  const audio = createAudio({ musicSrc: 'music.js' }); // the music is a file beside the page (audio.js asks for it on the first frame)
   cfgFreezeDefaults(); // every module has declared its CFG section by now
   let rules = game;
   const ui = createUI(document.getElementById('app') || document.body, {
