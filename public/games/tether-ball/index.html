@@ -395,6 +395,18 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   #hintText, #result.on .card, #result.on .badge, .ey[data-st="full"], .fy[data-st="held"], #streak i.f, .pad.wait { animation: none; }
   .eg, .eg .fl { transition: none; }
 }
+
+/* ───────────── a group of subs (the Specials): pick one, and its settings show under its name ───────────── */
+.subpick { display: grid; grid-template-columns: 1fr; row-gap: 6px; align-items: center; padding: 7px 0 5px; }
+.subpick .opt { position: relative; }
+.subpick .opt::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--c, var(--dim)); vertical-align: 1px; }
+.subpick .opt.chg::after { content: ''; position: absolute; top: 4px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.subpick .opt.chg[aria-checked="true"]::after { background: var(--ink); }
+.subh { margin: 10px 0 2px; font: 800 11px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--c, var(--dim)); }
+.subrows.off { display: none; }
+.filtering .subpick { display: none; }
+.filtering .subrows.off { display: block; }
+.filtering .subrows.none { display: none; }
 </style>
 </head>
 <body>
@@ -1698,7 +1710,7 @@ CFG_SCHEMA.push(
       { id: 'energyArm', cat: 'Moves', label: 'Armed', title: 'Special armed', when: 'Arming a special, or a swing curving enough to unleash one', gate: ['audio.special'] },
       { id: 'energyOff', cat: 'Moves', label: 'Disarmed', title: 'Special disarmed', when: 'Disarming a special again', gate: ['audio.special'] },
     ],
-    ['Swerve', 'Spike', 'Phantom', 'Decoys', 'Slip', 'Warp'].map((n) => ({ id: n.toLowerCase(), cat: 'Supers', label: n, title: n, when: 'Casting the ' + n + ' super, on top of its hit', gate: ['audio.special'] })),
+    ['Swerve', 'Spike', 'Phantom', 'Decoys', 'Slip', 'Warp', 'Zap', 'Wind', 'Stomp', 'Blast'].map((n) => ({ id: n.toLowerCase(), cat: 'Supers', label: n, title: n, when: 'Casting the ' + n + ' special, on top of its hit', gate: ['audio.special'] })),
     [
       { id: 'cutIn', cat: 'Super moments', label: 'Cut in', title: 'Swerve cuts in', when: 'A Swerve ball cutting in', gate: ['audio.special'] },
       { id: 'lockOn', cat: 'Super moments', label: 'Lock-on', title: 'Spike locks on', when: 'A Spike turning on its target', gate: ['audio.special'] },
@@ -1708,6 +1720,11 @@ CFG_SCHEMA.push(
       { id: 'slipOff', cat: 'Super moments', label: 'Slip off', title: 'Slip off', when: 'A touch slipping off a Slip ball', gate: ['audio.special'] },
       { id: 'blinkOut', cat: 'Super moments', label: 'Blink out', title: 'Warp blinks out', when: 'A Warp ball blinking out', gate: ['audio.special'] },
       { id: 'blinkIn', cat: 'Super moments', label: 'Blink in', title: 'Warp blinks in', when: 'A Warp ball solid again', gate: ['audio.special'] },
+      { id: 'bolt', cat: 'Super moments', label: 'Bolt', title: 'Lightning bolt', when: 'A Zap bolt striking a player', gate: ['audio.special'] },
+      { id: 'gustHit', cat: 'Super moments', label: 'Gust hit', title: 'Whirlwind hit', when: 'A Wind whirlwind reaching a player', gate: ['audio.special'] },
+      { id: 'quake', cat: 'Super moments', label: 'Quake', title: 'Stomp quake', when: "A Stomp's foot coming down: the boom and the rumble", gate: ['audio.special'] },
+      { id: 'blastWave', cat: 'Super moments', label: 'Blast wave', title: 'Blast goes off', when: "A Blast's power-up going off", gate: ['audio.special'] },
+      { id: 'knockdown', cat: 'Super moments', label: 'Knockdown', title: 'Knockdown', when: 'A player knocked off their feet by a Zap, a Wind, a Stomp or a Blast', gate: ['audio.special'] },
       { id: 'ignite', cat: 'Fire', label: 'Ignite', title: 'Ignite', when: 'The ball catching fire, or a fireball thrown', gate: ['audio.fire'] },
       { id: 'fireWon', cat: 'Fire', label: 'Volley won', title: 'Fire volley won', when: 'Winning a fire volley: the power-up', gate: ['audio.fire'] },
       { id: 'fireArm', cat: 'Fire', label: 'Charged', title: 'Fireball charged', when: 'A swing charged with the fireball', gate: ['audio.fire'] },
@@ -2146,11 +2163,12 @@ function createAudio(opts) {
     }
     reap(v);
   }
-  // ---- the supers (supers.js: 1 swerve, 2 spike, 3 phantom, 4 decoys, 5 slip, 6 warp), on top of the special's hit ----
-  const SUPER_IDS = [null, 'swerve', 'spike', 'phantom', 'decoys', 'slip', 'warp'];
+  // ---- the supers (supers.js: 1 swerve, 2 spike, 3 phantom, 4 decoys, 5 slip, 6 warp, 7 zap, 8 wind, 9 stomp, 10 blast), on top
+  // of the special's hit ----
+  const SUPER_IDS = [null, 'swerve', 'spike', 'phantom', 'decoys', 'slip', 'warp', 'zap', 'wind', 'stomp', 'blast'];
   function superCast(kind) {
-    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, id = kind >= 1 && kind <= 6 ? SUPER_IDS[kind | 0] : null;
-    if (S.muted || !id || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(10, true)) return;
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, id = kind >= 1 && kind < SUPER_IDS.length ? SUPER_IDS[kind | 0] : null;
+    if (S.muted || !id || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(kind > 6 ? 14 : 10, true)) return;
     const t = at(), v = begin(id);
     if (kind === 1) { // swerve: a whoosh that weaves up and down, and a low push under it
       const s = noiseSrc(v, t, 0.75), b = filt('bandpass', 900, 2.4), g = ctx.createGain();
@@ -2201,19 +2219,61 @@ function createAudio(opts) {
       const ns = noiseSrc(v, t, 0.4);
       for (let i = 0; i < 3; i++) burst(v, t + i * 0.07, ns, 'bandpass', 2400 + 1400 * i, 2.5, 0.22 * lv, 0.001, 0.04);
       tone(v, t, W.thump, 120, 38, 0.05, 0.42 * lv, 0.002, 0.35);
+    } else if (kind === 7) { // zap: the ball charged: an electric buzz jumping about in pitch, a sizzle of sparks, a low thump
+      const o = osc(t, 140, 'sawtooth'), b = filt('bandpass', 1900, 1.4), g = ctx.createGain(), end = t + 0.44;
+      v.n.push(o, b, g);
+      for (let i = 0; i < 14; i++) o.frequency.setValueAtTime(110 + rnd() * 190, t + i * 0.028);
+      env(g, t, 0.12 * lv, 0.004, 0.38);
+      o.connect(b); b.connect(g); g.connect(v.out); o.start(t); o.stop(end);
+      keep(v, o, end);
+      const ns = noiseSrc(v, t, 0.45);
+      for (let i = 0; i < 4; i++) burst(v, t + 0.02 + i * 0.07 + rnd() * 0.03, ns, 'highpass', 3800 + rnd() * 2400, 0.9, 0.2 * lv, 0.0004, 0.03);
+      tone(v, t, W.thump, 100, 38, 0.05, 0.4 * lv, 0.002, 0.35);
+    } else if (kind === 8) { // wind: a gust rushing up and away, a howl that bends with it, a low push
+      const s = noiseSrc(v, t, 0.9), b = filt('bandpass', 500, 3.5), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueCurveAtTime(curve((u) => 500 * Math.pow(5, Math.sin(u * Math.PI) * 0.9 + 0.12 * Math.sin(u * 9 * Math.PI))), t, 0.85);
+      env(g, t, 0.42 * lv, 0.08, 0.78);
+      s.connect(b); b.connect(g); g.connect(v.out);
+      tone(v, t, 'triangle', 420, 760, 0.25, 0.05 * lv, 0.08, 0.6);
+      tone(v, t, W.thump, 80, 40, 0.06, 0.35 * lv, 0.002, 0.35);
+    } else if (kind === 9) { // stomp: the foot goes up: a short whoosh rising, a grunt (the boom is the quake's, as it comes down)
+      const s = noiseSrc(v, t, 0.3), b = filt('bandpass', 600, 1.8), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueAtTime(600, t); b.frequency.exponentialRampToValueAtTime(2400, t + 0.16);
+      env(g, t, 0.26 * lv, 0.03, 0.16);
+      s.connect(b); b.connect(g); g.connect(v.out);
+      tone(v, t, 'triangle', 150, 95, 0.06, 0.12 * lv, 0.01, 0.16);
+      tone(v, t, W.thump, 90, 40, 0.05, 0.35 * lv, 0.002, 0.3);
+    } else if (kind === 10) { // blast: powering up: a whine climbing and a roar of fire swelling under it (the bang is the blast's)
+      const ch = 0.75, o = osc(t, 180, 'sawtooth'), b = filt('lowpass', 700, 4), g = ctx.createGain(), end = t + ch + 0.14;
+      v.n.push(o, b, g);
+      o.frequency.exponentialRampToValueAtTime(900, t + ch);
+      b.frequency.setValueAtTime(700, t); b.frequency.exponentialRampToValueAtTime(3200, t + ch);
+      const p = g.gain; p.setValueAtTime(0, t); p.linearRampToValueAtTime(0.07 * lv, t + ch); p.exponentialRampToValueAtTime(FLOOR, t + ch + 0.12);
+      o.connect(b); b.connect(g); g.connect(v.out); o.start(t); o.stop(end);
+      keep(v, o, end);
+      const s = noiseSrc(v, t, ch + 0.16), nb = filt('bandpass', 400, 0.8), ng = ctx.createGain();
+      v.n.push(nb, ng);
+      nb.frequency.setValueAtTime(400, t); nb.frequency.exponentialRampToValueAtTime(1400, t + ch);
+      const q = ng.gain; q.setValueAtTime(0, t); q.linearRampToValueAtTime(0.3 * lv, t + ch); q.exponentialRampToValueAtTime(FLOOR, t + ch + 0.14);
+      s.connect(nb); nb.connect(ng); ng.connect(v.out);
+      tone(v, t, W.thump, 85, 40, 0.05, 0.35 * lv, 0.002, 0.3);
     }
     reap(v);
   }
   // a super's moment away from the hit: 'hit' (a spike landing on a player), 'pop' (a decoy), 'slip' (a touch slipped off),
   // 'reveal' (a phantom shows again), 'break' (a swerve cuts in), 'lock' (a spike turns on them), 'warp' (it blinks out),
-  // 'unwarp' (solid again)
+  // 'unwarp' (solid again); the four's: 'bolt' (a zap strikes), 'gust' (a whirlwind reaches them), 'quake' (a stomp's foot comes
+  // down), 'blast' (a power-up goes off), 'down' (a player knocked off their feet by one of them)
   function fxId(kind) { // a super moment's sound on the soundboard
     return kind === 'hit' ? 'blow' : kind === 'pop' ? 'pop' : kind === 'slip' ? 'slipOff' : kind === 'reveal' ? 'reveal' : kind === 'break' ? 'cutIn'
-      : kind === 'lock' ? 'lockOn' : kind === 'warp' ? 'blinkOut' : kind === 'unwarp' ? 'blinkIn' : null;
+      : kind === 'lock' ? 'lockOn' : kind === 'warp' ? 'blinkOut' : kind === 'unwarp' ? 'blinkIn' : kind === 'bolt' ? 'bolt' : kind === 'gust' ? 'gustHit'
+        : kind === 'quake' ? 'quake' : kind === 'blast' ? 'blastWave' : kind === 'down' ? 'knockdown' : null;
   }
   function superFx(kind) {
-    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, big = kind === 'hit', id = fxId(kind);
-    if (S.muted || !id || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(big ? 8 : 4, big)) return;
+    const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, big = kind === 'hit' || kind === 'bolt' || kind === 'quake' || kind === 'blast' || kind === 'down', id = fxId(kind);
+    if (S.muted || !id || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(big ? (kind === 'hit' ? 8 : 13) : 4, big)) return;
     const t = at(), v = begin(id);
     if (kind === 'hit') { // a body blow: a slap, a deep thud, a bonk
       const ns = noiseSrc(v, t, 0.4);
@@ -2250,6 +2310,42 @@ function createAudio(opts) {
       keep(v, o, end);
       const ns = noiseSrc(v, t, 0.2);
       burst(v, t, ns, 'highpass', 3600, 0.8, 0.16 * lv, 0.0005, 0.05);
+    } else if (kind === 'bolt') { // a bolt strikes: a hard crack, a sizzle and a buzz falling away, a low boom
+      const ns = noiseSrc(v, t, 0.6);
+      burst(v, t, ns, 'highpass', 2200, 0.7, 0.6 * lv, 0.0004, 0.09);
+      burst(v, t + 0.01, ns, 'bandpass', 5200, 1.2, 0.22 * lv, 0.002, 0.4);
+      const o = osc(t, 1900, 'sawtooth'), b = filt('bandpass', 1500, 1.8), g = ctx.createGain(), end = t + 0.3;
+      v.n.push(o, b, g);
+      for (let i = 0; i < 8; i++) o.frequency.setValueAtTime(1900 * Math.pow(0.72, i) * (0.85 + rnd() * 0.3), t + i * 0.03);
+      env(g, t, 0.14 * lv, 0.001, 0.26);
+      o.connect(b); b.connect(g); g.connect(v.out); o.start(t); o.stop(end);
+      keep(v, o, end);
+      tone(v, t, W.thump, 70, 28, 0.08, 0.7 * lv, 0.001, 0.6);
+    } else if (kind === 'gust') { // a whirlwind slams into them: a rush of air sweeping past, fluttering
+      const s = noiseSrc(v, t, 0.6), b = filt('bandpass', 2400, 1.2), g = ctx.createGain();
+      v.n.push(b, g);
+      b.frequency.setValueCurveAtTime(curve((u) => 2400 * Math.pow(0.2, u) * (1 + 0.25 * Math.sin(u * 22 * Math.PI))), t, 0.5);
+      env(g, t, 0.45 * lv, 0.015, 0.5);
+      s.connect(b); b.connect(g); g.connect(v.out);
+    } else if (kind === 'quake') { // a foot stamps the ground: a boom, the slap of the foot, a crunch, the ground rumbling on, grit
+      tone(v, t, W.thump, 62, 24, 0.1, 0.95 * lv, 0.001, 0.9);
+      tone(v, t, 'triangle', 120, 45, 0.08, 0.25 * lv, 0.002, 0.35);
+      const ns = noiseSrc(v, t, 1.2);
+      burst(v, t, ns, 'bandpass', 900, 0.8, 0.3 * lv, 0.0008, 0.12);
+      burst(v, t, ns, 'bandpass', 420, 0.9, 0.4 * lv, 0.004, 0.5);
+      burst(v, t, ns, 'lowpass', 180, 0.9, 0.55 * lv, 0.01, 1.1);
+      burst(v, t + 0.05, ns, 'highpass', 3000, 0.7, 0.07 * lv, 0.01, 0.5);
+    } else if (kind === 'blast') { // a power-up goes off: a crack, a bang, a roar of fire rolling out
+      const ns = noiseSrc(v, t, 1.2);
+      burst(v, t, ns, 'highpass', 2600, 0.7, 0.25 * lv, 0.0005, 0.06);
+      burst(v, t, ns, 'lowpass', 1400, 0.7, 0.7 * lv, 0.001, 0.25);
+      burst(v, t + 0.02, ns, 'bandpass', 600, 0.6, 0.45 * lv, 0.03, 0.9);
+      tone(v, t, W.thump, 70, 26, 0.09, 0.85 * lv, 0.001, 0.75);
+    } else if (kind === 'down') { // a body hits the floor: a thud and a scuff
+      tone(v, t, W.thump, 88, 34, 0.06, 0.7 * lv, 0.001, 0.4);
+      const ns = noiseSrc(v, t, 0.4);
+      burst(v, t, ns, 'bandpass', 700, 0.9, 0.3 * lv, 0.002, 0.12);
+      burst(v, t + 0.08, ns, 'bandpass', 1800, 1.2, 0.12 * lv, 0.01, 0.2);
     }
     reap(v);
   }
@@ -2663,6 +2759,11 @@ function createAudio(opts) {
       case 'slipOff': superFx('slip'); break;
       case 'blinkOut': superFx('warp'); break;
       case 'blinkIn': superFx('unwarp'); break;
+      case 'bolt': superFx('bolt'); break;
+      case 'gustHit': superFx('gust'); break;
+      case 'quake': superFx('quake'); break;
+      case 'blastWave': superFx('blast'); break;
+      case 'knockdown': superFx('down'); break;
       case 'ignite': fire('ignite'); break;
       case 'fireWon': fire('won'); break;
       case 'fireArm': fire('arm'); break;
@@ -2811,8 +2912,10 @@ function createAudio(opts) {
 // Specials (energy.js). A hit with `special` set ('you' | 'kage') is drawn as one of power 0.85 at least, under its name, and
 //   brings its own layer: Raijin's lightning out of the sky onto the ball, or Kage's shadow cut across it. setCharge(owner, k)
 //   each frame puts the charge the ball carries round it (crackling arcs, or a ring of shadow), fading out with k. A special
-//   that is one of the supers (supers.js: `superKind` 1..6) says the super's name in its colours instead (themes 5..10), and an
-//   event { type: 'super', kind, word, size } is its moment away from a hit (a spike landing on a player, a slip).
+//   that is one of the supers (supers.js: `superKind` 1..10) says the super's name in its colours instead (themes 5..14), and an
+//   event { type: 'super', kind, word, size } is its moment away from a hit (a spike or one of the four landing on a player, a
+//   slip). event({ type: 'quake', k }) is a stomp's foot coming down: the whole screen shakes, mostly up and down, for most of
+//   a second, k times as hard (its own shake: the Hit FX screen shake is the hits').
 // Fire (fire.js), in the Feel panel's fire colour: a hit with `burned` set is BURNED!, one with `fireball` set is FIREBALL!, and
 //   event({ type: 'fire', at, word }) is the ball catching fire (a burst of flame under the word: ON FIRE! for a fire volley).
 //   The flames themselves are fire.js's.
@@ -2860,7 +2963,9 @@ function createFX(seed) {
   // ---- palette: rebuilt only if CFG.pal changes ----
   let pa = null, ph = null, pc = null, pf = -2;
   const N_HEAT = 16, heat = [];
-  const themes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(() => ({ sp: [], glow: null, flash: null }));
+  const N_SUPER = 10; // the supers' themes: 5..14 (supers.js)
+  const themes = [];
+  for (let i = 0; i <= 4 + N_SUPER; i++) themes.push({ sp: [], glow: null, flash: null });
   const fireKey = () => (typeof firePal === 'function' && CFG.fire ? CFG.fire.color : -1); // the fire colour (fire.js), if it is in the build
   const stale = () => pa !== CFG.pal.accent || ph !== CFG.pal.hot || pc !== CFG.pal.cool || pf !== fireKey();
   function buildThemes() {
@@ -2875,8 +2980,8 @@ function createFX(seed) {
       { b0: mix(KN, '#2a0640', 0.55), b1: KN, b2: mix(KN, W, 0.72), ring: mix(KN, W, 0.45), ring2: mix(P.cool, W, 0.5), line: mix(KN, W, 0.78), veil: '#fbe6ff', tFill: '#fff1ff', tOut: mix(KN, '#3a0057', 0.45), mph: mix(KN, W, 0.35), k: [mix(KN, W, 0.5), KN, mix(KN, '#5a10c0', 0.5)] },
       { b0: mix(FP.outer, '#200400', 0.35), b1: FP.outer, b2: FP.mid, ring: mix(FP.mid, W, 0.35), ring2: mix(FP.core, W, 0.5), line: mix(FP.mid, W, 0.7), veil: mix(FP.core, W, 0.5), tFill: mix(FP.core, W, 0.4), tOut: mix(FP.outer, '#200400', 0.45), mph: FP.mid, k: [FP.core, FP.mid, FP.outer] },
     ];
-    // 5..10: the supers (supers.js), each in its own colours whoever throws it
-    for (let k = 1; k <= 6; k++) {
+    // 5..14: the supers (supers.js), each in its own colours whoever throws it
+    for (let k = 1; k <= N_SUPER; k++) {
       const Q = typeof SUPERS !== 'undefined' && SUPERS[k] && SUPERS[k].mid ? SUPERS[k] : { core: '#ffffff', mid: '#c9cfdd', outer: '#7c8395' };
       d.push({ b0: mix(Q.outer, '#0a0612', 0.4), b1: Q.outer, b2: Q.mid, ring: mix(Q.mid, W, 0.35), ring2: mix(Q.core, W, 0.5), line: mix(Q.mid, W, 0.7), veil: mix(Q.core, W, 0.5), tFill: mix(Q.core, W, 0.3), tOut: mix(Q.outer, '#0a0612', 0.45), mph: Q.mid, k: [Q.core, Q.mid, Q.outer] });
     }
@@ -3016,12 +3121,14 @@ function createFX(seed) {
     vig: 0, ballHeat: 0, relI: 0, relS: 1, relUx: 1, relUy: 0,
     windAcc: 0, windK: 0, bX: 0, bY: 0, bZ: 0, bVX: 0, bVY: 0, bVZ: 0, hX: 0, hY: 0, hZ: 0, hSp: 0,
     spAge: 9, spS: 1, spUx: 1, spUy: 0, spJag: 9, chK: 0, chT: 0, chJag: 9, // the special's layer, and the ball's charge
+    qA: 0, qT: 9, // a stomp's quake: px at its start, s since
   };
   const vg = { w: 0, h: 0, g: null };
   const stats = { sparks: 0, lines: 0, wind: 0, trail: 0, total: 0 };
 
   // ---- the special's layer and the ball's charge (real time): fixed pools, their own dice so the bursts' shapes never shift ----
   const SPECIAL_LIFE = 0.34, N_BOLT = 3, N_SEG = 14, N_FORK = 5, N_ARC = 4, N_ASEG = 6;
+  const QUAKE_LIFE = 0.9, QUAKE_TAU = 0.3; // s a stomp's quake lasts, and how fast it dies
   const bJag = new Float32Array(N_BOLT * (N_SEG + 1)), bX0 = new Float32Array(N_BOLT); // each bolt's zigzag (a random walk, unit), and where it leaves the sky (px × S off the ball)
   const fAt = new Uint8Array(N_BOLT), fAng = new Float32Array(N_BOLT), fJag = new Float32Array(N_BOLT * (N_FORK + 1)); // each bolt's fork: the vertex it leaves from, its angle off the bolt, its zigzag
   const aA0 = new Float32Array(N_ARC), aSpan = new Float32Array(N_ARC), aR = new Float32Array(N_ARC * (N_ASEG + 1)); // the charge's arcs: start, sweep, radii (× ball r)
@@ -3270,7 +3377,7 @@ function createFX(seed) {
     } else if (ev.type === 'super') {
       // a super's moment away from a hit (supers.js): a spike landing on a player (big), a slip, a warp's blink (small)
       const big = ev.size !== 'small';
-      resetSpec(4 + (ev.kind > 0 && ev.kind <= 6 ? ev.kind : 4), big ? 0.9 : 0.4, S);
+      resetSpec(4 + (ev.kind > 0 && ev.kind <= N_SUPER ? ev.kind : 4), big ? 0.9 : 0.4, S);
       const sp = spec;
       sp.wx = at.x; sp.wy = at.y; sp.wz = at.z; sp.ux = ev.ux || 0; sp.uy = ev.uy || -1; sp.spread = ev.ux || ev.uy ? 0.5 : 1; sp.fwd = 0;
       sp.nRay = big ? 12 : 6; sp.starR = S * (big ? 90 : 34); sp.starLife = big ? 0.32 : 0.18; sp.sparkMode = 1;
@@ -3281,6 +3388,12 @@ function createFX(seed) {
       sp.tx = cx; sp.ty = U.clamp(cy - S * (big ? 96 : 52), sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize);
       startBurst();
       if (big) { addTrauma(0.5); st.shS = S; kick(F.shake * S * 0.4, ev.ux || 0, ev.uy || 1, 0.01); punch(F.punch * 0.7, F.snap * 0.6, 0.12, cx, cy); }
+    } else if (ev.type === 'quake') {
+      // a stomp (supers.js): no burst (the shockwave and the dust are supers.js's), a quake that outlasts a hit's shake
+      k = Math.max(0, ev.k == null ? 1 : ev.k);
+      if (!(k > 0)) return;
+      st.qA = Math.max(st.qA * Math.exp(-st.qT / QUAKE_TAU), 15 * S * k); st.qT = 0;
+      punch(F.punch * 0.45 * Math.min(1, k), F.snap * 0.4, 0.1, cx, cy);
     } else if (ev.type === 'pole') {
       k = U.clamp01((ev.speed || 0) / vmax);
       if (k < 0.04) return;
@@ -3353,7 +3466,7 @@ function createFX(seed) {
 
     // camera: st.trauma shake (quadratic), a directional kick that rings out, zoom punch held through the freeze then snapped out
     if (st.trauma > 0) st.trauma = Math.max(0, st.trauma - realDt * 1.15);
-    st.shT += realDt; st.kickT += realDt; st.rollT += realDt; st.zSince += realDt;
+    st.shT += realDt; st.kickT += realDt; st.rollT += realDt; st.zSince += realDt; st.qT += realDt;
     let zt;
     if (phase === 'freeze') zt = st.zHold;
     else if (phase === 'slow') zt = st.zHold * (1 - 0.18 * pT * pT * (3 - 2 * pT));
@@ -3414,7 +3527,7 @@ function createFX(seed) {
     let nL = 0;
     for (let i = 0; i < N_SLOT; i++) if (slots[i].on && slots[i].age < slots[i].lineLife + 0.05) nL += slots[i].nLine;
     stats.lines = nL; stats.total = nSp + nL + nW + nT;
-    live = any || nSp > 0 || nW > 0 || sqMode !== 0 || st.vig > 0 || st.ballHeat > 0 || st.trauma > 0 || st.zOff !== 0 || st.kickT < 0.6 || st.rollT < 0.8 || st.zSince < 1.2 || st.chK > 0 || st.spAge < SPECIAL_LIFE;
+    live = any || nSp > 0 || nW > 0 || sqMode !== 0 || st.vig > 0 || st.ballHeat > 0 || st.trauma > 0 || st.zOff !== 0 || st.kickT < 0.6 || st.rollT < 0.8 || st.zSince < 1.2 || st.chK > 0 || st.spAge < SPECIAL_LIFE || st.qT < QUAKE_LIFE;
   }
 
   function applyCamera(cam) {
@@ -3424,12 +3537,16 @@ function createFX(seed) {
     let kx = 0, ky = 0, rl = 0;
     if (st.kickT < 0.6) { const e = st.kickA * Math.exp(-st.kickT / 0.07) * Math.cos(TAU * st.kickT / 0.11); kx = st.kickUx * e; ky = st.kickUy * e; }
     if (st.rollT < 0.8) rl = st.rollA * Math.exp(-st.rollT / 0.16) * Math.cos(TAU * st.rollT / 0.33);
+    if (st.qT < QUAKE_LIFE) { // a stomp's quake: a heavy, slower shudder, mostly up and down, dying away
+      const e = st.qA * Math.exp(-st.qT / QUAKE_TAU) * (1 - st.qT / QUAKE_LIFE);
+      kx += e * 0.45 * Math.sin(TAU * 11 * st.qT + 0.7); ky += e * (0.75 * Math.sin(TAU * 14 * st.qT) + 0.25 * Math.sin(TAU * 23 * st.qT + 1.9));
+    }
     cam.zoom = 1 + st.zOff;
     cam.shakeX = amp * (0.6 * Math.sin(97 * st.shT) + 0.4 * Math.sin(53 * st.shT + 1.1)) + kx;
     cam.shakeY = amp * (0.6 * Math.sin(89 * st.shT + 2.1) + 0.4 * Math.sin(67 * st.shT + 0.4)) + ky;
     cam.roll = rl + 0.012 * (F.shake / 15) * t2 * Math.sin(41 * st.shT + 0.7);
     if (hasFocus) { cam.focusX = st.focX; cam.focusY = st.focY; }
-    if (st.zOff === 0 && st.trauma === 0 && st.kickT >= 0.6 && st.rollT >= 0.8) {
+    if (st.zOff === 0 && st.trauma === 0 && st.kickT >= 0.6 && st.rollT >= 0.8 && st.qT >= QUAKE_LIFE) {
       cam.zoom = 1; cam.shakeX = 0; cam.shakeY = 0; cam.roll = 0; cam.focusX = cam.w / 2; cam.focusY = cam.h / 2; hasFocus = false;
     }
   }
@@ -3864,7 +3981,7 @@ function createFX(seed) {
     tHead = 0; tCount = 0; hOn = false; st.windAcc = 0; sparkCur = 0; anchorCur = 0;
     rel = 0; st.trauma = 0; st.kickT = 9; st.rollT = 9; st.kickA = 0; st.rollA = 0; st.zOff = 0; st.zHold = 0; st.zSnap = 0; st.zSince = 9; hasFocus = false;
     st.sq = 0; st.sqv = 0; sqMode = 0; st.vig = 0; st.ballHeat = 0; st.shT = 0; st.windK = 0; live = false; underDone = false;
-    st.spAge = 9; spAn = null; st.chK = 0; st.chT = 0; chOwner = '';
+    st.spAge = 9; spAn = null; st.chK = 0; st.chT = 0; chOwner = ''; st.qA = 0; st.qT = 9;
     stats.sparks = stats.lines = stats.wind = stats.trail = stats.total = 0;
   }
 
@@ -3882,6 +3999,8 @@ function createFX(seed) {
 // ball and each other by their z, and their speech goes over everything. view.overBall (fire.js: a burning ball) draws round the
 // ball in the ball's layer, its tail just before the ball and its heat just after, so the pole hides them with it. view.halves (−1 / +1: the side Kage's half is on, 0 none) paints the two
 // halves into the baked court. view.paceK / paceF (main.js, pace.js): your hit delay, a ring round the ball in the ball's layer.
+// view.attacks (supers.js: a zap, a whirlwind, a stomp's shockwave, a blast) draws on the floor after the shadows (drawFloor) and
+// over the players after them (drawOver); view.quake (0..1, a stomp) shakes the ground: the baked court jolts under everything.
 // Depth rule: the pole is the y axis and the camera sits on +z, so "behind the pole" is simply z < 0. A rope that crosses
 // z = 0 is split there (it can pass in front of the pole at one end and behind it at the other); fx.drawTrail goes just
 // before the ball. Reads CFG.pal when it bakes (resize() re-skins); nothing allocates per frame.
@@ -3928,6 +4047,7 @@ function createScene(canvas) {
   const rX = new Float64Array(NS + 1), rY = new Float64Array(NS + 1), rS = new Float64Array(NS + 1), rZ = new Float64Array(NS + 1);
   const ORD = [], ORDZ = new Float64Array(8), ORDB = new Int8Array(8), NO_ACTORS = []; // this frame's characters, far to near
   let over = null; // this frame's view.overBall
+  const QK = { x: 0, y: 0 }; // this frame's ground shake (CSS px): the court alone moves by it
   // this frame's view: how much of the ball, its rope and its shadow shows (a phantom super fades them, supers.js), and whether
   // its heat trail is drawn
   const VIS = { ball: 1, rope: 1, shadow: 1, trail: true };
@@ -4478,14 +4598,14 @@ function createScene(canvas) {
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     if (cam.zoom === 1 && cam.roll === 0) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.drawImage(L.cv, Math.round(cam.shakeX * kx) - L.mPx, Math.round(cam.shakeY * ky) - L.mPx);
+      ctx.drawImage(L.cv, Math.round((cam.shakeX + QK.x) * kx) - L.mPx, Math.round((cam.shakeY + QK.y) * ky) - L.mPx);
       return;
     }
     const z = cam.zoom, co = Math.cos(cam.roll), si = Math.sin(cam.roll), mx = cam.w * 0.5, my = cam.h * 0.5;
     const tx = cam.focusX * (1 - z) - mx, ty = cam.focusY * (1 - z) - my;
     base(ctx);
     if (z < 0.97 || Math.abs(cam.roll) > 0.04) { ctx.fillStyle = lookOf() === 1 ? CFG.pal.bg0 : YARD.tarNear; ctx.fillRect(0, 0, W, H); }
-    ctx.setTransform(kx * z * co, ky * z * si, -kx * z * si, ky * z * co, kx * (mx + tx * co - ty * si + cam.shakeX), ky * (my + tx * si + ty * co + cam.shakeY));
+    ctx.setTransform(kx * z * co, ky * z * si, -kx * z * si, ky * z * co, kx * (mx + tx * co - ty * si + cam.shakeX + QK.x), ky * (my + tx * si + ty * co + cam.shakeY + QK.y));
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(L.cv, -L.mx, -L.my, L.cw, L.ch);
     ctx.imageSmoothingEnabled = true;
@@ -4821,6 +4941,9 @@ function createScene(canvas) {
     VIS.ball = view && view.ballA >= 0 ? view.ballA : 1; VIS.rope = view && view.ropeA >= 0 ? view.ropeA : 1;
     VIS.shadow = view && view.shadowA >= 0 ? view.shadowA : 1; VIS.trail = !(view && view.noTrail);
     PACE.k = view && view.paceK > 0 ? Math.min(1, view.paceK) : 0; PACE.f = view && view.paceF > 0 ? Math.min(1, view.paceF) : 0;
+    const q = view && view.quake > 0 ? Math.min(1, view.quake) : 0, qa = q * 0.06 * cam.pxPerM, qt = (view && view.now) || 0; // a jolt of up to 6 cm, mostly up and down
+    QK.x = q > 0 ? qa * 0.45 * Math.sin(qt * 0.071 + 1.3) : 0; QK.y = q > 0 ? qa * (0.7 * Math.sin(qt * 0.093) + 0.3 * Math.sin(qt * 0.157 + 0.6)) : 0;
+    const atk = view && view.attacks ? view.attacks : null;
     if (cam.sync) cam.sync(); // a retuned camera knob refits before anything is projected this frame
     sync(cam);
     blit(ctx, cam);
@@ -4830,6 +4953,7 @@ function createScene(canvas) {
     drawShadows(ctx, cam, world);
     const acts = view && view.actors ? view.actors : NO_ACTORS;
     for (let i = 0; i < acts.length; i++) { acts[i].drawShadow(ctx, cam, kx, ky); base(ctx); }
+    if (atk) { atk.drawFloor(ctx, cam, world); base(ctx); }
     preparePole(cam, world);
     prepareBall(cam, world, view, fx);
     buildRope(cam, world);
@@ -4843,6 +4967,7 @@ function createScene(canvas) {
     layer(ctx, cam, world, fx, 1);
     actors(ctx, cam, world, 3);
     base(ctx);
+    if (atk) { atk.drawOver(ctx, cam, world); base(ctx); }
     if (fx && fx.drawOver) fx.drawOver(ctx, cam, world);
     base(ctx);
     drawFinger(ctx, cam, view ? view.input : null, view && view.charged ? view.charged : '', view ? view.chargedPal : null);
@@ -5641,12 +5766,13 @@ function createEnergy() {
 }
 
 // ════════ supers.js ════════
-// supers.js — the supers (versus only): what a special does to the ball, for one turn.
+// supers.js — the supers (versus only): what a special does to the ball for one turn, or to the other player.
 //
 // A full energy bar is a special (energy.js), unleashed with a counter-clockwise curved swipe. Each player's special is their
-// SUPER, picked in the Feel panel's Supers group: yours is Raijin and Kage's Shadow cut by default (the signatures: the
-// other player's next touch is heavy, energy.js's charge), or one of six that change what the ball DOES for that turn, and so
-// make it harder to hit. Each of the six has a group of its own under Supers, and every row in it changes the ball:
+// SUPER, picked in the Feel panel's Specials group: yours is Raijin and Kage's Shadow cut by default (the signatures: the
+// other player's next touch is heavy, energy.js's charge), or one of ten. The first six change what the ball DOES for that
+// turn, and so make it harder to hit; the last four knock the other player down. The Specials group lists them all: pick one
+// and its settings show, and every row in them changes the ball or the knockdown:
 //   SWERVE   it breaks off the round arc and cuts in toward the pole: its path bends `angle` degrees in from the orbit, over
 //            `turn` seconds, `when` it is thrown (off the hand, at the centre line, or near the other player), and then flies
 //            straight, on a slack rope, until the rope catches it on the far side. Kage reads the ball by running the physics,
@@ -5664,12 +5790,27 @@ function createEnergy() {
 //   WARP     `when` it is thrown (near the other player, by default; or the instant their hand would meet it) it blinks out,
 //            skips `jump` seconds of its flight, and for `time` seconds it is out of phase: every hand goes through it. Then it is
 //            solid again.
+// The four that knock the other player down (Josh's ask, 2026-10-16: specials that knock the opponent down, with settings):
+//   ZAP      lightning: `when` it is thrown (off the hand, by default) and once they are within `reach`, the ball crackles for
+//            `delay` and a bolt leaps from it to them: down for `stun`, thrown back at `push`, and the ball flies on at `jolt` of
+//            its speed. A touch on the ball while it crackles stops it (unless `block` is off: then their hands go through it).
+//   WIND     a whirlwind leaves the hand and flies at them at `speed`, `width` across, turning after them at `home`: if it
+//            reaches them they are blown off their feet (`stun`, `push`). The ball rides its tailwind (`ball`).
+//   STOMP    the thrower stomps: the screen shakes (`shake`), the ground with it (`quake`), and a shockwave rolls out across the
+//            court at `speed` to `reach`. On the ground as it passes, they fall (`stun`); in the air (a leap for a high ball),
+//            they ride it out (`air`). The ball jumps on its rope as the wave passes under it (`hop`).
+//   BLAST    the thrower powers up, in the fire's colours, for `charge` seconds, then the power-up goes off: a ring of fire
+//            spreads at `speed` to `reach` (from them, or by the setting from the ball), throws them down (`stun`, `push`) and
+//            blows the ball away from where it went off (`ball`). Powered up, the thrower's next hit lands `power` times harder.
+// The four go out from where the special hit the ball and resolve on their own: the ball is a plain ball again at once (a
+// zap's, once its bolt has gone), and a touch on it does not stop a gust, a wave or a blast already on its way.
 // A super lasts the other player's turn: until they touch the ball (or it hits them), or `turn` seconds (2: about as long as a
 // signature's charge lasts); any touch of its owner's ends it too. A pass they let go by does not, unless `pass` says so: it
 // comes round at them again, still the super it was. (Ended at the first pass, the supers wound less rope than Raijin while Kage
 // returned half as many of them: the signature's heavy touch reaches across passes.) Rules on game time. A super's forces go
 // into the ball's velocity before the physics step: physics.js never sees a super, and so neither does Kage's look-ahead, which
-// runs it. Drawing on the real clock: each super in its own colour, whoever throws it.
+// runs it. Drawing on the real clock: each super in its own colour, whoever throws it. A knockdown's moment goes to main.js
+// as an event ('down': who, by which, where, which way); so do a stomp landing ('quake') and a blast going off ('blast').
 
 const SUPERS = [ // the setting's value is the index. Colours as fire.js's: core, body, edge, glow
   { key: 'signature', name: 'Signature', word: '' }, // Raijin or Shadow cut: energy.js and fx.js draw them, as before
@@ -5679,12 +5820,16 @@ const SUPERS = [ // the setting's value is the index. Colours as fire.js's: core
   { key: 'decoys', name: 'Decoys', word: 'DECOYS!', core: '#ffffff', mid: '#d5d9e3', outer: '#7c8395', glow: '#c9cfdd', hint: 'Decoys! Follow the rope' },
   { key: 'slip', name: 'Slip', word: 'SLIP!', core: '#f9ffe8', mid: '#c4ff4d', outer: '#5fae12', glow: '#b5ff3a', hint: 'Slip! Swing again' },
   { key: 'warp', name: 'Warp', word: 'WARP!', core: '#f2feff', mid: '#2ef2ff', outer: '#ff2bd6', glow: '#7ff6ff', hint: 'Warp! Wait for it' }, // a glitch: cyan split from magenta
+  { key: 'zap', name: 'Zap', word: 'ZAP!', core: '#ffffff', mid: '#ffe94d', outer: '#3a7bff', glow: '#9fdcff', hint: 'Zap! Lightning ⚡', down: 'ZAPPED!' }, // a bolt: yellow-white on electric blue
+  { key: 'wind', name: 'Wind', word: 'GUST!', core: '#ffffff', mid: '#c4f7ff', outer: '#2fa7b8', glow: '#9ff0ff', hint: 'Whirlwind! Down you go 🌪️', down: 'BLOWN AWAY!' },
+  { key: 'stomp', name: 'Stomp', word: 'STOMP!', core: '#fff3d6', mid: '#ffb347', outer: '#8a5a2b', glow: '#ffc670', hint: 'Stomp! Feel the quake 💥', down: 'STOMPED!' }, // earth and dust
+  { key: 'blast', name: 'Blast', word: 'POWER UP!', core: '#fff6d8', mid: '#ff9a1f', outer: '#d4320c', glow: '#ff7a1a', hint: 'Power-up! Blast coming 🔥', down: 'BLASTED!' },
 ];
 
-const WHEN = ['Off the hand', 'At the line', 'Near them']; // when a swerve breaks, a spike turns on them, a warp blinks out (or, for a warp, as they swing)
+const WHEN = ['Off the hand', 'At the line', 'Near them']; // when a swerve breaks, a spike turns on them, a warp blinks out, a zap strikes (or, for a warp, as they swing)
 CFG.supers = {
-  you: 0, // your super: 0 your signature (Raijin), 1 Swerve, 2 Spike, 3 Phantom, 4 Decoys, 5 Slip, 6 Warp
-  kage: 0, // Kage's: 0 his signature (Shadow cut), then the same six
+  you: 0, // your super: 0 your signature (Raijin), 1 Swerve, 2 Spike, 3 Phantom, 4 Decoys, 5 Slip, 6 Warp, 7 Zap, 8 Wind, 9 Stomp, 10 Blast
+  kage: 0, // Kage's: 0 his signature (Shadow cut), then the same ten
   turn: 2, // s a super lasts at most
   near: 1.2, // m: "near them" (on their side of the line), for a super set to go off near the other player
   pass: 0, // 1: a pass they let go by ends it (0: it comes round at them again, still the super it was)
@@ -5746,70 +5891,151 @@ CFG.supers = {
     speed: 1, // × its speed as it comes back
     flip: 0, // 1: it comes back going the other way
   },
+  zap: {
+    when: 0, // 0 off the hand (at once), 1 at the line, 2 near them
+    reach: 4, // m a bolt can jump: further off, it waits for them to come within it
+    delay: 0.12, // s it crackles on the ball before it strikes
+    stun: 0.5, // s it knocks them down
+    push: 1.2, // m/s it throws them back
+    jolt: 0.9, // × the ball's speed as the bolt leaves it (it takes a little with it: at ×1.1 a zap was worth 10 points to the bot)
+    block: 1, // 1: a touch on the ball while it crackles stops it (0: their hands go through it)
+  },
+  wind: {
+    speed: 9, // m/s the whirlwind flies at them
+    width: 0.9, // m across
+    home: 2.5, // rad/s it turns after them
+    stun: 0.6, // s it knocks them down (0.8 cost the bot 17 points in the balance sim)
+    push: 3, // m/s it blows them back
+    ball: 1.1, // × the ball's speed: its tailwind as it leaves the hand
+    form: 0, // 0 a whirlwind, 1 a gust (blades of wind)
+  },
+  stomp: {
+    shake: 1, // × the screen shake
+    quake: 1, // 1: the ground shakes too
+    speed: 7, // m/s the shockwave spreads
+    reach: 4.5, // m it spreads to
+    stun: 0.7, // s it knocks them down
+    air: 1, // 1: in the air as it passes (a leap), they ride it out
+    hop: 1.5, // m/s the ball jumps as it passes under it
+  },
+  blast: {
+    charge: 0.4, // s the thrower powers up before the blast
+    speed: 9, // m/s the ring of fire spreads
+    reach: 4, // m it spreads to
+    stun: 0.6, // s it knocks them down
+    push: 2.5, // m/s it throws them back
+    ball: 1.5, // m/s it blows the ball away from the thrower as it passes
+    power: 1.15, // × the thrower's next hit, powered up (until it lands, or 3 s)
+    from: 0, // 0 it goes off from the thrower, 1 from the ball, wherever it is by then
+  },
 };
-CFG_SCHEMA.push(
-  { path: 'supers.you', label: 'Your super', type: 'choice', options: ['Raijin', 'Swerve', 'Spike', 'Phantom', 'Decoys', 'Slip', 'Warp'], min: 0, max: 6, step: 1, group: 'Supers', rank: -2.75, unit: '' },
-  { path: 'supers.kage', label: "Kage's super", type: 'choice', options: ['Shadow cut', 'Swerve', 'Spike', 'Phantom', 'Decoys', 'Slip', 'Warp'], min: 0, max: 6, step: 1, group: 'Supers', rank: -2.75, unit: '' },
-  { path: 'supers.turn', label: 'A super lasts at most', min: 1, max: 5, step: 0.1, group: 'Supers', rank: -2.75, unit: 's' },
-  { path: 'supers.near', label: '"Near them" is within', min: 0.5, max: 2.5, step: 0.05, group: 'Supers', rank: -2.75, unit: 'm' },
-  { path: 'supers.pass', label: 'A pass let go by ends it', type: 'toggle', min: 0, max: 1, step: 1, group: 'Supers', rank: -2.75, unit: '' },
-  { path: 'supers.hints', label: "Tips on Kage's supers", type: 'toggle', min: 0, max: 1, step: 1, group: 'Supers', rank: -2.75, unit: '' },
+// The Feel panel's Specials group: whose special is which and the rules they share, then a pick of the ten, which shows that
+// one's settings (an entry's `sub`, in its colour: ui.js). Picking a special for you or Kage shows its settings (`follow`).
+// Every row of each changes what the ball does, or the knockdown.
+{
+  const G = 'Specials', R = -2.75, names = SUPERS.slice(1).map((x) => x.name), n = names.length;
+  const tint = (sub) => { for (let i = 1; i < SUPERS.length; i++) if (SUPERS[i].name === sub) return SUPERS[i].mid; return ''; };
+  const row = (sub, path, label, min, max, step, unit, extra) => Object.assign({ path: 'supers.' + path, label, min, max, step, group: G, rank: R, unit, sub, subTint: tint(sub) }, extra || {});
+  const pick = (sub, path, label, options) => row(sub, path, label, 0, options.length - 1, 1, '', { type: 'choice', options });
+  const flip = (sub, path, label) => row(sub, path, label, 0, 1, 1, '', { type: 'toggle' });
+  CFG_SCHEMA.push(
+    { path: 'supers.you', label: 'Your special', type: 'choice', options: ['Raijin'].concat(names), min: 0, max: n, step: 1, group: G, rank: R, unit: '', follow: true },
+    { path: 'supers.kage', label: "Kage's special", type: 'choice', options: ['Shadow cut'].concat(names), min: 0, max: n, step: 1, group: G, rank: R, unit: '', follow: true },
+    { path: 'supers.turn', label: 'A special lasts at most', min: 1, max: 5, step: 0.1, group: G, rank: R, unit: 's' },
+    { path: 'supers.near', label: '"Near them" is within', min: 0.5, max: 2.5, step: 0.05, group: G, rank: R, unit: 'm' },
+    { path: 'supers.pass', label: 'A pass let go by ends it', type: 'toggle', min: 0, max: 1, step: 1, group: G, rank: R, unit: '' },
+    { path: 'supers.hints', label: "Tips on Kage's specials", type: 'toggle', min: 0, max: 1, step: 1, group: G, rank: R, unit: '' },
 
-  { path: 'supers.swerve.when', label: 'It swerves', type: 'choice', options: WHEN, min: 0, max: 2, step: 1, group: 'Swerve', rank: -2.749, unit: '' },
-  { path: 'supers.swerve.angle', label: 'Cuts in toward the pole by', min: 10, max: 80, step: 1, group: 'Swerve', rank: -2.749, unit: '°' },
-  { path: 'supers.swerve.turn', label: 'The cut takes', min: 0.02, max: 0.4, step: 0.01, group: 'Swerve', rank: -2.749, unit: 's' },
-  { path: 'supers.swerve.speed', label: 'Swerve speed', min: 0.6, max: 1.8, step: 0.05, group: 'Swerve', rank: -2.749, unit: 'x' },
-  { path: 'supers.swerve.keep', label: 'Keeps its speed', type: 'toggle', min: 0, max: 1, step: 1, group: 'Swerve', rank: -2.749, unit: '' },
-  { path: 'supers.swerve.n', label: 'Swerves a turn', min: 1, max: 4, step: 1, group: 'Swerve', rank: -2.749, unit: '' },
-  { path: 'supers.swerve.dip', label: 'Dives as it swerves', min: 0, max: 6, step: 0.1, group: 'Swerve', rank: -2.749, unit: 'm/s' },
-  { path: 'supers.swerve.weave', label: 'Weave (dips and surges)', min: 0, max: 2, step: 0.05, group: 'Swerve', rank: -2.749, unit: 'x' },
+    pick('Swerve', 'swerve.when', 'It swerves', WHEN),
+    row('Swerve', 'swerve.angle', 'Cuts in toward the pole by', 10, 80, 1, '°'),
+    row('Swerve', 'swerve.turn', 'The cut takes', 0.02, 0.4, 0.01, 's'),
+    row('Swerve', 'swerve.speed', 'Swerve speed', 0.6, 1.8, 0.05, 'x'),
+    flip('Swerve', 'swerve.keep', 'Keeps its speed'),
+    row('Swerve', 'swerve.n', 'Swerves a turn', 1, 4, 1, ''),
+    row('Swerve', 'swerve.dip', 'Dives as it swerves', 0, 6, 0.1, 'm/s'),
+    row('Swerve', 'swerve.weave', 'Weave (dips and surges)', 0, 2, 0.05, 'x'),
 
-  { path: 'supers.spike.when', label: 'It turns on them', type: 'choice', options: WHEN, min: 0, max: 2, step: 1, group: 'Spike', rank: -2.748, unit: '' },
-  { path: 'supers.spike.speed', label: 'Spike speed', min: 10, max: 32, step: 0.5, group: 'Spike', rank: -2.748, unit: 'm/s' },
-  { path: 'supers.spike.home', label: 'Homing (follows them)', min: 0, max: 60, step: 1, group: 'Spike', rank: -2.748, unit: 'rad/s' },
-  { path: 'supers.spike.aim', label: 'Aims at', type: 'choice', options: ['Head', 'Body'], min: 0, max: 1, step: 1, group: 'Spike', rank: -2.748, unit: '' },
-  { path: 'supers.spike.stun', label: 'Knocks them down for', min: 0.2, max: 2, step: 0.1, group: 'Spike', rank: -2.748, unit: 's' },
-  { path: 'supers.spike.bounce', label: 'Speed off them', min: 0, max: 2, step: 0.05, group: 'Spike', rank: -2.748, unit: 'x' },
-  { path: 'supers.spike.back', label: 'Off them it', type: 'choice', options: ['Carries on', 'Bounces back'], min: 0, max: 1, step: 1, group: 'Spike', rank: -2.748, unit: '' },
-  { path: 'supers.spike.block', label: 'They can hit it first', type: 'toggle', min: 0, max: 1, step: 1, group: 'Spike', rank: -2.748, unit: '' },
-  { path: 'supers.spike.pole', label: 'Bends round the pole', type: 'toggle', min: 0, max: 1, step: 1, group: 'Spike', rank: -2.748, unit: '' },
+    pick('Spike', 'spike.when', 'It turns on them', WHEN),
+    row('Spike', 'spike.speed', 'Spike speed', 10, 32, 0.5, 'm/s'),
+    row('Spike', 'spike.home', 'Homing (follows them)', 0, 60, 1, 'rad/s'),
+    pick('Spike', 'spike.aim', 'Aims at', ['Head', 'Body']),
+    row('Spike', 'spike.stun', 'Knocks them down for', 0.2, 2, 0.1, 's'),
+    row('Spike', 'spike.bounce', 'Speed off them', 0, 2, 0.05, 'x'),
+    pick('Spike', 'spike.back', 'Off them it', ['Carries on', 'Bounces back']),
+    flip('Spike', 'spike.block', 'They can hit it first'),
+    flip('Spike', 'spike.pole', 'Bends round the pole'),
 
-  { path: 'supers.phantom.show', label: 'A phantom shows at', min: 0, max: 0.6, step: 0.02, group: 'Phantom', rank: -2.747, unit: 'x' },
-  { path: 'supers.phantom.after', label: 'Fades after', min: 0, max: 0.8, step: 0.01, group: 'Phantom', rank: -2.747, unit: 's' },
-  { path: 'supers.phantom.rope', label: 'Its rope fades too', type: 'toggle', min: 0, max: 1, step: 1, group: 'Phantom', rank: -2.747, unit: '' },
-  { path: 'supers.phantom.shadow', label: 'Its shadow', type: 'choice', options: ['Shows', 'Faint', 'Gone'], min: 0, max: 2, step: 1, group: 'Phantom', rank: -2.747, unit: '' },
-  { path: 'supers.phantom.gravity', label: 'Phantom gravity', min: 0, max: 1.5, step: 0.05, group: 'Phantom', rank: -2.747, unit: 'x' },
-  { path: 'supers.phantom.speed', label: 'Phantom speed', min: 0.6, max: 1.6, step: 0.05, group: 'Phantom', rank: -2.747, unit: 'x' },
-  { path: 'supers.phantom.sight', label: 'Kage sees it from', min: 0.4, max: 2, step: 0.05, group: 'Phantom', rank: -2.747, unit: 'x' },
-  { path: 'supers.phantom.flicker', label: 'Flickers into view', type: 'toggle', min: 0, max: 1, step: 1, group: 'Phantom', rank: -2.747, unit: '' },
+    row('Phantom', 'phantom.show', 'A phantom shows at', 0, 0.6, 0.02, 'x'),
+    row('Phantom', 'phantom.after', 'Fades after', 0, 0.8, 0.01, 's'),
+    flip('Phantom', 'phantom.rope', 'Its rope fades too'),
+    pick('Phantom', 'phantom.shadow', 'Its shadow', ['Shows', 'Faint', 'Gone']),
+    row('Phantom', 'phantom.gravity', 'Phantom gravity', 0, 1.5, 0.05, 'x'),
+    row('Phantom', 'phantom.speed', 'Phantom speed', 0.6, 1.6, 0.05, 'x'),
+    row('Phantom', 'phantom.sight', 'Kage sees it from', 0.4, 2, 0.05, 'x'),
+    flip('Phantom', 'phantom.flicker', 'Flickers into view'),
 
-  { path: 'supers.decoys.n', label: 'Decoys', min: 1, max: 4, step: 1, group: 'Decoys', rank: -2.746, unit: '' },
-  { path: 'supers.decoys.spread', label: 'Spread round the pole', min: 6, max: 45, step: 1, group: 'Decoys', rank: -2.746, unit: '°' },
-  { path: 'supers.decoys.height', label: 'Spread up and down', min: 0, max: 0.6, step: 0.02, group: 'Decoys', rank: -2.746, unit: 'm' },
-  { path: 'supers.decoys.free', label: 'Each flies its own path', type: 'toggle', min: 0, max: 1, step: 1, group: 'Decoys', rank: -2.746, unit: '' },
-  { path: 'supers.decoys.ropes', label: 'Decoys have ropes', type: 'toggle', min: 0, max: 1, step: 1, group: 'Decoys', rank: -2.746, unit: '' },
-  { path: 'supers.decoys.pop', label: 'A swing through one pops it', type: 'toggle', min: 0, max: 1, step: 1, group: 'Decoys', rank: -2.746, unit: '' },
-  { path: 'supers.decoys.speed', label: 'Speed as it splits', min: 0.6, max: 1.6, step: 0.05, group: 'Decoys', rank: -2.746, unit: 'x' },
+    row('Decoys', 'decoys.n', 'Decoys', 1, 4, 1, ''),
+    row('Decoys', 'decoys.spread', 'Spread round the pole', 6, 45, 1, '°'),
+    row('Decoys', 'decoys.height', 'Spread up and down', 0, 0.6, 0.02, 'm'),
+    flip('Decoys', 'decoys.free', 'Each flies its own path'),
+    flip('Decoys', 'decoys.ropes', 'Decoys have ropes'),
+    flip('Decoys', 'decoys.pop', 'A swing through one pops it'),
+    row('Decoys', 'decoys.speed', 'Speed as it splits', 0.6, 1.6, 0.05, 'x'),
 
-  { path: 'supers.slip.n', label: 'Slips', min: 1, max: 3, step: 1, group: 'Slip', rank: -2.745, unit: '' },
-  { path: 'supers.slip.hop', label: 'Slip hop', min: 0.5, max: 6, step: 0.1, group: 'Slip', rank: -2.745, unit: 'm/s' },
-  { path: 'supers.slip.dir', label: 'It slips', type: 'choice', options: ['Away', 'Up', 'Down', 'Ahead', 'Back'], min: 0, max: 4, step: 1, group: 'Slip', rank: -2.745, unit: '' },
-  { path: 'supers.slip.ghost', label: "Then can't be touched for", min: 0, max: 0.4, step: 0.01, group: 'Slip', rank: -2.745, unit: 's' },
-  { path: 'supers.slip.speed', label: 'Speed after a slip', min: 0.5, max: 1.5, step: 0.05, group: 'Slip', rank: -2.745, unit: 'x' },
-  { path: 'supers.slip.again', label: 'Kage swings again', type: 'toggle', min: 0, max: 1, step: 1, group: 'Slip', rank: -2.745, unit: '' },
+    row('Slip', 'slip.n', 'Slips', 1, 3, 1, ''),
+    row('Slip', 'slip.hop', 'Slip hop', 0.5, 6, 0.1, 'm/s'),
+    pick('Slip', 'slip.dir', 'It slips', ['Away', 'Up', 'Down', 'Ahead', 'Back']),
+    row('Slip', 'slip.ghost', "Then can't be touched for", 0, 0.4, 0.01, 's'),
+    row('Slip', 'slip.speed', 'Speed after a slip', 0.5, 1.5, 0.05, 'x'),
+    flip('Slip', 'slip.again', 'Kage swings again'),
 
-  { path: 'supers.warp.when', label: 'It warps', type: 'choice', options: WHEN.concat('As they swing'), min: 0, max: 3, step: 1, group: 'Warp', rank: -2.744, unit: '' },
-  { path: 'supers.warp.time', label: "Can't be hit for", min: 0.08, max: 0.8, step: 0.01, group: 'Warp', rank: -2.744, unit: 's' },
-  { path: 'supers.warp.jump', label: 'Jumps ahead', min: 0, max: 0.3, step: 0.01, group: 'Warp', rank: -2.744, unit: 's' },
-  { path: 'supers.warp.n', label: 'Warps a turn', min: 1, max: 3, step: 1, group: 'Warp', rank: -2.744, unit: '' },
-  { path: 'supers.warp.show', label: 'While warped', type: 'choice', options: ['Glitch', 'Outline', 'Gone'], min: 0, max: 2, step: 1, group: 'Warp', rank: -2.744, unit: '' },
-  { path: 'supers.warp.speed', label: 'Comes back at', min: 0.6, max: 1.6, step: 0.05, group: 'Warp', rank: -2.744, unit: 'x' },
-  { path: 'supers.warp.flip', label: 'Comes back the other way', type: 'toggle', min: 0, max: 1, step: 1, group: 'Warp', rank: -2.744, unit: '' }
-);
+    pick('Warp', 'warp.when', 'It warps', WHEN.concat('As they swing')),
+    row('Warp', 'warp.time', "Can't be hit for", 0.08, 0.8, 0.01, 's'),
+    row('Warp', 'warp.jump', 'Jumps ahead', 0, 0.3, 0.01, 's'),
+    row('Warp', 'warp.n', 'Warps a turn', 1, 3, 1, ''),
+    pick('Warp', 'warp.show', 'While warped', ['Glitch', 'Outline', 'Gone']),
+    row('Warp', 'warp.speed', 'Comes back at', 0.6, 1.6, 0.05, 'x'),
+    flip('Warp', 'warp.flip', 'Comes back the other way'),
+
+    pick('Zap', 'zap.when', 'It strikes', WHEN),
+    row('Zap', 'zap.reach', 'A bolt reaches', 1, 5, 0.1, 'm'),
+    row('Zap', 'zap.delay', 'Crackles first for', 0, 0.6, 0.01, 's'),
+    row('Zap', 'zap.stun', 'Knocks them down for', 0.2, 2, 0.1, 's'),
+    row('Zap', 'zap.push', 'Throws them back at', 0, 4, 0.1, 'm/s'),
+    row('Zap', 'zap.jolt', 'Ball speed after the bolt', 0.6, 1.6, 0.05, 'x'),
+    flip('Zap', 'zap.block', 'A touch stops it'),
+
+    row('Wind', 'wind.speed', 'Whirlwind speed', 3, 16, 0.5, 'm/s'),
+    row('Wind', 'wind.width', 'Its width', 0.3, 1.6, 0.05, 'm'),
+    row('Wind', 'wind.home', 'Turns after them', 0, 8, 0.1, 'rad/s'),
+    row('Wind', 'wind.stun', 'Knocks them down for', 0.2, 2, 0.1, 's'),
+    row('Wind', 'wind.push', 'Blows them back at', 0, 6, 0.1, 'm/s'),
+    row('Wind', 'wind.ball', 'The ball rides it', 0.8, 1.6, 0.05, 'x'),
+    pick('Wind', 'wind.form', 'It looks like', ['A whirlwind', 'A gust']),
+
+    row('Stomp', 'stomp.shake', 'Screen shake', 0, 2, 0.05, 'x'),
+    flip('Stomp', 'stomp.quake', 'The ground shakes'),
+    row('Stomp', 'stomp.speed', 'Shockwave speed', 2, 16, 0.5, 'm/s'),
+    row('Stomp', 'stomp.reach', 'It spreads to', 1, 5, 0.1, 'm'),
+    row('Stomp', 'stomp.stun', 'Knocks them down for', 0.2, 2, 0.1, 's'),
+    flip('Stomp', 'stomp.air', 'In the air it misses them'),
+    row('Stomp', 'stomp.hop', 'The ball jumps', 0, 5, 0.1, 'm/s'),
+
+    row('Blast', 'blast.charge', 'Powers up for', 0, 1.2, 0.05, 's'),
+    row('Blast', 'blast.speed', 'Blast speed', 3, 20, 0.5, 'm/s'),
+    row('Blast', 'blast.reach', 'It spreads to', 1, 5, 0.1, 'm'),
+    row('Blast', 'blast.stun', 'Knocks them down for', 0.2, 2, 0.1, 's'),
+    row('Blast', 'blast.push', 'Throws them back at', 0, 6, 0.1, 'm/s'),
+    row('Blast', 'blast.ball', 'Blows the ball away', 0, 6, 0.1, 'm/s'),
+    row('Blast', 'blast.power', 'Your next hit, powered', 1, 1.5, 0.05, 'x'),
+    pick('Blast', 'blast.from', 'It goes off from', ['You', 'The ball'])
+  );
+}
 
 function createSupers() {
   const TAU = Math.PI * 2, NEUTRAL = 0.06, DEG = Math.PI / 180; // m either side of the centre line, as versus.js draws it
-  const SWERVE = 1, SPIKE = 2, PHANTOM = 3, DECOYS = 4, SLIP = 5, WARP = 6, MAXK = 6, MAXN = 5;
+  const SWERVE = 1, SPIKE = 2, PHANTOM = 3, DECOYS = 4, SLIP = 5, WARP = 6, ZAP = 7, WIND = 8, STOMP = 9, BLAST = 10, MAXK = 10, MAXN = 5;
+  const STOMP_DROP = 0.16, POWER_T = 3, AIR = 0.12; // s from the hit to the foot coming down; s a power-up holds at most; m off the floor that is "in the air"
   const SW_HZ = 2.3, SW_V = 19, SW_T = 5.5, SW_FWD = 0.5; // the weave: cycles a second, up-and-down and along-the-path pushes (m/s² at ×1), and the share of the latter that drives it on
   const st = {
     on: true,
@@ -5830,10 +6056,26 @@ function createSupers() {
     // warp: warps left, game s still out of phase, game s before the next may go, where it blinked out and when (real), where it
     // came back and when
     wpN: 0, wpT: 0, wpGap: 0, wpX: 0, wpY: 0, wpZ: 0, wpRt: -9, wiX: 0, wiY: 0, wiZ: 0, wiRt: -9,
-    down: { you: 0, kage: 0 }, // s each player is still knocked down by a spike
+    // zap: phase (0 waiting, 1 crackling, 2 struck), s crackling, and its bolt: from the ball (zbX0..) to them (zbX1..), when (real)
+    zpPh: 0, zpT: 0, zbX0: 0, zbY0: 0, zbZ0: 0, zbX1: 0, zbY1: 0, zbZ1: 0, zbRt: -9,
+    // what a wind, a stomp or a blast sent at the other player, one for each thrower: they go on after the ball's turn (onward())
+    at: { you: null, kage: null },
+    power: { you: 0, kage: 0 }, powT: { you: 0, kage: 0 }, // a blast's power-up: × the next hit, game s it holds
+    quakeRt: -9, // when the ground last shook (real)
+    down: { you: 0, kage: 0 }, // s each player is still knocked down by a spike, or by one of the four
     rt: 0, fade: 0, endKind: 0, endRt: -9, endWhy: '', castRt: -9, // real clock; phantom fade 0..1; the last super that ended, when, why; when this one was thrown
-    stats: { thrown: { you: [0, 0, 0, 0, 0, 0, 0], kage: [0, 0, 0, 0, 0, 0, 0] }, spiked: { you: 0, kage: 0 }, slips: 0, popped: 0, missed: 0, answered: 0, timeout: 0, swerves: 0, warps: 0, ghosted: 0 },
+    stats: {
+      thrown: { you: new Array(MAXK + 1).fill(0), kage: new Array(MAXK + 1).fill(0) }, spiked: { you: 0, kage: 0 }, slips: 0, popped: 0, missed: 0, answered: 0, timeout: 0, swerves: 0, warps: 0, ghosted: 0,
+      downed: { you: 0, kage: 0 }, byKind: new Array(MAXK + 1).fill(0), // knockdowns by the four: on whom, and by which
+      rode: 0, fizzled: 0, // a stomp ridden out in the air; a zap a touch stopped, or one of the four that missed
+    },
   };
+  // an attack in flight: which, whose (thrower) and at whom, phase (0 none, 1 winding up: the stomp's foot, the blast's power-up;
+  // 2 on its way; 3 over), game s into the phase, where it set out (x0, z0: under the ball as it was hit), where it is (a wind:
+  // x, z, and the way it goes, ux, uz; a wave: r, how far out), whether the ball has felt it, what it did to them (0 not yet,
+  // 1 down, 2 missed), and when it set out and when it found them (real)
+  function newAttack() { return { kind: 0, owner: '', target: '', ph: 0, t: 0, x0: 0, z0: 0, x: 0, z: 0, ux: 0, uz: 0, r: 0, ball: false, done: 0, rt: -9, goRt: -9, hitRt: -9, endRt: -9, hx: 0, hz: 0, seed: 0 }; }
+  st.at.you = newAttack(); st.at.kage = newAttack();
   const rnd = U.rng(20261016);
   let lastW = null; // the world, as last seen (a decoy that pops in a touch's code path needs its place)
   const on = () => CFG.energy.on > 0; // a super is a special: no energy, no supers
@@ -5850,9 +6092,12 @@ function createSupers() {
   // Moments for main.js to sound and show, away from the hit: 'break' (a swerve cuts in), 'lock' (a spike turns on them, away
   // from the hand), 'warp' (it blinks out), 'unwarp' (solid again). drain() hands them over, oldest first.
   const EVP = [], EVQ = [];
-  for (let i = 0; i < 8; i++) EVP.push({ type: '', x: 0, y: 0, z: 0 });
+  // Moments of the four: 'down' (a knockdown: who, by which kind, where, and the push, nx/nz in m/s), 'quake' (a stomp's foot
+  // comes down: who stomped), 'blast' (a power-up goes off), 'ridden' (a stomp passed under someone in the air).
+  for (let i = 0; i < 8; i++) EVP.push({ type: '', x: 0, y: 0, z: 0, who: '', kind: 0, nx: 0, nz: 0 });
   let evN = 0;
-  function emit(type, p) { if (evN >= EVP.length) return; const e = EVP[evN++]; e.type = type; e.x = p.x; e.y = p.y; e.z = p.z; }
+  function emit(type, p) { if (evN >= EVP.length) return; const e = EVP[evN++]; e.type = type; e.x = p.x; e.y = p.y; e.z = p.z; e.who = ''; e.kind = 0; e.nx = 0; e.nz = 0; }
+  function emitAt(type, x, y, z, who, kind, nx, nz) { if (evN >= EVP.length) return; const e = EVP[evN++]; e.type = type; e.x = x; e.y = y; e.z = z; e.who = who; e.kind = kind; e.nx = nx || 0; e.nz = nz || 0; }
   function drain() { EVQ.length = 0; for (let i = 0; i < evN; i++) EVQ.push(EVP[i]); evN = 0; return EVQ; }
 
   // the turn is over: why ('answered' the other player touched it, 'timeout', 'hit' a spike reached them, 'again' its owner
@@ -5864,15 +6109,21 @@ function createSupers() {
     if (st.kind === WARP && st.wpT > 0 && lastW) unwarp(lastW, !why); // solid again
     st.endKind = st.kind; st.endRt = st.rt; st.endWhy = why;
     if (why === 'answered' || why === 'timeout') st.stats[why]++;
+    if (st.kind === ZAP && st.zpPh === 1 && why === 'answered') st.stats.fizzled++; // a touch stopped it crackling
     st.owner = ''; st.kind = 0; st.t = 0; st.crossed = false; st.kPick = -1; st.slips = 0; st.homing = 0;
-    st.swN = 0; st.swPh = 0; st.spPh = 0; st.wpN = 0; st.wpT = 0; st.wpGap = 0;
+    st.swN = 0; st.swPh = 0; st.spPh = 0; st.wpN = 0; st.wpT = 0; st.wpGap = 0; st.zpPh = 0; st.zpT = 0;
   }
-  function newRally() { endTurn(''); st.down.you = 0; st.down.kage = 0; st.slipT = 0; st.fade = 0; st.endRt = -9; st.wiRt = -9; st.wpRt = -9; pn = 0; tn = 0; evN = 0; }
+  function clearAttack(A) { A.kind = 0; A.ph = 0; A.t = 0; A.done = 0; A.rt = -9; A.goRt = -9; A.hitRt = -9; A.endRt = -9; A.ball = false; }
+  function newRally() {
+    endTurn(''); st.down.you = 0; st.down.kage = 0; st.slipT = 0; st.fade = 0; st.endRt = -9; st.wiRt = -9; st.wpRt = -9; pn = 0; tn = 0; evN = 0;
+    clearAttack(st.at.you); clearAttack(st.at.kage); st.power.you = 0; st.power.kage = 0; st.powT.you = 0; st.powT.kage = 0; st.zbRt = -9; st.quakeRt = -9;
+  }
   function reset() {
     newRally();
     const S = st.stats;
-    for (let i = 0; i <= MAXK; i++) { S.thrown.you[i] = 0; S.thrown.kage[i] = 0; }
+    for (let i = 0; i <= MAXK; i++) { S.thrown.you[i] = 0; S.thrown.kage[i] = 0; S.byKind[i] = 0; }
     S.spiked.you = 0; S.spiked.kage = 0; S.slips = 0; S.popped = 0; S.missed = 0; S.answered = 0; S.timeout = 0; S.swerves = 0; S.warps = 0; S.ghosted = 0;
+    S.downed.you = 0; S.downed.kage = 0; S.rode = 0; S.fizzled = 0;
   }
 
   // A special landed for `who`: their super takes the ball for this turn. B: the players' bodies, { you, kage }: { x, y, z, h }
@@ -5911,14 +6162,33 @@ function createSupers() {
       }
     } else if (k === SLIP) { st.slips = U.clamp(Math.round(CFG.supers.slip.n), 1, 3); st.slipT = 0; }
     else if (k === WARP) { st.wpN = U.clamp(Math.round(CFG.supers.warp.n), 1, 3); st.wpT = 0; st.wpGap = 0; }
+    else if (k === ZAP) { st.zpPh = 0; st.zpT = 0; }
+    else if (k === WIND || k === STOMP || k === BLAST) { // they set out from under the ball as it is hit, and the ball is a plain ball again
+      const A = st.at[o];
+      A.kind = k; A.owner = o; A.target = other(o); A.ph = k === WIND ? 2 : 1; A.t = 0; A.done = 0; A.ball = false; A.rt = st.rt; A.goRt = k === WIND ? st.rt : -9; A.hitRt = -9; A.endRt = -9;
+      A.x0 = p.x; A.z0 = p.z; A.x = p.x; A.z = p.z; A.r = 0; A.seed = rnd();
+      if (k === WIND) {
+        const body = B && B[A.target];
+        let ux = body ? body.x - p.x : -p.x, uz = body ? body.z - p.z : -p.z;
+        const l = Math.sqrt(ux * ux + uz * uz);
+        if (l > 1e-3) { ux /= l; uz /= l; } else { ux = 1; uz = 0; }
+        A.ux = ux; A.uz = uz;
+        scale(v, U.clamp(CFG.supers.wind.ball, 0.3, 3)); // the ball rides its tailwind
+      }
+      endTurn('cast');
+    }
     return k;
   }
 
-  // a touch landed (any): it ends the live super, whoever it was
+  // a touch landed (any): it ends the live super, whoever it was, and it spends its own player's power-up (a blast's)
   function onTouch(who) {
+    const o = key(who);
+    if (st.power[o] > 0) { st.power[o] = 0; st.powT[o] = 0; }
     if (!st.owner) return;
-    endTurn(key(who) === st.owner ? 'again' : 'answered');
+    endTurn(o === st.owner ? 'again' : 'answered');
   }
+  // × a touch of `who` lands with: a blast's power-up, until that touch (main.js puts it into the hand's boost)
+  function powerFor(who) { const k = st.power[key(who)]; return k > 1 ? k : 1; }
 
   // Is a super set to go off `when` (0 off the hand, 1 at the line, 2 near them) due now? `after`: game s off the hand before
   // "off the hand" counts (the ball is seen to leave it first). half: the side Kage's half is on; B the bodies. Near them is
@@ -5943,7 +6213,10 @@ function createSupers() {
   function force(w, simDt, B, half) {
     const dt = simDt > 0 ? simDt : 0;
     st.homing = 0; lastW = w;
-    if (!st.owner || !(dt > 0) || !on()) return;
+    if (!(dt > 0) || !on()) return;
+    if (st.at.you.ph === 1 || st.at.you.ph === 2) onward(st.at.you, w, dt, B);
+    if (st.at.kage.ph === 1 || st.at.kage.ph === 2) onward(st.at.kage, w, dt, B);
+    if (!st.owner) return;
     const v = w.ball.v;
     if (st.kind === SWERVE) swerveForce(w, dt, B, half);
     else if (st.kind === SPIKE) {
@@ -5955,6 +6228,12 @@ function createSupers() {
     else if (st.kind === WARP) {
       const C = CFG.supers.warp;
       if (st.wpT <= 0 && st.wpN > 0 && st.wpGap <= 0 && w.state === 'live' && Math.round(C.when) !== 3 && due(C.when, w, B, half, 0.06)) warpOut(w, C);
+    } else if (st.kind === ZAP && st.zpPh === 0) { // due, and they are within a bolt's reach: it starts to crackle
+      const C = CFG.supers.zap, body = B && B[other(st.owner)];
+      if (body && due(C.when, w, B, half, 0)) {
+        const p = w.ball.p, dx = body.x - p.x, dz = body.z - p.z, r = Math.max(0.5, C.reach);
+        if (dx * dx + dz * dz <= r * r) { st.zpPh = 1; st.zpT = 0; }
+      }
     }
   }
 
@@ -6123,6 +6402,102 @@ function createSupers() {
     if (!quiet) emit('unwarp', p);
   }
 
+  // ---- the four: a zap's bolt, and the wind, stomp and blast in flight ----
+  // where they are hit: their chest, as the bolt and the burst see it
+  const bodyR = (body) => (0.28 * (body.h || 1.75)) / 1.75;
+  // `o` goes down: for `stun` (the longer of this and what was left), thrown along (nx, nz) at `push`. The moment goes to main.js.
+  function knock(o, kind, body, fromX, fromZ, stun, push) {
+    let nx = body.x - fromX, nz = body.z - fromZ;
+    const l = Math.sqrt(nx * nx + nz * nz);
+    if (l > 1e-3) { nx /= l; nz /= l; } else { nx = 0; nz = 0; }
+    st.down[o] = Math.max(st.down[o], Math.max(0.1, stun));
+    st.stats.downed[o]++; st.stats.byKind[kind]++;
+    const pu = Math.max(0, push);
+    emitAt('down', body.x, body.y + 0.62 * (body.h || 1.75), body.z, o, kind, nx * pu, nz * pu);
+  }
+  // the bolt: from the ball to their chest, now. The ball surges on (`jolt`), and the turn is over.
+  function strike(w, o, body) {
+    const C = CFG.supers.zap, p = w.ball.p;
+    st.zbX0 = p.x; st.zbY0 = p.y; st.zbZ0 = p.z; st.zbX1 = body.x; st.zbY1 = body.y + 0.62 * (body.h || 1.75); st.zbZ1 = body.z; st.zbRt = st.rt;
+    knock(o, ZAP, body, p.x, p.z, C.stun, C.push);
+    scale(w.ball.v, U.clamp(C.jolt, 0.3, 3));
+    st.zpPh = 2;
+    endTurn('hit');
+  }
+  // One of a wind, a stomp or a blast, a step on (game time, before the physics). B: the bodies.
+  function onward(A, w, dt, B) {
+    const body = B && B[A.target], b = w.ball, p = b.p, v = b.v;
+    A.t += dt;
+    if (A.kind === WIND) {
+      const C = CFG.supers.wind, sp = Math.max(0.5, C.speed);
+      if (body && A.done === 0) { // it turns after them, at `home`
+        const dx = body.x - A.x, dz = body.z - A.z, l = Math.sqrt(dx * dx + dz * dz);
+        if (l > 1e-3) {
+          const want = Math.atan2(dz, dx), now = Math.atan2(A.uz, A.ux);
+          let d = want - now; d -= TAU * Math.round(d / TAU);
+          const a = now + U.clamp(d, -Math.max(0, C.home) * dt, Math.max(0, C.home) * dt);
+          A.ux = Math.cos(a); A.uz = Math.sin(a);
+        }
+      }
+      A.x += A.ux * sp * dt; A.z += A.uz * sp * dt;
+      if (body && A.done === 0 && w.state === 'live') {
+        const dx = body.x - A.x, dz = body.z - A.z, rr = Math.max(0.05, C.width) / 2 + bodyR(body);
+        if (dx * dx + dz * dz <= rr * rr) { A.done = 1; A.hitRt = st.rt; A.hx = body.x; A.hz = body.z; knock(A.target, WIND, body, A.x - A.ux, A.z - A.uz, C.stun, C.push); }
+      }
+      const gone = (A.x - A.x0) * (A.x - A.x0) + (A.z - A.z0) * (A.z - A.z0);
+      if (A.done === 0 && (gone > 36 || A.t > 1.6)) { A.done = 2; st.stats.fizzled++; } // 6 m on, or 1.6 s, and nobody: it blows itself out
+      if (A.done) { A.ph = 3; A.t = 0; A.endRt = st.rt; } // spent: it dies away where it is
+      return;
+    }
+    const C = A.kind === STOMP ? CFG.supers.stomp : CFG.supers.blast;
+    if (A.ph === 1) { // the foot coming down (a leap lands first: it stomps the ground), or the power-up building
+      const me = B && B[A.owner], wait = A.kind === STOMP ? STOMP_DROP : Math.max(0, C.charge);
+      if (A.t < wait || (A.kind === STOMP && me && me.y > AIR && A.t < 1)) return;
+      A.ph = 2; A.t = 0; A.r = 0; A.goRt = st.rt;
+      if (A.kind === BLAST && C.from > 0) { A.x0 = p.x; A.z0 = p.z; } // a blast set to go off from the ball: where it is now
+      else if (me) { A.x0 = me.x; A.z0 = me.z; } // it goes out from the thrower: their foot, their power-up
+      if (A.kind === STOMP) { st.quakeRt = st.rt; emitAt('quake', A.x0, 0, A.z0, A.owner, STOMP, 0, 0); }
+      else {
+        const pw = U.clamp(C.power, 1, 3);
+        st.power[A.owner] = pw > 1 ? pw : 0; st.powT[A.owner] = pw > 1 ? POWER_T : 0;
+        emitAt('blast', A.x0, C.from > 0 ? p.y : 0.9, A.z0, A.owner, BLAST, 0, 0);
+      }
+    }
+    const r0 = A.r, reach = Math.max(0.5, C.reach);
+    A.r = Math.min(reach, A.r + Math.max(0.5, C.speed) * dt);
+    if (!A.ball) { // the wave passes under the ball: a stomp throws it up its rope, a blast blows it away from the thrower
+      const bx = p.x - A.x0, bz = p.z - A.z0, bd = Math.sqrt(bx * bx + bz * bz);
+      if (bd <= A.r) {
+        A.ball = true;
+        if (A.kind === STOMP) v.y += Math.max(0, C.hop) * (p.y < CFG.world.attachY - 0.2 ? 1 : 0.5);
+        else if (bd > 1e-3) { const k = Math.max(0, C.ball) / bd; v.x += bx * k; v.z += bz * k; }
+      }
+    }
+    if (body && A.done === 0 && w.state === 'live') { // (a round already over knocks nobody down)
+      const tx = body.x - A.x0, tz = body.z - A.z0, td = Math.sqrt(tx * tx + tz * tz);
+      if (td <= A.r) {
+        A.hitRt = st.rt; A.hx = body.x; A.hz = body.z;
+        if (A.kind === STOMP && CFG.supers.stomp.air > 0 && body.y > AIR) { A.done = 2; st.stats.rode++; emitAt('ridden', body.x, body.y, body.z, A.target, STOMP, 0, 0); } // in the air: it rolls on under them
+        else { A.done = 1; knock(A.target, A.kind, body, A.x0, A.z0, C.stun, A.kind === BLAST ? C.push : 0.6); }
+      } else if (A.r >= reach && r0 >= reach) { A.done = 2; st.stats.fizzled++; } // out of its reach
+    }
+    if (A.r >= reach && r0 >= reach && (A.done || !body)) { A.ph = 3; A.t = 0; A.endRt = st.rt; }
+  }
+  // how strongly a player glows powered up (0..1): building through a blast's charge, then held while the power-up lasts
+  function powerK(who) {
+    const o = key(who), A = st.at[o];
+    if (A.kind === BLAST && A.ph === 1) return U.clamp01(A.t / Math.max(0.05, CFG.supers.blast.charge));
+    if (!(st.power[o] > 1)) return 0;
+    const since = A.kind === BLAST && A.goRt > -9 ? st.rt - A.goRt : 9; // it has just gone off: bright, then settling to a glow
+    return (0.6 + 0.4 * (1 - U.clamp01(since / 0.35))) * U.clamp01(st.powT[o] / 0.4);
+  }
+  // how hard the ground still shakes (0..1), on the real clock: a stomp's foot, then the wave rolling out
+  function quakeK() {
+    if (!(CFG.supers.stomp.quake > 0)) return 0;
+    const a = st.rt - st.quakeRt;
+    return a >= 0 && a < 0.7 ? (1 - a / 0.7) * (1 - a / 0.7) : 0;
+  }
+
   // After the physics step. live: the rally is in play; half: the side Kage's half is on (−1 / +1); B as for force(). Returns
   // 'spiked' (a spike reached the other player: st.spiked, st.hx..), 'end' (the turn is over), or ''. drain() has the moments.
   function update(simDt, realDt, w, live, half, B) {
@@ -6133,12 +6508,14 @@ function createSupers() {
       st.fade += (want - st.fade) * Math.min(1, realDt * (want ? 14 : 9));
     }
     st.on = on();
-    if (!st.on) { endTurn(''); st.down.you = 0; st.down.kage = 0; return ''; }
+    if (!st.on) { endTurn(''); st.down.you = 0; st.down.kage = 0; clearAttack(st.at.you); clearAttack(st.at.kage); st.power.you = 0; st.power.kage = 0; return ''; }
     const dt = simDt > 0 ? simDt : 0;
     if (dt > 0) {
       if (st.down.you > 0) st.down.you = Math.max(0, st.down.you - dt);
       if (st.down.kage > 0) st.down.kage = Math.max(0, st.down.kage - dt);
       if (st.slipT > 0) st.slipT = Math.max(0, st.slipT - dt);
+      if (st.powT.you > 0) { st.powT.you -= dt; if (st.powT.you <= 0) { st.powT.you = 0; st.power.you = 0; } }
+      if (st.powT.kage > 0) { st.powT.kage -= dt; if (st.powT.kage <= 0) { st.powT.kage = 0; st.power.kage = 0; } }
     }
     if (!st.owner || !(dt > 0)) return '';
     if (!live || !w || !w.ball) { endTurn(''); return 'end'; }
@@ -6155,6 +6532,10 @@ function createSupers() {
       if (st.wpT > 0) { st.wpT -= dt; if (st.wpT <= 0) unwarp(w, false); }
     } else if (st.kind === DECOYS && st.free) {
       for (let i = 0; i < st.n; i++) { const d = DW[i]; if (i !== st.real && d && !st.popped[i] && d.state === 'live') { advance(d, dt); d.events.length = 0; } }
+    } else if (st.kind === ZAP && st.zpPh === 1) { // crackling: then the bolt
+      st.zpT += dt;
+      const o = other(st.owner), body = B && B[o];
+      if (body && st.zpT >= Math.max(0, CFG.supers.zap.delay)) { strike(w, o, body); return 'end'; }
     }
     // a pass of their half let go by: counted (it comes round at them again, still the super it was, unless `pass` ends it)
     const x = half ? w.ball.p.x * (half < 0 ? -1 : 1) : 0, onKage = x > NEUTRAL, onYou = x < -NEUTRAL;
@@ -6211,6 +6592,7 @@ function createSupers() {
     }
     if (mine) return '';
     if (st.kind === SPIKE) return st.spPh === 1 && !(CFG.supers.spike.block > 0) && touches(w, hand) ? 'ghost' : '';
+    if (st.kind === ZAP) return st.zpPh === 1 && !(CFG.supers.zap.block > 0) && touches(w, hand) ? 'ghost' : '';
     if (st.kind !== SLIP || !touches(w, hand)) return '';
     if (st.slipT > 0) return 'ghost';
     if (st.slips <= 0) return '';
@@ -6504,6 +6886,21 @@ function createSupers() {
         ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.5, rp * 0.16 * (1 - q)); ctx.globalAlpha = 0.85 * (1 - q);
         ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1.1 + 0.9 * q), 0, TAU); ctx.stroke();
       }
+    } else if (st.kind === ZAP && st.zpPh < 2) { // it crackles: a few jagged arcs off its rim, more and brighter as it is about to strike
+      const k = st.zpPh === 1 ? 1 : 0.5, n = st.zpPh === 1 ? 6 : 3, f = Math.floor(st.rt * 28);
+      ctx.lineJoin = 'round';
+      for (let pass = 0; pass < 2; pass++) {
+        ctx.strokeStyle = pass ? P.core : P.outer; ctx.lineWidth = Math.max(1, rp * (pass ? 0.06 : 0.18)); ctx.globalAlpha = (pass ? 0.95 : 0.5) * k;
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const a0 = hash(f * 7 + i) * TAU, len = rp * (0.5 + 0.9 * hash(f * 13 + i * 3));
+          let x = A.x + Math.cos(a0) * rp * 0.95, y = A.y + Math.sin(a0) * rp * 0.95;
+          ctx.moveTo(x, y);
+          for (let j = 1; j <= 3; j++) { const a = a0 + (hash(f * 5 + i * 11 + j) - 0.5) * 1.6; x += Math.cos(a) * len / 3; y += Math.sin(a) * len / 3; ctx.lineTo(x, y); }
+        }
+        ctx.stroke();
+      }
+      ctx.lineJoin = 'miter';
     } else if (st.kind === WARP) {
       if (st.wpT > 0) warped(ctx, A, rp, P);
       else if (st.wpN > 0) { // it is going to: a cyan and a magenta edge either side of it
@@ -6544,6 +6941,164 @@ function createSupers() {
       ctx.fillRect(A.x - rp + sh, y, rp * 2 * (0.45 + 0.5 * Math.abs(Math.sin(t * 13 + i))), Math.max(1, rp * 0.15));
     }
   }
+  // ───────────────────────── the four, drawn (real time) ─────────────────────────
+  const hash = (n) => { const x = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }; // 0..1, the same for the same n
+  // a world circle on the floor, as a path: its own perspective, not an ellipse round its centre
+  function floorRing(ctx, cam, x0, z0, r, n) {
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) { const a = (i / n) * TAU; cam.project(x0 + Math.cos(a) * r, 0, z0 + Math.sin(a) * r, B2); if (i) ctx.lineTo(B2.x, B2.y); else ctx.moveTo(B2.x, B2.y); }
+  }
+  const age = (rt) => st.rt - rt;
+  // On the floor, under the players: the stomp's shockwave and its cracks, the blast's ring of fire and its scorch, the
+  // whirlwind's dust, and a scorch where a bolt struck.
+  function drawFloor(ctx, cam, w) {
+    for (let j = 0; j < 2; j++) {
+      const At = j ? st.at.kage : st.at.you;
+      if (!At.kind) continue;
+      const P = SUPERS[At.kind], end = At.ph === 3 ? age(At.endRt) : 0, f = At.ph === 3 ? 1 - U.clamp01(end / 0.35) : 1;
+      if (!(f > 0)) continue;
+      cam.project(At.x0, 0, At.z0, A);
+      if (At.kind === STOMP && (At.ph === 2 || At.ph === 3)) {
+        const g = age(At.goRt), u = U.clamp01(g / 1.4);
+        ctx.globalCompositeOperation = 'source-over'; ctx.lineCap = 'round'; ctx.strokeStyle = '#1a120a'; // cracks out from the foot
+        ctx.globalAlpha = 0.8 * (1 - u); ctx.lineWidth = Math.max(1.5, A.s * 0.035);
+        ctx.beginPath();
+        for (let i = 0; i < 8; i++) {
+          const a = (i / 8) * TAU + hash(At.seed * 97 + i) * 0.7, L = (0.5 + 0.7 * hash(At.seed * 31 + i)) * U.easeOut(U.clamp01(g / 0.12), 2);
+          let x = At.x0, z = At.z0;
+          cam.project(x, 0, z, B2); ctx.moveTo(B2.x, B2.y);
+          for (let k = 1; k <= 3; k++) { const b = a + (hash(At.seed * 7 + i * 5 + k) - 0.5) * 0.7; x += Math.cos(b) * L / 3; z += Math.sin(b) * L / 3; cam.project(x, 0, z, B2); ctx.lineTo(B2.x, B2.y); }
+        }
+        ctx.stroke();
+        if (At.r > 0.05) { // the wave: a ripple behind, a thick band of dust, a bright edge leading it
+          if (At.r > 0.4) { floorRing(ctx, cam, At.x0, At.z0, At.r * 0.72, 40); ctx.globalAlpha = 0.3 * f; ctx.strokeStyle = P.outer; ctx.lineWidth = Math.max(1.5, A.s * 0.06); ctx.stroke(); }
+          floorRing(ctx, cam, At.x0, At.z0, At.r, 48);
+          ctx.globalAlpha = 0.5 * f; ctx.strokeStyle = '#c9b796'; ctx.lineWidth = Math.max(3, A.s * 0.24); ctx.stroke();
+          ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.9 * f; ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, A.s * 0.07); ctx.stroke();
+          ctx.globalAlpha = 0.6 * f; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, A.s * 0.025); ctx.stroke();
+        }
+        ctx.lineCap = 'butt';
+      } else if (At.kind === BLAST && (At.ph === 2 || At.ph === 3)) {
+        const g = age(At.goRt), FP = typeof firePal === 'function' ? firePal() : P;
+        ctx.globalCompositeOperation = 'source-over'; // the scorch, fading over a second and a half
+        floorRing(ctx, cam, At.x0, At.z0, Math.min(At.r, 0.9), 28);
+        ctx.globalAlpha = 0.35 * (1 - U.clamp01(g / 1.5)); ctx.fillStyle = '#140804'; ctx.fill();
+        if (At.r > 0.05) {
+          floorRing(ctx, cam, At.x0, At.z0, At.r, 48);
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 0.45 * f; ctx.strokeStyle = FP.outer; ctx.lineWidth = Math.max(2, A.s * 0.2); ctx.stroke();
+          ctx.globalAlpha = 0.85 * f; ctx.strokeStyle = FP.core; ctx.lineWidth = Math.max(1.5, A.s * 0.05); ctx.stroke();
+        }
+      } else if (At.kind === WIND) { // dust round its foot, and a scuffed trail behind it
+        const r = Math.max(0.2, CFG.supers.wind.width * 0.5);
+        cam.project(At.x, 0, At.z, B2);
+        ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#cdbfa8';
+        for (let i = 0; i < 6; i++) {
+          const a = st.rt * 9 + i * 1.047, rr = r * (0.7 + 0.3 * Math.sin(st.rt * 13 + i));
+          cam.project(At.x + Math.cos(a) * rr, 0, At.z + Math.sin(a) * rr, A);
+          ctx.globalAlpha = 0.28 * f; ctx.beginPath(); ctx.arc(A.x, A.y, Math.max(1.5, A.s * 0.07), 0, TAU); ctx.fill();
+        }
+      }
+    }
+    const zb = age(st.zbRt); // a bolt's scorch under the one it struck
+    if (zb >= 0 && zb < 0.6) {
+      floorRing(ctx, cam, st.zbX1, st.zbZ1, 0.3, 20);
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5 * (1 - zb / 0.6); ctx.fillStyle = SUPERS[ZAP].glow; ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  }
+  // Over the players: the zap's bolt, the whirlwind (or a gust's blades), the blast's wall of flame and its flash, the stomp's
+  // dust and chips flying.
+  function drawOver(ctx, cam, w) {
+    const zb = age(st.zbRt);
+    if (zb >= 0 && zb < 0.3) bolt(ctx, cam, zb / 0.3);
+    for (let j = 0; j < 2; j++) {
+      const At = j ? st.at.kage : st.at.you;
+      if (!At.kind) continue;
+      const end = At.ph === 3 ? age(At.endRt) : 0, f = At.ph === 3 ? 1 - U.clamp01(end / 0.3) : 1;
+      if (At.kind === WIND && f > 0) whirl(ctx, cam, At, f);
+      else if (At.kind === BLAST && (At.ph === 2 || At.ph === 3)) {
+        const g = age(At.goRt);
+        if (g < 0.25) { // the flash as it goes off
+          cam.project(At.x0, 0.9, At.z0, A);
+          const FP = typeof firePal === 'function' ? firePal() : SUPERS[BLAST];
+          if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, A.s * (0.8 + 2.2 * g), A.s * (0.8 + 2.2 * g), FP.glow, 0.9 * (1 - g / 0.25));
+        }
+        if (f > 0 && At.r > 0.1 && typeof fireCluster === 'function') { // a wall of flame along its front, taller as it starts out
+          const n = 18, tall = 0.45 + 0.35 * (1 - U.clamp01(At.r / Math.max(0.5, CFG.supers.blast.reach)));
+          for (let i = 0; i < n; i++) {
+            const a = (i / n) * TAU + At.seed * 3, x = At.x0 + Math.cos(a) * At.r, z = At.z0 + Math.sin(a) * At.r;
+            cam.project(x, 0, z, A);
+            fireCluster(ctx, A.x, A.y, A.s * 0.38, A.s * tall * f, st.rt + i * 0.37, 0.9 * f, 2);
+          }
+        }
+      } else if (At.kind === STOMP && (At.ph === 2 || At.ph === 3)) {
+        const g = age(At.goRt);
+        if (g >= 0 && g < 0.9) { // dust thrown up and chips of blacktop
+          const q = g / 0.9;
+          ctx.globalCompositeOperation = 'source-over';
+          for (let i = 0; i < 13; i++) {
+            const a = hash(At.seed * 53 + i) * TAU, sp = 0.8 + 1.6 * hash(At.seed * 17 + i), up = 1.4 + 2.4 * hash(At.seed * 29 + i);
+            const x = At.x0 + Math.cos(a) * sp * g, z = At.z0 + Math.sin(a) * sp * g, y = Math.max(0, up * g - 4.9 * g * g);
+            cam.project(x, y, z, A);
+            if (i < 8) { ctx.globalAlpha = 0.55 * (1 - q); ctx.fillStyle = '#cbbb9f'; ctx.beginPath(); ctx.arc(A.x, A.y, A.s * (0.12 + 0.25 * q), 0, TAU); ctx.fill(); }
+            else { ctx.globalAlpha = 0.85 * (1 - q); ctx.fillStyle = '#2e2721'; ctx.fillRect(A.x - A.s * 0.025, A.y - A.s * 0.025, A.s * 0.05, A.s * 0.05); }
+          }
+        }
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  }
+  // the bolt: a jagged stroke from the ball to their chest, a wide glow, the bolt, its white-hot core, struck twice
+  function bolt(ctx, cam, q) {
+    const P = SUPERS[ZAP], fl = q < 0.15 ? 1 : q < 0.25 ? 0.25 : q < 0.5 ? 1 : 0.8, f = (1 - q) * fl, seed = Math.floor(st.zbRt * 1000);
+    cam.project(st.zbX0, st.zbY0, st.zbZ0, A); cam.project(st.zbX1, st.zbY1, st.zbZ1, B2);
+    const dx = B2.x - A.x, dy = B2.y - A.y, l = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / l, ny = dx / l, amp = Math.min(30, l * 0.09), sc = (A.s + B2.s) * 0.5;
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineJoin = 'round';
+    for (let pass = 0; pass < 3; pass++) {
+      ctx.strokeStyle = pass === 2 ? '#ffffff' : pass === 1 ? P.mid : P.outer;
+      ctx.lineWidth = Math.max(1, sc * (pass === 2 ? 0.02 : pass === 1 ? 0.05 : 0.13));
+      ctx.globalAlpha = (pass === 2 ? 1 : pass === 1 ? 0.75 : 0.35) * f;
+      ctx.beginPath();
+      for (let k = 0; k <= 10; k++) {
+        const t = k / 10, jg = (hash(seed + k * 7) - 0.5) * 2 * amp * Math.sin(Math.PI * t);
+        const x = A.x + dx * t + nx * jg, y = A.y + dy * t + ny * jg;
+        if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 0.6 * f; ctx.fillStyle = P.glow; // the flash where it lands
+    ctx.beginPath(); ctx.arc(B2.x, B2.y, sc * 0.35 * (1 + q), 0, TAU); ctx.fill();
+    ctx.lineJoin = 'miter';
+  }
+  // a whirlwind: rings of wind spinning round a funnel, wider as it rises; or a gust: blades of wind sweeping ahead of it
+  function whirl(ctx, cam, At, f) {
+    const P = SUPERS[WIND], C = CFG.supers.wind, wd = Math.max(0.2, C.width);
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+    if (Math.round(C.form) === 1) {
+      const ux = At.ux, uz = At.uz, nx = -uz, nz = ux;
+      for (let i = 0; i < 3; i++) {
+        const back = ((st.rt * 3 + i / 3) % 1) * 0.6, y = 0.5 + 0.35 * i, half = wd * (0.35 + 0.15 * i);
+        const cx = At.x - ux * back, cz = At.z - uz * back;
+        ctx.globalAlpha = 0.7 * f * (1 - back / 0.6); ctx.strokeStyle = i === 1 ? P.outer : i ? P.core : P.mid;
+        cam.project(cx - nx * half - ux * 0.15, y, cz - nz * half - uz * 0.15, A); cam.project(cx + ux * 0.12, y + 0.05, cz + uz * 0.12, B2);
+        const sx = A.x, sy = A.y, mx = B2.x, my = B2.y;
+        cam.project(cx + nx * half - ux * 0.15, y, cz + nz * half - uz * 0.15, A);
+        ctx.lineWidth = Math.max(1.5, B2.s * 0.04);
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, A.x, A.y); ctx.stroke();
+      }
+    } else {
+      for (let i = 0; i < 7; i++) {
+        const u = i / 6, y = 0.06 + 1.5 * u, r = wd * (0.18 + 0.42 * u), spin = st.rt * (11 - 4 * u) + i * 0.9;
+        cam.project(At.x + Math.sin(st.rt * 6 + i) * 0.04 * u, y, At.z, A);
+        const rx = r * A.s, ry = rx * 0.28;
+        ctx.globalAlpha = (0.55 - 0.25 * u) * f; ctx.strokeStyle = i % 3 === 0 ? P.outer : i % 3 === 1 ? P.mid : P.core; ctx.lineWidth = Math.max(1, A.s * (0.035 - 0.015 * u));
+        ctx.beginPath(); ctx.ellipse(A.x, A.y, rx, ry, 0, spin, spin + 3.6); ctx.stroke();
+      }
+    }
+    ctx.lineCap = 'butt';
+  }
+
   // On one side of the pole's plane (side −1 behind, +1 in front): the decoys there (and their ropes, by the setting), drawn as
   // the ball itself (ballAt: the scene's own ball at a point), and the puffs.
   function drawSide(ctx, cam, w, side, ballAt) {
@@ -6595,7 +7150,7 @@ function createSupers() {
   reset();
   return {
     snap: st, reset, newRally, launch, onTouch, force, update, drain, intercept, swipe, kageWhiffed, kageView, tick,
-    drawBehind, drawBall, drawSide, ballAlpha, ropeAlpha, shadowAlpha, noTrail, decoyAt, kindOf,
+    drawBehind, drawBall, drawSide, drawFloor, drawOver, ballAlpha, ropeAlpha, shadowAlpha, noTrail, decoyAt, kindOf, powerFor, powerK, quakeK,
     isDown: (who) => st.down[key(who)] > 0,
     get live() { return st.owner ? st.kind : 0; }, get owner() { return st.owner; },
     get warped() { return st.wpT > 0; },
@@ -7308,8 +7863,10 @@ function createNinja(doc, look) {
 // phantom gives him nothing to read until it is close (info.blindBall), then a startled beat; with decoys he chases the one he
 // picked (info.fakePhi / fakeY: his read turned round the pole to it; or info.fakeWorld, a decoy on its own path, which he reads
 // instead of the ball) until his swing goes through it; a slip slips off his fist and a warped ball lets it through (main.js).
-// A spike that reaches him knocks him down seeing stars (onSpiked). His own super glows on him in its colours (info.armCol),
-// and he has a line for each.
+// A spike that reaches him knocks him down seeing stars (onSpiked); so does one of the four (onKnocked: a zap's bolt leaves him
+// crackling, a blast on fire, a whirlwind or a stomp's shockwave just down). His own super glows on him in its colours
+// (info.armCol), and he has a line for each. Powering up for a blast he burns in the fire's colours (info.power, 0..1), and
+// stomping he lands hard (onStomp).
 //
 // Clocks: everything he does runs on SIM time, so a hit's freeze and slow-mo hold him too (fair, and it reads as drama). The
 // glow, the clones and the flames run on REAL time, so they play out inside the freeze.
@@ -7385,8 +7942,18 @@ const KAGE_LINES = {
   sup4: ['Pick one.', 'Which is real?', 'Clone run.'],
   sup5: ['Too slippery.', 'Catch me.', 'Greased.'],
   sup6: ['Blink.', 'Phase shift.', "Now you don't."],
+  sup7: ['Live wire.', 'High voltage.', 'Zap.'],
+  sup8: ['Windfall.', 'Blow over.', 'Storm front.'],
+  sup9: ['Feel that?', 'Ground control.', 'Quake.'],
+  sup10: ['Powering up.', 'Full burn.', 'Overload.'],
   spiked: ['Oof—', 'System hit.', 'Cheap shot.', 'Ow.'],
   spikedYou: ['Bullseye.', 'Got you.', 'Direct hit.'],
+  // one of the four knocking him down (by which), or one of his knocking you down
+  zapped: ['Short circuit—', 'Bzzt—', 'Rebooting...'],
+  blown: ['Whoa—!', 'Gale force?', 'Tch, wind.'],
+  stomped: ['Ground fault.', 'Quake?!', 'Off balance—'],
+  blasted: ['Too hot—!', 'Meltdown.', 'Burn notice.'],
+  downYou: ['Stay down.', 'Grounded.', 'Knocked out.'],
 };
 
 // Kage-X on the Neo Dojo rig (ninja.js): the sheet's dark gi and visor, and his magenta neon
@@ -7516,7 +8083,8 @@ function createKage(doc) {
     fireK: 0, // armed with a fireball: its glow 0..1
     vy: 0, downT: -9, upT: -9, downLeft: 0, slowK: 1, // burned: falling (m/s), when he went down and got up (sim), s still down, how much slower he is now
     fireSeen: 0, dodge: false, dodges: 0, burns: 0, // the last fireball he weighed, whether he is letting it go by; counted for the tests
-    downKind: 'burn', spiked: 0, // what put him down ('burn' fire.js, 'stun' a spike, supers.js); spikes that landed on him
+    downKind: 'burn', spiked: 0, knocked: 0, // what put him down ('burn' fire.js or a blast, 'stun' a spike, a whirlwind or a stomp, 'zap' a bolt: supers.js); spikes that landed on him; the four that did
+    powK: 0, // powering up for a blast, or powered up (info.power, supers.js): his fire glow 0..1
     wasBlind: false, armCol: '', armCol2: '', // your phantom was too far off to read last frame; his armed glow's colours ('' his neon)
     reStrike: 0, // your slip super slipped off his fist: when he swings again (sim s; 0 none)
   };
@@ -7735,6 +8303,7 @@ function createKage(doc) {
       st.sayT -= realDt; st.sayCool -= realDt; st.rt += realDt; st.armK += ((info && info.armed ? 1 : 0) - st.armK) * Math.min(1, realDt * 12);
       st.fireK += ((info && info.fireArmed ? 1 : 0) - st.fireK) * Math.min(1, realDt * 12);
     }
+    st.powK = info && info.power > 0 ? info.power : 0;
     if (!(dt > 0)) return null;
     st.t += dt; st.blind -= dt; st.cool -= dt; st.reread -= dt; st.moodT += dt;
     if (st.t > st.blinkAt) st.blinkAt = st.t + 2.2 + rnd() * 3.5;
@@ -7832,9 +8401,20 @@ function createKage(doc) {
     st.vx = (nx || 0) * 1.6; st.vz = (nz || 0) * 1.6; st.vy = st.y > 0.05 ? 0 : 1.4;
     st.sayCool = 0; quipF('spiked', 0.85, rndS);
   }
-  // he threw a super (supers.js: 1..6), or his spike landed on you
+  // he threw a super (supers.js: 1..10), or his spike landed on you
   function onSuper(kind) { st.specials++; st.sayCool = 0; quipF('sup' + kind, 0.75, rndS); }
   function onSpikedYou() { st.sayCool = 0; quipF('spikedYou', 0.8, rndS); }
+  // one of your four knocked him down (supers.js: 7 zap, 8 wind, 9 stomp, 10 blast), thrown along its push (nx, nz: m/s):
+  // crackling after a bolt, on fire after a blast, seeing stars either way
+  const KNOCK_LINE = { 7: 'zapped', 8: 'blown', 9: 'stomped', 10: 'blasted' };
+  function onKnocked(kind, nx, nz) {
+    st.phase = 'down'; st.downT = st.t; st.has = false; st.knocked++; st.downKind = kind === 7 ? 'zap' : kind === 10 ? 'burn' : 'stun';
+    st.vx = nx || 0; st.vz = nz || 0; st.vy = st.y > 0.05 ? 0 : kind === 9 ? 0.8 : 1.3; // a stomp's shockwave knocks his feet out from under him
+    st.sayCool = 0; quipF(KNOCK_LINE[kind] || 'spiked', 0.85, rndS);
+  }
+  // one of his four knocked you down; his stomp's foot comes down (a hard landing)
+  function onKnockedYou() { st.sayCool = 0; quipF('downYou', 0.8, rndS); }
+  function onStomp() { if (st.phase !== 'down') st.tLand = st.t; }
   // your slip super slipped off his fist (main.js): a reflex second swing a beat later, as your finger's follow-through gets
   function onSlip() { if (st.phase === 'swing' && !st.reStrike) st.reStrike = st.t + 0.12; }
   // he holds the second power-up and a swing is starting: does he use it? Like his special, by the rope (fire's dice)
@@ -8000,15 +8580,18 @@ function createKage(doc) {
     const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15), gl = Math.max(0.4, CFG.kage.glow); // armed: an aura behind him and his neon over him
     const ac = st.armCol || NEON, ac2 = st.armCol2 || NEON; // (a super of another kind: in its colours, supers.js)
     if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, ac, st.armK * (0.35 + 0.25 * pulse) * gl);
-    const fp = st.fireK > 0.01 && typeof firePal === 'function' ? firePal() : null; // armed with a fireball: he burns in its colour
-    if (fp) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
+    const fp = (st.fireK > 0.01 || st.powK > 0.01) && typeof firePal === 'function' ? firePal() : null; // armed with a fireball: he burns in its colour
+    if (fp && st.fireK > 0.01) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
+    if (fp && st.powK > 0.01) { R.drawAura(ctx, kx, ky, pose, fp.glow, st.powK * (0.55 + 0.3 * pulse)); R.drawBurn(ctx, kx, ky, pose, st.rt, st.powK * 0.75, 0); } // powering up: a fire round him
     const da = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // down: seeing stars
-    const fa = st.downKind === 'stun' ? 0 : da; // and burned: on fire while he is down
+    const fa = st.downKind === 'burn' ? da : 0; // and burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
     if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, ac2, st.armK * (0.18 + 0.18 * pulse) * gl, true);
-    if (fp) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.18 + 0.16 * pulse), true);
+    if (fp && st.fireK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.18 + 0.16 * pulse), true);
+    if (fp && st.powK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.powK * (0.2 + 0.18 * pulse), true);
     if (fa > 0) R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1);
+    if (st.downKind === 'zap' && da > 0 && Math.sin(st.rt * 61) * Math.sin(st.rt * 23) > -0.2) R.drawTint(ctx, kx, ky, pose, '#bfe6ff', 0.5 * da, true); // a bolt: he crackles, on and off
     if (da > 0) R.drawDizzy(ctx, kx, ky, pose, st.rt, da);
     else if (st.slowK > 1) R.drawSmoke(ctx, kx, ky, pose, st.rt, 0.9); // and smoking until his next hit lands
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
@@ -8023,7 +8606,7 @@ function createKage(doc) {
 
   return {
     st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, onBurn, onFire, wantsFire, onVolley,
-    onSpiked, onSuper, onSpikedYou, onSlip, predict: (w) => { predict(w); return np; },
+    onSpiked, onSuper, onSpikedYou, onSlip, onKnocked, onKnockedYou, onStomp, predict: (w) => { predict(w); return np; },
     get side() { return st.side; }, get dir() { return st.dir; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
@@ -8052,7 +8635,8 @@ function createKage(doc) {
 //
 // SUPERS (supers.js). Armed with a super of another kind than Raijin he glows in its colours (info.armCol). Kage's spike, if
 // it reaches him before your swipe does, knocks him down wherever he stands, seeing stars (onSpiked), for as long as
-// supers.js keeps you down.
+// supers.js keeps you down; so does one of Kage's four (onKnocked: crackling after a bolt, on fire after a blast). Powering up
+// for your blast he burns in the fire's colours (info.power, 0..1), and your stomp lands him hard (onStomp).
 //
 // Clocks: the flash (afterimages, speed lines, the white flash he arrives in, the ring he kicks off from) runs on REAL time,
 // so it plays out inside a hit's freeze; his body (the follow-through, the fall, the landing, his moods) runs on SIM time, so
@@ -8195,7 +8779,8 @@ function createKiru(doc) {
     armK: 0, specialRt: -9, spX: 0, spY: 0, spZ: 0, specials: 0, // the armed glow 0..1; his last special: when (real), where the ball was
     fireK: 0, // your swing is charged with the fireball (fire.js): its glow 0..1
     downT: -9, upT: -9, downLeft: 0, slowed: false, burns: 0, // burned: when he went down and got up (sim), s still down, smouldering on; counted for the tests
-    downKind: 'burn', spiked: 0, armCol: '', armCol2: '', // what put him down ('burn', or 'stun': Kage's spike, supers.js); counted; his armed glow's colours ('' storm blue)
+    downKind: 'burn', spiked: 0, knocked: 0, armCol: '', armCol2: '', // what put him down ('burn' a fireball or a blast, 'stun' a spike, a whirlwind or a stomp, 'zap' a bolt: supers.js); counted; his armed glow's colours ('' storm blue)
+    powK: 0, // powering up for your blast, or powered up (info.power, supers.js): his fire glow 0..1
   };
 
   // a flash step: from → to, when (real time), the path's shape (0 dash along the floor, 1 leap in an arc, 2 dash then
@@ -8288,6 +8873,14 @@ function createKiru(doc) {
     st.phase = 'down'; st.downT = st.t; st.spiked++; st.downKind = 'stun';
     st.vx = (nx || 0) * 1.6; st.vz = (nz || 0) * 1.6;
   }
+  // one of Kage's four reached him (supers.js: 7 zap, 8 wind, 9 stomp, 10 blast), thrown along its push (nx, nz: m/s)
+  function onKnocked(kind, nx, nz) {
+    if (st.phase === 'won' || st.phase === 'lost') return;
+    st.phase = 'down'; st.downT = st.t; st.knocked++; st.downKind = kind === 7 ? 'zap' : kind === 10 ? 'burn' : 'stun';
+    st.vx = nx || 0; st.vz = nz || 0;
+  }
+  // your stomp's foot comes down: he lands hard
+  function onStomp() { if (st.phase !== 'down') st.tLand = st.t; }
 
   // back to his spot: a flash step (returns how far), or a run
   function goHome() {
@@ -8313,6 +8906,7 @@ function createKiru(doc) {
     }
     st.slowed = !!(info && info.slowed); st.downLeft = info && info.down > 0 ? info.down : 0;
     st.armCol = info && info.armCol ? info.armCol : ''; st.armCol2 = info && info.armCol2 ? info.armCol2 : '';
+    st.powK = info && info.power > 0 ? info.power : 0;
     if (!(dt > 0)) return 0;
     geom();
     st.t += dt; st.moodT += dt;
@@ -8533,17 +9127,20 @@ function createKiru(doc) {
     drawFlashes(ctx, cam, kx, ky);
     const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15); // armed: an aura behind him and a storm-blue charge over him (a super: its colours)
     if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, st.armCol || '#5ad1ff', st.armK * (0.4 + 0.25 * pulse));
-    const fp = st.fireK > 0.01 && typeof firePal === 'function' ? firePal() : null; // charged with the fireball: he burns in its colour
-    if (fp) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
+    const fp = (st.fireK > 0.01 || st.powK > 0.01) && typeof firePal === 'function' ? firePal() : null; // charged with the fireball: he burns in its colour
+    if (fp && st.fireK > 0.01) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
+    if (fp && st.powK > 0.01) { R.drawAura(ctx, kx, ky, pose, fp.glow, st.powK * (0.55 + 0.3 * pulse)); R.drawBurn(ctx, kx, ky, pose, st.rt, st.powK * 0.75, 0); } // powering up: a fire round him
     const da = st.phase === 'down' ? U.clamp01((st.t - st.downT) / 0.08) * U.clamp01(st.downLeft / 0.25) : 0; // down: seeing stars
-    const fa = st.downKind === 'stun' ? 0 : da; // and burned: on fire while he is down
+    const fa = st.downKind === 'burn' ? da : 0; // and burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
     if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, st.armCol2 || '#8fd2ff', st.armK * (0.22 + 0.2 * pulse), true);
-    if (fp) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.2 + 0.18 * pulse), true);
+    if (fp && st.fireK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.2 + 0.18 * pulse), true);
+    if (fp && st.powK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.powK * (0.2 + 0.18 * pulse), true);
     const ar = st.rt - st.arriveRt;
     if (ar >= 0 && ar < ARRIVE) R.drawTint(ctx, kx, ky, pose, '#ffffff', st.arriveA * (1 - ar / ARRIVE), true);
     if (fa > 0) R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 1);
+    if (st.downKind === 'zap' && da > 0 && Math.sin(st.rt * 61) * Math.sin(st.rt * 23) > -0.2) R.drawTint(ctx, kx, ky, pose, '#bfe6ff', 0.5 * da, true); // a bolt: he crackles, on and off
     if (da > 0) R.drawDizzy(ctx, kx, ky, pose, st.rt, da);
     else if (st.slowed) R.drawSmoke(ctx, kx, ky, pose, st.rt, 0.9); // and smoking until your next hit lands
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
@@ -8557,7 +9154,7 @@ function createKiru(doc) {
   };
 
   return {
-    st, G, actor, pose, flashes: FL, setSide, reset, update, onHit, onBurn, onSpiked, onRoundEnd,
+    st, G, actor, pose, flashes: FL, setSide, reset, update, onHit, onBurn, onSpiked, onKnocked, onStomp, onRoundEnd,
     get side() { return st.side; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
@@ -8580,7 +9177,9 @@ function createKiru(doc) {
 // resetting and Copy/Paste treat them all alike. Groups are listed by their entries' `rank`
 // (lowest first, default 0), then in the order modules declared them. The panel opens as a drawer and expands to fill the
 // screen (columns of groups, a filter, open/close all), remembered. A group whose entries carry a `sound` (audio.js's
-// soundboard) is the Soundboard: pads to play every sound, and an editor for the one picked (makeBoard below).
+// soundboard) is the Soundboard: pads to play every sound, and an editor for the one picked (makeBoard below). A group whose
+// entries carry a `sub` (supers.js: the Specials, one special's settings each) shows its own rows, then a pick of the subs, then
+// the picked one's rows (makeSubs below).
 
 CFG.ui = {
   ease: 18, // 1/s: how fast the big mph number chases the ball as it speeds up (it settles down at 30 % of this)
@@ -8801,6 +9400,7 @@ function createUI(root, opts) {
     const ioWrap = $('feelIOWrap'), ta = $('feelIO'), ioHint = $('feelIOHint'), applyBtn = $('feelApply'), toastEl = $('feelToast');
     const RESET_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.3-5.4"/><path d="M19.8 4.2v4.6h-4.6"/></svg>';
     const rows = [], badges = {}, known = new Set(), byPath = new Map(); // byPath: the rows showing a path (the soundboard's Volume is an Audio row's twin)
+    const subs = []; // the groups of subs, as makeSubs builds them
     let built = -1, saveT = 0, toastT = 0, board = null;
 
     const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
@@ -8845,6 +9445,7 @@ function createUI(root, opts) {
       r.row.classList.toggle('chg', moved(r.s.path, num));
     }
     function badge() {
+      subMarks();
       const count = {};
       for (let i = 0; i < rows.length; i++) if (rows[i].row.classList.contains('chg')) count[rows[i].g] = (count[rows[i].g] || 0) + 1;
       if (board) count[board.g] = board.count(); // the soundboard counts sounds, not rows
@@ -8892,7 +9493,7 @@ function createUI(root, opts) {
     }
 
     // a switch (0/1) or a row of choices (an index): same row, same reset, same storage as a slider
-    function setNum(r, v) { cfgSet(r.s.path, v); paint(r, false); changed(r); save(); }
+    function setNum(r, v) { cfgSet(r.s.path, v); paint(r, false); changed(r); save(); if (r.s.follow) subFollow(r.s, v); }
     function makeToggle(r, id) {
       const s = r.s, lab = el('span', 'lab'), rst = el('button', 'rst'), sw = r.sw = el('button', 'sw');
       lab.id = id + '-l'; lab.textContent = s.label;
@@ -9089,6 +9690,66 @@ function createUI(root, opts) {
       };
     }
 
+    // ---- a group of subs (the Specials: one special's settings each, by its entries' `sub`): the group's own rows, then a pick
+    // of the subs (each in its `subTint`, a dot on one with a row off its default), then the picked one's rows under its name.
+    // The pick is remembered; a choice marked `follow` (whose special is which) moves it to the sub its option names, so picking
+    // a special shows its settings. Every sub's rows are built (so the badge, Reset and the filter see them all) and all but
+    // the picked one's are hidden; a filter shows the matches in every sub, under their names.
+    const SUBS = 'tetherball.feel.sub.v1';
+    function subsSaved() { try { const o = JSON.parse(lsGet(SUBS)); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; } catch (e) { return {}; } }
+    function subShow(P, name, remember) {
+      if (!P.wraps.has(name)) return;
+      P.cur = name;
+      for (const [n, w] of P.wraps) w.classList.toggle('off', n !== name); // a class, not [hidden] (style.css makes that one final): a filter shows them all
+      for (const [n, b] of P.chips) b.setAttribute('aria-checked', n === name ? 'true' : 'false');
+      if (remember) { const o = subsSaved(); o[P.g] = name; lsSet(SUBS, JSON.stringify(o)); }
+    }
+    function subMarks() { for (const P of subs) for (const [n, b] of P.chips) b.classList.toggle('chg', P.rows.get(n).some((r) => r.row.classList.contains('chg'))); }
+    function subFollow(s, v) {
+      const n = s.options ? s.options[Math.round(v)] : null;
+      for (const P of subs) if (P.g === (s.group || 'Other') && P.wraps.has(n)) subShow(P, n, true);
+    }
+    function makeSubs(d, items, group) {
+      const P = { g: group, names: [], wraps: new Map(), chips: new Map(), rows: new Map(), cur: '' }, tint = new Map();
+      for (let i = 0; i < items.length; i++) {
+        const s = items[i];
+        if (!s.sub) { const r = makeRow(s); rows.push(r); link(r); d.appendChild(r.row); }
+        else if (!P.rows.has(s.sub)) { P.names.push(s.sub); P.rows.set(s.sub, []); if (s.subTint) tint.set(s.sub, s.subTint); }
+      }
+      const pk = el('div', 'subpick'), lab = el('span', 'lab'), seg = el('div', 'seg wrap'); // not a .row: rows are settings (each with its data-find)
+      lab.id = 'f-sub-' + group.replace(/\W/g, '-') + '-l'; lab.textContent = 'Settings for';
+      seg.setAttribute('role', 'radiogroup'); seg.setAttribute('aria-labelledby', lab.id);
+      for (const n of P.names) {
+        const b = el('button', 'opt');
+        b.type = 'button'; b.setAttribute('role', 'radio'); b.textContent = n;
+        if (tint.has(n)) b.style.setProperty('--c', tint.get(n));
+        b.addEventListener('click', () => subShow(P, n, true));
+        P.chips.set(n, b); seg.appendChild(b);
+      }
+      pk.append(lab, seg); d.appendChild(pk);
+      for (const n of P.names) {
+        const w = el('div', 'subrows'), h = el('p', 'subh');
+        h.textContent = n; if (tint.has(n)) w.style.setProperty('--c', tint.get(n));
+        w.dataset.sub = n; w.appendChild(h);
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].sub !== n) continue;
+          const r = makeRow(items[i]);
+          r.row.dataset.find += ' ' + n.toLowerCase(); // a filter for "zap" finds every Zap row
+          rows.push(r); link(r); P.rows.get(n).push(r); w.appendChild(r.row);
+        }
+        P.wraps.set(n, w); d.appendChild(w);
+      }
+      // the one to show: as left last time, else the special that is yours (or Kage's) when it has settings, else the first
+      let pick = subsSaved()[group];
+      if (!P.wraps.has(pick)) {
+        pick = P.names[0];
+        for (let i = items.length - 1; i >= 0; i--) { const s = items[i]; if (s.follow && s.options) { const n = s.options[Math.round(cfgGet(s.path))]; if (P.wraps.has(n)) pick = n; } }
+      }
+      subShow(P, pick, false);
+      subs.push(P);
+      return P;
+    }
+
     function openGroups() { try { const a = JSON.parse(lsGet(GROUPS)); return Array.isArray(a) ? a : null; } catch (e) { return null; } }
     function saveGroups() {
       if (listEl.classList.contains('filtering')) return; // a filter opens groups for itself: not a choice to remember
@@ -9098,7 +9759,7 @@ function createUI(root, opts) {
     }
     function build() {
       if (board) board.stop();
-      listEl.textContent = ''; rows.length = 0; byPath.clear(); board = null;
+      listEl.textContent = ''; rows.length = 0; byPath.clear(); board = null; subs.length = 0;
       for (const g in badges) delete badges[g];
       const byGroup = new Map(), remembered = openGroups(), rank = new Map();
       for (let i = 0; i < CFG_SCHEMA.length; i++) {
@@ -9117,6 +9778,7 @@ function createUI(root, opts) {
         sum.append(doc.createTextNode(name), n);
         d.appendChild(sum);
         if (items[0].sound) board = makeBoard(d, items, name);
+        else if (items.some((e) => e.sub)) makeSubs(d, items, name);
         else for (let i = 0; i < items.length; i++) { const r = makeRow(items[i]); rows.push(r); link(r); d.appendChild(r.row); }
         d.addEventListener('toggle', saveGroups);
         listEl.appendChild(d);
@@ -9193,6 +9855,7 @@ function createUI(root, opts) {
           row.hidden = !hit; if (hit) any = true;
         }
         for (const c of d.querySelectorAll('.sb-c')) c.hidden = !c.querySelector('.pad:not([hidden])');
+        for (const c of d.querySelectorAll('.subrows')) c.classList.toggle('none', !c.querySelector('.row:not([hidden])')); // a sub with no match
         d.hidden = !any;
         if (words.length) { if (any) d.open = true; } else d.open = groupsOpen ? groupsOpen.indexOf(d.dataset.g) >= 0 : i === 0;
       }
@@ -9241,7 +9904,11 @@ function createUI(root, opts) {
     // every frame (from update): the soundboard's pads follow a track it is playing (loading, playing, stopped)
     function tick() { if (board && isOpen()) board.sync(false); }
 
-    return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save, tick, get board() { return board; } };
+    // tests, and a way in from elsewhere: show a group's sub (the Specials' "Zap"), or which one shows
+    function showSub(group, name) { for (const P of subs) if (P.g === group && P.wraps.has(name)) { subShow(P, name, true); return true; } return false; }
+    function subOf(group) { for (const P of subs) if (P.g === group) return P.cur; return null; }
+
+    return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save, tick, showSub, subOf, get board() { return board; } };
   })();
 
   return { update, energy, fire, showResult, hideResult, hint, setMuted, tuner };
@@ -9260,12 +9927,14 @@ function createUI(root, opts) {
 // or E can do it instead, by the setting). Kage arms his as a swing starts. Every hit goes through energy.prepare first, which is
 // all the physics ever sees of it: a boost on the special itself, a damp on the touch that answers it.
 //
-// What a special does is each player's SUPER (supers.js, the Feel panel's Supers group, and a group of settings for each):
+// What a special does is each player's SUPER (supers.js, the Feel panel's Specials group: pick one and its settings show):
 // Raijin and Shadow cut by default, or one of six that change what the ball does for one turn: swerve (it cuts in toward the
 // pole), spike (it flies straight at the other player and knocks them down if it reaches them), phantom, decoys, slip, warp
-// (it blinks out, and for a split second no hand can touch it). Its forces go into the ball before each physics step; a slip,
-// a warped ball and a spike nobody may hit are caught in tryHit before the physics; a spike that lands knocks its target down
-// (tryHit refuses them, as for a burn).
+// (it blinks out, and for a split second no hand can touch it); or one of four that knock the other player down: zap (a bolt
+// off the ball), wind (a whirlwind at them), stomp (the screen and the ground shake, and a shockwave rolls out) and blast (a
+// fire power-up that goes off). Its forces go into the ball before each physics step; a slip, a warped ball and a spike
+// nobody may hit are caught in tryHit before the physics; a spike that lands, or one of the four, knocks its target down
+// (tryHit refuses them, as for a burn). A blast powers its thrower up: their next touch lands harder (supers.powerFor).
 //
 // Fire volleys (fire.js, the Feel panel's Fire group) are versus only too. Six hits in a row, three each with no miss, and the
 // ball catches fire; whoever wins that volley (the other player misses) holds the second power-up, the fireball by default,
@@ -9342,7 +10011,7 @@ function createUI(root, opts) {
   let kageSide = -1, sidePick = NaN; // Kage's half this match (−1 left, +1 right), and the setting it was resolved from
   const NEUTRAL = 0.06; // m either side of the centre line where either player may hit
   const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you', curl: 0, curved: false };
-  const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world, charged: '', overBall: null };
+  const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world, charged: '', overBall: null, attacks: null, quake: 0 };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1, fire: 0 };
   const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false, fireArmed: false };
@@ -9353,6 +10022,8 @@ function createUI(root, opts) {
   // time each of Kage's is seen in a match (a word on how to beat it), the swing of his already checked for a decoy
   const bodies = { you: { x: 0, y: 0, z: 0, h: 1.75 }, kage: { x: 0, y: 0, z: 0, h: 1.75 } };
   const SUPER_EV = { type: 'super', kind: 0, word: '', size: '', at: { x: 0, y: 0, z: 0 }, ux: 0, uy: 0 };
+  const QUAKE_EV = { type: 'quake', k: 1, at: { x: 0, y: 0, z: 0 } }; // a stomp's foot coming down (fx.js shakes the screen)
+  const DOWN_HINT = ['', '', 'Spiked! 💥', '', '', '', '', 'Zapped! ⚡', 'Blown away! 🌪️', 'Stomped! 💥', 'Blasted! 🔥'];
   const toldSuper = new Uint8Array(SUPERS.length);
   let kageStruck = -1;
   // round the ball: the fire's flames, then the supers' (and the decoys, on their side of the pole)
@@ -9439,6 +10110,7 @@ function createUI(root, opts) {
     if (vs()) {
       if (fire.armed(k) && !fire.fireball) energy.arm(k, true, true); // the second power-up set to a special: a free one
       energy.prepare(k, hand);
+      hand.boost *= supers.powerFor(k); // powered up by a blast of theirs: this touch lands harder
     } else { hand.boost = 1; hand.gain = 1; }
     const heavy = hand.gain < 1; // it answers the other player's special: it lands heavy
     if (vs()) fire.prepare(k, hand); // a touch on their fireball, or your first hit after a burn, lands weak
@@ -9503,13 +10175,40 @@ function createUI(root, opts) {
     fx.event(SUPER_EV, cam, world);
     audio.superFx('slip');
   }
-  // a swerve cuts in ('break'), a spike turns on them away from the hand ('lock'), a warp blinks out ('warp') and back ('unwarp')
-  function onSuperMoment(e) {
-    if (e.type === 'warp' || e.type === 'unwarp') {
-      SUPER_EV.kind = 6; SUPER_EV.word = ''; SUPER_EV.size = 'small'; SUPER_EV.at.x = e.x; SUPER_EV.at.y = e.y; SUPER_EV.at.z = e.z; SUPER_EV.ux = 0; SUPER_EV.uy = 0;
-      fx.event(SUPER_EV, cam, world);
-    }
+  // a swerve cuts in ('break'), a spike turns on them away from the hand ('lock'), a warp blinks out ('warp') and back ('unwarp');
+  // one of the four knocks a player down ('down'), a stomp's foot comes down ('quake'), a power-up goes off ('blast'), a stomp
+  // passes under a player in the air ('ridden')
+  function superEv(kind, word, size, x, y, z) {
+    SUPER_EV.kind = kind; SUPER_EV.word = word; SUPER_EV.size = size; SUPER_EV.at.x = x; SUPER_EV.at.y = y; SUPER_EV.at.z = z; SUPER_EV.ux = 0; SUPER_EV.uy = 0;
+    fx.event(SUPER_EV, cam, world);
+  }
+  function onSuperMoment(e, now) {
+    if (e.type === 'down') { onKnocked(e, now); return; }
+    if (e.type === 'quake') { // the screen shakes (by the setting), and the stomper lands hard
+      QUAKE_EV.k = U.clamp(CFG.supers.stomp.shake, 0, 3); QUAKE_EV.at.x = e.x; QUAKE_EV.at.y = 0; QUAKE_EV.at.z = e.z;
+      fx.event(QUAKE_EV, cam, world);
+      if (e.who === 'kage') kage.onStomp(); else if (kiruOn()) kiru.onStomp();
+      audio.vibrate([50, 30, 40]);
+    } else if (e.type === 'blast') superEv(10, '', '', e.x, e.y, e.z);
+    else if (e.type === 'ridden') { superEv(9, 'DODGED!', 'small', e.x, e.y + 0.8, e.z); return; }
+    else if (e.type === 'warp' || e.type === 'unwarp') superEv(6, '', 'small', e.x, e.y, e.z);
     audio.superFx(e.type);
+  }
+  // one of the four reached them (supers.js: a zap's bolt, a whirlwind, a stomp's shockwave, a blast): its word over them, a crack
+  // or a gust and a thud, a big moment; down they go, thrown along its push
+  function onKnocked(e, now) {
+    const P = SUPERS[e.kind] || SUPERS[2], C = CFG.supers[P.key] || CFG.supers.spike;
+    superEv(e.kind, P.down || 'HIT!', '', e.x, e.y, e.z);
+    if (e.kind === 7) audio.superFx('bolt'); else if (e.kind === 8) audio.superFx('gust');
+    audio.superFx('down');
+    tw.trigger(0.8, 'perfect', true); // a body blow is a big moment
+    if (e.who === 'kage') kage.onKnocked(e.kind, e.nx, e.nz);
+    else {
+      if (kiruOn()) kiru.onKnocked(e.kind, e.nx, e.nz);
+      kage.onKnockedYou(e.kind);
+      audio.vibrate([40, 30, 80]);
+      ui.hint(DOWN_HINT[e.kind] || 'Down! 💥'); hintUntil = now + 1000 * Math.max(0.6, C.stun) + 300;
+    }
   }
   function onSpiked(now) {
     const S = supers.snap, o = S.spiked;
@@ -9522,7 +10221,7 @@ function createUI(root, opts) {
       if (kiruOn()) kiru.onSpiked(S.hnx, S.hnz);
       kage.onSpikedYou();
       audio.vibrate([40, 30, 80]);
-      ui.hint('Spiked! 💥'); hintUntil = now + 1000 * Math.max(0.6, CFG.supers.stun) + 300;
+      ui.hint('Spiked! 💥'); hintUntil = now + 1000 * Math.max(0.6, CFG.supers.spike.stun) + 300;
     }
   }
 
@@ -9700,6 +10399,7 @@ function createUI(root, opts) {
       if (supers.snap.down.kage > info.down) info.down = supers.snap.down.kage;
       supers.kageView(info, world, kage.st.x, kage.st.z); // what he can see of your super: a phantom too far off, the decoy he chose
       const kk = supers.kindOf('kage'); info.armCol = kk ? SUPERS[kk].glow : ''; info.armCol2 = kk ? SUPERS[kk].mid : '';
+      info.power = supers.powerK('kage'); // powering up for a blast, or powered up: he glows in the fire's colours
       const hand = kage.update(simDt, realDt, world, info);
       if (kage.st.struck && kage.st.ts !== kageStruck) { kageStruck = kage.st.ts; if (!hand && supers.kageWhiffed()) audio.superFx('pop'); } // his swing went through your decoy
       if (kage.st.phase === 'swing' && kage.st.ts !== kageSwing) { // he weighs his special as a swing starts, so it shows on him before the fist lands
@@ -9735,6 +10435,7 @@ function createUI(root, opts) {
       kinfo.fire = vs() && (charged === 'fire' || (fire.armed('you') && fire.fireball));
       kinfo.down = vs() ? Math.max(fire.snap.down.you, supers.snap.down.you) : 0; kinfo.slowed = vs() && fire.snap.slow.you;
       kinfo.armCol = yk ? SUPERS[yk].glow : ''; kinfo.armCol2 = yk ? SUPERS[yk].mid : '';
+      kinfo.power = vs() ? supers.powerK('you') : 0;
       const back = kiru.update(simDt, realDt, world, kinfo);
       if (back > 0.05) audio.flash(back, 0.4);
     }
@@ -9749,8 +10450,8 @@ function createUI(root, opts) {
       const se = supers.update(simDt, realDt, world, versus.state === 'playing' && world.state === 'live', kageSide, bodies);
       if (se === 'spiked') onSpiked(now);
       else if (se === 'end' && supers.snap.endKind === 3) audio.superFx('reveal');
-      const sev = supers.drain(); // its moments in flight: a swerve cutting in, a spike turning on them, a warp's blink out and back
-      for (let i = 0; i < sev.length; i++) onSuperMoment(sev[i]);
+      const sev = supers.drain(); // its moments in flight: a swerve cutting in, a spike turning on them, a warp's blink, a knockdown
+      for (let i = 0; i < sev.length; i++) onSuperMoment(sev[i], now);
     }
     if (prevPhase !== 'ramp' && tw.phase === 'ramp') audio.release(tw.seq.power); // the running sequence's power, so the whoosh fits the ramp tw plays (a wound slam can replace it)
     prevPhase = tw.phase;
@@ -9784,6 +10485,8 @@ function createUI(root, opts) {
       view.overBall = vs() ? OVER : null;
       view.ballA = vs() ? supers.ballAlpha() : 1; view.ropeA = vs() ? supers.ropeAlpha() : 1; view.shadowA = vs() ? supers.shadowAlpha() : 1; // a phantom fades
       view.noTrail = vs() && supers.noTrail();
+      view.attacks = vs() ? supers : null; // the four: on the floor under the players (drawFloor), and over them (drawOver)
+      view.quake = vs() ? supers.quakeK() : 0; // a stomp: the ground shakes under them
       const cue = CFG.pace.cue > 0 && world.state === 'live'; // your hit delay: a ring round the ball, emptying; a swipe into it flashes it
       view.paceK = cue ? pace.left('you', paceT) : 0;
       view.paceF = cue ? Math.max(0, 1 - (paceT - paceFlash) / 260) : 0;
