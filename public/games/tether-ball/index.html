@@ -3340,7 +3340,7 @@ function createFX(seed) {
 // The characters (view.actors: Kage and Kiru) are depth-sorted into that order against the pole, the
 // ball and each other by their z, and their speech goes over everything. view.overBall (fire.js: a burning ball) draws round the
 // ball in the ball's layer, its tail just before the ball and its heat just after, so the pole hides them with it. view.halves (−1 / +1: the side Kage's half is on, 0 none) paints the two
-// halves into the baked court.
+// halves into the baked court. view.paceK / paceF (main.js, pace.js): your hit delay, a ring round the ball in the ball's layer.
 // Depth rule: the pole is the y axis and the camera sits on +z, so "behind the pole" is simply z < 0. A rope that crosses
 // z = 0 is split there (it can pass in front of the pole at one end and behind it at the other); fx.drawTrail goes just
 // before the ball. Reads CFG.pal when it bakes (resize() re-skins); nothing allocates per frame.
@@ -3430,7 +3430,7 @@ function createScene(canvas) {
     P.ropeLo = 'rgba(8,10,16,0.62)'; P.black = '#000';
     P.rope = p.rope; P.ropeSlack = U.mix(p.rope, p.groundRim, 0.35); P.ropeGlow = U.rgba(p.rope, 0.5);
     P.mark = p.ballMark; P.capSide = U.mix(p.poleDark, '#000000', 0.45); P.white = '#ffffff';
-    P.text = p.text; P.cool = U.rgba(p.cool, 1);
+    P.text = p.text; P.cool = U.rgba(p.cool, 1); P.accent = p.accent;
     let g = c.createRadialGradient(0, 0, 0, 0, 0, 1); // a soft round shadow, strongest at the centre
     g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(0.6, 'rgba(0,0,0,0.82)'); g.addColorStop(1, 'rgba(0,0,0,0)');
     G.shadow = g;
@@ -3822,6 +3822,25 @@ function createScene(canvas) {
     drawBall(ctx, cam, VIS.ball);
     if (BL.facing) ropePass(ctx, side);
     if (over) { base(ctx); over.drawBall(ctx, cam, world, kx, ky); base(ctx); }
+    drawPace(ctx);
+  }
+
+  // your hit delay (pace.js, main.js): a ring round the ball that empties as the delay runs out, starting from the top, and flares
+  // for a beat when a swipe comes in while it runs
+  const PACE = { k: 0, f: 0 };
+  function drawPace(ctx) {
+    const k = PACE.k, f = PACE.f;
+    if (!(k > 0.002) && !(f > 0.002)) return;
+    const r = BL.rp * 1.5 + 4, a0 = -HALF_PI, ga = VIS.ball;
+    base(ctx);
+    ctx.globalAlpha = (0.16 + 0.34 * f) * ga; ctx.strokeStyle = P.text; ctx.lineWidth = 2 + 2 * f;
+    ctx.beginPath(); ctx.arc(BL.x, BL.y, r, 0, TAU); ctx.stroke();
+    if (k > 0.002) { // a dark edge under the amber, so it reads over a hit's flash
+      ctx.beginPath(); ctx.arc(BL.x, BL.y, r, a0, a0 + TAU * k);
+      ctx.globalAlpha = 0.6 * ga; ctx.strokeStyle = P.ropeLo; ctx.lineWidth = 5.5 + 2 * f; ctx.stroke();
+      ctx.globalAlpha = 0.95 * ga; ctx.strokeStyle = P.accent; ctx.lineWidth = 3.2 + 2 * f; ctx.stroke();
+    }
+    base(ctx);
   }
 
   function drawPole(ctx, cam, world) {
@@ -3927,6 +3946,7 @@ function createScene(canvas) {
     over = view && view.overBall ? view.overBall : null;
     VIS.ball = view && view.ballA >= 0 ? view.ballA : 1; VIS.rope = view && view.ropeA >= 0 ? view.ropeA : 1;
     VIS.shadow = view && view.shadowA >= 0 ? view.shadowA : 1; VIS.trail = !(view && view.noTrail);
+    PACE.k = view && view.paceK > 0 ? Math.min(1, view.paceK) : 0; PACE.f = view && view.paceF > 0 ? Math.min(1, view.paceF) : 0;
     if (cam.sync) cam.sync(); // a retuned camera knob refits before anything is projected this frame
     sync(cam);
     blit(ctx, cam);
@@ -4540,6 +4560,65 @@ function createVersus() {
   setSides(-1);
   reset();
   return { mode: 'versus', players, snap, get state() { return snap.state; }, setSides, onHit, onEvent, update, reset, nextRound, replay };
+}
+
+// ════════ pace.js ════════
+// pace.js — the hit delay: two quick hits, then a beat before the next (Josh's eleventh ask, 2026-10-16).
+//
+// Swipe after swipe while the ball is in reach was the cheapest way to pile on speed, and it is no game. So a player may land
+// `burst` hits in rapid succession, each within `quickMs` of the one before; after that run the next hit needs `waitMs` since
+// the last, and then a new run starts. A slower rhythm never waits, and the other player's touch ends your run. Off, only the
+// 140 ms debounce between two of your hits is left (CFG.hit.cooldownMs, main.js).
+//
+// Pure, and it keeps no clock of its own: the caller passes the time in ms. main.js passes its pace clock (real time as the
+// stopwatch counts it, so a hit-stop freeze counts and a hidden tab does not); the Node balance runs pass their sim time.
+
+CFG.pace = {
+  on: 1, // 1 = the delay is on
+  burst: 2, // quick hits allowed in a row before it
+  quickMs: 450, // a hit within this long of your last one is a quick one
+  waitMs: 400, // the delay: after a run of quick hits, the next one needs this long since your last
+  kage: 1, // 1 = Kage waits too
+  cue: 1, // 1 = a ring round the ball shows your delay running out
+};
+CFG_SCHEMA.push(
+  { path: 'pace.on', label: 'Delay after quick hits', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit delay', rank: -2.9, unit: '' },
+  { path: 'pace.burst', label: 'Quick hits before it', min: 1, max: 5, step: 1, group: 'Hit delay', rank: -2.9, unit: '' },
+  { path: 'pace.waitMs', label: 'Delay', min: 50, max: 1500, step: 25, group: 'Hit delay', rank: -2.9, unit: 'ms' },
+  { path: 'pace.quickMs', label: 'Quick means within', min: 150, max: 1200, step: 25, group: 'Hit delay', rank: -2.9, unit: 'ms' },
+  { path: 'pace.kage', label: 'Kage waits too', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit delay', rank: -2.9, unit: '' },
+  { path: 'pace.cue', label: 'Show the delay', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit delay', rank: -2.9, unit: '' }
+);
+
+function createPace() {
+  // per player: hits in the current run, and when the last one landed (ms on the caller's clock)
+  const S = { you: { n: 0, at: -1e9 }, kage: { n: 0, at: -1e9 } };
+  const run = () => Math.max(1, Math.round(CFG.pace.burst) || 1);
+  const applies = (k) => CFG.pace.on > 0 && (k !== 'kage' || CFG.pace.kage > 0);
+
+  // ms before k may hit again (0: now). A bad number from the panel fails open: nobody waits.
+  function wait(k, t) {
+    const s = S[k];
+    if (!s || !applies(k) || s.n < run()) return 0;
+    const left = CFG.pace.waitMs - (t - s.at);
+    return left > 0 ? left : 0;
+  }
+  // how much of k's delay is left, 1 → 0 (the ring round the ball)
+  function left(k, t) {
+    const W = CFG.pace.waitMs, l = W > 0 ? wait(k, t) / W : 0;
+    return l > 1 ? 1 : l;
+  }
+  // k's hit landed at t: it carries on their run (or starts a new one, after a slow gap or a delay served) and ends the other's
+  function onHit(k, t) {
+    const s = S[k];
+    if (!s) return;
+    s.n = s.n >= run() || !(t - s.at <= CFG.pace.quickMs) ? 1 : s.n + 1;
+    s.at = t;
+    S[k === 'you' ? 'kage' : 'you'].n = 0;
+  }
+  function reset() { S.you.n = 0; S.you.at = -1e9; S.kage.n = 0; S.kage.at = -1e9; }
+
+  return { wait, left, onHit, reset, snap: S };
 }
 
 // ════════ energy.js ════════
@@ -8165,6 +8244,11 @@ function createUI(root, opts) {
 //
 // Two rule sets: the solo time trial (game.js) and versus Kage (versus.js), picked by CFG.match.opponent (the Feel
 // panel's Match group; "#solo" or "#versus" in the URL picks one for this page load without touching saved settings).
+//
+// The hit delay (pace.js, the Feel panel's Hit delay group) holds in both: two quick hits, then a beat before the next. tryHit
+// asks it on the pace clock (paceT: real ms as the stopwatch counts them), which the 140 ms debounce reads too. While your delay
+// runs, a ring round the ball empties and Kiru drops out of his ready stance; a swipe through the ball in it flashes the ring
+// (and the first time in a match, a word on why). Kage waits too, by the setting.
 (function boot() {
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -8181,6 +8265,7 @@ function createUI(root, opts) {
   const energy = createEnergy();
   const supers = createSupers();
   const fire = createFire();
+  const pace = createPace();
   const kage = createKage(document);
   const kiru = createKiru(document);
   const audio = createAudio();
@@ -8220,6 +8305,9 @@ function createUI(root, opts) {
 
   // ---- state ----
   let lastHitAt = -1e9, woundAt = -1, resultShown = false, prevPhase = 'idle', hintUntil = 0, sideWarnAt = -1e9;
+  // the pace clock (ms, real time as the stopwatch counts it): the hit delay and the debounce run on it. lastHitAt is on it too.
+  // paceFlash: when a swipe last went through the ball while your delay ran; toldPace: the word on why, once a match
+  let paceT = 0, paceFlash = -1e9, toldPace = false;
   let kageSide = -1, sidePick = NaN; // Kage's half this match (−1 left, +1 right), and the setting it was resolved from
   const NEUTRAL = 0.06; // m either side of the centre line where either player may hit
   const handBuf = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: 0.26, stroke: 0, owner: 'you', curl: 0, curved: false };
@@ -8282,6 +8370,7 @@ function createUI(root, opts) {
     energy.newRally(); kageSwing = -1; kageStruck = -1;
     supers.newRally();
     fire.newRally();
+    pace.reset(); paceFlash = -1e9;
     tw.cancel();
     fx.reset();
     ui.hideResult();
@@ -8296,6 +8385,7 @@ function createUI(root, opts) {
     energy.reset(); fullWas = false; toldSpecial = false;
     supers.reset(); toldSuper.fill(0);
     fire.reset(); toldHot = false; toldVolley = false;
+    toldPace = false;
     startRally();
   }
   // the round card was tapped: next round, or a new match once it is over
@@ -8304,10 +8394,11 @@ function createUI(root, opts) {
   }
 
   // ---- a hit, from either player: a finger's swipe, or Kage's fist ----
-  function tryHit(hand, now, who) {
+  // free: the test hook's swipes, which skip the debounce and the hit delay (and leave no mark on the delay)
+  function tryHit(hand, now, who, free) {
     if (world.state !== 'live' || !tw.canHit()) return null;
     const you = who !== 'kage', k = you ? 'you' : 'kage';
-    if (you && now - lastHitAt < CFG.hit.cooldownMs) return null;
+    if (!free && ((you && paceT - lastHitAt < CFG.hit.cooldownMs) || pace.wait(k, paceT) > 0)) return null; // the debounce; the hit delay
     if (vs() && (fire.isDown(k) || supers.isDown(k))) return null; // burned or spiked: down, and nothing they swing at counts until they are up
     // your curved swipe, armed for this one touch (a miss leaves it unarmed again): counter-clockwise on a full bar is your special,
     // clockwise with a power-up held is the power-up
@@ -8328,7 +8419,8 @@ function createUI(root, opts) {
       if (autoF) { fire.arm('you', false); energy.arm('you', false, true); }
       return null;
     }
-    if (you) lastHitAt = now;
+    if (you) lastHitAt = paceT;
+    if (!free) pace.onHit(k, paceT);
     res.owner = you ? 'you' : 'cpu';
     res.charged = heavy;
     rules.onHit(res, who);
@@ -8456,15 +8548,26 @@ function createUI(root, opts) {
     const b = world.ball;
     return b.speed < 1.2 || b.p.x * kageSide <= NEUTRAL;
   }
-  // a swipe through the ball on his half: say why nothing happened (once in a while, not every segment)
-  function sideWarn(hand, now) {
-    if (now - sideWarnAt < 1400) return;
+  // does this swipe go through the ball (seen from above)?
+  function touches(hand) {
     const b = world.ball.p, ax = hand.p1.x - hand.p0.x, az = hand.p1.z - hand.p0.z, l2 = ax * ax + az * az;
     const t = l2 > 1e-9 ? Math.max(0, Math.min(1, ((b.x - hand.p0.x) * ax + (b.z - hand.p0.z) * az) / l2)) : 0;
     const dx = hand.p0.x + ax * t - b.x, dz = hand.p0.z + az * t - b.z, rs = world.ball.r + hand.r;
-    if (dx * dx + dz * dz > rs * rs) return;
+    return dx * dx + dz * dz <= rs * rs;
+  }
+  // a swipe through the ball on his half: say why nothing happened (once in a while, not every segment)
+  function sideWarn(hand, now) {
+    if (now - sideWarnAt < 1400 || !touches(hand)) return;
     sideWarnAt = now;
     ui.hint(versus.state === 'ready' ? 'Kage serves' : "Kage's half"); hintUntil = now + 1100;
+  }
+  // a swipe through the ball while your delay runs: the ring flashes, and the first time in a match, a word on why
+  function paceWarn(hand, now) {
+    if (!touches(hand)) return;
+    paceFlash = paceT;
+    if (toldPace) return;
+    toldPace = true;
+    ui.hint('Wait a beat'); hintUntil = now + 1200;
   }
 
   function pumpInput(now) {
@@ -8480,6 +8583,7 @@ function createUI(root, opts) {
       if (vs() && supers.swipe(seg, input, world)) audio.superFx('pop'); // Kage's decoys: a swipe through one pops it
       if (!mayHit()) { sideWarn(hand, now); continue; }
       if (input.shouldHold(seg, hand, world.ball)) continue; // a finger that landed ON the ball: its first contact is the slowest part of the swipe, so wait ~2 frames for the peak
+      if (pace.wait('you', paceT) > 0) { paceWarn(hand, now); continue; } // the hit delay: the swipe goes on, and may still land once it is over
       if (tryHit(hand, now, 'you')) {
         input.consumeStroke(seg.stroke);
         swing.turn = seg.turn; swing.turnAbs = seg.turnAbs; swing.arc = seg.arc; swing.curl = hand.curl; swing.curved = hand.curved;
@@ -8550,6 +8654,7 @@ function createUI(root, opts) {
     yb.x = kiruOn() ? ks.x : ks.homeX; yb.y = kiruOn() ? ks.y : 0; yb.z = kiruOn() ? ks.z : ks.homeZ; yb.h = CFG.kiru.size;
   }
   function step(realDt, now, draw, clockDt) {
+    if (clockDt > 0) paceT += clockDt * 1000;
     watchRules();
     watchCourt();
     if (vs()) syncBodies(); // a spike thrown off the hand goes for where they stand now
@@ -8594,7 +8699,7 @@ function createUI(root, opts) {
     view.chargedPal = yk ? SUPERS[yk] : null;
     if (kiruOn()) {
       if (!kiruWas) { kiru.setSide(vs() ? -kageSide : 1); kiru.reset(); }
-      kinfo.ready = input.active && world.state === 'live' && tw.canHit() && mayHit();
+      kinfo.ready = input.active && world.state === 'live' && tw.canHit() && mayHit() && !(pace.wait('you', paceT) > 0);
       kinfo.armed = vs() && (energy.armed('you') || charged === 'special');
       kinfo.fire = vs() && (charged === 'fire' || (fire.armed('you') && fire.fireball));
       kinfo.down = vs() ? Math.max(fire.snap.down.you, supers.snap.down.you) : 0; kinfo.slowed = vs() && fire.snap.slow.you;
@@ -8648,6 +8753,9 @@ function createUI(root, opts) {
       view.overBall = vs() ? OVER : null;
       view.ballA = vs() ? supers.ballAlpha() : 1; view.ropeA = vs() ? supers.ropeAlpha() : 1; view.shadowA = vs() ? supers.shadowAlpha() : 1; // a phantom fades
       view.noTrail = vs() && supers.noTrail();
+      const cue = CFG.pace.cue > 0 && world.state === 'live'; // your hit delay: a ring round the ball, emptying; a swipe into it flashes it
+      view.paceK = cue ? pace.left('you', paceT) : 0;
+      view.paceF = cue ? Math.max(0, 1 - (paceT - paceFlash) / 260) : 0;
       scene.draw(ctx, cam, world, view);
     }
   }
@@ -8687,8 +8795,9 @@ function createUI(root, opts) {
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, versus, energy, supers, fire, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial, fireball: armFire,
+    CFG, world, cam, tw, fx, game, versus, energy, supers, fire, pace, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial, fireball: armFire,
     get rules() { return rules; },
+    get paceT() { return paceT; }, // the pace clock, ms
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)
     advance(ms) {
@@ -8697,16 +8806,17 @@ function createUI(root, opts) {
       for (let i = 0; i < n; i++) { t += 16.667; step(1 / 60, t, i === n - 1, 1 / 60); }
     },
     // a synthetic swipe through the ball along (dx,dz) at `speed` m/s, via the real hit path (the half rule is the finger's, not this hook's);
-    // curl: as if its swing had curved enough, −1 counter-clockwise (the special; true means the same) or +1 clockwise (the power-up)
-    hit(dx, dz, speed, curl) {
-      lastHitAt = -1e9; // tests may chain hits freely; the real cooldown still guards fingers
+    // curl: as if its swing had curved enough, −1 counter-clockwise (the special; true means the same) or +1 clockwise (the power-up).
+    // Tests may chain these freely: they skip the debounce and the hit delay, and leave no mark on the delay. gate: true holds this
+    // one to both, as a finger is, on the pace clock (__tb.advance moves it).
+    hit(dx, dz, speed, curl, gate) {
       const l = Math.hypot(dx, dz) || 1, ux = dx / l, uz = dz / l, b = world.ball.p;
       const h = handBuf;
       h.p0.x = b.x - ux * 0.5; h.p0.y = b.y; h.p0.z = b.z - uz * 0.5;
       h.p1.x = b.x + ux * 0.05; h.p1.y = b.y; h.p1.z = b.z + uz * 0.05;
       h.vx = ux * speed; h.vz = uz * speed; h.speed = speed; h.r = CFG.hit.handR; h.stroke = -1; h.owner = 'you';
       h.curl = curl === true ? -1 : curl === 1 || curl === -1 ? curl : 0; h.curved = h.curl !== 0;
-      return tryHit(h, performance.now(), 'you');
+      return tryHit(h, performance.now(), 'you', gate !== true);
     },
     reset: resetAll,
     next: nextRound,
