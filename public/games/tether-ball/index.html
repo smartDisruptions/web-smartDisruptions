@@ -168,37 +168,20 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 #hud[data-energy="on"] #hintText { text-align: center; line-height: 1.25; }
 @media (max-width: 429px) { #hud[data-energy="on"] #hintText { padding: 8px 14px; font-size: 12px; letter-spacing: .05em; } }
 
-/* ───────────── result card ───────────── */
-#result { position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center; padding: calc(var(--st) + 84px) calc(var(--sr) + 20px) calc(var(--sb) + 20px) calc(var(--sl) + 20px); background: rgba(14,17,25,.62); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .25s ease, visibility 0s .25s; cursor: pointer; }
-#result.on { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .25s ease; }
-.card { width: min(100%, 340px); padding: 22px 20px 16px; border-radius: 22px; text-align: center; cursor: default; background: linear-gradient(180deg, rgba(36,44,64,.98), rgba(22,28,42,.98)); border: 1px solid var(--line); box-shadow: 0 24px 64px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06); }
-#result.on .card { animation: cardIn .42s cubic-bezier(.2,1.25,.35,1) both; }
-@keyframes cardIn { from { opacity: 0; transform: translateY(18px) scale(.9); } to { opacity: 1; transform: none; } }
-.kick { margin: 0; font: 800 13px/1 var(--ui); letter-spacing: .24em; text-transform: uppercase; color: var(--accent); }
-.rtime { margin-top: 10px; display: flex; align-items: baseline; justify-content: center; gap: 4px; }
-#rTime { font-size: 78px; font-weight: 800; line-height: 1; letter-spacing: -.03em; }
-#rUnit { font: 800 26px/1 var(--ui); color: var(--dim); font-style: normal; }
-.delta { margin: 8px 0 0; min-height: 26px; display: flex; align-items: center; justify-content: center; font: 700 14px/1 var(--ui); color: var(--dim); }
-.badge { padding: 7px 14px; border-radius: 99px; background: var(--accent); color: var(--ink); font: 800 12px/1 var(--ui); letter-spacing: .18em; text-transform: uppercase; }
-#result.on .badge { animation: badgePop .55s .25s cubic-bezier(.2,1.8,.4,1) both; }
-@keyframes badgePop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
-.stat { padding: 10px 4px 9px; border-radius: 12px; background: rgba(255,255,255,.05); }
-.stat b { display: block; font-size: 22px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
-.stat span { display: block; margin-top: 4px; font: 800 10px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+/* ───────────── the round's end: the show is on the canvas (finale.js); this layer over it only takes the taps ───────────── */
+#result { position: absolute; inset: 0; z-index: 3; visibility: hidden; pointer-events: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#result.on { visibility: visible; pointer-events: auto; }
+.sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+/* once the show is over: the next round, a pill at the bottom in the winner's colour */
+.next { position: absolute; left: 50%; bottom: calc(var(--sb) + 18px); display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 22px 0 26px; border: 0; border-radius: 99px; background: var(--accent); color: var(--ink); font: 800 16px/1 var(--ui); letter-spacing: .02em; white-space: nowrap; box-shadow: 0 6px 22px rgba(255,176,32,.32), inset 0 0 0 1px rgba(255,255,255,.22); opacity: 0; visibility: hidden; transform: translate(-50%, 14px); transition: opacity .3s ease, transform .3s ease, visibility 0s .3s; }
+.next::after { content: ''; width: 8px; height: 8px; margin-left: 2px; border: solid currentColor; border-width: 2.5px 2.5px 0 0; transform: rotate(45deg); }
+#result[data-ready="1"] .next { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition: opacity .3s ease, transform .4s cubic-bezier(.2,1.6,.4,1); animation: nextGlow 1.6s ease-in-out .4s infinite; }
+#result[data-winner="kage"] .next { background: var(--kage); color: var(--kage-ink); box-shadow: 0 6px 22px rgba(233,61,255,.32), inset 0 0 0 1px rgba(255,255,255,.22); }
+#result[data-ready="1"] .next:active { transform: translate(-50%, 0) scale(.96); }
+@keyframes nextGlow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.18); } }
+/* the panel's Apply button is a .go */
 .go { width: 100%; height: 52px; margin-top: 16px; border: 0; border-radius: 14px; background: var(--accent); color: var(--ink); font: 800 17px/1 var(--ui); letter-spacing: .02em; box-shadow: 0 6px 18px rgba(255,176,32,.28); transition: transform .1s; }
 .go:active { transform: scale(.97); }
-.tap { margin: 10px 0 0; font: 600 12px/1 var(--ui); color: var(--dim); }
-/* versus: who took the round, and the score, in place of the time */
-.vres { display: none; margin-top: 12px; }
-#result[data-mode="versus"] .vres { display: block; }
-#result[data-mode="versus"] .rtime, #result[data-mode="versus"] .delta { display: none; }
-#rWho { display: block; font-size: 32px; font-weight: 800; line-height: 1.08; letter-spacing: -.01em; }
-#result[data-winner="you"] #rWho { color: var(--accent); }
-#result[data-winner="kage"] #rWho { color: var(--kage); }
-#rScore { margin: 10px 0 2px; font: 800 15px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text); }
-#result[data-winner="kage"] .kick { color: var(--kage); }
-#result[data-winner="kage"] .go { background: var(--kage); color: var(--kage-ink); box-shadow: 0 6px 18px rgba(233,61,255,.3); }
 
 /* ───────────── Feel panel: bottom drawer (~45 %) on tall screens, side drawer on wide ones ───────────── */
 #panel { position: absolute; z-index: 5; left: 0; right: 0; bottom: 0; height: 45%; max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; padding-bottom: var(--sb); border-radius: 18px 18px 0 0; background: rgba(16,20,30,.99); border: 1px solid var(--line); border-bottom: 0; box-shadow: 0 -12px 40px rgba(0,0,0,.5); transform: translateY(100%); visibility: hidden; pointer-events: none; transition: transform .26s cubic-bezier(.2,.8,.2,1), visibility 0s .26s; }
@@ -374,25 +357,12 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   #hint { bottom: calc(var(--sb) + 2px); }
   #hintText { padding: 6px 14px; font-size: 11px; }
   .eg { bottom: calc(var(--sb) + 4px); width: 44px; height: 44px; }
-  #result { padding-top: calc(var(--st) + 48px); padding-bottom: calc(var(--sb) + 8px); }
-  .card { padding: 12px 16px 10px; }
-  .rtime { margin-top: 6px; }
-  #rTime { font-size: 54px; }
-  #rWho { font-size: 24px; }
-  .vres { margin-top: 6px; }
-  #rScore { margin-top: 6px; }
-  #rUnit { font-size: 20px; }
-  .delta { margin-top: 4px; min-height: 22px; }
-  .stats { margin-top: 8px; }
-  .stat { padding: 6px 4px; }
-  .stat b { font-size: 19px; }
-  .go { height: 44px; margin-top: 10px; }
-  .tap { display: none; }
+  .next { bottom: calc(var(--sb) + 8px); height: 40px; font-size: 15px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #panel, #panel.open, #result, #result.on, #hint, .toast, #hSpeed { transition: none; }
-  #hintText, #result.on .card, #result.on .badge, .ey[data-st="full"], .fy[data-st="held"], #streak i.f, .pad.wait { animation: none; }
+  #panel, #panel.open, #hint, .toast, #hSpeed, .next, #result[data-ready="1"] .next { transition: none; }
+  #hintText, #result[data-ready="1"] .next, .ey[data-st="full"], .fy[data-st="held"], #streak i.f, .pad.wait { animation: none; }
   .eg, .eg .fl { transition: none; }
 }
 
@@ -458,20 +428,14 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
     </div>
   </div>
 
-  <div id="result" aria-hidden="true">
-    <div class="card" role="dialog" aria-modal="true" aria-labelledby="rTitle">
-      <p class="kick" id="rTitle">Rope wound</p>
-      <div class="vres"><b id="rWho">You win</b><p id="rScore">1 – 0</p></div>
-      <div class="rtime"><b id="rTime">0.00</b><i id="rUnit">s</i></div>
-      <p class="delta"><span class="badge" id="rNew" hidden>New best</span><span id="rDelta"></span></p>
-      <div class="stats">
-        <div class="stat"><b id="rHits">0</b><span>Hits</span></div>
-        <div class="stat"><b id="rTop">0</b><span>Top mph</span></div>
-        <div class="stat"><b id="rBest">-</b><span id="rBestK">Best</span></div>
-      </div>
-      <button id="rAgain" class="go" type="button">Go again</button>
-      <p class="tap">or tap anywhere</p>
+  <div id="result" aria-hidden="true" data-ready="0">
+    <div class="sr" id="rSum" role="status" aria-live="polite">
+      <p id="rTitle">Rope wound</p>
+      <p><b id="rWho"></b> <span id="rScore"></span></p>
+      <p><b id="rTime"></b><i id="rUnit">s</i> <span id="rNew" hidden>New best</span> <span id="rDelta"></span></p>
+      <p><b id="rHits">0</b> hits, top <b id="rTop">0</b> mph, <span id="rBestK">Best</span> <b id="rBest">-</b></p>
     </div>
+    <button id="rAgain" class="next" type="button">Next round</button>
   </div>
 
   <aside id="panel" aria-label="Feel settings" aria-hidden="true">
@@ -1646,6 +1610,7 @@ CFG.audio = {
   pole: 1, // the ball touching the pole: a bright clack
   ground: 1, // the ball bouncing on the floor
   wound: 1, // the sting when a round is won (the rope wound all the way)
+  finale: 1, // the show at a round's end (finale.js): the power-up, the burst, the fanfare, a defeat, fireworks
   flash: 1, // Kiru's flash step: the swish as he blinks across the court
   special: 1, // the specials (energy.js): Raijin's thunderclap, Kage's shadow cut, the supers' (supers.js), and the energy bar's cues
   fire: 1, // fire volleys and the fireball (fire.js): the ball catching fire and crackling, a volley won, a swing charging, a burn, a fire going out
@@ -1676,6 +1641,7 @@ CFG_SCHEMA.push(
   { path: 'audio.pole', label: 'Pole clack', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.ground', label: 'Floor bounce', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.wound', label: 'Round-won sting', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
+  { path: 'audio.finale', label: 'Finish sounds', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.flash', label: "Kiru's flash step", min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.special', label: 'Special moves', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
   { path: 'audio.fire', label: 'Fire sounds', min: 0, max: 2, step: 0.05, group: 'Audio', unit: 'x' },
@@ -1731,6 +1697,12 @@ CFG_SCHEMA.push(
       { id: 'burn', cat: 'Fire', label: 'Burn', title: 'Burned touch', when: 'A burned touch: the sizzle, then the fall', gate: ['audio.fire'] },
       { id: 'fireOut', cat: 'Fire', label: 'Fire out', title: 'Fire out', when: 'A fire hissing out', gate: ['audio.fire'] },
       { id: 'crackle', cat: 'Fire', label: 'Crackle', title: 'Crackle', when: 'A burning ball, a dozen pops a second', vars: ['Burning', 'One pop'], gate: ['audio.fire'] },
+      // the show at a round's end (finale.js)
+      { id: 'powerUp', cat: 'Finish', label: 'Power-up', title: 'Power-up', when: 'The winner powering up at the end of a round', vars: ['Kiru', 'Kage'], gate: ['audio.finale'] },
+      { id: 'victory', cat: 'Finish', label: 'Victory', title: 'Victory burst', when: "The winner's power going off: the round is theirs", vars: ['Kiru', 'Kage'], gate: ['audio.finale'] },
+      { id: 'fanfare', cat: 'Finish', label: 'Fanfare', title: 'Match fanfare', when: 'The match won (or a new best in the time trial); the music dips under it', vars: ['Kiru', 'Kage'], gate: ['audio.finale'] },
+      { id: 'defeat', cat: 'Finish', label: 'Defeat', title: 'Defeat', when: 'Losing a round to Kage (the long one: the match)', vars: ['Round', 'Match'], gate: ['audio.finale'] },
+      { id: 'firework', cat: 'Finish', label: 'Firework', title: 'Firework', when: 'Each firework over a match won', gate: ['audio.finale'] },
     ]
   );
   // each sound's edits: pitch in semitones, volume (unless it has one in the Audio group), tone -10 (darker) .. +10 (brighter).
@@ -1758,7 +1730,7 @@ function createAudio(opts) {
   const stats = { peak: 0, dropped: 0, made: 0, freed: 0, errors: 0, lastError: null, get live() { return liveNodes(); } };
   let cur = null; // the voice being built, so a failure halfway can take its nodes down with it
   const late = { at: -1, power: 0, quality: 'good', reversed: false }; // a hit that landed before the context could play
-  const S = { muted: false, gestured: false, offline: false, failed: false, nudge: 0, tSnap: -1, tGround: -1, tPole: -1, tWrap: -1, when: -1 }; // when: a queued take's start
+  const S = { muted: false, gestured: false, offline: false, failed: false, nudge: 0, tSnap: -1, tGround: -1, tPole: -1, tWrap: -1, when: -1, duckTo: -1 }; // when: a queued take's start; duckTo: the music dips under a fanfare until then (audio clock)
   // the ambient voice (a looped noise through a band-pass and a low-pass) and the last value sent to each of its params
   const A = { src: null, bp: null, lp: null, g: null, to: null, quiet: 0, vG: -1, vF: -1, vL: -1, vR: -1, vP: 9, vol: -1, crk: 0 }; // crk: the fire's crackle carried over; to: where it feeds
   let ctx = null, bus = null, master = null, pan = null, noise = null;
@@ -2485,6 +2457,112 @@ function createAudio(opts) {
     reap(v);
   }
 
+  // ---- the show at a round's end (finale.js). k: 0 Kiru's (yours), 1 Kage's ----
+  //   'powerUp' (d s): a whine climbing and a roar swelling under it, up to the burst
+  //   'victory': the power going off: a boom, a crash, a chord (major for Kiru, minor for Kage)
+  //   'fanfare': a match won (or a new best): brass over a timpani roll, Kage's in minor; the music dips under it
+  //   'defeat': you lost it: a sad trombone, two notes for a round (k 0), four for the match (k 1)
+  //   'firework': a whistle up, then the pop, a thud and a crackle
+  // a brass note: one sawtooth (two, detuned, for a lead) into a shared filter, a blatty attack settling to a held level
+  function brassNote(v, t, f, dur, peak, dest, lead) {
+    const g = ctx.createGain(), end = t + dur + 0.34, p = g.gain;
+    v.n.push(g);
+    p.setValueAtTime(0, t); p.linearRampToValueAtTime(peak, t + 0.022); p.linearRampToValueAtTime(peak * 0.7, t + 0.13);
+    p.setValueAtTime(peak * 0.7, t + Math.max(0.14, dur)); p.exponentialRampToValueAtTime(FLOOR, t + Math.max(0.14, dur) + 0.3);
+    for (let i = 0; i < (lead ? 2 : 1); i++) {
+      const o = osc(t, f * (i ? 1.0045 : 1), 'sawtooth');
+      v.n.push(o); o.connect(g); o.start(t); o.stop(end); keep(v, o, end);
+    }
+    g.connect(dest);
+  }
+  function brassBus(v, t, open, close) { // the brass filter: it opens on each attack (blat) and closes back a little
+    const lp = filt('lowpass', close, 1.1);
+    v.n.push(lp); lp.connect(v.out);
+    lp.frequency.setValueAtTime(close * 0.6, t); lp.frequency.linearRampToValueAtTime(open, t + 0.04); lp.frequency.exponentialRampToValueAtTime(close, t + 0.35);
+    return lp;
+  }
+  function finaleSound(kind, k, d) {
+    const L = level('finale'), id = kind;
+    if (!(L > 0) || !(vol(id) > 0) || !ready()) return;
+    const kg = k === 1, t = at();
+    if (kind === 'powerUp') {
+      if (!room(10, true)) return;
+      const D = d > 0.15 ? (d < 3 ? d : 3) : 0.53, v = begin(id);
+      const o = osc(t, kg ? 110 : 150, kg ? 'square' : 'sawtooth'), b = filt('lowpass', 500, 4), g = ctx.createGain(), end = t + D + 0.12;
+      v.n.push(o, b, g);
+      if (kg) { for (let i = 0; i * 0.05 < D; i++) o.frequency.setValueAtTime(110 * Math.pow(6.4, (i * 0.05) / D) * (0.94 + 0.12 * rnd()), t + i * 0.05); } // glitching up
+      else o.frequency.exponentialRampToValueAtTime(1100, t + D);
+      b.frequency.setValueAtTime(500, t); b.frequency.exponentialRampToValueAtTime(4000, t + D);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.075 * L, t + D); g.gain.exponentialRampToValueAtTime(FLOOR, t + D + 0.1);
+      o.connect(b); b.connect(g); g.connect(v.out); o.start(t); o.stop(end); keep(v, o, end);
+      const s = noiseSrc(v, t, D + 0.12), nb = filt('bandpass', 300, 0.9), ng = ctx.createGain(); // the roar under it
+      v.n.push(nb, ng);
+      nb.frequency.setValueAtTime(300, t); nb.frequency.exponentialRampToValueAtTime(kg ? 1600 : 2400, t + D);
+      ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(0.3 * L, t + D); ng.gain.exponentialRampToValueAtTime(FLOOR, t + D + 0.1);
+      s.connect(nb); nb.connect(ng); ng.connect(v.out);
+      const sub = osc(t, 50, null), sg = ctx.createGain(); // and the floor humming
+      v.n.push(sub, sg);
+      sub.frequency.linearRampToValueAtTime(85, t + D);
+      sg.gain.setValueAtTime(0, t); sg.gain.linearRampToValueAtTime(0.32 * L, t + D); sg.gain.exponentialRampToValueAtTime(FLOOR, t + D + 0.1);
+      sub.connect(sg); sg.connect(v.out); sub.start(t); sub.stop(end); keep(v, sub, end);
+      reap(v);
+    } else if (kind === 'victory') {
+      if (!room(16, true)) return;
+      const v = begin(id);
+      tone(v, t, W.thump, 72, 26, 0.09, 0.9 * L, 0.001, 0.8); // the boom
+      const ns = noiseSrc(v, t, 1.3);
+      burst(v, t, ns, 'lowpass', kg ? 1800 : 3200, 0.7, 0.42 * L, 0.002, 1.1); // the crash
+      burst(v, t, ns, 'highpass', 5000, 0.7, 0.1 * L, 0.002, 0.7);
+      const bus = brassBus(v, t + 0.02, kg ? 2200 : 3600, kg ? 1100 : 1700), chord = kg ? [261.63, 311.13, 392, 523.25] : [261.63, 329.63, 392, 523.25];
+      for (let i = 0; i < chord.length; i++) brassNote(v, t + 0.02, chord[i], 0.55, 0.075 * L, bus, false);
+      reap(v);
+    } else if (kind === 'fanfare') {
+      if (!room(37, true)) return;
+      const v = begin(id), G = kg ? 196 : 392; // the call on G (Kage's an octave down), then the landing
+      const lead = brassBus(v, t, kg ? 2400 : 4200, kg ? 1200 : 2000), pad = brassBus(v, t + 0.36, kg ? 2000 : 3000, kg ? 900 : 1400);
+      const tune = kg ? [[0, G, 0.09], [0.12, G, 0.09], [0.24, G, 0.09], [0.36, 311.13, 0.5], [0.92, 293.66, 0.13], [1.08, 261.63, 1.2]]
+        : [[0, G, 0.09], [0.12, G, 0.09], [0.24, G, 0.09], [0.36, 523.25, 0.5], [0.92, 659.25, 0.13], [1.08, 783.99, 1.2]];
+      for (let i = 0; i < tune.length; i++) brassNote(v, t + tune[i][0], tune[i][1], tune[i][2], 0.15 * L, lead, false);
+      const c1 = kg ? [130.81, 196, 261.63] : [261.63, 329.63, 392], c2 = kg ? [130.81, 196, 261.63, 311.13] : [261.63, 329.63, 392, 523.25];
+      for (let i = 0; i < c1.length; i++) brassNote(v, t + 0.36, c1[i], 0.5, 0.075 * L, pad, false);
+      for (let i = 0; i < c2.length; i++) brassNote(v, t + 1.08, c2[i], 1.2, 0.08 * L, pad, false);
+      tone(v, t + 0.36, W.thump, 98, 44, 0.08, 0.6 * L, 0.002, 0.5); // the timpani: a hit, then a roll under the landing
+      tone(v, t + 1.08, W.thump, 92, 40, 0.08, 0.6 * L, 0.002, 0.7);
+      const rs = noiseSrc(v, t + 1.08, 1.4), rb = filt('lowpass', 240, 0.9), rg = ctx.createGain(), lfo = osc(t + 1.08, 17, null), lg = ctx.createGain();
+      v.n.push(rb, rg, lfo, lg);
+      rg.gain.setValueAtTime(0, t + 1.08); rg.gain.linearRampToValueAtTime(0.32 * L, t + 1.5); rg.gain.exponentialRampToValueAtTime(FLOOR, t + 2.45);
+      lg.gain.value = 0.16 * L; lfo.connect(lg); lg.connect(rg.gain); // the roll's strokes
+      rs.connect(rb); rb.connect(rg); rg.connect(v.out); lfo.start(t + 1.08); lfo.stop(t + 2.5); keep(v, lfo, t + 2.5);
+      reap(v);
+      S.duckTo = Math.max(S.duckTo, t + 2.4); // the music dips under it
+    } else if (kind === 'defeat') {
+      if (!room(12, true)) return;
+      const v = begin(id), lp = filt('lowpass', 500, 2.2), notes = k === 1 ? [233.08, 220, 207.65, 196] : [233.08, 220];
+      v.n.push(lp); lp.connect(v.out);
+      let tt = t;
+      for (let i = 0; i < notes.length; i++) { // wah, wah, wah, waaah: the filter opens and closes on each, the pitch sags at its end
+        const last = i === notes.length - 1, dur = last ? (k === 1 ? 1.0 : 0.6) : 0.3, o = osc(tt, notes[i], 'sawtooth'), g = ctx.createGain(), end = tt + dur + 0.3;
+        v.n.push(o, g);
+        o.frequency.setValueAtTime(notes[i], tt + dur * 0.6); o.frequency.linearRampToValueAtTime(notes[i] * 0.97, tt + dur);
+        if (last) { const lf = osc(tt, 5.5, null), lfg = ctx.createGain(); v.n.push(lf, lfg); lfg.gain.setValueAtTime(0, tt); lfg.gain.linearRampToValueAtTime(notes[i] * 0.025, tt + dur * 0.6); lf.connect(lfg); lfg.connect(o.frequency); lf.start(tt); lf.stop(end); }
+        g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(0.34 * L, tt + 0.04); g.gain.setValueAtTime(0.34 * L, tt + dur - 0.05); g.gain.exponentialRampToValueAtTime(FLOOR, tt + dur + 0.25);
+        lp.frequency.setValueAtTime(380, tt); lp.frequency.linearRampToValueAtTime(1500, tt + 0.12); lp.frequency.exponentialRampToValueAtTime(480, tt + dur);
+        o.connect(g); g.connect(lp); o.start(tt); o.stop(end); keep(v, o, end);
+        tt += dur + 0.04;
+      }
+      reap(v);
+    } else if (kind === 'firework') {
+      if (!room(10, true)) return;
+      const v = begin(id), f0 = 1500 + 500 * rnd(), tp = t + 0.42;
+      tone(v, t, null, f0, f0 * 1.7, 0.3, 0.025 * L, 0.05, 0.36); // the whistle up
+      const ns = noiseSrc(v, tp, 0.9);
+      burst(v, tp, ns, 'lowpass', 2400, 0.7, 0.24 * L, 0.001, 0.12); // the pop
+      tone(v, tp, W.thump, 95, 38, 0.06, 0.2 * L, 0.001, 0.35);
+      burst(v, tp + 0.18 + 0.1 * rnd(), ns, 'bandpass', 4200 + 1600 * rnd(), 2, 0.12 * L, 0.001, 0.25); // and its crackle
+      reap(v);
+    }
+  }
+
   // ---- the ambient whirr: pitched and gated by speed, panned by x, slowed by the time scale ----
   function ambStop() {
     if (!A.src) return;
@@ -2608,7 +2686,7 @@ function createAudio(opts) {
     // slow-mo: a low-pass from wide open (full speed) to 900 Hz (frozen), and a dip of up to 30 %, both on the time scale; and
     // silence while the soundboard plays a track on its own
     const duck = CFG.audio.musicDuck >= 0.5 ? 1 - ts : 0, open = ctx.sampleRate / 2, gn = tr.gain;
-    const v = PV.src ? 0 : level('music') * (gn > 0 ? gn : 0) * (1 - 0.3 * duck);
+    const v = PV.src ? 0 : level('music') * (gn > 0 ? gn : 0) * (1 - 0.3 * duck) * (now < S.duckTo ? 0.35 : 1); // (and under a fanfare)
     if (Math.abs(v - MU.vG) > 0.0005 + MU.vG * 0.02) { MU.g.gain.setTargetAtTime(v, now, v < MU.vG ? 0.03 : 0.15); MU.vG = v; }
     const f = 900 * Math.pow(open / 900, Math.pow(1 - duck, 0.6));
     if (Math.abs(f - MU.vF) > MU.vF * 0.02) { MU.lp.frequency.setTargetAtTime(f, now, f < MU.vF ? 0.03 : 0.12); MU.vF = f; }
@@ -2769,6 +2847,11 @@ function createAudio(opts) {
       case 'fireArm': fire('arm'); break;
       case 'burn': fire('burn'); break;
       case 'fireOut': fire('out'); break;
+      case 'powerUp': finaleSound('powerUp', n, 0.53); break;
+      case 'victory': finaleSound('victory', n); break;
+      case 'fanfare': finaleSound('fanfare', n); break;
+      case 'defeat': finaleSound('defeat', n); break;
+      case 'firework': finaleSound('firework', 0); break;
       case 'crackle': { // a burning ball's two seconds of pops, as tick() sprinkles them, or one
         const lv = level('fire');
         if (n) crackle(lv);
@@ -2875,6 +2958,7 @@ function createAudio(opts) {
   return {
     unlock: safe(unlock), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
     wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), special: safe(special), superCast: safe(superCast), superFx: safe(superFx), energy: safe(energy), fire: safe(fire), vibrate, stats,
+    finale: function (kind, k, d) { try { finaleSound(kind, k, d); } catch (e) { fail(e); } }, // the show's (finale.js)
     voices: { get ready() { return HV.ready || Promise.resolve(); }, get loaded() { return HV.loaded; }, get failed() { return HV.failed; } },
     // the music: the track it holds (its name and label), state none / decoding / ready / failed / missing, whether it is playing,
     // and where in the recording (s)
@@ -4001,6 +4085,10 @@ function createFX(seed) {
 // halves into the baked court. view.paceK / paceF (main.js, pace.js): your hit delay, a ring round the ball in the ball's layer.
 // view.attacks (supers.js: a zap, a whirlwind, a stomp's shockwave, a blast) draws on the floor after the shadows (drawFloor) and
 // over the players after them (drawOver); view.quake (0..1, a stomp) shakes the ground: the baked court jolts under everything.
+// view.finale (finale.js: the show at a round's end) draws over the court under everything else (drawBack: god rays, fireworks,
+// the round's numbers), on the floor under the players (drawFloor: shockwaves, the pillar behind the winner) and over them (drawOver:
+// the spotlight, sparks, the lightning, the cuts, confetti, the title, the flash). view.smooth: resample the court smooth while the
+// show's push-in holds (a hit's quick zoom stays nearest-neighbour).
 // Depth rule: the pole is the y axis and the camera sits on +z, so "behind the pole" is simply z < 0. A rope that crosses
 // z = 0 is split there (it can pass in front of the pole at one end and behind it at the other); fx.drawTrail goes just
 // before the ball. Reads CFG.pal when it bakes (resize() re-skins); nothing allocates per frame.
@@ -4594,7 +4682,7 @@ function createScene(canvas) {
   // pixels and stays a straight copy (a fractional offset made it a full-screen bilinear resample, ~8x slower), and zoom or
   // roll resample nearest-neighbour (~2.5x cheaper than bilinear; the court is faint lines on a gradient and the effect lasts
   // a few frames, so the aliasing hides in the motion).
-  function blit(ctx, cam) {
+  function blit(ctx, cam, smooth) {
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     if (cam.zoom === 1 && cam.roll === 0) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -4606,7 +4694,7 @@ function createScene(canvas) {
     base(ctx);
     if (z < 0.97 || Math.abs(cam.roll) > 0.04) { ctx.fillStyle = lookOf() === 1 ? CFG.pal.bg0 : YARD.tarNear; ctx.fillRect(0, 0, W, H); }
     ctx.setTransform(kx * z * co, ky * z * si, -kx * z * si, ky * z * co, kx * (mx + tx * co - ty * si + cam.shakeX + QK.x), ky * (my + tx * si + ty * co + cam.shakeY + QK.y));
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = !!smooth;
     ctx.drawImage(L.cv, -L.mx, -L.my, L.cw, L.ch);
     ctx.imageSmoothingEnabled = true;
   }
@@ -4943,17 +5031,19 @@ function createScene(canvas) {
     PACE.k = view && view.paceK > 0 ? Math.min(1, view.paceK) : 0; PACE.f = view && view.paceF > 0 ? Math.min(1, view.paceF) : 0;
     const q = view && view.quake > 0 ? Math.min(1, view.quake) : 0, qa = q * 0.06 * cam.pxPerM, qt = (view && view.now) || 0; // a jolt of up to 6 cm, mostly up and down
     QK.x = q > 0 ? qa * 0.45 * Math.sin(qt * 0.071 + 1.3) : 0; QK.y = q > 0 ? qa * (0.7 * Math.sin(qt * 0.093) + 0.3 * Math.sin(qt * 0.157 + 0.6)) : 0;
-    const atk = view && view.attacks ? view.attacks : null;
+    const atk = view && view.attacks ? view.attacks : null, fin = view && view.finale ? view.finale : null;
     if (cam.sync) cam.sync(); // a retuned camera knob refits before anything is projected this frame
     sync(cam);
-    blit(ctx, cam);
+    blit(ctx, cam, view && view.smooth);
     base(ctx);
     if (fx && fx.drawUnder) fx.drawUnder(ctx, cam, world);
     base(ctx);
+    if (fin) { fin.drawBack(ctx, cam, world, kx, ky); base(ctx); }
     drawShadows(ctx, cam, world);
     const acts = view && view.actors ? view.actors : NO_ACTORS;
     for (let i = 0; i < acts.length; i++) { acts[i].drawShadow(ctx, cam, kx, ky); base(ctx); }
     if (atk) { atk.drawFloor(ctx, cam, world); base(ctx); }
+    if (fin) { fin.drawFloor(ctx, cam, world, kx, ky); base(ctx); }
     preparePole(cam, world);
     prepareBall(cam, world, view, fx);
     buildRope(cam, world);
@@ -4970,6 +5060,7 @@ function createScene(canvas) {
     if (atk) { atk.drawOver(ctx, cam, world); base(ctx); }
     if (fx && fx.drawOver) fx.drawOver(ctx, cam, world);
     base(ctx);
+    if (fin) { fin.drawOver(ctx, cam, world, kx, ky); base(ctx); }
     drawFinger(ctx, cam, view ? view.input : null, view && view.charged ? view.charged : '', view ? view.chargedPal : null);
     base(ctx);
     for (let i = 0; i < acts.length; i++) if (acts[i].drawSay) { acts[i].drawSay(ctx, cam, kx, ky); base(ctx); }
@@ -5371,7 +5462,7 @@ CFG.game = {
 
 function createGame() {
   const KEY = 'tetherball.best';
-  const snap = { state: 'ready', timeMs: 0, hits: 0, topMph: 0, turns: 0, turnsGoal: 1, best: null, newBest: false, mode: 'solo' };
+  const snap = { state: 'ready', timeMs: 0, hits: 0, topMph: 0, turns: 0, turnsGoal: 1, best: null, prev: null, newBest: false, mode: 'solo' }; // prev: the best before this run (the show says by how much it fell)
   const players = [{ id: 'you', side: 1 }]; // side: which way along φ this player winds (solo: both ways count)
   let best = readBest();
   let fresh = false; // the clock just started: the frame it started in was spent before the hit, so it is not counted
@@ -5394,7 +5485,7 @@ function createGame() {
 
   function reset() {
     snap.state = 'ready'; snap.timeMs = 0; snap.hits = 0; snap.topMph = 0; snap.turns = 0;
-    snap.turnsGoal = goal(); snap.best = best; snap.newBest = false;
+    snap.turnsGoal = goal(); snap.best = best; snap.prev = best; snap.newBest = false;
     fresh = false;
   }
 
@@ -5415,6 +5506,7 @@ function createGame() {
     snap.timeMs = Math.round(snap.timeMs);
     snap.turnsGoal = goal();
     snap.turns = snap.turnsGoal; // wound means full: don't show 6.2 / 6.4 on the result card
+    snap.prev = best;
     snap.newBest = best === null || snap.timeMs < best;
     if (snap.newBest) { best = snap.timeMs; writeBest(best); }
     snap.best = best;
@@ -7520,6 +7612,871 @@ function createFire() {
   return { snap: st, reset, newRally, update, tick, prepare, onHit, onRoundEnd, held, armed, arm, isDown, drawBehind, drawBall, get on() { return on(); }, get volley() { return st.volley; }, get need() { return need(); }, get fireball() { return fireballPower(); }, get embers() { return pn; } };
 }
 
+// ════════ finale.js ════════
+// finale.js — the end of a round, as a show (Josh's sixteenth ask). The round card is gone. When the rope is wound the winner
+// steps out to the front of their half and does a victory move (Kiru: a rising uppercut that pulls lightning down onto his fist;
+// Kage: two shadow cuts that cross in an X), powers up (an aura, sparks rising round them, the camera pushing in) and the power
+// goes off (a pillar of light, a shockwave across the floor, a flash), and the round's title slams in. The loser flinches and
+// sinks to their knees under a cloud of gloom. Winning the match, or beating your best in the time trial, goes further: a second
+// power-up lifts the winner off the ground and it goes off with god rays, fireworks, confetti and the fanfare, under VICTORY!
+// (or KAGE WINS!). The round's numbers are painted into the background, under the players: the score with the winner's point
+// ticking up (in the time trial, your best), and the round's stats.
+//
+// It owns the show's clock, the camera and the effects. The characters (kiru.js, kage.js) play their parts from the same clock
+// (FINALE below: update()'s info.ft), so a skip moves everyone at once; main.js plays the cues (drain(): sounds, haptics). The
+// clock runs on the time scale, so the wound's own hit-stop plays out first. A tap during the show skips to its end (ui.js); once
+// it is over, a tap (or the Next round button) starts the next round. With the show off (CFG.finale.on 0) the title and the
+// numbers come up at once and the characters cheer and sulk where they stand.
+//
+// Layers (scene.js): drawBack over the court and under everything else (god rays, fireworks, the numbers), drawFloor on the floor
+// under the players (shockwaves, the pillar behind them), drawOver over the players (the spotlight, the pillar's glow, sparks,
+// the lightning, the cuts, confetti, the title, the flash).
+
+CFG.finale = {
+  on: 1, // 1 = the show (the victory move, the power-up, the burst); 0 = the title and the numbers, at once
+  zoom: 0.16, // how far the camera pushes in on the winner (less on a wide screen, where the players are big already)
+  speed: 1, // × how fast the show plays
+  fireworks: 1, // fireworks and confetti for a match won, or a new best
+  stats: 1, // the round's numbers, painted into the background
+  size: 1, // × the title's size
+  auto: 0, // s after the show that the next round starts by itself (0: it waits for a tap)
+};
+CFG_SCHEMA.push(
+  { path: 'finale.on', label: 'Victory show', type: 'toggle', min: 0, max: 1, step: 1, group: 'Finish', rank: -2.95, unit: '' },
+  { path: 'finale.zoom', label: 'Camera push-in', min: 0, max: 0.4, step: 0.01, group: 'Finish', rank: -2.95, unit: '' },
+  { path: 'finale.speed', label: 'Show speed', min: 0.5, max: 2, step: 0.05, group: 'Finish', rank: -2.95, unit: 'x' },
+  { path: 'finale.fireworks', label: 'Fireworks and confetti', type: 'toggle', min: 0, max: 1, step: 1, group: 'Finish', rank: -2.95, unit: '' },
+  { path: 'finale.stats', label: 'Stats in the background', type: 'toggle', min: 0, max: 1, step: 1, group: 'Finish', rank: -2.95, unit: '' },
+  { path: 'finale.size', label: 'Title size', min: 0.5, max: 1.6, step: 0.05, group: 'Finish', rank: -2.95, unit: 'x' },
+  { path: 'finale.auto', label: 'Next round by itself after', min: 0, max: 10, step: 0.5, group: 'Finish', rank: -2.95, unit: 's' }
+);
+
+// The show's beats, in seconds on its clock. A round (or a time trial): the winner steps out (MOVE), the victory move rises
+// (RISE) to its peak (STRIKE: the lightning, or the second cut), lands, charges and bursts, the title slams in, they cheer; the
+// numbers come up, and it is over (READY). A match (or a new best) adds a second, bigger charge (CHARGE2 → BURST2) in the air.
+const FINALE = {
+  FLINCH: 0.06, MOVE: 0.3, RISE: 0.48, SLASH: 0.47, STRIKE: 0.62, LAND: 0.82, CHARGE: 0.92, BURST: 1.45, TITLE: 1.58, CHEER: 1.85, STATS: 2.2, READY: 2.6,
+  CHARGE2: 1.75, BURST2: 2.5, TITLE2: 2.6, LAND2: 3.25, CHEER2: 3.4, STATS2: 3.35, READY2: 3.85,
+  FLING: 0.34, // s: the loser is thrown out to the front of their half by the finish (from FLINCH), lands,
+  KNEEL: 0.42, // and goes down onto their knees
+  big: (kind) => kind === 'match' || kind === 'best',
+};
+// the winner's power-up glow at t (0..1): it builds through the charge, peaks at the burst and settles to an afterglow
+function finaleGlow(t, kind) {
+  const F = FINALE;
+  if (!(t >= F.CHARGE)) return 0;
+  if (t < F.BURST) return U.easeIn((t - F.CHARGE) / (F.BURST - F.CHARGE), 1.6);
+  if (!F.big(kind)) return U.lerp(1, 0.3, U.clamp01((t - F.BURST) / 0.6));
+  if (t < F.CHARGE2) return U.lerp(1, 0.4, U.clamp01((t - F.BURST) / 0.25));
+  if (t < F.BURST2) return 0.4 + 0.6 * U.easeIn((t - F.CHARGE2) / (F.BURST2 - F.CHARGE2), 1.4);
+  return U.lerp(1, 0.42, U.clamp01((t - F.BURST2) / 0.9));
+}
+// the winner's colours: their own for a round (Kiru storm blue, Kage magenta), gold (Kiru) or violet (Kage) once a match's second
+// charge starts. [aura, tint, core, deep]
+const FINALE_PAL = {
+  you: ['#5ad1ff', '#a8e6ff', '#ffffff', '#ffd54a'], youBig: ['#ffc23a', '#ffe9a0', '#ffffff', '#ff8a1f'],
+  kage: ['#e93dff', '#ffa8ff', '#ffffff', '#7a2cff'], kageBig: ['#b45cff', '#e6c0ff', '#ffffff', '#e93dff'],
+};
+function finalePal(who, kind, t) {
+  const big = FINALE.big(kind) && t >= FINALE.CHARGE2;
+  return who === 'kage' ? (big ? FINALE_PAL.kageBig : FINALE_PAL.kage) : big ? FINALE_PAL.youBig : FINALE_PAL.you;
+}
+// The parts both characters play the same way (kiru.js and kage.js call these from their pose and their draw). R: their rig
+// (ninja.js), P: the pose, t: the show's clock, rt: their own real clock (s), for the breathing.
+// Losing: a jolt as it is lost (arms flung up), then down onto their knees, the head hung, the shoulders heaving; the winner's
+// power going off rocks them. faces: the jolt's, and once they are down.
+function finaleLose(R, P, t, kind, rt, face0, face1) {
+  const F = FINALE;
+  const j = t >= F.FLINCH && t < F.KNEEL + 0.12 ? Math.sin(Math.PI * U.clamp01((t - F.FLINCH) / (F.KNEEL + 0.12 - F.FLINCH))) : 0;
+  P.face = face0;
+  if (j > 0) { P.fx = U.lerp(P.fx, 56, j); P.fy = U.lerp(P.fy, 132, j); P.fBend = U.lerp(P.fBend, 12, j); P.bx = U.lerp(P.bx, 146, j); P.by = U.lerp(P.by, 134, j); P.tilt += P.mir * 0.12 * j; P.headTilt += 0.12 * j; }
+  const k = U.easeOut(U.clamp01((t - F.KNEEL) / 0.42), 2);
+  R.kneel(P, k);
+  if (k > 0.35) P.face = face1;
+  if (k > 0.9) { const b = Math.sin(rt * 2.6); P.sqy *= 1 + 0.018 * b; P.headDy += 1.3 * b; P.headTilt += Math.sin(rt * 1.1) * 0.05; }
+  const hit = Math.max(finaleJolt(t, F.BURST), F.big(kind) ? finaleJolt(t, F.BURST2) : 0);
+  if (hit > 0) { P.tilt += P.mir * 0.12 * hit; P.sqx *= 1 + 0.04 * hit; }
+}
+function finaleJolt(t, T) { return t >= T && t < T + 0.5 ? Math.exp(-(t - T) / 0.1) : 0; }
+// a loser's mood over them: gloom once they are down, and a rain cloud for a match lost
+function finaleGloom(R, ctx, kx, ky, P, t, kind, rt) {
+  R.drawGloom(ctx, kx, ky, P, rt, 0.9 * U.clamp01((t - 0.95) / 0.4));
+  if (FINALE.big(kind)) R.drawRain(ctx, kx, ky, P, rt, U.clamp01((t - 1.25) / 0.45));
+}
+// the winner's power-up on them: an aura behind (over false) and the glow over them (over true), in their show colours
+function finaleAura(R, ctx, kx, ky, P, t, kind, who, pulse, over) {
+  const g = finaleGlow(t, kind);
+  if (!(g > 0.01)) return;
+  const p = finalePal(who, kind, t);
+  if (over) R.drawTint(ctx, kx, ky, P, p[1], g * (0.26 + 0.16 * pulse), true);
+  else R.drawAura(ctx, kx, ky, P, p[0], Math.min(1, g * (0.8 + 0.3 * pulse)));
+}
+// where the players are for the show: out at the front of their own half (side −1 left, +1 right), in the camera's view and clear
+// of the pole and the wound ball (the loser was often behind them). The winner steps out there; the loser is thrown there by the
+// finish (finaleFling), so they end up face to face across the line
+function finaleStage(side, out) {
+  const a = Math.PI / 2 - (side < 0 ? -1 : 1) * 1.05, r = 0.66 * CFG.world.ropeL;
+  out.x = Math.cos(a) * r; out.z = Math.sin(a) * r;
+  return out;
+}
+// the loser's throw (kiru.js, kage.js call it from their update): from where they stood (st.lx0, st.lz0, kept as it starts) to their
+// spot (st.stageX, st.stageZ), in an arc, landing hard. h: their height scale (1 at 1.75 m). Returns true while it is in the air
+function finaleFling(st, t, p, side, h) {
+  const F = FINALE;
+  if (p < F.FLINCH && t >= F.FLINCH) { st.lx0 = st.x; st.lz0 = st.z; finaleStage(side, FLING_TO); st.stageX = FLING_TO.x; st.stageZ = FLING_TO.z; }
+  if (!(t >= F.FLINCH)) { st.y = 0; return false; }
+  const u = U.clamp01((t - F.FLINCH) / F.FLING), e = U.easeOut(u, 1.6);
+  st.x = U.lerp(st.lx0, st.stageX, e); st.z = U.lerp(st.lz0, st.stageZ, e);
+  const d = Math.sqrt((st.stageX - st.lx0) * (st.stageX - st.lx0) + (st.stageZ - st.lz0) * (st.stageZ - st.lz0));
+  st.y = u < 1 ? (0.1 + 0.16 * Math.min(1, d)) * h * Math.sin(Math.PI * u) : 0;
+  return u < 1;
+}
+const FLING_TO = { x: 0, z: 0 };
+
+function createFinale(doc) {
+  const TAU = Math.PI * 2, F = FINALE;
+  const FAMILY = 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+  const rnd = U.rng(20261016);
+  const AMBER = '#ffb020', NEON = '#e93dff', GOLD = '#ffd54a';
+
+  // ---- the clock and its cues ----
+  const N_CUE = 20;
+  const cueN = []; for (let i = 0; i < N_CUE; i++) cueN.push('');
+  const cueT = new Float64Array(N_CUE);
+  let nCue = 0, nextCue = 0;
+  const out = []; // this frame's cues for main.js (drain)
+  const st = {
+    on: false, show: true, t: 0, kind: 'round', big: false, vs: true, winner: 'you', W: null, L: null, ready: false, sinceReady: 0, end: F.READY,
+    zoom: 0, fit: 1, focX: 0, focY: 0, panX: 0, panY: 0,
+    boltT: -9, boltNew: false, jagT: 0, sl1: -9, sl2: -9, xNew: false, burstT: -9, burst2T: -9, titleT: -9, statsT: -9, landT: -9,
+    flashA: 0, flashC: '#ffffff', fwNext: 0, fwEnd: -1, conf: false, skipped: false, side: 1,
+  };
+  // what the show says: the title and its kicker, the numbers in the background (the big line and the small one), the button
+  const TX = {
+    kicker: '', title: '', gold: false, col: AMBER, fill: '#fff6de', dark: '#1a0d05', next: 'Next round',
+    bigKind: 'score', nameL: '', nameR: '', colL: NEON, colR: AMBER, oldL: '', newL: '', oldR: '', newR: '', tickL: false, tickR: false,
+    head: '', small: ['', '', ''], nSmall: 0, deltaCol: '', ws: [0, 0, 0, 0, 0, 0, 0], wsKey: '',
+    kw: 0, tw: 0, // measured: the kicker's and the title's widths (0: measure on the next draw)
+  };
+
+  // ---- particles (fixed pools, screen px, on the show's clock) ----
+  const N_SP = 112; // sparks: rising round a charge, thrown out by a burst
+  const spOn = new Uint8Array(N_SP), spC = new Uint8Array(N_SP), spG = new Uint8Array(N_SP);
+  const spX = new Float32Array(N_SP), spY = new Float32Array(N_SP), spVX = new Float32Array(N_SP), spVY = new Float32Array(N_SP);
+  const spAge = new Float32Array(N_SP), spLife = new Float32Array(N_SP), spW = new Float32Array(N_SP);
+  let spCur = 0, spAcc = 0;
+  const N_SH = 6, N_FP = 28; // fireworks: shells, and each one's sparks
+  const shOn = new Uint8Array(N_SH), shC = new Uint8Array(N_SH);
+  const shX0 = new Float32Array(N_SH), shY0 = new Float32Array(N_SH), shX1 = new Float32Array(N_SH), shY1 = new Float32Array(N_SH);
+  const shAge = new Float32Array(N_SH), shR = new Float32Array(N_SH);
+  const fpOn = new Uint8Array(N_SH * N_FP), fpX = new Float32Array(N_SH * N_FP), fpY = new Float32Array(N_SH * N_FP);
+  const fpVX = new Float32Array(N_SH * N_FP), fpVY = new Float32Array(N_SH * N_FP), fpAge = new Float32Array(N_SH * N_FP), fpLife = new Float32Array(N_SH * N_FP);
+  let shCur = 0;
+  const N_CF = 72; // confetti
+  const cfOn = new Uint8Array(N_CF), cfC = new Uint8Array(N_CF);
+  const cfX = new Float32Array(N_CF), cfY = new Float32Array(N_CF), cfVX = new Float32Array(N_CF), cfVY = new Float32Array(N_CF);
+  const cfR = new Float32Array(N_CF), cfVR = new Float32Array(N_CF), cfW = new Float32Array(N_CF), cfH = new Float32Array(N_CF), cfPh = new Float32Array(N_CF), cfAge = new Float32Array(N_CF);
+  const N_RG = 4; // shockwaves on the floor: world x, z, metres
+  const rgOn = new Uint8Array(N_RG), rgX = new Float32Array(N_RG), rgZ = new Float32Array(N_RG), rgAge = new Float32Array(N_RG);
+  const rgLife = new Float32Array(N_RG), rgR0 = new Float32Array(N_RG), rgR1 = new Float32Array(N_RG), rgW = new Float32Array(N_RG), rgC = new Uint8Array(N_RG);
+  let rgCur = 0;
+  const N_J = 11, jag = new Float32Array(N_J), jag2 = new Float32Array(N_J); // the lightning's kinks
+  const CONF = ['#ffd54a', '#ffffff', '#5ad1ff', '#ff5a1f', '#ffb020', '#7cf29a'], CONFK = ['#e93dff', '#b45cff', '#ffffff', '#ff6ad5', '#7a2cff', '#5ad1ff'];
+
+  let pal = FINALE_PAL.you; // this frame's palette (the winner's: their colours, gold or violet for a match's second power)
+  const A = { x: 0, y: 0, s: 0, d: 0 }, B = { x: 0, y: 0, s: 0, d: 0 }, C = { x: 0, y: 0, s: 0, d: 0 }, Q = { x: 0, y: 0 }, Q2 = { x: 0, y: 0 };
+
+  // ---- the show ----
+  // info: { kind 'round' | 'match' | 'solo' | 'best', winner 'you' | 'kage', vs, W, L (the winner's and the loser's bodies, or
+  // null: kiru.body / kage.body), snap (the rules' snap), kageSide, prev (solo: the best before this run, ms, or 0) }
+  function start(info) {
+    reset();
+    st.on = true; st.show = CFG.finale.on > 0; st.kind = info.kind || 'round'; st.big = F.big(st.kind); st.vs = !!info.vs;
+    st.winner = info.winner === 'kage' ? 'kage' : 'you'; st.W = info.W || null; st.L = info.L || null;
+    words(info);
+    // the cues, in order
+    nCue = 0; nextCue = 0;
+    const cue = (n, t) => { if (nCue < N_CUE) { cueN[nCue] = n; cueT[nCue] = t; nCue++; } };
+    if (!st.show) { cue('title', 0.35); cue('stats', 0.4); cue('ready', 0.8); st.end = 0.8; }
+    else {
+      const k = st.winner === 'kage', av = !!st.W;
+      if (st.L) cue('flinch', F.FLINCH);
+      if (av) cue('move', F.MOVE);
+      if (k) cue('defeat', F.KNEEL + 0.08);
+      if (av && k) cue('slash1', F.SLASH);
+      if (av) cue(k ? 'slash2' : 'strike', F.STRIKE);
+      if (av && !k) cue('land', F.LAND);
+      if (av) { cue('charge', F.CHARGE); cue('burst', F.BURST); }
+      if (st.big) {
+        if (av) cue('charge2', F.CHARGE2);
+        cue('burst2', F.BURST2); cue('title', F.TITLE2);
+        if (av) cue('land2', F.LAND2);
+        cue('stats', F.STATS2); cue('ready', F.READY2); st.end = F.READY2;
+      } else { cue('title', F.TITLE); cue('stats', F.STATS); cue('ready', F.READY); st.end = F.READY; }
+      for (let i = 1; i < nCue; i++) { // keep them in time order (a handful: insertion)
+        const n = cueN[i], t = cueT[i];
+        let j = i;
+        while (j > 0 && cueT[j - 1] > t) { cueN[j] = cueN[j - 1]; cueT[j] = cueT[j - 1]; j--; }
+        cueN[j] = n; cueT[j] = t;
+      }
+    }
+  }
+
+  const secs = (ms) => (ms / 1000).toFixed(2) + 's';
+  const pad2 = (n) => (n < 10 ? '0' : '') + n;
+  const span = (ms) => (ms >= 60000 ? Math.floor(ms / 60000) + ':' + pad2(Math.floor(ms / 1000) % 60) + '.' + pad2(Math.floor(ms / 10) % 100) : secs(ms));
+  function words(info) {
+    const s = info.snap || {}, you = st.winner === 'you';
+    TX.kw = 0; TX.tw = 0; TX.wsKey = '';
+    TX.gold = false; TX.deltaCol = '';
+    if (st.vs) {
+      const ys = s.you | 0, ks = s.kage | 0;
+      TX.kicker = st.kind === 'match' ? 'MATCH · ' + (you ? ys + '–' + ks : ks + '–' + ys) : 'ROUND ' + (s.round | 0);
+      TX.title = st.kind === 'match' ? (you ? 'VICTORY!' : 'KAGE WINS!') : you ? 'YOU WIN!' : 'KAGE WINS!';
+      TX.gold = st.kind === 'match' && you;
+      TX.next = st.kind === 'match' ? 'Rematch' : 'Next round';
+      // the score, Kage's on his side of the screen: the winner's point ticks up
+      const kl = (info.kageSide | 0) < 0;
+      TX.bigKind = 'score'; TX.nameL = kl ? 'KAGE' : 'YOU'; TX.nameR = kl ? 'YOU' : 'KAGE'; TX.colL = kl ? NEON : AMBER; TX.colR = kl ? AMBER : NEON;
+      const yOld = ys - (you ? 1 : 0), kOld = ks - (you ? 0 : 1);
+      TX.oldL = String(kl ? kOld : yOld); TX.newL = String(kl ? ks : ys); TX.oldR = String(kl ? yOld : kOld); TX.newR = String(kl ? ys : ks);
+      TX.tickL = TX.oldL !== TX.newL; TX.tickR = TX.oldR !== TX.newR;
+      TX.head = st.kind === 'match' ? 'MATCH OVER' : 'FIRST TO ' + Math.max(1, s.rounds | 0);
+      TX.small[0] = (s.hits | 0) + ' HITS'; TX.small[1] = 'TOP ' + Math.round(s.topMph || 0) + ' MPH'; TX.small[2] = span(Math.max(0, s.timeMs || 0)).toUpperCase() + ' RALLY'; TX.nSmall = 3;
+    } else {
+      const ms = Math.max(0, s.timeMs || 0), prev = info.prev > 0 ? info.prev : 0, best = s.best > 0 ? s.best : ms;
+      TX.kicker = st.kind === 'best' ? 'NEW BEST!' : 'ROPE WOUND';
+      TX.title = span(ms);
+      TX.gold = st.kind === 'best';
+      TX.next = 'Go again';
+      TX.bigKind = 'best'; TX.nameL = 'BEST'; TX.nameR = ''; TX.colL = AMBER; TX.colR = AMBER;
+      TX.oldL = prev ? span(prev) : '–'; TX.newL = span(best); TX.tickL = TX.oldL !== TX.newL; TX.oldR = ''; TX.newR = ''; TX.tickR = false;
+      TX.head = s.newBest ? (prev ? 'YOUR BEST, BEATEN' : 'YOUR FIRST TIME') : 'YOUR BEST';
+      TX.small[0] = (s.hits | 0) + ' HITS'; TX.small[1] = 'TOP ' + Math.round(s.topMph || 0) + ' MPH';
+      if (s.newBest && prev) { TX.small[2] = secs(prev - ms) + ' FASTER'; TX.deltaCol = '#7cf29a'; }
+      else if (!s.newBest && s.best > 0) TX.small[2] = '+' + secs(ms - s.best) + ' OFF';
+      else TX.small[2] = '';
+      TX.nSmall = TX.small[2] ? 3 : 2;
+    }
+    TX.col = you ? (TX.gold ? GOLD : AMBER) : NEON;
+    TX.fill = you ? '#fff6de' : '#fff1ff';
+    TX.dark = you ? '#1a0d05' : '#1e0326';
+  }
+
+  function reset() {
+    st.on = false; st.t = 0; st.ready = false; st.sinceReady = 0; st.zoom = 0; st.panX = 0; st.panY = 0; st.skipped = false;
+    st.boltT = -9; st.boltNew = false; st.sl1 = -9; st.sl2 = -9; st.xNew = false; st.burstT = -9; st.burst2T = -9; st.titleT = -9; st.statsT = -9; st.landT = -9;
+    st.flashA = 0; st.fwNext = 0; st.fwEnd = -1; st.conf = false;
+    nCue = 0; nextCue = 0; out.length = 0;
+    spOn.fill(0); shOn.fill(0); fpOn.fill(0); cfOn.fill(0); rgOn.fill(0);
+  }
+
+  // the show jumps to its end: what was still to come is skipped, silently, but the title and the numbers are up, and a match's
+  // fireworks still go off
+  function skip() {
+    if (!st.on || st.t >= st.end) return;
+    const t = st.end;
+    while (nextCue < nCue && cueT[nextCue] < t) {
+      const n = cueN[nextCue++];
+      if (n === 'burst2' && st.show) { st.burst2T = t - 0.9; fireworks(t); }
+    }
+    if (st.titleT < 0) st.titleT = t - 0.6;
+    if (st.statsT < 0) st.statsT = t - 0.5;
+    st.boltT = -9; st.sl1 = -9; st.sl2 = -9; st.burstT = -9; st.flashA = 0;
+    spOn.fill(0); rgOn.fill(0);
+    st.t = t; st.skipped = true;
+  }
+
+  // the fireworks (and the confetti) start: a shell every 0.3–0.5 s for 3.6 s
+  function fireworks(t) {
+    if (!(CFG.finale.fireworks > 0)) return;
+    st.fwNext = t; st.fwEnd = t + 3.6; st.conf = true;
+  }
+
+  // ---- one frame: realDt (s, real), ts (the time scale: a freeze holds the show too) ----
+  function update(realDt, ts, cam) {
+    out.length = 0;
+    if (!st.on) return;
+    const dt = (realDt > 0 ? (realDt > 0.1 ? 0.1 : realDt) : 0) * (ts >= 0 ? (ts < 1 ? ts : 1) : 1) * U.clamp(+CFG.finale.speed || 1, 0.25, 4);
+    st.t += dt;
+    const t = st.t;
+    while (nextCue < nCue && cueT[nextCue] <= t) fire(cueN[nextCue++], t, cam);
+    if (st.ready) st.sinceReady += realDt > 0 ? realDt : 0;
+    st.flashA *= Math.exp(-dt / 0.09); if (st.flashA < 0.004) st.flashA = 0;
+    pal = finalePal(st.winner, st.kind, t);
+    if (st.show) step(dt, t, cam);
+  }
+
+  // a cue: its effect here, and passed on to main.js (its sound)
+  function fire(n, t, cam) {
+    out.push(n);
+    const big = st.big;
+    if (n === 'strike') { st.boltT = t; st.boltNew = true; flash(0.32, '#e8f6ff'); }
+    else if (n === 'slash1') st.sl1 = t;
+    else if (n === 'slash2') { st.sl2 = t; st.xNew = true; flash(0.18, '#ffd6ff'); }
+    else if (n === 'land') { st.landT = t; ring(0.15, 0.9, 0.35, 0.05, 1); }
+    else if (n === 'burst') { st.burstT = t; flash(0.42, st.winner === 'kage' ? '#ffd6ff' : '#ffffff'); ring(0.3, 2.6, 0.75, 0.12, 0); burstSparks(cam, 34); }
+    else if (n === 'burst2') {
+      st.burst2T = t; flash(0.65, st.winner === 'kage' ? '#f0d0ff' : '#fff6d8'); ring(0.3, 3.6, 0.95, 0.16, 0); ring(0.2, 2.4, 0.7, 0.08, 1); burstSparks(cam, 46);
+      fireworks(t);
+    } else if (n === 'title') st.titleT = t;
+    else if (n === 'stats') st.statsT = t;
+    else if (n === 'ready') { st.ready = true; st.sinceReady = 0; }
+    else if (n === 'charge' || n === 'charge2') spAcc = 0;
+    if (big && n === 'land2') { st.landT = t; ring(0.15, 1.1, 0.4, 0.06, 1); }
+  }
+  function flash(a, col) { st.flashA = Math.max(st.flashA, a); st.flashC = col; }
+  function ring(r0, r1, life, w, c) {
+    const W = st.W;
+    if (!W) return;
+    const i = rgCur; rgCur = (rgCur + 1) % N_RG;
+    rgOn[i] = 1; rgX[i] = W.x; rgZ[i] = W.z; rgAge[i] = 0; rgLife[i] = life; rgR0[i] = r0; rgR1[i] = r1; rgW[i] = w; rgC[i] = c;
+  }
+
+  // the winner on screen: their feet, how tall they stand (px), their chest (the camera's world, this frame)
+  const WS = { fx: 0, fy: 0, cx: 0, cy: 0, hpx: 100, s: 1, ok: false };
+  function where(cam) {
+    const W = st.W;
+    WS.ok = !!W && cam != null;
+    if (!WS.ok) return WS;
+    cam.project(W.x, 0, W.z, A); cam.project(W.x, W.y + W.h * 0.55, W.z, B);
+    WS.fx = A.x; WS.fy = A.y; WS.cx = B.x; WS.cy = B.y; WS.hpx = Math.max(20, A.s * W.h); WS.s = U.clamp(cam.pxPerM / 88.8, 0.85, 2.2);
+    return WS;
+  }
+
+  function spark(x, y, vx, vy, life, w, c, g) {
+    const i = spCur; spCur = (spCur + 1) % N_SP;
+    spOn[i] = 1; spX[i] = x; spY[i] = y; spVX[i] = vx; spVY[i] = vy; spAge[i] = 0; spLife[i] = life; spW[i] = w; spC[i] = c; spG[i] = g ? 1 : 0;
+  }
+  function burstSparks(cam, n) {
+    if (!st.W || !cam) return;
+    where(cam);
+    for (let i = 0; i < n; i++) {
+      const a = rnd() * TAU, v = (260 + 420 * rnd()) * WS.s;
+      spark(WS.cx, WS.cy, Math.cos(a) * v, Math.sin(a) * v - 120 * WS.s, 0.5 + 0.45 * rnd(), (1.6 + 1.6 * rnd()) * WS.s, (rnd() * 4) | 0, true);
+    }
+  }
+
+  function step(dt, t, cam) {
+    // sparks rising round a charge
+    const charging = (t >= F.CHARGE && t < F.BURST + 0.15) || (st.big && t >= F.CHARGE2 && t < F.BURST2 + 0.2);
+    if (charging && st.W && cam && dt > 0) {
+      where(cam);
+      spAcc += dt * (t >= F.CHARGE2 && st.big ? 95 : 70);
+      while (spAcc >= 1) {
+        spAcc -= 1;
+        const x = WS.fx + (rnd() - 0.5) * WS.hpx * 0.95, y = WS.fy - rnd() * WS.hpx * 0.55;
+        spark(x, y, (rnd() - 0.5) * 30 * WS.s, -(150 + 230 * rnd()) * WS.s, 0.45 + 0.45 * rnd(), (2 + 2.2 * rnd()) * WS.s, (rnd() * 4) | 0, false);
+      }
+    }
+    for (let i = 0; i < N_SP; i++) {
+      if (!spOn[i]) continue;
+      spAge[i] += dt;
+      if (spAge[i] >= spLife[i]) { spOn[i] = 0; continue; }
+      if (spG[i]) { const d = Math.exp(-2.6 * dt); spVX[i] *= d; spVY[i] = spVY[i] * d + 520 * WS.s * dt; }
+      spX[i] += spVX[i] * dt; spY[i] += spVY[i] * dt;
+    }
+    for (let i = 0; i < N_RG; i++) if (rgOn[i] && (rgAge[i] += dt) >= rgLife[i]) rgOn[i] = 0;
+    if (st.boltT >= 0 && t - st.boltT < 0.36 && (st.jagT += dt) > 0.045) { st.jagT = 0; jags(); }
+    // fireworks: launch, rise, burst; their sparks fall and fade
+    if (st.fwEnd > 0 && t >= st.fwNext && t < st.fwEnd && cam) { launch(cam); st.fwNext = t + 0.3 + 0.22 * rnd(); }
+    for (let i = 0; i < N_SH; i++) {
+      if (!shOn[i]) continue;
+      shAge[i] += dt;
+      if (shAge[i] >= 0.42) { shOn[i] = 0; pop(i); }
+    }
+    for (let i = 0; i < N_SH * N_FP; i++) {
+      if (!fpOn[i]) continue;
+      fpAge[i] += dt;
+      if (fpAge[i] >= fpLife[i]) { fpOn[i] = 0; continue; }
+      const d = Math.exp(-2.2 * dt);
+      fpVX[i] *= d; fpVY[i] = fpVY[i] * d + 70 * dt;
+      fpX[i] += fpVX[i] * dt; fpY[i] += fpVY[i] * dt;
+    }
+    // confetti: it flutters down from the top of the screen
+    if (st.conf && cam) { st.conf = false; confetti(cam); }
+    for (let i = 0; i < N_CF; i++) {
+      if (!cfOn[i]) continue;
+      cfAge[i] += dt;
+      cfVY[i] += (cfH[i] * 18 - cfVY[i]) * Math.min(1, dt * 1.6); // to its own fall speed (a big piece falls faster)
+      cfX[i] += (cfVX[i] + Math.sin(cfAge[i] * 2.6 + cfPh[i]) * 34) * dt; cfY[i] += cfVY[i] * dt; cfR[i] += cfVR[i] * dt;
+      if (cam && cfY[i] > cam.h + 30) cfOn[i] = 0;
+    }
+    // the camera: in during the charge, a punch at the burst, a little further for a match
+    const Z = (+CFG.finale.zoom > 0 ? +CFG.finale.zoom : 0) * st.fit;
+    st.zoom = U.damp(st.zoom, st.W ? Z * zoomAt(t) : 0, 9, dt);
+  }
+  function zoomAt(t) {
+    if (t < F.MOVE) return 0;
+    if (t < F.CHARGE) return 0.35 * U.easeInOut(U.clamp01((t - F.MOVE) / (F.CHARGE - F.MOVE)));
+    if (t < F.BURST) return 0.35 + 0.45 * U.easeIn((t - F.CHARGE) / (F.BURST - F.CHARGE), 1.5);
+    const p = 0.4 * Math.exp(-(t - F.BURST) / 0.16);
+    if (!st.big) return U.lerp(0.8, 1, U.clamp01((t - F.BURST) / 0.5)) + p;
+    if (t < F.CHARGE2) return U.lerp(0.8, 1, U.clamp01((t - F.BURST) / 0.3)) + p;
+    if (t < F.BURST2) return 1 + 0.35 * U.easeIn((t - F.CHARGE2) / (F.BURST2 - F.CHARGE2), 1.5) + p;
+    return U.lerp(1.35, 1.15, U.clamp01((t - F.BURST2) / 0.8)) + 0.45 * Math.exp(-(t - F.BURST2) / 0.18);
+  }
+  function jags() {
+    for (let i = 0; i < N_J; i++) { const e = i === 0 || i === N_J - 1 ? 0 : 1; jag[i] = (rnd() - 0.5) * 2 * e; jag2[i] = (rnd() - 0.5) * 2 * e; }
+  }
+  function launch(cam) {
+    const i = shCur; shCur = (shCur + 1) % N_SH;
+    const w = cam.w, h = cam.h, top = cam.safe.top, S = U.clamp(cam.pxPerM / 88.8, 0.85, 2.2);
+    shOn[i] = 1; shAge[i] = 0; shC[i] = (rnd() * 6) | 0;
+    shX1[i] = w * (0.12 + 0.76 * rnd()); shY1[i] = top + h * (0.03 + 0.26 * rnd());
+    shX0[i] = shX1[i] + (rnd() - 0.5) * 40; shY0[i] = shY1[i] + h * 0.3;
+    shR[i] = (70 + 50 * rnd()) * S;
+    out.push('firework');
+  }
+  function pop(i) {
+    const n = N_FP, base = i * N_FP, r = shR[i], a0 = rnd() * TAU;
+    for (let j = 0; j < n; j++) {
+      const k = base + j, a = a0 + (j / n) * TAU, v = r * (1.9 + 0.5 * rnd());
+      fpOn[k] = 1; fpX[k] = shX1[i]; fpY[k] = shY1[i]; fpVX[k] = Math.cos(a) * v; fpVY[k] = Math.sin(a) * v; fpAge[k] = 0; fpLife[k] = 0.9 + 0.45 * rnd();
+    }
+  }
+  function confetti(cam) {
+    const w = cam.w, h = cam.h, S = U.clamp(cam.pxPerM / 88.8, 0.85, 2.2);
+    for (let i = 0; i < N_CF; i++) {
+      cfOn[i] = 1; cfC[i] = (rnd() * 6) | 0; cfAge[i] = 0; cfPh[i] = rnd() * TAU;
+      cfX[i] = rnd() * w; cfY[i] = -10 - rnd() * h * 0.55; cfVX[i] = (rnd() - 0.5) * 40;
+      cfW[i] = (5 + 4 * rnd()) * S; cfH[i] = (3 + 3 * rnd()) * S; cfVY[i] = cfH[i] * 18; cfR[i] = rnd() * TAU; cfVR[i] = (rnd() - 0.5) * 9;
+    }
+  }
+
+  // ---- the camera: pushed in about the winner's chest, which drifts toward the middle of the screen. Composed with fx.js's
+  //      punch (its zoom about its focus): one zoom about our focus, and the difference made up in the shake ----
+  function applyCamera(cam) {
+    if (!st.on) return;
+    if (!(st.zoom > 0.0005) || !st.W) return;
+    const W = st.W, zm = cam.zoom, sx = cam.shakeX, sy = cam.shakeY, rl = cam.roll, f1x = cam.focusX, f1y = cam.focusY;
+    cam.zoom = 1; cam.shakeX = 0; cam.shakeY = 0; cam.roll = 0;
+    cam.project(W.x, W.h * 0.55, W.z, A); // its chest, standing (a leap does not drag the camera up with it)
+    cam.zoom = zm; cam.shakeX = sx; cam.shakeY = sy; cam.roll = rl;
+    const z2 = 1 + st.zoom, k = U.clamp01(st.zoom / Math.max(0.01, (+CFG.finale.zoom || 0) * st.fit));
+    const tx = (cam.w * 0.5 - A.x) * 0.3 * k, ty = (cam.h * 0.5 - A.y) * 0.3 * k;
+    st.focX = A.x; st.focY = A.y; st.panX = tx; st.panY = ty;
+    cam.shakeX = z2 * (1 - zm) * (f1x - A.x) + z2 * sx + tx;
+    cam.shakeY = z2 * (1 - zm) * (f1y - A.y) + z2 * sy + ty;
+    cam.zoom = zm * z2; cam.focusX = A.x; cam.focusY = A.y;
+  }
+  // how much of the push-in this screen gets: none to speak of where the players already fill the height (a landscape phone)
+  function fitFor(cam) {
+    if (!st.W || !cam) { st.fit = 0; return; }
+    const frac = (st.W.h * cam.pxPerM) / Math.max(1, cam.h);
+    st.fit = U.clamp((0.42 - frac) / 0.24, 0.15, 1);
+  }
+
+  // ---- layout: the title and the numbers, out of the players' way. A tall screen: the numbers along the top (the school wall), the
+  //      title under them. A wide one (players fill the height): the title along the top, the numbers in the side band away from the
+  //      winner. ----
+  const LY = { key: '', mode: 'top', sx: 0, sy: 0, sw: 0, sh: 0, tx: 0, ty: 0, fb: 40, fs: 12, fk: 12, ft: 52, sc: 1 };
+  function layout(cam) {
+    const w = cam.w, h = cam.h, sf = cam.safe, ar = cam.area, size = U.clamp(+CFG.finale.size || 1, 0.5, 1.6);
+    if (st.W) { cam.project(st.W.x, 0, st.W.z, A); st.side = A.x < w * 0.5 ? -1 : 1; } else st.side = 0;
+    const key = w + ',' + h + ',' + sf.top + ',' + sf.bottom + ',' + Math.round(ar.l) + ',' + Math.round(ar.r) + ',' + st.side + ',' + size;
+    if (key === LY.key) return LY;
+    LY.key = key;
+    const m = Math.min(w, h);
+    LY.fb = U.clamp(m * 0.105, 28, 60); LY.fs = U.clamp(m * 0.031, 11, 16); LY.fk = U.clamp(m * 0.036, 12, 19);
+    LY.ft = U.clamp(Math.min(w * 0.15, h * 0.13), 34, 100) * size;
+    const tall = w < h * 0.9, bandL = Math.max(0, ar.l - 8), bandR = Math.max(0, w - ar.r - 8);
+    const band = st.side > 0 ? (bandL >= 150 ? -1 : bandR >= 150 ? 1 : 0) : st.side < 0 ? (bandR >= 150 ? 1 : bandL >= 150 ? -1 : 0) : bandL >= bandR && bandL >= 150 ? -1 : bandR >= 150 ? 1 : 0;
+    if (tall || !band) {
+      LY.mode = 'top'; LY.sc = 1;
+      LY.sh = LY.fs + 6 + LY.fb + 8 + LY.fs; LY.sw = w; LY.sx = w * 0.5; LY.sy = sf.top + 4;
+      LY.tx = w * 0.5; LY.ty = LY.sy + LY.sh + 16 + LY.fk + 8 + LY.ft * 0.5;
+    } else {
+      const bw = band < 0 ? bandL : bandR;
+      LY.mode = 'side'; LY.sc = U.clamp(bw / 240, 0.7, 1);
+      LY.sh = (LY.fs + 8 + LY.fb + 10 + 3 * (LY.fs + 7)) * LY.sc; LY.sw = bw;
+      LY.sx = band < 0 ? bw * 0.5 + 4 : w - bw * 0.5 - 4; LY.sy = U.clamp((sf.top + h - sf.bottom) * 0.5 - LY.sh * 0.5, sf.top + 4, h - sf.bottom - LY.sh);
+      LY.tx = w * 0.5; LY.ty = sf.top + 6 + LY.fk + 8 + LY.ft * 0.5;
+    }
+    TX.kw = 0; TX.tw = 0; TX.wsKey = '';
+    return LY;
+  }
+
+  // ---- drawing ----
+  // cached gradients (unit sized, placed with a transform), rebuilt for a new context or palette
+  const GR = { ctx: null, spot: null, spotK: -1, band: null, rays: null, raysC: '', beam: null, beamC: '', pool: null, poolC: '', glow: null, glowC: '' };
+  function grads(ctx) {
+    if (GR.ctx === ctx) return;
+    GR.ctx = ctx; GR.spot = null; GR.band = null; GR.rays = null; GR.beam = null; GR.pool = null; GR.glow = null;
+  }
+  function radial(ctx, stops) {
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    for (let i = 0; i < stops.length; i += 2) g.addColorStop(stops[i], stops[i + 1]);
+    return g;
+  }
+
+  // over the court, under everything else: god rays behind the winner, fireworks in the distance, the numbers
+  function drawBack(ctx, cam, w, kx, ky) {
+    if (!st.on) return;
+    grads(ctx);
+    const t = st.t;
+    if (st.show && st.big && st.burst2T >= 0 && st.W) godRays(ctx, cam, t - st.burst2T);
+    if (st.fwEnd > 0) drawFireworks(ctx);
+    if (st.statsT >= 0 && CFG.finale.stats > 0) drawStats(ctx, cam, t - st.statsT);
+  }
+
+  function godRays(ctx, cam, a) {
+    const k = U.clamp01(a / 0.25) * U.lerp(1, 0.45, U.clamp01((a - 0.6) / 2.2));
+    if (!(k > 0.01)) return;
+    where(cam);
+    const col = pal[0];
+    if (GR.raysC !== col || !GR.rays) { GR.raysC = col; GR.rays = radial(ctx, [0, 'rgba(255,255,255,0.9)', 0.12, U.rgba(col, 0.75), 0.55, U.rgba(col, 0.22), 1, U.rgba(col, 0)]); }
+    const L = Math.max(cam.w, cam.h) * 1.15, n = 14, rot = st.t * 0.22;
+    ctx.save();
+    ctx.translate(WS.cx, WS.cy); ctx.scale(L, L);
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.28 * k; ctx.fillStyle = GR.rays;
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const a0 = rot + (i / n) * TAU, h = (i & 1 ? 0.05 : 0.09);
+      ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a0 - h), Math.sin(a0 - h)); ctx.lineTo(Math.cos(a0 + h), Math.sin(a0 + h)); ctx.closePath();
+    }
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawFireworks(ctx) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+    const P = st.winner === 'kage' ? CONFK : CONF;
+    for (let i = 0; i < N_SH; i++) { // the shells, rising with a short tail
+      if (!shOn[i]) continue;
+      const u = U.easeOut(shAge[i] / 0.42, 2), x = U.lerp(shX0[i], shX1[i], u), y = U.lerp(shY0[i], shY1[i], u), v = 1 - u;
+      ctx.globalAlpha = 0.9; ctx.strokeStyle = '#fff4d6'; ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - (shX1[i] - shX0[i]) * 0.08 * v, y + 26 * v + 6); ctx.stroke();
+    }
+    for (let s = 0; s < N_SH; s++) {
+      const c = P[shC[s] % P.length];
+      ctx.strokeStyle = c;
+      for (let j = 0; j < N_FP; j++) {
+        const i = s * N_FP + j;
+        if (!fpOn[i]) continue;
+        const q = fpAge[i] / fpLife[i], tw = 0.75 + 0.25 * Math.sin(fpAge[i] * 40 + j);
+        ctx.globalAlpha = (1 - q) * (1 - q) * tw; ctx.lineWidth = 2.4 * (1 - 0.5 * q);
+        ctx.beginPath(); ctx.moveTo(fpX[i], fpY[i]); ctx.lineTo(fpX[i] - fpVX[i] * 0.045, fpY[i] - fpVY[i] * 0.045); ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  // the numbers: a soft dark band (so they read on the school wall), the head line, the big line (the score, its winner's point
+  // ticking up; or your best), and the small line (the round's stats)
+  function drawStats(ctx, cam, a) {
+    const L = layout(cam), k = U.clamp01(a / 0.35), rise = (1 - U.easeOut(k, 2)) * 14;
+    if (!(k > 0)) return;
+    ctx.save();
+    ctx.globalAlpha = k;
+    // the band
+    if (!GR.band) GR.band = radial(ctx, [0, 'rgba(8,10,18,0.62)', 0.55, 'rgba(8,10,18,0.42)', 1, 'rgba(8,10,18,0)']);
+    ctx.save();
+    ctx.translate(L.sx, L.sy + L.sh * 0.5 + rise); ctx.scale(Math.max(L.sw * 0.62, 160), L.sh * 0.95 + 20);
+    ctx.fillStyle = GR.band; ctx.fillRect(-1, -1, 2, 2);
+    ctx.restore();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    const sc = L.sc, fs = L.fs * sc, fb = L.fb * sc;
+    let y = L.sy + rise + fs * 0.5;
+    text(ctx, TX.head, L.sx, y, '800 ' + fs + 'px ' + FAMILY, '#c9cfdd', fs * 0.32, 0.16);
+    y += fs * 0.5 + 6 * sc + fb * 0.5;
+    bigLine(ctx, L.sx, y, fb, fs, a);
+    y += fb * 0.5 + 8 * sc + fs * 0.5;
+    if (L.mode === 'top') {
+      let s = TX.small[0];
+      for (let i = 1; i < TX.nSmall; i++) s += '  ·  ' + TX.small[i];
+      text(ctx, s, L.sx, y, '800 ' + fs + 'px ' + FAMILY, '#e9edf6', fs * 0.32, 0.12);
+    } else {
+      for (let i = 0; i < TX.nSmall; i++) {
+        text(ctx, TX.small[i], L.sx, y, '800 ' + fs + 'px ' + FAMILY, i === 2 && TX.deltaCol ? TX.deltaCol : '#e9edf6', fs * 0.32, 0.12);
+        y += fs + 7 * sc;
+      }
+    }
+    ctx.restore();
+  }
+  // a line of text with a dark outline, letter-spaced (where the browser can)
+  function text(ctx, s, x, y, font, fill, outline, spacing) {
+    if (!s) return;
+    ctx.font = font;
+    if (spacing) ctx.letterSpacing = Math.round(parseFloat(font.slice(4)) * spacing) + 'px';
+    ctx.lineWidth = outline; ctx.strokeStyle = 'rgba(8,10,18,0.9)'; ctx.strokeText(s, x, y);
+    ctx.fillStyle = fill; ctx.fillText(s, x, y);
+    if (spacing) ctx.letterSpacing = '0px';
+  }
+  // the big line: [name] digit : digit [name] (or BEST value), each side's number ticking from its old value to its new one
+  function bigLine(ctx, cx, y, fb, fs, a) {
+    const fName = '900 ' + Math.round(fs * 1.25) + 'px ' + FAMILY, fNum = '900 ' + Math.round(fb) + 'px ' + FAMILY;
+    const key = fName + fNum + TX.newL + TX.oldL + TX.newR;
+    const ws = TX.ws;
+    if (TX.wsKey !== key) { // measured once per layout: the names, the widest of each side's two numbers, the colon
+      TX.wsKey = key;
+      ctx.font = fName; ws[0] = TX.nameL ? ctx.measureText(TX.nameL).width : 0; ws[4] = TX.nameR ? ctx.measureText(TX.nameR).width : 0;
+      ctx.font = fNum; ws[1] = Math.max(ctx.measureText(TX.newL).width, ctx.measureText(TX.oldL).width);
+      ws[3] = TX.bigKind === 'score' ? Math.max(ctx.measureText(TX.newR).width, ctx.measureText(TX.oldR).width) : 0;
+      ws[2] = TX.bigKind === 'score' ? ctx.measureText(':').width + fb * 0.3 : 0;
+    }
+    const gap = fs * 0.9, total = ws[0] + gap + ws[1] + ws[2] + ws[3] + (ws[4] ? gap + ws[4] : 0);
+    let x = cx - total * 0.5;
+    ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+    if (TX.nameL) { text(ctx, TX.nameL, x + ws[0] * 0.5, y + fb * 0.06, fName, TX.colL, fs * 0.4, 0.08); x += ws[0] + gap; }
+    number(ctx, TX.oldL, TX.newL, TX.tickL, x + ws[1] * 0.5, y, fNum, fb, TX.colL, a);
+    x += ws[1];
+    if (TX.bigKind === 'score') {
+      text(ctx, ':', x + ws[2] * 0.5, y - fb * 0.04, fNum, '#8c95ab', fb * 0.16, 0);
+      x += ws[2];
+      number(ctx, TX.oldR, TX.newR, TX.tickR, x + ws[3] * 0.5, y, fNum, fb, TX.colR, a);
+      x += ws[3];
+    }
+    if (TX.nameR) text(ctx, TX.nameR, x + gap + ws[4] * 0.5, y + fb * 0.06, fName, TX.colR, fs * 0.4, 0.08);
+  }
+  // a number that ticks: the old value slides up and out, the new one springs up from below and flashes in its side's colour
+  function number(ctx, o, n, tick, x, y, font, fb, col, a) {
+    const t0 = 0.18, u = tick ? U.clamp01((a - t0) / 0.34) : 1, a0 = ctx.globalAlpha;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x - fb * 2.6, y - fb * 0.62, fb * 5.2, fb * 1.24); ctx.clip(); // the window they roll through
+    if (u < 1 && o) { const e = U.easeIn(u, 2); ctx.globalAlpha = a0 * (1 - e); text(ctx, o, x, y - fb * 0.85 * e, font, '#ffffff', fb * 0.16, 0); }
+    if (u > 0) {
+      const e = U.easeOutBack(u, 1.9), pop = tick ? U.clamp01(1 - (a - t0 - 0.34) / 0.5) : 0; // it lands in its side's colour, then whitens
+      ctx.globalAlpha = a0;
+      text(ctx, n, x, y + fb * 0.85 * (1 - e), font, pop > 0 ? U.mix('#ffffff', col, pop * 0.85) : '#ffffff', fb * 0.16, 0);
+    }
+    ctx.restore();
+  }
+
+  // on the floor under the players: the charge's glow, shockwaves, the pillar (behind them)
+  function drawFloor(ctx, cam, w, kx, ky) {
+    if (!st.on || !st.show) return;
+    grads(ctx);
+    const t = st.t, W = st.W;
+    ctx.save();
+    if (W) {
+      const g = finaleGlow(t, st.kind);
+      if (g > 0.01) { // the floor lit under them
+        const col = pal[0];
+        if (GR.poolC !== col || !GR.pool) { GR.poolC = col; GR.pool = radial(ctx, [0, U.rgba(pal[1], 0.9), 0.4, U.rgba(col, 0.45), 1, U.rgba(col, 0)]); }
+        onFloor(ctx, cam, kx, ky, W.x, W.z, 0.55 + 0.35 * g);
+        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.65 * g; ctx.fillStyle = GR.pool;
+        ctx.beginPath(); ctx.arc(0, 0, 1, 0, TAU); ctx.fill();
+      }
+    }
+    for (let i = 0; i < N_RG; i++) { // shockwaves
+      if (!rgOn[i]) continue;
+      const q = rgAge[i] / rgLife[i], r = U.lerp(rgR0[i], rgR1[i], U.easeOut(q, 2.4));
+      onFloor(ctx, cam, kx, ky, rgX[i], rgZ[i], 1);
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - q) * (rgC[i] ? 0.45 : 0.85);
+      ctx.strokeStyle = rgC[i] ? '#e8eefc' : pal[1]; ctx.lineWidth = rgW[i] * (1 - 0.6 * q);
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
+      if (!rgC[i]) { ctx.globalAlpha = (1 - q) * 0.35; ctx.strokeStyle = pal[0]; ctx.lineWidth = rgW[i] * 2.6 * (1 - 0.5 * q); ctx.stroke(); }
+    }
+    ctx.restore();
+    if (W) pillar(ctx, cam, kx, ky, false);
+  }
+  function onFloor(ctx, cam, kx, ky, x, z, m) {
+    cam.project(x, 0, z, A); cam.project(x + m, 0, z, B); cam.project(x, 0, z + m, C);
+    ctx.setTransform(kx * (B.x - A.x), ky * (B.y - A.y), kx * (C.x - A.x), ky * (C.y - A.y), kx * A.x, ky * A.y);
+  }
+  // a column of light up from the winner's feet to the top of the screen, as the power goes off: behind them (front false) and a
+  // thinner core over them (front true)
+  function pillar(ctx, cam, kx, ky, front) {
+    const t = st.t, b1 = st.burstT >= 0 ? t - st.burstT : -1, b2 = st.burst2T >= 0 ? t - st.burst2T : -1;
+    const life1 = 0.85, life2 = 1.3;
+    let k = 0, wide = 0.75;
+    if (b1 >= 0 && b1 < life1) k = Math.max(k, (b1 < 0.05 ? b1 / 0.05 : 1) * Math.pow(1 - b1 / life1, 1.6));
+    if (b2 >= 0 && b2 < life2) { const k2 = (b2 < 0.05 ? b2 / 0.05 : 1) * Math.pow(1 - b2 / life2, 1.4); if (k2 > k) { k = k2; wide = 1.15; } }
+    if (!(k > 0.01)) return;
+    where(cam);
+    const col = pal[0];
+    if (GR.beamC !== col || !GR.beam) {
+      GR.beamC = col;
+      const g = ctx.createLinearGradient(-1, 0, 1, 0);
+      g.addColorStop(0, U.rgba(col, 0)); g.addColorStop(0.28, U.rgba(col, 0.55)); g.addColorStop(0.46, 'rgba(255,255,255,0.95)'); g.addColorStop(0.54, 'rgba(255,255,255,0.95)'); g.addColorStop(0.72, U.rgba(col, 0.55)); g.addColorStop(1, U.rgba(col, 0));
+      GR.beam = g;
+    }
+    const hw = WS.hpx * wide * (front ? 0.32 : 0.62) * (1 + 0.5 * (1 - k)) * (1 + 0.06 * Math.sin(t * 60));
+    ctx.save();
+    ctx.setTransform(kx * hw, 0, 0, ky, kx * WS.fx, 0);
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (front ? 0.45 : 0.85) * k; ctx.fillStyle = GR.beam;
+    ctx.fillRect(-1, -20, 2, WS.fy + 20 + WS.hpx * 0.04);
+    ctx.restore();
+  }
+
+  // over the players: the spotlight, the pillar's core, sparks, the lightning or the cuts, confetti, the title, the flash
+  function drawOver(ctx, cam, w, kx, ky) {
+    if (!st.on) return;
+    grads(ctx);
+    const t = st.t;
+    if (st.show && st.W) {
+      spotlight(ctx, cam, t);
+      pillar(ctx, cam, kx, ky, true);
+      if (st.boltT >= 0 && t - st.boltT < 0.36) bolt(ctx, cam, t - st.boltT);
+      if (st.sl1 >= 0 && t - st.sl1 < 0.5) cut(ctx, cam, t - st.sl1, 0);
+      if (st.sl2 >= 0 && t - st.sl2 < 0.5) cut(ctx, cam, t - st.sl2, 1);
+    }
+    drawSparks(ctx);
+    drawConfetti(ctx, kx, ky);
+    if (st.titleT >= 0) title(ctx, cam, t - st.titleT);
+    if (st.flashA > 0.004) {
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = Math.min(1, st.flashA * (CFG.fx ? U.clamp(+CFG.fx.flashAlpha, 0, 1.5) : 1)); ctx.fillStyle = st.flashC;
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.restore();
+    }
+  }
+
+  // the rest of the screen dims while the winner powers up, so the light is theirs
+  function spotlight(ctx, cam, t) {
+    const on = U.smoothstep(F.CHARGE - 0.15, F.CHARGE + 0.25, t), end = st.big ? F.BURST2 + 0.15 : F.BURST + 0.12;
+    const k = on * (1 - U.smoothstep(end, end + 0.55, t));
+    if (!(k > 0.01)) return;
+    where(cam);
+    const R = Math.max(cam.w, cam.h) * 0.62, clear = U.clamp((WS.hpx * 0.7) / R, 0.08, 0.5), q = Math.round(clear * 50) / 50;
+    if (!GR.spot || GR.spotK !== q) { GR.spotK = q; GR.spot = radial(ctx, [0, 'rgba(4,6,14,0)', q, 'rgba(4,6,14,0)', Math.min(1, q + 0.28), 'rgba(4,6,14,0.8)', 1, 'rgba(4,6,14,1)']); }
+    ctx.save();
+    ctx.translate(WS.cx, WS.cy); ctx.scale(R, R);
+    ctx.globalAlpha = 0.58 * k; ctx.fillStyle = GR.spot;
+    ctx.fillRect(-WS.cx / R - 0.1, -WS.cy / R - 0.1, cam.w / R + 0.2, cam.h / R + 0.2);
+    ctx.restore();
+  }
+
+  // Kiru's lightning: out of the sky onto his raised fist, flickering between shapes
+  function bolt(ctx, cam, a) {
+    const W = st.W;
+    if (!W.fist) return;
+    W.fist(Q);
+    where(cam);
+    if (st.boltNew) { st.boltNew = false; jags(); for (let i = 0; i < 18; i++) { const an = rnd() * TAU, v = (200 + 300 * rnd()) * WS.s; spark(Q.x, Q.y, Math.cos(an) * v, Math.sin(an) * v, 0.35 + 0.3 * rnd(), (1.4 + 1.2 * rnd()) * WS.s, 1 + ((rnd() * 2) | 0), true); } }
+    const on = a < 0.05 ? 1 : (Math.sin(a * 83) > -0.35 ? 1 : 0.35) * (1 - (a - 0.05) / 0.31);
+    if (!(on > 0.01)) return;
+    const amp = WS.hpx * 0.16, top = -10, x0 = Q.x + amp * 0.8;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.globalAlpha = (pass ? 1 : 0.5) * on; ctx.strokeStyle = pass ? '#ffffff' : '#7fd4ff'; ctx.lineWidth = (pass ? 2.6 : 10) * WS.s;
+      ctx.beginPath();
+      for (let i = 0; i < N_J; i++) { const u = i / (N_J - 1), x = U.lerp(x0, Q.x, u) + jag[i] * amp, y = U.lerp(top, Q.y, u); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+      ctx.stroke();
+      // a branch off its middle
+      const i0 = 4, u0 = i0 / (N_J - 1), bx = U.lerp(x0, Q.x, u0) + jag[i0] * amp, by = U.lerp(top, Q.y, u0);
+      ctx.lineWidth *= 0.6; ctx.beginPath(); ctx.moveTo(bx, by);
+      for (let j = 1; j < 4; j++) ctx.lineTo(bx + (j * 0.5 + jag2[j] * 0.4) * amp * (jag2[0] < 0 ? -1 : 1) * 1.3, by + j * (Q.y - top) * 0.07);
+      ctx.stroke();
+    }
+    // the hit: a white-hot pool at the fist
+    if (!GR.glow || GR.glowC !== '#7fd4ff') { GR.glowC = '#7fd4ff'; GR.glow = radial(ctx, [0, 'rgba(255,255,255,1)', 0.25, 'rgba(191,233,255,0.8)', 0.6, 'rgba(127,212,255,0.25)', 1, 'rgba(127,212,255,0)']); }
+    ctx.translate(Q.x, Q.y); ctx.scale(WS.hpx * 0.45, WS.hpx * 0.45);
+    ctx.globalAlpha = 0.9 * on; ctx.fillStyle = GR.glow; ctx.fillRect(-1, -1, 2, 2);
+    ctx.restore();
+  }
+
+  // one of Kage's two cuts: a crescent of magenta light that sweeps across in front of him, then fades as it opens. i 0 the first
+  // (high behind him to low in front), 1 the second (low behind to high in front): together an X
+  function cut(ctx, cam, a, i) {
+    const W = st.W;
+    if (!W.chest) return;
+    W.chest(Q);
+    where(cam);
+    const dir = W.facing > 0 ? 1 : -1, R = WS.hpx * 0.56 * (1 + 0.14 * U.easeOut(U.clamp01((a - 0.08) / 0.4), 2));
+    const cx = Q.x + dir * WS.hpx * 0.16, cy = Q.y + WS.hpx * 0.02;
+    const sweep = U.clamp01(a / 0.075), fade = a < 0.1 ? 1 : Math.pow(1 - (a - 0.1) / 0.4, 1.5);
+    if (!(fade > 0.01)) return;
+    const th0 = -2.35, th1 = 0.75, span = (th1 - th0) * U.easeOut(sweep, 2), rot = i ? 0.55 : -0.55, flip = i ? -1 : 1;
+    ctx.save();
+    ctx.translate(cx, cy); ctx.scale(dir, flip); ctx.rotate(rot * flip);
+    ctx.globalCompositeOperation = 'lighter';
+    const xBurst = i === 1 && a > 0.04 && a < 0.2 ? 1 - Math.abs(a - 0.08) / 0.12 : 0; // the X flares as the second cut lands
+    for (let pass = 0; pass < 2; pass++) {
+      const thick = R * (pass ? 0.075 : 0.16);
+      ctx.globalAlpha = (pass ? 0.95 : 0.55) * fade; ctx.fillStyle = pass ? (xBurst > 0 ? '#ffffff' : '#ffe6ff') : NEON;
+      ctx.beginPath();
+      const n = 18;
+      for (let j = 0; j <= n; j++) { const u = j / n, th = th0 + span * u; ctx.lineTo(Math.cos(th) * R, Math.sin(th) * R * 0.62); }
+      for (let j = n; j >= 0; j--) { const u = j / n, th = th0 + span * u, r = R - thick * Math.sin(Math.PI * u); ctx.lineTo(Math.cos(th) * r, Math.sin(th) * r * 0.62); }
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+    if (i === 1 && st.xNew && a > 0.07) { // where the cuts cross: a burst of sparks
+      st.xNew = false;
+      for (let j = 0; j < 22; j++) { const an = rnd() * TAU, v = (220 + 320 * rnd()) * WS.s; spark(cx, cy, Math.cos(an) * v, Math.sin(an) * v, 0.35 + 0.35 * rnd(), (1.4 + 1.4 * rnd()) * WS.s, (rnd() * 4) | 0, true); }
+    }
+  }
+
+  function drawSparks(ctx) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+    for (let i = 0; i < N_SP; i++) {
+      if (!spOn[i]) continue;
+      const q = spAge[i] / spLife[i];
+      ctx.globalAlpha = (1 - q) * (q < 0.1 ? q / 0.1 : 1); ctx.strokeStyle = pal[spC[i] & 3]; ctx.lineWidth = spW[i];
+      ctx.beginPath(); ctx.moveTo(spX[i], spY[i]); ctx.lineTo(spX[i] - spVX[i] * 0.03, spY[i] - spVY[i] * 0.03); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawConfetti(ctx, kx, ky) {
+    const P = st.winner === 'kage' ? CONFK : CONF;
+    let any = false;
+    for (let i = 0; i < N_CF; i++) {
+      if (!cfOn[i] || cfY[i] < -12) continue;
+      if (!any) { any = true; ctx.save(); }
+      const c = Math.cos(cfR[i]), s = Math.sin(cfR[i]), fl = Math.cos(cfAge[i] * 7 + cfPh[i]);
+      ctx.setTransform(kx * c * fl, ky * s * fl, -kx * s, ky * c, kx * cfX[i], ky * cfY[i]);
+      ctx.globalAlpha = 0.95; ctx.fillStyle = P[cfC[i]];
+      ctx.fillRect(-cfW[i] * 0.5, -cfH[i] * 0.5, cfW[i], cfH[i]);
+    }
+    if (any) ctx.restore();
+  }
+
+  // the title: its kicker over it, slammed in big and settling; VICTORY! in gold with a shine running across it
+  function title(ctx, cam, a) {
+    const L = layout(cam);
+    if (!(a >= 0)) return;
+    const fk = L.fk, ft = L.ft, fKick = '900 ' + Math.round(fk) + 'px ' + FAMILY, fTit = 'italic 900 ' + Math.round(ft) + 'px ' + FAMILY;
+    if (!TX.tw) { ctx.font = fTit; TX.tw = ctx.measureText(TX.title).width || 1; ctx.font = fKick; TX.kw = ctx.measureText(TX.kicker).width || 1; }
+    const fit = Math.min(1, (cam.w - 28) / (TX.tw * 1.12 + ft * 0.3));
+    const slam = a < 0.2 ? U.lerp(2.3, 1, U.easeOutBack(a / 0.2, 1.7)) : 1 + 0.012 * Math.sin((a - 0.2) * 3.2);
+    const alpha = U.clamp01(a / 0.07), jx = a < 0.24 && a > 0.12 ? Math.sin(a * 260) * 5 * (1 - (a - 0.12) / 0.12) : 0;
+    ctx.save();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+    // the kicker drops in a beat after the slam
+    const ka = U.clamp01((a - 0.12) / 0.2);
+    if (ka > 0 && TX.kicker) {
+      ctx.globalAlpha = alpha * ka;
+      text(ctx, TX.kicker, L.tx, L.ty - ft * 0.5 * fit - fk * 0.5 - 10 + (1 - ka) * 8, fKick, TX.col, fk * 0.42, 0.22);
+    }
+    ctx.translate(L.tx + jx, L.ty); ctx.rotate(-0.045); ctx.scale(slam * fit, slam * fit);
+    ctx.globalAlpha = alpha;
+    ctx.font = fTit;
+    ctx.lineWidth = ft * 0.34; ctx.strokeStyle = TX.dark; ctx.strokeText(TX.title, 0, 0);
+    ctx.lineWidth = ft * 0.16; ctx.strokeStyle = TX.col; ctx.strokeText(TX.title, 0, 0);
+    if (TX.gold) {
+      const g = ctx.createLinearGradient(0, -ft * 0.5, 0, ft * 0.5);
+      g.addColorStop(0, '#fffbe0'); g.addColorStop(0.45, '#ffe066'); g.addColorStop(0.55, '#ffc21f'); g.addColorStop(1, '#ff8a1f');
+      ctx.fillStyle = g; ctx.fillText(TX.title, 0, 0);
+      const sp = ((a * 0.55) % 1.6) - 0.3; // the shine: a bright band running left to right every few seconds
+      if (sp > -0.2 && sp < 1.2) {
+        const x = (sp - 0.5) * TX.tw * 1.2, sh = ctx.createLinearGradient(x - ft * 0.6, 0, x + ft * 0.6, 0);
+        sh.addColorStop(0, 'rgba(255,255,255,0)'); sh.addColorStop(0.5, 'rgba(255,255,255,0.85)'); sh.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = sh; ctx.fillText(TX.title, 0, 0); ctx.globalCompositeOperation = 'source-over';
+      }
+    } else { ctx.fillStyle = TX.fill; ctx.fillText(TX.title, 0, 0); }
+    if (a < 0.2) { ctx.globalAlpha = alpha * (1 - a / 0.2); ctx.fillStyle = '#ffffff'; ctx.fillText(TX.title, 0, 0); } // white-hot as it lands
+    ctx.restore();
+  }
+
+  return {
+    st, TX, start, reset, skip, update, applyCamera, drawBack, drawFloor, drawOver,
+    // this frame's cues (main.js plays them): flinch, move, defeat, slash1, slash2, strike, land, charge, burst, charge2, burst2,
+    // land2, title, stats, ready, firework
+    drain() { return out; },
+    fitFor, // main.js, once the show has its winner: how much push-in this screen gets
+    get on() { return st.on; }, get clock() { return st.on ? st.t : -1; }, get ready() { return st.on && st.ready; }, get sinceReady() { return st.sinceReady; },
+    get kind() { return st.kind; }, get show() { return st.show; }, get next() { return TX.next; },
+    get layout() { return LY; }, // where the title and the numbers go on this screen (tests)
+    stats: () => ({ sparks: spOn.reduce((n, v) => n + v, 0), confetti: cfOn.reduce((n, v) => n + v, 0), shells: shOn.reduce((n, v) => n + v, 0), pops: fpOn.reduce((n, v) => n + v, 0), rings: rgOn.reduce((n, v) => n + v, 0) }),
+  };
+}
+
 // ════════ ninja.js ════════
 // ninja.js — the Neo Dojo rig: Kiru's own body, which the cast sheet (Tools/neo-dojo-cast) draws every character on, in the
 // sheet's units (x 0..200, the hood centred on (100, 90), the soles on y = 231.5). A "look" says what goes on it: Kage-X's
@@ -7814,6 +8771,76 @@ function createNinja(doc, look) {
     fireSmoke(ctx, BA.x, BA.y, 30 * P.s, t, a);
   }
 
+  // ── the finish (finale.js): the same three shapes for both of them. Each lerps the pose's own fields by k, like knockDown ──
+  // On their knees: the body dropped so the knees are on the floor, fists down on it in front, hunched forward, the head hung.
+  const KNEEL = { lax: 74, lay: 201, lknee: 13, lrot: -0.25, rax: 124, ray: 203, rknee: -6, rrot: 0.9, fx: 50, fy: 203, fBend: 10, bx: 140, by: 205, bBend: -8, headTilt: -0.2, headDy: 10 };
+  // The power stance, charging: low and wide, fists clenched at the hips with the elbows out.
+  const STANCE = { lax: 66, lay: 217.5, lknee: 12, lrot: -0.18, rax: 134, ray: 217.5, rknee: -12, rrot: 0.18, fx: 62, fy: 191, fBend: 15, bx: 138, by: 191, bBend: -15, headTilt: -0.04, headDy: 3 };
+  // The power going off: flung up and out into a Y, the fists out past the hood, head back.
+  const BURSTY = { lax: 72, lay: 223.5, lknee: 2, lrot: -0.1, rax: 128, ray: 223.5, rknee: -2, rrot: 0.1, fx: 10, fy: 90, fBend: -4, bx: 190, by: 90, bBend: 4, headTilt: 0.16, headDy: -3 };
+  function lerpPose(P, D, k) {
+    const l = U.lerp;
+    P.lax = l(P.lax, D.lax, k); P.lay = l(P.lay, D.lay, k); P.lknee = l(P.lknee, D.lknee, k); P.lrot = l(P.lrot, D.lrot, k);
+    P.rax = l(P.rax, D.rax, k); P.ray = l(P.ray, D.ray, k); P.rknee = l(P.rknee, D.rknee, k); P.rrot = l(P.rrot, D.rrot, k);
+    P.fx = l(P.fx, D.fx, k); P.fy = l(P.fy, D.fy, k); P.fBend = l(P.fBend, D.fBend, k);
+    P.bx = l(P.bx, D.bx, k); P.by = l(P.by, D.by, k); P.bBend = l(P.bBend, D.bBend, k);
+    P.headTilt = l(P.headTilt, D.headTilt, k); P.headDy = l(P.headDy, D.headDy, k);
+  }
+  function kneel(P, k) {
+    if (!(k > 0)) return;
+    lerpPose(P, KNEEL, k);
+    P.y += 24 * P.s * k; P.tilt += -P.mir * 0.13 * k; P.sqy *= 1 - 0.05 * k; P.smear *= 1 - k; P.lift *= 1 - k; P.wind *= 1 - k;
+  }
+  // shake 0..1: it trembles harder as the power builds (t: a clock, s)
+  function stance(P, k, shake, t) {
+    if (!(k > 0)) return;
+    lerpPose(P, STANCE, k);
+    P.y += 6 * P.s * k; P.sqy *= 1 - 0.03 * k; P.sqx *= 1 + 0.02 * k;
+    if (shake > 0) { P.x += Math.sin(t * 97) * 2.4 * P.s * shake; P.y += Math.sin(t * 83 + 1.3) * 1.2 * P.s * shake; }
+  }
+  function burstY(P, k) {
+    if (!(k > 0)) return;
+    lerpPose(P, BURSTY, k);
+    P.sqy *= 1 + 0.05 * k; P.sqx *= 1 - 0.03 * k;
+  }
+  // gloom: a loser's mood, wavy lines hanging down over the hood, swaying, at alpha a (t: a clock, s)
+  function drawGloom(ctx, kx, ky, P, t, a) {
+    if (!(a > 0.01)) return;
+    toScreen(P, N.CX, 26, BA);
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+    const s = P.s;
+    ctx.lineCap = 'round'; ctx.strokeStyle = '#8a93d4'; ctx.lineWidth = Math.max(1.2, 3.4 * s);
+    for (let i = 0; i < 4; i++) {
+      const x0 = BA.x + (i - 1.5) * 28 * s, top = BA.y - 70 * s, len = (38 + 14 * (i & 1)) * s, ph = t * 2.2 + i * 1.3;
+      ctx.globalAlpha = a * (0.6 + 0.25 * Math.sin(ph));
+      ctx.beginPath();
+      for (let j = 0; j <= 8; j++) { const u = j / 8, y = top + u * len, x = x0 + Math.sin(ph + u * 7) * 4 * s; if (j) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  // a rain cloud: a match lost, a little grey cloud over the hood raining on them, at alpha a
+  function drawRain(ctx, kx, ky, P, t, a) {
+    if (!(a > 0.01)) return;
+    toScreen(P, N.CX, 20, BA);
+    ctx.setTransform(kx, 0, 0, ky, 0, 0);
+    const s = P.s, cx = BA.x + Math.sin(t * 0.9) * 6 * s, cy = BA.y - 96 * s;
+    ctx.strokeStyle = '#a9c2f2'; ctx.lineWidth = Math.max(1, 2.4 * s); ctx.lineCap = 'round';
+    for (let i = 0; i < 9; i++) { // the rain: streaks falling from the cloud onto the hood
+      const u = (t * 1.6 + i * 0.37) % 1, x = cx + (i - 4) * 11 * s + 4 * s * Math.sin(i * 2.1), y = cy + 12 * s + u * 74 * s;
+      ctx.globalAlpha = a * 0.8 * (1 - u * 0.5);
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 2 * s, y + 11 * s); ctx.stroke();
+    }
+    ctx.globalAlpha = a * 0.96; // the cloud: a dark flat base under three puffs
+    ctx.fillStyle = '#4f556b'; ctx.beginPath(); ctx.ellipse(cx, cy + 6 * s, 54 * s, 14 * s, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#80879f'; ctx.beginPath();
+    ctx.moveTo(cx - 8 * s, cy); ctx.arc(cx - 26 * s, cy, 18 * s, 0, TAU);
+    ctx.moveTo(cx + 26 * s, cy - 10 * s); ctx.arc(cx + 2 * s, cy - 10 * s, 24 * s, 0, TAU);
+    ctx.moveTo(cx + 44 * s, cy + 1 * s); ctx.arc(cx + 28 * s, cy + 1 * s, 16 * s, 0, TAU);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
   // screen point → sheet units, through the pose's rig transform (the inverse of drawRig's)
   function toSheet(sx, sy, out) {
     let dx = sx - pose.x, dy = sy - pose.y;
@@ -7827,7 +8854,7 @@ function createNinja(doc, look) {
     if (d > m) { p.x = sh.x + (dx / d) * m; p.y = sh.y + (dy / d) * m; }
   }
 
-  return { art, pose, REST, hasCanvas, ensureArt, drawRig, drawSil, drawTint, drawTints, drawAura, drawBurn, drawSmoke, drawDizzy, knockDown, toSheet, toScreen, limitArm, H };
+  return { art, pose, REST, hasCanvas, ensureArt, drawRig, drawSil, drawTint, drawTints, drawAura, drawBurn, drawSmoke, drawDizzy, knockDown, kneel, stance, burstY, drawGloom, drawRain, toSheet, toScreen, limitArm, H };
 }
 
 // ════════ kage.js ════════
@@ -7867,6 +8894,12 @@ function createNinja(doc, look) {
 // crackling, a blast on fire, a whirlwind or a stomp's shockwave just down). His own super glows on him in its colours
 // (info.armCol), and he has a line for each. Powering up for a blast he burns in the fire's colours (info.power, 0..1), and
 // stomping he lands hard (onStomp).
+//
+// THE FINISH (finale.js). When the rope is wound he plays his part in the show from its clock (update()'s info.ft): won, he
+// shadow-steps out to the front of his half (his clones strung back along the step), cuts twice so the cuts cross in an X, crosses
+// his arms and charges, throws them out wide as it goes off, then stands there taunting, arms crossed, now and then beckoning you
+// on. A match won takes him up into the air for a second charge first. Lost, he jolts and sinks to his knees, his neon dimmed,
+// gloom over him (a rain cloud for a match). His line comes once the show has made its point. body: where he is, for the show.
 //
 // Clocks: everything he does runs on SIM time, so a hit's freeze and slow-mo hold him too (fair, and it reads as drama). The
 // glow, the clones and the flames run on REAL time, so they play out inside the freeze.
@@ -7927,6 +8960,8 @@ const KAGE_LINES = {
   whiff: ['Lag spike.', 'Glitch.', 'Tch.', '...Lucky.'],
   won: ['Upgrade yourself.', 'Cut clean.', 'Next.', 'Too easy.'],
   lost: ['Rematch. Now.', 'Not bad... for 2026.', 'Hmph.', 'Bug in my code.'],
+  matchWon: ['Flawless.', 'Game over.', 'Bow to 2099.', 'Uninstalled.'], // the match, at the end of the show
+  matchLost: ['This is not over.', 'Recalibrating...', 'Impossible.', 'Next time, Kiru.'],
   serve: ['Ready?', 'Watch closely.', 'Try to keep up.'],
   special: ['Overdrive.', 'Shadow protocol.', 'Execute.', 'Delete.'],
   burned: ['Hot—!', 'Thermal error.', 'Overheating.', 'Who lit that?'],
@@ -8087,6 +9122,8 @@ function createKage(doc) {
     powK: 0, // powering up for a blast, or powered up (info.power, supers.js): his fire glow 0..1
     wasBlind: false, armCol: '', armCol2: '', // your phantom was too far off to read last frame; his armed glow's colours ('' his neon)
     reStrike: 0, // your slip super slipped off his fist: when he swings again (sim s; 0 none)
+    show: false, ft: -1, ftPrev: -1, finKind: 'round', stageX: 0, stageZ: 0, lx0: 0, lz0: 0, // the finish (finale.js): on, its clock, its kind, where he goes for it (and from)
+    quipAt: -1, sayNext: '', // his line in the show, and when on its clock he says it
   };
   const FAKE = { phi: 0, y: 0 }; // the decoy he is going for (supers.js): an offset round the pole and up from the real ball
   const hand = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: HAND_R, stroke: -2, owner: 'cpu' };
@@ -8304,6 +9341,8 @@ function createKage(doc) {
       st.fireK += ((info && info.fireArmed ? 1 : 0) - st.fireK) * Math.min(1, realDt * 12);
     }
     st.powK = info && info.power > 0 ? info.power : 0;
+    st.ft = info && info.ft >= 0 ? info.ft : -1;
+    if (st.quipAt >= 0 && st.ft >= st.quipAt) { st.quipAt = -1; if (st.sayNext) { st.say = st.sayNext; st.sayT = 2.6; st.sayCool = 2.2; st.sayNext = ''; } }
     if (!(dt > 0)) return null;
     st.t += dt; st.blind -= dt; st.cool -= dt; st.reread -= dt; st.moodT += dt;
     if (st.t > st.blinkAt) st.blinkAt = st.t + 2.2 + rnd() * 3.5;
@@ -8330,9 +9369,12 @@ function createKage(doc) {
       if (!(info.down > 0) || info.state === 'wound' || w.state !== 'live') { st.phase = 'ready'; st.upT = st.t; st.y = 0; st.vy = 0; st.vx = 0; st.vz = 0; st.blind = SK.reaction; st.reread = 0; st.cool = GETUP; }
     } else if (st.phase === 'won' || st.phase === 'lost' || info.state === 'wound' || w.state !== 'live') {
       st.has = false;
-      const hop = st.phase === 'won' ? Math.max(0, Math.sin(st.moodT * 9)) * 0.16 : 0;
-      st.y = hop;
-      steer(st.x, st.z, dt);
+      if (inShow()) finStep();
+      else {
+        const hop = st.phase === 'won' ? Math.max(0, Math.sin(st.moodT * 9)) * 0.16 : 0;
+        st.y = hop;
+        steer(st.x, st.z, dt);
+      }
     } else if (st.phase === 'swing') {
       const tp = st.tc; // the apex is the contact
       if (st.h > 0) { const q = (st.t - tp) / st.up; st.y = Math.abs(q) < 1 ? st.h * (1 - q * q) : 0; } else st.y = 0;
@@ -8425,10 +9467,109 @@ function createKage(doc) {
   // he threw his fireball; a fire volley lit, or went to him (won) or to you (lost)
   function onFire() { st.sayCool = 0; quipF('fire', 0.7); }
   function onVolley(kind) { if (st.sayCool <= 0 || kind !== 'ignite') { st.sayCool = 0; quipF(kind === 'won' ? 'prize' : kind === 'lost' ? 'lose' : 'ignite', kind === 'ignite' ? 0.4 : 0.6); } }
-  function onRoundEnd(winner) {
+  // the rope is wound (main.js): who won it, the kind of finish ('round', 'match') and whether it is the show. In the show his line
+  // waits for its moment (picked now, on the same dice it always was)
+  function onRoundEnd(winner, kind, show) {
     if (st.phase === 'down') st.upT = st.t; // he gets up for it
-    st.phase = winner === 'kage' ? 'won' : 'lost'; st.moodT = 0; st.has = false; st.vx = 0; st.vz = 0;
-    st.sayCool = 0; quip(winner === 'kage' ? 'won' : 'lost', 0.95);
+    const won = winner === 'kage';
+    st.phase = won ? 'won' : 'lost'; st.moodT = 0; st.has = false; st.vx = 0; st.vz = 0;
+    st.show = !!show; st.finKind = kind || 'round'; st.ft = -1; st.ftPrev = -1; st.quipAt = -1; st.sayNext = '';
+    st.sayCool = 0;
+    if (!st.show) { quip(won ? 'won' : 'lost', 0.95); return; }
+    const big = FINALE.big(st.finKind);
+    st.say = ''; st.sayT = 0;
+    if (CFG.kage.taunts > 0 && !(rnd() > 0.95)) st.sayNext = pick(KAGE_LINES[big ? (won ? 'matchWon' : 'matchLost') : won ? 'won' : 'lost']);
+    st.quipAt = won ? (big ? FINALE.TITLE2 + 0.4 : FINALE.TITLE + 0.35) : 1.1;
+    if (won) { finaleStage(st.side, FS); st.stageX = FS.x; st.stageZ = FS.z; }
+  }
+
+  // ---- the finish (finale.js): his part, on the show's clock ----
+  const FS = { x: 0, z: 0 };
+  const inShow = () => st.show && st.ft >= 0 && (st.phase === 'won' || st.phase === 'lost');
+  function finStep() {
+    const F = FINALE, t = st.ft, p = st.ftPrev, big = F.big(st.finKind), k = CFG.kage.size / 1.75;
+    st.vx = 0; st.vz = 0; st.vy = 0;
+    if (st.phase === 'won') {
+      if (p < F.MOVE && t >= F.MOVE) { // a shadow step out to the front: his clones strung back along it (drawn as his special's are)
+        const dx = st.stageX - st.x, dz = st.stageZ - st.z, d = Math.sqrt(dx * dx + dz * dz) || 1;
+        st.fdx = dx / d; st.fdz = dz / d; st.specialRt = st.rt; st.x = st.stageX; st.z = st.stageZ;
+      }
+      if (big && p < F.LAND2 && t >= F.LAND2) st.tLand = st.t;
+      st.y = finHeight(t, big) * k;
+    } else if (!finaleFling(st, t, p, st.side, k) && p < F.FLINCH + F.FLING && t >= F.FLINCH + F.FLING) st.tLand = st.t; // thrown out front, landing hard
+    st.ftPrev = t;
+  }
+  // his height off the floor (m, at 1.75 m tall): a hop into the cuts, a match's hover
+  function finHeight(t, big) {
+    const F = FINALE;
+    if (t >= F.SLASH - 0.05 && t < F.LAND) return 0.2 * Math.sin((Math.PI * (t - F.SLASH + 0.05)) / (F.LAND - F.SLASH + 0.05));
+    if (big && t >= F.CHARGE2 && t < F.LAND2) {
+      const up = U.easeInOut(U.clamp01((t - F.CHARGE2) / 0.55)), down = U.easeInOut(U.clamp01((t - (F.LAND2 - 0.45)) / 0.45));
+      return (0.6 + 0.03 * Math.sin(t * 4.4)) * up * (1 - down);
+    }
+    return 0;
+  }
+  // his pose through the show (sheet units: the rig's REST is fx 50 / 184, bx 151 / 193, ankles 85 / 115 at 223.5). Arms crossed:
+  // the front fist across his chest (the back one is behind him)
+  const CROSS_X = 116, CROSS_Y = 164;
+  function finPose(P) {
+    const F = FINALE, t = st.ft, big = F.big(st.finKind);
+    if (st.phase === 'lost') { finaleLose(R, P, t, st.finKind, st.rt, 'open', 'blink'); return; }
+    P.lift = 0.6; P.wind = 0.4;
+    if (t < F.MOVE) { // it is won: arms up where he stands
+      const k = U.clamp01(t / 0.12);
+      P.fx = U.lerp(50, 64, k); P.fy = U.lerp(184, 112, k); P.bx = U.lerp(151, 138, k); P.by = U.lerp(193, 112, k); P.lift = 1;
+      return;
+    }
+    if (t < F.SLASH) { // wound up for the first cut: the fist cocked high over his back shoulder
+      const k = U.easeOut(U.clamp01((t - F.MOVE) / (F.SLASH - F.MOVE)), 2);
+      P.fx = U.lerp(P.fx, 128, k); P.fy = U.lerp(P.fy, 108, k); P.fBend = -10; P.bx = U.lerp(P.bx, 150, k); P.by = U.lerp(P.by, 182, k);
+      P.lknee += 8 * k; P.rknee -= 6 * k; P.sqy *= 1 - 0.05 * k; P.headDy += 2 * k; P.tilt = P.mir * 0.08 * k;
+      return;
+    }
+    if (t < F.STRIKE) { // the first cut: from high behind him to low in front
+      const e = U.easeOut(U.clamp01((t - F.SLASH) / 0.07), 2), e0 = Math.max(0, e - 0.35);
+      P.fx = U.lerp(128, 26, e); P.fy = U.lerp(108, 200, e); P.fBend = 4; P.smear = 1 - 0.5 * e; P.sx0 = U.lerp(128, 26, e0); P.sy0 = U.lerp(108, 200, e0);
+      P.bx = 150; P.by = 172; P.tilt = -P.mir * 0.1 * e; P.lift = 0.8; P.wind = 0.8;
+      return;
+    }
+    const x = U.easeInOut(U.clamp01((t - F.STRIKE - 0.1) / 0.14)); // then he crosses his arms
+    if (t < F.BURST) {
+      if (x <= 0) { // the second: from low in front, up across him
+        const e = U.easeOut(U.clamp01((t - F.STRIKE) / 0.07), 2), e0 = Math.max(0, e - 0.35);
+        P.fx = U.lerp(26, 16, e); P.fy = U.lerp(200, 104, e); P.fBend = 2; P.smear = 1 - 0.5 * e; P.sx0 = U.lerp(26, 16, e0); P.sy0 = U.lerp(200, 104, e0);
+        P.bx = 150; P.by = 172; P.tilt = -P.mir * 0.06; P.lift = 0.8; P.wind = 0.8;
+        return;
+      }
+      const g = U.clamp01((t - F.CHARGE) / (F.BURST - F.CHARGE)); // arms crossed, charging: low in the stance, trembling
+      R.stance(P, U.easeInOut(U.clamp01((t - F.LAND) / (F.CHARGE - F.LAND))), g > 0 ? 0.3 + 0.7 * g : 0, st.rt);
+      P.fx = U.lerp(16, CROSS_X, x); P.fy = U.lerp(104, CROSS_Y, x); P.fBend = U.lerp(2, -10, x); P.bx = U.lerp(150, 86, x); P.by = U.lerp(172, 160, x);
+      P.headTilt -= 0.08 * x; P.wind = 0.4 + 0.6 * g; P.lift = 0.5 + 0.5 * g;
+      return;
+    }
+    const out = (k) => { // the power goes off: arms thrown out wide, head back
+      R.burstY(P, k); P.fx = U.lerp(P.fx, 8, k); P.fy = U.lerp(P.fy, 146, k); P.bx = U.lerp(P.bx, 192, k); P.by = U.lerp(P.by, 146, k); P.fBend = -6; P.bBend = 6;
+    };
+    if (big && t >= F.CHARGE2 && t < F.CHEER2) {
+      if (t < F.BURST2) { // up into the air, legs crossed under him, arms crossed, gathering the second charge
+        const k = U.easeOut(U.clamp01((t - F.CHARGE2) / 0.3), 2), g = (t - F.CHARGE2) / (F.BURST2 - F.CHARGE2);
+        P.lift = 1; P.wind = 0.6 + 0.4 * g;
+        P.lax = U.lerp(P.lax, 106, k); P.lay = U.lerp(P.lay, 210, k); P.lknee = -8; P.lrot = 0.5; P.rax = U.lerp(P.rax, 94, k); P.ray = U.lerp(P.ray, 213, k); P.rknee = 8; P.rrot = -0.4;
+        P.fx = U.lerp(8, CROSS_X, k); P.fy = U.lerp(146, CROSS_Y, k); P.fBend = -10; P.bx = 86; P.by = 160;
+        P.headTilt -= 0.06; P.x += Math.sin(st.rt * 97) * 2.2 * P.s * g;
+        return;
+      }
+      out(U.easeOut(U.clamp01((t - F.BURST2) / 0.1), 2)); P.lift = 1; P.wind = 1; // it goes off, in the air; then he floats down
+      if (st.y > 0.04) { P.lay -= 8; P.ray -= 5; P.lknee = 8; P.rknee = 6; }
+      return;
+    }
+    const c0 = big ? F.CHEER2 : F.CHEER;
+    if (t < c0) { out(U.easeOut(U.clamp01((t - F.BURST) / 0.1), 2)); P.lift = 1; P.wind = 1; return; }
+    // the taunt: arms crossed, head nodding; every so often the front hand comes out and beckons you on
+    const u = t - c0, k = U.easeInOut(U.clamp01(u / 0.25)), cyc = u % 2.2, bk = cyc > 1.1 && cyc < 1.9 ? Math.sin(Math.PI * (cyc - 1.1) / 0.8) : 0;
+    P.fx = U.lerp(8, U.lerp(CROSS_X, 26, bk), k); P.fy = U.lerp(146, U.lerp(CROSS_Y, 150 + 6 * Math.sin(u * 30) * bk, bk), k); P.fBend = U.lerp(-10, 6, bk);
+    P.bx = U.lerp(192, 86, k); P.by = U.lerp(146, 160, k); P.bBend = -9;
+    P.headTilt += Math.sin(u * 3) * 0.05 - 0.05; P.lift = 0.5;
   }
 
   // a new rally: home (or by the ball when he serves), still, reading again
@@ -8437,6 +9578,7 @@ function createKage(doc) {
     st.phase = 'ready'; st.has = false; st.blind = 0.3; st.cool = 0; st.reread = 0; st.serveT = 0;
     st.vx = 0; st.vz = 0; st.y = 0; st.vy = 0; st.struck = false; st.res = 0; st.moodT = 0; st.sx = 0; st.sz = 0;
     st.downT = -9; st.upT = -9; st.slowK = 1; st.dodge = false; st.downKind = 'burn'; st.wasBlind = false; st.reStrike = 0;
+    st.show = false; st.ft = -1; st.ftPrev = -1; st.quipAt = -1; st.sayNext = '';
     st.x = st.homeX; st.z = st.homeZ;
     if (info && info.server === 'kage' && w) { const b = w.ball.p; st.x = b.x + st.side * 0.5; st.z = b.z + 0.45; }
     clampRegion();
@@ -8480,6 +9622,7 @@ function createKage(doc) {
     P.fx = guard ? 58 : 50 + Math.sin(t * 2.4) * 1.5; P.fy = guard ? 162 : 184; P.fBend = 10;
     P.bx = guard ? 142 : 151; P.by = guard ? 170 : 193; P.bBend = -9;
     if (sp > 0.6 && !guard) { P.fx = 50 + c1 * 10 * runK; P.fy = 182 - Math.abs(s1) * 4; P.bx = 151 - c1 * 10 * runK; P.by = 190 - Math.abs(c1) * 4; }
+    if (inShow()) { finPose(P); return; }
     if (st.phase === 'won') { const k = Math.min(1, st.moodT * 5); P.fx = U.lerp(50, 64, k); P.fy = U.lerp(184, 112, k); P.bx = U.lerp(151, 138, k); P.by = U.lerp(193, 112, k); P.lift = 1; P.headTilt = -0.06 + Math.sin(st.moodT * 9) * 0.05; }
     else if (st.phase === 'lost') { const k = Math.min(1, st.moodT * 3); P.fx = 56; P.fy = U.lerp(184, 198, k); P.bx = 146; P.by = U.lerp(193, 200, k); P.headDy = 7 * k; P.sqy *= 1 - 0.03 * k; P.headTilt = 0.08 * k; }
     else if (st.phase === 'swing' || (st.phase === 'down' && st.t - st.downT < 0.08)) swingArm(cam, w, P);
@@ -8579,6 +9722,8 @@ function createKage(doc) {
     }
     const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15), gl = Math.max(0.4, CFG.kage.glow); // armed: an aura behind him and his neon over him
     const ac = st.armCol || NEON, ac2 = st.armCol2 || NEON; // (a super of another kind: in its colours, supers.js)
+    const fin = inShow() ? st.ft : -1, won = fin >= 0 && st.phase === 'won'; // the show's power-up (finale.js)
+    if (won) finaleAura(R, ctx, kx, ky, pose, fin, st.finKind, 'kage', pulse, false);
     if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, ac, st.armK * (0.35 + 0.25 * pulse) * gl);
     const fp = (st.fireK > 0.01 || st.powK > 0.01) && typeof firePal === 'function' ? firePal() : null; // armed with a fireball: he burns in its colour
     if (fp && st.fireK > 0.01) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
@@ -8587,6 +9732,11 @@ function createKage(doc) {
     const fa = st.downKind === 'burn' ? da : 0; // and burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
+    if (won) finaleAura(R, ctx, kx, ky, pose, fin, st.finKind, 'kage', pulse, true);
+    else if (fin >= 0) { // lost: his neon dims as he goes down, and the gloom gathers
+      R.drawTint(ctx, kx, ky, pose, '#05060f', 0.22 * U.clamp01((fin - FINALE.KNEEL) / 0.5), false);
+      finaleGloom(R, ctx, kx, ky, pose, fin, st.finKind, st.rt);
+    }
     if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, ac2, st.armK * (0.18 + 0.18 * pulse) * gl, true);
     if (fp && st.fireK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.18 + 0.16 * pulse), true);
     if (fp && st.powK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.powK * (0.2 + 0.18 * pulse), true);
@@ -8603,9 +9753,16 @@ function createKage(doc) {
     drawShadow, drawSay,
     draw(ctx, cam, kx, ky, w) { draw(ctx, cam, kx, ky, w); },
   };
+  // where he is, for the show (finale.js): his feet (m), his height, which way he faces on screen (+1 right), and where his front
+  // fist and his chest are on screen as he was last drawn
+  const body = {
+    get x() { return st.x; }, get y() { return st.y; }, get z() { return st.z; }, get h() { return CFG.kage.size; }, get facing() { return st.face; },
+    fist(o) { return R.toScreen(pose, pose.fx, pose.fy, o); },
+    chest(o) { return R.toScreen(pose, CX, 168, o); },
+  };
 
   return {
-    st, SK, G, dbg, actor, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, onBurn, onFire, wantsFire, onVolley,
+    st, SK, G, dbg, actor, body, pose, setSide, reset, update, onSwing, onWorldHit, onRoundEnd, wantsSpecial, onSpecial, onBurn, onFire, wantsFire, onVolley,
     onSpiked, onSuper, onSpikedYou, onSlip, onKnocked, onKnockedYou, onStomp, predict: (w) => { predict(w); return np; },
     get side() { return st.side; }, get dir() { return st.dir; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
@@ -8637,6 +9794,12 @@ function createKage(doc) {
 // it reaches him before your swipe does, knocks him down wherever he stands, seeing stars (onSpiked), for as long as
 // supers.js keeps you down; so does one of Kage's four (onKnocked: crackling after a bolt, on fire after a blast). Powering up
 // for your blast he burns in the fire's colours (info.power, 0..1), and your stomp lands him hard (onStomp).
+//
+// THE FINISH (finale.js). When the rope is wound he plays his part in the show from its clock (update()'s info.ft): won, he
+// flash-steps out to the front of his half and throws a rising uppercut, spinning, that pulls the lightning down onto his fist;
+// lands; charges in the power stance; bursts into a Y as it goes off; and cheers, hopping, a fist pumping. A match won (or a new
+// best) takes him up into the air for a second charge first. Lost, he jolts and sinks to his knees, gloom over him (a rain cloud
+// for a match). body: where he is, for the show's camera and its lightning.
 //
 // Clocks: the flash (afterimages, speed lines, the white flash he arrives in, the ring he kicks off from) runs on REAL time,
 // so it plays out inside a hit's freeze; his body (the follow-through, the fall, the landing, his moods) runs on SIM time, so
@@ -8781,6 +9944,7 @@ function createKiru(doc) {
     downT: -9, upT: -9, downLeft: 0, slowed: false, burns: 0, // burned: when he went down and got up (sim), s still down, smouldering on; counted for the tests
     downKind: 'burn', spiked: 0, knocked: 0, armCol: '', armCol2: '', // what put him down ('burn' a fireball or a blast, 'stun' a spike, a whirlwind or a stomp, 'zap' a bolt: supers.js); counted; his armed glow's colours ('' storm blue)
     powK: 0, // powering up for your blast, or powered up (info.power, supers.js): his fire glow 0..1
+    show: false, ft: -1, ftPrev: -1, finKind: 'round', stageX: 0, stageZ: 0, lx0: 0, lz0: 0, // the finish (finale.js): on, its clock, its kind, where he goes for it (and from)
   };
 
   // a flash step: from → to, when (real time), the path's shape (0 dash along the floor, 1 leap in an arc, 2 dash then
@@ -8907,10 +10071,12 @@ function createKiru(doc) {
     st.slowed = !!(info && info.slowed); st.downLeft = info && info.down > 0 ? info.down : 0;
     st.armCol = info && info.armCol ? info.armCol : ''; st.armCol2 = info && info.armCol2 ? info.armCol2 : '';
     st.powK = info && info.power > 0 ? info.power : 0;
+    st.ft = info && info.ft >= 0 ? info.ft : -1;
     if (!(dt > 0)) return 0;
     geom();
     st.t += dt; st.moodT += dt;
     if (st.t > st.blinkAt) st.blinkAt = st.t + 2.2 + rnd() * 3.5;
+    if (inShow()) { out = finStep(); st.ftPrev = st.ft; return out; }
     if (st.y > 0 || st.vy > 0) { // in the air
       st.vy -= GRAV * dt; st.y += st.vy * dt;
       if (st.y <= 0) { st.y = 0; st.vy = 0; st.leap = false; st.tLand = st.t; if (st.phase === 'strike') st.phase = 'land'; }
@@ -8932,13 +10098,117 @@ function createKiru(doc) {
     return out;
   }
 
-  function onRoundEnd(won) { if (st.phase === 'down') st.upT = st.t; st.phase = won ? 'won' : 'lost'; st.moodT = 0; st.vx = 0; st.vz = 0; }
+  // the rope is wound (main.js): won or lost, the kind of finish ('round', 'match', 'solo', 'best') and whether it is the show
+  function onRoundEnd(won, kind, show) {
+    if (st.phase === 'down') st.upT = st.t;
+    st.phase = won ? 'won' : 'lost'; st.moodT = 0; st.vx = 0; st.vz = 0;
+    st.show = !!show; st.finKind = kind || 'round'; st.ft = -1; st.ftPrev = -1;
+    if (won && st.show) { finaleStage(st.side, Q); st.stageX = Q.x; st.stageZ = Q.z; }
+  }
+
+  // ---- the finish (finale.js): his part, on the show's clock ----
+  const inShow = () => st.show && st.ft >= 0 && (st.phase === 'won' || st.phase === 'lost');
+  // where he is: out to the front of his half when the show says, then the uppercut's rise and fall, a match's hover, the hops
+  function finStep() {
+    const F = FINALE, t = st.ft, p = st.ftPrev, big = F.big(st.finKind);
+    let out = 0;
+    st.vx = 0; st.vz = 0; st.vy = 0;
+    if (st.phase === 'won') {
+      if (p < F.MOVE && t >= F.MOVE) { // a flash step out to the front (its swish is main.js's, as for any flash back home)
+        out = addFlash(st.x, st.y, st.z, st.stageX, 0, st.stageZ, 0, 0.9, true);
+        st.x = st.stageX; st.z = st.stageZ; st.arriveRt = st.rt; st.arriveA = 0.42;
+      }
+      if (p < F.STRIKE && t >= F.STRIKE) { st.arriveRt = st.rt; st.arriveA = 0.6; } // the lightning lands on him: white-hot
+      if ((p < F.LAND && t >= F.LAND) || (big && p < F.LAND2 && t >= F.LAND2)) st.tLand = st.t;
+      st.y = finHeight(t, big) * G.k;
+    } else if (!finaleFling(st, t, p, st.side, G.k) && p < F.FLINCH + F.FLING && t >= F.FLINCH + F.FLING) st.tLand = st.t; // thrown out front, landing hard
+    return out;
+  }
+  // his height off the floor (m, at 1.75 m tall) through the show
+  function finHeight(t, big) {
+    const F = FINALE;
+    if (t >= F.RISE && t < F.LAND) {
+      if (t < F.STRIKE) return 0.5 * U.easeOut((t - F.RISE) / (F.STRIKE - F.RISE), 2.2);
+      if (t < F.STRIKE + 0.06) return 0.5; // held there as the lightning lands
+      const v = (t - F.STRIKE - 0.06) / (F.LAND - F.STRIKE - 0.06);
+      return 0.5 * (1 - v * v);
+    }
+    if (big && t >= F.CHARGE2 && t < F.LAND2) {
+      const up = U.easeInOut(U.clamp01((t - F.CHARGE2) / 0.55)), down = U.easeInOut(U.clamp01((t - (F.LAND2 - 0.45)) / 0.45));
+      return (0.62 + 0.03 * Math.sin(t * 5)) * up * (1 - down);
+    }
+    const c0 = big ? F.CHEER2 : F.CHEER;
+    return t >= c0 ? 0.16 * Math.abs(Math.sin((Math.PI * (t - c0)) / 0.5)) : 0;
+  }
+  // his pose through the show (sheet units: the rig's REST is fx 50 / 184, bx 151 / 193, ankles 85 / 115 at 223.5)
+  function finPose(P) {
+    const F = FINALE, t = st.ft, big = F.big(st.finKind);
+    if (st.phase === 'lost') { finaleLose(R, P, t, st.finKind, st.rt, 'open', 'sad'); return; }
+    P.lift = 0.5; P.wind = 0.4;
+    if (t < F.MOVE) { // it is won: a fist pump where he stands
+      const k = U.clamp01(t / 0.12);
+      P.face = 'happy'; P.fx = U.lerp(50, 30, k); P.fy = U.lerp(184, 112, k); P.fBend = 6; P.bx = U.lerp(151, 142, k); P.by = U.lerp(193, 184, k);
+      return;
+    }
+    if (t < F.RISE) { // he gathers himself for it: down low, the fist cocked
+      const k = U.easeOut(U.clamp01((t - F.MOVE) / (F.RISE - F.MOVE - 0.04)), 2);
+      P.face = 'fierce'; P.lknee += 12 * k; P.rknee -= 6 * k; P.lax -= 8 * k; P.rax += 8 * k; P.sqy *= 1 - 0.08 * k; P.sqx *= 1 + 0.04 * k;
+      P.fx = U.lerp(P.fx, 64, k); P.fy = U.lerp(P.fy, 198, k); P.fBend = 6; P.bx = U.lerp(P.bx, 136, k); P.by = U.lerp(P.by, 196, k); P.headDy += 4 * k;
+      return;
+    }
+    if (t < F.LAND) { // the uppercut: up he goes, one full turn, the fist driving up out past his hood; it holds for the lightning
+      const u = U.clamp01((t - F.RISE) / (F.STRIKE - F.RISE)), e = U.easeOut(u, 2.2);
+      P.face = 'fierce'; P.lift = 1; P.wind = 1;
+      P.fx = U.lerp(64, 12, e); P.fy = U.lerp(198, 96, e); P.fBend = U.lerp(6, -2, e);
+      P.sx0 = U.lerp(64, 12, Math.max(0, e - 0.3)); P.sy0 = U.lerp(198, 96, Math.max(0, e - 0.3)); P.smear = u < 1 ? 0.8 * (1 - e * 0.6) : 0;
+      P.bx = 150; P.by = 202; P.bBend = -8;
+      P.lax = 84; P.lay = 205; P.lknee = 15; P.lrot = 0.35; P.rax = 122; P.ray = 228; P.rknee = 2; P.rrot = 0.25; // the front knee up, the back leg driving
+      if (u < 1) P.sqx *= Math.cos(TAU * e);
+      P.tilt = P.mir * 0.08 * e; P.headTilt = 0.12 * e;
+      if (t > F.STRIKE + 0.06) { P.lay = 214; P.ray = 220; P.lknee = 10; } // coming down, reaching for the floor
+      return;
+    }
+    if (t < F.BURST) { // down into the power stance, and charging: trembling harder as it builds, the ribbons streaming
+      const k = U.easeInOut(U.clamp01((t - F.LAND) / (F.CHARGE - F.LAND))), g = U.clamp01((t - F.CHARGE) / (F.BURST - F.CHARGE));
+      R.stance(P, k, g > 0 ? 0.3 + 0.7 * g : 0, st.rt);
+      P.face = 'fierce'; P.wind = 0.4 + 0.6 * g; P.lift = 0.5 + 0.5 * g;
+      return;
+    }
+    if (big && t >= F.CHARGE2 && t < F.CHEER2) {
+      if (t < F.BURST2) { // up into the air, tucked, fists clenched by his head, gathering the second charge
+        const k = U.easeOut(U.clamp01((t - F.CHARGE2) / 0.3), 2), g = (t - F.CHARGE2) / (F.BURST2 - F.CHARGE2);
+        P.face = 'fierce'; P.lift = 1; P.wind = 0.6 + 0.4 * g;
+        P.lax = U.lerp(P.lax, 90, k); P.lay = U.lerp(P.lay, 206, k); P.lknee = 14; P.lrot = 0.3; P.rax = U.lerp(P.rax, 112, k); P.ray = U.lerp(P.ray, 210, k); P.rknee = 12; P.rrot = 0.2;
+        P.fx = U.lerp(P.fx, 40, k); P.fy = U.lerp(P.fy, 146, k); P.fBend = 14; P.bx = U.lerp(P.bx, 160, k); P.by = U.lerp(P.by, 146, k); P.bBend = -14;
+        P.headDy += 2; P.sqy *= 1 - 0.04 * k; P.x += Math.sin(st.rt * 97) * 2.2 * P.s * g;
+        return;
+      }
+      R.burstY(P, U.easeOut(U.clamp01((t - F.BURST2) / 0.1), 2)); // it goes off: the Y, held in the air, then down onto the floor
+      P.face = t < F.BURST2 + 0.3 ? 'fierce' : 'happy'; P.lift = 1; P.wind = 1;
+      if (st.y > 0.04) { P.lay -= 8; P.ray -= 5; P.lknee = 8; P.rknee = 6; }
+      return;
+    }
+    const c0 = big ? F.CHEER2 : F.CHEER;
+    if (t < c0) { // the power goes off: up and out into a Y
+      R.burstY(P, U.easeOut(U.clamp01((t - F.BURST) / 0.1), 2));
+      P.face = t < F.BURST + 0.25 ? 'fierce' : 'happy'; P.wind = 1; P.lift = 1;
+      return;
+    }
+    // the cheer: hopping, a fist pumping up past his hood and back with each hop, the other on his hip, grinning
+    const u = t - c0, pump = Math.abs(Math.sin(u * TAU)), k = U.clamp01(u / 0.15);
+    P.face = 'happy'; P.lift = 0.8; P.wind = 0.45;
+    P.fx = U.lerp(10, U.lerp(42, 14, pump), k); P.fy = U.lerp(90, U.lerp(150, 96, pump), k); P.fBend = 4;
+    P.bx = U.lerp(186, 142, k); P.by = U.lerp(110, 188, k); P.bBend = -12;
+    P.headTilt = 0.08 + Math.sin(u * TAU) * 0.05;
+    if (st.y > 0.04) { P.lay -= 7; P.ray -= 7; P.lknee += 6; P.rknee += 4; }
+  }
 
   // a new rally: on his spot, still
   function reset() {
     geom(); home();
     st.phase = 'idle'; st.x = st.homeX; st.z = st.homeZ; st.y = 0; st.vx = 0; st.vz = 0; st.vy = 0; st.leap = false;
     st.moodT = 0; st.ts = -9; st.tLand = -9; st.arriveRt = -9; st.specialRt = -9; st.downT = -9; st.upT = -9; st.slowed = false; st.downKind = 'burn';
+    st.show = false; st.ft = -1; st.ftPrev = -1;
     for (let i = 0; i < NF; i++) FL[i].rt = -9;
   }
 
@@ -8978,6 +10248,7 @@ function createKiru(doc) {
     if (land >= 0 && land < 0.25) { const k = Math.exp(-land * 14) * Math.cos(land * 30) * 0.14; P.sqy = 1 - k; P.sqx = 1 + k * 0.7; P.lknee += 40 * k; P.rknee += 40 * k; }
     const ar = st.rt - st.arriveRt; // the arrival: a quick stretch along the step that settles (real time: it plays inside the freeze)
     if (ar >= 0 && ar < 0.12) { const q = 1 - ar / 0.12; P.sqx *= 1 + 0.1 * q; P.sqy *= 1 - 0.07 * q; }
+    if (inShow()) { finPose(P); return; }
 
     if (st.phase === 'won') {
       const k = Math.min(1, st.moodT * 5), pump = Math.abs(Math.sin(st.moodT * 7));
@@ -9126,6 +10397,8 @@ function createKiru(doc) {
     drawRaijin(ctx, cam, kx, ky);
     drawFlashes(ctx, cam, kx, ky);
     const pulse = 0.5 + 0.5 * Math.sin(st.rt * 15); // armed: an aura behind him and a storm-blue charge over him (a super: its colours)
+    const fin = inShow() ? st.ft : -1, won = fin >= 0 && st.phase === 'won'; // the show's power-up (finale.js)
+    if (won) finaleAura(R, ctx, kx, ky, pose, fin, st.finKind, 'you', pulse, false);
     if (st.armK > 0.01) R.drawAura(ctx, kx, ky, pose, st.armCol || '#5ad1ff', st.armK * (0.4 + 0.25 * pulse));
     const fp = (st.fireK > 0.01 || st.powK > 0.01) && typeof firePal === 'function' ? firePal() : null; // charged with the fireball: he burns in its colour
     if (fp && st.fireK > 0.01) R.drawAura(ctx, kx, ky, pose, fp.glow, st.fireK * (0.45 + 0.25 * pulse));
@@ -9134,6 +10407,8 @@ function createKiru(doc) {
     const fa = st.downKind === 'burn' ? da : 0; // and burned: on fire while he is down
     R.drawBurn(ctx, kx, ky, pose, st.rt, fa, 0);
     R.drawRig(ctx, kx, ky, pose);
+    if (won) finaleAura(R, ctx, kx, ky, pose, fin, st.finKind, 'you', pulse, true);
+    else if (fin >= 0) finaleGloom(R, ctx, kx, ky, pose, fin, st.finKind, st.rt);
     if (st.armK > 0.01) R.drawTint(ctx, kx, ky, pose, st.armCol2 || '#8fd2ff', st.armK * (0.22 + 0.2 * pulse), true);
     if (fp && st.fireK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.fireK * (0.2 + 0.18 * pulse), true);
     if (fp && st.powK > 0.01) R.drawTint(ctx, kx, ky, pose, fp.mid, st.powK * (0.2 + 0.18 * pulse), true);
@@ -9152,9 +10427,16 @@ function createKiru(doc) {
     drawShadow,
     draw(ctx, cam, kx, ky, w) { draw(ctx, cam, kx, ky, w); },
   };
+  // where he is, for the show (finale.js): his feet (m), his height, which way he faces on screen (+1 right), and where his front
+  // fist and his chest are on screen as he was last drawn
+  const body = {
+    get x() { return st.x; }, get y() { return st.y; }, get z() { return st.z; }, get h() { return CFG.kiru.size; }, get facing() { return st.face; },
+    fist(o) { return R.toScreen(pose, pose.fx, pose.fy, o); },
+    chest(o) { return R.toScreen(pose, N.CX, 168, o); },
+  };
 
   return {
-    st, G, actor, pose, flashes: FL, setSide, reset, update, onHit, onBurn, onSpiked, onKnocked, onStomp, onRoundEnd,
+    st, G, actor, body, pose, flashes: FL, setSide, reset, update, onHit, onBurn, onSpiked, onKnocked, onStomp, onRoundEnd,
     get side() { return st.side; },
     ensureArt: R.ensureArt, drawRig: R.drawRig, hasCanvas, art: R.art,
   };
@@ -9162,7 +10444,7 @@ function createKiru(doc) {
 
 // ════════ ui.js ════════
 // ui.js — everything in the DOM: the HUD numbers, the energy rings and the special button, the fire badges and the streak toward a
-// fire volley, the round card, the bottom hint
+// fire volley, the layer over the show at a round's end (finale.js: a tap skips it, then starts the next round), the bottom hint
 // and the Feel panel.
 //
 // The markup lives in shell.html (ids below) and the look in style.css; this file binds to them and keeps them current.
@@ -9184,7 +10466,7 @@ function createKiru(doc) {
 CFG.ui = {
   ease: 18, // 1/s: how fast the big mph number chases the ball as it speeds up (it settles down at 30 % of this)
   pop: 0.3, // how far the number swells on a hit (0.3 = +30 %)
-  resultArmMs: 450, // taps on the round card are ignored this long after it appears, so a finishing swipe cannot dismiss it
+  resultArmMs: 450, // taps at a round's end are ignored this long after the wound, so a finishing swipe cannot skip the show
 };
 CFG_SCHEMA.push(
   { path: 'ui.pop', label: 'Speed number pop', min: 0, max: 0.8, step: 0.02, group: 'HUD', unit: '' },
@@ -9344,11 +10626,15 @@ function createUI(root, opts) {
   $('bReset').addEventListener('click', () => { hideResult(); if (opts.onReset) opts.onReset(); });
   gearBtn.addEventListener('click', () => tuner.toggle());
 
-  // ───────────── round card ─────────────
-  let armedAt = 0;
+  // ───────────── the round's end ─────────────
+  // The show (finale.js) is on the canvas; this is the layer over it while it plays: invisible, it takes the taps. A tap during the
+  // show skips to its end (opts.onSkip); once it is over (resultReady) the button shows, and a tap anywhere starts the next round.
+  // The round's summary is in a status line only a screen reader sees, with the ids the card had.
+  let armedAt = 0, ready = false;
   const secs = (ms) => (ms / 1000).toFixed(2) + 's';
   // a rope this slow reads better as m:ss.cc than as 94.20s
   const span = (ms) => (ms >= 60000 ? clock(Math.floor(ms / 10)) : secs(ms));
+  const againEl = $('rAgain'), sumEl = $('rSum');
 
   function showResult(s) {
     if (!s) return;
@@ -9359,37 +10645,49 @@ function createUI(root, opts) {
       $('rTitle').textContent = s.matchOver ? 'Match over' : 'Round ' + s.round + ' · first to ' + s.rounds;
       $('rWho').textContent = s.winner === 'you' ? (s.matchOver ? 'You win the match' : 'You win the round') : s.matchOver ? 'Kage wins the match' : 'Kage takes the round';
       $('rScore').textContent = 'You ' + s.you + ' – ' + s.kage + ' Kage';
-      $('rHits').textContent = s.hits;
-      $('rTop').textContent = Math.round(s.topMph);
       $('rBest').textContent = span(Math.max(0, s.timeMs)); $('rBestK').textContent = 'Rally';
-      $('rAgain').textContent = s.matchOver ? 'Rematch' : 'Next round';
-      $('rNew').hidden = true; $('rDelta').textContent = '';
-      armedAt = performance.now() + CFG.ui.resultArmMs;
-      resultEl.classList.add('on'); resultEl.setAttribute('aria-hidden', 'false');
-      try { $('rAgain').focus({ preventScroll: true }); } catch (e) { /* nothing to focus */ }
-      return;
+      againEl.textContent = s.matchOver ? 'Rematch' : 'Next round';
+      $('rNew').hidden = true; $('rDelta').textContent = ''; $('rTime').textContent = ''; $('rUnit').hidden = true;
+    } else {
+      $('rTitle').textContent = 'Rope wound'; $('rWho').textContent = ''; $('rScore').textContent = ''; $('rBestK').textContent = 'Best';
+      againEl.textContent = 'Go again';
+      const ms = Math.max(0, s.timeMs), slow = ms >= 60000;
+      $('rTime').textContent = slow ? clock(Math.floor(ms / 10)) : (ms / 1000).toFixed(2);
+      $('rUnit').hidden = slow;
+      $('rBest').textContent = s.best > 0 ? span(s.best) : '-';
+      $('rNew').hidden = !s.newBest;
+      $('rDelta').textContent = !s.newBest && s.best > 0 ? '+' + secs(ms - s.best) + ' off your best' : '';
     }
-    $('rTitle').textContent = 'Rope wound'; $('rBestK').textContent = 'Best'; $('rAgain').textContent = 'Go again';
-    const ms = Math.max(0, s.timeMs), slow = ms >= 60000;
-    $('rTime').textContent = slow ? clock(Math.floor(ms / 10)) : (ms / 1000).toFixed(2);
-    $('rUnit').hidden = slow;
     $('rHits').textContent = s.hits;
     $('rTop').textContent = Math.round(s.topMph);
-    $('rBest').textContent = s.best > 0 ? span(s.best) : '-';
-    $('rNew').hidden = !s.newBest;
-    $('rDelta').textContent = !s.newBest && s.best > 0 ? '+' + secs(ms - s.best) + ' off your best' : '';
     armedAt = performance.now() + CFG.ui.resultArmMs;
-    resultEl.classList.add('on');
-    resultEl.setAttribute('aria-hidden', 'false');
-    try { $('rAgain').focus({ preventScroll: true }); } catch (e) { /* nothing to focus */ }
+    ready = false; resultEl.setAttribute('data-ready', '0');
+    resultEl.classList.add('on'); resultEl.setAttribute('aria-hidden', 'false');
+    if (sumEl) sumEl.setAttribute('aria-hidden', 'false');
   }
-  function hideResult() { resultEl.classList.remove('on'); resultEl.setAttribute('aria-hidden', 'true'); }
-  // the whole overlay is the button: a tap anywhere (Go again included, it bubbles) starts the next round
-  resultEl.addEventListener('click', () => {
+  // the show is over: the button comes up (label: Next round, Rematch, Go again), and the next tap starts the next round
+  function resultReady(label) {
+    if (!resultEl.classList.contains('on')) return;
+    if (label) againEl.textContent = label;
+    ready = true; resultEl.setAttribute('data-ready', '1');
+    try { againEl.focus({ preventScroll: true }); } catch (e) { /* nothing to focus */ }
+  }
+  function hideResult() { ready = false; resultEl.classList.remove('on'); resultEl.setAttribute('aria-hidden', 'true'); resultEl.setAttribute('data-ready', '0'); }
+  // the whole screen is the button (the Next round button included: it bubbles). A tap soon after the wound is the finishing swipe's
+  // follow-through and is ignored; one during the show skips it; one after it starts the next round
+  function tapResult() {
     if (!resultEl.classList.contains('on') || performance.now() < armedAt) return;
+    if (!ready) { if (opts.onSkip) opts.onSkip(); return; }
     hideResult();
     const go = opts.onNext || opts.onReset;
     if (go) go();
+  }
+  resultEl.addEventListener('click', tapResult);
+  doc.addEventListener('keydown', (e) => { // Enter or Space does the same (the button, once it has focus, clicks for itself)
+    if (!resultEl.classList.contains('on') || e.repeat || (e.key !== 'Enter' && e.key !== ' ')) return;
+    if (e.target === againEl || (e.target && /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(e.target.tagName))) return;
+    e.preventDefault();
+    tapResult();
   });
 
   // ───────────── Feel panel ─────────────
@@ -9911,7 +11209,7 @@ function createUI(root, opts) {
     return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save, tick, showSub, subOf, get board() { return board; } };
   })();
 
-  return { update, energy, fire, showResult, hideResult, hint, setMuted, tuner };
+  return { update, energy, fire, showResult, resultReady, hideResult, hint, setMuted, tuner, get resultIsReady() { return ready; } };
 }
 
 // ════════ main.js ════════
@@ -9945,6 +11243,12 @@ function createUI(root, opts) {
 // Two rule sets: the solo time trial (game.js) and versus Kage (versus.js), picked by CFG.match.opponent (the Feel
 // panel's Match group; "#solo" or "#versus" in the URL picks one for this page load without touching saved settings).
 //
+// The end of a round is a show (finale.js, the Feel panel's Finish group): the winner's victory move, a power-up and the burst,
+// the title, the round's numbers painted into the background, and for a match (or a new best) a second power-up with fireworks.
+// It starts at the wound; its clock runs on the time scale (the wound's hit-stop plays first), the characters play their parts
+// from it (their update info's ft), and its cues are played here (finaleCue). The round card is an invisible layer now (ui.js):
+// a tap skips the show, and once it is over a tap starts the next round.
+//
 // The hit delay (pace.js, the Feel panel's Hit delay group) holds in both: two quick hits, then a beat before the next. tryHit
 // asks it on the pace clock (paceT: real ms as the stopwatch counts them), which the 140 ms debounce reads too. While your delay
 // runs, a ring round the ball empties and Kiru drops out of his ready stance; a swipe through the ball in it flashes the ring
@@ -9968,6 +11272,7 @@ function createUI(root, opts) {
   const pace = createPace();
   const kage = createKage(document);
   const kiru = createKiru(document);
+  const finale = createFinale(document);
   const audio = createAudio({ musicFetch: true }); // the music: the picked track's file beside the page (audio.js asks for it on the first frame)
   cfgFreezeDefaults(); // every module has declared its CFG section by now
   let rules = game;
@@ -9975,6 +11280,7 @@ function createUI(root, opts) {
     getWorld: () => world,
     onReset: resetAll,
     onNext: nextRound,
+    onSkip: () => finale.skip(),
     onMuteToggle: () => { audio.unlock(); audio.setMuted(!audio.muted); return audio.muted; },
     onSpecial: armSpecial,
     audio,
@@ -10004,7 +11310,9 @@ function createUI(root, opts) {
   resize();
 
   // ---- state ----
-  let lastHitAt = -1e9, woundAt = -1, resultShown = false, prevPhase = 'idle', hintUntil = 0, sideWarnAt = -1e9;
+  let lastHitAt = -1e9, prevPhase = 'idle', hintUntil = 0, sideWarnAt = -1e9;
+  // the show at the end of a round (finale.js): what it is told as it starts
+  const FIN = { kind: 'round', winner: 'you', vs: true, W: null, L: null, snap: null, kageSide: -1, prev: 0 };
   // the pace clock (ms, real time as the stopwatch counts it): the hit delay and the debounce run on it. lastHitAt is on it too.
   // paceFlash: when a swipe last went through the ball while your delay ran; toldPace: the word on why, once a match
   let paceT = 0, paceFlash = -1e9, toldPace = false;
@@ -10014,8 +11322,8 @@ function createUI(root, opts) {
   const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world, charged: '', overBall: null, attacks: null, quake: 0 };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1, fire: 0 };
-  const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false, fireArmed: false };
-  const kinfo = { ready: false, armed: false, fire: false, down: 0, slowed: false }, kiruHit = { half: false, kage: null, special: false };
+  const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false, fireArmed: false, ft: -1 };
+  const kinfo = { ready: false, armed: false, fire: false, down: 0, slowed: false, ft: -1 }, kiruHit = { half: false, kage: null, special: false };
   let toldHot = false, toldVolley = false; // shown this match: the "let it pass" hint for Kage's fireball, the first fire volley's
   const FIRE_EV = { type: 'fire', at: world.ball.p, word: '' }; // the burst as the ball catches fire (fx.event)
   // the supers (supers.js): the players' bodies (what a spike flies at, and what it hits), a super's moment for fx, the first
@@ -10075,9 +11383,10 @@ function createUI(root, opts) {
     pace.reset(); paceFlash = -1e9;
     tw.cancel();
     fx.reset();
+    finale.reset();
     ui.hideResult();
     ui.hint(hintText());
-    resultShown = false; woundAt = -1; lastHitAt = -1e9; prevPhase = 'idle'; hintUntil = 0;
+    lastHitAt = -1e9; prevPhase = 'idle'; hintUntil = 0;
   }
   // a new match (or a new solo round)
   function resetAll() {
@@ -10090,7 +11399,7 @@ function createUI(root, opts) {
     toldPace = false;
     startRally();
   }
-  // the round card was tapped: next round, or a new match once it is over
+  // the show is over and was tapped (or its time ran out): next round, or a new match once it is over
   function nextRound() {
     if (vs() && versus.state === 'wound' && !versus.snap.matchOver) { versus.nextRound(); startRally(); } else resetAll();
   }
@@ -10335,12 +11644,42 @@ function createUI(root, opts) {
         audio.wound();
         audio.vibrate([25, 40, 45]);
         tw.trigger(Math.min(1, Math.max(0.85, ev.speed / CFG.hit.vMax)), 'perfect', true); // the finish is always a big moment: forced past the re-hit window and the rally pacing
-        woundAt = now;
-        if (vs() && versus.snap.winner) kage.onRoundEnd(versus.snap.winner);
+        startFinale();
+        if (vs() && versus.snap.winner) kage.onRoundEnd(versus.snap.winner, FIN.kind, finale.show);
         if (vs() && versus.snap.winner && fire.onRoundEnd(versus.snap.winner) === 'won') volleyWon(fire.snap.wonBy, now, true); // a fire volley still burning goes to the round's winner
-        if (kiruOn()) kiru.onRoundEnd(!vs() || versus.snap.winner === 'you');
+        if (kiruOn()) kiru.onRoundEnd(!vs() || versus.snap.winner === 'you', FIN.kind, finale.show);
       }
     }
+  }
+
+  // The rope is wound: the show starts (finale.js). Its kind: a round or the match against Kage; a time trial, or a new best (beating
+  // one you had). The winner and the loser are the characters on the court (Kiru only while he is on).
+  function startFinale() {
+    const s = rules.snap, v = vs(), winner = v ? (s.winner === 'kage' ? 'kage' : 'you') : 'you';
+    FIN.vs = v; FIN.winner = winner; FIN.snap = s; FIN.kageSide = kageSide;
+    FIN.prev = !v && s.prev > 0 ? s.prev : 0;
+    FIN.kind = v ? (s.matchOver ? 'match' : 'round') : s.newBest && FIN.prev > 0 ? 'best' : 'solo';
+    const you = kiruOn() ? kiru.body : null;
+    FIN.W = winner === 'kage' ? kage.body : you;
+    FIN.L = v ? (winner === 'kage' ? you : kage.body) : null;
+    finale.start(FIN);
+    finale.fitFor(cam);
+    ui.showResult(s); // the layer over the show: it takes the taps, and a screen reader hears who won
+  }
+  // the show's cues, as its clock passes them: their sounds and haptics, and the button once it is over
+  function finaleCue(c) {
+    const kg = finale.st.winner === 'kage' ? 1 : 0, sp = U.clamp(+CFG.finale.speed || 1, 0.25, 4);
+    if (c === 'move') { if (kg) audio.flash(1.6, 0.5); } // (Kiru's flash step sounds through his update, as his flashes home do)
+    else if (c === 'slash1') audio.special('kage');
+    else if (c === 'slash2') { audio.special('kage'); audio.vibrate([20, 30, 30]); }
+    else if (c === 'strike') { audio.special('you'); audio.vibrate([25, 30, 40]); }
+    else if (c === 'defeat') audio.finale('defeat', FINALE.big(finale.kind) ? 1 : 0);
+    else if (c === 'charge') audio.finale('powerUp', kg, (FINALE.BURST - FINALE.CHARGE) / sp);
+    else if (c === 'burst') { audio.finale('victory', kg); audio.vibrate([30, 40, 70]); }
+    else if (c === 'charge2') audio.finale('powerUp', kg, (FINALE.BURST2 - FINALE.CHARGE2) / sp);
+    else if (c === 'burst2') { audio.finale('fanfare', kg); audio.vibrate([40, 30, 90, 30, 140]); }
+    else if (c === 'firework') audio.finale('firework', kg);
+    else if (c === 'ready') ui.resultReady(finale.next);
   }
 
   // The court's size is on the Feel panel (pole, rope, ball): a change re-ties the rope and replays the round. The tie point
@@ -10391,6 +11730,10 @@ function createUI(root, opts) {
     pumpInput(now);
     const scale = tw.update(realDt);
     const simDt = realDt * scale;
+    finale.update(realDt, scale, cam); // the show at a round's end: its clock, then its cues
+    const cues = finale.drain();
+    for (let i = 0; i < cues.length; i++) finaleCue(cues[i]);
+    info.ft = kinfo.ft = finale.clock; // the characters play their parts from it (−1: no show)
     energy.update(simDt);
     if (vs()) {
       info.state = versus.state; info.server = versus.snap.server; info.armed = energy.armed('kage');
@@ -10459,6 +11802,7 @@ function createUI(root, opts) {
     fx.setCharge(vs() ? energy.snap.charge : '', energy.snap.chargeK);
     fx.update(realDt, simDt, tw, world);
     fx.applyCamera(cam);
+    finale.applyCamera(cam); // the show pushes in on its winner, on top of the hit's own camera
     fire.tick(realDt, cam, world); // the burning ball's embers (real time)
     supers.tick(realDt, cam, world); // the path a super's ball takes (real time)
     rules.update(clockDt, world);
@@ -10471,7 +11815,7 @@ function createUI(root, opts) {
     audio.tick(realDt, tick);
 
     if (hintUntil && now > hintUntil) { hintUntil = 0; ui.hint(hintText()); }
-    if (rules.state === 'wound' && !resultShown && woundAt >= 0 && now - woundAt > 900) { resultShown = true; ui.showResult(rules.snap); }
+    if (finale.ready && CFG.finale.auto > 0 && finale.sinceReady >= CFG.finale.auto) nextRound(); // the next round, by itself
     ui.update(rules.snap, realDt);
     ui.energy(energy.snap, vs(), chargedS);
     ui.fire(fire.snap, vs(), chargedF);
@@ -10490,6 +11834,8 @@ function createUI(root, opts) {
       const cue = CFG.pace.cue > 0 && world.state === 'live'; // your hit delay: a ring round the ball, emptying; a swipe into it flashes it
       view.paceK = cue ? pace.left('you', paceT) : 0;
       view.paceF = cue ? Math.max(0, 1 - (paceT - paceFlash) / 260) : 0;
+      view.finale = finale.on ? finale : null; // the show: behind the players, on the floor, over them
+      view.smooth = finale.on && cam.zoom !== 1; // its push-in holds for seconds: the court resampled smooth, not in the hit's quick nearest-neighbour
       scene.draw(ctx, cam, world, view);
     }
   }
@@ -10529,7 +11875,7 @@ function createUI(root, opts) {
 
   // ---- test hooks: manual stepping and synthetic swipes through the SAME hit path as a finger ----
   window.__tb = {
-    CFG, world, cam, tw, fx, game, versus, energy, supers, fire, pace, kage, kiru, input, scene, audio, ui, perf, swing, special: armSpecial, fireball: armFire,
+    CFG, world, cam, tw, fx, game, versus, energy, supers, fire, pace, kage, kiru, finale, input, scene, audio, ui, perf, swing, special: armSpecial, fireball: armFire,
     get rules() { return rules; },
     get paceT() { return paceT; }, // the pace clock, ms
     manual(b) { manual = b !== false; },
