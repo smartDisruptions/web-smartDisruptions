@@ -3335,7 +3335,9 @@ function createFX(seed) {
 // ════════ scene.js ════════
 // scene.js — draws the world. The backdrop and court are baked once per camera fit (any refit, including the Feel panel's
 // cam.setInsetBottom, rebakes on the next draw) and blitted under the camera's zoom / roll / shake; everything that moves
-// is drawn live, in the contract's order:
+// is drawn live, in the contract's order. The baked court has two looks (CFG.scene.look, the Court group's "Court look"): a
+// school playground (yard(): the blacktop, the games painted on it, the school wall) and the feel build's night stage (stage()).
+// The order:
 //   court → fx.drawUnder → floor shadows → [behind the pole] → pole → [in front of the pole] → fx.drawOver → finger.
 // The characters (view.actors: Kage and Kiru) are depth-sorted into that order against the pole, the
 // ball and each other by their z, and their speech goes over everything. view.overBall (fire.js: a burning ball) draws round the
@@ -3352,13 +3354,15 @@ CFG.scene = {
   orbitRing: 0.16, // opacity of the ring on the floor under the ball's orbit (it shrinks as the rope winds in)
   gauge: 0.2, // opacity of the 0.5 m height bands on the pole
   fingerMs: 190, // how long the finger trail lasts
+  look: 0, // 0 a school playground (the blacktop, its painted games, the school wall), 1 the night stage the feel build had
 };
 CFG_SCHEMA.push(
   { path: 'scene.stretch', label: 'Ball speed stretch', min: 0, max: 0.4, step: 0.01, group: 'Scene', unit: '' },
   { path: 'scene.shadow', label: 'Floor shadow', min: 0, max: 1.6, step: 0.05, group: 'Scene', unit: '' },
   { path: 'scene.orbitRing', label: 'Orbit ring', min: 0, max: 0.5, step: 0.02, group: 'Scene', unit: '' },
   { path: 'scene.gauge', label: 'Pole height bands', min: 0, max: 0.6, step: 0.02, group: 'Scene', unit: '' },
-  { path: 'scene.fingerMs', label: 'Finger trail', min: 60, max: 500, step: 10, group: 'Scene', unit: 'ms' }
+  { path: 'scene.fingerMs', label: 'Finger trail', min: 60, max: 500, step: 10, group: 'Scene', unit: 'ms' },
+  { path: 'scene.look', label: 'Court look', type: 'choice', options: ['Playground', 'Night stage'], min: 0, max: 1, step: 1, group: 'Court', rank: -1, unit: '' }
 );
 
 function createScene(canvas) {
@@ -3369,7 +3373,7 @@ function createScene(canvas) {
   const NF = 48; // finger-trail points kept
 
   let W = 390, H = 844, kx = 1, ky = 1, quality = 1, wantDpr = 1, sized = false, halves = 0;
-  const NK = 17;
+  const NK = 18;
   const L = { cv: null, cx: null, key: new Float64Array(NK), mPx: 0, mx: 0, my: 0, cw: 0, ch: 0 }; // the baked layer
   const kn = new Float64Array(NK);
   const P = {}, G = {}; // palette strings and unit gradients, built at bake time
@@ -3449,6 +3453,8 @@ function createScene(canvas) {
     G.ballOv = g;
   }
 
+  const lookOf = () => (Math.round(CFG.scene.look) === 1 ? 1 : 0);
+
   function bake(cam) {
     const t0 = performance.now(), Wd = CFG.world, pal = CFG.pal, kmax = Math.max(kx, ky);
     if (!L.cv) { L.cv = canvas.ownerDocument.createElement('canvas'); L.cx = L.cv.getContext('2d'); }
@@ -3480,6 +3486,16 @@ function createScene(canvas) {
       c.transform(B.x - A.x, B.y - A.y, C.x - A.x, C.y - A.y, A.x, A.y);
     };
 
+    if (lookOf() === 1) stage(c, cam, x0, y0, ring, onFloor);
+    else { yard(c, cam, x0, y0); yardHalves(c, cam); yardPole(c, cam, ring, onFloor); yardLight(c, x0, y0); }
+
+    cam.zoom = z0; cam.shakeX = sx0; cam.shakeY = sy0; cam.roll = r0;
+    stats.bakeMs = performance.now() - t0;
+  }
+
+  // ---- the night stage (CFG.scene.look 1): the feel build's dark greybox, a pool of light on a ringed floor ----
+  function stage(c, cam, x0, y0, ring, onFloor) {
+    const Wd = CFG.world, pal = CFG.pal;
     // backdrop: a dark stage with a pool of light behind the pole
     let g = c.createLinearGradient(0, y0, 0, y0 + L.ch);
     g.addColorStop(0, pal.bg0); g.addColorStop(1, U.mix(pal.bg0, pal.bg1, 0.7));
@@ -3579,9 +3595,328 @@ function createScene(canvas) {
     g = c.createRadialGradient(W / 2, H / 2, dg * 0.3, W / 2, H / 2, dg * 0.78);
     g.addColorStop(0, 'rgba(4,6,12,0)'); g.addColorStop(1, 'rgba(4,6,12,0.62)');
     c.fillStyle = g; c.fillRect(x0, y0, L.cw, L.ch);
+  }
 
-    cam.zoom = z0; cam.shakeX = sx0; cam.shakeY = sy0; cam.roll = r0;
-    stats.bakeMs = performance.now() - t0;
+  // ---- the playground (CFG.scene.look 0, Josh's twelfth ask): a school blacktop in the afternoon sun ----
+  // Laid out in world metres round the pole and drawn through the camera, so it lies on the same ground the ball, the players
+  // and their shadows do. What a screen sees depends on its shape: a phone held upright sees ~20 m back, so the school's brick
+  // wall (z = YARD.wallZ) fills the top; landscape and desktop see ~6 m back and the games painted on the blacktop carry it.
+  // Shapes and paint are projected exactly (a quad per stripe, a polygon per circle); the asphalt grain and the bricks are
+  // patterns carried onto their plane by an affine fit at the middle of each band, so the grain shrinks with distance. Seeded,
+  // so a rebake for the same camera gives the same picture bit for bit. The sun is the scene's light: up and to the left,
+  // behind the camera (THROW_X / THROW_Z), so the wall faces it.
+  const YARD = {
+    wallZ: -9.5, wallH: 7.4, apron: 0.45, seed: 20261016,
+    tarFar: '#4d4f54', tarNear: '#36383d', patchD: '#2f3135', patchL: '#55575c', seam: 'rgba(12,13,16,0.5)', crack: 'rgba(10,11,14,0.52)',
+    white: '#eeede6', yellow: '#f4c63c', red: '#e0523f', blue: '#3d7fd8', green: '#46a65a', orange: '#f28b2c', purple: '#9b62d9',
+    chalk: ['#ffe680', '#ff9fc6', '#9fe0ff', '#ffffff'],
+    concrete: '#a19e96', concreteD: '#86837c', brick: '#a8573f', mortar: '#cbbca8', plinth: '#8e8b84', coping: '#77736d',
+    glass: '#7fa6c2', glassHi: '#c8e3f2', frame: '#f1efe8', door: '#2e7a8f', doorD: '#225f70', canopy: '#5f636a', sky: '#b9e0ff',
+    leaf: ['#e08a2c', '#d4642a', '#e8b33b', '#9a5a2e'],
+  };
+  const TEX = { tar: null, brick: null, tried: false }; // patterns' source canvases, made once (never per bake)
+
+  // the asphalt's grain: light aggregate and dark pits on clear, tiling. 1 px = 8 mm of blacktop.
+  function tarCanvas(doc) {
+    const n = 256, cv = doc.createElement('canvas');
+    cv.width = n; cv.height = n;
+    const x = cv.getContext && cv.getContext('2d');
+    if (!x || !x.createImageData || !x.putImageData) return null;
+    const img = x.createImageData(n, n), d = img.data, r = U.rng(YARD.seed);
+    for (let i = 0; i < n * n; i++) {
+      const v = r(), o = i * 4;
+      if (v < 0.075) { d[o] = d[o + 1] = d[o + 2] = 255; d[o + 3] = 14 + r() * 26; } // a pale chip of aggregate
+      else if (v < 0.14) { d[o] = d[o + 1] = d[o + 2] = 0; d[o + 3] = 26 + r() * 40; } // a pit
+    }
+    for (let k = 0; k < 90; k++) { // a few bigger stones, 2-3 px
+      const cx = (r() * n) | 0, cy = (r() * n) | 0, s = 2 + ((r() * 2) | 0), light = r() < 0.6, a = light ? 24 + r() * 20 : 40;
+      for (let yy = 0; yy < s; yy++) for (let xx = 0; xx < s; xx++) { const o = (((cy + yy) % n) * n + ((cx + xx) % n)) * 4; d[o] = d[o + 1] = d[o + 2] = light ? 255 : 0; d[o + 3] = a; }
+    }
+    x.putImageData(img, 0, 0);
+    return cv;
+  }
+  // running-bond brick: two courses of two bricks, 0.45 m × 0.15 m at 200 px/m, each brick its own shade
+  function brickCanvas(doc) {
+    const cv = doc.createElement('canvas'), w = 90, h = 30;
+    cv.width = w; cv.height = h;
+    const x = cv.getContext && cv.getContext('2d');
+    if (!x || !x.fillRect) return null;
+    const r = U.rng(YARD.seed + 1);
+    x.fillStyle = YARD.mortar; x.fillRect(0, 0, w, h);
+    const brick = (bx, by, bw) => { x.fillStyle = U.mix(YARD.brick, r() < 0.5 ? '#6e2f1f' : '#c98a6a', r() * 0.28); x.fillRect(bx, by, bw, 13); };
+    brick(1, 1, 43); brick(46, 1, 43); // course 1
+    brick(-22, 16, 43); brick(23, 16, 43); brick(68, 16, 43); // course 2, half a brick along (it wraps)
+    return cv;
+  }
+  function textures(doc) {
+    if (TEX.tried) return;
+    TEX.tried = true;
+    try { TEX.tar = tarCanvas(doc); TEX.brick = brickCanvas(doc); } catch (e) { TEX.tar = null; TEX.brick = null; }
+  }
+
+  // ground helpers (metres on the plane y = 0, through the camera)
+  function gpoly(c, cam, pts) { // pts: x0, z0, x1, z1, ... a closed polygon
+    for (let i = 0; i < pts.length; i += 2) { cam.project(pts[i], 0, pts[i + 1], A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+    c.closePath();
+  }
+  function gcircle(c, cam, cx, cz, r, n, rev) { // a circle on the ground; rev draws it the other way (a hole, under nonzero)
+    for (let i = 0; i <= n; i++) { const a = ((rev ? n - i : i) / n) * TAU; cam.project(cx + Math.cos(a) * r, 0, cz + Math.sin(a) * r, A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+    c.closePath();
+  }
+  function gring(c, cam, cx, cz, r, w, n) { c.beginPath(); gcircle(c, cam, cx, cz, r + w / 2, n, false); gcircle(c, cam, cx, cz, Math.max(0.001, r - w / 2), n, true); c.fill(); }
+  function gline(c, cam, x0, z0, x1, z1, w) { // a painted stripe w metres wide, as a projected quad
+    const dx = x1 - x0, dz = z1 - z0, l = Math.sqrt(dx * dx + dz * dz) || 1, nx = (-dz / l) * w * 0.5, nz = (dx / l) * w * 0.5;
+    c.beginPath(); gpoly(c, cam, [x0 + nx, z0 + nz, x1 + nx, z1 + nz, x1 - nx, z1 - nz, x0 - nx, z0 - nz]); c.fill();
+  }
+  function gframe(c, cam, x, z, w, d, lw) { // the outline of an axis-aligned rectangle, centred on (x, z)
+    const hx = w / 2, hz = d / 2;
+    gline(c, cam, x - hx, z - hz, x + hx, z - hz, lw); gline(c, cam, x + hx, z - hz, x + hx, z + hz, lw);
+    gline(c, cam, x + hx, z + hz, x - hx, z + hz, lw); gline(c, cam, x - hx, z + hz, x - hx, z - hz, lw);
+  }
+  function onGround(c, cam, x, z) { // c's transform: 1 unit = 1 m on the ground at (x, z), +u along +x, +v along +z
+    cam.project(x, 0, z, A); cam.project(x + 1, 0, z, B); cam.project(x, 0, z + 1, C);
+    c.transform(B.x - A.x, B.y - A.y, C.x - A.x, C.y - A.y, A.x, A.y);
+  }
+  // painted text on the ground, reading from the camera, h metres tall
+  function gtext(c, cam, txt, x, z, h, col, alpha) {
+    if (!c.fillText) return;
+    c.save(); onGround(c, cam, x, z); c.transform(0.01, 0, 0, 0.01, 0, 0);
+    c.globalAlpha = alpha; c.fillStyle = col; c.font = '900 ' + Math.round(h * 100) + 'px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(txt, 0, 0);
+    c.restore();
+  }
+  // wall helpers: the plane z = YARD.wallZ, metres along x and up y
+  function wquad(c, cam, x0, y0, x1, y1, zo) { // a rectangle on the wall (zo: how far it stands out from it)
+    const z = YARD.wallZ + (zo || 0);
+    cam.project(x0, y0, z, A); c.moveTo(A.x, A.y); cam.project(x1, y0, z, A); c.lineTo(A.x, A.y);
+    cam.project(x1, y1, z, A); c.lineTo(A.x, A.y); cam.project(x0, y1, z, A); c.lineTo(A.x, A.y); c.closePath();
+  }
+  function wfill(c, cam, x0, y0, x1, y1, col, alpha, zo) { c.globalAlpha = alpha; c.fillStyle = col; c.beginPath(); wquad(c, cam, x0, y0, x1, y1, zo); c.fill(); }
+
+  function yard(c, cam, x0, y0) {
+    const Wd = CFG.world, R = Wd.groundR, Y = YARD, rnd = U.rng(Y.seed + 7), doc = canvas.ownerDocument;
+    if (doc) textures(doc);
+    const pat = (cv) => (cv && c.createPattern ? c.createPattern(cv, 'repeat') : null);
+
+    // 1. the blacktop: lighter far off (the low sun glances off it), darker at your feet
+    let g = c.createLinearGradient(0, y0, 0, y0 + L.ch);
+    g.addColorStop(0, Y.tarFar); g.addColorStop(1, Y.tarNear);
+    c.globalAlpha = 1; c.fillStyle = g; c.fillRect(x0, y0, L.cw, L.ch);
+    // its grain, band by band so it shrinks with distance (each band clipped to its own strip of ground)
+    const tar = pat(TEX.tar);
+    if (tar) {
+      const bands = [6, 2.5, 0, -2.5, -5, -7.5, Y.wallZ];
+      for (let i = 0; i < bands.length - 1; i++) {
+        const za = bands[i], zb = bands[i + 1];
+        c.save(); c.beginPath(); gpoly(c, cam, [-60, za, 60, za, 60, zb, -60, zb]); c.clip();
+        onGround(c, cam, 0, (za + zb) / 2); c.transform(0.008, 0, 0, 0.008, 0, 0);
+        c.imageSmoothingEnabled = false; c.fillStyle = tar; c.fillRect(-6000, -1500, 12000, 3000); c.imageSmoothingEnabled = true;
+        c.restore();
+      }
+    }
+    // sealcoat that has worn unevenly: soft lighter and darker blooms
+    for (let i = 0; i < 9; i++) {
+      const bx = (rnd() - 0.5) * 16, bz = 4 - rnd() * 13, br = 0.7 + rnd() * 1.3, light = rnd() < 0.5;
+      c.save(); onGround(c, cam, bx, bz); c.transform(br, 0, 0, br * (0.6 + rnd() * 0.5), 0, 0);
+      g = c.createRadialGradient(0, 0, 0, 0, 0, 1);
+      g.addColorStop(0, light ? 'rgba(255,255,255,0.055)' : 'rgba(0,0,0,0.09)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      c.fillStyle = g; c.beginPath(); c.arc(0, 0, 1, 0, TAU); c.fill(); c.restore();
+    }
+    // patched repairs: crisp-edged, a shade darker, with a sealed seam round them
+    const patches = [[-6.2, 2.4, 1.6, 1.1], [5.6, -6.6, 2.2, 1.3], [-2.4, -8.6, 1.5, 0.6], [2.9, 3.1, 1.2, 0.9]];
+    for (let i = 0; i < patches.length; i++) {
+      const p = patches[i], hx = p[2] / 2, hz = p[3] / 2, j = () => (rnd() - 0.5) * 0.12;
+      const pts = [p[0] - hx + j(), p[1] - hz + j(), p[0] + hx + j(), p[1] - hz + j(), p[0] + hx + j(), p[1] + hz + j(), p[0] - hx + j(), p[1] + hz + j()];
+      c.globalAlpha = 0.55; c.fillStyle = Y.patchD; c.beginPath(); gpoly(c, cam, pts); c.fill();
+      c.globalAlpha = 1; c.strokeStyle = Y.seam; c.lineWidth = 1.4; c.stroke();
+    }
+    // cracks: wandering hairlines with a pale lip, kept off the middle of the court
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    for (let i = 0; i < 11; i++) {
+      let px = (rnd() - 0.5) * 16, pz = 4.5 - rnd() * 13.5, a = rnd() * TAU;
+      if (px * px + pz * pz < (R + 0.4) * (R + 0.4)) { px += px >= 0 ? R + 0.6 : -R - 0.6; }
+      const n = 6 + ((rnd() * 9) | 0), pts = [px, pz];
+      for (let k = 0; k < n; k++) { a += (rnd() - 0.5) * 1.1; px += Math.cos(a) * (0.16 + rnd() * 0.24); pz += Math.sin(a) * (0.16 + rnd() * 0.24); if (pz < Y.wallZ + Y.apron || px * px + pz * pz < R * R * 0.3) break; pts.push(px, pz); }
+      for (let pass = 0; pass < 2; pass++) {
+        c.beginPath();
+        for (let k = 0; k < pts.length; k += 2) { cam.project(pts[k], 0, pts[k + 1], A); const ox = pass ? 0 : 0.6, oy = pass ? 0 : 0.8; if (k) c.lineTo(A.x + ox, A.y + oy); else c.moveTo(A.x + ox, A.y + oy); }
+        c.globalAlpha = pass ? 1 : 0.07; c.strokeStyle = pass ? Y.crack : '#ffffff'; c.lineWidth = pass ? 1.3 : 1.1; c.stroke();
+      }
+    }
+
+    // 2. the games painted on it
+    const paint = (col, a) => { c.globalAlpha = a; c.fillStyle = col; };
+    // four-square behind the court, its squares in faded colour and numbered 1 to 4
+    const fx = -1.0, fz = -5.7, fs = 4.2, hs = fs / 2;
+    const sq = [[Y.red, -1, -1], [Y.blue, 1, -1], [Y.yellow, 1, 1], [Y.green, -1, 1]];
+    for (let i = 0; i < 4; i++) { paint(sq[i][0], 0.42); c.beginPath(); gpoly(c, cam, [fx, fz, fx + sq[i][1] * hs, fz, fx + sq[i][1] * hs, fz + sq[i][2] * hs, fx, fz + sq[i][2] * hs]); c.fill(); }
+    paint(Y.white, 0.9); gframe(c, cam, fx, fz, fs, fs, 0.07); gline(c, cam, fx - hs, fz, fx + hs, fz, 0.07); gline(c, cam, fx, fz - hs, fx, fz + hs, 0.07);
+    const nums = ['4', '3', '2', '1'];
+    for (let i = 0; i < 4; i++) gtext(c, cam, nums[i], fx + sq[i][1] * hs * 0.5, fz + sq[i][2] * hs * 0.5, 0.95, Y.white, 0.72);
+    // hopscotch up the left, 1 to 10, the last a half-moon
+    const hx = -3.9, hw = 0.56, rows = [[1], [2, 3], [4], [5, 6], [7], [8, 9]];
+    let hz = 1.15;
+    for (let i = 0; i < rows.length; i++) {
+      const two = rows[i].length === 2;
+      for (let k = 0; k < rows[i].length; k++) {
+        const cx = two ? hx + (k ? hw / 2 : -hw / 2) : hx, col = (rows[i][k] & 1) ? Y.yellow : Y.white;
+        paint(col, 0.88); gframe(c, cam, cx, hz - hw / 2, hw, hw, 0.05);
+        gtext(c, cam, String(rows[i][k]), cx, hz - hw / 2, 0.34, col, 0.8);
+      }
+      hz -= hw;
+    }
+    paint(Y.white, 0.88); c.beginPath();
+    for (let i = 0; i <= 16; i++) { const a = Math.PI + (i / 16) * Math.PI; cam.project(hx + Math.cos(a) * hw * 0.62, 0, hz + Math.sin(a) * hw * 0.62, A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+    c.lineWidth = 2; c.strokeStyle = Y.white; c.stroke();
+    gtext(c, cam, '10', hx, hz - hw * 0.28, 0.3, Y.white, 0.8);
+    // line-up spots on the right, red blue yellow green orange purple
+    const spots = [Y.red, Y.blue, Y.yellow, Y.green, Y.orange, Y.purple];
+    for (let i = 0; i < spots.length; i++) {
+      const sz = 1.25 - i * 0.78;
+      paint(spots[i], 0.8); c.beginPath(); gcircle(c, cam, 4.0, sz, 0.23, 24, false); c.fill();
+      paint(Y.white, 0.75); gring(c, cam, 4.0, sz, 0.23, 0.035, 24);
+    }
+    // a basketball key off the school wall, its hoop on the wall
+    const kx = 3.3, kw = 3.0, kTop = Y.wallZ + Y.apron, kFt = -5.0, kr = 1.5;
+    paint(Y.red, 0.3); c.beginPath(); gpoly(c, cam, [kx - kw / 2, kTop, kx + kw / 2, kTop, kx + kw / 2, kFt, kx - kw / 2, kFt]); c.fill();
+    paint(Y.white, 0.85);
+    gline(c, cam, kx - kw / 2, kTop, kx - kw / 2, kFt, 0.06); gline(c, cam, kx + kw / 2, kTop, kx + kw / 2, kFt, 0.06); gline(c, cam, kx - kw / 2, kFt, kx + kw / 2, kFt, 0.06);
+    c.save(); c.beginPath(); gpoly(c, cam, [kx - 3, kFt, kx + 3, kFt, kx + 3, kFt + 3, kx - 3, kFt + 3]); c.clip(); // the free-throw circle's near half
+    c.beginPath(); gcircle(c, cam, kx, kFt, kr + 0.03, 40, false); gcircle(c, cam, kx, kFt, kr - 0.03, 40, true); c.fill(); c.restore();
+    // chalk drawings near the wall: a sun and a star
+    const chalk = (col, a, w) => { c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = w; };
+    chalk(Y.chalk[0], 0.55, 2);
+    c.beginPath(); gcircle(c, cam, -4.4, -8.3, 0.36, 28, false); c.stroke();
+    for (let i = 0; i < 9; i++) { const a = (i / 9) * TAU; cam.project(-4.4 + Math.cos(a) * 0.5, 0, -8.3 + Math.sin(a) * 0.5, A); cam.project(-4.4 + Math.cos(a) * 0.74, 0, -8.3 + Math.sin(a) * 0.74, B); c.beginPath(); c.moveTo(A.x, A.y); c.lineTo(B.x, B.y); c.stroke(); }
+    chalk(Y.chalk[1], 0.5, 2); c.beginPath();
+    for (let i = 0; i <= 10; i++) { const a = -HALF_PI + (i / 10) * TAU, r = i & 1 ? 0.2 : 0.5; cam.project(1.0 + Math.cos(a) * r, 0, -8.55 + Math.sin(a) * r, A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+    c.stroke();
+    chalk(Y.chalk[2], 0.45, 2); c.beginPath(); // a squiggle
+    for (let i = 0; i <= 18; i++) { cam.project(-6.2 + i * 0.12, 0, -7.2 + Math.sin(i * 0.9) * 0.18, A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+    c.stroke();
+    // a storm drain behind the court on the right: a dark grate with slots
+    paint('#1c1d20', 0.92); c.beginPath(); gpoly(c, cam, [2.35, -2.25, 2.85, -2.25, 2.85, -2.6, 2.35, -2.6]); c.fill();
+    paint('#5a5c61', 0.9); for (let i = 1; i < 6; i++) gline(c, cam, 2.35 + i * 0.083, -2.27, 2.35 + i * 0.083, -2.58, 0.016);
+    c.globalAlpha = 0.8; c.strokeStyle = '#6b6d72'; c.lineWidth = 1.2; c.beginPath(); gpoly(c, cam, [2.35, -2.25, 2.85, -2.25, 2.85, -2.6, 2.35, -2.6]); c.stroke();
+
+    // 3. the tetherball court: a white circle, a line through the pole, chalk where the rope reaches
+    paint(Y.white, 0.94); gring(c, cam, 0, 0, R, 0.06, 120);
+    paint(Y.white, 0.85); gline(c, cam, 0, -R, 0, R, 0.05);
+    c.globalAlpha = 0.34; c.strokeStyle = '#ffffff'; c.lineWidth = 1.6; c.beginPath();
+    for (let i = 0; i < 40; i++) { // chalk dashes
+      const a0 = (i / 40) * TAU, a1 = a0 + (TAU / 40) * 0.55;
+      for (let j = 0; j < 4; j++) { const a = a0 + ((a1 - a0) * j) / 3; cam.project(Math.cos(a) * Wd.ropeL, 0, Math.sin(a) * Wd.ropeL, A); if (j) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+    }
+    c.stroke();
+
+    // 4. the school wall: its apron, then the wall itself over everything beyond it
+    paint(Y.concrete, 1); c.beginPath(); gpoly(c, cam, [-60, Y.wallZ, 60, Y.wallZ, 60, Y.wallZ + Y.apron, -60, Y.wallZ + Y.apron]); c.fill();
+    paint(Y.concreteD, 0.9); for (let x = -30; x <= 30; x += 1.5) gline(c, cam, x, Y.wallZ, x, Y.wallZ + Y.apron, 0.02);
+    paint(Y.concreteD, 0.7); gline(c, cam, -60, Y.wallZ + Y.apron, 60, Y.wallZ + Y.apron, 0.03);
+    // the sky over the roof, should a screen ever see that far up
+    cam.project(0, Y.wallH, Y.wallZ, A);
+    if (A.y > y0) { c.globalAlpha = 1; c.fillStyle = Y.sky; c.fillRect(x0, y0, L.cw, A.y - y0 + 2); }
+    paint(Y.brick, 1); c.beginPath(); wquad(c, cam, -60, 0, 60, Y.wallH); c.fill();
+    const bricks = pat(TEX.brick);
+    if (bricks) {
+      c.save(); c.beginPath(); wquad(c, cam, -60, 0, 60, Y.wallH); c.clip();
+      cam.project(0, 2, Y.wallZ, A); cam.project(1, 2, Y.wallZ, B); cam.project(0, 1, Y.wallZ, C); // u along +x, v down the wall
+      c.transform(B.x - A.x, B.y - A.y, C.x - A.x, C.y - A.y, A.x, A.y); c.transform(0.005, 0, 0, 0.005, 0, 0);
+      c.globalAlpha = 1; c.fillStyle = bricks; c.fillRect(-12000, -1200, 24000, 2400);
+      c.restore();
+    }
+    wfill(c, cam, -60, 0, 60, 0.45, Y.plinth, 1); // a concrete plinth along its foot
+    wfill(c, cam, -60, Y.wallH - 0.3, 60, Y.wallH, Y.coping, 1); // and coping along the top
+    // windows on both floors (some with the children's paintings taped up), and the double door
+    const doorX = -1.0, art = [Y.yellow, Y.red, Y.blue, Y.green, Y.orange, Y.purple];
+    for (let fl = 0; fl < 2; fl++) {
+      const yb = fl ? 3.7 : 1.0, yt = yb + 1.35;
+      for (let x = -28.8; x <= 28.8; x += 3.2) {
+        if (!fl && Math.abs(x - doorX) < 1.8) continue;
+        wfill(c, cam, x - 0.85, yb - 0.08, x + 0.85, yt + 0.08, Y.frame, 1);
+        wfill(c, cam, x - 0.77, yb, x + 0.77, yt, Y.glass, 1);
+        wfill(c, cam, x - 0.77, yb + (yt - yb) * 0.55, x + 0.77, yt, Y.glassHi, 0.45); // the sky in the glass
+        wfill(c, cam, x - 0.03, yb, x + 0.03, yt, Y.frame, 1); wfill(c, cam, x - 0.77, yb + 0.62, x + 0.77, yb + 0.68, Y.frame, 1);
+        if (!fl && rnd() < 0.7) for (let k = 0; k < 2; k++) { const ax = x - 0.62 + k * 0.82 + rnd() * 0.1, ay = yb + 0.12 + rnd() * 0.15; wfill(c, cam, ax, ay, ax + 0.3, ay + 0.38, art[(rnd() * art.length) | 0], 0.85); }
+      }
+    }
+    wfill(c, cam, doorX - 0.95, 0, doorX + 0.95, 2.35, Y.frame, 1);
+    wfill(c, cam, doorX - 0.88, 0, doorX - 0.02, 2.28, Y.door, 1); wfill(c, cam, doorX + 0.02, 0, doorX + 0.88, 2.28, Y.door, 1);
+    wfill(c, cam, doorX - 0.7, 1.25, doorX - 0.2, 2.05, Y.glass, 1); wfill(c, cam, doorX + 0.2, 1.25, doorX + 0.7, 2.05, Y.glass, 1);
+    wfill(c, cam, doorX - 0.86, 0.95, doorX - 0.06, 1.0, Y.doorD, 1); wfill(c, cam, doorX + 0.06, 0.95, doorX + 0.86, 1.0, Y.doorD, 1); // push bars
+    wfill(c, cam, doorX - 1.35, 2.45, doorX + 1.35, 2.62, Y.canopy, 1, 0.7); // the canopy over it
+    // the hoop on the wall: backboard, its square, the orange rim and a white net
+    const bx = kx, bb = 2.75, bt = 3.8;
+    wfill(c, cam, bx - 0.12, 2.2, bx + 0.12, bb, '#3a3d42', 1, 0.1); // the bracket
+    wfill(c, cam, bx - 0.9, bb, bx + 0.9, bt, '#f4f4f0', 1, 0.15); wfill(c, cam, bx - 0.3, bb + 0.15, bx + 0.3, bb + 0.6, Y.red, 0.9, 0.16);
+    wfill(c, cam, bx - 0.26, bb + 0.19, bx + 0.26, bb + 0.56, '#f4f4f0', 1, 0.161);
+    c.globalAlpha = 1; c.strokeStyle = Y.orange; c.lineWidth = 2.2; c.beginPath();
+    for (let i = 0; i <= 24; i++) { const a = (i / 24) * TAU; cam.project(bx + Math.cos(a) * 0.23, 3.05, Y.wallZ + 0.53 + Math.sin(a) * 0.23, A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+    c.stroke();
+    c.globalAlpha = 0.7; c.strokeStyle = '#ffffff'; c.lineWidth = 1;
+    for (let i = 0; i < 8; i++) { const a = (i / 8) * TAU; cam.project(bx + Math.cos(a) * 0.23, 3.05, Y.wallZ + 0.53 + Math.sin(a) * 0.23, A); cam.project(bx + Math.cos(a) * 0.13, 2.68, Y.wallZ + 0.53 + Math.sin(a) * 0.13, B); c.beginPath(); c.moveTo(A.x, A.y); c.lineTo(B.x, B.y); c.stroke(); }
+    // where the wall meets the ground, a little shade
+    c.save(); onGround(c, cam, 0, Y.wallZ);
+    g = c.createLinearGradient(0, 0, 0, 0.9); g.addColorStop(0, 'rgba(0,0,0,0.3)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    c.globalAlpha = 1; c.fillStyle = g; c.fillRect(-60, 0, 120, 0.9); c.restore();
+    // leaves blown against the wall and a few loose ones about (it is autumn)
+    for (let i = 0; i < 70; i++) {
+      const near = i < 44, lx = (rnd() - 0.5) * (near ? 16 : 18), lz = near ? Y.wallZ + Y.apron + rnd() * 0.9 : 4 - rnd() * 12.5;
+      if (!near && lx * lx + lz * lz < (R + 0.3) * (R + 0.3)) continue;
+      cam.project(lx, 0, lz, A);
+      const s = (0.05 + rnd() * 0.05) * A.s;
+      c.globalAlpha = 0.9; c.fillStyle = Y.leaf[(rnd() * Y.leaf.length) | 0];
+      c.beginPath(); c.ellipse(A.x, A.y, Math.max(0.6, s), Math.max(0.4, s * 0.45 * Math.abs(cam.up.z) + 0.3), rnd() * Math.PI, 0, TAU); c.fill();
+    }
+    c.globalAlpha = 1;
+  }
+
+  // the court's halves against Kage, painted: his half in his neon, yours in amber, and who plays where in big letters
+  function yardHalves(c, cam) {
+    if (!halves) return;
+    const R = CFG.world.groundR;
+    for (let k = 0; k < 2; k++) {
+      const sg = k === 0 ? halves : -halves;
+      c.beginPath();
+      for (let i = 0; i <= 40; i++) { const a = -HALF_PI + (i / 40) * Math.PI; cam.project(sg * Math.cos(a) * (R - 0.04), 0, Math.sin(a) * (R - 0.04), A); if (i) c.lineTo(A.x, A.y); else c.moveTo(A.x, A.y); }
+      c.closePath();
+      c.globalAlpha = k === 0 ? 0.17 : 0.2; c.fillStyle = k === 0 ? '#e93dff' : '#ffb426'; c.fill(); // yellow over blacktop goes olive: yours is a little stronger
+    }
+    gtext(c, cam, 'KAGE', halves * R * 0.6, R * 0.6, 0.3, '#f6a8ff', 0.55);
+    gtext(c, cam, 'YOU', -halves * R * 0.6, R * 0.6, 0.3, '#ffd27a', 0.55);
+    c.globalAlpha = 1;
+  }
+
+  // under the pole: a concrete footing, the contact shadow, the shadow it throws in the sun, and its collar
+  function yardPole(c, cam, ring, onFloor) {
+    const Wd = CFG.world, pal = CFG.pal;
+    c.globalAlpha = 1; c.fillStyle = YARD.concrete; c.beginPath(); gcircle(c, cam, 0, 0, 0.27, 40, false); c.fill();
+    c.strokeStyle = YARD.concreteD; c.lineWidth = 1.4; c.stroke();
+    c.save(); onFloor(0, 0, 0.3); c.globalAlpha = 0.45; c.fillStyle = G.shadow; c.beginPath(); c.arc(0, 0, 1, 0, TAU); c.fill(); c.restore();
+    const tx = THROW_X * Wd.poleH, tz = THROW_Z * Wd.poleH, tl = Math.sqrt(tx * tx + tz * tz), hw = Wd.poleR * 1.15;
+    cam.project(0, 0, 0, A); cam.project(tx, 0, tz, B);
+    const g = c.createLinearGradient(A.x, A.y, B.x, B.y);
+    g.addColorStop(0, 'rgba(0,0,0,0.42)'); g.addColorStop(1, 'rgba(0,0,0,0.08)');
+    c.fillStyle = g; c.globalAlpha = 1; c.beginPath();
+    cam.project(-tz / tl * hw, 0, tx / tl * hw, C); c.moveTo(C.x, C.y);
+    cam.project(tz / tl * hw, 0, -tx / tl * hw, C); c.lineTo(C.x, C.y);
+    cam.project(tx + tz / tl * hw, 0, tz - tx / tl * hw, C); c.lineTo(C.x, C.y);
+    cam.project(tx - tz / tl * hw, 0, tz + tx / tl * hw, C); c.lineTo(C.x, C.y);
+    c.closePath(); c.fill();
+    c.fillStyle = U.mix(YARD.concrete, pal.poleDark, 0.6); c.beginPath(); ring(0.12, 32); c.fill();
+    c.strokeStyle = pal.pole; c.globalAlpha = 0.6; c.lineWidth = 1; c.stroke(); c.globalAlpha = 1;
+  }
+
+  // the light over it all: a soft vignette, and a scrim behind the HUD so its numbers read against the wall
+  function yardLight(c, x0, y0) {
+    const dg = Math.sqrt(W * W + H * H);
+    let g = c.createRadialGradient(W / 2, H * 0.55, dg * 0.32, W / 2, H * 0.55, dg * 0.8);
+    g.addColorStop(0, 'rgba(10,8,6,0)'); g.addColorStop(1, 'rgba(10,8,6,0.36)');
+    c.globalAlpha = 1; c.fillStyle = g; c.fillRect(x0, y0, L.cw, L.ch);
+    const band = H < 520 ? 72 : 150; // the HUD's dim labels sit as low as ~80 px on a tall phone: keep it dark that far down
+    g = c.createLinearGradient(0, y0, 0, band);
+    g.addColorStop(0, 'rgba(8,10,16,0.62)'); g.addColorStop(0.55, 'rgba(8,10,16,0.36)'); g.addColorStop(1, 'rgba(8,10,16,0)');
+    c.fillStyle = g; c.fillRect(x0, y0, L.cw, band - y0);
   }
 
   // Rebake when the camera was refit (a resize, the Feel panel's cam.setInsetBottom, a retuned pitch), the canvas changed or
@@ -3589,7 +3924,7 @@ function createScene(canvas) {
   function sync(cam) {
     const w = CFG.world;
     kn[0] = W; kn[1] = H; kn[2] = kx; kn[3] = ky; kn[4] = cam.F; kn[5] = cam.cx; kn[6] = cam.cy; kn[7] = cam.w; kn[8] = cam.h;
-    kn[9] = cam.pitchDeg; kn[10] = cam.pos.y; kn[11] = cam.pos.z; kn[12] = w.groundR; kn[13] = w.poleH; kn[14] = w.ropeL; kn[15] = w.poleR; kn[16] = halves;
+    kn[9] = cam.pitchDeg; kn[10] = cam.pos.y; kn[11] = cam.pos.z; kn[12] = w.groundR; kn[13] = w.poleH; kn[14] = w.ropeL; kn[15] = w.poleR; kn[16] = halves; kn[17] = lookOf();
     let i = 0;
     while (i < NK && kn[i] === L.key[i]) i++;
     if (i < NK || !L.cv) { bake(cam); L.key.set(kn); }
@@ -3610,7 +3945,7 @@ function createScene(canvas) {
     const z = cam.zoom, co = Math.cos(cam.roll), si = Math.sin(cam.roll), mx = cam.w * 0.5, my = cam.h * 0.5;
     const tx = cam.focusX * (1 - z) - mx, ty = cam.focusY * (1 - z) - my;
     base(ctx);
-    if (z < 0.97 || Math.abs(cam.roll) > 0.04) { ctx.fillStyle = CFG.pal.bg0; ctx.fillRect(0, 0, W, H); }
+    if (z < 0.97 || Math.abs(cam.roll) > 0.04) { ctx.fillStyle = lookOf() === 1 ? CFG.pal.bg0 : YARD.tarNear; ctx.fillRect(0, 0, W, H); }
     ctx.setTransform(kx * z * co, ky * z * si, -kx * z * si, ky * z * co, kx * (mx + tx * co - ty * si + cam.shakeX), ky * (my + tx * si + ty * co + cam.shakeY));
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(L.cv, -L.mx, -L.my, L.cw, L.ch);
