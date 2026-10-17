@@ -117,29 +117,28 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 #hintText { padding: 10px 20px; border-radius: 99px; background: var(--glass); border: 1px solid var(--line); font: 800 14px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--text); animation: hintPulse 2.2s ease-in-out infinite; }
 @keyframes hintPulse { 0%, 100% { opacity: .62; } 50% { opacity: 1; } }
 
-/* ───────────── the power-ups (versus): one row under the strip, yours at the top of your side, where a thumb ends its swipe up
-   (big, so it is easy to hit straight after one), Kage's in the same row on his. Each player has their energy ring in the corner
-   and, beside it toward the middle, the flame of a power-up a fire volley won. The camera keeps the ball's envelope below the row
-   (tests/buttons.mjs measures it), and the show at a round's end hides it, since its numbers go along the top. */
-#hud { --pu-mid: 132px; --pu-y: 76px; --pu-k: 52px; --pu-fy: 56px; --pu-fk: 36px; --pu-gap: 8px; --pu-edge: 12px; } /* the row's centre line under the safe inset, and the sizes: your ring, his, your flame, his */
+/* ───────────── the power-ups (versus): a row in the corner the Buttons settings pick (top right by default), yours in that corner
+   and Kage's in the other corner of the same row. Each player's energy ring sits in the corner and, beside it toward the middle,
+   the flame of a power-up a fire volley won. ui.js lays them out in px (left/top/width/height, --r the corner radius) and gives
+   yours a hit zone: the ::before, reaching --hz-* past the button (out to the screen's edge on the outside). The camera keeps the
+   ball out from under the whole block (cam.setCorners), and the show at a round's end hides it, since its numbers go along the
+   top. Yours can be wide tiles (data-pushape): the ring becomes a bar along the tile's foot. */
 #energy, #fireHud { transition: opacity .25s, visibility .25s; }
 #hud[data-state="wound"] #energy, #hud[data-state="wound"] #fireHud { opacity: 0; visibility: hidden; }
+.ey::before, .fy::before { content: ''; position: absolute; top: calc(-1 * var(--hz-t, 0px)); right: calc(-1 * var(--hz-r, 0px)); bottom: calc(-1 * var(--hz-b, 0px)); left: calc(-1 * var(--hz-l, 0px)); }
 
 /* energy: the ring fills with volleys (amber yours, magenta his); a full one glows, and yours takes a tap (unless a curved swipe
-   is the only trigger): armed, it fills storm blue. */
+   is the only trigger): armed, it fills storm blue. While it fills, a tap on it shakes it and says how long to go. */
 #energy { display: none; }
 #hud[data-energy="on"] #energy { display: block; }
-.eg { position: absolute; top: calc(var(--st) + var(--pu-mid) - var(--pu-k) / 2); width: var(--pu-k); height: var(--pu-k); padding: 0; border: 0; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--dim); pointer-events: none; text-shadow: none; transition: background .15s, color .15s, box-shadow .2s, transform .1s; }
-.ey { top: calc(var(--st) + var(--pu-mid) - var(--pu-y) / 2); width: var(--pu-y); height: var(--pu-y); }
-#hud[data-ks="l"] .ek, #hud[data-ks="r"] .ey { left: calc(var(--sl) + var(--pu-edge)); }
-#hud[data-ks="l"] .ey, #hud[data-ks="r"] .ek { right: calc(var(--sr) + var(--pu-edge)); }
+.eg { position: absolute; left: 0; top: 0; width: 52px; height: 52px; padding: 0; border: 0; border-radius: var(--r, 50%); background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--dim); pointer-events: none; text-shadow: none; transition: background .15s, color .15s, box-shadow .2s, transform .1s; }
 .eg svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .eg .tr { fill: none; stroke: rgba(233,237,246,.13); stroke-width: 4; }
 .eg .fl { fill: none; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset .25s ease-out, stroke .15s; }
 .eg .ic { fill: currentColor; }
 .ey .fl { stroke: var(--accent); }
 .ek .fl { stroke: var(--kage); }
-.ey[data-st="full"], .ey[data-st="armed"] { pointer-events: auto; }
+.ey:not(:disabled) { pointer-events: auto; }
 .ey[data-st="full"] { color: var(--cool); animation: egPulse 1.1s ease-in-out infinite; }
 .ey[data-st="full"] .fl { stroke: var(--cool); }
 .ey[data-st="armed"] { background: var(--cool); color: #04121c; box-shadow: 0 0 0 3px rgba(90,209,255,.35), 0 0 26px rgba(90,209,255,.75); }
@@ -148,19 +147,20 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .ek[data-st="full"] { color: var(--kage); box-shadow: inset 0 0 0 1px rgba(233,61,255,.55), 0 0 16px rgba(233,61,255,.45); }
 .ek[data-st="armed"] { background: var(--kage); color: var(--kage-ink); box-shadow: 0 0 0 3px rgba(233,61,255,.3), 0 0 26px rgba(233,61,255,.75); }
 .ek[data-st="armed"] .fl { stroke: #fff1ff; }
-#hud[data-state="wound"] .ey, #hud[data-trigger="curve"] .ey[data-st] { pointer-events: none; } /* a curved swipe is the trigger: the ring only shows it */
+#hud[data-state="wound"] .ey { pointer-events: none; }
 @keyframes egPulse { 0%, 100% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.5), 0 0 6px rgba(90,209,255,.3); transform: scale(1); } 50% { box-shadow: inset 0 0 0 1px rgba(90,209,255,.9), 0 0 24px rgba(90,209,255,.75); transform: scale(1.07); } }
+/* a wide tile: no ring, a bar along its foot fills instead */
+#hud[data-pushape="wide"] .ey .tr, #hud[data-pushape="wide"] .ey .fl { display: none; }
+#hud[data-pushape="wide"] .ey::after { content: ''; position: absolute; left: 14%; right: 14%; bottom: 11%; height: 8%; min-height: 5px; border-radius: 99px; pointer-events: none;
+  background: linear-gradient(90deg, var(--bar, var(--accent)) calc(var(--e, 0) * 100%), rgba(233,237,246,.16) 0); }
+.ey[data-st="full"] { --bar: var(--cool); }
+.ey[data-st="armed"] { --bar: #f2fdff; }
 /* fire volleys: each player's second power-up, a flame beside their energy ring (it shows once won, burns while armed, and yours
-   takes a tap as your ring does), and the streak toward a fire volley at the bottom, a pip a hit in the hitter's colour, all ablaze
-   once the ball is on fire. */
+   takes a tap as your ring does), and the streak toward a fire volley, a pip a hit in the hitter's colour, all ablaze once the
+   ball is on fire (over the hint at the bottom, or under it at the top). */
 #fireHud { display: none; }
 #hud[data-fire="on"] #fireHud { display: block; }
-.fb { position: absolute; top: calc(var(--st) + var(--pu-mid) - var(--pu-fk) / 2); width: var(--pu-fk); height: var(--pu-fk); padding: 0; border: 0; border-radius: 50%; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--fire-mid, #ffae1f); opacity: 0; transform: scale(.6); transition: opacity .2s, transform .2s, background .15s, box-shadow .2s; pointer-events: none; text-shadow: none; }
-.fy { top: calc(var(--st) + var(--pu-mid) - var(--pu-fy) / 2); width: var(--pu-fy); height: var(--pu-fy); }
-#hud[data-ks="l"] .fk { left: calc(var(--sl) + var(--pu-edge) + var(--pu-k) + var(--pu-gap)); }
-#hud[data-ks="r"] .fy { left: calc(var(--sl) + var(--pu-edge) + var(--pu-y) + var(--pu-gap)); }
-#hud[data-ks="l"] .fy { right: calc(var(--sr) + var(--pu-edge) + var(--pu-y) + var(--pu-gap)); }
-#hud[data-ks="r"] .fk { right: calc(var(--sr) + var(--pu-edge) + var(--pu-k) + var(--pu-gap)); }
+.fb { position: absolute; left: 0; top: 0; width: 36px; height: 36px; padding: 0; border: 0; border-radius: var(--r, 50%); background: var(--glass); box-shadow: inset 0 0 0 1px var(--line); color: var(--fire-mid, #ffae1f); opacity: 0; transform: scale(.6); transition: opacity .2s, transform .2s, background .15s, box-shadow .2s; pointer-events: none; text-shadow: none; }
 .fy[data-st="held"]:not(:disabled), .fy[data-st="armed"]:not(:disabled) { pointer-events: auto; }
 #hud[data-state="wound"] .fy { pointer-events: none; }
 .fb svg { display: block; width: 100%; height: 100%; }
@@ -180,6 +180,8 @@ button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 #streak i.f { background: var(--fire-mid, #ffae1f); box-shadow: 0 0 8px var(--fire-glow, #ff7a1a); animation: pipFire .5s ease-in-out infinite alternate; }
 @keyframes pipFire { from { box-shadow: 0 0 4px var(--fire-glow, #ff7a1a); } to { box-shadow: 0 0 12px var(--fire-glow, #ff7a1a), 0 0 2px var(--fire-core, #fff4c2); } }
 #hud[data-energy="on"] #hintText { text-align: center; line-height: 1.25; }
+#hud[data-hint="top"] #hint { top: calc(var(--strip, 88px) + 8px); bottom: auto; }
+#hud[data-hint="top"] #streak { top: calc(var(--strip, 88px) + 56px); bottom: auto; }
 @media (max-width: 429px) { #hud[data-energy="on"] #hintText { padding: 8px 14px; font-size: 12px; letter-spacing: .05em; } }
 
 /* ───────────── the round's end: the show is on the canvas (finale.js); this layer over it only takes the taps ───────────── */
@@ -370,7 +372,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   #hTime { font-size: 19px; }
   #hint { bottom: calc(var(--sb) + 2px); }
   #hintText { padding: 6px 14px; font-size: 11px; }
-  #hud { --pu-mid: 86px; --pu-y: 64px; --pu-k: 44px; --pu-fy: 50px; --pu-fk: 32px; } /* the row under the slim strip, in the side bands */
   .next { bottom: calc(var(--sb) + 8px); height: 40px; font-size: 15px; }
 }
 
@@ -673,9 +674,10 @@ const U = {
 // unproject(sx,sy,planeY)  screen px → the world point where that pixel's ray meets the horizontal plane y=planeY
 //                          (this is how a swipe becomes a hand moving through the ball's plane)
 // setInsetBottom(px)       px of extra safe space under the court (the Feel panel covers it): the court refits above it
-// setCorners(x, y)         the top corners kept clear of the ball (the power-up buttons): x px in from each side, y px down
-//                          from the top; 0 for none. Where the fit would put the ball under one, the court comes down just
-//                          far enough to clear it (a tall phone has room above the court, so its fit does not move)
+// setCorners(x, y, edge)   the corners kept clear of the ball (the power-up buttons): x px in from each side, y px in from
+//                          the top (edge 'top') or the foot ('bottom'); 0 for none. Where the fit would put the ball under one,
+//                          the court's edge on that side comes in just far enough to clear it (a tall phone has room above
+//                          and below the court, so its fit does not move)
 // area                     {l,t,r,b}: the screen box the fit keeps the ball's envelope and the pole in
 // sync()                   refit if a CFG number the fit reads was retuned (the scene calls it every frame)
 //
@@ -709,8 +711,8 @@ function createCamera() {
     pos: { x: 0, y: 0, z: 0 }, fwd: { x: 0, y: 0, z: -1 }, up: { x: 0, y: 1, z: 0 },
     pxPerM: 100, // px per metre at the pole axis, mid-height (for sizing things in screen space)
     area: { l: 0, t: 0, r: 0, b: 0 }, // the screen box the fit keeps the ball's envelope and the pole in (at rest: no zoom, roll or shake)
-    corner: { x: 0, y: 0 }, // the top corners kept clear (setCorners)
-    top: 76, // the court's top edge as fitted: safe.top, or lower where a corner asked for it
+    corner: { x: 0, y: 0, edge: 'top' }, // the corners kept clear (setCorners)
+    top: 76, bottom: 64, // the court's edges as fitted: the safe rect's, or further in where a corner asked for it
   };
   const base = { top: 76, bottom: 64, left: 10, right: 10 }; // the HUD bands the caller asked for, before the inset
   const NK = 14;
@@ -718,7 +720,7 @@ function createCamera() {
   const NL = 16, NA = 64; // polar steps and azimuths sampled over the ball's envelope: the fit errs by under a pixel
   // the corner test samples the shell finer (a gap between two samples could hide a corner), in pre-focal coords: the fit only
   // scales and moves them, so one sampling serves every trial fit
-  const CL = 32, CA = 256, CN = (CL + 1) * CA;
+  const CL = 32, CA = 512, CN = (CL + 1) * CA; // 512 round: on a 1400 px square window a gap between samples is still under a ball
   const cXn = new Float64Array(CN), cYn = new Float64Array(CN), cEx = new Float64Array(CN), cEy = new Float64Array(CN);
 
   // the pitch follows the window's shape: a wide window is short for the orbit's width, a tall one is narrow for its height
@@ -776,17 +778,17 @@ function createCamera() {
     add(0, W.poleH, 0, 0.08, 0.08); // the pole cap
     add(0, 0, 0, 0.14, 0.14); // and its foot, so the pole stands on something
     const sf = cam.safe;
-    const place = (top) => {
-      const availW = Math.max(1, cam.w - sf.left - sf.right), availH = Math.max(60, cam.h - top - sf.bottom - 2 * pad);
+    const place = (top, bot) => {
+      const availW = Math.max(1, cam.w - sf.left - sf.right), availH = Math.max(60, cam.h - top - bot - 2 * pad);
       cam.F = Math.min(availW / (2 * xMax), availH / (yMax - yMin));
       cam.cx = (sf.left + (cam.w - sf.right)) / 2;
-      const bandMid = (top + (cam.h - sf.bottom)) / 2;
+      const bandMid = (top + (cam.h - bot)) / 2;
       cam.cy = bandMid + cam.F * (yMin + yMax) / 2; // sy = cy - yn·F  ⇒ mid of [yMin,yMax] lands on bandMid
-      cam.top = top;
+      cam.top = top; cam.bottom = bot;
     };
-    place(sf.top);
-    const cn = cam.corner;
-    if (cn.x > 0 && cn.y > sf.top) {
+    place(sf.top, sf.bottom);
+    const cn = cam.corner, foot = cn.edge === 'bottom', base = foot ? sf.bottom : sf.top;
+    if (cn.x > 0 && cn.y > base) {
       let n = 0;
       for (let k = 0; k <= CL; k++) {
         const al = (aMax * k) / CL, y = Math.max(W.ballR, W.attachY - reach * Math.cos(al)), rho = reach * Math.sin(al);
@@ -798,17 +800,19 @@ function createCamera() {
       }
       // a ball under either corner (2 px to spare): the envelope is mirror-symmetric, but the insets need not be
       const under = () => {
-        const F = cam.F, xl = cn.x + 2, xr = cam.w - cn.x - 2, yb = cn.y + 2;
+        const F = cam.F, xl = cn.x + 2, xr = cam.w - cn.x - 2, yb = foot ? cam.h - cn.y - 2 : cn.y + 2;
         for (let i = 0; i < CN; i++) {
           const sx = cam.cx + F * cXn[i], rx = F * cEx[i];
-          if (cam.cy - F * (cYn[i] + cEy[i]) < yb && (sx + rx > xr || sx - rx < xl)) return true;
+          const inRow = foot ? cam.cy - F * (cYn[i] - cEy[i]) > yb : cam.cy - F * (cYn[i] + cEy[i]) < yb;
+          if (inRow && (sx + rx > xr || sx - rx < xl)) return true;
         }
         return false;
       };
-      if (under()) { // bring the top edge down until it clears: all the way down to the corners always does
-        let lo = sf.top, hi = cn.y + 2;
-        for (let i = 0; i < 12 && hi - lo > 0.5; i++) { const m = (lo + hi) / 2; place(m); if (under()) lo = m; else hi = m; }
-        place(hi);
+      const fit = (m) => (foot ? place(sf.top, m) : place(m, sf.bottom));
+      if (under()) { // bring that edge in until it clears: all the way in to the corners always does
+        let lo = base, hi = cn.y + 2;
+        for (let i = 0; i < 12 && hi - lo > 0.5; i++) { const m = (lo + hi) / 2; fit(m); if (under()) lo = m; else hi = m; }
+        fit(hi);
       }
     }
     cam.area.l = cam.cx - cam.F * xMax; cam.area.r = cam.cx + cam.F * xMax; cam.area.t = cam.cy - cam.F * yMax; cam.area.b = cam.cy - cam.F * yMin;
@@ -848,11 +852,11 @@ function createCamera() {
     cam.refit();
   };
 
-  // the power-up buttons in the top corners (ui: main.js reads their row off the CSS): keep the ball out from under them
-  cam.setCorners = function (x, y) {
-    const cx = x > 0 && y > 0 ? x : 0, cy = cx ? y : 0;
-    if (cx === cam.corner.x && cy === cam.corner.y) return false;
-    cam.corner.x = cx; cam.corner.y = cy;
+  // the power-up buttons in two corners of the top or the foot (ui.js lays them out, main.js passes them on): keep the ball out from under them
+  cam.setCorners = function (x, y, edge) {
+    const cx = x > 0 && y > 0 ? x : 0, cy = cx ? y : 0, ce = edge === 'bottom' ? 'bottom' : 'top';
+    if (cx === cam.corner.x && cy === cam.corner.y && ce === cam.corner.edge) return false;
+    cam.corner.x = cx; cam.corner.y = cy; cam.corner.edge = ce;
     cam.refit();
     return true;
   };
@@ -10537,6 +10541,23 @@ CFG_SCHEMA.push(
   { path: 'ui.ease', label: 'Speed number chase', min: 4, max: 40, step: 1, group: 'HUD', unit: '1/s' }
 );
 
+// The power-up buttons (versus): your special and the fire flame beside it, in the corner you pick, with Kage's pair in the other
+// corner of the same row. Josh, 2026-10-16: "they're still difficult to hit". So they answer the touch going DOWN (a click waits for
+// the finger to lift, and drops a tap whose thumb is still sliding from a swipe, or one made while another finger is on the court),
+// and each takes a tap well past what it draws: out to the screen's edge on the outside, `reach` px on the other sides.
+CFG.buttons = {
+  where: 0, // 0 top right, 1 top left, 2 bottom right, 3 bottom left
+  size: 96, // px: your special button's height (84 % of it on a short screen); the flame is 74 % of it. A row too wide shrinks
+  shape: 1, // 0 round, 1 wide (a tile half as wide again as it is tall: more to hit)
+  reach: 20, // px round each of yours that still counts as a tap
+};
+CFG_SCHEMA.push(
+  { path: 'buttons.where', label: 'Where', type: 'choice', options: ['Top right', 'Top left', 'Bottom right', 'Bottom left'], min: 0, max: 3, step: 1, group: 'Buttons', rank: -2.78, unit: '' },
+  { path: 'buttons.size', label: 'Size', min: 56, max: 140, step: 4, group: 'Buttons', rank: -2.78, unit: 'px' },
+  { path: 'buttons.shape', label: 'Shape', type: 'choice', options: ['Round', 'Wide'], min: 0, max: 1, step: 1, group: 'Buttons', rank: -2.78, unit: '' },
+  { path: 'buttons.reach', label: 'A tap counts this far out', min: 0, max: 40, step: 2, group: 'Buttons', rank: -2.78, unit: 'px' }
+);
+
 function createUI(root, opts) {
   opts = opts || {};
   const $ = (id) => root.querySelector('#' + id);
@@ -10618,40 +10639,127 @@ function createUI(root, opts) {
     if (snap.hits !== lastHits) { if (snap.hits > lastHits) pop(); lastHits = snap.hits; }
   }
 
-  // ───────────── energy (versus): your special button and Kage's gauge, filled round their rings ─────────────
+  // ───────────── the power-up row (versus): your special ring and fire flame in the corner CFG.buttons.where picks, Kage's ring and
+  // flame (smaller, always round: they only show) in the other corner of the same row. Laid out here in px from the strip's
+  // height, the safe insets and the settings; each of yours gets a hit zone (its ::before, the --hz-* insets) out to the screen's
+  // edge on the outside and `reach` px elsewhere. row(): the corner block the camera keeps the ball out of (main.js). ─────────────
   const enBtn = $('bSpecial'), enY = $('eYouR'), enK = $('eKageR'), enKEl = $('eKage');
+  const fY = $('fYou'), fK = $('fKage'), stEl = $('streak');
+  const stripEl = root.querySelector('.hud-in'), btnsEl = root.querySelector('.btns');
+  const pu = { edge: 'top', x: 0, y: 0, hintTop: false, w: 0, h: 0, ins: { t: 0, r: 0, b: 0, l: 0 }, scale: 1, size: 0 };
+  const puKey = new Float64Array(10);
+  puKey[0] = -1;
+  const PULSE = 1.1; // a ready button's pulse swells it this much (egPulse, fbPulse): the camera keeps clear of the swell too
+  function viewport(w, h, ins) { pu.w = w; pu.h = h; if (ins) { pu.ins.t = ins.t || 0; pu.ins.r = ins.r || 0; pu.ins.b = ins.b || 0; pu.ins.l = ins.l || 0; } }
+  function box(el, l, t, w, h, rad) {
+    const s = el.style;
+    s.left = l.toFixed(1) + 'px'; s.top = t.toFixed(1) + 'px'; s.width = w.toFixed(1) + 'px'; s.height = h.toFixed(1) + 'px'; s.setProperty('--r', rad.toFixed(1) + 'px');
+  }
+  function zone(el, t, r, b, l) {
+    const s = el.style;
+    s.setProperty('--hz-t', Math.max(0, t).toFixed(1) + 'px'); s.setProperty('--hz-r', Math.max(0, r).toFixed(1) + 'px');
+    s.setProperty('--hz-b', Math.max(0, b).toFixed(1) + 'px'); s.setProperty('--hz-l', Math.max(0, l).toFixed(1) + 'px');
+  }
+  function layoutRow() {
+    const B = CFG.buttons, ins = pu.ins, w = pu.w || hud.clientWidth, h = pu.h || hud.clientHeight, short = h < 520;
+    const where = U.clamp(Math.round(+B.where) || 0, 0, 3), right = where === 0 || where === 2, bottom = where >= 2, wide = Math.round(+B.shape) === 1;
+    const reach = U.clamp(+B.reach || 0, 0, 80), gap = 12, edge = 12; // 12 between ring and flame: both pulsing at once still clear
+    let Y = U.clamp(+B.size || 96, 40, 180) * (short ? 0.84 : 1);
+    const K = short ? 44 : 52, FK = Math.round(K * 0.7);
+    // yours shrink if the row would not fit across the screen with a little room between the pairs
+    const room = w - ins.l - ins.r - 2 * edge - (K + gap + FK) - 24, need = Y * ((wide ? 1.5 : 1) + 0.74 * (wide ? 1.35 : 1)) + gap;
+    pu.scale = need > room && room > 40 ? room / need : 1;
+    Y *= pu.scale;
+    const F = Y * 0.74, yw = wide ? Y * 1.5 : Y, fw = wide ? F * 1.35 : F;
+    pu.size = Y;
+    // top0: how high a zone reaches, 10 px under the strip's buttons (a pulse swells a zone too, and they must stay theirs)
+    const strip = stripEl ? stripEl.getBoundingClientRect().bottom : ins.t + 88, top0 = btnsEl ? btnsEl.getBoundingClientRect().bottom + 10 : strip;
+    const cy = bottom ? h - ins.b - edge - Y / 2 : strip + 6 + Y / 2;
+    // each element at distance d in from its side's outer edge
+    const at = (rightSide, d, ew) => (rightSide ? w - ins.r - edge - d - ew : ins.l + edge + d);
+    const yl = at(right, 0, yw), fl = at(right, yw + gap, fw), kl = at(!right, 0, K), fkl = at(!right, K + gap, FK);
+    box(enBtn, yl, cy - Y / 2, yw, Y, wide ? Y * 0.24 : Y / 2);
+    box(fY, fl, cy - F / 2, fw, F, wide ? F * 0.24 : F / 2);
+    box(enKEl, kl, cy - K / 2, K, K, K / 2);
+    box(fK, fkl, cy - FK / 2, FK, FK, FK / 2);
+    // the hit zones: toward the row's edge all the way (up to the strip's buttons, or down to the screen's foot), outward to the
+    // screen's side, half the gap between ring and flame, `reach` elsewhere; the flame's reaches as low (or high) as the ring's
+    const outR = (right ? ins.r : ins.l) + edge, toEdge = (y0, y1) => (bottom ? h - y1 : y0 - top0);
+    const yT = cy - Y / 2, yB = cy + Y / 2, fT = cy - F / 2, fB = cy + F / 2, away = reach, fAway = reach + (Y - F) / 2;
+    const yv = bottom ? [away, toEdge(yT, yB)] : [toEdge(yT, yB), away], fv = bottom ? [fAway, toEdge(fT, fB)] : [toEdge(fT, fB), fAway];
+    if (right) { zone(enBtn, yv[0], outR, yv[1], gap / 2); zone(fY, fv[0], gap / 2, fv[1], reach); }
+    else { zone(enBtn, yv[0], gap / 2, yv[1], outR); zone(fY, fv[0], reach, fv[1], gap / 2); }
+    // the corner block the ball keeps out of: yours with their zones and their pulse, his with his pulse, the wider on both sides
+    const swell = (PULSE - 1) / 2;
+    const mine = outR + yw + gap + fw * (1 + swell) + reach, his = (right ? ins.l : ins.r) + edge + K + gap + FK * (1 + swell);
+    pu.edge = bottom ? 'bottom' : 'top';
+    pu.x = Math.max(mine, his);
+    pu.y = bottom ? h - (cy - Y / 2 * PULSE - reach) : cy + Y / 2 * PULSE + reach;
+    // a row along the foot of a tall screen leaves the hint no room between the pairs: it goes up under the strip
+    pu.hintTop = bottom && w - pu.x - Math.min(mine, his) - 16 < 280;
+    hud.setAttribute('data-pu', pu.edge); hud.setAttribute('data-pushape', wide ? 'wide' : 'round'); hud.setAttribute('data-hint', pu.hintTop ? 'top' : '');
+    hud.style.setProperty('--strip', strip.toFixed(1) + 'px');
+  }
+  // relaid only when the screen or a setting moves (a frame costs ten compares)
+  function syncRow() {
+    const B = CFG.buttons, ins = pu.ins, k = puKey;
+    if (k[0] !== pu.w || k[1] !== pu.h || k[2] !== ins.t || k[3] !== ins.r || k[4] !== ins.b || k[5] !== ins.l || k[6] !== +B.where || k[7] !== +B.size || k[8] !== +B.shape || k[9] !== +B.reach) {
+      k[0] = pu.w; k[1] = pu.h; k[2] = ins.t; k[3] = ins.r; k[4] = ins.b; k[5] = ins.l; k[6] = +B.where; k[7] = +B.size; k[8] = +B.shape; k[9] = +B.reach;
+      layoutRow();
+    }
+    return pu;
+  }
+
+  // A press acts as the touch goes down. The click a pointer makes after it (detail ≥ 1) is dropped; a click from Enter or Space
+  // on the focused button (detail 0) still acts.
+  function press(el, act) {
+    el.addEventListener('pointerdown', (e) => { if (e.button > 0) return; act(); });
+    el.addEventListener('click', (e) => { if (e.detail === 0) act(); });
+  }
+  // a tap that came too early: the button shakes, so it is plain the tap landed
+  function nope(el) {
+    if (el.animate) el.animate([{ translate: '0 0' }, { translate: '-6px 0' }, { translate: '6px 0' }, { translate: '-4px 0' }, { translate: '0 0' }], { duration: 320, easing: 'ease-out' });
+  }
+
+  // ───────────── energy (versus): your special button and Kage's gauge, filled round their rings (or along a bar, on a wide tile)
   let enOn = -1, enYQ = -1, enKQ = -1, enYS = '', enKS = '', enTrig = -1;
-  // charged: your swing has curved enough to unleash it (it shows as armed). The trigger setting decides whether the ring is a button.
+  // charged: your swing has curved enough to unleash it (it shows as armed). The trigger setting decides whether the ring is a
+  // button; when it is, it takes a tap even while it fills, and says it is not ready.
   function energy(es, show, charged) {
     const on = show && es && es.on ? 1 : 0;
     if (on !== enOn) { enOn = on; hud.setAttribute('data-energy', on ? 'on' : ''); }
     if (!on) return;
+    syncRow();
     const trig = CFG.energy ? CFG.energy.trigger | 0 : 1;
     if (trig !== enTrig) { enTrig = trig; enYS = ''; hud.setAttribute('data-trigger', trig === 0 ? 'curve' : trig === 1 ? 'tap' : 'both'); }
     const yq = Math.round(U.clamp01(es.you) * 100), kq = Math.round(U.clamp01(es.kage) * 100);
     // an empty ring hides its stroke: a round cap would still draw a dot
-    if (yq !== enYQ) { enYQ = yq; enY.style.strokeDashoffset = String(100 - yq); enY.style.opacity = yq > 0 ? '1' : '0'; }
+    if (yq !== enYQ) { enYQ = yq; enY.style.strokeDashoffset = String(100 - yq); enY.style.opacity = yq > 0 ? '1' : '0'; enBtn.style.setProperty('--e', String(yq / 100)); }
     if (kq !== enKQ) { enKQ = kq; enK.style.strokeDashoffset = String(100 - kq); enK.style.opacity = kq > 0 ? '1' : '0'; }
     const ys = es.armedYou || charged ? 'armed' : yq >= 100 ? 'full' : 'fill', ks = es.armedKage ? 'armed' : kq >= 100 ? 'full' : 'fill';
     if (ys !== enYS) {
-      enYS = ys; enBtn.setAttribute('data-st', ys); enBtn.disabled = ys === 'fill' || trig === 0;
+      enYS = ys; enBtn.setAttribute('data-st', ys); enBtn.disabled = trig === 0;
+      enBtn.setAttribute('aria-disabled', ys === 'fill' ? 'true' : 'false');
       enBtn.setAttribute('aria-pressed', ys === 'armed' ? 'true' : 'false');
       enBtn.setAttribute('aria-label', ys === 'armed' ? 'Special armed: your next hit is the special' : ys === 'fill' ? 'Special: charging' : trig === 0 ? 'Special ready: swipe in a curve to unleash it' : 'Special ready: arm it');
     }
     if (ks !== enKS) { enKS = ks; enKEl.setAttribute('data-st', ks); enKEl.setAttribute('aria-label', ks === 'armed' ? 'Kage has armed his special' : ks === 'full' ? "Kage's special is ready" : "Kage's energy"); }
   }
-  enBtn.addEventListener('click', () => { if (opts.onSpecial) opts.onSpecial(); });
+  press(enBtn, () => {
+    if (enYS === 'fill') { nope(enBtn); if (opts.onNotReady) opts.onNotReady('special'); return; }
+    if (opts.onSpecial) opts.onSpecial();
+  });
 
   // ───────────── fire volleys (versus): each player's second power-up, a flame beside their energy ring (it shows once won, burns
   // while armed; yours is a button whenever the trigger setting lets your ring be one), and the streak toward a fire volley: a pip
   // a hit in the hitter's colour, all ablaze once the ball is on fire ─────
-  const fY = $('fYou'), fK = $('fKage'), stEl = $('streak');
   let fOn = -1, fYS = '#', fKS = '#', fCol = -1, fPow = -1, fTap = -1, sN = -1, sKey = -1;
   // fs: fire.snap. charged: your swing has curved enough, clockwise, to throw it (it shows as armed).
   function fire(fs, show, charged) {
     const on = show && fs && fs.on ? 1 : 0;
     if (on !== fOn) { fOn = on; hud.setAttribute('data-fire', on ? 'on' : ''); }
     if (!on) return;
+    syncRow();
     const col = CFG.fire.color | 0;
     if (col !== fCol && typeof firePal === 'function') {
       fCol = col; const P = firePal();
@@ -10679,8 +10787,7 @@ function createUI(root, opts) {
       }
     }
   }
-
-  fY.addEventListener('click', () => { if (opts.onFireball) opts.onFireball(); });
+  press(fY, () => { if (opts.onFireball) opts.onFireball(); });
 
   function hint(text) {
     if (text) { $('hintText').textContent = text; hintEl.classList.add('on'); } else hintEl.classList.remove('on');
@@ -11281,7 +11388,7 @@ function createUI(root, opts) {
     return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save, tick, showSub, subOf, get board() { return board; } };
   })();
 
-  return { update, energy, fire, showResult, resultReady, hideResult, hint, setMuted, tuner, get resultIsReady() { return ready; } };
+  return { update, energy, fire, viewport, row: syncRow, showResult, resultReady, hideResult, hint, setMuted, tuner, get resultIsReady() { return ready; } };
 }
 
 // ════════ main.js ════════
@@ -11357,6 +11464,7 @@ function createUI(root, opts) {
     onMuteToggle: () => { audio.unlock(); audio.setMuted(!audio.muted); return audio.muted; },
     onSpecial: armSpecial,
     onFireball: armFire,
+    onNotReady: specialNotReady,
     audio,
   });
   // after createUI: the panel has applied the saved settings, and the URL wins over them for this load only
@@ -11369,7 +11477,7 @@ function createUI(root, opts) {
   probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
   document.body.appendChild(probe);
   const inset = { t: 0, r: 0, b: 0, l: 0 }; // the safe-area insets, as of the last resize
-  let cornerKey = -1; // syncCorners: the power-up row's state the camera was last told (-1 before the first frame)
+  let framed = false; // the first frame has run: syncCorners may read the rules (resize runs once before they exist)
   function resize() {
     const vv = window.visualViewport;
     const w = Math.max(1, Math.round(vv ? vv.width : window.innerWidth)), h = Math.max(1, Math.round(vv ? vv.height : window.innerHeight));
@@ -11378,7 +11486,8 @@ function createUI(root, opts) {
     const short = h < 520;
     const safe = { top: (short ? 48 : 88) + inset.t, bottom: (short ? 28 : 64) + inset.b, left: 10 + inset.l, right: 10 + inset.r };
     cam.resize(w, h, Math.min(window.devicePixelRatio || 1, 2) * quality, safe);
-    if (cornerKey >= 0) syncCorners(true); // the row's sizes follow the screen (style.css); the first frame tells it the first time
+    ui.viewport(w, h, inset); // the power-up row is laid out for this screen (ui.js)
+    if (framed) syncCorners();
     scene.resize(w, h, Math.min(window.devicePixelRatio || 1, 2) * quality);
   }
   window.addEventListener('resize', resize);
@@ -11646,8 +11755,15 @@ function createUI(root, opts) {
     audio.unlock();
     if (!vs() || !energy.tapOn || versus.state === 'wound' || !energy.full('you')) return false;
     const a = energy.arm('you');
-    audio.energy(a ? 'arm' : 'disarm');
+    audio.energy(a ? 'arm' : 'disarm'); audio.vibrate(a ? 18 : 8);
     return a;
+  }
+  // a tap on your ring before the bar is full: how far it has to go (the ring shakes, ui.js)
+  function specialNotReady() {
+    if (!vs() || versus.state === 'wound') return;
+    const n = Math.max(1, Math.ceil((1 - energy.snap.you) * Math.max(1, Math.round(CFG.energy.volleys)) - 1e-6));
+    ui.hint('Charging · ' + n + (n === 1 ? ' more volley' : ' more volleys') + ' ⚡'); hintUntil = performance.now() + 1500;
+    audio.vibrate(6);
   }
   // F, on a keyboard: arm the power-up a fire volley won you (or disarm it again)
   function armFire() {
@@ -11656,6 +11772,7 @@ function createUI(root, opts) {
     const a = fire.arm('you');
     if (!fire.fireball) energy.arm('you', a, true);
     if (a && fire.fireball) audio.fire('arm'); else audio.energy(a ? 'arm' : 'disarm');
+    audio.vibrate(a ? 18 : 8);
     return a;
   }
 
@@ -11795,18 +11912,14 @@ function createUI(root, opts) {
   }
   window.addEventListener('resize', () => syncPanel(true)); // a rotation can turn the drawer into a side panel (and back)
 
-  // The power-up buttons sit in a row under the HUD strip, in the top corners (style.css's --pu-* sizes): against Kage, with energy
-  // or fire on, the camera keeps the ball out from under them. Yours is the wider pair, and both corners keep its width, so a swap
-  // of halves needs no refit. A tall phone has room above the court already, and its fit does not move.
-  const hudEl = document.getElementById('hud');
-  function syncCorners(force) {
-    const key = vs() && (CFG.energy.on > 0 || CFG.fire.on > 0) ? 1 : 0;
-    if (key === cornerKey && !force) return;
-    cornerKey = key;
-    if (!key) { cam.setCorners(0, 0); return; }
-    const cs = getComputedStyle(hudEl), v = (n) => parseFloat(cs.getPropertyValue(n)) || 0, P = 1.1; // P: a ready button's pulse swells it up to 1.1 (egPulse, fbPulse)
-    const gap = v('--pu-gap'), wide = Math.max(v('--pu-y') + gap + v('--pu-fy') * (1 + P) / 2, v('--pu-k') + gap + v('--pu-fk') * (1 + P) / 2);
-    cam.setCorners(Math.max(inset.l, inset.r) + v('--pu-edge') + wide, inset.t + v('--pu-mid') + Math.max(v('--pu-y'), v('--pu-k')) * P / 2);
+  // The power-up buttons sit in two corners of the top or the foot (ui.js lays them out from the Buttons settings): against Kage,
+  // with energy or fire on, the camera keeps the ball out from under them and their hit zones. ui.row() is the corner block, the
+  // wider pair's on both sides, so a swap of halves needs no refit; it is relaid only when the screen or a setting moves, and
+  // cam.setCorners refits only when the block does. A tall phone has room round the court already, and its fit does not move.
+  function syncCorners() {
+    if (!(vs() && (CFG.energy.on > 0 || CFG.fire.on > 0))) { cam.setCorners(0, 0); return; }
+    const r = ui.row();
+    cam.setCorners(r.x, r.y, r.edge);
   }
 
   // ---- one frame of the whole game ----
@@ -11915,7 +12028,8 @@ function createUI(root, opts) {
     ui.energy(energy.snap, vs(), chargedS);
     ui.fire(fire.snap, vs(), chargedF);
     syncPanel(false);
-    syncCorners(false);
+    framed = true;
+    syncCorners();
 
     if (draw) {
       view.now = now; view.halves = vs() ? kageSide : 0;
