@@ -6246,6 +6246,7 @@ function createSupers() {
     return v >= 0 && v <= MAXK ? v : 0;
   }
   const skill = () => U.clamp01(((CFG.kage && CFG.kage.difficulty) - 1) / 9) || 0;
+  const skillUp = () => U.clamp01(((CFG.kage && CFG.kage.difficulty) - 10) / 10) || 0; // past 10 (kageSkill): sharper still
   const speedOf = (v) => Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
   function scale(v, k) { if (k > 0 && k !== 1) { v.x *= k; v.y *= k; v.z *= k; } }
 
@@ -6317,7 +6318,7 @@ function createSupers() {
       puff(p.x, p.y, p.z, DECOYS); // the split
       // Kage goes for one of them: the real one at a level-1 guess, likelier the sharper he is (he can follow the rope)
       if (o === 'you') {
-        if (rnd() < U.lerp(1 / n, 0.6, skill())) st.kPick = st.real;
+        if (rnd() < (skillUp() > 0 ? U.lerp(0.6, 0.8, skillUp()) : U.lerp(1 / n, 0.6, skill()))) st.kPick = st.real;
         else { let j = Math.floor(rnd() * (n - 1)) % (n - 1); if (j >= st.real) j++; st.kPick = j; }
       }
     } else if (k === SLIP) { st.slips = U.clamp(Math.round(CFG.supers.slip.n), 1, 3); st.slipT = 0; }
@@ -6851,7 +6852,7 @@ function createSupers() {
     out.blindBall = false; out.fakePhi = 0; out.fakeY = 0; out.fakeWorld = null;
     if (st.owner !== 'you' || !w) return out;
     if (st.kind === PHANTOM) {
-      const p = w.ball.p, dx = p.x - kx, dz = p.z - kz, r = U.lerp(1.35, 2.5, skill()) * U.clamp(CFG.supers.phantom.sight, 0.1, 5);
+      const p = w.ball.p, dx = p.x - kx, dz = p.z - kz, r = (skillUp() > 0 ? U.lerp(2.5, 3.2, skillUp()) : U.lerp(1.35, 2.5, skill())) * U.clamp(CFG.supers.phantom.sight, 0.1, 5);
       out.blindBall = st.t > Math.max(0, CFG.supers.phantom.after) && dx * dx + dz * dz > r * r;
     } else if (st.kind === DECOYS && st.kPick >= 0 && st.kPick !== st.real && !st.popped[st.kPick]) {
       if (st.free && DW[st.kPick]) out.fakeWorld = DW[st.kPick];
@@ -8974,10 +8975,12 @@ function createNinja(doc, look) {
 
 CFG.kage = {
   side: 0, // 0 left, 1 right, 2 a coin flip each match
-  difficulty: 5, // 1..10: reaction, foot speed, wind-up, jump and hand speed (kageSkill)
+  difficulty: 5, // 1..20: reaction, foot speed, wind-up, jump, hand speed, recovery and clean contact (kageSkill). 10 is the old top
   accuracy: 0.7, // 0..1: how clean his contact is (whiffs, grazes and wild aim fall as it rises)
+  composure: 1, // × how much a fast ball rattles his contact (0 = not at all)
   power: 1, // × his hand speed
-  reaction: 1, // × his reaction time (lower = sharper)
+  reaction: 1, // × his reaction time (lower = sharper; 0 = he reads your hit the instant it lands)
+  recovery: 1, // × the time after his own swing before he can start another (lower = back on guard sooner: quick rallies)
   speed: 1, // × his foot speed
   jump: 1, // × his jump height (0 = he never leaves the ground)
   size: 1.75, // m tall
@@ -8990,12 +8993,14 @@ CFG.kage = {
 };
 CFG_SCHEMA.push(
   { path: 'kage.side', label: 'Kage plays', type: 'choice', options: ['Left', 'Right', 'Random'], min: 0, max: 2, step: 1, group: 'Kage', rank: -2, unit: '' },
-  { path: 'kage.difficulty', label: 'Difficulty', min: 1, max: 10, step: 1, group: 'Kage', rank: -2, unit: '' },
+  { path: 'kage.difficulty', label: 'Difficulty', min: 1, max: 20, step: 1, group: 'Kage', rank: -2, unit: '' },
   { path: 'kage.accuracy', label: 'Accuracy', min: 0, max: 1, step: 0.05, group: 'Kage', rank: -2, unit: '' },
-  { path: 'kage.power', label: 'Hit power', min: 0.4, max: 1.6, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
-  { path: 'kage.reaction', label: 'Reaction time', min: 0.25, max: 3, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
-  { path: 'kage.speed', label: 'Foot speed', min: 0.3, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
-  { path: 'kage.jump', label: 'Jump height', min: 0, max: 1.6, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.composure', label: 'Rattled by fast balls', min: 0, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.power', label: 'Hit power', min: 0.4, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.reaction', label: 'Reaction time', min: 0, max: 3, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.recovery', label: 'Recovery after a swing', min: 0.2, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.speed', label: 'Foot speed', min: 0.3, max: 2.5, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.jump', label: 'Jump height', min: 0, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
   { path: 'kage.boost', label: 'Speeds up balls going his way', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' },
   { path: 'kage.taunts', label: 'Trash talk', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' },
   { path: 'kage.warp', label: 'Slow-mo on his hits', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' },
@@ -9004,21 +9009,34 @@ CFG_SCHEMA.push(
   { path: 'kage.showReach', label: 'Show his reach', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' }
 );
 
-// What a difficulty level means, end to end (t = 0 at level 1, 1 at level 10). The multipliers above scale these.
+// What a difficulty level means, end to end. Levels 1..10 run t from 0 to 1 (10 was the top until 2026-10-16, and plays exactly as
+// it did); 11..20 run u from 0 to 1 past it, every curve carried on: at 20 he reads your hit the instant it lands, gets his fist
+// and his leap there in half the time, is back on guard after a swing in a third of it, and barely fluffs one. Two gaps 10 left
+// open close with it (tests/kage.mjs measures both): a ball you hit just before the line reached him inside his reaction plus
+// his wind-up, and in a quick exchange your next ball came while he was still in his follow-through. The multipliers above
+// scale these.
 function kageSkill(out) {
-  const K = CFG.kage, t = U.clamp01((K.difficulty - 1) / 9);
-  out.t = t;
-  out.reaction = U.lerp(0.38, 0.06, t) * K.reaction; // s from a hit until he can read the new trajectory
-  out.foot = U.lerp(3, 7.5, t) * K.speed; // m/s
-  out.accel = U.lerp(16, 40, t); // m/s²
-  out.windup = U.lerp(0.16, 0.08, t); // s his fist needs from guard to contact
-  out.hop = U.lerp(0.15, 0.1, t); // s to leave the ground (a leap's apex comes this + 0.07·√height after takeoff)
-  out.jump = U.lerp(1.1, 1.75, t) * K.jump; // m of leap: a hard hit rides up near the pole top, so a ninja has to fly
-  out.hand = U.lerp(7, 14, t) * K.power; // m/s of fist
-  const a = U.clamp01(K.accuracy);
-  out.whiff = 0.32 * (1 - a) * (1 - a * 0.5); // chance a swing finds nothing (0.32 at 0, ~0.06 at 0.7, 0 at 1); fast balls add to it
-  out.offSd = 0.08 + 0.55 * (1 - a); // sd of where the fist meets the ball, in (ball + fist) radii: 0 = dead centre
-  out.aimSd = (2 + 24 * (1 - a)) * Math.PI / 180; // sd of his aim
+  const K = CFG.kage, t = U.clamp01((K.difficulty - 1) / 9), u = U.clamp01((K.difficulty - 10) / 10);
+  const lv = (a1, a10, a20) => (u > 0 ? U.lerp(a10, a20, u) : U.lerp(a1, a10, t));
+  out.t = t; out.u = u;
+  out.reaction = lv(0.38, 0.06, 0) * K.reaction; // s from a hit until he can read the new trajectory
+  out.reread = lv(0.32, 0.1, 0.06); // s between reads of a ball he has seen (faster still only churns his plan)
+  out.foot = lv(3, 7.5, 11) * K.speed; // m/s
+  out.accel = lv(16, 40, 70); // m/s²
+  out.windup = lv(0.16, 0.08, 0.04); // s his fist needs from guard to contact
+  out.hop = lv(0.15, 0.1, 0.05); // s to leave the ground (a leap's apex comes this + rise·√height after takeoff)
+  out.rise = lv(0.07, 0.07, 0.045);
+  out.jump = lv(1.1, 1.75, 2.2) * K.jump; // m of leap: a hard hit rides up near the pole top, so a ninja has to fly
+  out.hand = lv(7, 14, 18) * K.power; // m/s of fist
+  const rc = K.recovery >= 0 ? K.recovery : 1;
+  out.follow = lv(0.26, 0.26, 0.09) * rc; // s he stays in his swing after contact (a leap holds him till he lands)
+  out.settle = lv(0.12, 0.12, 0.04) * rc; // s more before he can start the next
+  out.calm = lv(1.1, 0.1, 0) * (K.composure >= 0 ? K.composure : 1); // how hard a fast ball presses him (× its speed share²)
+  out.dodge = lv(0.35, 0.85, 0.95); // the chance he lets your fireball go by, when dodging is on (fire.js)
+  const a = U.clamp01(K.accuracy), e = lv(1, 1, 0.35); // past 10, his errors shrink too
+  out.whiff = 0.32 * (1 - a) * (1 - a * 0.5) * e; // chance a swing finds nothing (0.32 at 0, ~0.06 at 0.7, 0 at 1); fast balls add to it
+  out.offSd = (0.08 + 0.55 * (1 - a)) * e; // sd of where the fist meets the ball, in (ball + fist) radii: 0 = dead centre
+  out.aimSd = ((2 + 24 * (1 - a)) * Math.PI / 180) * e; // sd of his aim
   return out;
 }
 
@@ -9305,7 +9323,7 @@ function createKage(doc) {
   }
 
   // a ninja's leap: jump boots put him at the top in about a fifth of a second, however high (a real 1.3 m jump takes half a second)
-  const upFor = (jump) => (jump > 0 ? SK.hop + 0.07 * Math.sqrt(jump) : 0);
+  const upFor = (jump) => (jump > 0 ? SK.hop + SK.rise * Math.sqrt(jump) : 0);
   const leadFor = (jump) => Math.max(SK.windup, upFor(jump));
   // how far he can run in t seconds from where he is (accelerating from his current speed)
   function reach(t) {
@@ -9383,7 +9401,7 @@ function createKage(doc) {
     const a = gauss() * SK.aimSd, ca = Math.cos(a), sa = Math.sin(a);
     const ux = OUT.dx * ca - OUT.dz * sa, uz = OUT.dx * sa + OUT.dz * ca;
     // a fast ball is harder to meet clean, as it is for you: the pressure fades as his level rises
-    const q = U.clamp01(b.speed / CFG.hit.vMax), pressure = q * q * (1.1 - SK.t);
+    const q = U.clamp01(b.speed / CFG.hit.vMax), pressure = q * q * SK.calm;
     let off = gauss() * SK.offSd * (1 + pressure);
     if (rnd() < SK.whiff + 0.4 * pressure) off = (off < 0 ? -1 : 1) * (1.15 + 0.5 * rnd());
     off = U.clamp(off, -1.9, 1.9);
@@ -9421,7 +9439,7 @@ function createKage(doc) {
     const hot = !!info.hot;
     if (hot && info.fireId !== st.fireSeen) {
       st.fireSeen = info.fireId;
-      st.dodge = !!info.dodge && rndF() < U.lerp(0.35, 0.85, SK.t);
+      st.dodge = !!info.dodge && rndF() < SK.dodge;
       if (st.dodge) {
         st.dodges++; st.has = false; quipF('dodge', 0.6);
         if (st.phase === 'swing' && !st.struck && st.y < 0.05) { st.phase = 'ready'; st.y = 0; }
@@ -9449,7 +9467,7 @@ function createKage(doc) {
       steer(st.sx, st.sz, dt);
       if (!st.struck && st.t >= st.tc) { st.struck = true; out = strike(w, serving); if (!out) { st.res = -1; quip('whiff', 0.35); } }
       else if (st.reStrike > 0 && st.t >= st.reStrike) { st.reStrike = 0; out = strike(w, serving); } // a slip: the reflex swing after it
-      if (st.t >= st.tc + Math.max(0.26, st.up) && st.y <= 0 && !(st.reStrike > 0)) { st.phase = 'ready'; st.tLand = st.h > 0.05 ? st.t : st.tLand; st.y = 0; st.cool = 0.12; st.reread = 0; }
+      if (st.t >= st.tc + Math.max(SK.follow, st.up) && st.y <= 0 && !(st.reStrike > 0)) { st.phase = 'ready'; st.tLand = st.h > 0.05 ? st.t : st.tLand; st.y = 0; st.cool = SK.settle; st.reread = 0; }
     } else {
       st.y = 0;
       if (info.state === 'ready' && !serving) { st.has = false; steer(st.homeX, st.homeZ, dt); } // your serve: he waits at home
@@ -9462,7 +9480,7 @@ function createKage(doc) {
         if (blindBall) st.has = false;
         const may = serving ? st.serveT > SERVE_WAIT : st.blind <= 0 && !st.dodge && !blindBall;
         if (st.dodge && !serving) { st.has = false; st.sx = st.homeX; st.sz = st.homeZ; } // out of its way, back where he waits
-        else if (may && st.reread <= 0) { read(info && info.fakeWorld ? info.fakeWorld : w, serving); st.reread = U.lerp(0.32, 0.1, U.clamp01((CFG.kage.difficulty - 1) / 9)); } // a decoy on its own path: he reads that one
+        else if (may && st.reread <= 0) { read(info && info.fakeWorld ? info.fakeWorld : w, serving); st.reread = SK.reread; } // a decoy on its own path: he reads that one
         if (st.has && st.t > st.tc + 0.03) st.has = false;
         steer(st.has || st.sx || st.sz ? st.sx : st.homeX, st.has || st.sx || st.sz ? st.sz : st.homeZ, dt);
         if (st.has && st.cool <= 0 && st.t >= st.tc - st.lead) {
@@ -9480,7 +9498,7 @@ function createKage(doc) {
   // a hit landed (or not) — his, or yours
   function onSwing(res) {
     st.res = res ? 1 : -1;
-    st.cool = 0.25;
+    st.cool = Math.min(0.25, SK.follow + SK.settle);
     if (res) quip(res.power > 0.7 ? 'smash' : 'hit', res.power > 0.7 ? 0.55 : 0.25);
     else quip('whiff', 0.35);
   }
@@ -9718,7 +9736,7 @@ function createKage(doc) {
       else { const e = U.easeIn((u - 0.55) / 0.45, 2.2); fx = U.lerp(bkx, T1.x, e); fy = U.lerp(bky, T1.y, e); P.smear = e; const e0 = U.easeIn(Math.max(0, (u - 0.62) / 0.45), 2.2); k0x = U.lerp(bkx, T1.x, e0); k0y = U.lerp(bky, T1.y, e0); }
       P.headTilt += 0.06 * (uy < 0 ? -1 : 1);
     } else {
-      const v = (t - tc) / 0.11;
+      const v = (t - tc) / (0.11 * (SK.follow > 0 ? Math.min(1, SK.follow / 0.26) : 1)); // a quicker recovery (past 10) pulls the fist back sooner
       cam.project(st.cx + st.fdx * 0.6, st.cy, st.cz + st.fdz * 0.6, Cc); toSheet(Cc.x, Cc.y, T2); limitArm(SH_F, T2);
       if (v < 1) { const e = U.easeOut(v, 2); fx = U.lerp(T1.x, T2.x, e); fy = U.lerp(T1.y, T2.y, e); P.smear = st.res >= 0 ? 1 - e * 0.7 : 0.5 * (1 - e); k0x = T1.x; k0y = T1.y; }
       else { const e = U.easeInOut(U.clamp01((v - 1) * 0.11 / 0.24)); fx = U.lerp(T2.x, 58, e); fy = U.lerp(T2.y, 162, e); k0x = fx; k0y = fy; P.smear = 0.3 * (1 - e); }
