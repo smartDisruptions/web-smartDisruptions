@@ -668,6 +668,14 @@ const U = {
 
   // m/s → mph (what the HUD shows)
   mph(ms) { return ms * 2.2369363; },
+  // a special's "Ball speed" (mph; 0: leave it as hit): the ball's velocity v set to that speed, its direction kept. Returns the speed
+  setMph(v, mph) {
+    const s = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    if (!(mph > 0) || !(s > 1e-6)) return s;
+    const k = mph / 2.2369363 / s;
+    v.x *= k; v.y *= k; v.z *= k;
+    return s * k;
+  },
 
   // vector helpers on {x,y,z} objects, writing into `o` (never allocating)
   v3(o, x, y, z) { o.x = x; o.y = y; o.z = z; return o; },
@@ -5882,6 +5890,7 @@ CFG.energy = {
   on: 1, // 1 = energy bars and specials (versus only)
   volleys: 8, // volleys that fill a bar (Josh's, 2026-10-16: about 3 specials a side a round, tests/energy.mjs; 16 was the tuned 2–3 in a long round)
   boost: 1.2, // a special hit leaves the hand this much harder
+  mph: 0, // ...or at this speed (0: as hit, boosted): its Ball speed, as every special has one
   charge: 1.5, // s of game time the ball carries a special's charge, if the other player does not touch it first
   damp: 0.7, // the other player's next touch lands at this share of its strength
   kage: 1, // 1 = Kage uses his specials
@@ -5894,6 +5903,7 @@ CFG_SCHEMA.push(
   { path: 'energy.on', label: 'Energy and specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' },
   { path: 'energy.volleys', label: 'Volleys to fill a bar', min: 4, max: 40, step: 1, group: 'Energy', rank: -2.8, unit: '' },
   { path: 'energy.boost', label: 'Special hit power', min: 1, max: 3, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
+  { path: 'energy.mph', label: 'Special ball speed', min: 0, max: 150, step: 1, group: 'Energy', rank: -2.8, unit: 'mph', zero: 'as hit' },
   { path: 'energy.charge', label: 'Charge lasts', min: 0.3, max: 6, step: 0.1, group: 'Energy', rank: -2.8, unit: 's' },
   { path: 'energy.damp', label: 'Their next touch lands at', min: 0.2, max: 1, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
   { path: 'energy.kage', label: 'Kage uses specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' },
@@ -6083,7 +6093,7 @@ const SUPERS = [ // the setting's value is the index. Colours as fire.js's: core
   // the three big ones (legends.js): Josh, 2026-10-16, "more powerful than the other ones"
   { key: 'dragon', name: 'Double Dragon', word: 'DOUBLE DRAGON!', core: '#fff1c2', mid: '#ff8a1c', outer: '#c4161c', glow: '#ff6a00', hint: 'Double Dragon! Its fire burns 🐉', down: 'BURNED!', big: true },
   { key: 'ray', name: 'Ray of Light', word: 'RAY OF LIGHT!', core: '#ffffff', mid: '#fff1a8', outer: '#ffb627', glow: '#ffe066', hint: 'Ray of Light! The sun strikes ☀️', down: 'SUNSTRUCK!', big: true },
-  { key: 'hole', name: 'Black Hole', word: 'BLACK HOLE!', core: '#e9d8ff', mid: '#8a3cff', outer: '#2a0a4a', glow: '#7b2cff', hint: 'Black Hole! It swallows your special 🕳️', big: true },
+  { key: 'hole', name: 'Black Hole', word: 'BLACK HOLE!', core: '#e9d8ff', mid: '#8a3cff', outer: '#2a0a4a', glow: '#7b2cff', hint: "Black Hole! It can't be hit while it warps 🕳️", big: true },
 ];
 
 const WHEN = ['Off the hand', 'At the line', 'Near them']; // when a swerve breaks, a spike turns on them, a warp blinks out, a zap strikes (or, for a warp, as they swing)
@@ -6193,6 +6203,9 @@ CFG.supers = {
     from: 0, // 0 it goes off from the thrower, 1 from the ball, wherever it is by then
   },
 };
+// Each ball special's "Ball speed" (Josh, 2026-10-16: "I want to be able to increase the speeds and toggle them on every single
+// special"): the ball leaves the hand at that many mph (0: as hit, then the special's own ×). The spike keeps its own speed.
+for (const k of ['swerve', 'phantom', 'decoys', 'slip', 'warp', 'zap', 'wind', 'stomp', 'blast']) CFG.supers[k].mph = 0;
 // The Feel panel's Specials group: whose special is which and the rules they share, then a pick of the ten, which shows that
 // one's settings (an entry's `sub`, in its colour: ui.js). Picking a special for you or Kage shows its settings (`follow`).
 // Every row of each changes what the ball does, or the knockdown. (The three big ones' rows are legends.js's, under their names.)
@@ -6295,7 +6308,9 @@ CFG.supers = {
     row('Blast', 'blast.push', 'Throws them back at', 0, 12, 0.1, 'm/s'),
     row('Blast', 'blast.ball', 'Blows the ball away', 0, 15, 0.1, 'm/s'),
     row('Blast', 'blast.power', 'Your next hit, powered', 1, 3, 0.05, 'x'),
-    pick('Blast', 'blast.from', 'It goes off from', ['You', 'The ball'])
+    pick('Blast', 'blast.from', 'It goes off from', ['You', 'The ball']),
+    // and each one's Ball speed, last in its own settings
+    ...['Swerve', 'Phantom', 'Decoys', 'Slip', 'Warp', 'Zap', 'Wind', 'Stomp', 'Blast'].map((sub) => row(sub, sub.toLowerCase() + '.mph', 'Ball speed', 0, 150, 1, 'mph', { zero: 'as hit' }))
   );
 }
 
@@ -6405,7 +6420,7 @@ function createSupers() {
     const o = key(who), m = opt && opt.mult > 1 ? opt.mult : 1;
     endTurn('');
     if (!on()) return 0;
-    if (k === HOLE) k = 0;
+    if (k === HOLE && CFG.legends && CFG.legends.hole.mode === 1) k = 0; // a black hole that swallows is a hold, not a throw (legends.js)
     st.stats.thrown[o][k]++;
     if (k === 0 || k > BLAST) return k;
     st.kind = k; st.owner = o; st.id++; st.t = 0; st.crossed = false; st.passes = 0; st.castRt = st.rt; st.spiked = ''; tn = 0; lastW = w;
@@ -6428,6 +6443,7 @@ function createSupers() {
         st.popped[i] = 0; st.popRt[i] = -9;
       }
       scale(v, U.clamp(C.speed, 0.3, 4));
+      U.setMph(v, C.mph); // (before the free decoys take their speeds from it)
       if (st.free) splitFree(w);
       puff(p.x, p.y, p.z, DECOYS); // the split
       // Kage goes for one of them: the real one at a level-1 guess, likelier the sharper he is (he can follow the rope)
@@ -6452,6 +6468,7 @@ function createSupers() {
       }
       endTurn('cast');
     }
+    if (k !== SPIKE) U.setMph(v, CFG.supers[SUPERS[k].key].mph); // its Ball speed, after its own × (the spike flies at its own)
     return k;
   }
 
@@ -7491,6 +7508,8 @@ CFG.fire = {
   slow: 1.7, // then, through one more turn, Kage reacts, runs and leaps this many times slower...
   youHit: 0.7, // ...and your next hit lands at this share
   burn: 3, // s of game time a fireball burns at most (it goes out sooner, once it has crossed the other player's half untouched)
+  mph: 65, // the fireball (and a Single Dragon) leaves the hand this fast (0: as hit). Josh, 2026-10-16: "I want the speed of the
+  // regular fireball and the dragon to be sped up" (a hit tops out near 39 mph)
   dodge: 1, // 1 = Kage sometimes lets a fireball go by (more often the sharper he is)
   size: 1, // × the flames
   color: 0, // FIRE_COLORS
@@ -7501,6 +7520,7 @@ CFG_SCHEMA.push(
   { path: 'fire.hits', label: 'Hits to catch fire', min: 2, max: 20, step: 1, group: 'Fire', rank: -2.7, unit: '' },
   { path: 'fire.power', label: 'Second power-up', type: 'choice', options: ['Fireball', 'Special'], min: 0, max: 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
   { path: 'fire.kage', label: 'Kage uses his', type: 'toggle', min: 0, max: 1, step: 1, group: 'Fire', rank: -2.7, unit: '' },
+  { path: 'fire.mph', label: 'Fireball speed', min: 0, max: 150, step: 1, group: 'Fire', rank: -2.7, unit: 'mph', zero: 'as hit' },
   { path: 'fire.hit', label: 'A burned touch lands at', min: 0.1, max: 1, step: 0.05, group: 'Fire', rank: -2.7, unit: 'x' },
   { path: 'fire.down', label: 'Knocked down for', min: 0.2, max: 5, step: 0.1, group: 'Fire', rank: -2.7, unit: 's' },
   { path: 'fire.slow', label: 'Kage slowed next turn', min: 1, max: 3, step: 0.05, group: 'Fire', rank: -2.7, unit: 'x' },
@@ -7842,8 +7862,13 @@ function createFire() {
 //   RAY OF LIGHT (12)  a giant sunbeam: a ring of light marks them (following them, by `track`), the light gathers for `charge`,
 //                      and the beam comes down on them: struck, down for `stun`. The whole time the ball shines like a small sun
 //                      and rides the light (`glide`: no drag, gravity at `float`), until they touch it or `sun` runs out.
-//   BLACK HOLE (13)    no hit of its own: a hold. With a full bar (held by itself, or by a tap or a curve, by `auto`) it waits for
-//                      the other player's special. The moment theirs lands, the black hole opens on the ball and swallows it: none
+//   BLACK HOLE (13)    by default (`mode` 0, Warp; Josh, 2026-10-16: "I want the black hole to be the ball") armed like the others,
+//                      for the next hit. The hit opens a black hole on the ball and swallows it; three small ones open in a
+//                      triangle ahead of it on its orbit (`size` a side), and the ball warps from one to the next, `laps` times
+//                      round (1: back to the top), `hop` s a warp, and no hand can touch it. Then it comes out of the last one going
+//                      its owner's way, `out` times faster than it went in (or at its Ball speed).
+//                      Set to Swallow (`mode` 1), it is the first version: no hit of its own, a hold. With a full bar (held by
+//                      itself, or by a tap or a curve, by `auto`) it waits for the other player's special. The moment theirs lands, the black hole opens on the ball and swallows it: none
 //                      of their special happens. It holds the ball for `hold`, then spits it out going its owner's way, `spit`
 //                      times faster, and their special comes back at them as the owner's, `mult` times over: a knockdown that
 //                      much longer, a ball super that many of their turns, a dragon that many more turns (main.js casts it again:
@@ -7876,8 +7901,9 @@ CFG.legends = {
     hit: 0.5, // their touch on it lands at this share
     width: 0.5, // m: how close to their coils burns them
     sweep: 1, // 1: anything in their way burns (0: only a touch on the ball)
-    size: 1, // × the dragons
+    size: 1, // × the dragons (their length, their coils, their width and what they burn)
     life: 8, // s they stay at most
+    mph: 80, // the ball leaves the second strike this fast (0: `second` × as hit). Josh, 2026-10-16: "the dragon to be sped up"
   },
   ray: {
     charge: 0.55, // s the light gathers before the beam comes down
@@ -7888,6 +7914,7 @@ CFG.legends = {
     float: 0.5, // × gravity on the sunlit ball
     sun: 3, // s the ball shines at most (their touch ends it sooner)
     flash: 1, // × the flash as it strikes
+    mph: 0, // the sunlit ball leaves the hand this fast (0: as hit), and with `glide` on it keeps it
   },
   beam: {
     speed: 36, // m/s: the Light Beam flies at them
@@ -7895,6 +7922,13 @@ CFG.legends = {
     block: 0, // 1: they can hit it before it reaches them (0: their hands go through it)
   },
   hole: {
+    mode: 0, // 0 Warp: armed like any special, it warps the ball round a triangle of black holes; 1 Swallow: a hold, that swallows theirs
+    laps: 1, // times round the triangle (1: back to the top it started from; 1.5: on round to the far corner)
+    hop: 0.11, // s (real) the ball sits in each before it warps to the next
+    size: 1.4, // m: a side of the triangle
+    out: 2, // × the speed it went in at, coming out of the last one
+    mph: 0, // ...or this fast (0: by `out`)
+    // Swallow
     auto: 1, // 1: a full bar holds the black hole by itself (0: a tap or a curve holds it, and it waits held)
     hold: 0.5, // s it holds the swallowed ball
     spit: 1.2, // × the speed it spits the ball back out at
@@ -7915,7 +7949,8 @@ CFG.legends = {
     row('Double Dragon', 'dragon.hit', 'Their touch lands at', 0.1, 1, 0.05, 'x'),
     flip('Double Dragon', 'dragon.sweep', 'Burns anything in its way'),
     row('Double Dragon', 'dragon.width', 'Burns within', 0.1, 1.5, 0.05, 'm'),
-    row('Double Dragon', 'dragon.size', 'Dragon size', 0.5, 2, 0.05, 'x'),
+    row('Double Dragon', 'dragon.size', 'Dragon size', 0.3, 4, 0.05, 'x'),
+    row('Double Dragon', 'dragon.mph', 'Ball speed', 0, 150, 1, 'mph', { zero: 'as hit' }),
     row('Double Dragon', 'dragon.life', 'Dragons stay at most', 2, 20, 0.5, 's'),
     flip('Double Dragon', 'follow', 'Power-up follows your special'),
 
@@ -7927,14 +7962,21 @@ CFG.legends = {
     row('Ray of Light', 'ray.float', 'Sunlit ball gravity', 0, 1.5, 0.05, 'x'),
     row('Ray of Light', 'ray.sun', 'The ball shines for', 0.5, 8, 0.1, 's'),
     row('Ray of Light', 'ray.flash', 'Strike flash', 0, 2, 0.05, 'x'),
+    row('Ray of Light', 'ray.mph', 'Ball speed', 0, 150, 1, 'mph', { zero: 'as hit' }),
     row('Ray of Light', 'beam.speed', 'Light Beam speed', 10, 80, 1, 'm/s'),
     row('Ray of Light', 'beam.stun', 'Light Beam knocks down for', 0.2, 4, 0.1, 's'),
     flip('Ray of Light', 'beam.block', 'They can hit the Light Beam'),
 
-    flip('Black Hole', 'hole.auto', 'Holds by itself when full'),
-    row('Black Hole', 'hole.hold', 'Holds the ball for', 0.1, 1.5, 0.05, 's'),
-    row('Black Hole', 'hole.spit', 'Spits it back at', 0.6, 3, 0.05, 'x'),
-    row('Black Hole', 'hole.mult', 'Returns their special', 1, 4, 0.5, 'x')
+    row('Black Hole', 'hole.mode', 'What it does', 0, 1, 1, '', { type: 'choice', options: ['Warp', 'Swallow'] }),
+    row('Black Hole', 'hole.laps', 'Laps round the triangle', 0.5, 6, 0.5, ''),
+    row('Black Hole', 'hole.hop', 'Each warp takes', 0.03, 0.4, 0.01, 's'),
+    row('Black Hole', 'hole.size', 'Triangle size', 0.4, 2.5, 0.05, 'm'),
+    row('Black Hole', 'hole.out', 'Comes out faster', 1, 5, 0.05, 'x'),
+    row('Black Hole', 'hole.mph', 'Ball speed', 0, 150, 1, 'mph', { zero: 'by ×' }),
+    flip('Black Hole', 'hole.auto', 'Swallow: holds by itself when full'),
+    row('Black Hole', 'hole.hold', 'Swallow: holds the ball for', 0.1, 1.5, 0.05, 's'),
+    row('Black Hole', 'hole.spit', 'Swallow: spits it back at', 0.6, 3, 0.05, 'x'),
+    row('Black Hole', 'hole.mult', 'Swallow: returns their special', 1, 4, 0.5, 'x')
   );
 }
 
@@ -7942,7 +7984,7 @@ function createLegends() {
   const TAU = Math.PI * 2, NEUTRAL = 0.06;
   const DRAGON = 11, RAY = 12, HOLE = 13, BEAM = 14, SDRAGON = 15;
   const SHOCKS = [0.84, 1.36]; // s (real) after the Light Beam leaves the hand: its sound's two shocks (assets/specials/specials.json)
-  const NH = 48; // the path the ball took: 48 samples at the game's 60 Hz, the dragons' bodies lie along it
+  const NH = 96; // the path the ball took: 96 samples, spaced by the dragons' size (step()), their bodies lie along it
   const st = {
     rt: 0,
     down: { you: 0, kage: 0 }, downKind: { you: 0, kage: 0 }, // s each is still down here, and by which
@@ -7961,8 +8003,12 @@ function createLegends() {
     // opened, how fast the ball was going, when it opened and spat (real); held by a tap ({ you, kage })
     hole: { owner: '', from: '', kind: 0, ph: 0, t: 0, x: 0, y: 0, z: 0, sp: 0, rt0: -9, spitRt: -9 },
     held: { you: false, kage: false },
+    // the black hole's warp: whose, at whom, phase (0 none, 1 swallowing the ball, 2 warping round the triangle, 3 out), where it
+    // was hit, the corners (top, ahead, behind), the warps to make and made, the corner it is at and the one before, when it began,
+    // last warped and came out (real), how fast it went in
+    warp: { owner: '', target: '', ph: 0, x0: 0, y0: 0, z0: 0, vx: [0, 0, 0], vy: [0, 0, 0], vz: [0, 0, 0], hops: 3, hop: 0, at: -1, prev: -1, rt0: -9, hopRt: -9, outRt: -9, sp: 0 },
     marked: { owner: '', until: 0 }, // the ×2 mark (real clock) on what a black hole returned: whose it is now
-    stats: { strikes2: 0, burns: { you: 0, kage: 0 }, rays: 0, sunstruck: { you: 0, kage: 0 }, beams: 0, shocked: { you: 0, kage: 0 }, holes: 0, swallowed: new Array(16).fill(0), returned: 0, flown: 0 },
+    stats: { strikes2: 0, burns: { you: 0, kage: 0 }, rays: 0, sunstruck: { you: 0, kage: 0 }, beams: 0, shocked: { you: 0, kage: 0 }, holes: 0, swallowed: new Array(16).fill(0), returned: 0, flown: 0, warps: 0 },
   };
   const hx = new Float32Array(NH), hy = new Float32Array(NH), hz = new Float32Array(NH);
   let hn = 0, hc = 0;
@@ -7990,13 +8036,14 @@ function createLegends() {
     st.sun.owner = ''; st.sun.t = 0;
     const B = st.beam; B.owner = ''; B.ph = 0; B.t = 0; B.shocks = 0; B.hitRt = -9;
     const H = st.hole; H.owner = ''; H.ph = 0; H.t = 0; H.spitRt = -9;
+    const X = st.warp; X.owner = ''; X.ph = 0; X.at = -1; X.prev = -1; X.outRt = -9;
     st.down.you = 0; st.down.kage = 0; st.marked.owner = ''; st.marked.until = 0; hn = 0; evN = 0;
   }
   function reset() {
     newRally(); st.held.you = false; st.held.kage = false;
     const S = st.stats;
     S.strikes2 = 0; S.burns.you = 0; S.burns.kage = 0; S.rays = 0; S.sunstruck.you = 0; S.sunstruck.kage = 0; S.beams = 0; S.shocked.you = 0; S.shocked.kage = 0;
-    S.holes = 0; S.swallowed.fill(0); S.returned = 0; S.flown = 0;
+    S.holes = 0; S.swallowed.fill(0); S.returned = 0; S.flown = 0; S.warps = 0;
   }
   const isDown = (who) => st.down[key(who)] > 0;
   function knock(o, kind, s, body, fromX, fromZ, push) {
@@ -8031,8 +8078,10 @@ function createLegends() {
       R.x = body ? body.x : 0; R.z = body ? body.z : 0;
       st.sun.owner = o; st.sun.t = Math.max(0.2, CFG.legends.ray.sun); st.sun.rt0 = st.rt;
       st.stats.rays++;
+      if (!spat) U.setMph(w.ball.v, CFG.legends.ray.mph); // its Ball speed (a black hole's return keeps the spit's)
       return RAY;
     }
+    if (kind === HOLE) { warp(o, w); return HOLE; } // thrown: its warp
     return 0;
   }
   // the fire volley's power-up as a Single Dragon: fire.js has lit the ball for `who` (its rules hold); this draws the dragon and,
@@ -8063,7 +8112,7 @@ function createLegends() {
   // does `who` hold one? full: their bar is full (energy.js). Held by itself (auto), or by a tap or a curve.
   function holding(who, full) {
     const k = Math.round(key(who) === 'kage' ? CFG.supers.kage : CFG.supers.you);
-    if (k !== HOLE || !full || !on() || st.hole.ph === 1) return false;
+    if (k !== HOLE || CFG.legends.hole.mode !== 1 || !full || !on() || st.hole.ph === 1) return false; // (set to Warp, it is thrown)
     return key(who) === 'kage' || CFG.legends.hole.auto > 0 || st.held[key(who)];
   }
   // a tap or a curve holds it (or lets it go again), when it does not hold itself
@@ -8077,7 +8126,60 @@ function createLegends() {
     st.stats.holes++; st.stats.swallowed[kind]++;
     emit('hole', H.owner, kind, p.x, p.y, p.z);
   }
-  const holdsBall = () => st.hole.ph === 1;
+  const holdsBall = () => st.hole.ph === 1 || st.warp.ph === 1 || st.warp.ph === 2;
+
+  // ───────────────────────── the black hole's warp (thrown: `mode` 0) ─────────────────────────
+  // `who`'s hit opened a black hole on the ball: it swallows it, and three small ones open in a triangle ahead of it on its orbit
+  function warp(who, w) {
+    const X = st.warp, C = CFG.legends.hole, b = w.ball, p = b.p, v = b.v, R = w.rope;
+    X.owner = key(who); X.target = other(who); X.ph = 1; X.rt0 = st.rt; X.hopRt = -9; X.outRt = -9; X.at = -1; X.prev = -1; X.hop = 0;
+    X.x0 = p.x; X.y0 = p.y; X.z0 = p.z; X.sp = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    X.hops = Math.max(1, Math.round(U.clamp(C.laps, 0.5, 6) * 3));
+    // equilateral, `size` a side, laid out by angle round the pole at the rope's full reach: its top above, the corner it goes to
+    // first ahead the way it was going round, the third behind, round a point on its bearing between 15° and 55° below level (a
+    // ball served from rest hangs nearly under the tie point). At full reach the rope stays taut, so the ball comes out of the last
+    // one on its orbit and loses nothing to the rope.
+    const s = U.clamp(C.size, 0.3, 3), dir = X.owner === 'kage' ? KAGE_DIR() : -KAGE_DIR(), rho = Math.sqrt(p.x * p.x + p.z * p.z);
+    const pv = R && R.pivot ? R.pivot : { x: 0, y: (w.pole && w.pole.attachY) || 2.2, z: 0 }, L = Math.max(0.4, R ? R.free * 0.99 : 1.5);
+    const dx = p.x - pv.x, dy = p.y - pv.y, dz = p.z - pv.z, a = s / L;
+    const el = U.clamp(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz) || 1), -0.96 + 0.29 * a, -0.12 - 0.58 * a), az = rho > 1e-3 ? Math.atan2(p.z, p.x) : Math.PI / 2;
+    const da = (0.5 * a) / Math.max(0.3, Math.cos(el)) * dir;
+    onSphere(0, pv, L, az, el + 0.577 * a, w);
+    onSphere(1, pv, L, az + da, el - 0.289 * a, w);
+    onSphere(2, pv, L, az - da, el - 0.289 * a, w);
+    v.x = 0; v.y = 0; v.z = 0;
+    st.stats.warps++;
+    emit('warp', X.owner, HOLE, p.x, p.y, p.z);
+  }
+  function onSphere(i, pv, L, az, el, w) { // a corner at the rope's reach from where it leaves the pole: bearing az, el below level
+    const X = st.warp, c = Math.cos(el);
+    X.vx[i] = pv.x + Math.cos(az) * c * L; X.vy[i] = Math.max(w.ball.r + 0.05, pv.y + Math.sin(el) * L); X.vz[i] = pv.z + Math.sin(az) * c * L;
+  }
+  // out of the last corner, going its owner's way round the pole (a little outward), `out` times faster than it went in
+  function warpOut(w) {
+    const X = st.warp, C = CFG.legends.hole, b = w.ball, p = b.p, v = b.v, rho = Math.sqrt(p.x * p.x + p.z * p.z);
+    const dir = X.owner === 'kage' ? KAGE_DIR() : -KAGE_DIR();
+    const tx = rho > 1e-3 ? (-p.z / rho) * dir : 1, tz = rho > 1e-3 ? (p.x / rho) * dir : 0; // along its orbit: square to the taut rope
+    const sp = Math.min(70, Math.max(9, X.sp) * U.clamp(C.out, 0.5, 6));
+    v.x = tx * sp; v.y = 0; v.z = tz * sp;
+    U.setMph(v, C.mph); // its Ball speed
+    b.prevP.x = p.x; b.prevP.y = p.y; b.prevP.z = p.z;
+    X.ph = 3; X.outRt = st.rt;
+    emit('warpOut', X.owner, HOLE, p.x, p.y, p.z);
+  }
+  // real time: it swallows the ball, then the warps, each `hop` s; the ball held where it is meanwhile (main.js skips the physics)
+  function warpStep(w) {
+    const X = st.warp, b = w.ball, p = b.p;
+    if (X.ph === 1 && st.rt - X.rt0 >= WARP_OPEN) { X.ph = 2; X.at = 0; X.prev = -1; X.hop = 0; X.hopRt = st.rt; arrive(); }
+    else if (X.ph === 2 && st.rt - X.hopRt >= U.clamp(CFG.legends.hole.hop, 0.02, 0.6)) {
+      if (X.hop >= X.hops) { warpOut(w); return; }
+      X.hop++; X.prev = X.at; X.at = X.hop % 3; X.hopRt = st.rt; arrive();
+    }
+    if (X.ph === 1) { p.x = X.x0; p.y = X.y0; p.z = X.z0; } else if (X.ph === 2) { p.x = X.vx[X.at]; p.y = X.vy[X.at]; p.z = X.vz[X.at]; }
+    b.prevP.x = p.x; b.prevP.y = p.y; b.prevP.z = p.z; b.v.x = 0; b.v.y = 0; b.v.z = 0;
+  }
+  function arrive() { const X = st.warp, e = emit('warpIn', X.owner, HOLE, X.vx[X.at], X.vy[X.at], X.vz[X.at]); if (e) e.n = X.hop; }
+  const WARP_OPEN = 0.24; // s (real) the ball takes to go into the first black hole
   // it spits the ball out going its owner's way (round the pole, a little outward), and their special comes back as its owner's
   function spit(w) {
     const H = st.hole, C = CFG.legends.hole, b = w.ball, p = b.p, v = b.v, rho = Math.sqrt(p.x * p.x + p.z * p.z);
@@ -8102,6 +8204,7 @@ function createLegends() {
   // goes through it ('ghost'). Returns 'burn', 'ghost' or ''.
   function prepare(who, hand) {
     const o = key(who), D = st.dragon;
+    if (st.warp.ph === 1 || st.warp.ph === 2) return 'ghost'; // warping: no hand can touch it
     if (st.beam.ph === 1 && st.beam.target === o && !(CFG.legends.beam.block > 0)) return 'ghost';
     if (D.ph === 2 && !D.single && D.target === o) {
       hand.gain = (hand.gain > 0 && hand.gain < 1 ? hand.gain : 1) * U.clamp(CFG.legends.dragon.hit, 0.05, 1);
@@ -8132,12 +8235,12 @@ function createLegends() {
   function flyOff() { const D = st.dragon; if (D.ph === 3 || !D.ph) return; D.ph = 3; D.t = 0; D.endRt = st.rt; st.stats.flown++; emit('flown', D.owner, D.single ? SDRAGON : DRAGON, 0, 0, 0); }
 
   // ───────────────────────── forces and the turn (game time) ─────────────────────────
-  // the path, sampled every 4 cm the ball goes (not every frame: in slow-mo a frame's worth of path is nothing, and the dragons
-  // would shrink to their heads just as they are most watched)
-  const STEP = 0.04;
+  // the path, sampled every few cm the ball goes (not every frame: in slow-mo a frame's worth of path is nothing, and the dragons
+  // would shrink to their heads just as they are most watched): 4 cm, or longer for dragons too long for 96 samples of that
+  const step = () => Math.max(0.04, (2.6 * U.clamp(CFG.legends.dragon.size, 0.3, 4)) / (NH - 6));
   function sample(w) {
-    const p = w.ball.p;
-    if (hn) { const i = (hc - 1 + NH) % NH, dx = p.x - hx[i], dy = p.y - hy[i], dz = p.z - hz[i]; if (dx * dx + dy * dy + dz * dz < STEP * STEP) return; }
+    const p = w.ball.p, d = step();
+    if (hn) { const i = (hc - 1 + NH) % NH, dx = p.x - hx[i], dy = p.y - hy[i], dz = p.z - hz[i]; if (dx * dx + dy * dy + dz * dz < d * d) return; }
     hx[hc] = p.x; hy[hc] = p.y; hz[hc] = p.z; hc = (hc + 1) % NH; if (hn < NH) hn++;
   }
   // before the physics: the sunlit ball rides the light; the Light Beam flies at them; the black hole holds the ball
@@ -8161,7 +8264,7 @@ function createLegends() {
   function update(simDt, realDt, w, live, half, B) {
     if (realDt > 0) st.rt += realDt;
     const dt = simDt > 0 ? simDt : 0;
-    if (!on()) { if (st.dragon.ph || st.ray.ph || st.beam.ph || st.hole.ph) newRally(); return; }
+    if (!on()) { if (st.dragon.ph || st.ray.ph || st.beam.ph || st.hole.ph || st.warp.ph) newRally(); return; }
     if (dt > 0) {
       if (st.down.you > 0) st.down.you = Math.max(0, st.down.you - dt);
       if (st.down.kage > 0) st.down.kage = Math.max(0, st.down.kage - dt);
@@ -8176,6 +8279,10 @@ function createLegends() {
       if (H.t >= Math.max(0.05, CFG.legends.hole.hold)) spit(w);
       return; // nothing else moves while it holds
     } else if (H.ph === 2) { H.t += dt; if (H.t > 1.2) H.ph = 0; }
+    // the black hole's warp: on the real clock (the hit's freeze and slow-mo are the moment it plays in), the ball held meanwhile
+    const X = st.warp;
+    if (X.ph === 1 || X.ph === 2) { warpStep(w); if (X.ph !== 3) return; } // nothing else moves while it warps
+    else if (X.ph === 3 && st.rt - X.outRt > 0.7) X.ph = 0;
     if (!(dt > 0)) return;
     const x = half ? w.ball.p.x * (half < 0 ? -1 : 1) : 0, onKage = x > NEUTRAL, onYou = x < -NEUTRAL; // whose half the ball is on
     // the dragons
@@ -8185,7 +8292,8 @@ function createLegends() {
       if (D.ph <= 2) sample(w);
       if (D.ph === 1 && !D.single && D.t >= Math.max(0.005, CD.gap)) { // the second strike (game time: the first hit's freeze holds it)
         const v = w.ball.v, k = U.clamp(CD.second, 0.5, 4);
-        v.x *= k; v.y *= k; v.z *= k;
+        if (CD.mph > 0) U.setMph(v, CD.mph); // its Ball speed, off the second strike
+        else { v.x *= k; v.y *= k; v.z *= k; }
         D.ph = 2; D.rt2 = st.rt; st.stats.strikes2++;
         const p = w.ball.p;
         emit('strike2', D.owner, DRAGON, p.x, p.y, p.z);
@@ -8276,7 +8384,7 @@ function createLegends() {
   }
   // the dragons' coils (the last third of a second of the ball's path, as wide as `width`) through a body
   function sweeps(w, body) {
-    const n = Math.min(hn, 20), rr = bodyR(body) + Math.max(0.05, CFG.legends.dragon.width) * 0.5 * U.clamp(CFG.legends.dragon.size, 0.3, 3);
+    const n = Math.min(hn, 20), rr = bodyR(body) + Math.max(0.05, CFG.legends.dragon.width) * 0.5 * U.clamp(CFG.legends.dragon.size, 0.3, 4);
     for (let j = 1; j < n; j++) {
       const i0 = (hc - j + NH) % NH, i1 = (hc - j - 1 + NH) % NH;
       segSeg(hx[i0], hy[i0], hz[i0], hx[i1], hy[i1], hz[i1], body.x, body.y, body.z, body.x, body.y + 0.95 * body.h, body.z);
@@ -8299,6 +8407,7 @@ function createLegends() {
   function ballAlpha() {
     const H = st.hole;
     if (H.ph === 1) return Math.max(0, 1 - (st.rt - H.rt0) / 0.25);
+    if (st.warp.ph === 1) return Math.max(0, 1 - (st.rt - st.warp.rt0) / (WARP_OPEN * 0.8)); // into the first black hole
     return 1;
   }
 
@@ -8328,6 +8437,7 @@ function createLegends() {
   function drawBehind(ctx, cam, w) {
     const D = st.dragon;
     if (D.ph) drawDragons(ctx, cam, w, false);
+    if (st.warp.ph) warpHoles(ctx, cam, w);
     const E = st.beam;
     if (E.ph === 1 || (E.ph >= 2 && st.rt - E.rt0 < 0.9)) lance(ctx, cam, w, E);
   }
@@ -8336,6 +8446,7 @@ function createLegends() {
     if (st.dragon.ph) drawDragons(ctx, cam, w, true);
     if (st.sun.owner || st.rt - st.sun.rt0 < 0.3) sunBall(ctx, cam, w);
     if (st.hole.ph) hole(ctx, cam, w);
+    if (st.warp.ph) warpFlash(ctx, cam, w);
     if (st.marked.owner && st.rt < st.marked.until) mark(ctx, cam, w);
   }
   // On the floor: the sunbeam's ring of light and its scorch
@@ -8382,7 +8493,7 @@ function createLegends() {
   // drawn, scales along it, flames off its back; head: drawn over the ball, jaws round it, horns, whiskers, a burning eye.
   const SX = new Float32Array(NB * 2), SY = new Float32Array(NB * 2), SW = new Float32Array(NB * 2);
   function drawDragons(ctx, cam, w, heads) {
-    const D = st.dragon, CD = CFG.legends.dragon, size = U.clamp(CD.size, 0.3, 3) * (D.single ? 0.8 : 1);
+    const D = st.dragon, CD = CFG.legends.dragon, size = U.clamp(CD.size, 0.3, 4) * (D.single ? 0.8 : 1);
     const end = D.ph === 3 ? U.clamp01((st.rt - D.endRt) / 0.8) : 0, f = 1 - end;
     if (!(f > 0) || (!D.single && D.ph === 1)) return; // before the second strike there is no dragon: it was a plain hit
     const born = U.clamp01((st.rt - (D.single ? D.rt0 : D.rt2)) / 0.25);
@@ -8618,6 +8729,85 @@ function createLegends() {
       }
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+  // A black hole of screen radius R at (x, y): what it pulls in spiralling to it, its accretion ring turning, the dark core and its
+  // thin rim of bent light. f: how much of it there is (0..1); g: its own clock; Q: whose colours it pulls in
+  function vortex(ctx, x, y, R, f, g, Q, n) {
+    const P = SUPERS[HOLE];
+    if (!(R > 0.5) || !(f > 0)) return;
+    ctx.globalCompositeOperation = 'lighter';
+    if (typeof fireGlow === 'function') fireGlow(ctx, x, y, R * 3, R * 3, P.glow, 0.45 * f);
+    for (let i = 0; i < n; i++) {
+      const q = (g * 1.8 + hash(i * 3.7)) % 1, ang = hash(i) * TAU + g * 5 + q * 3.5, d = R * (3.2 * (1 - q) + 0.6);
+      ctx.globalAlpha = 0.85 * f * q; ctx.fillStyle = i % 3 === 0 ? Q.core : i % 3 === 1 ? Q.mid : P.mid;
+      ctx.beginPath(); ctx.arc(x + Math.cos(ang) * d, y + Math.sin(ang) * d * 0.62, Math.max(1, R * 0.1 * (1 - q * 0.5)), 0, TAU); ctx.fill();
+    }
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.globalAlpha = (pass ? 0.9 : 0.5) * f; ctx.strokeStyle = pass ? '#ffb347' : P.mid; ctx.lineWidth = Math.max(1.5, R * (pass ? 0.1 : 0.28));
+      ctx.beginPath(); ctx.ellipse(x, y, R * 1.75, R * 0.55, -0.25, g * 4, g * 4 + TAU * 0.85); ctx.stroke();
+    }
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = f; ctx.fillStyle = VOID;
+    ctx.beginPath(); ctx.arc(x, y, R, 0, TAU); ctx.fill();
+    ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, R * 0.07); ctx.globalAlpha = 0.85 * f;
+    ctx.beginPath(); ctx.arc(x, y, R * 1.06, 0, TAU); ctx.stroke();
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+  // the warp, behind the ball: the black hole that swallows it, then the triangle, its three small holes and the edges between them
+  // lit, closing again once it is out
+  function warpHoles(ctx, cam, w) {
+    const X = st.warp, P = SUPERS[HOLE], g = st.rt - X.rt0, r = w.ball.r;
+    // the first: it opens on the ball, and closes as the ball comes out at the top of the triangle
+    const first = X.ph === 1 ? U.clamp01(g / 0.15) : X.ph === 2 && X.hop === 0 ? 1 - U.clamp01((st.rt - X.hopRt) / 0.2) : 0;
+    if (first > 0) { cam.project(X.x0, X.y0, X.z0, A); vortex(ctx, A.x, A.y, r * A.s * (1.3 + 1.1 * U.clamp01(g / 0.2)), first, g, P, 22); }
+    // the triangle: it opens as the ball goes in, and closes once it is out
+    const f = U.clamp01((g - WARP_OPEN * 0.45) / 0.18) * (X.ph === 3 ? 1 - U.clamp01((st.rt - X.outRt) / 0.45) : 1);
+    if (!(f > 0)) return;
+    cam.project(X.vx[0], X.vy[0], X.vz[0], A); cam.project(X.vx[1], X.vy[1], X.vz[1], B2); cam.project(X.vx[2], X.vy[2], X.vz[2], C3);
+    const rp = r * A.s;
+    if (!(rp > 0.5)) return;
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+    for (let pass = 0; pass < 2; pass++) { // its edges: a violet glow, a bright thread, flickering
+      ctx.strokeStyle = pass ? P.core : P.mid; ctx.globalAlpha = (pass ? 0.75 : 0.35) * f * (0.8 + 0.2 * Math.sin(st.rt * 20));
+      ctx.lineWidth = Math.max(1, rp * (pass ? 0.08 : 0.35));
+      ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B2.x, B2.y); ctx.lineTo(C3.x, C3.y); ctx.closePath(); ctx.stroke();
+    }
+    ctx.lineCap = 'butt'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    vortex(ctx, A.x, A.y, rp * 1.25 * f, f, g + 0.3, P, 10);
+    vortex(ctx, B2.x, B2.y, r * B2.s * 1.25 * f, f, g + 0.6, P, 10);
+    vortex(ctx, C3.x, C3.y, r * C3.s * 1.25 * f, f, g + 0.9, P, 10);
+  }
+  // over the ball: the streak of each warp from the corner it left to the one it is in, a flash as it lands there, and the burst it
+  // comes out of the last one with
+  function warpFlash(ctx, cam, w) {
+    const X = st.warp, P = SUPERS[HOLE];
+    ctx.globalCompositeOperation = 'lighter';
+    if (X.ph === 2 && X.at >= 0) {
+      const q = U.clamp01((st.rt - X.hopRt) / Math.max(0.05, Math.min(0.14, CFG.legends.hole.hop))), f = 1 - q;
+      cam.project(X.vx[X.at], X.vy[X.at], X.vz[X.at], A);
+      const rp = w.ball.r * A.s;
+      if (X.prev >= 0 && f > 0) {
+        cam.project(X.vx[X.prev], X.vy[X.prev], X.vz[X.prev], B2);
+        for (let pass = 0; pass < 2; pass++) {
+          ctx.strokeStyle = pass ? '#ffffff' : P.mid; ctx.globalAlpha = (pass ? 0.9 : 0.6) * f; ctx.lineWidth = Math.max(1.5, rp * (pass ? 0.35 : 1.1) * f);
+          ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(B2.x, B2.y); ctx.lineTo(A.x, A.y); ctx.stroke();
+        }
+      }
+      if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 3 * q), rp * (2 + 3 * q), P.glow, 0.9 * f);
+      ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.18 * f); ctx.globalAlpha = 0.9 * f;
+      ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1.1 + 2.4 * q), 0, TAU); ctx.stroke();
+    } else if (X.ph === 3) {
+      const q = U.clamp01((st.rt - X.outRt) / 0.5), f = 1 - q, i = X.at >= 0 ? X.at : 0;
+      cam.project(X.vx[i], X.vy[i], X.vz[i], A);
+      const rp = w.ball.r * A.s;
+      if (f > 0 && rp > 0.5) {
+        if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 7 * q), rp * (2 + 7 * q), P.glow, 0.85 * f);
+        ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, rp * 0.35 * f); ctx.globalAlpha = 0.9 * f;
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1.2 + 8 * q), 0, TAU); ctx.stroke();
+        ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.12 * f);
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 5 * q), 0, TAU); ctx.stroke();
+      }
+    }
+    ctx.lineCap = 'butt'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   }
   // the ×2 mark on what a black hole returned: a violet rim of the dark round the ball, turning
   function mark(ctx, cam, w) {
@@ -11934,7 +12124,9 @@ function createUI(root, opts) {
       else {
         if (!dragging) r.inp.value = String(num);
         r.inp.style.setProperty('--f', String(U.clamp01((num - r.s.min) / (r.s.max - r.s.min || 1))));
-        r.num.data = (r.s.signed && num > 0 ? '+' : '') + num.toFixed(r.dec);
+        const z = r.s.zero && num === 0; // a speed at 0 reads as what 0 means ("as hit"), with no unit
+        r.num.data = z ? r.s.zero : (r.s.signed && num > 0 ? '+' : '') + num.toFixed(r.dec);
+        if (r.unitEl) r.unitEl.hidden = z;
       }
       r.row.classList.toggle('chg', moved(r.s.path, num));
     }
@@ -12030,7 +12222,7 @@ function createUI(root, opts) {
       if (r.kind === 'choice') return makeChoice(r, id);
       const lab = el('label', 'lab'); lab.htmlFor = id; lab.textContent = s.label;
       const val = el('output', 'val'); val.htmlFor = id; val.appendChild(r.num);
-      if (s.unit) { const u = el('small'); u.textContent = s.unit; val.appendChild(u); }
+      if (s.unit) { const u = r.unitEl = el('small'); u.textContent = s.unit; val.appendChild(u); }
       const rst = el('button', 'rst'); rst.type = 'button'; rst.setAttribute('aria-label', 'Reset ' + s.label); rst.innerHTML = RESET_SVG;
       const sl = el('div', 'sl'), inp = r.inp = el('input'); inp.type = 'range'; inp.id = id; inp.min = s.min; inp.max = s.max; inp.step = s.step;
       sl.appendChild(inp);
@@ -12543,7 +12735,7 @@ function createUI(root, opts) {
   const SUPER_EV = { type: 'super', kind: 0, word: '', size: '', at: { x: 0, y: 0, z: 0 }, ux: 0, uy: 0 };
   const QUAKE_EV = { type: 'quake', k: 1, at: { x: 0, y: 0, z: 0 } }; // a stomp's foot coming down (fx.js shakes the screen)
   const DOWN_HINT = ['', '', 'Spiked! 💥', '', '', '', '', 'Zapped! ⚡', 'Blown away! 🌪️', 'Stomped! 💥', 'Blasted! 🔥', 'Burned! 🐉', 'Sunstruck! ☀️', '', 'Shocked! ⚡', 'Burned! 🐉'];
-  const HOLE = 13; // the Black Hole (legends.js): a hold, never thrown
+  const HOLE = 13; // the Black Hole (legends.js): thrown, its warp; or, set to swallow, a hold, never thrown
   const toldSuper = new Uint8Array(SUPERS.length);
   let kageStruck = -1;
   // round the ball: the fire's flames, then the supers' (and the decoys, on their side of the pole)
@@ -12557,7 +12749,8 @@ function createUI(root, opts) {
     drawFloor(c, cm, w) { supers.drawFloor(c, cm, w); legends.drawFloor(c, cm, w); },
     drawOver(c, cm, w) { supers.drawOver(c, cm, w); legends.drawOver(c, cm, w); },
   };
-  const holeYou = () => vs() && supers.kindOf('you') === HOLE; // your special is the Black Hole: a hold, not a hit
+  const swallows = () => CFG.legends.hole.mode === 1; // the Black Hole set to swallow their special (a hold) rather than warp the ball
+  const holeYou = () => vs() && swallows() && supers.kindOf('you') === HOLE; // your special is a black hole that holds: not a hit
   const HOLD = { you: false, kage: false }; // who holds a black hole this frame (the HUD's rings show it)
   let kiruWas = false; // was Kiru on last frame (switching him on puts him on his spot)
   let kageSwing = -1; // the swing (his st.ts) Kage last weighed his special for
@@ -12672,11 +12865,18 @@ function createUI(root, opts) {
       legends.swallow(k, sk === HOLE ? 0 : sk, world);
       res.superKind = 0; res.swallowed = true;
     } else res.superKind = res.special && vs() ? supers.launch(k, world, bodies) : 0; // which super it was (0: the signature, Raijin or Shadow cut)
-    if (res.superKind === 11 || res.superKind === 12) legends.cast(k, res.superKind, world, bodies); // the big two: legends.js
+    if (res.superKind >= 11 && res.superKind <= 13) legends.cast(k, res.superKind, world, bodies); // the big three: legends.js (a black hole here is its warp)
     if (res.superKind) {
       energy.dropCharge(); // the others carry no charge: what they do is the ball's
       const v = world.ball.v, s = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z); // a super may have turned the ball as it left the hand (a spike, at them): the burst points where it went
       if (s > 1e-6) { res.dir = { x: v.x / s, y: v.y / s, z: v.z / s }; res.speedAfter = s; }
+    }
+    // a Ball speed: the signature's (Raijin, Shadow cut), the fireball's (and a Single Dragon's). The others' are their own (supers.js,
+    // legends.js)
+    const mph = res.special && !res.superKind && !res.swallowed ? CFG.energy.mph : res.fireball ? CFG.fire.mph : 0;
+    if (mph > 0) {
+      const v = world.ball.v, sv = U.setMph(v, mph);
+      if (sv > 1e-6) { res.dir = { x: v.x / sv, y: v.y / sv, z: v.z / sv }; res.speedAfter = sv; }
     }
     if (fh && fh.dragon) legends.single(k, world); // the power-up as a Single Dragon: fire.js's rules, legends.js's dragon
     if (res.beam) { legends.beam(k, world, bodies); const v = world.ball.v, sv = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z); if (sv > 1e-6) { res.dir = { x: v.x / sv, y: v.y / sv, z: v.z / sv }; res.speedAfter = sv; } }
@@ -12821,6 +13021,12 @@ function createUI(root, opts) {
       if (CFG.supers.slowmo > 0) tw.trigger(0.95, 'perfect', true);
       audio.vibrate([50, 30, 90]);
     } else if (e.type === 'shock') { superEv(14, '', 'small', e.x, e.y, e.z); audio.vibrate(25); }
+    else if (e.type === 'warpIn') { audio.superFx('unwarp'); audio.vibrate(8); } // the black hole's warp: in at the next corner of its triangle
+    else if (e.type === 'warpOut') { // ...and out of the last one, fast, its owner's way: he reads its new line
+      audio.legend('holeSpit');
+      audio.vibrate([20, 20, 50]);
+      kage.onWorldHit(RUSH, e.who === 'kage' ? 'kage' : 'you');
+    }
     else if (e.type === 'hole') { // it opens on the ball: the special is swallowed
       superEv(13, words ? 'BLACK HOLE!' : '', '', e.x, e.y, e.z);
       audio.legend('holeOpen');
@@ -13087,7 +13293,7 @@ function createUI(root, opts) {
       if (kage.st.struck && kage.st.ts !== kageStruck) { kageStruck = kage.st.ts; if (!hand && supers.kageWhiffed()) audio.superFx('pop'); } // his swing went through your decoy
       if (kage.st.phase === 'swing' && kage.st.ts !== kageSwing) { // he weighs his special as a swing starts, so it shows on him before the fist lands
         kageSwing = kage.st.ts;
-        if (CFG.energy.kage > 0 && energy.full('kage') && !energy.armed('kage') && supers.kindOf('kage') !== HOLE && kage.wantsSpecial(versus.snap.lead)) energy.arm('kage', true); // (a black hole is a hold, never thrown)
+        if (CFG.energy.kage > 0 && energy.full('kage') && !energy.armed('kage') && !(swallows() && supers.kindOf('kage') === HOLE) && kage.wantsSpecial(versus.snap.lead)) energy.arm('kage', true); // (a black hole that swallows is a hold, never thrown)
         else if (CFG.fire.kage > 0 && fire.held('kage') && !fire.armed('kage') && !fire.volley && !energy.armed('kage') && kage.wantsFire(versus.snap.lead)) {
           fire.arm('kage', true); // his power-up, the same way (one or the other on a swing)
           if (!fire.fireball) energy.arm('kage', true, true);
