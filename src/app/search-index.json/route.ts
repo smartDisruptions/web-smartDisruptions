@@ -1,7 +1,7 @@
 import { getPublishedPosts } from '@/lib/posts';
 import { archivedReports, frontReports } from '@/data/marketStorm';
 import { projects } from '@/data/projects';
-import { apps, GAME_SLUGS } from '@/data/apps';
+import { apps, ARCADE_DEMO_SLUGS, GAME_SLUGS } from '@/data/apps';
 import { builtHref } from '@/data/projects';
 
 /**
@@ -150,7 +150,7 @@ export function GET() {
     items.push({
       t: a.name,
       u: href,
-      k: (GAME_SLUGS as readonly string[]).includes(a.slug)
+      k: [...GAME_SLUGS, ...ARCADE_DEMO_SLUGS].includes(a.slug)
         ? 'Arcade'
         : 'Built',
       d: a.description,

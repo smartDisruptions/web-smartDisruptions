@@ -99,6 +99,11 @@ const nextConfig: NextConfig = {
           source: '/demo/portfolio-ledger',
           destination: '/demo/portfolio-ledger/index.html',
         },
+        // The archive's Demo section: Tether Ball, one file.
+        {
+          source: '/games/tether-ball',
+          destination: '/games/tether-ball/index.html',
+        },
         // The Broom & Blade Arcade's five machines: the same, one file each.
         ...['hoop-quest', 'kid-volt-knockout', 'whack-a-dust-bunny', 'ring-toss', 'milk-bottle-knockdown'].map((name) => ({
           source: `/games/${name}`,
