@@ -2278,7 +2278,7 @@ function createAudio(opts) {
   const SUPER_IDS = [null, 'swerve', 'spike', 'phantom', 'decoys', 'slip', 'warp', 'zap', 'wind', 'stomp', 'blast'];
   function superCast(kind) {
     if (kind === 11) { legend('dragonRoar'); return; } // the first dragon wakes (its twin's rush is the second strike's)
-    if (kind === 12) { legend('sunbeam'); return; }
+    if (kind === 12) { if (!(CFG.legends && !(CFG.legends.ray.charge > 0))) legend('sunbeam'); return; } // an instant one only strikes
     if (kind === 13) { legend('holeOpen'); return; }
     const lv = CFG.audio.special > 0 ? CFG.audio.special : 0, id = kind >= 1 && kind < SUPER_IDS.length ? SUPER_IDS[kind | 0] : null;
     if (S.muted || !id || !(lv > 0) || !(vol(id) > 0) || !ready() || !room(kind > 6 ? 14 : 10, true)) return;
@@ -3464,6 +3464,23 @@ function createFX(seed) {
     s.life = Math.max(s.starLife, s.lineLife + 0.05, nr, s.tLife, 0.16, sp.gR > 0 ? GROUND_LIFE : 0);
     if (sp.nSpark > 0) spawnSparks(an, sp.th, sp.nSpark, sp.sparkV, sp.ux, sp.uy, sp.sparkMode, S);
     st.lastS = S;
+    return s;
+  }
+  // A word that would print over a live one (a special's name and its knockdown on the same hit: an instant sunbeam) moves
+  // clear of it, above it, or below where there's no room above. lo/hi: where its middle may go. Widths not yet measured are
+  // estimated from the letters.
+  const wordW = (o) => (o.tw > 0 ? o.tw : Math.max(o.word.length * o.fs1 * 0.62, o.mph.length * o.fs2 * 0.6));
+  const wordUp = (o) => o.fs1 * 0.6, wordDown = (o) => (o.mph && o.word ? o.fs1 * 0.82 + o.fs2 * 0.6 : o.fs1 * 0.6);
+  function unstack(s, lo, hi) {
+    if (!(s.tLife > 0) || !s.word) return;
+    for (let pass = 0; pass < 2; pass++) for (let i = 0; i < N_SLOT; i++) {
+      const o = slots[i];
+      if (o === s || !o.on || !(o.tLife > 0) || o.age >= o.tLife || !(o.word || o.mph)) continue;
+      if (Math.abs(o.tx - s.tx) * 2 >= wordW(o) + wordW(s)) continue;
+      if (s.ty + wordDown(s) <= o.ty - wordUp(o) || s.ty - wordUp(s) >= o.ty + wordDown(o)) continue;
+      const up = o.ty - wordUp(o) - wordDown(s) - 10 * s.S, down = o.ty + wordDown(o) + wordUp(s) + 10 * s.S;
+      s.ty = up >= lo ? up : Math.min(down, hi);
+    }
   }
 
   function resetSpec(th, I, S) {
@@ -3626,7 +3643,7 @@ function createFX(seed) {
       sp.nSpark = Math.round((big ? 40 : 10) * F.sparkCount); sp.sparkV = S * (big ? 800 : 380);
       sp.word = ev.word || ''; sp.mph = ''; sp.tSize = S * (big ? 40 : 24) * F.textSize; sp.tilt = -0.06;
       sp.tx = cx; sp.ty = U.clamp(cy - S * (big ? 96 : 52), sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize);
-      startBurst();
+      unstack(startBurst(), sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize);
       if (big) { addTrauma(0.5); st.shS = S; kick(F.shake * S * 0.4, ev.ux || 0, ev.uy || 1, 0.01); punch(F.punch * 0.7, F.snap * 0.6, 0.12, cx, cy); }
     } else if (ev.type === 'quake') {
       // a stomp (supers.js): no burst (the shockwave and the dust are supers.js's), a quake that outlasts a hit's shake
@@ -7860,7 +7877,8 @@ function createFire() {
 //                      them. The dragons stay for `turns` of their turns (a pass of their half, touched or not), through any touch
 //                      of the thrower's, then fly off. A touch of theirs before the second strike calls it off.
 //   RAY OF LIGHT (12)  a giant sunbeam: a ring of light marks them (following them, by `track`), the light gathers for `charge`,
-//                      and the beam comes down on them: struck, down for `stun`. The whole time the ball shines like a small sun
+//                      and the beam comes down on them: struck, down for `stun` (`charge` 0: on the hit itself, so they're
+//                      down before the ball reaches them; Josh, 2026-10-16: "the light beam could hit instantaneously"). The whole time the ball shines like a small sun
 //                      and rides the light (`glide`: no drag, gravity at `float`), until they touch it or `sun` runs out.
 //   BLACK HOLE (13)    by default (`mode` 0, Warp; Josh, 2026-10-16: "I want the black hole to be the ball") armed like the others,
 //                      for the next hit. The hit opens a black hole on the ball and swallows it; three small ones open in a
@@ -7906,7 +7924,7 @@ CFG.legends = {
     mph: 80, // the ball leaves the second strike this fast (0: `second` × as hit). Josh, 2026-10-16: "the dragon to be sped up"
   },
   ray: {
-    charge: 0.55, // s the light gathers before the beam comes down
+    charge: 0.55, // s the light gathers before the beam comes down (0: it strikes the instant the ball is hit)
     width: 1.1, // m across the beam
     stun: 1.4, // s it knocks them down
     track: 1, // 1: the ring of light follows them while it gathers (0: it stays where they stood)
@@ -7954,7 +7972,7 @@ CFG.legends = {
     row('Double Dragon', 'dragon.life', 'Dragons stay at most', 2, 20, 0.5, 's'),
     flip('Double Dragon', 'follow', 'Power-up follows your special'),
 
-    row('Ray of Light', 'ray.charge', 'Light gathers for', 0.1, 1.5, 0.05, 's'),
+    row('Ray of Light', 'ray.charge', 'Light gathers for', 0, 1.5, 0.05, 's', { zero: 'instant' }),
     row('Ray of Light', 'ray.width', 'Beam width', 0.4, 3, 0.05, 'm'),
     row('Ray of Light', 'ray.stun', 'Knocks them down for', 0.2, 4, 0.1, 's'),
     flip('Ray of Light', 'ray.track', 'It follows them'),
@@ -8055,6 +8073,16 @@ function createLegends() {
       e.nx = nx * (push || 0); e.nz = nz * (push || 0);
     }
   }
+  // the sunbeam comes down where its ring is: struck if they're under it
+  function sunstrike(body) {
+    const R = st.ray, CR = CFG.legends.ray;
+    R.ph = 2; R.t = 0; R.strikeRt = st.rt;
+    emit('sunstrike', R.owner, RAY, R.x, 0, R.z);
+    if (body) {
+      const dx = body.x - R.x, dz = body.z - R.z, rr = Math.max(0.2, CR.width) / 2 + 0.25 * (body.h || 1.75) / 1.75;
+      if (dx * dx + dz * dz <= rr * rr) { R.hit = true; st.stats.sunstruck[R.target]++; knock(R.target, RAY, CR.stun * R.mult, body, R.x, R.z, 0.4); }
+    }
+  }
   // what a returned special carries, while it lasts: × (1 none)
   const multOf = (who) => (st.marked.owner && st.marked.owner === key(who) && st.rt < st.marked.until ? 2 : 1);
 
@@ -8079,6 +8107,7 @@ function createLegends() {
       st.sun.owner = o; st.sun.t = Math.max(0.2, CFG.legends.ray.sun); st.sun.rt0 = st.rt;
       st.stats.rays++;
       if (!spat) U.setMph(w.ball.v, CFG.legends.ray.mph); // its Ball speed (a black hole's return keeps the spit's)
+      if (!(CFG.legends.ray.charge > 0)) sunstrike(body); // instant: down before the ball has left the hand
       return RAY;
     }
     if (kind === HOLE) { warp(o, w); return HOLE; } // thrown: its warp
@@ -8317,14 +8346,7 @@ function createLegends() {
       const body = B && B[R.target];
       if (R.ph === 1) {
         if (body && CR.track > 0) { R.x += (body.x - R.x) * Math.min(1, dt * 14); R.z += (body.z - R.z) * Math.min(1, dt * 14); }
-        if (R.t >= Math.max(0.05, CR.charge) && live) {
-          R.ph = 2; R.t = 0; R.strikeRt = st.rt;
-          emit('sunstrike', R.owner, RAY, R.x, 0, R.z);
-          if (body) {
-            const dx = body.x - R.x, dz = body.z - R.z, rr = Math.max(0.2, CR.width) / 2 + 0.25 * (body.h || 1.75) / 1.75;
-            if (dx * dx + dz * dz <= rr * rr) { R.hit = true; st.stats.sunstruck[R.target]++; knock(R.target, RAY, CR.stun * R.mult, body, R.x, R.z, 0.4); }
-          }
-        }
+        if (R.t >= CR.charge && live) sunstrike(body);
       } else if (R.ph === 2 && R.t > 0.9) { R.ph = 3; R.t = 0; }
       else if (R.ph === 3 && R.t > 0.5) R.ph = 0;
     }
