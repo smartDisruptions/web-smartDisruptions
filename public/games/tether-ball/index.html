@@ -478,6 +478,27 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 @keyframes m-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5%); } }
 @media (prefers-reduced-motion: reduce) { .m-who .pt svg, .m-who .pt img, .m-fig svg { animation: none; } }
 @media (min-width: 700px) { .m-grid { grid-template-columns: repeat(5, 1fr); } }
+/* the creator: the preview and the tabs stay in view while the options scroll under them */
+.m-mk-top { position: sticky; top: calc(var(--st) + 44px); z-index: 1; display: flex; flex-direction: column; gap: 8px; margin: 0 -6px; padding: 0 6px 8px; background: rgba(9,11,19,.97); }
+.m-make .m-stage { padding: 2px 0 0; flex-direction: row; justify-content: center; gap: 10px; }
+.m-make .m-fig { width: min(190px, 46vw); }
+.m-make .m-name { width: min(150px, 38vw); align-self: center; font-size: 16px; }
+.m-tabs { display: flex; gap: 4px; padding: 3px; border-radius: 12px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
+.m-tab { flex: 1; min-width: 0; height: 40px; padding: 0 4px; border: 0; border-radius: 9px; background: none; font: 800 13.5px/1 var(--ui); color: var(--dim); }
+.m-tab[aria-selected="true"] { background: var(--accent); color: var(--ink); }
+.m-pane { display: flex; flex-direction: column; gap: 16px; }
+.m-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; }
+.m-tiles.wide { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.m-tile { display: flex; flex-direction: column; align-items: stretch; gap: 2px; padding: 4px 4px 6px; border-radius: 12px; border: 2px solid transparent; background: rgba(255,255,255,.06); min-width: 0; }
+.m-tile .pt { aspect-ratio: auto; height: 70px; }
+.m-tiles.wide .m-tile .pt { height: 52px; }
+.m-tile .pt svg { width: 100%; height: 100%; }
+.m-tl { font: 700 11px/1.15 var(--ui); color: var(--dim); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-tile[aria-checked="true"] { border-color: var(--accent); background: rgba(255,176,32,.14); }
+.m-tile[aria-checked="true"] .m-tl { color: var(--text); }
+.m-sw { gap: 7px; }
+.m-swb { width: 34px; height: 34px; }
+@media (max-height: 640px) { .m-mk-top { position: static; } }
 </style>
 </head>
 <body>
@@ -10404,12 +10425,13 @@ function sleeve(sx, sy, hx, hy, col, trim, o = {}) {
 let EYE_N = 0;
 function eyes(o = {}) {
   const { lx = -2, ly = 1.5, iris = INK, y = 95.5, rx = 12.5, ry = 14, pr = 8, a = 76, b = 124, s = 1, lid = 0, tilt = 0,
-    skin = SKIN, closed = false, happy = false, under = 0, ring = '', glints = true, look = null } = o;
+    skin = SKIN, closed = false, happy = false, under = 0, ring = '', glints = true, look = null, lashes = false, sparkle = false } = o;
   const one = (cx, side) => {
     if (closed) return ln(`M${cx - rx + 1} ${y - 1}Q${cx} ${y + 6} ${cx + rx - 1} ${y - 1}`, INK, 3.4);
     if (happy) return ln(`M${cx - rx + 1} ${y + 4}Q${cx} ${y - 11} ${cx + rx - 1} ${y + 4}`, INK, 4.2);   // a smile in the eyes (the game's happy face)
     let e = el(cx, y, rx, ry, '#fff') + ci(cx + lx, y + ly, pr, iris) + (ring ? ci(cx + lx, y + ly, pr * 0.5, ring) : '');
     if (glints) e += ci(cx + lx + 3, y + ly - 4, f1(pr * 0.37), '#fff') + ci(cx + lx - 3, y + ly + 4, f1(pr * 0.16), '#fff', 'opacity=".8"');
+    if (sparkle) e += ci(cx + lx + 3.5, y + ly - 3.5, f1(pr * 0.5), '#fff') + ci(cx + lx - 3.5, y + ly + 3.5, f1(pr * 0.26), '#fff');   // starry eyes (the creator's)
     if (lid > 0 || under > 0) {
       const id = `eye${++EYE_N}`, qx = rx + 1.2, qy = ry + 1.2;   // a touch larger than the white, so its edge can't show round the lid
       clipDef(id, `M${cx - qx} ${y}a${qx} ${qy} 0 1 0 ${2 * qx} 0a${qx} ${qy} 0 1 0 ${-2 * qx} 0Z`);
@@ -10419,6 +10441,7 @@ function eyes(o = {}) {
       if (under > 0) { const uy = y + ry - 2 * ry * under; g += fl(`M${cx - rx - 4} ${uy}H${cx + rx + 4}V${y + ry + 4}H${cx - rx - 4}Z`, skin); }
       e += `<g clip-path="url(#${id})">${g}</g>`;
     }
+    if (lashes) { const o2 = -side; e += ln(`M${f1(cx + o2 * rx * 0.55)} ${f1(y - ry * 0.8)}l${o2 * 3} -6 M${f1(cx + o2 * rx * 0.88)} ${f1(y - ry * 0.45)}l${o2 * 6} -4 M${f1(cx + o2 * rx * 0.15)} ${f1(y - ry * 0.98)}l${o2 * 1} -6`, INK, 2.6); }
     return `<g transform="translate(${cx} ${y}) scale(${s}) translate(${-cx} ${-y})">${e}</g>`;
   };
   return `<g class="blink">${one(a, 1)}${one(b, -1)}</g>`;
@@ -10864,6 +10887,77 @@ function curls(id, stops, n = 14, r = 15, from = 196, to = 344, out = 1.02) {
 const cowlick = (id, stops) => sp('M94 28 Q84 6 104 2 Q94 12 106 26 Z', hg(id, stops), 4) + sp('M106 27 Q116 10 128 14 Q116 18 114 29 Z', hg(id, stops), 4);
 // a streak of colour along the fringe (in fx.overFace)
 const streak = (d, col) => ln(d, col, 7, 'opacity=".95"');
+
+// more hair, for the new kid the player makes (Tools/tether-ball's character creator, 2026-10-17: "especially more different
+// haircuts"). The head is the hood's ellipse (100 90, 74 by 66): these sit behind it (headBack), on it (overHead) or hang behind the
+// body (back), as each says.
+Object.assign(FRINGE, {
+  bowl: 'M34 96 C34 52 166 52 166 96 Q100 70 34 96 Z',                                     // a bowl cut: one round edge at the brows
+  curtain: 'M36 98 C36 64 90 54 100 64 C110 54 164 64 164 98 C152 86 134 78 116 82 C108 74 104 69 100 69 C96 69 92 74 84 82 C66 78 48 86 36 98 Z', // parted in the middle
+  shag: 'M38 90 C40 62 160 62 162 90 L154 84 L148 94 L138 84 L130 92 L120 82 L110 90 L100 80 L90 90 L80 82 L70 92 L62 84 L52 94 L46 84 Z',
+});
+// a big round afro (headBack): bumps round a dome that stops beside the jaw, so none of it shows under the chin
+function afro(id, stops, rx = 94, ry = 76, cy = 66) {
+  let s = '';
+  for (let i = 0; i < 26; i++) {
+    const a = (i / 26) * Math.PI * 2, x = 100 + Math.cos(a) * rx, y = cy + Math.sin(a) * ry;
+    if (y < 122) s += se(f1(x), f1(y), 15, 15, hg(id, stops), 4.5);
+  }
+  return s + se(100, cy, rx, ry - 4, hg(id, stops), 0);
+}
+// a mohawk's crest standing up along the middle (overHead; shave the sides with buzz())
+const mohawk = (id, stops) => sp('M78 42 L70 4 L86 20 L90 -12 L100 12 L110 -12 L114 20 L130 4 L122 42 Q100 32 78 42 Z', hg(id, stops), 4.5)
+  + ln('M86 34 L90 0 M100 30 L100 -2 M114 34 L110 0', stops[0], 1.8, 'opacity=".5"');
+// a high-top fade: a tall flat block above the head (headBack), the sides cut short
+const hightop = (id, stops) => sp('M40 76 L34 -4 Q34 -24 56 -24 L144 -24 Q166 -24 166 -4 L160 76 Z', hg(id, stops), 5)
+  + ln('M48 -14 V62 M62 -17 V58 M76 -19 V56 M90 -20 V54 M110 -20 V54 M124 -19 V56 M138 -17 V58 M152 -14 V62', stops[2], 2, 'stroke-dasharray="2 4" opacity=".6"')
+  + ln('M46 -16 Q100 -26 154 -16', '#ffffff', 2.4, 'opacity=".2"');
+// locs hanging behind the body (back) and a few loc tips over the hairline (front: overHead)
+function locs(id, stops, n = 5) {
+  let s = '';
+  for (const side of [-1, 1]) for (let i = 0; i < n; i++) {
+    const x0 = 100 + side * (46 + i * 7), x1 = 100 + side * (48 + i * 10), y1 = 166 + (i % 2) * 9 - i * 2;
+    const d = `M${x0} 70 Q${x0 + side * 12} 122 ${x1} ${y1}`;
+    s += ln(d, L, 15) + ln(d, stops[1], 10.5) + ln(d, stops[0], 3.4, 'stroke-dasharray="2 6" opacity=".55"');
+  }
+  return s;
+}
+const locTips = (stops) => [[64, 44], [84, 36], [116, 36], [136, 44]].map(([x, y]) => ln(`M${x} ${y} Q${x - 3} ${y + 18} ${x + 2} ${y + 34}`, L, 13) + ln(`M${x} ${y} Q${x - 3} ${y + 18} ${x + 2} ${y + 34}`, stops[1], 8.5)).join('');
+// cornrows: rows running back over the head from the hairline (overHead, on a short cap)
+const cornrows = (stops, gap) => ln('M58 82 Q52 54 66 30 M78 78 Q74 48 84 26 M100 76 V24 M122 78 Q126 48 116 26 M142 82 Q148 54 134 30', gap, 2.6)
+  + ln('M68 80 Q63 52 75 28 M89 77 Q87 48 92 25 M111 77 Q113 48 108 25 M132 80 Q137 52 125 28', stops[0], 2.4, 'stroke-dasharray="2.5 3" opacity=".75"');
+// a quiff: the front swept up and back in one wave (overHead)
+const quiff = (id, stops) => sp('M56 58 Q58 6 112 0 Q156 0 152 40 Q134 20 104 24 Q76 30 56 58 Z', hg(id, stops), 4.5) + ln('M70 40 Q86 14 120 10', stops[0], 1.8, 'opacity=".55"');
+// short twists poking out all over the top (headBack)
+function twists(id, stops, n = 11) {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const a = (198 + (144 * i) / (n - 1)) * Math.PI / 180, x = 100 + Math.cos(a) * 66, y = 90 + Math.sin(a) * 58, ox = Math.cos(a) * 17, oy = Math.sin(a) * 17;
+    const d = `M${f1(x)} ${f1(y)}L${f1(x + ox)} ${f1(y + oy)}`;
+    s += ln(d, L, 15) + ln(d, stops[1], 10) + ln(d, stops[0], 2.6, 'stroke-dasharray="2 3" opacity=".7"');
+  }
+  return s;
+}
+// a ponytail off one side, tied above the ear (headBack)
+const sideTail = (id, stops, tie) => sp('M144 62 Q190 56 198 98 Q206 140 184 174 Q182 132 170 108 Q160 92 144 86 Z', hg(id, stops), 5) + (tie ? se(152, 70, 7.5, 6.5, tie, 3) : '');
+// long wavy hair down both sides behind the body (back)
+const wavy = (id, stops) => { const d = 'M36 94 Q16 118 30 140 Q44 160 24 182 Q46 198 72 186 Q56 166 66 146 Q76 124 62 104 Z';
+  return sp(d, hg(id, stops), 5) + `<g transform="translate(200 0) scale(-1 1)">${sp(d, hg(id, stops), 5)}</g>`; };
+// a shag: choppy layers past the ears (headBack; with the shag fringe)
+const shag = (id, stops) => { const d = 'M30 86 Q18 120 30 148 L38 136 L44 152 L52 138 L60 150 Q52 120 58 98 Z';
+  return sp(d, hg(id, stops), 5) + `<g transform="translate(200 0) scale(-1 1)">${sp(d, hg(id, stops), 5)}</g>`; };
+// more mouths for the new kid (the cast's own stay as they are)
+Object.assign(MOUTH, {
+  big: () => sp('M86 124 Q100 146 114 124 Z', '#5b1d24', 2.6) + fl('M89 125 H111 V129 H89 Z', '#fff') + el(100, 138, 6, 3, '#e0727a'),
+  gap: () => sp('M88 125 Q100 141 112 125 Z', '#fff', 2.6) + ln('M100 125 V132', '#5b1d24', 2.4) + ln('M90 128 H110', '#d9dbe6', 1.2),
+  tongue: () => ln('M92 128 Q100 134 108 128', INK, 3.5) + sp('M97 131 Q100 140 105 132 Z', '#e0727a', 2),
+  cat: () => ln('M90 128 Q95 133 100 128 Q105 133 110 128', INK, 3.2),
+  braces: () => sp('M88 125 Q100 141 112 125 Z', '#fff', 2.6) + ln('M90 129 H110', '#9aa3b5', 2.2) + [92, 97, 103, 108].map((x) => sr(x - 1.2, 127.6, 2.4, 2.8, 0.6, '#cfd5e2', 0)).join(''),
+  buck: () => ln('M90 127 Q100 133 110 127', INK, 3.2) + sr(96, 128.5, 4, 5, 1, '#fff', 1.6) + sr(100, 128.5, 4, 5, 1, '#fff', 1.6),
+  o: () => se(100, 131, 3.6, 4.2, '#5b1d24', 2.4),
+  pout: () => ln('M94 132 Q100 128 106 132', INK, 3.2) + ln('M96 134 Q100 135.5 104 134', INK, 1.6, 'opacity=".5"'),
+  lopsided: () => ln('M90 129 Q98 133 110 124', INK, 3.4),
+});
 
 // ── props ──
 // the playground ball: off-white like the game's (#f3f2ec), with its seam and a stub of rope
@@ -11423,7 +11517,12 @@ function defsFor(markup) {
   }
   return out;
 }
-return { CAST, GROUPS, SPECIAL, SKINS, HAIRS, CREAM, P, INK, L, MOUTH, FRINGE, kid, layers, defsFor, puffs, twinBuns, bob, curls, braids, pigtails, cowlick, glasses, freckles, bandaid, bow, buzz, mystery, tball };
+// the gradients and clips the creator's previews registered (ids starting with one of these), dropped once drawn: each preview
+// has its own, inlined into it
+function forget(prefixes) { for (const k of [...DEFS.keys()]) if (prefixes.some((p) => k.startsWith(p))) DEFS.delete(k); }
+return { CAST, GROUPS, SPECIAL, SKINS, HAIRS, CREAM, P, INK, L, MOUTH, FRINGE, STAR, kid, layers, defsFor, forget, sp, se, sr, ln, fl, el, ci, f1, rot,
+  puffs, twinBuns, bob, curls, braids, pigtails, cowlick, glasses, freckles, bandaid, bow, buzz, lanyard, crown, mystery, tball,
+  afro, mohawk, hightop, locs, locTips, cornrows, quiff, twists, sideTail, wavy, shag };
 })();
 
 // ════════ kage.js ════════
@@ -13298,60 +13397,176 @@ function sigOwner(owner) { return rosterEntry(owner === 'kage' || owner === 'cpu
 function rosterBakeKey() { return CFG.roster.opp * 1000 + (rosterEntry('opp').key === 'you' ? youVer : 0); }
 
 // ───────────────────────── you: the new kid, as made in the character creator ─────────────────────────
-// what you picked (menu.js saves it). Every option is the kit's own: a skin, a hair style and colour, eyes, a mouth, the gi's colour,
-// the belt's and the trainers', and extras. youOptions() turns it into a kid() for the kit.
-const YOU_DEFAULT = { name: 'You', skin: 'warm', hair: 'crop', hairCol: 'black', eyes: 'bright', mouth: 'smile', gi: 'lime', belt: 'lime', shoes: 'white', extras: [] };
+// what you picked (menu.js saves it). Every option is drawn with the cast sheet's kit: skin, build, hair style and colour, eyes and
+// their colour, brows, a mouth, the top and its colour, the belt, trousers and trainers, and extras (Josh, 2026-10-17: "give several
+// more look options for every category, and especially more different haircuts"). youOptions() turns it into a kid() for the kit.
+const YOU_DEFAULT = { name: 'You', skin: 'warm', build: 'regular', hair: 'crop', hairCol: 'black', eyes: 'bright', eyeCol: 'dark', brows: 'normal', mouth: 'smile',
+  top: 'gi', gi: 'lime', belt: 'lime', pants: 'navy', shoes: 'white', extras: [] };
 let YOU = Object.assign({}, YOU_DEFAULT), youVer = 0, youN = 0;
 function youName() { return (YOU.name || 'You').slice(0, 14); }
 function rosterYou() { return YOU; }
 function rosterSetYou(o) { YOU = Object.assign({}, YOU_DEFAULT, o || {}); youVer++; }
-// the gi colours the creator offers: [the gi's three stops, its shade, the collar], the belts and trainers by name
+
+// skins, light to deep, and hair colours (the kit's, and more for the creator: real ones, then dyes)
+Object.assign(CASTKIT.SKINS, {
+  porcelain: ['#fbe3d3', '#ecc4ad'], peach: ['#f9d2b5', '#e8b08f'], honey: ['#e6b47f', '#c98f58'], golden: ['#d9a066', '#b97e46'],
+  sienna: ['#a8673f', '#87502f'], mahogany: ['#73422a', '#5a321f'], espresso: ['#4a2c1c', '#382014'],
+});
+const YOU_SKINS = ['porcelain', 'rosy', 'peach', 'light', 'warm', 'olive', 'honey', 'tan', 'golden', 'deep', 'sienna', 'umber', 'cocoa', 'mahogany', 'ebony', 'espresso'];
+Object.assign(CASTKIT.HAIRS, {
+  platinum: ['#f4efd6', '#d8cfa4', '#a99f74'], strawberry: ['#e8a07a', '#c9744e', '#985034'], darkbrown: ['#4a3022', '#2f1e15', '#1a110c'],
+  pink: ['#ff9ccf', '#e05ea6', '#a3306f'], purple: ['#b48cff', '#8150ab', '#4b2a6c'], blue: ['#6aa8ff', '#3a6ee6', '#1d3f8f'],
+  teal: ['#5fe0d0', '#1fa89a', '#0d6b63'], green: ['#8ee07a', '#4cae3c', '#2c6e22'], red: ['#ff6b5a', '#d4321c', '#8a1d0e'],
+});
+const YOU_HAIRCOLS = ['black', 'darkbrown', 'brown', 'chestnut', 'auburn', 'ginger', 'strawberry', 'sandy', 'blonde', 'platinum', 'grey', 'white',
+  'navy', 'blue', 'teal', 'green', 'purple', 'pink', 'red'];
+const YOU_BUILDS = { slim: 0.9, regular: 1, broad: 1.14 };
+// the haircuts: a name, and what each does to the kit's hair (H: { hair, fx, head }, the colours, a gradient id, the tie's colour)
+const YOU_HAIR = {
+  crop: ['Crop', () => {}],
+  spiky: ['Spiky', (H) => Object.assign(H.hair, { cap: 'spiky', spikes: 9, fringe: 'spiky' })],
+  messy: ['Messy', (H) => Object.assign(H.hair, { cap: 'spiky', spikes: 5, fringe: 'scallop' })],
+  part: ['Side part', (H) => { H.hair.fringe = 'part'; }],
+  curtains: ['Middle part', (H) => { H.hair.fringe = 'curtain'; }],
+  swept: ['Swept', (H) => { H.hair.fringe = 'swept'; }],
+  bangs: ['Bangs', (H) => { H.hair.fringe = 'bangs'; }],
+  bowl: ['Bowl cut', (H) => Object.assign(H.hair, { fringe: 'bowl', cut: 110, strands: false })],
+  slick: ['Slicked back', (H, K, hs) => { Object.assign(H.hair, { cut: 86, fringe: null, strands: false });
+    H.add('overHead', K.ln('M56 72 Q58 42 80 28 M72 68 Q76 38 96 25 M90 66 Q94 34 112 24 M108 66 Q114 36 130 28 M126 68 Q134 44 146 36', hs[0], 2.4, 'opacity=".75"')); }],
+  quiff: ['Quiff', (H, K, hs, id) => { Object.assign(H.hair, { cut: 96, fringe: null }); H.add('overHead', K.quiff(id, hs)); }],
+  buzz: ['Buzz', (H, K, hs) => { Object.assign(H.hair, { cut: 84, fringe: null, strands: false }); H.add('overHead', K.buzz(hs[2], 84)); }],
+  bald: ['Bald', (H) => { H.head = 'bald'; }],
+  mohawk: ['Mohawk', (H, K, hs, id) => { Object.assign(H.hair, { cut: 84, fringe: null, strands: false }); H.add('overHead', K.buzz(hs[2], 84) + K.mohawk(id, hs)); }],
+  frohawk: ['Frohawk', (H, K, hs, id) => { Object.assign(H.hair, { cut: 84, fringe: null, strands: false }); H.add('overHead', K.buzz(hs[2], 84)); H.add('headBack', K.curls(id, hs, 7, 14, 238, 302, 1.05)); }],
+  hightop: ['High-top', (H, K, hs, id) => { Object.assign(H.hair, { cut: 90, fringe: null, strands: false }); H.add('headBack', K.hightop(id, hs)); }],
+  fade: ['Curly fade', (H, K, hs, id) => { Object.assign(H.hair, { cut: 92, fringe: null, strands: false }); H.add('headBack', K.curls(id, hs, 9, 13, 205, 335, 0.98)); }],
+  afro: ['Afro', (H, K, hs, id) => { Object.assign(H.hair, { cut: 98, fringe: 'scallop', strands: false }); H.add('headBack', K.afro(id, hs)); }],
+  curls: ['Curls', (H, K, hs, id) => { Object.assign(H.hair, { fringe: 'scallop', strands: false }); H.add('headBack', K.curls(id, hs, 13, 14)); }],
+  twists: ['Twists', (H, K, hs, id) => { Object.assign(H.hair, { cut: 98, fringe: null, strands: false }); H.add('headBack', K.twists(id, hs)); }],
+  cornrows: ['Cornrows', (H, K, hs, id, tie, sk) => { Object.assign(H.hair, { cut: 86, fringe: null, strands: false }); H.add('overHead', K.cornrows(hs, sk[1])); }],
+  locs: ['Locs', (H, K, hs, id) => { Object.assign(H.hair, { cut: 98, fringe: null, strands: false }); H.add('back', K.locs(id, hs)); H.add('overHead', K.locTips(hs)); }],
+  braids: ['Box braids', (H, K, hs, id, tie) => { H.hair.fringe = 'part'; H.add('back', K.braids(id, hs, [tie, '#dcae4e'], 4)); }],
+  puffs: ['Puffs', (H, K, hs, id) => { Object.assign(H.hair, { cut: 98, strands: false }); H.add('headBack', K.puffs(id, hs)); }],
+  buns: ['Space buns', (H, K, hs, id, tie) => { H.hair.fringe = 'bangs'; H.add('headBack', K.twinBuns(id, hs, tie)); }],
+  bun: ['Top bun', (H, K, hs, id, tie) => Object.assign(H.hair, { knot: 'bun', tie, fringe: 'swept' })],
+  topknot: ['Top knot', (H, K, hs, id, tie) => Object.assign(H.hair, { knot: 'top', tie, fringe: 'widow' })],
+  ponytail: ['Ponytail', (H) => Object.assign(H.hair, { fringe: 'swept', tail: 'high' })],
+  lowpony: ['Low ponytail', (H) => Object.assign(H.hair, { fringe: 'part', tail: 'low' })],
+  sidepony: ['Side ponytail', (H, K, hs, id, tie) => { H.hair.fringe = 'swept'; H.add('headBack', K.sideTail(id, hs, tie)); }],
+  pigtails: ['Pigtails', (H, K, hs, id, tie) => { H.hair.fringe = 'bangs'; H.add('headBack', K.pigtails(id, hs, tie)); }],
+  bob: ['Bob', (H, K, hs, id) => H.add('headBack', K.bob(id, hs))],
+  shag: ['Shag', (H, K, hs, id) => { H.hair.fringe = 'shag'; H.add('headBack', K.shag(id, hs)); }],
+  long: ['Long', (H) => Object.assign(H.hair, { fringe: 'part', long: true })],
+  wavy: ['Wavy', (H, K, hs, id) => { H.hair.fringe = 'curtain'; H.add('back', K.wavy(id, hs)); }],
+  halfup: ['Half up', (H, K, hs, id, tie) => Object.assign(H.hair, { fringe: 'part', long: true, knot: 'bun', tie })],
+  longbangs: ['Long bangs', (H) => Object.assign(H.hair, { fringe: 'bangs', long: true })],
+  cowlick: ['Cowlick', (H, K, hs, id) => H.add('overHead', K.cowlick(id, hs))],
+};
+const YOU_HAIRS = Object.keys(YOU_HAIR);
+const YOU_EYES = {
+  bright: ['Bright', {}], big: ['Big', { s: 1.1, pr: 8.6 }], wide: ['Wide', { s: 1.14, pr: 6.8 }], round: ['Round', { pr: 9.6, s: 1.02 }],
+  sparkle: ['Sparkly', { sparkle: true, pr: 9 }], lashes: ['Lashes', { lashes: true }], kind: ['Kind', { lid: 0.18, tilt: -6 }], calm: ['Calm', { lid: 0.3 }],
+  sharp: ['Sharp', { lid: 0.28, tilt: 12 }], determined: ['Determined', { lid: 0.22, tilt: 16 }], narrow: ['Narrow', { lid: 0.5, tilt: 2 }],
+  sleepy: ['Sleepy', { lid: 0.45, tilt: -4 }], dreamy: ['Dreamy', { lid: 0.36, ly: -2.5, lx: 2 }], sideeye: ['Side-eye', { lid: 0.3, lx: 4.5 }],
+};
+const YOU_IRIS = { dark: '#13152a', brown: '#5a3825', hazel: '#7a5a2a', amber: '#b07a1a', green: '#2f7d4a', teal: '#1f8f8a', blue: '#2f62c8', grey: '#6b7280', violet: '#6a3fb5' };
+// brows: [outer y, inner y, width, curve] (their colour is the hair's darkest)
+const YOU_BROWS = {
+  normal: ['Normal', [78, 81, 4.6, 0]], thin: ['Thin', [78, 81, 3, 0]], thick: ['Thick', [77, 81, 6.6, 0]], bushy: ['Bushy', [76, 81, 8.4, 0]],
+  arched: ['Arched', [79, 80, 4.6, -6]], raised: ['Raised', [70, 74, 4.6, -2]], flat: ['Flat', [80, 80, 4.6, 0]], angry: ['Angry', [72, 87, 5.2, 0]], worried: ['Worried', [86, 74, 4.6, 0]],
+};
+const YOU_MOUTHS = { smile: 'Smile', soft: 'Soft', grin: 'Grin', big: 'Big smile', gap: 'Gap tooth', buck: 'Buck teeth', braces: 'Braces', tongue: 'Tongue out',
+  cat: 'Cat', smirk: 'Smirk', lopsided: 'Lopsided', open: 'Open', o: 'Oh', flat: 'Flat', pout: 'Pout' };
+// tops: the gi as the kids wear it, or something else over the same body
+const YOU_TOPS = { gi: 'Gi', karate: 'Karate gi', hoodie: 'Hoodie', track: 'Track jacket', vest: 'Training vest', haori: 'Haori' };
+// the top's colours: [its three stops, its shade, the collar]; belts and trainers; trousers
 const YOU_GI = {
   lime: [['#d8ff7a', '#c4ff4d', '#8fd12a'], '#5fae12', '#5fae12'], indigo: [['#34417c', '#252d56', '#181d3b'], '#1a2044', '#c9cfe3'],
-  cream: [['#fbf8ef', '#ece6d6', '#cfc6b0'], '#b9ae94', '#cfc6b0'], red: [['#ff6b5a', '#e8432a', '#bd3019'], '#8f2112', '#ffd2c8'],
-  blue: [['#6aa8ff', '#3a7bff', '#2552b8'], '#1d3f8f', '#cfe2ff'], mint: [['#7ff7cf', '#36f2b4', '#0d9474'], '#06614c', '#eafff8'],
-  violet: [['#c9a8ff', '#a47fd0', '#6a4fd8'], '#4b2a6c', '#f6f2ff'], orange: [['#ffc670', '#ffb347', '#e0902a'], '#b06a1c', '#fff3d6'],
-  pink: [['#ffb3d9', '#ff7ac0', '#d94f97'], '#a3306f', '#fff0f8'], charcoal: [['#4a4e66', '#33364a', '#1f2130'], '#121420', '#c4ff4d'],
+  cream: [['#fbf8ef', '#ece6d6', '#cfc6b0'], '#b9ae94', '#cfc6b0'], white: [['#ffffff', '#f1f2f6', '#d3d6e0'], '#aeb3c2', '#d3d6e0'],
+  red: [['#ff6b5a', '#e8432a', '#bd3019'], '#8f2112', '#ffd2c8'], maroon: [['#a8304a', '#86203a', '#5e1428'], '#430c1c', '#f2c2cc'],
+  orange: [['#ffc670', '#ffb347', '#e0902a'], '#b06a1c', '#fff3d6'], yellow: [['#fff08a', '#ffd84d', '#e0b52a'], '#a8841a', '#fffbe0'],
+  mint: [['#7ff7cf', '#36f2b4', '#0d9474'], '#06614c', '#eafff8'], forest: [['#5aa86a', '#3c8a4e', '#286a38'], '#1a4a26', '#dff2e2'],
+  teal: [['#5fe0d0', '#1fb5a6', '#0d8478'], '#085a52', '#e0fbf8'], sky: [['#a8dcff', '#7cc4ff', '#4f9fe0'], '#2f76b8', '#eef8ff'],
+  blue: [['#6aa8ff', '#3a7bff', '#2552b8'], '#1d3f8f', '#cfe2ff'], violet: [['#c9a8ff', '#a47fd0', '#6a4fd8'], '#4b2a6c', '#f6f2ff'],
+  pink: [['#ffb3d9', '#ff7ac0', '#d94f97'], '#a3306f', '#fff0f8'], brown: [['#a8794e', '#8a5f3a', '#6a4528'], '#4a2e18', '#f2e2cc'],
+  charcoal: [['#4a4e66', '#33364a', '#1f2130'], '#121420', '#c4ff4d'], black: [['#2a2c38', '#1a1b24', '#0e0f15'], '#050508', '#e9edf6'],
 };
 const YOU_COL = {
-  lime: ['#c4ff4d', '#5fae12'], white: ['#f4f4f8', '#c9cdd8'], black: ['#13152a', '#000000'], red: ['#e8432a', '#9c1d0c'], blue: ['#3a7bff', '#1d3f8f'],
-  gold: ['#ffd23f', '#b8901b'], mint: ['#36f2b4', '#0d9474'], violet: ['#8a3cff', '#4b2a6c'], pink: ['#ff7ac0', '#a3306f'], orange: ['#ff9a1f', '#b84f08'],
+  lime: ['#c4ff4d', '#5fae12'], white: ['#f4f4f8', '#c9cdd8'], silver: ['#cfd5e2', '#8d95ab'], grey: ['#8c95ab', '#5a6280'], black: ['#13152a', '#000000'],
+  red: ['#e8432a', '#9c1d0c'], maroon: ['#86203a', '#4a0f1f'], orange: ['#ff9a1f', '#b84f08'], gold: ['#ffd23f', '#b8901b'], yellow: ['#ffe94d', '#c9a80f'],
+  mint: ['#36f2b4', '#0d9474'], teal: ['#1fb5a6', '#0d6b63'], sky: ['#7cc4ff', '#2f76b8'], blue: ['#3a7bff', '#1d3f8f'], navy: ['#2e3970', '#1a2044'],
+  violet: ['#8a3cff', '#4b2a6c'], pink: ['#ff7ac0', '#a3306f'], brown: ['#8a5f3a', '#4a2e18'],
 };
-const YOU_EYES = {
-  bright: {}, calm: { lid: 0.3 }, sharp: { lid: 0.28, tilt: 12 }, sleepy: { lid: 0.45, tilt: -4 }, big: { s: 1.1, pr: 8.6 }, kind: { lid: 0.18, tilt: -6 },
+const YOU_PANTS = {
+  navy: ['#2b3354', '#232a47'], black: ['#13152a', '#0b0c16'], charcoal: ['#3a3d4f', '#2c2f3e'], grey: ['#7a8194', '#646a7c'], khaki: ['#b8a479', '#9a875c'],
+  denim: ['#3f6db0', '#33598f'], white: ['#e9e3d2', '#d6cdb6'], brown: ['#6b4a2e', '#5a3d24'], red: ['#b0102e', '#8a0a22'], olive: ['#5e6b3a', '#4b562d'],
+  purple: ['#4b2a6c', '#3d2259'], teal: ['#1f6b66', '#175450'],
 };
-const YOU_HAIRS = ['crop', 'spiky', 'part', 'swept', 'bangs', 'buzz', 'puffs', 'buns', 'bob', 'curls', 'ponytail', 'long', 'braids', 'cowlick'];
-const YOU_EXTRAS = ['glasses', 'freckles', 'headband', 'plaster', 'crown'];
+// extras, each in its place on the kit's drawing (o: the draft; c: its colours)
+const YOU_EXTRA = {
+  glasses: ['Glasses', 'overFace', (K) => K.glasses('#2e2a3a')],
+  sunglasses: ['Sunglasses', 'overFace', (K) => K.sr(56, 84, 40, 24, 9, '#1d1f2b', 3) + K.sr(104, 84, 40, 24, 9, '#1d1f2b', 3) + K.ln('M96 92 Q100 89 104 92', '#1d1f2b', 3.4)
+    + K.ln('M58 90 L38 86 M142 90 L162 86', '#1d1f2b', 3) + K.ln('M62 92 l10 -5 M110 92 l10 -5', '#ffffff', 2.4, 'opacity=".45"')],
+  goggles: ['Goggles', 'overHead', (K) => K.ln('M28 62 Q100 38 172 62', '#2b2f45', 7) + K.se(78, 54, 15, 12, '#7ff6ff', 3.4) + K.se(122, 54, 15, 12, '#7ff6ff', 3.4)
+    + K.ln('M93 54 H107', '#2b2f45', 4) + K.ln('M70 50 l6 -4 M114 50 l6 -4', '#ffffff', 2, 'opacity=".7"')],
+  freckles: ['Freckles', 'overFace', (K, c) => K.freckles(c.sk[1])],
+  blush: ['Rosy cheeks', 'overFace', (K) => K.el(56, 110, 10, 5, '#ff7a8a', 'opacity=".55"') + K.el(144, 110, 10, 5, '#ff7a8a', 'opacity=".55"')],
+  mole: ['Beauty mark', 'overFace', (K) => K.ci(130, 122, 1.9, '#3b2a20')],
+  star: ['Star sticker', 'overFace', (K) => `<g transform="translate(140 112) scale(1.1)">${K.fl(K.STAR, '#ffd23f', 'stroke="#3d4c95" stroke-width="1.6" paint-order="stroke"')}</g>`],
+  facepaint: ['Face paint', 'overFace', (K, c) => K.ln('M46 108 L66 104 M48 116 L66 112 M154 108 L134 104 M152 116 L134 112', c.belt[0], 3.2, 'opacity=".9"')],
+  plaster: ['Plaster', 'overFace', (K) => K.bandaid(140, 112, -20)],
+  earrings: ['Earrings', 'overFace', (K) => K.ci(28, 120, 4, 'none', 'stroke="#e8b850" stroke-width="2.6"') + K.ci(172, 120, 4, 'none', 'stroke="#e8b850" stroke-width="2.6"')],
+  headband: ['Headband', 'band'],
+  cap: ['Cap', 'hat', (K, c) => K.sp('M28 76 C26 12 174 12 172 76 Q100 60 28 76 Z', c.belt[0], 4.5) + K.ln('M100 16 V62 M64 24 Q72 48 72 66 M136 24 Q128 48 128 66', c.belt[1], 1.6, 'opacity=".5"')
+    + K.sp('M30 72 Q100 58 170 72 L178 84 Q100 70 22 84 Z', c.belt[1], 4) + K.se(100, 16, 5, 4, c.belt[1], 2.4)],
+  beanie: ['Beanie', 'hat', (K, c) => K.sp('M30 72 C26 2 174 2 170 72 Z', c.belt[0], 4.5) + K.ln('M60 20 V68 M80 10 V66 M100 6 V66 M120 10 V66 M140 20 V68', c.belt[1], 1.6, 'opacity=".45"')
+    + K.sp('M26 68 Q100 50 174 68 L176 86 Q100 68 24 86 Z', c.belt[1], 4) + K.se(100, 6, 13, 12, c.belt[0], 4)],
+  bandana: ['Bandana', 'hat', (K) => K.sp('M30 72 C32 18 168 18 170 72 Q100 54 30 72 Z', '#e8432a', 4.5) + [[70, 40], [100, 30], [130, 40], [86, 56], [116, 56], [56, 60], [144, 60]].map(([x, y]) => K.ci(x, y, 2.6, '#ffffff', 'opacity=".9"')).join('')
+    + K.sp('M164 64 l24 -10 l-6 15 z M166 70 l20 10 l-15 5 z', '#bd3019', 3)],
+  crown: ['Paper crown', 'overHead', () => '<path d="M58 44 L62 14 L78 32 L92 6 L104 30 L118 8 L126 32 L142 16 L144 46 Q100 34 58 44 Z" fill="#ffd84d" stroke="#3d4c95" stroke-width="4" stroke-linejoin="round" paint-order="stroke"/>'],
+  bow: ['Hair bow', 'overHead', (K, c) => `<g transform="translate(146 42) scale(1.6) translate(-146 -42)">${K.bow(146, 42, c.belt[0], 20)}</g>`],
+  flower: ['Flower', 'overHead', (K) => [0, 72, 144, 216, 288].map((a) => `<g transform="rotate(${a} 52 52)">${K.se(52, 42, 6, 9, '#ff9ccf', 2.4)}</g>`).join('') + K.se(52, 52, 5, 5, '#ffd23f', 2.4)],
+  headphones: ['Headphones', 'overHead', (K, c) => K.ln('M30 96 Q28 6 100 4 Q172 6 170 96', '#3d4c95', 10) + K.ln('M30 96 Q28 6 100 4 Q172 6 170 96', '#2b2f45', 6)
+    + K.se(26, 102, 11, 17, c.belt[0], 4) + K.se(174, 102, 11, 17, c.belt[0], 4)],
+  scarf: ['Scarf', 'overBody', (K, c) => K.sp('M68 146 Q100 162 132 146 L134 158 Q100 176 66 158 Z', c.belt[0], 4) + K.sp('M112 158 L120 192 L106 190 L104 162 Z', c.belt[1], 3.4)
+    + K.ln('M74 152 Q100 164 126 152', c.belt[1], 1.6, 'opacity=".6"')],
+  medal: ['Medal', 'overBody', (K) => K.ln('M88 146 L98 172 M112 146 L102 172', '#3a7bff', 4) + K.se(100, 178, 8, 8, '#ffd23f', 3) + K.ln('M97 175 L100 181 L103 175', '#b8901b', 1.6)],
+  whistle: ['Whistle', 'overBody', (K, c) => K.lanyard(c.belt[0], '#cfd5e2')],
+};
+const YOU_EXTRAS = Object.keys(YOU_EXTRA);
 function youOptions(o, id) {
   const K = CASTKIT, sk = K.SKINS[o.skin] || K.SKINS.warm, hs = K.HAIRS[o.hairCol] || K.HAIRS.black, gi = YOU_GI[o.gi] || YOU_GI.lime;
-  const belt = YOU_COL[o.belt] || YOU_COL.lime, shoe = YOU_COL[o.shoes] || YOU_COL.white, ex = new Set(o.extras || []);
-  const hair = { stops: hs, cap: 'crop', cut: 100, fringe: 'neat' }, fx = {};
-  const h = o.hair;
-  if (h === 'spiky') Object.assign(hair, { cap: 'spiky', spikes: 9, fringe: 'spiky' });
-  else if (h === 'part') hair.fringe = 'part';
-  else if (h === 'swept') hair.fringe = 'swept';
-  else if (h === 'bangs') hair.fringe = 'bangs';
-  else if (h === 'buzz') { Object.assign(hair, { cut: 84, fringe: null, strands: false }); fx.overHead = K.buzz(hs[2], 84); }
-  else if (h === 'puffs') { Object.assign(hair, { cut: 98, strands: false }); fx.headBack = K.puffs(id, hs); }
-  else if (h === 'buns') { hair.fringe = 'bangs'; fx.headBack = K.twinBuns(id, hs, belt[0]); }
-  else if (h === 'bob') fx.headBack = K.bob(id, hs);
-  else if (h === 'curls') { Object.assign(hair, { fringe: 'scallop', strands: false }); fx.headBack = K.curls(id, hs, 13, 14); }
-  else if (h === 'ponytail') Object.assign(hair, { fringe: 'swept', tail: 'high' });
-  else if (h === 'long') Object.assign(hair, { fringe: 'part', long: true });
-  else if (h === 'braids') { hair.fringe = 'part'; fx.back = K.braids(id, hs, [belt[0], '#dcae4e'], 4); }
-  else if (h === 'cowlick') fx.overHead = K.cowlick(id, hs);
-  const face = { eyes: Object.assign({ skin: sk[0] }, YOU_EYES[o.eyes] || {}), brows: [78, 81, hs[2], 4.6, 0], mouth: o.mouth || 'smile', cheeks: 0.5, moods: { fierce: 'shout', happy: 'grin', sad: 'frown' } };
+  const belt = YOU_COL[o.belt] || YOU_COL.lime, shoe = YOU_COL[o.shoes] || YOU_COL.white, pants = YOU_PANTS[o.pants] || YOU_PANTS.navy, ex = new Set(o.extras || []);
+  const fx = {}, H = { hair: { stops: hs, cap: 'crop', cut: 100, fringe: 'neat' }, head: 'bare', add(slot, m) { fx[slot] = (fx[slot] || '') + m; } };
+  (YOU_HAIR[o.hair] || YOU_HAIR.crop)[1](H, K, hs, id, belt[0], sk);
+  const br = (YOU_BROWS[o.brows] || YOU_BROWS.normal)[1];
+  const face = { eyes: Object.assign({ skin: sk[0], iris: YOU_IRIS[o.eyeCol] || YOU_IRIS.dark }, (YOU_EYES[o.eyes] || YOU_EYES.bright)[1]),
+    brows: H.head === 'bald' && o.brows === 'normal' ? [78, 81, hs[2], 4, 0] : [br[0], br[1], hs[2], br[2], br[3]], mouth: YOU_MOUTHS[o.mouth] ? o.mouth : 'smile', cheeks: 0.5,
+    moods: { fierce: 'shout', happy: 'grin', sad: 'frown' } };
+  // the top: a gi as the kids wear it, a karate gi (no cross-over), a hoodie (a hood behind the head, a pocket), a track jacket (a
+  // zip and stripes in the belt's colour), a training vest in the belt's colour, or a haori over the gi
+  const body = {}, top = o.top;
+  let sash = true;
+  if (top === 'karate') body.cross = false;
+  else if (top === 'hoodie') {
+    Object.assign(body, { vneck: false, armor: K.ln('M100 150 V168', gi[2], 2.4) + K.sp('M80 172 h40 v14 q-20 6 -40 0 z', gi[0][2], 3) + K.ln('M94 150 v12 M106 150 v12', '#ffffff', 1.8) });
+    H.add('back', K.sp('M58 140 Q100 168 142 140 Q130 160 100 164 Q70 160 58 140 Z', gi[0][2], 4)); sash = false;
+  } else if (top === 'track') {
+    Object.assign(body, { vneck: false, armor: K.ln('M100 146 V198', '#e9edf6', 2.4) + K.ln('M88 146 Q100 152 112 146', belt[0], 4) + K.ln('M70 152 L68 196 M130 152 L132 196', belt[0], 3) });
+    sash = false;
+  } else if (top === 'vest') body.armor = K.sp('M66 151 Q68 145 82 144 L91 144 L100 160 L109 144 L118 144 Q132 145 134 151 L132 189 Q100 196 68 189 Z', belt[0], 4.5) + K.ln('M70 186 Q100 193 130 186', belt[1], 3);
+  else if (top === 'haori') body.jacket = { stops: [U.mix(gi[0][0], '#000000', 0.35), U.mix(gi[0][1], '#000000', 0.4), U.mix(gi[0][2], '#000000', 0.45)], trim: belt[0], hem: belt[0], len: 214 };
   let band = null;
-  if (ex.has('headband')) band = { col: belt[0], dark: belt[1], plate: 'none', tails: 'one', knot: true, w: 12 };
-  let overFace = '';
-  if (ex.has('freckles')) overFace += K.freckles(sk[1]);
-  if (ex.has('plaster')) overFace += K.bandaid(140, 112, -20);
-  if (ex.has('glasses')) overFace += K.glasses('#2e2a3a');
-  if (overFace) fx.overFace = overFace;
-  if (ex.has('crown')) fx.overHead = (fx.overHead || '') + '<path d="M58 44 L62 14 L78 32 L92 6 L104 30 L118 8 L126 32 L142 16 L144 46 Q100 34 58 44 Z" fill="#ffd84d" stroke="#3d4c95" stroke-width="4" stroke-linejoin="round" paint-order="stroke"/>';
+  for (const k of YOU_EXTRAS) {
+    if (!ex.has(k)) continue;
+    const [, slot, draw] = YOU_EXTRA[k];
+    if (slot === 'band') band = { col: belt[0], dark: belt[1], plate: 'none', tails: 'one', knot: true, w: 12 };
+    else if (slot === 'hat') H.hat = (H.hat || '') + draw(K, { sk, belt, gi });
+    else H.add(slot, draw(K, { sk, belt, gi }));
+  }
   return {
-    id, skin: sk, hair, face, band, fx,
-    cloth: { gi: gi[0], shade: gi[1], inner: '#ffffff', collar: gi[2], belt, pants: ['#2b3354', '#232a47'], shoe: shoe[0], sole: shoe[0] === '#f4f4f8' ? '#c9cdd8' : '#f4f4f8' },
+    id, skin: sk, head: H.head, hair: H.hair, face, band, fx, body, hat: H.hat, build: YOU_BUILDS[o.build] || 1,
+    cloth: { gi: gi[0], shade: gi[1], inner: '#ffffff', collar: gi[2], belt: sash ? belt : null, pants, shoe: shoe[0], sole: shoe[0] === '#f4f4f8' ? '#c9cdd8' : '#f4f4f8' },
   };
 }
 // you, drawn by the kit (the creator's preview and the game's look): a fresh id each time, so a new colour is a new gradient
@@ -14645,78 +14860,123 @@ function createMenu(doc, opts) {
   }
 
   // ───────────── make: the character creator ─────────────
-  const SKIN_LIST = ['rosy', 'light', 'warm', 'olive', 'tan', 'deep', 'umber', 'cocoa', 'ebony'];
-  const HAIR_COLS = ['black', 'brown', 'chestnut', 'auburn', 'ginger', 'sandy', 'blonde', 'navy', 'grey', 'white'];
-  const HAIR_NAMES = { crop: 'Crop', spiky: 'Spiky', part: 'Side part', swept: 'Swept', bangs: 'Bangs', buzz: 'Buzz', puffs: 'Puffs', buns: 'Buns', bob: 'Bob', curls: 'Curls', ponytail: 'Ponytail', long: 'Long', braids: 'Braids', cowlick: 'Cowlick' };
-  const EYE_NAMES = { bright: 'Bright', calm: 'Calm', sharp: 'Sharp', sleepy: 'Sleepy', big: 'Big', kind: 'Kind' };
-  const MOUTHS = { smile: 'Smile', soft: 'Soft', grin: 'Grin', smirk: 'Smirk', flat: 'Flat', open: 'Open' };
-  const EXTRA_NAMES = { glasses: 'Glasses', freckles: 'Freckles', headband: 'Headband', plaster: 'Plaster', crown: 'Paper crown' };
+  // Five tabs (Body, Hair, Face, Clothes, Extras) under a preview that stays in view. Shapes (haircuts, eyes, brows, mouths, tops,
+  // builds, extras) are tiles, each a small drawing of you with that one thing changed, so a haircut is seen in your own colours;
+  // colours are swatches. A tile group redraws when something it shows changes (a new hair colour redraws every haircut).
+  const TABS = [['body', 'Body'], ['hair', 'Hair'], ['face', 'Face'], ['clothes', 'Clothes'], ['extras', 'Extras']];
+  const CROP = { head: '-34 -40 268 220', face: '36 62 128 84', top: '28 124 144 112', full: '-24 -26 288 264', extra: '-26 -34 252 236' };
+  const names = (o) => { const r = {}; for (const k in o) r[k] = Array.isArray(o[k]) ? o[k][0] : o[k]; return r; };
+  const title = (k) => k.replace(/^./, (c) => c.toUpperCase()).replace(/([a-z])([A-Z])/g, '$1 $2');
+  let tab = 'hair', thumbN = 0;
   function make() {
-    draft = Object.assign({}, rosterYou(), { extras: (rosterYou().extras || []).slice() });
-    const s = el('div', 'm-scr m-make');
+    draft = Object.assign({}, YOU_DEFAULT, rosterYou(), { extras: (rosterYou().extras || []).slice() });
+    const K = CASTKIT, s = el('div', 'm-scr m-make');
     s.appendChild(bar('Create your character', () => show('home')));
-    const stage = el('div', 'm-stage'), fig = el('div', 'm-fig');
+    const top = el('div', 'm-mk-top'), stage = el('div', 'm-stage'), fig = el('div', 'm-fig');
     stage.appendChild(fig);
     const nm = el('input', 'm-name');
     nm.type = 'text'; nm.maxLength = 14; nm.value = draft.name === 'You' ? '' : draft.name; nm.placeholder = 'Your name'; nm.setAttribute('aria-label', 'Your name');
     nm.addEventListener('input', () => { draft.name = nm.value.trim() || 'You'; });
     nm.addEventListener('keydown', (e) => e.stopPropagation()); // typing a name must not reach the game's hotkeys
     stage.appendChild(nm);
-    s.appendChild(stage);
+    const tabs = el('div', 'm-tabs');
+    tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', 'Parts of your character');
+    top.append(stage, tabs);
+    s.appendChild(top);
+    const panes = {}, groups = [];
+    for (const [k, label] of TABS) {
+      const b = btn('m-tab', label, () => pickTab(k));
+      b.setAttribute('role', 'tab'); b.dataset.tab = k; b.id = 'm-tab-' + k; tabs.appendChild(b);
+      const p = el('div', 'm-pane'); p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id); p.dataset.tab = k;
+      panes[k] = p; s.appendChild(p);
+    }
+    function pickTab(k) {
+      tab = k;
+      tabs.childNodes.forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === k ? 'true' : 'false'));
+      for (const t in panes) panes[t].hidden = t !== k;
+      refresh();
+    }
     const redraw = () => { fig.innerHTML = rosterPortraitOf(draft); };
-    const box = el('div', 'm-opts-list');
-    const swatches = (label, list, cols, key) => {
+    // a row of colour swatches
+    const swatches = (pane, label, list, cols, key) => {
       const w = el('div', 'm-row'), g = el('div', 'm-sw');
+      w.dataset.key = key;
       w.appendChild(el('span', 'm-lab', label));
       g.setAttribute('role', 'radiogroup'); g.setAttribute('aria-label', label);
       list.forEach((k) => {
         const b = btn('m-swb', '');
-        b.setAttribute('role', 'radio'); b.setAttribute('aria-label', k); b.title = k; b.dataset.k = k;
+        b.setAttribute('role', 'radio'); b.setAttribute('aria-label', title(k)); b.title = title(k); b.dataset.k = k;
         const c = cols(k); b.style.background = Array.isArray(c) ? `linear-gradient(135deg, ${c[0]} 0 55%, ${c[1]} 55%)` : c;
-        b.addEventListener('click', () => { draft[key] = k; paint(); redraw(); });
+        b.addEventListener('click', () => { draft[key] = k; changedKey(key); });
         g.appendChild(b);
       });
       const paint = () => g.childNodes.forEach((b) => b.setAttribute('aria-checked', b.dataset.k === draft[key] ? 'true' : 'false'));
-      paint(); w.appendChild(g); box.appendChild(w);
-      return paint;
+      w.appendChild(g); panes[pane].appendChild(w);
+      groups.push({ pane, key, paint, draw: null });
     };
-    const chips = (label, names, key, multi) => {
-      const w = el('div', 'm-row'), g = el('div', 'm-chips');
+    // a grid of tiles: each one you, drawn with that choice (multi: extras, any number on)
+    const tiles = (pane, label, opts, key, crop, multi) => {
+      const w = el('div', 'm-row'), g = el('div', 'm-tiles' + (crop === 'face' ? ' wide' : ''));
+      w.dataset.key = key;
       w.appendChild(el('span', 'm-lab', label));
       g.setAttribute('role', multi ? 'group' : 'radiogroup'); g.setAttribute('aria-label', label);
-      for (const k in names) {
-        const b = btn('m-chip', names[k]);
-        b.dataset.k = k; b.setAttribute('role', multi ? 'checkbox' : 'radio');
+      const keys = Object.keys(opts);
+      for (const k of keys) {
+        const b = btn('m-tile', '');
+        b.dataset.k = k; b.setAttribute('role', multi ? 'checkbox' : 'radio'); b.setAttribute('aria-label', opts[k]);
+        b.append(el('span', 'pt'), el('span', 'm-tl', opts[k]));
         b.addEventListener('click', () => {
           if (multi) { const a = draft[key], j = a.indexOf(k); if (j >= 0) a.splice(j, 1); else a.push(k); } else draft[key] = k;
-          paint(); redraw();
+          changedKey(key);
         });
         g.appendChild(b);
       }
       const paint = () => g.childNodes.forEach((b) => b.setAttribute('aria-checked', (multi ? draft[key].indexOf(b.dataset.k) >= 0 : b.dataset.k === draft[key]) ? 'true' : 'false'));
-      paint(); w.appendChild(g); box.appendChild(w);
-      return paint;
+      let sig = '';
+      const draw = () => { // each tile drawn from the draft with its own choice in; only when what the tiles show has changed
+        const base = Object.assign({}, draft, { name: '' }); delete base[key];
+        const now = JSON.stringify(base);
+        if (now === sig) return;
+        sig = now;
+        g.childNodes.forEach((b) => {
+          const o = Object.assign({}, draft);
+          if (multi) o[key] = [b.dataset.k]; else o[key] = b.dataset.k;
+          const m = K.kid(youOptions(o, 'yt' + (++thumbN)));
+          b.firstChild.innerHTML = `<svg viewBox="${CROP[crop]}" aria-hidden="true"><defs>${K.defsFor(m)}</defs><g>${m}</g></svg>`;
+        });
+      };
+      w.appendChild(g); panes[pane].appendChild(w);
+      groups.push({ pane, key, paint, draw });
     };
-    const K = CASTKIT, paints = [
-      swatches('Skin', SKIN_LIST, (k) => K.SKINS[k], 'skin'),
-      chips('Hair', HAIR_NAMES, 'hair'),
-      swatches('Hair colour', HAIR_COLS, (k) => [K.HAIRS[k][0], K.HAIRS[k][2]], 'hairCol'),
-      chips('Eyes', EYE_NAMES, 'eyes'),
-      chips('Mouth', MOUTHS, 'mouth'),
-      swatches('Gi', Object.keys(YOU_GI), (k) => [YOU_GI[k][0][0], YOU_GI[k][0][2]], 'gi'),
-      swatches('Belt', Object.keys(YOU_COL), (k) => YOU_COL[k], 'belt'),
-      swatches('Trainers', Object.keys(YOU_COL), (k) => YOU_COL[k], 'shoes'),
-      chips('Extras', EXTRA_NAMES, 'extras', true),
-    ];
-    s.appendChild(box);
-    s.appendChild(el('p', 'm-note', "You're the new kid, and the story never draws you. Your special is Slip, as it is in the story: the Characters tab in Dev settings can change it."));
+    swatches('body', 'Skin', YOU_SKINS, (k) => K.SKINS[k], 'skin');
+    tiles('body', 'Build', { slim: 'Slim', regular: 'Regular', broad: 'Broad' }, 'build', 'full');
+    tiles('hair', 'Haircut', names(YOU_HAIR), 'hair', 'head');
+    swatches('hair', 'Hair colour', YOU_HAIRCOLS, (k) => [K.HAIRS[k][0], K.HAIRS[k][2]], 'hairCol');
+    tiles('face', 'Eyes', names(YOU_EYES), 'eyes', 'face');
+    swatches('face', 'Eye colour', Object.keys(YOU_IRIS), (k) => YOU_IRIS[k], 'eyeCol');
+    tiles('face', 'Eyebrows', names(YOU_BROWS), 'brows', 'face');
+    tiles('face', 'Mouth', YOU_MOUTHS, 'mouth', 'face');
+    tiles('clothes', 'Top', YOU_TOPS, 'top', 'top');
+    swatches('clothes', 'Top colour', Object.keys(YOU_GI), (k) => [YOU_GI[k][0][0], YOU_GI[k][0][2]], 'gi');
+    swatches('clothes', 'Belt and trim', Object.keys(YOU_COL), (k) => YOU_COL[k], 'belt');
+    swatches('clothes', 'Trousers', Object.keys(YOU_PANTS), (k) => YOU_PANTS[k], 'pants');
+    swatches('clothes', 'Trainers', Object.keys(YOU_COL), (k) => YOU_COL[k], 'shoes');
+    tiles('extras', 'Extras (any number)', names(YOU_EXTRA), 'extras', 'extra', true);
+    panes.extras.appendChild(el('p', 'm-note', "You're the new kid, and the story never draws you. Your special is Slip, as it is in the story: the Characters tab in Dev settings can change it."));
+    function refresh() {
+      K.forget(['yt', 'eye']); // each tile and the preview carry their own gradients
+      for (const gp of groups) { gp.paint(); if (gp.pane === tab && gp.draw) gp.draw(); }
+    }
+    function changedKey() { redraw(); refresh(); }
     const foot = el('div', 'm-foot');
     foot.append(
       btn('m-btn', 'Surprise me', () => {
         const any = (a) => a[Math.floor(Math.random() * a.length)];
-        Object.assign(draft, { skin: any(SKIN_LIST), hair: any(YOU_HAIRS), hairCol: any(HAIR_COLS), eyes: any(Object.keys(EYE_NAMES)), mouth: any(Object.keys(MOUTHS)),
-          gi: any(Object.keys(YOU_GI)), belt: any(Object.keys(YOU_COL)), shoes: any(Object.keys(YOU_COL)), extras: YOU_EXTRAS.filter(() => Math.random() < 0.2) });
-        paints.forEach((p) => p()); redraw();
+        Object.assign(draft, { skin: any(YOU_SKINS), build: any(Object.keys(YOU_BUILDS)), hair: any(YOU_HAIRS), hairCol: any(YOU_HAIRCOLS), eyes: any(Object.keys(YOU_EYES)),
+          eyeCol: any(Object.keys(YOU_IRIS)), brows: any(Object.keys(YOU_BROWS)), mouth: any(Object.keys(YOU_MOUTHS)), top: any(Object.keys(YOU_TOPS)),
+          gi: any(Object.keys(YOU_GI)), belt: any(Object.keys(YOU_COL)), pants: any(Object.keys(YOU_PANTS)), shoes: any(Object.keys(YOU_COL)),
+          extras: YOU_EXTRAS.filter(() => Math.random() < 0.12) });
+        changedKey();
       }),
       btn('m-btn go', 'Save', () => {
         rosterSetYou(draft); ls.set(YOU_KEY, JSON.stringify(rosterYou()));
@@ -14725,6 +14985,7 @@ function createMenu(doc, opts) {
       }));
     s.appendChild(foot);
     redraw();
+    pickTab(tab);
     return s;
   }
 
