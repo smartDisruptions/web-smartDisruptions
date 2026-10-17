@@ -3490,6 +3490,7 @@ function createFX(seed) {
 
   // ---- the hit ----
   function textFor(hit, I) {
+    if (hit.quiet) return ''; // a hit whose word is coming next (the Double Dragon's first strike: its name lands on the second)
     if (hit.burned) return 'BURNED!'; // it answered the other player's fireball (fire.js)
     if (hit.fireball) return hit.dragon ? 'DRAGON!' : 'FIREBALL!'; // it threw one (a Single Dragon: legends.js)
     if (hit.special && CFG.supers && !(CFG.supers.words > 0)) return ''; // (names over the court switched off)
@@ -3531,7 +3532,7 @@ function createFX(seed) {
     sp.nSpark = Math.round((8 + 52 * Math.pow(I, 1.05)) * F.sparkCount); sp.sparkV = S * U.lerp(380, 1050, I);
     sp.word = textFor(hit, I);
     const mph = Math.round(U.mph(hit.speedAfter != null ? hit.speedAfter : b ? b.speed : 0));
-    sp.mph = mph + ' MPH';
+    sp.mph = hit.quiet ? '' : mph + ' MPH';
     sp.tSize = (I > 0.12 ? S * (20 + 24 * I) * F.textSize : S * 24 * F.textSize) * (hit.special ? 1.2 : 1);
     sp.tilt = (ux >= 0 ? -1 : 1) * (0.06 + 0.05 * I);
     // text rides above the star, or below it when the launch heads up the screen; kept inside the safe area
@@ -7830,12 +7831,14 @@ function createFire() {
 // legends.js — the three big specials (versus only), picked in the Specials group like the other ten (supers.js keeps the
 // list: kinds 11, 12, 13), and the power-ups they bring with them. Josh, 2026-10-16: "three more specials. These need to be
 // more powerful than the other ones."
-//   DOUBLE DRAGON (11)  two strikes, both slow-mo: the hit, then `gap` later its thrower rushes in and strikes the ball again
-//                      (it leaves `second` times faster). A dragon of fire forms as the first lands and its twin as the second
-//                      does: they coil round the ball's path, and anything caught in their way burns. Their touch on the ball is
-//                      burned (it lands at `hit`, and they go down in flames for `stun`), and with `sweep` on so is the dragons'
-//                      body passing through them. The dragons stay for `turns` of their turns (a pass of their half, touched or
-//                      not), through any touch of the thrower's, then fly off.
+//   DOUBLE DRAGON (11)  two strikes, both slow-mo. The first looks like any hit (main.js shows it plain), then `gap` later, before
+//                      the ball has gone anywhere, its thrower rushes in and strikes it again (it leaves `second` times faster),
+//                      and that strike unleashes it: two dragons of fire burst out of the ball and coil round its path, and
+//                      anything caught in their way burns (Josh, 2026-10-16: "the first hit looks like a normal hit that slows down
+//                      time... that second hit unleashes the double dragon"). Their touch on the ball is burned (it lands at
+//                      `hit`, and they go down in flames for `stun`), and with `sweep` on so is the dragons' body passing through
+//                      them. The dragons stay for `turns` of their turns (a pass of their half, touched or not), through any touch
+//                      of the thrower's, then fly off. A touch of theirs before the second strike calls it off.
 //   RAY OF LIGHT (12)  a giant sunbeam: a ring of light marks them (following them, by `track`), the light gathers for `charge`,
 //                      and the beam comes down on them: struck, down for `stun`. The whole time the ball shines like a small sun
 //                      and rides the light (`glide`: no drag, gravity at `float`), until they touch it or `sun` runs out.
@@ -7865,7 +7868,7 @@ function specialLook(k) { return (typeof SUPERS !== 'undefined' && SUPERS[k]) ||
 CFG.legends = {
   follow: 1, // 1: the fire volley's power-up follows your special: a Single Dragon with Double Dragon, a Light Beam with Ray of Light
   dragon: {
-    gap: 0.3, // s (game time) after the first strike that the second lands
+    gap: 0.015, // s of game time after the first strike that the second lands: as the first hit's freeze lets go, the ball barely moved
     second: 1.3, // × the ball's speed off the second strike
     slow: 1, // 1: both strikes are slow-mo moments
     turns: 2, // of their turns the dragons stay for
@@ -7904,7 +7907,7 @@ CFG.legends = {
   const row = (sub, path, label, min, max, step, unit, extra) => Object.assign({ path: 'legends.' + path, label, min, max, step, group: G, rank: R, unit, sub, subTint: tint(sub) }, extra || {});
   const flip = (sub, path, label) => row(sub, path, label, 0, 1, 1, '', { type: 'toggle' });
   CFG_SCHEMA.push(
-    row('Double Dragon', 'dragon.gap', 'Second strike after', 0.1, 0.8, 0.01, 's'),
+    row('Double Dragon', 'dragon.gap', 'Second strike after', 0.005, 0.5, 0.005, 's'),
     row('Double Dragon', 'dragon.second', 'Second strike speed', 1, 3, 0.05, 'x'),
     flip('Double Dragon', 'dragon.slow', 'Both strikes in slow-mo'),
     row('Double Dragon', 'dragon.turns', 'Dragons stay for (their turns)', 1, 6, 1, ''),
@@ -7943,10 +7946,10 @@ function createLegends() {
   const st = {
     rt: 0,
     down: { you: 0, kage: 0 }, downKind: { you: 0, kage: 0 }, // s each is still down here, and by which
-    // the Double Dragon (and a Single Dragon's look): whose, at whom, phase (0 none, 1 the first dragon, waiting for the second
-    // strike; 2 both; 3 flying off), game s, how many of their turns are left, ×, on their half this pass, burned this turn,
-    // when it formed and flew off (real), which one (Kage's dodge reads it)
-    dragon: { owner: '', target: '', ph: 0, t: 0, turns: 0, mult: 1, theirs: false, burned: false, rt0: -9, rt2: -9, endRt: -9, id: 0, single: false },
+    // the Double Dragon (and a Single Dragon's look): whose, at whom, phase (0 none, 1 after the first strike, which looks plain,
+    // waiting for the second; 2 unleashed, both dragons; 3 flying off), game s, how many of their turns are left, ×, on their half
+    // this pass, burned this turn, when it was cast, unleashed and flew off (real), which one (Kage's dodge reads it)
+    dragon: { owner: '', target: '', ph: 0, t: 0, turns: 0, mult: 1, theirs: false, burned: false, rt0: -9, rt2: -9, endRt: -9, id: 0, single: false, fresh: false },
     // the Ray of Light: whose, at whom, phase (0 none, 1 gathering, 2 struck, 3 gone), game s, where it comes down, struck them?,
     // ×, when it struck (real); and the sun on the ball: game s left, whose
     ray: { owner: '', target: '', ph: 0, t: 0, x: 0, z: 0, hit: false, mult: 1, rt0: -9, strikeRt: -9 },
@@ -7980,7 +7983,7 @@ function createLegends() {
   }
   function drain() { EVQ.length = 0; for (let i = 0; i < evN; i++) EVQ.push(EVP[i]); evN = 0; return EVQ; }
 
-  function clearDragon() { const D = st.dragon; D.owner = ''; D.target = ''; D.ph = 0; D.t = 0; D.turns = 0; D.theirs = false; D.burned = false; D.single = false; }
+  function clearDragon() { const D = st.dragon; D.owner = ''; D.target = ''; D.ph = 0; D.t = 0; D.turns = 0; D.theirs = false; D.burned = false; D.single = false; D.fresh = false; }
   function newRally() {
     clearDragon(); st.dragon.endRt = -9;
     const R = st.ray; R.owner = ''; R.ph = 0; R.t = 0; R.hit = false; R.strikeRt = -9;
@@ -8017,7 +8020,7 @@ function createLegends() {
       const D = st.dragon, C = CFG.legends.dragon;
       clearDragon();
       D.owner = o; D.target = other(o); D.t = 0; D.mult = m; D.turns = Math.max(1, Math.round(C.turns)) * m; D.rt0 = st.rt; D.rt2 = spat ? st.rt : -9; D.id++;
-      D.ph = spat ? 2 : 1; D.theirs = false; D.burned = false; D.single = false;
+      D.ph = spat ? 2 : 1; D.theirs = false; D.burned = false; D.single = false; D.fresh = true;
       hn = 0; sample(w);
       if (spat) st.stats.strikes2++;
       return DRAGON;
@@ -8100,17 +8103,18 @@ function createLegends() {
   function prepare(who, hand) {
     const o = key(who), D = st.dragon;
     if (st.beam.ph === 1 && st.beam.target === o && !(CFG.legends.beam.block > 0)) return 'ghost';
-    if (D.ph >= 1 && D.ph <= 2 && !D.single && D.target === o) {
+    if (D.ph === 2 && !D.single && D.target === o) {
       hand.gain = (hand.gain > 0 && hand.gain < 1 ? hand.gain : 1) * U.clamp(CFG.legends.dragon.hit, 0.05, 1);
       return 'burn';
     }
     return '';
   }
-  // a touch landed (any): their touch on the dragons' ball burns them (body: where they are) and is one of their turns; their
-  // touch ends the sun on the ball; a touch on the Light Beam ends it as a ball
+  // a touch landed (any): their touch on the dragons' ball burns them (body: where they are) and is one of their turns (one
+  // before the second strike calls it off); their touch ends the sun on the ball; a touch on the Light Beam ends it as a ball
   function onTouch(who, w, B) {
     const o = key(who), D = st.dragon;
-    if (D.ph >= 1 && D.ph <= 2 && !D.single && D.target === o) {
+    if (D.ph === 1 && !D.single && D.target === o) clearDragon();
+    else if (D.ph === 2 && !D.single && D.target === o) {
       const body = B && B[o];
       burn(o, body, w);
       turn();
@@ -8177,16 +8181,16 @@ function createLegends() {
     // the dragons
     const D = st.dragon, CD = CFG.legends.dragon;
     if (D.ph) {
-      D.t += dt;
+      if (D.fresh) D.fresh = false; else D.t += dt; // its clock starts on the next frame: a hit mid-frame (Kage's) has had its time
       if (D.ph <= 2) sample(w);
-      if (D.ph === 1 && !D.single && D.t >= Math.max(0.05, CD.gap)) { // the second strike
+      if (D.ph === 1 && !D.single && D.t >= Math.max(0.005, CD.gap)) { // the second strike (game time: the first hit's freeze holds it)
         const v = w.ball.v, k = U.clamp(CD.second, 0.5, 4);
         v.x *= k; v.y *= k; v.z *= k;
         D.ph = 2; D.rt2 = st.rt; st.stats.strikes2++;
         const p = w.ball.p;
         emit('strike2', D.owner, DRAGON, p.x, p.y, p.z);
       }
-      if (D.ph >= 1 && D.ph <= 2 && live) {
+      if ((D.single ? D.ph === 1 : D.ph === 2) && live) { // a Double Dragon's turns start when it is unleashed
         const theirs = D.target === 'kage' ? onKage : onYou, mine = D.target === 'kage' ? onYou : onKage;
         if (theirs) D.theirs = true;
         else if (D.theirs && mine && !D.single) turn(); // a pass of their half: one of their turns
@@ -8284,7 +8288,7 @@ function createLegends() {
   // What Kage sees of yours: a dragon of yours on the ball is hot (he may let it go by, as a fireball: kage.js). Into info.
   function kageView(info) {
     const D = st.dragon;
-    if (D.ph >= 1 && D.ph <= 2 && D.owner === 'you' && !D.single) { info.hot = true; info.fireId = 100000 + D.id * 10 + D.turns; }
+    if (D.ph === 2 && D.owner === 'you' && !D.single) { info.hot = true; info.fireId = 100000 + D.id * 10 + D.turns; }
   }
 
   // ───────────────────────── seeing it (real time) ─────────────────────────
@@ -8373,22 +8377,22 @@ function createLegends() {
   }
 
   // ---- the dragons ----
-  // Each is a serpent of fire along the ball's path: two (the Double Dragon) coil round it, one red, one gold, half a turn apart;
-  // one (the Single Dragon) rides it. Body: a stroke that thins to the tail, in three solid layers as the game's flames are
+  // Each is a serpent of fire along the ball's path: two (the Double Dragon, from its second strike) burst out of the ball and
+  // coil round it, one red, one gold, half a turn apart; one (the Single Dragon) rides it. Body: a stroke that thins to the tail, in three solid layers as the game's flames are
   // drawn, scales along it, flames off its back; head: drawn over the ball, jaws round it, horns, whiskers, a burning eye.
   const SX = new Float32Array(NB * 2), SY = new Float32Array(NB * 2), SW = new Float32Array(NB * 2);
   function drawDragons(ctx, cam, w, heads) {
     const D = st.dragon, CD = CFG.legends.dragon, size = U.clamp(CD.size, 0.3, 3) * (D.single ? 0.8 : 1);
     const end = D.ph === 3 ? U.clamp01((st.rt - D.endRt) / 0.8) : 0, f = 1 - end;
-    if (!(f > 0)) return;
-    const born = U.clamp01((st.rt - D.rt0) / 0.25);
+    if (!(f > 0) || (!D.single && D.ph === 1)) return; // before the second strike there is no dragon: it was a plain hit
+    const born = U.clamp01((st.rt - (D.single ? D.rt0 : D.rt2)) / 0.25);
     body(2.6 * size * U.lerp(0.35, 1, born), D.ph <= 2 ? w.ball.p : null);
     if (bn < 2) return;
-    const FP = typeof firePal === 'function' ? firePal() : SUPERS[DRAGON], n = D.single ? 1 : D.rt2 > -9 ? 2 : 1;
-    const twin = D.rt2 > -9 ? U.clamp01((st.rt - D.rt2) / 0.3) : 0;
+    const FP = typeof firePal === 'function' ? firePal() : SUPERS[DRAGON], n = D.single ? 1 : 2;
+    const form = D.single ? 1 : U.clamp01((st.rt - D.rt2) / 0.3); // the two spiral out of the ball together
     const r = w.ball.r;
     for (let d = 0; d < n; d++) {
-      const amp = (D.single ? 0.16 : 0.3) * size * (d === 1 ? twin : 1), ph = d * Math.PI, rise = end * 1.6; // flying off: up and away
+      const amp = (D.single ? 0.16 : 0.3) * size * form, ph = d * Math.PI, rise = end * 1.6; // flying off: up and away
       // the coil: round the path, in the plane across it (its own horizontal normal and up)
       for (let i = 0; i < bn; i++) {
         const j0 = Math.max(0, i - 1), j1 = Math.min(bn - 1, i + 1);
@@ -12681,15 +12685,20 @@ function createUI(root, opts) {
       else if (res.burned || res.fireball) tw.trigger(Math.max(0.75, res.power), res.quality, true); // so are a fireball and a burn
       else tw.trigger(you ? res.power : res.power * CFG.kage.warpScale, res.quality);
     }
+    // the Double Dragon's first strike is a plain hit to look at and hear (its slow-mo aside): the second strike, a beat later,
+    // unleashes it (legends.js: 'strike2', onLegend)
+    const veil = res.superKind === 11 && !res.swallowed;
+    if (veil) { res.special = ''; res.superKind = 0; res.quiet = true; } // (no word: its name comes with the second strike)
     fx.impact(res, cam, world);
     audio.hit(res);
-    if (res.special && !res.swallowed) { if (res.superKind) audio.superCast(res.superKind); else audio.special(res.special); }
+    if (veil) { res.special = k; res.superKind = 11; res.quiet = false; }
+    if (res.special && !res.swallowed && !veil) { if (res.superKind) audio.superCast(res.superKind); else audio.special(res.special); }
     if (res.fireball) { audio.fire('ignite'); if (fh.dragon) audio.legend('dragonRoar'); }
     if (res.beam) { audio.legend('lightBeam'); superEv(14, CFG.supers.words > 0 ? 'LIGHT BEAM!' : '', 'small', world.ball.p.x, world.ball.p.y, world.ball.p.z); }
     if (res.burned) audio.fire('burn');
-    if (you) audio.vibrate(res.burned ? [40, 30, 80] : res.special || res.fireball ? [30, 40, 60] : res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
+    if (you) audio.vibrate(res.burned ? [40, 30, 80] : (res.special && !veil) || res.fireball ? [30, 40, 60] : res.power > 0.7 ? [20, 30, 35] : res.power > 0.25 ? [12] : null);
     if (vs()) kage.onWorldHit(res, who);
-    if (res.special === 'kage' && !res.swallowed) { if (res.superKind) kage.onSuper(res.superKind); else kage.onSpecial(); }
+    if (res.special === 'kage' && !res.swallowed && !veil) { if (res.superKind) kage.onSuper(res.superKind); else kage.onSpecial(); }
     if (res.fireball && !you) kage.onFire();
     if (res.burned && !you) kage.onBurn();
     if (you && kiruOn()) { // Kiru flash-steps to the ball your swipe just hit
@@ -12703,7 +12712,7 @@ function createUI(root, opts) {
     if (fh && fh.won) volleyWon(fh.won, now);
     if (res.burned && you) { ui.hint('Burned! 🔥'); hintUntil = now + 1000 * Math.max(0.6, CFG.fire.down) + 400; }
     else if (res.fireball && !you && !toldHot) { toldHot = true; ui.hint('Hot! Let it pass 🔥'); hintUntil = now + 2200; }
-    else if (res.superKind && !you && !toldSuper[res.superKind] && CFG.supers.hints > 0) { toldSuper[res.superKind] = 1; ui.hint(SUPERS[res.superKind].hint); hintUntil = now + 2200; } // the first time he throws each one: how to beat it
+    else if (res.superKind && !veil && !you && !toldSuper[res.superKind] && CFG.supers.hints > 0) { toldSuper[res.superKind] = 1; ui.hint(SUPERS[res.superKind].hint); hintUntil = now + 2200; } // the first time he throws each one: how to beat it
     else if (res.swallowed && you && !toldHole) { toldHole = true; ui.hint('Black hole! Kage swallows it 🕳️'); hintUntil = now + 2200; }
     return res;
   }
@@ -12769,15 +12778,25 @@ function createUI(root, opts) {
   // the sunbeam striking, and whom; the Light Beam's shocks; a black hole opening, and its spit, which casts what it swallowed back
   // at them as its owner's, doubled (supers.launch's { kind, mult }, energy.reflect, legends.cast)
   const RUSH = { normal: { x: 1, y: 0, z: 0 }, power: 1, quality: 'perfect' }; // the second strike, as Kiru's flash step reads a hit
+  // ...and as fx.impact draws it: the Double Dragon's own burst and name, as any special's hit is drawn
+  const STRIKE = { special: '', superKind: 11, owner: 'you', power: 1, quality: 'perfect', reversed: false, offset: 0, point: { x: 0, y: 0, z: 0 }, dir: { x: 1, y: 0, z: 0 }, normal: RUSH.normal, speedAfter: 0 };
   function onLegend(e, now) {
     const look = specialLook(e.kind) || SUPERS[11], words = CFG.supers.words > 0;
-    if (e.type === 'strike2') { // the thrower rushes in and strikes it again: slow-mo again, the twin dragon forms
-      const p = world.ball.p, v = world.ball.v, hv = Math.sqrt(v.x * v.x + v.z * v.z) || 1;
+    if (e.type === 'strike2') { // the thrower rushes in and strikes it again, before it has gone anywhere: slow-mo again, and this
+      // strike unleashes the Double Dragon (its burst, its name, its roar; both dragons burst out of the ball: legends.js)
+      const p = world.ball.p, v = world.ball.v, hv = Math.sqrt(v.x * v.x + v.z * v.z) || 1, sv = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) || 1;
       if (CFG.legends.dragon.slow > 0 && CFG.supers.slowmo > 0) tw.trigger(1, 'perfect', true);
-      superEv(11, words ? 'TWIN DRAGON!' : '', 'small', p.x, p.y + 0.8, p.z); // above the first word, which is still up
-      audio.legend('dragonRush');
-      audio.vibrate([30, 30, 60]);
       RUSH.normal.x = v.x / hv; RUSH.normal.z = v.z / hv;
+      STRIKE.special = e.who === 'kage' ? 'kage' : 'you'; STRIKE.owner = e.who === 'kage' ? 'cpu' : 'you';
+      STRIKE.point.x = p.x; STRIKE.point.y = p.y; STRIKE.point.z = p.z;
+      STRIKE.dir.x = v.x / sv; STRIKE.dir.y = v.y / sv; STRIKE.dir.z = v.z / sv; STRIKE.speedAfter = sv;
+      fx.impact(STRIKE, cam, world);
+      audio.legend('dragonRush'); audio.legend('dragonRoar', 0.1);
+      audio.vibrate([30, 40, 60]);
+      if (e.who === 'kage') {
+        kage.onSuper(11);
+        if (!toldSuper[11] && CFG.supers.hints > 0) { toldSuper[11] = 1; ui.hint(SUPERS[11].hint); hintUntil = now + 2200; }
+      }
       if (e.who === 'you' && kiruOn()) {
         kiruHit.half = true; kiruHit.kage = kage.st; kiruHit.special = false;
         const d = kiru.onHit(RUSH, world, kiruHit);
