@@ -663,7 +663,9 @@ const CFG = {
 // (optional: type 'toggle' / 'choice' with options, rank for the group's place, signed to show a + on positive values, sparse
 // to leave it out of a snapshot at its default, sound for the soundboard's entries: see ui.js and audio.js; view for a row that
 // shows a setting stored under another path, real() naming it: roster.js's Kage and Kiru rows show whoever plays that side. A view
-// is never saved, applied or reset itself: the path it shows is)
+// is never saved, applied or reset itself: the path it shows is. rev for a slider drawn high to low: on the opponent's rows a
+// lower number can be the harder one (Reaction time, Rattled, Recovery), and right is always harder (Josh, 2026-10-18). Only the
+// slider turns round: the number, the save and the snapshot are the setting's own)
 const CFG_SCHEMA = [];
 // Settings that moved: an old saved name → where it lives now, so a snapshot saved before the move still lands (roster.js)
 const CFG_ALIAS = {};
@@ -11594,10 +11596,10 @@ CFG_SCHEMA.push(
   { path: 'kage.side', label: 'Kage plays', type: 'choice', options: ['Left', 'Right', 'Random'], min: 0, max: 2, step: 1, group: 'Kage', rank: -2, unit: '' },
   { path: 'kage.difficulty', label: 'Difficulty', min: 1, max: 20, step: 1, group: 'Kage', rank: -2, unit: '' },
   { path: 'kage.accuracy', label: 'Accuracy', min: 0, max: 1, step: 0.05, group: 'Kage', rank: -2, unit: '' },
-  { path: 'kage.composure', label: 'Rattled by fast balls', min: 0, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.composure', label: 'Rattled by fast balls', min: 0, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x', rev: true },
   { path: 'kage.power', label: 'Hit power', min: 0.4, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
-  { path: 'kage.reaction', label: 'Reaction time', min: 0, max: 3, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
-  { path: 'kage.recovery', label: 'Recovery after a swing', min: 0.2, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
+  { path: 'kage.reaction', label: 'Reaction time', min: 0, max: 3, step: 0.05, group: 'Kage', rank: -2, unit: 'x', rev: true },
+  { path: 'kage.recovery', label: 'Recovery after a swing', min: 0.2, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x', rev: true },
   { path: 'kage.speed', label: 'Foot speed', min: 0.3, max: 2.5, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
   { path: 'kage.jump', label: 'Jump height', min: 0, max: 2, step: 0.05, group: 'Kage', rank: -2, unit: 'x' },
   { path: 'kage.boost', label: 'Speeds up balls going his way', type: 'toggle', min: 0, max: 1, step: 1, group: 'Kage', rank: -2, unit: '' },
@@ -13367,10 +13369,10 @@ const rosterProf = (side) => CFG.chars[rosterEntry(side).key];
       row('size', 'Height', 1.1, 2.2, 0.05, 'm'),
       row('difficulty', 'Difficulty (as your opponent)', 1, 20, 1, ''),
       row('accuracy', 'Accuracy', 0, 1, 0.05, ''),
-      row('composure', 'Rattled by fast balls', 0, 2, 0.05, 'x'),
+      row('composure', 'Rattled by fast balls', 0, 2, 0.05, 'x', { rev: true }),
       row('power', 'Hit power', 0.4, 2, 0.05, 'x'),
-      row('reaction', 'Reaction time', 0, 3, 0.05, 'x'),
-      row('recovery', 'Recovery after a swing', 0.2, 2, 0.05, 'x'),
+      row('reaction', 'Reaction time', 0, 3, 0.05, 'x', { rev: true }),
+      row('recovery', 'Recovery after a swing', 0.2, 2, 0.05, 'x', { rev: true }),
       row('speed', 'Foot speed', 0.3, 2.5, 0.05, 'x'),
       row('jump', 'Jump height', 0, 2, 0.05, 'x')
     );
@@ -14209,17 +14211,20 @@ function createUI(root, opts) {
 
     const el = (tag, cls) => { const e = doc.createElement(tag); if (cls) e.className = cls; return e; };
     const decimals = (s) => { const d = String(s.step).split('.')[1]; return d ? d.length : 0; };
+    // a value ↔ where its slider sits (the same both ways): a rev row runs high to low, so right is always the harder opponent
+    const along = (s, v) => (s.rev ? s.min + s.max - v : v);
 
     function paint(r, dragging) {
       const v = cfgGet(r.s.path), num = typeof v === 'number' && isFinite(v) ? v : r.s.min;
       if (r.kind === 'toggle') r.sw.setAttribute('aria-checked', num >= 0.5 ? 'true' : 'false');
       else if (r.kind === 'choice') { const k = Math.round(num); for (let i = 0; i < r.opts.length; i++) r.opts[i].setAttribute('aria-checked', i === k ? 'true' : 'false'); }
       else {
-        if (!dragging) r.inp.value = String(num);
-        r.inp.style.setProperty('--f', String(U.clamp01((num - r.s.min) / (r.s.max - r.s.min || 1))));
+        if (!dragging) r.inp.value = String(along(r.s, num));
+        r.inp.style.setProperty('--f', String(U.clamp01((along(r.s, num) - r.s.min) / (r.s.max - r.s.min || 1))));
         const z = r.s.zero && num === 0; // a speed at 0 reads as what 0 means ("as hit"), with no unit
         r.num.data = z ? r.s.zero : (r.s.signed && num > 0 ? '+' : '') + num.toFixed(r.dec);
         if (r.unitEl) r.unitEl.hidden = z;
+        if (r.s.rev) r.inp.setAttribute('aria-valuetext', r.num.data + (r.s.unit ? ' ' + r.s.unit : '')); // the number, not where it sits
       }
       r.row.classList.toggle('chg', moved(r.s.path, num, r.s));
     }
@@ -14257,7 +14262,7 @@ function createUI(root, opts) {
         if (!drag) {
           const dx = e.clientX - x0;
           if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - y0)) return;
-          drag = true; x0 = e.clientX; v0 = cfgGet(s.path);
+          drag = true; x0 = e.clientX; v0 = along(s, cfgGet(s.path));
           sl.classList.add('held');
           try { sl.setPointerCapture(id); } catch (err) { /* a synthetic pointer: moves still arrive */ }
         }
@@ -14323,7 +14328,7 @@ function createUI(root, opts) {
       const sl = el('div', 'sl'), inp = r.inp = el('input'); inp.type = 'range'; inp.id = id; inp.min = s.min; inp.max = s.max; inp.step = s.step;
       sl.appendChild(inp);
       dragWire(sl, inp, s);
-      inp.addEventListener('input', () => { cfgSet(s.path, +(+inp.value).toFixed(r.dec)); paint(r, true); changed(r); saveSoon(); });
+      inp.addEventListener('input', () => { cfgSet(s.path, +along(s, +inp.value).toFixed(r.dec)); paint(r, true); changed(r); saveSoon(); });
       inp.addEventListener('change', save);
       rst.addEventListener('click', () => { const d = dflt(s.path, s); if (d !== undefined) { cfgSet(s.path, d); paint(r, false); changed(r); save(); } });
       r.rst = rst;
