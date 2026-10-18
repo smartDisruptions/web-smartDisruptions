@@ -3272,6 +3272,8 @@ function createAudio(opts) {
 //   event { type: 'super', kind, word, size } is its moment away from a hit (a spike or one of the four landing on a player, a
 //   slip). event({ type: 'quake', k }) is a stomp's foot coming down: the whole screen shakes, mostly up and down, for most of
 //   a second, k times as hard (its own shake: the Hit FX screen shake is the hits').
+//   A special's burst (a fireball's, a Light Beam's and a burn's too, and a super's moment), its layer and its charge are drawn at
+//   the level's size (supers.js specialSize: small against a beginner, bigger as the levels climb). Their words are not.
 // Fire (fire.js), in the Feel panel's fire colour: a hit with `burned` set is BURNED!, one with `fireball` set is FIREBALL!, and
 //   event({ type: 'fire', at, word }) is the ball catching fire (a burst of flame under the word: ON FIRE! for a fire volley).
 //   The flames themselves are fire.js's.
@@ -3526,11 +3528,12 @@ function createFX(seed) {
     nRay: 0, starR: 0, starLife: 0, nLine: 0, lineLen: 0, lineLife: 0, fwd: 0.6,
     ring0: 0, ring1: 0, ringW: 0, inward: false, glow: 0, veil: 0, gR: 0,
     nSpark: 0, sparkV: 0, sparkMode: 0, word: '', mph: '', tSize: 0, tx: 0, ty: 0, tilt: 0,
+    Z: 1, // a special's burst at the level's size (supers.js specialSize): its star, lines, rings, glow and sparks, not its words
   };
 
   // Fill a slot from `spec` and spawn its sparks. All the shape is generated once here (seeded), never per frame.
   function startBurst() {
-    const sp = spec, s = takeSlot(), S = sp.S, I = sp.I;
+    const sp = spec, s = takeSlot(), S = sp.S, I = sp.I, SZ = S * sp.Z;
     const an = newAnchor(sp.wx, sp.wy, sp.wz);
     s.on = true; s.age = 0; s.th = themes[sp.th]; s.an = an; s.S = S; s.I = I;
     const a0 = Math.atan2(sp.uy, sp.ux);
@@ -3564,10 +3567,10 @@ function createFX(seed) {
     for (let i = 0; i < nl; i++) {
       const front = rnd() < sp.fwd, ang = front ? a0 + (rnd() + rnd() - 1) * 0.55 : rnd() * TAU, c = Math.cos(ang - a0);
       s.lc[i] = Math.cos(ang); s.ls[i] = Math.sin(ang);
-      s.l0[i] = Math.max(S * 20, sp.starR * (0.55 + 0.4 * rnd()));
+      s.l0[i] = Math.max(SZ * 20, sp.starR * (0.55 + 0.4 * rnd()));
       s.ll[i] = sp.lineLen * (0.45 + 0.55 * rnd()) * (front ? 1 + (1 - sp.spread) * 0.25 * Math.max(0, c) : 0.55);
       s.ld[i] = rnd() * 0.04;
-      s.lw[i] = S * (0.5 + 0.9 * rnd()) * (0.5 + 0.5 * I);
+      s.lw[i] = SZ * (0.5 + 0.9 * rnd()) * (0.5 + 0.5 * I);
     }
 
     // rings: 0 the main shock, 1 a bigger delayed echo (perfect), 2 the reversal's inward collapse
@@ -3585,7 +3588,7 @@ function createFX(seed) {
       s.font = 'italic 900 ' + s.fs1 + 'px ' + FAMILY; s.font2 = 'italic 800 ' + s.fs2 + 'px ' + FAMILY;
     }
     s.life = Math.max(s.starLife, s.lineLife + 0.05, nr, s.tLife, 0.16, sp.gR > 0 ? GROUND_LIFE : 0);
-    if (sp.nSpark > 0) spawnSparks(an, sp.th, sp.nSpark, sp.sparkV, sp.ux, sp.uy, sp.sparkMode, S);
+    if (sp.nSpark > 0) spawnSparks(an, sp.th, sp.nSpark, sp.sparkV, sp.ux, sp.uy, sp.sparkMode, SZ);
     st.lastS = S;
     return s;
   }
@@ -3611,7 +3614,7 @@ function createFX(seed) {
     sp.th = th; sp.I = I; sp.S = S; sp.spread = 0; sp.fwd = 0.6; sp.sparkMode = 0;
     sp.nRay = 0; sp.starR = 0; sp.starLife = 0; sp.nLine = 0; sp.lineLen = 0; sp.lineLife = 0;
     sp.ring0 = 0; sp.ring1 = 0; sp.ringW = 0; sp.inward = false; sp.glow = 0; sp.veil = 0; sp.gR = 0;
-    sp.nSpark = 0; sp.sparkV = 0; sp.word = ''; sp.mph = ''; sp.tSize = 0; sp.tilt = 0;
+    sp.nSpark = 0; sp.sparkV = 0; sp.word = ''; sp.mph = ''; sp.tSize = 0; sp.tilt = 0; sp.Z = 1;
   }
 
   // ---- camera kicks shared by hits and events ----
@@ -3665,19 +3668,20 @@ function createFX(seed) {
     if (ul > 1e-3) { ux /= ul; uy /= ul; } else { ux = 1; uy = 0; }
 
     const k = U.smoothstep(0.05, 0.45, I), hot = perfect || I > 0.82;
+    const Z = (hit.special || hit.fireball || hit.beam || hit.burned) && typeof specialSize === 'function' ? specialSize() : 1, SZ = S * Z;
     resetSpec(hit.superKind > 0 && hit.special ? 4 + hit.superKind : hit.burned || hit.fireball ? 4 : hit.owner === 'cpu' ? 3 : hit.special || rev ? 1 : hot ? 2 : 0, I, S);
     const sp = spec;
-    sp.wx = pt.x; sp.wy = pt.y; sp.wz = pt.z; sp.ux = ux; sp.uy = uy;
+    sp.wx = pt.x; sp.wy = pt.y; sp.wz = pt.z; sp.ux = ux; sp.uy = uy; sp.Z = Z;
     sp.nRay = k > 0.02 ? 8 + Math.round(6 * I) : 0;
-    sp.starR = S * (26 + 96 * I) * (0.5 + 0.5 * k) * (perfect ? 1.1 : 1);
+    sp.starR = SZ * (26 + 96 * I) * (0.5 + 0.5 * k) * (perfect ? 1.1 : 1);
     sp.starLife = U.lerp(0.16, 0.36, I) * (perfect ? 1.15 : 1);
     sp.nLine = I < 0.05 ? 0 : Math.round(U.lerp(5, 30, Math.pow(I, 1.1)));
-    sp.lineLen = S * U.lerp(60, 250, I); sp.lineLife = U.lerp(0.14, 0.27, I);
-    sp.ring0 = S * (70 + 130 * I) * F.ringSize; sp.ring1 = perfect ? sp.ring0 * 1.3 : 0;
-    sp.ringW = S * 5 * (0.35 + 0.65 * I); sp.inward = rev;
-    sp.glow = F.flashAlpha * (0.3 + 0.6 * I); sp.glowR = S * (60 + 110 * I);
+    sp.lineLen = SZ * U.lerp(60, 250, I); sp.lineLife = U.lerp(0.14, 0.27, I);
+    sp.ring0 = SZ * (70 + 130 * I) * F.ringSize; sp.ring1 = perfect ? sp.ring0 * 1.3 : 0;
+    sp.ringW = SZ * 5 * (0.35 + 0.65 * I); sp.inward = rev;
+    sp.glow = F.flashAlpha * (0.3 + 0.6 * I); sp.glowR = SZ * (60 + 110 * I);
     sp.veil = F.flashAlpha * (0.2 + 0.6 * I * I + (perfect ? 0.1 : 0));
-    sp.nSpark = Math.round((8 + 52 * Math.pow(I, 1.05)) * F.sparkCount * gfxK()); sp.sparkV = S * U.lerp(380, 1050, I);
+    sp.nSpark = Math.round((8 + 52 * Math.pow(I, 1.05)) * F.sparkCount * gfxK()); sp.sparkV = SZ * U.lerp(380, 1050, I);
     sp.word = textFor(hit, I);
     const mph = Math.round(U.mph(hit.speedAfter != null ? hit.speedAfter : b ? b.speed : 0));
     sp.mph = hit.quiet ? '' : mph + ' MPH';
@@ -3688,7 +3692,7 @@ function createFX(seed) {
     sp.tx = cx;
     sp.ty = U.clamp(up ? cy - gap : cy + gap, sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize * 1.4);
     startBurst();
-    if (hit.special && !(hit.superKind > 0) && !hit.swallowed) startSpecial(sigStyle(hit.special), pt.x, pt.y, pt.z, ux, uy, S); // Raijin's bolts, his cuts: the signatures only, as whoever threw it throws theirs
+    if (hit.special && !(hit.superKind > 0) && !hit.swallowed) startSpecial(sigStyle(hit.special), pt.x, pt.y, pt.z, ux, uy, SZ); // Raijin's bolts, his cuts: the signatures only, as whoever threw it throws theirs
 
     addTrauma(0.35 + 0.55 * I + (perfect ? 0.1 : 0));
     st.shS = S;
@@ -3756,14 +3760,14 @@ function createFX(seed) {
       st.ballHeat = 1;
     } else if (ev.type === 'super') {
       // a super's moment away from a hit (supers.js): a spike landing on a player (big), a slip, a warp's blink (small)
-      const big = ev.size !== 'small';
+      const big = ev.size !== 'small', Z = typeof specialSize === 'function' ? specialSize() : 1, SZ = S * Z;
       resetSpec(4 + (ev.kind > 0 && ev.kind <= N_SUPER ? ev.kind : 4), big ? 0.9 : 0.4, S);
       const sp = spec;
-      sp.wx = at.x; sp.wy = at.y; sp.wz = at.z; sp.ux = ev.ux || 0; sp.uy = ev.uy || -1; sp.spread = ev.ux || ev.uy ? 0.5 : 1; sp.fwd = 0;
-      sp.nRay = big ? 12 : 6; sp.starR = S * (big ? 90 : 34); sp.starLife = big ? 0.32 : 0.18; sp.sparkMode = 1;
-      sp.ring0 = S * (big ? 150 : 60) * F.ringSize; sp.ringW = S * (big ? 6 : 3);
-      sp.glow = (big ? 0.9 : 0.4) * F.flashAlpha; sp.glowR = S * (big ? 120 : 50); sp.veil = big ? 0.3 * F.flashAlpha : 0;
-      sp.nSpark = Math.round((big ? 40 : 10) * F.sparkCount * gfxK()); sp.sparkV = S * (big ? 800 : 380);
+      sp.wx = at.x; sp.wy = at.y; sp.wz = at.z; sp.ux = ev.ux || 0; sp.uy = ev.uy || -1; sp.spread = ev.ux || ev.uy ? 0.5 : 1; sp.fwd = 0; sp.Z = Z;
+      sp.nRay = big ? 12 : 6; sp.starR = SZ * (big ? 90 : 34); sp.starLife = big ? 0.32 : 0.18; sp.sparkMode = 1;
+      sp.ring0 = SZ * (big ? 150 : 60) * F.ringSize; sp.ringW = SZ * (big ? 6 : 3);
+      sp.glow = (big ? 0.9 : 0.4) * F.flashAlpha; sp.glowR = SZ * (big ? 120 : 50); sp.veil = big ? 0.3 * F.flashAlpha : 0;
+      sp.nSpark = Math.round((big ? 40 : 10) * F.sparkCount * gfxK()); sp.sparkV = SZ * (big ? 800 : 380);
       sp.word = ev.word || ''; sp.mph = ''; sp.tSize = S * (big ? 40 : 24) * F.textSize; sp.tilt = -0.06;
       sp.tx = cx; sp.ty = U.clamp(cy - S * (big ? 96 : 52), sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize);
       unstack(startBurst(), sf.top + sp.tSize, cam.h - sf.bottom - sp.tSize);
@@ -4137,29 +4141,30 @@ function createFX(seed) {
     if (!(k > 0) || !chOwner || !world || !world.ball) return;
     const b = world.ball;
     cam.project(b.p.x, b.p.y, b.p.z, tmp);
-    const r = b.r * tmp.s, cx = tmp.x, cy = tmp.y;
+    const r = b.r * tmp.s, cx = tmp.x, cy = tmp.y, z = typeof specialSize === 'function' ? specialSize() : 1, out = (m) => r * (1 + (m - 1) * z);
     if (!(r > 0.5)) return;
     if (chOwner === 'kage') {
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 0.4 * k; ctx.fillStyle = '#14001f';
-      ctx.beginPath(); ctx.arc(cx, cy, r * 1.6, 0, TAU); ctx.arc(cx, cy, r * 0.98, 0, TAU, true); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, out(1.6), 0, TAU); ctx.arc(cx, cy, r * 0.98, 0, TAU, true); ctx.fill();
       ctx.globalCompositeOperation = 'lighter';
-      ctx.strokeStyle = '#e93dff'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1.2, r * 0.16); ctx.globalAlpha = 0.75 * k;
+      ctx.strokeStyle = '#e93dff'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1.2, r * 0.16 * z); ctx.globalAlpha = 0.75 * k;
+      const br = out(1.32);
       ctx.beginPath();
-      for (let i = 0; i < 3; i++) { const a0 = st.chT * 6 + i * TAU / 3; ctx.moveTo(cx + Math.cos(a0) * r * 1.32, cy + Math.sin(a0) * r * 1.32); ctx.arc(cx, cy, r * 1.32, a0, a0 + 1.2); }
+      for (let i = 0; i < 3; i++) { const a0 = st.chT * 6 + i * TAU / 3; ctx.moveTo(cx + Math.cos(a0) * br, cy + Math.sin(a0) * br); ctx.arc(cx, cy, br, a0, a0 + 1.2); }
       ctx.stroke();
       ctx.lineCap = 'butt';
       return;
     }
-    ctx.strokeStyle = '#5ad1ff'; ctx.globalAlpha = 0.3 * k; ctx.lineWidth = r * 0.3;
-    ctx.beginPath(); ctx.arc(cx, cy, r * 1.22, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = '#5ad1ff'; ctx.globalAlpha = 0.3 * k; ctx.lineWidth = r * 0.3 * z;
+    ctx.beginPath(); ctx.arc(cx, cy, out(1.22), 0, TAU); ctx.stroke();
     for (let pass = 0; pass < 2; pass++) {
       ctx.strokeStyle = pass ? '#f2fdff' : '#5ad1ff';
-      ctx.globalAlpha = (pass ? 0.9 : 0.45) * k; ctx.lineWidth = Math.max(1, r * (pass ? 0.07 : 0.2));
+      ctx.globalAlpha = (pass ? 0.9 : 0.45) * k; ctx.lineWidth = Math.max(1, r * (pass ? 0.07 : 0.2) * z);
       ctx.beginPath();
       for (let i = 0; i < N_ARC; i++) {
         for (let j = 0; j <= N_ASEG; j++) {
-          const ang = aA0[i] + (aSpan[i] * j) / N_ASEG, rr = r * aR[i * (N_ASEG + 1) + j];
+          const ang = aA0[i] + (aSpan[i] * j) / N_ASEG, rr = out(aR[i * (N_ASEG + 1) + j]);
           if (j) ctx.lineTo(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr); else ctx.moveTo(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr);
         }
       }
@@ -6014,12 +6019,14 @@ function createPace() {
 }
 
 // ════════ energy.js ════════
-// energy.js — the energy bars and the special move (versus only). Rally with your opponent and both bars fill together: one
-// step for every volley (a hit that answers the other player's last one), `volleys` steps to fill. A full bar is one special
-// for its owner. You unleash yours with a counter-clockwise curved swipe: a swing that has turned `curve` degrees that way
-// (input.js measures it) when it meets the ball is the special, and the moment it has turned that far the stroke shows it is
-// charged. A clockwise one unleashes the second power-up a fire volley wins (fire.js). Or tap your ring (or E), at the top of your
-// side where a swipe up ends, which arms the next hit (the flame beside it does the same for the power-up). The trigger setting
+// energy.js — the energy bars and the special move (versus only). Every hit fills its player's own bar (Josh, 2026-10-18: "any
+// hit fills the energy bar", where it was volleys that filled both): `hits` of yours fill yours, and your opponent's take as
+// many as their level says, `lv1` at level 1 down to `lv20` at level 20 on a straight line (30 to 6: "Beginning opponents takes
+// 30 hits to activate a super. But in thr last levels they may only need 6 or 7 hits"). A full bar is one special for its owner.
+// You unleash yours with a counter-clockwise curved swipe: a swing that has turned `curve` degrees that way (input.js measures it)
+// when it meets the ball is the special, and the moment it has turned that far the stroke shows it is charged. A clockwise one
+// unleashes the second power-up a fire volley wins (fire.js). Or tap your ring (or E), at the top of your side where a swipe up
+// ends, which arms the next hit (the flame beside it does the same for the power-up). The trigger setting
 // allows either (the default), or only the curve, or only the tap. Kage weighs his as each swing starts
 // (kage.wantsSpecial). The special:
 //   · it leaves the hand `boost` times harder (the soft speed cap rises by as much, so a weak swipe stays a weak special), and
@@ -6033,7 +6040,9 @@ function createPace() {
 
 CFG.energy = {
   on: 1, // 1 = energy bars and specials (versus only)
-  volleys: 8, // volleys that fill a bar (Josh's, 2026-10-16: about 3 specials a side a round, tests/energy.mjs; 16 was the tuned 2–3 in a long round)
+  hits: 8, // your hits that fill your bar (Josh's 8, 2026-10-16, when it counted volleys)
+  lv1: 30, // your opponent's hits that fill theirs at level 1...
+  lv20: 6, // ...and at level 20: a straight line between, so 19 at level 10 and 7 at level 19 (oppHits)
   boost: 1.2, // a special hit leaves the hand this much harder
   mph: 0, // ...or at this speed (0: as hit, boosted): its Ball speed, as every special has one
   charge: 1.5, // s of game time the ball carries a special's charge, if the other player does not touch it first
@@ -6046,7 +6055,9 @@ CFG.energy = {
 };
 CFG_SCHEMA.push(
   { path: 'energy.on', label: 'Energy and specials', type: 'toggle', min: 0, max: 1, step: 1, group: 'Energy', rank: -2.8, unit: '' },
-  { path: 'energy.volleys', label: 'Volleys to fill a bar', min: 4, max: 40, step: 1, group: 'Energy', rank: -2.8, unit: '' },
+  { path: 'energy.hits', label: 'Your hits to fill your bar', min: 2, max: 40, step: 1, group: 'Energy', rank: -2.8, unit: '' },
+  { path: 'energy.lv1', label: "Opponent's hits to fill, at level 1", min: 2, max: 60, step: 1, group: 'Energy', rank: -2.8, unit: '', rev: true },
+  { path: 'energy.lv20', label: "Opponent's hits to fill, at level 20", min: 2, max: 60, step: 1, group: 'Energy', rank: -2.8, unit: '', rev: true },
   { path: 'energy.boost', label: 'Special hit power', min: 1, max: 3, step: 0.05, group: 'Energy', rank: -2.8, unit: 'x' },
   { path: 'energy.mph', label: 'Special ball speed', min: 0, max: 150, step: 1, group: 'Energy', rank: -2.8, unit: 'mph', zero: 'as hit' },
   { path: 'energy.charge', label: 'Charge lasts', min: 0.3, max: 6, step: 0.1, group: 'Energy', rank: -2.8, unit: 's' },
@@ -6056,6 +6067,14 @@ CFG_SCHEMA.push(
   { path: 'energy.curve', label: 'Curve it takes', min: 20, max: 150, step: 5, group: 'Energy', rank: -2.8, unit: '°' }
 );
 
+CFG_ALIAS['energy.volleys'] = 'energy.hits'; // a save from before every hit counted: its volleys are your hits now
+// the hits that fill a player's bar: yours, or the opponent's at their level (CFG.kage.difficulty is whoever you play against's)
+function oppHits() {
+  const C = CFG.energy, L = U.clamp(+(CFG.kage && CFG.kage.difficulty) || 10, 1, 20);
+  return Math.max(1, Math.round(U.lerp(+C.lv1 || 1, +C.lv20 || 1, (L - 1) / 19)));
+}
+function hitsToFill(who) { return who === 'kage' ? oppHits() : Math.max(1, Math.round(CFG.energy.hits) || 1); }
+
 function createEnergy() {
   const snap = {
     on: true, // CFG.energy.on, as of the last update
@@ -6064,13 +6083,11 @@ function createEnergy() {
     freeYou: false, freeKage: false, // a free special armed (fire.js's second power-up): no bar needed, none spent
     charge: '', chargeT: 0, chargeK: 0, chargeN: 0, chargeR: false, // the ball's charge: whose ('you' | 'kage' | ''), seconds left, the share
     // left (0..1), how many of the other player's touches it weighs on (1; a black hole's return, legends.js: 2), and whether it is one
-    volleys: 0, // volleys this rally
+    hits: 0, // hits this rally that filled a bar
     used: { you: 0, kage: 0 }, // specials landed this match
   };
-  let last = ''; // who hit last this rally
-
   const on = () => CFG.energy.on > 0;
-  const step = () => 1 / Math.max(1, Math.round(CFG.energy.volleys) || 1);
+  const step = (who) => 1 / hitsToFill(who);
   const fill = (v) => (v > 1 - 1e-6 ? 1 : v); // six sixths are 0.9999999999999999: a full bar is exactly 1
 
   function reset() { // a new match
@@ -6078,7 +6095,7 @@ function createEnergy() {
     newRally();
   }
   function newRally() { // a round starts (or the court changed): the bars stay, nothing else does
-    last = ''; snap.volleys = 0; snap.armedYou = false; snap.armedKage = false; snap.freeYou = false; snap.freeKage = false;
+    snap.hits = 0; snap.armedYou = false; snap.armedKage = false; snap.freeYou = false; snap.freeKage = false;
     snap.charge = ''; snap.chargeT = 0; snap.chargeK = 0; snap.chargeN = 0; snap.chargeR = false;
   }
 
@@ -6119,10 +6136,10 @@ function createEnergy() {
   }
 
   // a hit landed (live: it counts in a rally, rather than a serve that did not open the round). Returns 'special' (an armed
-  // special went off), 'heavy' (a touch on the other player's charged ball: it was damped, and the charge is spent), 'volley'
-  // (an answer: both bars stepped), or ''.
+  // special went off), 'heavy' (a touch on the other player's charged ball: it was damped, and the charge is spent), 'hit'
+  // (its player's bar stepped), or ''.
   function onHit(who, live) {
-    if (!on()) { if (live) last = who; return ''; }
+    if (!on()) return '';
     let out = '';
     if (snap.charge) { // any touch spends a charge; one a black hole returned (chargeR) weighs on `chargeN` of theirs, through its owner's
       out = snap.charge !== who ? 'heavy' : '';
@@ -6138,16 +6155,10 @@ function createEnergy() {
       snap.charge = who === 'kage' ? 'kage' : 'you'; snap.chargeT = Math.max(0, CFG.energy.charge); snap.chargeK = 1; snap.chargeN = 1; snap.chargeR = false;
       out = 'special';
     }
-    if (!live) return out;
-    if (last && last !== who) { // an answer steps both bars, bar the one a special just spent
-      snap.volleys++;
-      const s = step(), spent = out === 'special' ? who : '';
-      if (spent !== 'kage') snap.kage = fill(snap.kage + s);
-      if (spent !== 'you') snap.you = fill(snap.you + s);
-      if (!out) out = 'volley';
-    }
-    last = who;
-    return out;
+    if (!live || out === 'special') return out; // (the hit that spends a bar fills none)
+    snap.hits++;
+    if (who === 'kage') snap.kage = fill(snap.kage + step('kage')); else snap.you = fill(snap.you + step('you'));
+    return out || 'hit';
   }
 
   // game time: the charge runs down (a hit's freeze and slow-mo hold it too)
@@ -6241,6 +6252,18 @@ const SUPERS = [ // the setting's value is the index. Colours as fire.js's: core
   { key: 'hole', name: 'Black Hole', word: 'BLACK HOLE!', core: '#e9d8ff', mid: '#8a3cff', outer: '#2a0a4a', glow: '#7b2cff', hint: "Black Hole! It can't be hit while it warps 🕳️", big: true },
 ];
 
+// How big a special is drawn (Josh, 2026-10-18: "let's make the Lower levels special move image effect sizes start small in early
+// levels, but gradually get bigger as you progress"): `size1` at level 1 to `size20` at level 20, on the opponent's level, for
+// both players' specials (it is the match's size). Drawing only: what a special does, and how far it reaches, is the same at
+// every size, so a ring that marks a reach (a stomp's wave, a blast's) keeps its radius and only its band and flames grow, and
+// what hugs the ball still hugs it. fx.js sizes a special's burst by it, fire.js a thrown fireball, legends.js the big three.
+function specialSize() {
+  const C = CFG.supers;
+  if (!C || !(C.grow > 0)) return 1;
+  const L = U.clamp(+(CFG.kage && CFG.kage.difficulty) || 10, 1, 20);
+  return U.clamp(U.lerp(+C.size1 || 1, +C.size20 || 1, (L - 1) / 19), 0.1, 3);
+}
+
 const WHEN = ['Off the hand', 'At the line', 'Near them']; // when a swerve breaks, a spike turns on them, a warp blinks out, a zap strikes (or, for a warp, as they swing)
 CFG.supers = {
   you: 10, // your super: 0 your signature (Raijin), 1 Swerve, 2 Spike, 3 Phantom, 4 Decoys, 5 Slip, 6 Warp, 7 Zap, 8 Wind, 9 Stomp, 10 Blast,
@@ -6253,6 +6276,9 @@ CFG.supers = {
   slowmo: 1, // 1: a special's hit (and the big ones' moments) is a slow-mo moment, whatever its power
   knockSlow: 1, // 1: a knockdown (a spike, the four, a burn, the sunbeam) is a slow-mo moment too
   words: 1, // 1: a special says its name over the court (SPIKE!, DOUBLE DRAGON!...)
+  grow: 1, // 1: a special is drawn smaller against a beginner and bigger as the levels climb (specialSize)
+  size1: 0.5, // how big at level 1...
+  size20: 1.5, // ...and at level 20, on a straight line between (about 1x at level 10, as they were drawn before)
   swerve: {
     when: 1, // 0 off the hand, 1 at the line (its round arc on your half, then the cut), 2 near them
     angle: 70, // ° its path bends in from the round arc, toward the pole (never so far that it would meet the pole)
@@ -6370,6 +6396,9 @@ for (const k of ['swerve', 'phantom', 'decoys', 'slip', 'warp', 'zap', 'wind', '
     { path: 'supers.slowmo', label: 'Slow-mo on specials', type: 'toggle', min: 0, max: 1, step: 1, group: G, rank: R, unit: '' },
     { path: 'supers.knockSlow', label: 'Slow-mo on knockdowns', type: 'toggle', min: 0, max: 1, step: 1, group: G, rank: R, unit: '' },
     { path: 'supers.words', label: 'Names over the court', type: 'toggle', min: 0, max: 1, step: 1, group: G, rank: R, unit: '' },
+    { path: 'supers.grow', label: 'Effects grow with the level', type: 'toggle', min: 0, max: 1, step: 1, group: G, rank: R, unit: '' },
+    { path: 'supers.size1', label: 'Effect size at level 1', min: 0.2, max: 2, step: 0.05, group: G, rank: R, unit: 'x' },
+    { path: 'supers.size20', label: 'Effect size at level 20', min: 0.5, max: 3, step: 0.05, group: G, rank: R, unit: 'x' },
 
     pick('Swerve', 'swerve.when', 'It swerves', WHEN),
     row('Swerve', 'swerve.angle', 'Cuts in toward the pole by', 10, 80, 1, '°'),
@@ -7200,7 +7229,9 @@ function createSupers() {
   const A = { x: 0, y: 0, s: 0, d: 0 }, B2 = { x: 0, y: 0, s: 0, d: 0 };
   // behind the ball, in its layer: the swerve's ribbon, the spike's streak, the phantom's wisps, the slip's glint and afterimage,
   // the warp's portals
+  let SZ = 1; // specialSize(), as of this frame's drawing
   function drawBehind(ctx, cam, w) {
+    SZ = specialSize();
     const k = st.owner ? st.kind : st.rt - st.endRt < 0.25 ? st.endKind : 0;
     const P = SUPERS[k];
     if (k && tn > 1) {
@@ -7217,10 +7248,10 @@ function createSupers() {
       const rp = r * A.s;
       ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = Q.mid; ctx.lineCap = 'round';
-      ctx.globalAlpha = 0.5 * q; ctx.lineWidth = rp * 1.1;
+      ctx.globalAlpha = 0.5 * q; ctx.lineWidth = rp * 1.1 * SZ;
       ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B2.x, B2.y); ctx.stroke();
-      ctx.globalAlpha = 0.9 * q; ctx.lineWidth = Math.max(1.5, rp * 0.16);
-      ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 0.5 * (1 - q)), 0, TAU); ctx.stroke();
+      ctx.globalAlpha = 0.9 * q; ctx.lineWidth = Math.max(1.5, rp * 0.16 * SZ);
+      ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 0.5 * (1 - q) * SZ), 0, TAU); ctx.stroke();
       ctx.lineCap = 'butt';
     }
     const W = SUPERS[WARP], wa = st.rt - st.wpRt, wi = st.rt - st.wiRt; // where it blinked out (closing), where it came back (opening)
@@ -7238,7 +7269,7 @@ function createSupers() {
         const i0 = (tc - tn + j - 1 + NT * 2) % NT, i1 = (tc - tn + j + NT * 2) % NT, u = j / tn;
         cam.project(tx[i0], ty[i0], tz[i0], A); cam.project(tx[i1], ty[i1], tz[i1], B2);
         const rp = r * B2.s;
-        ctx.globalAlpha = (pass ? 0.75 : 0.4) * u * f; ctx.lineWidth = Math.max(1, rp * (pass ? 0.28 : 0.9) * u);
+        ctx.globalAlpha = (pass ? 0.75 : 0.4) * u * f; ctx.lineWidth = Math.max(1, rp * (pass ? 0.28 : 0.9) * u * SZ);
         ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B2.x, B2.y); ctx.stroke();
       }
     }
@@ -7251,8 +7282,8 @@ function createSupers() {
     for (let j = 1; j <= 3; j++) {
       const back = Math.min(tn - 1, j * 4), i = (tc - 1 - back + NT * 2) % NT;
       cam.project(tx[i], ty[i], tz[i], A);
-      ctx.globalAlpha = 0.13 * (1 - j / 4) * f * st.fade; ctx.lineWidth = Math.max(1, r * A.s * 0.1);
-      ctx.beginPath(); ctx.arc(A.x, A.y, r * A.s * (1 + 0.15 * j), 0, TAU); ctx.stroke();
+      ctx.globalAlpha = 0.13 * (1 - j / 4) * f * st.fade; ctx.lineWidth = Math.max(1, r * A.s * 0.1 * SZ);
+      ctx.beginPath(); ctx.arc(A.x, A.y, r * A.s * (1 + 0.15 * j * SZ), 0, TAU); ctx.stroke();
     }
   }
   // the spike: a hard wedge of its colour back along the way it flies, white-hot down the middle, and speed lines
@@ -7264,16 +7295,16 @@ function createSupers() {
     const ul = Math.sqrt(ux * ux + uy * uy);
     if (ul < 1e-3) return;
     ux /= ul; uy /= ul;
-    const rp = b.r * A.s, L = rp * U.lerp(3, 6.5, U.clamp01((sp - 6) / 14)), nx = -uy, ny = ux;
+    const rp = b.r * A.s, L = rp * SZ * U.lerp(3, 6.5, U.clamp01((sp - 6) / 14)), nx = -uy, ny = ux;
     ctx.globalCompositeOperation = 'lighter';
     for (let pass = 0; pass < 2; pass++) {
-      const hw = rp * (pass ? 0.38 : 0.95);
+      const hw = rp * SZ * (pass ? 0.38 : 0.95);
       ctx.globalAlpha = pass ? 0.9 : 0.5; ctx.fillStyle = pass ? P.core : P.mid;
       ctx.beginPath(); ctx.moveTo(A.x + nx * hw, A.y + ny * hw); ctx.lineTo(A.x - ux * L * (pass ? 0.7 : 1), A.y - uy * L * (pass ? 0.7 : 1)); ctx.lineTo(A.x - nx * hw, A.y - ny * hw); ctx.closePath(); ctx.fill();
     }
-    ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(1, rp * 0.08);
+    ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(1, rp * 0.08 * SZ);
     for (let i = 0; i < 4; i++) {
-      const o = (i - 1.5) * rp * 0.75, ph = (st.rt * 9 + i * 0.37) % 1, l0 = L * (0.5 + 0.9 * ph), l1 = l0 + L * 0.5;
+      const o = (i - 1.5) * rp * 0.75 * SZ, ph = (st.rt * 9 + i * 0.37) % 1, l0 = L * (0.5 + 0.9 * ph), l1 = l0 + L * 0.5;
       ctx.globalAlpha = 0.45 * (1 - ph);
       ctx.beginPath(); ctx.moveTo(A.x + nx * o - ux * l0, A.y + ny * o - uy * l0); ctx.lineTo(A.x + nx * o - ux * l1, A.y + ny * o - uy * l1); ctx.stroke();
     }
@@ -7283,11 +7314,11 @@ function createSupers() {
     if (!(st.owner && st.slips > 0)) return;
     const p = w.ball.p;
     cam.project(p.x, p.y, p.z, A);
-    const rp = w.ball.r * A.s, a0 = st.rt * 7;
+    const rp = w.ball.r * A.s, a0 = st.rt * 7, gr = rp * (1 + 0.35 * SZ);
     ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = P.mid; ctx.lineCap = 'round';
-    ctx.globalAlpha = 0.85; ctx.lineWidth = Math.max(1.5, rp * 0.14);
+    ctx.globalAlpha = 0.85; ctx.lineWidth = Math.max(1.5, rp * 0.14 * SZ);
     ctx.beginPath();
-    for (let i = 0; i < 2; i++) { const a = a0 + i * Math.PI; ctx.moveTo(A.x + Math.cos(a) * rp * 1.35, A.y + Math.sin(a) * rp * 1.35); ctx.arc(A.x, A.y, rp * 1.35, a, a + 0.9); }
+    for (let i = 0; i < 2; i++) { const a = a0 + i * Math.PI; ctx.moveTo(A.x + Math.cos(a) * gr, A.y + Math.sin(a) * gr); ctx.arc(A.x, A.y, gr, a, a + 0.9); }
     ctx.stroke();
     ctx.lineCap = 'butt';
   }
@@ -7296,8 +7327,8 @@ function createSupers() {
     cam.project(x, y, z, A);
     const rp = r * A.s;
     if (!(rp > 0.5)) return;
-    const rr = rp * (out ? 0.15 + 1.5 * (1 - q) : 0.4 + 1.3 * q), f = 1 - q;
-    ctx.globalCompositeOperation = 'lighter'; ctx.lineWidth = Math.max(1.5, rp * 0.14);
+    const rr = rp * SZ * (out ? 0.15 + 1.5 * (1 - q) : 0.4 + 1.3 * q), f = 1 - q;
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineWidth = Math.max(1.5, rp * 0.14 * SZ);
     ctx.globalAlpha = 0.9 * f; ctx.strokeStyle = P.mid;
     ctx.beginPath(); ctx.ellipse(A.x - rp * 0.08, A.y, rr, rr * 0.42, 0, 0, TAU); ctx.stroke();
     ctx.globalAlpha = 0.7 * f; ctx.strokeStyle = P.outer;
@@ -7305,13 +7336,14 @@ function createSupers() {
     if (out) { // the tear it went through: a few shards flying in
       ctx.strokeStyle = P.core; ctx.globalAlpha = 0.8 * f;
       ctx.beginPath();
-      for (let i = 0; i < 6; i++) { const a = i * 1.047 + 0.4, d0 = rp * (0.4 + 1.6 * f), d1 = d0 + rp * 0.5 * f; ctx.moveTo(A.x + Math.cos(a) * d0, A.y + Math.sin(a) * d0 * 0.6); ctx.lineTo(A.x + Math.cos(a) * d1, A.y + Math.sin(a) * d1 * 0.6); }
+      for (let i = 0; i < 6; i++) { const a = i * 1.047 + 0.4, d0 = rp * SZ * (0.4 + 1.6 * f), d1 = d0 + rp * SZ * 0.5 * f; ctx.moveTo(A.x + Math.cos(a) * d0, A.y + Math.sin(a) * d0 * 0.6); ctx.lineTo(A.x + Math.cos(a) * d1, A.y + Math.sin(a) * d1 * 0.6); }
       ctx.stroke();
     }
   }
   // Over the ball: the spike's white-hot rim and the mark on the one it goes for, the phantom's shimmer, a swerve's flash as it
   // cuts in, and the warp: a fringe while it waits, and while it is out of phase a glitch, an outline, or nothing.
   function drawBall(ctx, cam, w) {
+    SZ = specialSize();
     if (!st.owner) return;
     const p = w.ball.p, P = SUPERS[st.kind];
     cam.project(p.x, p.y, p.z, A);
@@ -7321,30 +7353,30 @@ function createSupers() {
     if (st.kind === SPIKE) {
       if (st.spPh < 2) {
         ctx.globalAlpha = 0.35 + 0.25 * st.homing; ctx.fillStyle = P.glow;
-        ctx.beginPath(); ctx.arc(A.x, A.y, rp * 1.45, 0, TAU); ctx.arc(A.x, A.y, rp * 0.98, 0, TAU, true); ctx.fill();
-        ctx.globalAlpha = 0.9; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.2, rp * 0.12);
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 0.45 * SZ), 0, TAU); ctx.arc(A.x, A.y, rp * 0.98, 0, TAU, true); ctx.fill();
+        ctx.globalAlpha = 0.9; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.2, rp * 0.12 * SZ);
         ctx.beginPath(); ctx.arc(A.x, A.y, rp * 1.04, 0, TAU); ctx.stroke();
         reticle(ctx, cam, P, st.spPh === 1 ? 1 : 0.45);
       }
     } else if (st.kind === PHANTOM) {
-      ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(1, rp * 0.1); ctx.globalAlpha = 0.35 * st.fade;
+      ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(1, rp * 0.1 * SZ); ctx.globalAlpha = 0.35 * st.fade;
       ctx.beginPath();
-      for (let i = 0; i <= 40; i++) { const a = (i / 40) * TAU, rr = rp * (1.08 + 0.04 * Math.sin(a * 5 + st.rt * 9)); if (i) ctx.lineTo(A.x + Math.cos(a) * rr, A.y + Math.sin(a) * rr); else ctx.moveTo(A.x + Math.cos(a) * rr, A.y + Math.sin(a) * rr); }
+      for (let i = 0; i <= 40; i++) { const a = (i / 40) * TAU, rr = rp * (1 + (0.08 + 0.04 * Math.sin(a * 5 + st.rt * 9)) * SZ); if (i) ctx.lineTo(A.x + Math.cos(a) * rr, A.y + Math.sin(a) * rr); else ctx.moveTo(A.x + Math.cos(a) * rr, A.y + Math.sin(a) * rr); }
       ctx.stroke();
     } else if (st.kind === SWERVE) {
       const q = (st.rt - st.swRt) / 0.3;
       if (q >= 0 && q < 1) {
-        ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.5, rp * 0.16 * (1 - q)); ctx.globalAlpha = 0.85 * (1 - q);
-        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1.1 + 0.9 * q), 0, TAU); ctx.stroke();
+        ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.5, rp * 0.16 * (1 - q) * SZ); ctx.globalAlpha = 0.85 * (1 - q);
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + (0.1 + 0.9 * q) * SZ), 0, TAU); ctx.stroke();
       }
     } else if (st.kind === ZAP && st.zpPh < 2) { // it crackles: a few jagged arcs off its rim, more and brighter as it is about to strike
       const k = st.zpPh === 1 ? 1 : 0.5, n = st.zpPh === 1 ? 6 : 3, f = Math.floor(st.rt * 28);
       ctx.lineJoin = 'round';
       for (let pass = 0; pass < 2; pass++) {
-        ctx.strokeStyle = pass ? P.core : P.outer; ctx.lineWidth = Math.max(1, rp * (pass ? 0.06 : 0.18)); ctx.globalAlpha = (pass ? 0.95 : 0.5) * k;
+        ctx.strokeStyle = pass ? P.core : P.outer; ctx.lineWidth = Math.max(1, rp * (pass ? 0.06 : 0.18) * SZ); ctx.globalAlpha = (pass ? 0.95 : 0.5) * k;
         ctx.beginPath();
         for (let i = 0; i < n; i++) {
-          const a0 = hash(f * 7 + i) * TAU, len = rp * (0.5 + 0.9 * hash(f * 13 + i * 3));
+          const a0 = hash(f * 7 + i) * TAU, len = rp * SZ * (0.5 + 0.9 * hash(f * 13 + i * 3));
           let x = A.x + Math.cos(a0) * rp * 0.95, y = A.y + Math.sin(a0) * rp * 0.95;
           ctx.moveTo(x, y);
           for (let j = 1; j <= 3; j++) { const a = a0 + (hash(f * 5 + i * 11 + j) - 0.5) * 1.6; x += Math.cos(a) * len / 3; y += Math.sin(a) * len / 3; ctx.lineTo(x, y); }
@@ -7355,8 +7387,8 @@ function createSupers() {
     } else if (st.kind === WARP) {
       if (st.wpT > 0) warped(ctx, A, rp, P);
       else if (st.wpN > 0) { // it is going to: a cyan and a magenta edge either side of it
-        const j = 0.06 + 0.04 * Math.sin(st.rt * 23);
-        ctx.lineWidth = Math.max(1.2, rp * 0.1);
+        const j = (0.06 + 0.04 * Math.sin(st.rt * 23)) * SZ;
+        ctx.lineWidth = Math.max(1.2, rp * 0.1 * SZ);
         ctx.globalAlpha = 0.65; ctx.strokeStyle = P.mid; ctx.beginPath(); ctx.arc(A.x - rp * j, A.y, rp * 1.03, 0, TAU); ctx.stroke();
         ctx.globalAlpha = 0.55; ctx.strokeStyle = P.outer; ctx.beginPath(); ctx.arc(A.x + rp * j, A.y, rp * 1.03, 0, TAU); ctx.stroke();
       }
@@ -7366,7 +7398,7 @@ function createSupers() {
   // a mark on the one a spike goes for: a ring and four ticks, pulsing, at its target
   function reticle(ctx, cam, P, k) {
     cam.project(st.tgX, st.tgY, st.tgZ, B2);
-    const r = Math.max(9, 0.2 * B2.s), pulse = 0.5 + 0.5 * Math.sin(st.rt * 18), a0 = st.rt * 2.5;
+    const r = Math.max(9, 0.2 * B2.s) * SZ, pulse = 0.5 + 0.5 * Math.sin(st.rt * 18), a0 = st.rt * 2.5;
     ctx.strokeStyle = P.mid; ctx.globalAlpha = 0.8 * k; ctx.lineWidth = Math.max(1.5, r * 0.11);
     ctx.beginPath(); ctx.arc(B2.x, B2.y, r * (1 + 0.15 * pulse), 0, TAU); ctx.stroke();
     ctx.beginPath();
@@ -7377,17 +7409,17 @@ function createSupers() {
   function warped(ctx, A, rp, P) {
     const m = Math.round(CFG.supers.warp.show);
     if (m === 2) return;
-    ctx.lineWidth = Math.max(1.2, rp * 0.11);
+    ctx.lineWidth = Math.max(1.2, rp * 0.11 * SZ);
     if (m === 1) {
       ctx.setLineDash([Math.max(2, rp * 0.3), Math.max(2, rp * 0.22)]); ctx.globalAlpha = 0.75; ctx.strokeStyle = P.mid;
       ctx.beginPath(); ctx.arc(A.x, A.y, rp, st.rt * 3, st.rt * 3 + TAU); ctx.stroke(); ctx.setLineDash([]);
       return;
     }
-    const t = st.rt, off = rp * (0.16 + 0.12 * Math.sin(t * 71));
+    const t = st.rt, off = rp * SZ * (0.16 + 0.12 * Math.sin(t * 71));
     ctx.globalAlpha = 0.75; ctx.strokeStyle = P.mid; ctx.beginPath(); ctx.arc(A.x - off, A.y, rp, 0, TAU); ctx.stroke();
     ctx.globalAlpha = 0.65; ctx.strokeStyle = P.outer; ctx.beginPath(); ctx.arc(A.x + off, A.y, rp, 0, TAU); ctx.stroke();
     for (let i = 0; i < 4; i++) {
-      const y = A.y + rp * (-0.85 + 0.5 * i + 0.12 * Math.sin(t * 61 + i)), sh = rp * 0.55 * Math.sin(t * 97 + i * 2.3);
+      const y = A.y + rp * (-0.85 + 0.5 * i + 0.12 * Math.sin(t * 61 + i)), sh = rp * 0.55 * SZ * Math.sin(t * 97 + i * 2.3);
       ctx.globalAlpha = flick() ? 0.5 : 0.25; ctx.fillStyle = i % 2 ? P.mid : P.outer;
       ctx.fillRect(A.x - rp + sh, y, rp * 2 * (0.45 + 0.5 * Math.abs(Math.sin(t * 13 + i))), Math.max(1, rp * 0.15));
     }
@@ -7403,6 +7435,7 @@ function createSupers() {
   // On the floor, under the players: the stomp's shockwave and its cracks, the blast's ring of fire and its scorch, the
   // whirlwind's dust, and a scorch where a bolt struck.
   function drawFloor(ctx, cam, w) {
+    SZ = specialSize();
     for (let j = 0; j < 2; j++) {
       const At = j ? st.at.kage : st.at.you;
       if (!At.kind) continue;
@@ -7412,48 +7445,48 @@ function createSupers() {
       if (At.kind === STOMP && (At.ph === 2 || At.ph === 3)) {
         const g = age(At.goRt), u = U.clamp01(g / 1.4);
         ctx.globalCompositeOperation = 'source-over'; ctx.lineCap = 'round'; ctx.strokeStyle = '#1a120a'; // cracks out from the foot
-        ctx.globalAlpha = 0.8 * (1 - u); ctx.lineWidth = Math.max(1.5, A.s * 0.035);
+        ctx.globalAlpha = 0.8 * (1 - u); ctx.lineWidth = Math.max(1.5, A.s * 0.035 * SZ);
         ctx.beginPath();
         for (let i = 0; i < 8; i++) {
-          const a = (i / 8) * TAU + hash(At.seed * 97 + i) * 0.7, L = (0.5 + 0.7 * hash(At.seed * 31 + i)) * U.easeOut(U.clamp01(g / 0.12), 2);
+          const a = (i / 8) * TAU + hash(At.seed * 97 + i) * 0.7, L = SZ * (0.5 + 0.7 * hash(At.seed * 31 + i)) * U.easeOut(U.clamp01(g / 0.12), 2);
           let x = At.x0, z = At.z0;
           cam.project(x, 0, z, B2); ctx.moveTo(B2.x, B2.y);
           for (let k = 1; k <= 3; k++) { const b = a + (hash(At.seed * 7 + i * 5 + k) - 0.5) * 0.7; x += Math.cos(b) * L / 3; z += Math.sin(b) * L / 3; cam.project(x, 0, z, B2); ctx.lineTo(B2.x, B2.y); }
         }
         ctx.stroke();
         if (At.r > 0.05) { // the wave: a ripple behind, a thick band of dust, a bright edge leading it
-          if (At.r > 0.4) { floorRing(ctx, cam, At.x0, At.z0, At.r * 0.72, 40); ctx.globalAlpha = 0.3 * f; ctx.strokeStyle = P.outer; ctx.lineWidth = Math.max(1.5, A.s * 0.06); ctx.stroke(); }
+          if (At.r > 0.4) { floorRing(ctx, cam, At.x0, At.z0, At.r * 0.72, 40); ctx.globalAlpha = 0.3 * f; ctx.strokeStyle = P.outer; ctx.lineWidth = Math.max(1.5, A.s * 0.06 * SZ); ctx.stroke(); }
           floorRing(ctx, cam, At.x0, At.z0, At.r, 48);
-          ctx.globalAlpha = 0.5 * f; ctx.strokeStyle = '#c9b796'; ctx.lineWidth = Math.max(3, A.s * 0.24); ctx.stroke();
-          ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.9 * f; ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, A.s * 0.07); ctx.stroke();
-          ctx.globalAlpha = 0.6 * f; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, A.s * 0.025); ctx.stroke();
+          ctx.globalAlpha = 0.5 * f; ctx.strokeStyle = '#c9b796'; ctx.lineWidth = Math.max(3, A.s * 0.24 * SZ); ctx.stroke();
+          ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.9 * f; ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, A.s * 0.07 * SZ); ctx.stroke();
+          ctx.globalAlpha = 0.6 * f; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, A.s * 0.025 * SZ); ctx.stroke();
         }
         ctx.lineCap = 'butt';
       } else if (At.kind === BLAST && (At.ph === 2 || At.ph === 3)) {
         const g = age(At.goRt), FP = typeof firePal === 'function' ? firePal() : P;
         ctx.globalCompositeOperation = 'source-over'; // the scorch, fading over a second and a half
-        floorRing(ctx, cam, At.x0, At.z0, Math.min(At.r, 0.9), 28);
+        floorRing(ctx, cam, At.x0, At.z0, Math.min(At.r, 0.9 * SZ), 28);
         ctx.globalAlpha = 0.35 * (1 - U.clamp01(g / 1.5)); ctx.fillStyle = '#140804'; ctx.fill();
         if (At.r > 0.05) {
           floorRing(ctx, cam, At.x0, At.z0, At.r, 48);
           ctx.globalCompositeOperation = 'lighter';
-          ctx.globalAlpha = 0.45 * f; ctx.strokeStyle = FP.outer; ctx.lineWidth = Math.max(2, A.s * 0.2); ctx.stroke();
-          ctx.globalAlpha = 0.85 * f; ctx.strokeStyle = FP.core; ctx.lineWidth = Math.max(1.5, A.s * 0.05); ctx.stroke();
+          ctx.globalAlpha = 0.45 * f; ctx.strokeStyle = FP.outer; ctx.lineWidth = Math.max(2, A.s * 0.2 * SZ); ctx.stroke();
+          ctx.globalAlpha = 0.85 * f; ctx.strokeStyle = FP.core; ctx.lineWidth = Math.max(1.5, A.s * 0.05 * SZ); ctx.stroke();
         }
       } else if (At.kind === WIND) { // dust round its foot, and a scuffed trail behind it
-        const r = Math.max(0.2, CFG.supers.wind.width * 0.5);
+        const r = Math.max(0.2, CFG.supers.wind.width * 0.5) * SZ;
         cam.project(At.x, 0, At.z, B2);
         ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#cdbfa8';
         for (let i = 0; i < 6; i++) {
           const a = st.rt * 9 + i * 1.047, rr = r * (0.7 + 0.3 * Math.sin(st.rt * 13 + i));
           cam.project(At.x + Math.cos(a) * rr, 0, At.z + Math.sin(a) * rr, A);
-          ctx.globalAlpha = 0.28 * f; ctx.beginPath(); ctx.arc(A.x, A.y, Math.max(1.5, A.s * 0.07), 0, TAU); ctx.fill();
+          ctx.globalAlpha = 0.28 * f; ctx.beginPath(); ctx.arc(A.x, A.y, Math.max(1.5, A.s * 0.07 * SZ), 0, TAU); ctx.fill();
         }
       }
     }
     const zb = age(st.zbRt); // a bolt's scorch under the one it struck
     if (zb >= 0 && zb < 0.6) {
-      floorRing(ctx, cam, st.zbX1, st.zbZ1, 0.3, 20);
+      floorRing(ctx, cam, st.zbX1, st.zbZ1, 0.3 * SZ, 20);
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5 * (1 - zb / 0.6); ctx.fillStyle = SUPERS[ZAP].glow; ctx.fill();
     }
     ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
@@ -7461,6 +7494,7 @@ function createSupers() {
   // Over the players: the zap's bolt, the whirlwind (or a gust's blades), the blast's wall of flame and its flash, the stomp's
   // dust and chips flying.
   function drawOver(ctx, cam, w) {
+    SZ = specialSize();
     const zb = age(st.zbRt);
     if (zb >= 0 && zb < 0.3) bolt(ctx, cam, zb / 0.3);
     for (let j = 0; j < 2; j++) {
@@ -7473,14 +7507,14 @@ function createSupers() {
         if (g < 0.25) { // the flash as it goes off
           cam.project(At.x0, 0.9, At.z0, A);
           const FP = typeof firePal === 'function' ? firePal() : SUPERS[BLAST];
-          if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, A.s * (0.8 + 2.2 * g), A.s * (0.8 + 2.2 * g), FP.glow, 0.9 * (1 - g / 0.25));
+          if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, A.s * SZ * (0.8 + 2.2 * g), A.s * SZ * (0.8 + 2.2 * g), FP.glow, 0.9 * (1 - g / 0.25));
         }
         if (f > 0 && At.r > 0.1 && typeof fireCluster === 'function') { // a wall of flame along its front, taller as it starts out
           const n = 18, tall = 0.45 + 0.35 * (1 - U.clamp01(At.r / Math.max(0.5, CFG.supers.blast.reach)));
           for (let i = 0; i < n; i++) {
             const a = (i / n) * TAU + At.seed * 3, x = At.x0 + Math.cos(a) * At.r, z = At.z0 + Math.sin(a) * At.r;
             cam.project(x, 0, z, A);
-            fireCluster(ctx, A.x, A.y, A.s * 0.38, A.s * tall * f, st.rt + i * 0.37, 0.9 * f, 2);
+            fireCluster(ctx, A.x, A.y, A.s * 0.38 * SZ, A.s * tall * f * SZ, st.rt + i * 0.37, 0.9 * f, 2);
           }
         }
       } else if (At.kind === STOMP && (At.ph === 2 || At.ph === 3)) {
@@ -7490,10 +7524,10 @@ function createSupers() {
           ctx.globalCompositeOperation = 'source-over';
           for (let i = 0; i < 13; i++) {
             const a = hash(At.seed * 53 + i) * TAU, sp = 0.8 + 1.6 * hash(At.seed * 17 + i), up = 1.4 + 2.4 * hash(At.seed * 29 + i);
-            const x = At.x0 + Math.cos(a) * sp * g, z = At.z0 + Math.sin(a) * sp * g, y = Math.max(0, up * g - 4.9 * g * g);
+            const x = At.x0 + Math.cos(a) * sp * g * SZ, z = At.z0 + Math.sin(a) * sp * g * SZ, y = Math.max(0, up * g - 4.9 * g * g) * SZ;
             cam.project(x, y, z, A);
-            if (i < 8) { ctx.globalAlpha = 0.55 * (1 - q); ctx.fillStyle = '#cbbb9f'; ctx.beginPath(); ctx.arc(A.x, A.y, A.s * (0.12 + 0.25 * q), 0, TAU); ctx.fill(); }
-            else { ctx.globalAlpha = 0.85 * (1 - q); ctx.fillStyle = '#2e2721'; ctx.fillRect(A.x - A.s * 0.025, A.y - A.s * 0.025, A.s * 0.05, A.s * 0.05); }
+            if (i < 8) { ctx.globalAlpha = 0.55 * (1 - q); ctx.fillStyle = '#cbbb9f'; ctx.beginPath(); ctx.arc(A.x, A.y, A.s * (0.12 + 0.25 * q) * SZ, 0, TAU); ctx.fill(); }
+            else { const c = A.s * 0.025 * SZ; ctx.globalAlpha = 0.85 * (1 - q); ctx.fillStyle = '#2e2721'; ctx.fillRect(A.x - c, A.y - c, c * 2, c * 2); }
           }
         }
       }
@@ -7504,7 +7538,7 @@ function createSupers() {
   function bolt(ctx, cam, q) {
     const P = SUPERS[ZAP], fl = q < 0.15 ? 1 : q < 0.25 ? 0.25 : q < 0.5 ? 1 : 0.8, f = (1 - q) * fl, seed = Math.floor(st.zbRt * 1000);
     cam.project(st.zbX0, st.zbY0, st.zbZ0, A); cam.project(st.zbX1, st.zbY1, st.zbZ1, B2);
-    const dx = B2.x - A.x, dy = B2.y - A.y, l = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / l, ny = dx / l, amp = Math.min(30, l * 0.09), sc = (A.s + B2.s) * 0.5;
+    const dx = B2.x - A.x, dy = B2.y - A.y, l = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / l, ny = dx / l, amp = Math.min(30, l * 0.09) * SZ, sc = (A.s + B2.s) * 0.5 * SZ;
     ctx.globalCompositeOperation = 'lighter'; ctx.lineJoin = 'round';
     for (let pass = 0; pass < 3; pass++) {
       ctx.strokeStyle = pass === 2 ? '#ffffff' : pass === 1 ? P.mid : P.outer;
@@ -7524,26 +7558,26 @@ function createSupers() {
   }
   // a whirlwind: rings of wind spinning round a funnel, wider as it rises; or a gust: blades of wind sweeping ahead of it
   function whirl(ctx, cam, At, f) {
-    const P = SUPERS[WIND], C = CFG.supers.wind, wd = Math.max(0.2, C.width);
+    const P = SUPERS[WIND], C = CFG.supers.wind, wd = Math.max(0.2, C.width) * SZ;
     ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
     if (Math.round(C.form) === 1) {
       const ux = At.ux, uz = At.uz, nx = -uz, nz = ux;
       for (let i = 0; i < 3; i++) {
-        const back = ((st.rt * 3 + i / 3) % 1) * 0.6, y = 0.5 + 0.35 * i, half = wd * (0.35 + 0.15 * i);
+        const back = ((st.rt * 3 + i / 3) % 1) * 0.6, y = (0.5 + 0.35 * i) * SZ, half = wd * (0.35 + 0.15 * i);
         const cx = At.x - ux * back, cz = At.z - uz * back;
         ctx.globalAlpha = 0.7 * f * (1 - back / 0.6); ctx.strokeStyle = i === 1 ? P.outer : i ? P.core : P.mid;
         cam.project(cx - nx * half - ux * 0.15, y, cz - nz * half - uz * 0.15, A); cam.project(cx + ux * 0.12, y + 0.05, cz + uz * 0.12, B2);
         const sx = A.x, sy = A.y, mx = B2.x, my = B2.y;
         cam.project(cx + nx * half - ux * 0.15, y, cz + nz * half - uz * 0.15, A);
-        ctx.lineWidth = Math.max(1.5, B2.s * 0.04);
+        ctx.lineWidth = Math.max(1.5, B2.s * 0.04 * SZ);
         ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, A.x, A.y); ctx.stroke();
       }
     } else {
       for (let i = 0; i < 7; i++) {
-        const u = i / 6, y = 0.06 + 1.5 * u, r = wd * (0.18 + 0.42 * u), spin = st.rt * (11 - 4 * u) + i * 0.9;
+        const u = i / 6, y = (0.06 + 1.5 * u) * SZ, r = wd * (0.18 + 0.42 * u), spin = st.rt * (11 - 4 * u) + i * 0.9;
         cam.project(At.x + Math.sin(st.rt * 6 + i) * 0.04 * u, y, At.z, A);
         const rx = r * A.s, ry = rx * 0.28;
-        ctx.globalAlpha = (0.55 - 0.25 * u) * f; ctx.strokeStyle = i % 3 === 0 ? P.outer : i % 3 === 1 ? P.mid : P.core; ctx.lineWidth = Math.max(1, A.s * (0.035 - 0.015 * u));
+        ctx.globalAlpha = (0.55 - 0.25 * u) * f; ctx.strokeStyle = i % 3 === 0 ? P.outer : i % 3 === 1 ? P.mid : P.core; ctx.lineWidth = Math.max(1, A.s * (0.035 - 0.015 * u) * SZ);
         ctx.beginPath(); ctx.ellipse(A.x, A.y, rx, ry, 0, spin, spin + 3.6); ctx.stroke();
       }
     }
@@ -7553,6 +7587,7 @@ function createSupers() {
   // On one side of the pole's plane (side −1 behind, +1 in front): the decoys there (and their ropes, by the setting), drawn as
   // the ball itself (ballAt: the scene's own ball at a point), and the puffs.
   function drawSide(ctx, cam, w, side, ballAt) {
+    SZ = specialSize();
     if (st.owner && st.kind === DECOYS && ballAt) {
       const ropes = CFG.supers.decoys.ropes > 0;
       for (let i = 0; i < st.n; i++) {
@@ -7571,7 +7606,7 @@ function createSupers() {
       const rp = r * A.s;
       ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = pK[j] === DECOYS ? '#d9dde6' : P.mid;
       for (let i = 0; i < 5; i++) {
-        const ang = i * 1.2566 + j, d = rp * (0.3 + 1.1 * U.easeOut(q, 2)), s = rp * (0.55 + 0.4 * q) * (i % 2 ? 0.8 : 1);
+        const ang = i * 1.2566 + j, d = rp * SZ * (0.3 + 1.1 * U.easeOut(q, 2)), s = rp * SZ * (0.55 + 0.4 * q) * (i % 2 ? 0.8 : 1);
         ctx.globalAlpha = 0.55 * (1 - q) * (1 - q);
         ctx.beginPath(); ctx.arc(A.x + Math.cos(ang) * d, A.y + Math.sin(ang) * d - rp * 0.4 * q, s, 0, TAU); ctx.fill();
       }
@@ -7963,7 +7998,8 @@ function createFire() {
     const P = firePal();
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
     cam.project(w.ball.p.x, w.ball.p.y, w.ball.p.z, A);
-    const r = w.ball.r * A.s, S = CFG.fire.size * (0.8 + 0.2 * st.heat), k = st.heat * (st.lit ? 0.55 + 0.45 * st.litK : 1);
+    const z = st.lit && typeof specialSize === 'function' ? specialSize() : 1; // a thrown fireball at the level's size (a volley's fire as it was)
+    const r = w.ball.r * A.s, S = CFG.fire.size * (0.8 + 0.2 * st.heat) * z, k = st.heat * (st.lit ? 0.55 + 0.45 * st.litK : 1);
     // the tail streams back the way it came and rises: a ball held still in a freeze burns straight up
     const tx = -E.vx, ty = -E.vy - 160, tl = Math.sqrt(tx * tx + ty * ty) || 1, sp = Math.sqrt(E.vx * E.vx + E.vy * E.vy);
     fireGlow(ctx, A.x, A.y, r * 2.8 * S, r * 2.8 * S, P.glow, 0.6 * k);
@@ -8584,7 +8620,9 @@ function createLegends() {
     }
   }
   // Behind the ball: the dragons' coils (their heads are drawn over it, in drawBall), and the Light Beam's lance of light
+  let SZ = 1; // supers.js's specialSize(), as of this frame's drawing: the level's size
   function drawBehind(ctx, cam, w) {
+    SZ = (typeof specialSize === 'function' ? specialSize() : 1);
     const D = st.dragon;
     if (D.ph) drawDragons(ctx, cam, w, false);
     if (st.warp.ph) warpHoles(ctx, cam, w);
@@ -8593,6 +8631,7 @@ function createLegends() {
   }
   // Over the ball: the dragons' heads, the sun on the ball, the hole and its spit, the ×2 mark
   function drawBall(ctx, cam, w) {
+    SZ = (typeof specialSize === 'function' ? specialSize() : 1);
     if (st.dragon.ph) drawDragons(ctx, cam, w, true);
     if (st.sun.owner || st.rt - st.sun.rt0 < 0.3) sunBall(ctx, cam, w);
     if (st.hole.ph) hole(ctx, cam, w);
@@ -8601,13 +8640,14 @@ function createLegends() {
   }
   // On the floor: the sunbeam's ring of light and its scorch
   function drawFloor(ctx, cam, w) {
+    SZ = (typeof specialSize === 'function' ? specialSize() : 1);
     const R = st.ray;
     if (R.ph === 1 || R.ph === 2 || R.ph === 3) {
       const P = SUPERS[RAY], q = R.ph === 1 ? U.clamp01(R.t / Math.max(0.05, CFG.legends.ray.charge)) : 1, f = R.ph === 3 ? 1 - U.clamp01(R.t / 0.5) : 1;
-      const r = Math.max(0.2, CFG.legends.ray.width) / 2;
+      const r = (Math.max(0.2, CFG.legends.ray.width) / 2) * SZ;
       ctx.globalCompositeOperation = 'lighter';
       floorRing(ctx, cam, R.x, R.z, r * (R.ph === 1 ? 1.6 - 0.6 * q : 1 + 0.4 * U.clamp01((st.rt - R.strikeRt) / 0.6)), 40);
-      ctx.globalAlpha = (0.35 + 0.45 * q) * f; ctx.strokeStyle = P.mid; cam.project(R.x, 0, R.z, A); ctx.lineWidth = Math.max(2, A.s * 0.05); ctx.stroke();
+      ctx.globalAlpha = (0.35 + 0.45 * q) * f; ctx.strokeStyle = P.mid; cam.project(R.x, 0, R.z, A); ctx.lineWidth = Math.max(2, A.s * 0.05 * SZ); ctx.stroke();
       ctx.globalAlpha = 0.25 * q * f; ctx.fillStyle = P.glow; ctx.fill();
       // runes: twelve ticks turning round the ring as it gathers
       ctx.beginPath();
@@ -8626,6 +8666,7 @@ function createLegends() {
   }
   // Over everything on the court: the sunbeam coming down, the Light Beam's shocks, the hole's pull
   function drawOver(ctx, cam, w) {
+    SZ = (typeof specialSize === 'function' ? specialSize() : 1);
     const R = st.ray;
     if (R.ph === 1 || R.ph === 2 || (R.ph === 3)) sunbeam(ctx, cam, R);
     const E = st.beam;
@@ -8653,7 +8694,7 @@ function createLegends() {
     const form = D.single ? 1 : U.clamp01((st.rt - D.rt2) / 0.3); // the two spiral out of the ball together
     const r = w.ball.r;
     for (let d = 0; d < n; d++) {
-      const amp = (D.single ? 0.16 : 0.3) * size * form, ph = d * Math.PI, rise = end * 1.6; // flying off: up and away
+      const amp = (D.single ? 0.16 : 0.3) * size * form * SZ, ph = d * Math.PI, rise = end * 1.6; // flying off: up and away
       // the coil: round the path, in the plane across it (its own horizontal normal and up)
       for (let i = 0; i < bn; i++) {
         const j0 = Math.max(0, i - 1), j1 = Math.min(bn - 1, i + 1);
@@ -8662,7 +8703,7 @@ function createLegends() {
         const nx = -tz, nz = tx, u = i / (bn - 1), a = u * 7.5 - st.rt * 5 + ph, taper = Math.sin(Math.min(1, u * 6) * Math.PI / 2) * (1 - 0.3 * u);
         const ox = nx * Math.cos(a) * amp * taper, oz = nz * Math.cos(a) * amp * taper, oy = Math.sin(a) * amp * taper + rise * (1 - u * 0.5);
         cam.project(bx[i] + ox, by[i] + oy, bz[i] + oz, A);
-        SX[i] = A.x; SY[i] = A.y; SW[i] = r * A.s * size * (D.single ? 0.8 : 0.95) * (1 - 0.8 * u) + 1;
+        SX[i] = A.x; SY[i] = A.y; SW[i] = r * A.s * size * SZ * (D.single ? 0.8 : 0.95) * (1 - 0.8 * u) + 1;
       }
       const P = d === 0 ? { edge: FP.outer, body: FP.mid, belly: FP.core } : { edge: FP.mid, body: '#ffd34d', belly: '#fff6d0' };
       if (!heads) coils(ctx, P, f, d);
@@ -8749,26 +8790,26 @@ function createLegends() {
     cam.project(p.x, p.y, p.z, A);
     const rp = w.ball.r * A.s, born = U.clamp01((st.rt - st.sun.rt0) / 0.2), f = alive * born, pulse = 0.85 + 0.15 * Math.sin(st.rt * 13);
     if (!(rp > 0.5) || !(f > 0)) return;
-    if (typeof fireGlow === 'function') { fireGlow(ctx, A.x, A.y, rp * 4.2 * pulse, rp * 4.2 * pulse, P.glow, 0.55 * f); fireGlow(ctx, A.x, A.y, rp * 1.8, rp * 1.8, '#ffffff', 0.7 * f); }
+    if (typeof fireGlow === 'function') { const g1 = rp * (1 + 3.2 * SZ) * pulse, g2 = rp * (1 + 0.8 * SZ); fireGlow(ctx, A.x, A.y, g1, g1, P.glow, 0.55 * f); fireGlow(ctx, A.x, A.y, g2, g2, '#ffffff', 0.7 * f); }
     ctx.globalCompositeOperation = 'lighter';
     ctx.fillStyle = P.mid; ctx.globalAlpha = 0.55 * f;
     ctx.beginPath();
     for (let i = 0; i < 12; i++) { // the rays, long and short, turning
-      const a = st.rt * 1.4 + (i / 12) * TAU, L = rp * (i % 2 ? 2.2 : 3.2) * pulse, h = 0.11;
+      const a = st.rt * 1.4 + (i / 12) * TAU, L = rp * (1 + (i % 2 ? 1.2 : 2.2) * SZ) * pulse, h = 0.11;
       ctx.moveTo(A.x + Math.cos(a - h) * rp * 1.1, A.y + Math.sin(a - h) * rp * 1.1); ctx.lineTo(A.x + Math.cos(a) * L, A.y + Math.sin(a) * L); ctx.lineTo(A.x + Math.cos(a + h) * rp * 1.1, A.y + Math.sin(a + h) * rp * 1.1);
     }
     ctx.fill();
-    ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.5, rp * 0.14); ctx.globalAlpha = 0.8 * f;
-    ctx.beginPath(); ctx.arc(A.x, A.y, rp * 1.25 * pulse, 0, TAU); ctx.stroke();
-    ctx.strokeStyle = P.outer; ctx.lineWidth = Math.max(1, rp * 0.08); ctx.globalAlpha = 0.6 * f; // the flare
-    ctx.beginPath(); ctx.moveTo(A.x - rp * 4.5, A.y); ctx.lineTo(A.x + rp * 4.5, A.y); ctx.stroke();
+    ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1.5, rp * 0.14 * SZ); ctx.globalAlpha = 0.8 * f;
+    ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 0.25 * SZ) * pulse, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = P.outer; ctx.lineWidth = Math.max(1, rp * 0.08 * SZ); ctx.globalAlpha = 0.6 * f; // the flare
+    ctx.beginPath(); ctx.moveTo(A.x - rp * 4.5 * SZ, A.y); ctx.lineTo(A.x + rp * 4.5 * SZ, A.y); ctx.stroke();
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   }
   // ---- the sunbeam: gathering (a thin shaft of light growing), then the column comes down, then it fades ----
   function sunbeam(ctx, cam, R) {
     const P = SUPERS[RAY], C = CFG.legends.ray;
     cam.project(R.x, 0, R.z, A);
-    cam.project(R.x + Math.max(0.2, C.width) / 2, 0, R.z, B2);
+    cam.project(R.x + (Math.max(0.2, C.width) / 2) * SZ, 0, R.z, B2);
     const half = Math.max(4, Math.abs(B2.x - A.x)), top = -cam.h * 0.1;
     let wk, a;
     if (R.ph === 1) { const q = U.clamp01(R.t / Math.max(0.05, C.charge)); wk = 0.08 + 0.12 * q; a = 0.25 + 0.4 * q; }
@@ -8805,7 +8846,7 @@ function createLegends() {
   function lance(ctx, cam, w, E) {
     const P = LEGEND_LOOK[BEAM], p = w.ball.p, q = E.ph === 1 ? 1 : 1 - U.clamp01((st.rt - E.hitRt) / 0.5);
     cam.project(E.x0, E.y0, E.z0, A); cam.project(E.ph === 1 ? p.x : E.hx, E.ph === 1 ? p.y : E.hy, E.ph === 1 ? p.z : E.hz, B2);
-    const wd = w.ball.r * (A.s + B2.s) * 0.5;
+    const wd = w.ball.r * (A.s + B2.s) * 0.5 * SZ;
     ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
     for (let pass = 0; pass < 3; pass++) {
       ctx.strokeStyle = pass === 0 ? P.outer : pass === 1 ? P.mid : P.core; ctx.globalAlpha = q * (pass === 0 ? 0.35 : pass === 1 ? 0.6 : 0.95);
@@ -8817,7 +8858,7 @@ function createLegends() {
   function shocks(ctx, cam, E) {
     const P = LEGEND_LOOK[BEAM];
     cam.project(E.hx, E.hy, E.hz, A);
-    const s = A.s, since = st.rt - E.rt0;
+    const s = A.s * SZ, since = st.rt - E.rt0;
     for (let k = 0; k <= SHOCKS.length; k++) { // a jolt as it reaches them, then one on each of its sound's shocks
       const age = since - (k ? SHOCKS[k - 1] : E.hitRt - E.rt0);
       if (!(age >= 0 && age < 0.45)) continue;
@@ -8848,34 +8889,34 @@ function createLegends() {
     const rp = w.ball.r * A.s;
     if (!(rp > 0.5)) return;
     if (H.ph === 1) {
-      const g = st.rt - H.rt0, born = U.clamp01(g / 0.18), R = rp * (1.2 + 0.9 * born);
+      const g = st.rt - H.rt0, born = U.clamp01(g / 0.18), R = rp * (1 + (0.2 + 0.9 * born) * SZ);
       ctx.globalCompositeOperation = 'lighter';
       if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, R * 3.2, R * 3.2, P.glow, 0.5 * born);
       for (let i = 0; i < 26; i++) { // what it pulls in, spiralling to the core
         const q = (g * 1.6 + hash(i * 3.7)) % 1, ang = hash(i) * TAU + g * 5 + q * 3.5, d = R * (3.4 * (1 - q) + 0.6);
         ctx.globalAlpha = 0.85 * born * q; ctx.fillStyle = i % 3 === 0 ? Q.core : i % 3 === 1 ? Q.mid : P.mid;
-        ctx.beginPath(); ctx.arc(A.x + Math.cos(ang) * d, A.y + Math.sin(ang) * d * 0.62, Math.max(1, rp * 0.12 * (1 - q * 0.5)), 0, TAU); ctx.fill();
+        ctx.beginPath(); ctx.arc(A.x + Math.cos(ang) * d, A.y + Math.sin(ang) * d * 0.62, Math.max(1, rp * 0.12 * SZ * (1 - q * 0.5)), 0, TAU); ctx.fill();
       }
       for (let pass = 0; pass < 2; pass++) { // the accretion ring, turning
-        ctx.globalAlpha = (pass ? 0.9 : 0.5) * born; ctx.strokeStyle = pass ? '#ffb347' : P.mid; ctx.lineWidth = Math.max(2, rp * (pass ? 0.12 : 0.34));
+        ctx.globalAlpha = (pass ? 0.9 : 0.5) * born; ctx.strokeStyle = pass ? '#ffb347' : P.mid; ctx.lineWidth = Math.max(2, rp * (pass ? 0.12 : 0.34) * SZ);
         ctx.beginPath(); ctx.ellipse(A.x, A.y, R * 1.75, R * 0.55, -0.25, g * 4, g * 4 + TAU * 0.85); ctx.stroke();
       }
       ctx.globalCompositeOperation = 'source-over'; // the event horizon: dark, a thin bright ring of bent light round it
       ctx.globalAlpha = born; ctx.fillStyle = VOID; ctx.beginPath(); ctx.arc(A.x, A.y, R, 0, TAU); ctx.fill();
-      ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.07); ctx.globalAlpha = 0.85 * born;
+      ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.07 * SZ); ctx.globalAlpha = 0.85 * born;
       ctx.beginPath(); ctx.arc(A.x, A.y, R * 1.06, 0, TAU); ctx.stroke();
     } else if (H.ph === 2) {
       const g = st.rt - H.spitRt;
       if (g < 0.6) {
         const q = g / 0.6, f = 1 - q;
         ctx.globalCompositeOperation = 'lighter';
-        if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 6 * q), rp * (2 + 6 * q), P.glow, 0.8 * f);
-        ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, rp * 0.3 * f); ctx.globalAlpha = 0.9 * f;
-        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1.2 + 7 * q), 0, TAU); ctx.stroke();
-        ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.1 * f);
-        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 4.5 * q), 0, TAU); ctx.stroke();
+        if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 6 * q) * SZ, rp * (2 + 6 * q) * SZ, P.glow, 0.8 * f);
+        ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, rp * 0.3 * f * SZ); ctx.globalAlpha = 0.9 * f;
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + (0.2 + 7 * q) * SZ), 0, TAU); ctx.stroke();
+        ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.1 * f * SZ);
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 4.5 * q * SZ), 0, TAU); ctx.stroke();
         ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 0.8 * f * f; ctx.fillStyle = VOID; // the core closing
-        ctx.beginPath(); ctx.arc(A.x, A.y, rp * 1.5 * f, 0, TAU); ctx.fill();
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 0.5 * SZ) * f, 0, TAU); ctx.fill();
       }
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -8908,7 +8949,7 @@ function createLegends() {
     const X = st.warp, P = SUPERS[HOLE], g = st.rt - X.rt0, r = w.ball.r;
     // the first: it opens on the ball, and closes as the ball comes out at the top of the triangle
     const first = X.ph === 1 ? U.clamp01(g / 0.15) : X.ph === 2 && X.hop === 0 ? 1 - U.clamp01((st.rt - X.hopRt) / 0.2) : 0;
-    if (first > 0) { cam.project(X.x0, X.y0, X.z0, A); vortex(ctx, A.x, A.y, r * A.s * (1.3 + 1.1 * U.clamp01(g / 0.2)), first, g, P, 22); }
+    if (first > 0) { cam.project(X.x0, X.y0, X.z0, A); vortex(ctx, A.x, A.y, r * A.s * (1.3 + 1.1 * U.clamp01(g / 0.2)) * SZ, first, g, P, 22); }
     // the triangle: it opens as the ball goes in, and closes once it is out
     const f = U.clamp01((g - WARP_OPEN * 0.45) / 0.18) * (X.ph === 3 ? 1 - U.clamp01((st.rt - X.outRt) / 0.45) : 1);
     if (!(f > 0)) return;
@@ -8918,13 +8959,13 @@ function createLegends() {
     ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
     for (let pass = 0; pass < 2; pass++) { // its edges: a violet glow, a bright thread, flickering
       ctx.strokeStyle = pass ? P.core : P.mid; ctx.globalAlpha = (pass ? 0.75 : 0.35) * f * (0.8 + 0.2 * Math.sin(st.rt * 20));
-      ctx.lineWidth = Math.max(1, rp * (pass ? 0.08 : 0.35));
+      ctx.lineWidth = Math.max(1, rp * (pass ? 0.08 : 0.35) * SZ);
       ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B2.x, B2.y); ctx.lineTo(C3.x, C3.y); ctx.closePath(); ctx.stroke();
     }
     ctx.lineCap = 'butt'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-    vortex(ctx, A.x, A.y, rp * 1.25 * f, f, g + 0.3, P, 10);
-    vortex(ctx, B2.x, B2.y, r * B2.s * 1.25 * f, f, g + 0.6, P, 10);
-    vortex(ctx, C3.x, C3.y, r * C3.s * 1.25 * f, f, g + 0.9, P, 10);
+    vortex(ctx, A.x, A.y, rp * 1.25 * f * SZ, f, g + 0.3, P, 10);
+    vortex(ctx, B2.x, B2.y, r * B2.s * 1.25 * f * SZ, f, g + 0.6, P, 10);
+    vortex(ctx, C3.x, C3.y, r * C3.s * 1.25 * f * SZ, f, g + 0.9, P, 10);
   }
   // over the ball: the streak of each warp from the corner it left to the one it is in, a flash as it lands there, and the burst it
   // comes out of the last one with
@@ -8938,23 +8979,23 @@ function createLegends() {
       if (X.prev >= 0 && f > 0) {
         cam.project(X.vx[X.prev], X.vy[X.prev], X.vz[X.prev], B2);
         for (let pass = 0; pass < 2; pass++) {
-          ctx.strokeStyle = pass ? '#ffffff' : P.mid; ctx.globalAlpha = (pass ? 0.9 : 0.6) * f; ctx.lineWidth = Math.max(1.5, rp * (pass ? 0.35 : 1.1) * f);
+          ctx.strokeStyle = pass ? '#ffffff' : P.mid; ctx.globalAlpha = (pass ? 0.9 : 0.6) * f; ctx.lineWidth = Math.max(1.5, rp * (pass ? 0.35 : 1.1) * f * SZ);
           ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(B2.x, B2.y); ctx.lineTo(A.x, A.y); ctx.stroke();
         }
       }
-      if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 3 * q), rp * (2 + 3 * q), P.glow, 0.9 * f);
-      ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.18 * f); ctx.globalAlpha = 0.9 * f;
-      ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1.1 + 2.4 * q), 0, TAU); ctx.stroke();
+      if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 3 * q) * SZ, rp * (2 + 3 * q) * SZ, P.glow, 0.9 * f);
+      ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.18 * f * SZ); ctx.globalAlpha = 0.9 * f;
+      ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + (0.1 + 2.4 * q) * SZ), 0, TAU); ctx.stroke();
     } else if (X.ph === 3) {
       const q = U.clamp01((st.rt - X.outRt) / 0.5), f = 1 - q, i = X.at >= 0 ? X.at : 0;
       cam.project(X.vx[i], X.vy[i], X.vz[i], A);
       const rp = w.ball.r * A.s;
       if (f > 0 && rp > 0.5) {
-        if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 7 * q), rp * (2 + 7 * q), P.glow, 0.85 * f);
-        ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, rp * 0.35 * f); ctx.globalAlpha = 0.9 * f;
-        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1.2 + 8 * q), 0, TAU); ctx.stroke();
-        ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.12 * f);
-        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 5 * q), 0, TAU); ctx.stroke();
+        if (typeof fireGlow === 'function') fireGlow(ctx, A.x, A.y, rp * (2 + 7 * q) * SZ, rp * (2 + 7 * q) * SZ, P.glow, 0.85 * f);
+        ctx.strokeStyle = P.mid; ctx.lineWidth = Math.max(2, rp * 0.35 * f * SZ); ctx.globalAlpha = 0.9 * f;
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + (0.2 + 8 * q) * SZ), 0, TAU); ctx.stroke();
+        ctx.strokeStyle = P.core; ctx.lineWidth = Math.max(1, rp * 0.12 * f * SZ);
+        ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 5 * q * SZ), 0, TAU); ctx.stroke();
       }
     }
     ctx.lineCap = 'butt'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -8965,11 +9006,12 @@ function createLegends() {
     cam.project(p.x, p.y, p.z, A);
     const rp = w.ball.r * A.s, left = st.marked.until - st.rt, f = U.clamp01(left / 0.5);
     if (!(rp > 0.5)) return;
-    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 0.55 * f; ctx.strokeStyle = VOID; ctx.lineWidth = Math.max(2, rp * 0.22);
-    ctx.beginPath(); ctx.arc(A.x, A.y, rp * 1.22, 0, TAU); ctx.stroke();
-    ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = VIOLET; ctx.lineWidth = Math.max(1.2, rp * 0.1); ctx.globalAlpha = 0.9 * f;
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 0.55 * f; ctx.strokeStyle = VOID; ctx.lineWidth = Math.max(2, rp * 0.22 * SZ);
+    ctx.beginPath(); ctx.arc(A.x, A.y, rp * (1 + 0.22 * SZ), 0, TAU); ctx.stroke();
+    ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = VIOLET; ctx.lineWidth = Math.max(1.2, rp * 0.1 * SZ); ctx.globalAlpha = 0.9 * f;
+    const mr = rp * (1 + 0.3 * SZ);
     ctx.beginPath();
-    for (let i = 0; i < 3; i++) { const a = st.rt * 4 + (i / 3) * TAU; ctx.arc(A.x, A.y, rp * 1.3, a, a + 1.3); ctx.moveTo(A.x + Math.cos(a + TAU / 3) * rp * 1.3, A.y + Math.sin(a + TAU / 3) * rp * 1.3); }
+    for (let i = 0; i < 3; i++) { const a = st.rt * 4 + (i / 3) * TAU; ctx.arc(A.x, A.y, mr, a, a + 1.3); ctx.moveTo(A.x + Math.cos(a + TAU / 3) * mr, A.y + Math.sin(a + TAU / 3) * mr); }
     ctx.stroke();
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   }
@@ -15107,9 +15149,10 @@ function createMenu(doc, opts) {
 // Kiru (kiru.js, the Feel panel's Kiru group) is your avatar in both modes: every hit of yours flashes him to the ball. He is
 // drawn, not simulated, so with him switched off the game is the same game.
 //
-// Against Kage, volleys fill both players' energy bars (energy.js, the Feel panel's Energy group): a full bar is a special,
-// unleashed by a counter-clockwise curved swipe (the stroke shows it is charged the moment it has curved enough) or a tap on your
-// ring at the top of your side (or E); the setting can make it one or the other. Kage arms his as a swing starts. Every hit goes
+// Against Kage, every hit fills its player's energy bar (energy.js, the Feel panel's Energy group: your opponent's take as many
+// hits as their level says): a full bar is a special, unleashed by a counter-clockwise curved swipe (the stroke shows it is
+// charged the moment it has curved enough) or a tap on your ring at the top of your side (or E); the setting can make it one or
+// the other. Kage arms his as a swing starts. Every hit goes
 // through energy.prepare first, which is all the physics ever sees of it: a boost on the special itself, a damp on the touch that
 // answers it.
 //
@@ -15605,8 +15648,8 @@ function createMenu(doc, opts) {
   // a tap on your ring before the bar is full: how far it has to go (the ring shakes, ui.js)
   function specialNotReady() {
     if (!vs() || versus.state === 'wound') return;
-    const n = Math.max(1, Math.ceil((1 - energy.snap.you) * Math.max(1, Math.round(CFG.energy.volleys)) - 1e-6));
-    ui.hint('Charging · ' + n + (n === 1 ? ' more volley' : ' more volleys') + ' ⚡'); hintUntil = performance.now() + 1500;
+    const n = Math.max(1, Math.ceil((1 - energy.snap.you) * hitsToFill('you') - 1e-6));
+    ui.hint('Charging · ' + n + (n === 1 ? ' more hit' : ' more hits') + ' ⚡'); hintUntil = performance.now() + 1500;
     audio.vibrate(6);
   }
   // F, on a keyboard: arm the power-up a fire volley won you (or disarm it again)
