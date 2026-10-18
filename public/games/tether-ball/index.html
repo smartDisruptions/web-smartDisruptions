@@ -11794,7 +11794,7 @@ function createKage(doc) {
   const HAND_R = 0.15; // m: his fist's reach radius (a finger's is 0.13 + the screen's generosity)
   const SERVE_WAIT = 0.9; // s he lets the round breathe before he serves
   let ghost = null, np = 0, strokes = 0, lastW = null;
-  const dbg = { n: 0, mine: 0, high: 0, aim: 0, stance: 0, late: 0, ok: 0 }; // why reads fail (tests and tuning)
+  const dbg = { n: 0, mine: 0, high: 0, aim: 0, stance: 0, late: 0, ok: 0, lateHand: 0 }; // why reads fail (tests and tuning)
   const rnd = U.rng(20990311);
   const rndE = U.rng(20991231); // his special: its own dice, so arming one never changes how he plays the ball
   const rndF = U.rng(20991015); // the fire power-up's: whether he lets a fireball go by, and what he says about it
@@ -11826,6 +11826,7 @@ function createKage(doc) {
   const FAKE = { phi: 0, y: 0 }; // the decoy he is going for (supers.js): an offset round the pole and up from the real ball
   const hand = { p0: { x: 0, y: 0, z: 0 }, p1: { x: 0, y: 0, z: 0 }, vx: 0, vz: 0, speed: 0, r: HAND_R, stroke: -2, owner: 'cpu' };
   const OUT = { dx: 0, dz: 0, sx: 0, sz: 0 };
+  const LATE = { t: 0, x: 0, y: 0, z: 0, sx: 0, sz: 0, dx: 0, dz: 0, jump: 0, lead: 0 }; // the nearest miss of a read (a late hand)
 
   // his body in metres, from his height. He meets the ball beside him (it clears his hood), fist from the front shoulder.
   const G = { unit: 0, shoulder: 0, shOff: 0, arm: 0, reachC: 0, standY: 0, so: 0, rIn: 0, rOut: 0 };
@@ -11944,31 +11945,48 @@ function createKage(doc) {
     return t <= ta ? v0 * t + 0.5 * SK.accel * t * t : v0 * ta + 0.5 * SK.accel * ta * ta + SK.foot * (t - ta);
   }
 
-  function read(w, serving) {
+  // free: s before he may start a swing (the beat he settles in after one): a contact sooner is not his.
+  // Only the pass the ball is on is read. A ball coming through his half that he can't make in time used to send him to wait for
+  // its next lap, standing still while it went by, and against a player who hits every ball straight back that lap never comes
+  // (Josh, 2026-10-18: "the computer freezes and doesnt return the ball"). Now he goes for this pass: in time if he can, else a late
+  // hand when its nearest miss is within his fist's slack, else he runs at it anyway. The next lap is read once this one is gone.
+  function read(w, serving, free) {
     predict(w);
     if (FAKE.phi || FAKE.y) fake(w);
     geom();
-    const r = w.ball.r;
+    const r = w.ball.r, wait = free > 0 ? free : 0, slack = G.reachC + 0.12 - (G.so - G.shOff); // slack: how far short of his spot his fist still finds it
     st.has = false;
     const D = dbg; D.n++; D.mine = 0;
-    let lateX = NaN, lateZ = NaN;
+    let lateX = NaN, lateZ = NaN, seen = false, best = Infinity;
     for (let i = 0; i < np; i++) {
       const t = (i + 1) * DTP, x = PX[i], y = PY[i], z = PZ[i];
-      if (x * st.side < -NEUTRAL) continue; // your half
+      if (x * st.side < -NEUTRAL) { if (seen) break; continue; } // your half (and once a ball has come through his, the end of this pass)
       if (y + r < 0.12) continue;
       D.mine++;
       const jump = y > G.standY ? y - G.standY + 0.04 : 0;
       if (jump > SK.jump) { D.high++; continue; } // too high even for a ninja
       if (!aim(x, z, VX[i], VZ[i], serving)) { D.aim++; continue; }
+      seen = true;
       if (!stance(x, z)) { D.stance++; continue; }
       const lead = leadFor(jump), d = Math.sqrt((OUT.sx - st.x) * (OUT.sx - st.x) + (OUT.sz - st.z) * (OUT.sz - st.z));
-      if (d > reach(t - lead) + 0.25) { D.late++; if (lateX !== lateX) { lateX = OUT.sx; lateZ = OUT.sz; } continue; }
+      const short = t < wait ? Infinity : d - reach(t - lead) - 0.25;
+      if (short > 0) {
+        D.late++; if (lateX !== lateX) { lateX = OUT.sx; lateZ = OUT.sz; }
+        if (short < best) { best = short; LATE.t = t; LATE.x = x; LATE.y = y; LATE.z = z; LATE.sx = OUT.sx; LATE.sz = OUT.sz; LATE.dx = OUT.dx; LATE.dz = OUT.dz; LATE.jump = jump; LATE.lead = lead; }
+        continue;
+      }
       D.ok++;
       st.has = true; st.tc = st.t + t; st.cx = x; st.cy = y; st.cz = z; st.sx = OUT.sx; st.sz = OUT.sz;
       st.dx = OUT.dx; st.dz = OUT.dz; st.jump = jump; st.lead = lead;
       return;
     }
-    // nothing he can make: run at the first spot anyway (he may still get a late hand on it), else stand guard
+    if (best < slack) { // a late hand: short of his spot, but near enough that his fist may still find the ball (strike() decides)
+      D.lateHand++;
+      st.has = true; st.tc = st.t + LATE.t; st.cx = LATE.x; st.cy = LATE.y; st.cz = LATE.z; st.sx = LATE.sx; st.sz = LATE.sz;
+      st.dx = LATE.dx; st.dz = LATE.dz; st.jump = LATE.jump; st.lead = LATE.lead;
+      return;
+    }
+    // nothing he can make: run at the first spot anyway, else stand guard
     if (lateX === lateX) { st.sx = lateX; st.sz = lateZ; } else guardSpot(w);
   }
 
@@ -12092,7 +12110,7 @@ function createKage(doc) {
         if (blindBall) st.has = false;
         const may = serving ? st.serveT > SERVE_WAIT : st.blind <= 0 && !st.dodge && !blindBall;
         if (st.dodge && !serving) { st.has = false; st.sx = st.homeX; st.sz = st.homeZ; } // out of its way, back where he waits
-        else if (may && st.reread <= 0) { read(info && info.fakeWorld ? info.fakeWorld : w, serving); st.reread = SK.reread; } // a decoy on its own path: he reads that one
+        else if (may && st.reread <= 0) { read(info && info.fakeWorld ? info.fakeWorld : w, serving, st.cool); st.reread = SK.reread; } // a decoy on its own path: he reads that one (and no contact before he has settled)
         if (st.has && st.t > st.tc + 0.03) st.has = false;
         steer(st.has || st.sx || st.sz ? st.sx : st.homeX, st.has || st.sx || st.sz ? st.sz : st.homeZ, dt);
         if (st.has && st.cool <= 0 && st.t >= st.tc - st.lead) {
