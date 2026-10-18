@@ -663,7 +663,8 @@ const CFG = {
 // (optional: type 'toggle' / 'choice' with options, rank for the group's place, signed to show a + on positive values, sparse
 // to leave it out of a snapshot at its default, sound for the soundboard's entries: see ui.js and audio.js; view for a row that
 // shows a setting stored under another path, real() naming it: roster.js's Kage and Kiru rows show whoever plays that side. A view
-// is never saved, applied or reset itself: the path it shows is. rev for a slider drawn high to low: on the opponent's rows a
+// is never saved, applied or reset itself: the path it shows is; hide for a setting the panel stores, saves and resets but draws
+// no row for (it is shown through a view). rev for a slider drawn high to low: on the opponent's rows a
 // lower number can be the harder one (Reaction time, Rattled, Recovery), and right is always harder (Josh, 2026-10-18). Only the
 // slider turns round: the number, the save and the snapshot are the setting's own)
 const CFG_SCHEMA = [];
@@ -13345,6 +13346,52 @@ for (const e of ROSTER) {
   c.size = e.native === 'kiru' ? CFG.kiru.size : e.native === 'kage' ? CFG.kage.size : Math.round(U.clamp(e.h * 1.75, 1.1, 2.2) * 20) / 20;
   c.special = e.native === 'kiru' ? CFG.supers.you : e.native === 'kage' ? CFG.supers.kage : e.special;
 }
+// ───────────────────────── the story's order, and phases ─────────────────────────
+// The 22 matches of "King of the Pole" in the order the script plays them (the vault note): who you face, the special they throw
+// in that match (Milo has none until the epilogue, where his Black Hole is the reveal), and the level that fits where it falls:
+// chapter 1 at 4–5, chapter 2 at 6–10, chapter 3 at 7–12, the tournament at 10–14, Jackson and Rei at 15 and 18, and Milo's one
+// more game at 14. Each character met once already plays at their match's level.
+const STORY = [
+  { key: 'milo', special: RS.sig, level: 4 }, { key: 'emma', special: RS.swerve, level: 5 }, { key: 'marcus', special: RS.decoys, level: 5 }, // chapter 1
+  { key: 'akira', special: RS.zap, level: 8 }, { key: 'felix', special: RS.phantom, level: 6 }, { key: 'ben', special: RS.stomp, level: 7 }, // chapter 2
+  { key: 'harper', special: RS.wind, level: 8 }, { key: 'akira', special: RS.zap, level: 10 },
+  { key: 'tyler', special: RS.blast, level: 7 }, { key: 'mei', special: RS.warp, level: 9 }, { key: 'caleb', special: RS.spike, level: 9 }, // chapter 3
+  { key: 'akira', special: RS.zap, level: 12 },
+  { key: 'marcus', special: RS.decoys, level: 10 }, { key: 'emma', special: RS.swerve, level: 11 }, { key: 'felix', special: RS.phantom, level: 11 }, // chapter 4
+  { key: 'ben', special: RS.stomp, level: 12 }, { key: 'adaeze', special: RS.sig, level: 12 }, { key: 'harper', special: RS.wind, level: 13 },
+  { key: 'akira', special: RS.zap, level: 14 },
+  { key: 'jackson', special: RS.dragon, level: 15 }, { key: 'rei', special: RS.ray, level: 18 }, // chapter 5
+  { key: 'milo', special: RS.hole, level: 14 }, // the epilogue
+];
+// Josh, 2026-10-18: "Akira shows up 4 times. So he should have 4 phases of difficulty. Add phases to every character that shows up
+// more than once. Their successive phase should match where they are in the game. I should be able to choose which phase I'm up
+// against in the dev settings and I should be able to still adjust any of them." A character met more than once keeps a full
+// set of the brain's settings and a special for each meeting (CFG.chars[key].p1, .p2...), the level and special of that match,
+// and CFG.chars[key].phase picks which one plays (0 = the first meeting). Their own fields (CFG.chars[key].difficulty...) read
+// and write the phase picked, so the brain and everything else reads them as before; their height is the character's own.
+const PHASES = {}; // key → the story's match numbers they play in, for each one met more than once
+STORY.forEach((m, i) => { (PHASES[m.key] = PHASES[m.key] || []).push(i + 1); });
+for (const key in PHASES) if (PHASES[key].length < 2) delete PHASES[key];
+const PHASED = AI_KEYS.concat('special');
+const phaseOf = (key) => U.clamp(Math.round(CFG.chars[key].phase) || 0, 0, PHASES[key].length - 1) + 1; // 1-based
+for (const key in PHASES) {
+  const c = CFG.chars[key];
+  PHASES[key].forEach((n, j) => {
+    const p = c['p' + (j + 1)] = {};
+    for (const k of AI_KEYS) p[k] = c[k];
+    p.difficulty = STORY[n - 1].level; p.special = STORY[n - 1].special;
+  });
+  c.phase = 0;
+  for (const k of PHASED) {
+    CFG_ALIAS['chars.' + key + '.' + k] = 'chars.' + key + '.p1.' + k; // a save from before phases was their first meeting's
+    Object.defineProperty(c, k, { get: () => c['p' + phaseOf(key)][k], set: (v) => { c['p' + phaseOf(key)][k] = v; }, enumerable: true, configurable: true });
+  }
+}
+// where a character's setting is stored: the phase picked for one met more than once
+function charPath(key, field) { return PHASES[key] && PHASED.indexOf(field) >= 0 ? 'chars.' + key + '.p' + phaseOf(key) + '.' + field : 'chars.' + key + '.' + field; }
+// the story match a character's picked phase is (0: they have no phases)
+function rosterMatch(key) { return PHASES[key] ? PHASES[key][phaseOf(key) - 1] : 0; }
+
 const rosterAt = (i) => ROSTER[U.clamp(Math.round(i) || 0, 0, ROSTER.length - 1)];
 function rosterEntry(side) { return rosterAt(side === 'opp' || side === 'kage' || side === 'cpu' ? CFG.roster.opp : CFG.roster.you); }
 const rosterProf = (side) => CFG.chars[rosterEntry(side).key];
@@ -13368,7 +13415,7 @@ const rosterProf = (side) => CFG.chars[rosterEntry(side).key];
     const side = views[s.path];
     if (!side) continue;
     const field = s.path === 'supers.you' || s.path === 'supers.kage' ? 'special' : s.path.split('.')[1];
-    s.view = true; s.real = () => 'chars.' + rosterEntry(side).key + '.' + field;
+    s.view = true; s.real = () => charPath(rosterEntry(side).key, field);
     if (s.path === 'supers.kage') s.label = "Opponent's special";
   }
 }
@@ -13382,7 +13429,7 @@ const rosterProf = (side) => CFG.chars[rosterEntry(side).key];
   );
   for (const e of ROSTER) {
     const row = (field, label, min, max, step, unit, extra) => Object.assign({ path: 'chars.' + e.key + '.' + field, label, min, max, step, group: G, rank: R, unit, sub: e.name, subTint: e.accent }, extra || {});
-    CFG_SCHEMA.push(
+    const card = [
       row('special', 'Special', 0, sn.length, 1, '', { type: 'choice', options: [e.sig === 'shadow' ? 'Shadow cut' : 'Raijin'].concat(sn) }),
       row('size', 'Height', 1.1, 2.2, 0.05, 'm'),
       row('difficulty', 'Difficulty (as your opponent)', 1, 20, 1, ''),
@@ -13392,8 +13439,22 @@ const rosterProf = (side) => CFG.chars[rosterEntry(side).key];
       row('reaction', 'Reaction time', 0, 3, 0.05, 'x', { rev: true }),
       row('recovery', 'Recovery after a swing', 0.2, 2, 0.05, 'x', { rev: true }),
       row('speed', 'Foot speed', 0.3, 2.5, 0.05, 'x'),
-      row('jump', 'Jump height', 0, 2, 0.05, 'x')
-    );
+      row('jump', 'Jump height', 0, 2, 0.05, 'x'),
+    ];
+    const n = PHASES[e.key];
+    if (n) {
+      // the phase picked, then the card as views of it; each phase's own settings are stored, saved and reset as rows the panel
+      // doesn't draw (hide)
+      CFG_SCHEMA.push(row('phase', 'Phase (story match)', 0, n.length - 1, 1, '', { type: 'choice', options: n.map((m) => 'Match ' + m) }));
+      for (const r of card) if (PHASED.indexOf(r.path.split('.')[2]) >= 0) { const f = r.path.split('.')[2]; r.view = true; r.real = () => charPath(e.key, f); }
+      for (let j = 1; j <= n.length; j++) {
+        for (const r of card) {
+          const f = r.path.split('.')[2];
+          if (PHASED.indexOf(f) >= 0) CFG_SCHEMA.push(Object.assign({}, r, { path: 'chars.' + e.key + '.p' + j + '.' + f, label: r.label + ' (match ' + n[j - 1] + ')', view: false, real: undefined, hide: true }));
+        }
+      }
+    }
+    CFG_SCHEMA.push(...card);
   }
 }
 
@@ -14568,6 +14629,7 @@ function createUI(root, opts) {
       for (const g in badges) delete badges[g];
       const byGroup = new Map(), remembered = openGroups(), rank = new Map();
       for (let i = 0; i < CFG_SCHEMA.length; i++) {
+        if (CFG_SCHEMA[i].hide) continue; // stored, saved and reset, but shown through a view (roster.js's phases)
         const g = CFG_SCHEMA[i].group || 'Other', rk = typeof CFG_SCHEMA[i].rank === 'number' ? CFG_SCHEMA[i].rank : 0;
         if (!byGroup.has(g)) { byGroup.set(g, []); rank.set(g, rk); } else if (rk < rank.get(g)) rank.set(g, rk);
         byGroup.get(g).push(CFG_SCHEMA[i]);
@@ -14846,7 +14908,9 @@ function createMenu(doc, opts) {
       place(c, e, true);
       const t = el('span', 'm-ct');
       const sp = el('i', '', spName(e)); sp.style.color = spCol(e);
-      t.append(el('b', '', nameOf(e)), sp, el('small', '', e.role + (e.key === 'kage' || e.ai ? ' · Lv ' + Math.round(CFG.chars[e.key].difficulty) : '')));
+      const lv = e.key === 'kage' || e.ai ? 'Lv ' + Math.round(CFG.chars[e.key].difficulty) : '', m = rosterMatch(e.key);
+      // a character met more than once leads with the phase picked (its story match), so a long role is what gets cut
+      t.append(el('b', '', nameOf(e)), sp, el('small', '', m ? 'Match ' + m + ' · ' + lv + ' · ' + e.role : e.role + (lv ? ' · ' + lv : '')));
       c.appendChild(t);
       c.append(el('span', 'm-tag you', 'You'), el('span', 'm-tag opp', 'Opponent'));
       c.addEventListener('click', () => {
