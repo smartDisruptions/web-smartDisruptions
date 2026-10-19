@@ -43,7 +43,8 @@ html, body {
 button { font: inherit; color: inherit; margin: 0; -webkit-appearance: none; appearance: none; cursor: pointer; touch-action: manipulation; }
 button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-#app { position: fixed; inset: 0; overflow: hidden; }
+#app { position: fixed; inset: 0; overflow: hidden; overflow: clip; } /* clip: no scroll container at all. The closed drawer hangs below it, and a hidden
+   container can still be scrolled by a focus or a scroll-into-view (a click on story mode's Ready! did it): the court slid up 380 px */
 #c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 
 /* ───────────── HUD: the top band is 76 px under the safe inset (the camera keeps the court out of it) ───────────── */
@@ -499,6 +500,65 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 .m-sw { gap: 7px; }
 .m-swb { width: 34px; height: 34px; }
 @media (max-height: 640px) { .m-mk-top { position: static; } }
+
+/* ───────────── story mode (overworld.js): the school on the canvas, and over it the bar, the Talk button, the lines, the cards ─────────────
+   While you walk (body.st-on) the court's HUD and its round layer are gone. The touch layer under everything takes the drags and taps;
+   the lines box over it takes a tap to move on. Over the court (.over: Jackson's mid-series scene) only the lines show. */
+body.st-on #hud, body.st-on #result { display: none; }
+#story { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.st-touch { position: absolute; inset: 0; pointer-events: auto; touch-action: none; cursor: pointer; }
+.st-bar { position: absolute; top: calc(var(--st) + 10px); left: max(10px, calc(var(--sl) + 8px)); right: max(10px, calc(var(--sr) + 8px)); max-width: 640px; margin: 0 auto;
+  display: flex; align-items: flex-start; gap: 8px; pointer-events: none; }
+.st-goal { flex: 1; min-width: 0; padding: 8px 12px 9px; border-radius: 14px; background: var(--glass); border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,.28); }
+.st-ch { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 10px/1.1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.st-txt { display: block; margin-top: 4px; font: 700 14px/1.28 var(--ui); color: var(--text); }
+.st-menu { flex: none; margin: -2px -3px 0 0; }
+.st-how { display: block; margin-top: 5px; font: 700 12px/1.3 var(--ui); color: var(--dim); }
+.st-act { position: absolute; right: max(14px, calc(var(--sr) + 12px)); bottom: calc(var(--sb) + 20px); max-width: calc(100% - 28px); min-height: 54px; padding: 0 22px;
+  border: 0; border-radius: 99px; background: linear-gradient(180deg, #ffc24a, var(--accent)); color: var(--ink); font: 900 16px/1 var(--ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 6px 22px rgba(255,176,32,.34), inset 0 0 0 1px rgba(255,255,255,.25); pointer-events: auto; animation: stPop .22s cubic-bezier(.2,1.5,.4,1) both; }
+.st-act:active { transform: scale(.95); }
+.st-talk { position: absolute; left: max(10px, calc(var(--sl) + 8px)); right: max(10px, calc(var(--sr) + 8px)); bottom: calc(var(--sb) + 12px); max-width: 640px; margin: 0 auto;
+  display: flex; align-items: flex-start; gap: 12px; min-height: 108px; padding: 12px 16px 16px 12px; border-radius: 18px; cursor: pointer; pointer-events: auto;
+  background: linear-gradient(180deg, rgba(24,29,44,.97), rgba(14,17,27,.97)); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 14px 40px rgba(0,0,0,.5); animation: stUp .2s ease both; }
+.st-face { flex: none; width: 78px; height: 74px; margin-top: -30px; border-radius: 16px; overflow: hidden; border: 2px solid rgba(255,255,255,.2);
+  background: radial-gradient(80% 70% at 50% 40%, rgba(155,176,255,.3), rgba(26,32,48,.95)); box-shadow: 0 6px 16px rgba(0,0,0,.4); }
+.st-face svg { display: block; width: 100%; height: 100%; }
+.st-body { flex: 1; min-width: 0; padding-top: 2px; }
+.st-name { display: block; margin-bottom: 6px; font: 900 12.5px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; }
+.st-line { margin: 0; min-height: 2.8em; font: 600 16.5px/1.4 var(--ui); color: var(--text); text-wrap: pretty; }
+.st-talk.narr { align-items: center; }
+.st-talk.narr .st-line { font-style: italic; font-weight: 600; color: #d6dcef; }
+.st-talk.ask .st-line { min-height: 0; font-style: normal; font-weight: 800; color: var(--text); }
+.st-more { position: absolute; right: 14px; bottom: 9px; font-style: normal; font-size: 11px; line-height: 1; color: var(--accent); transition: opacity .15s; animation: stMore 1s ease-in-out infinite; }
+.st-choices { display: flex; gap: 8px; margin-top: 12px; }
+.st-opt { flex: 1; min-width: 0; min-height: 48px; padding: 0 12px; border-radius: 13px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); font: 800 16px/1 var(--ui); }
+.st-opt.go { background: linear-gradient(180deg, #ffc24a, var(--accent)); border-color: transparent; color: var(--ink); box-shadow: 0 4px 16px rgba(255,176,32,.3); }
+.st-opt:active { transform: scale(.96); }
+.st-opt:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.st-card { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center;
+  pointer-events: auto; cursor: pointer; background: radial-gradient(110% 70% at 50% 45%, rgba(40,32,84,.9), rgba(8,10,16,.97) 70%); animation: stCardIn .45s ease both; }
+.st-card.out { animation: stCardOut .26s ease both; pointer-events: none; }
+.st-ck { font: 800 12px/1 var(--ui); letter-spacing: .32em; text-transform: uppercase; color: var(--accent); }
+.st-ch2 { margin: 0; font: 900 clamp(30px, 9vw, 50px)/1.04 var(--ui); letter-spacing: -.01em; text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 0 30px rgba(155,176,255,.3); }
+.st-cp { margin: 0; max-width: 26em; font: 600 15.5px/1.45 var(--ui); color: #c3cadf; }
+.st-fade { position: absolute; inset: 0; z-index: 3; background: #07080d; opacity: 0; pointer-events: none; }
+#story.over .st-touch, #story.over .st-bar, #story.over .st-act, #story.over .st-card { display: none; }
+@keyframes stPop { from { opacity: 0; transform: scale(.8); } }
+@keyframes stUp { from { opacity: 0; transform: translateY(10px); } }
+@keyframes stMore { 50% { transform: translateY(3px); } }
+@keyframes stCardIn { from { opacity: 0; } }
+@keyframes stCardOut { to { opacity: 0; } }
+@media (min-aspect-ratio: 1/1) and (max-height: 519px) { .st-talk { min-height: 92px; padding: 10px 14px 12px 10px; } .st-face { width: 64px; height: 60px; margin-top: -22px; } .st-line { font-size: 15px; } .st-act { min-height: 46px; } }
+@media (prefers-reduced-motion: reduce) { .st-act, .st-talk, .st-card, .st-card.out, .st-more { animation: none; } }
+/* the start menu's Story card: the story, before the quick match */
+.m-story { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 18px; border: 1px solid rgba(255,176,32,.35);
+  background: radial-gradient(120% 90% at 0% 0%, rgba(255,176,32,.16), transparent 60%), linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); }
+.m-story .m-sk { font: 800 11px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.m-story .m-sp { margin: 0; font: 600 13.5px/1.4 var(--ui); color: #c3cadf; }
+.m-story .m-srow { display: flex; gap: 8px; }
+.m-story .m-srow .m-btn { flex: 1; }
+.m-story .m-srow .m-btn.new { flex: none; }
 </style>
 </head>
 <body>
@@ -10538,6 +10598,8 @@ let QUIET = false;
 // bottom). The rig draws the arms, legs, hands and shoes itself, so they go, with anything held and anything on an arm (fx.onArm);
 // so do the motifs, since the game draws the specials. EXPR is the face: 'open' as designed, or 'blink', 'fierce', 'happy', 'sad'.
 let GAME = false, EXPR = 'open';
+// 'back' (game only): the head from behind, for a kid walking away (Tether Ball's story mode). The face isn't drawn: hair is.
+let BACK = false;
 // a face under one of the rig's expressions: the design's own eyes, brows and mouth, moved only as far as the mood needs.
 // face.moods: { fierce, happy, sad } names the mouth a character makes for each (a shout, a grin)
 function mood(face) {
@@ -10689,11 +10751,15 @@ function ninja(o) {
     if (hood.lining) h += ln(ff, hood.lining, 9) + ln(ff, L, 3);
     if (hood.trim) h += ln(ff, hood.trim, 7.5);
     h += fl(ff, sk[0]) + fl(FACE_SH, sk[1], 'opacity=".75"');
+  } else if (head === 'bare' && BACK) {
+    // seen from behind (the game's walking kids, Tether Ball's story.js): hair where the face was, the nape shaded, the ears showing
+    h += fl(FULL, G(gradDef(`${id}-hair`, hair.stops))) + el(100, 132, 46, 13, hair.stops[2], 'opacity=".45"');
+    if (hair.strands !== false) h += ln('M64 80 Q66 104 72 126 M88 76 Q88 104 92 132 M112 76 Q112 104 108 132 M136 80 Q134 104 128 126', hair.stops[2], 2, 'opacity=".45"');
   } else if (head === 'bare') {
     h += fl(FULL, sk[0]) + fl(FACE_SH, sk[1], 'opacity=".55"');
     if (hair.fringe && FRINGE[hair.fringe]) h += fl(FRINGE[hair.fringe], hair.stops[1]);
   }
-  if (head !== 'custom' || o.drawFace) {
+  if ((head !== 'custom' || o.drawFace) && !BACK) {
     const m = mood(face);
     h += rim(o.rimOp ?? 0.75);
     if (m.cheeks) h += cheeks(m.cheeks, face.blush || BLUSH, face.cheekY);
@@ -10702,7 +10768,7 @@ function ninja(o) {
     if (m.mouth && MOUTH[m.mouth]) h += MOUTH[m.mouth]();
     h += face.extra;
   }
-  h += fx.overFace;
+  if (!BACK) h += fx.overFace;
   if (o.hat) h += o.hat;
   h += fx.top;
   put('head', h);
@@ -11539,15 +11605,17 @@ CAST.push({
 });
 
 // ── what the game takes from the kit ──
-// one character's layers for the rig: draw() (a look's draw) under GAME, once per face; back and torso from the first
+// one character's layers for the rig: draw() (a look's draw) under GAME, once per face; back and torso from the first. A face of
+// 'back' is the head from behind (story mode's walking kids): BACK in the kit
 function layers(draw, faces) {
   GAME = true;
   try {
     const heads = {};
     let base = null;
-    for (const f of faces) { EXPR = f; const r = draw(); if (!base) base = r; heads[f] = r.head; }
+    for (const f of faces) { BACK = f === 'back'; EXPR = BACK ? 'open' : f; const r = draw(); if (!base && !BACK) base = r; heads[f] = r.head; }
+    if (!base) base = draw();
     return { back: base.back, torso: base.torso, heads, colors: base.colors };
-  } finally { GAME = false; EXPR = 'open'; }
+  } finally { GAME = false; EXPR = 'open'; BACK = false; }
 }
 // the defs (gradients, clips) a piece of markup uses, by its url(#id)s, with the sheet's glow filter if it asks for it
 const GLOW = '<filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
@@ -13506,7 +13574,10 @@ function rosterName(side) { return side === 'you' ? 'You' : rosterEntry('opp').k
 function rosterAccent(side) { return rosterEntry(side).accent; }
 // a line of the opponent's of a kind (kage.js's KAGE_LINES kinds): Kage's own, or the character's, else what every kid says. A
 // character's lines for their own special are their special lines.
+// A story match (story.js STORY_MATCH) puts the script's quips for it here: what the opponent says as they hit, smash and serve
+let ROSTER_QUIPS = null;
 function rosterLines(kind) {
+  if (ROSTER_QUIPS && (kind === 'hit' || kind === 'smash' || kind === 'serve')) return ROSTER_QUIPS;
   const e = rosterEntry('opp');
   if (e.native === 'kage' || typeof KAGE_LINES === 'undefined') return typeof KAGE_LINES !== 'undefined' ? KAGE_LINES[kind] : null;
   const own = e.lines || {}, sp = Math.round(CFG.chars[e.key].special);
@@ -13722,10 +13793,11 @@ function svgImage(markup, defs, box, onload) {
   im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   return im;
 }
-function castLook(draw, accent) {
-  const K = CASTKIT, Ly = K.layers(draw, ROSTER_FACES);
+function castLook(draw, accent, faces) {
+  faces = faces || ROSTER_FACES; // (story mode's walking kids add 'back', the head from behind: story.js, overworld.js)
+  const K = CASTKIT, Ly = K.layers(draw, faces);
   let all = Ly.back + Ly.torso;
-  for (const f of ROSTER_FACES) all += Ly.heads[f];
+  for (const f of faces) all += Ly.heads[f];
   const defs = K.defsFor(all);
   const hb = layerBox(Ly.heads.open + Ly.heads.happy, defs) || [-30, -24, 256, 196], tb = layerBox(Ly.torso, defs) || [36, 128, 164, 240];
   const bb = Ly.back ? layerBox(Ly.back, defs) : null;
@@ -13733,12 +13805,12 @@ function castLook(draw, accent) {
   const done = () => { got++; };
   const img = (m, b) => { want++; return svgImage(m, defs, b, done); };
   const heads = {};
-  for (const f of ROSTER_FACES) heads[f] = img(Ly.heads[f], hb);
+  for (const f of faces) heads[f] = img(Ly.heads[f], hb);
   const torso = img(Ly.torso, tb), back = bb ? img(Ly.back, bb) : null;
   const put = (g, im, b) => { if (im && im.complete && im.naturalWidth > 0) g.drawImage(im, b[0], b[1], b[2] - b[0], b[3] - b[1]); };
   return {
     colors: Object.assign({}, Ly.colors, { smear: accent, ghost: accent }),
-    heads: ROSTER_FACES,
+    heads: faces,
     box: { head: hb, torso: tb, back: bb },
     key: () => (got >= want ? 1 : 0), // rebaked once, when every layer has come in
     get ready() { return got >= want; },
@@ -13828,8 +13900,9 @@ function rosterNewMatch() { rosterForm.you = 0; rosterForm.opp = 0; rosterSync()
 // ───────────────────────── how they stand ─────────────────────────
 // At rest (the ball elsewhere), each character's own stance, laid over the rig's breathing: kiru.js and kage.js call it as they pose
 // their side, before a finger down or a swing takes over. P: the rig's pose (sheet units; P.s px a unit), t: their clock (s).
-function rosterIdle(side, P, t) {
-  const e = rosterEntry(side);
+function rosterIdle(side, P, t) { rosterIdleOf(rosterEntry(side), P, t); }
+// ...and the same for anyone, by their entry (story mode's walking kids stand their own way too: overworld.js)
+function rosterIdleOf(e, P, t) {
   if (!e || !e.idle) return;
   const s = Math.sin;
   switch (e.idle) {
@@ -13906,6 +13979,1907 @@ function rosterPortrait(e, crop) {
   else { const c = CASTKIT.CAST.find((x) => x.key === (e.native || e.cast)); m = c ? c.looks[0].draw() : ''; }
   const vb = crop ? '-4 -8 208 196' : '-24 -26 288 264';
   return `<svg viewBox="${vb}" aria-hidden="true"><defs>${CASTKIT.defsFor(m)}</defs><g>${m}</g></svg>`;
+}
+
+// ════════ school.js ════════
+// school.js — the school you walk round in Story mode (story.js, world.js): six places, each a map in world units (wu). One wu is
+// a CSS pixel at the camera's 1x, and a kid stands about 64 wu tall. The view is three-quarter top-down, as an old handheld RPG:
+// every wall you see the face of runs along the top of a room, so a door in a top wall leads in (the playground's into the hall,
+// the hall's into the classroom and the cafeteria) and a door in a bottom wall leads back out.
+//
+//   gate   the Front Gate: the path in from the street, the gate, the trees. The story's first morning starts here.
+//   yard   the Playground: the blacktop and its three poles (Beginner, Challenge, the King's Pole, the script's "Three Poles"),
+//          four-square and hopscotch, benches, the school's brick front with the door into the hall.
+//   hall   the Main Hall: lockers, Oliver's rankings board, the trophy case, the doors to Room 4B and the cafeteria.
+//   class  Room 4B, Ms. Rivera's: the desks, the blackboard (what is on it follows the story), the windows.
+//   lunch  the Cafeteria: long tables, the serving counter, the menu board.
+//   field  the Field and the Old Tree: grass, the track, the practice pole, the pond, and the tree the script keeps coming back to.
+//
+// A map is plain data: its size, what is solid (rects [x, y, w, h] and circles [x, y, r]), its exits (a rect you walk into, the
+// map and spot it leads to), its zones (named rects or circles the story waits on), the things you can look at (objs), named spots
+// for the story to stand people on, and its props: the tall things (trees, poles, desks) that a kid can walk in front of or behind,
+// drawn in depth order with the kids. paint(g) draws the rest, the ground and the walls, in world units; world.js bakes it once per
+// map and size. Nothing here touches the DOM, so the maps load in Node for the tests (tests/story.mjs walks every one).
+
+const SC = { // the palette: the court's own (scene.js YARD) outdoors, so the playground is the one the matches are played on
+  tar: '#3f4247', tarL: '#4b4e54', tarD: '#33353a', white: '#eeede6', yellow: '#f4c63c', red: '#e0523f', blue: '#3d7fd8',
+  green: '#46a65a', orange: '#f28b2c', purple: '#9b62d9', chalk: ['#ffe680', '#ff9fc6', '#9fe0ff', '#ffffff'],
+  leaf: ['#e08a2c', '#d4642a', '#e8b33b', '#9a5a2e'],
+  grass: '#6db955', grassL: '#7fc866', grassD: '#5aa346', tuft: '#4f9a3d', dirt: '#c9a774', dirtD: '#a98a5a',
+  path: '#d2cbbb', pathD: '#bdb4a1', curb: '#e4ded0',
+  brick: '#a8573f', brickD: '#8e4532', mortar: '#cbbca8', coping: '#6d6a64', copingL: '#86837c',
+  glass: '#7fa6c2', glassHi: '#c8e3f2', frame: '#f1efe8', door: '#2e7a8f', doorD: '#225f70',
+  ink: '#2a2f45', shade: 'rgba(20,24,40,0.22)',
+  wood: '#c79a62', woodD: '#a57a46', woodL: '#ddb57f', plaster: '#efe6d2', plasterD: '#d9ccb2', teal: '#3f9c94', tealD: '#2f7d76',
+  tile: '#e7e2d4', tileD: '#d6cfbd', steel: '#c9d0da', steelD: '#9aa3b1', locker: '#3e6fb0', lockerD: '#2f5a93', lockerL: '#5a8bcb',
+  cork: '#c49a63', board: '#2f5d50', boardD: '#244a40', water: '#6fb7e0', waterD: '#4f97c4', bark: '#7a5236', barkD: '#5e3d27',
+  canopy: ['#3f8f3a', '#4ea446', '#5fb653', '#356f32'],
+};
+
+// ───────────────────────── drawing helpers (world units, any 2D context) ─────────────────────────
+const SD = {
+  rect(g, x, y, w, h, fill) { g.fillStyle = fill; g.fillRect(x, y, w, h); },
+  rr(g, x, y, w, h, r, fill, stroke, lw) {
+    g.beginPath();
+    if (g.roundRect) g.roundRect(x, y, w, h, r); else { g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+    if (fill) { g.fillStyle = fill; g.fill(); }
+    if (stroke) { g.lineWidth = lw || 2; g.strokeStyle = stroke; g.stroke(); }
+  },
+  circ(g, x, y, r, fill, stroke, lw) {
+    g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2);
+    if (fill) { g.fillStyle = fill; g.fill(); }
+    if (stroke) { g.lineWidth = lw || 2; g.strokeStyle = stroke; g.stroke(); }
+  },
+  ell(g, x, y, rx, ry, fill, stroke, lw) {
+    g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+    if (fill) { g.fillStyle = fill; g.fill(); }
+    if (stroke) { g.lineWidth = lw || 2; g.strokeStyle = stroke; g.stroke(); }
+  },
+  line(g, x0, y0, x1, y1, col, lw) { g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.lineWidth = lw; g.strokeStyle = col; g.stroke(); },
+  text(g, s, x, y, size, col, opt) {
+    g.font = (opt && opt.weight || 800) + ' ' + size + 'px system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+    g.textAlign = (opt && opt.align) || 'center'; g.textBaseline = 'middle';
+    if (opt && opt.stroke) { g.lineWidth = opt.lw || 3; g.strokeStyle = opt.stroke; g.lineJoin = 'round'; g.strokeText(s, x, y); }
+    g.fillStyle = col; g.fillText(s, x, y);
+  },
+  // a field of small marks: grass tufts, the blacktop's grain, sand. f(g, x, y, r) draws one, r a seeded 0..1
+  scatter(g, x, y, w, h, n, seed, f) { const r = U.rng(seed); for (let i = 0; i < n; i++) f(g, x + r() * w, y + r() * h, r()); },
+  grass(g, x, y, w, h, seed, stripes) {
+    SD.rect(g, x, y, w, h, SC.grass);
+    if (stripes) for (let i = 0; i * 44 < w; i += 2) SD.rect(g, x + i * 44, y, 44, h, SC.grassL); // mowed
+    g.globalAlpha = 0.55;
+    SD.scatter(g, x, y, w, h, Math.round((w * h) / 520), seed, (c, px, py, r) => { c.strokeStyle = r < 0.5 ? SC.tuft : SC.grassD; c.lineWidth = 1.6; c.beginPath(); c.moveTo(px - 2, py + 2); c.lineTo(px - 0.5, py - 3); c.moveTo(px + 1, py + 2); c.lineTo(px + 2.5, py - 2.5); c.stroke(); });
+    g.globalAlpha = 1;
+  },
+  tar(g, x, y, w, h, seed) {
+    SD.rect(g, x, y, w, h, SC.tar);
+    SD.scatter(g, x, y, w, h, Math.round((w * h) / 70), seed, (c, px, py, r) => { c.fillStyle = r < 0.55 ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.16)'; c.fillRect(px, py, 1.6, 1.6); });
+  },
+  // a running-bond brick face from y0 to y1 across x0..x1
+  bricks(g, x0, y0, x1, y1, seed) {
+    SD.rect(g, x0, y0, x1 - x0, y1 - y0, SC.mortar);
+    const r = U.rng(seed), bh = 7, bw = 20;
+    for (let row = 0, y = y0; y < y1; row++, y += bh + 1.5) {
+      for (let x = x0 - (row % 2 ? bw / 2 : 0); x < x1; x += bw + 1.5) {
+        g.fillStyle = r() < 0.5 ? SC.brick : r() < 0.5 ? SC.brickD : '#b46249';
+        const bx = Math.max(x, x0), bx1 = Math.min(x + bw, x1);
+        if (bx1 > bx) g.fillRect(bx, y, bx1 - bx, Math.min(bh, y1 - y));
+      }
+    }
+  },
+  // floor tiles, two shades in a checker
+  tiles(g, x, y, w, h, s, a, b) {
+    SD.rect(g, x, y, w, h, a);
+    g.fillStyle = b;
+    for (let ty = 0; ty * s < h; ty++) for (let tx = 0; tx * s < w; tx++) if ((tx + ty) % 2) g.fillRect(x + tx * s, y + ty * s, Math.min(s, w - tx * s), Math.min(s, h - ty * s));
+    g.strokeStyle = 'rgba(0,0,0,0.06)'; g.lineWidth = 1;
+    for (let tx = 0; tx * s <= w; tx++) SD.line(g, x + tx * s, y, x + tx * s, y + h, 'rgba(0,0,0,0.06)', 1);
+    for (let ty = 0; ty * s <= h; ty++) SD.line(g, x, y + ty * s, x + w, y + ty * s, 'rgba(0,0,0,0.06)', 1);
+  },
+  planks(g, x, y, w, h, seed) {
+    SD.rect(g, x, y, w, h, SC.wood);
+    const r = U.rng(seed);
+    for (let py = y, row = 0; py < y + h; py += 16, row++) {
+      g.fillStyle = row % 2 ? SC.woodL : SC.wood; g.globalAlpha = 0.5; g.fillRect(x, py, w, 16); g.globalAlpha = 1;
+      SD.line(g, x, py, x + w, py, SC.woodD, 1.2);
+      for (let px = x + r() * 80; px < x + w; px += 70 + r() * 60) SD.line(g, px, py, px, py + 16, SC.woodD, 1);
+    }
+  },
+  // a window in a wall face: frame, glass, two panes, a glint
+  window(g, x, y, w, h, art) {
+    SD.rr(g, x - 3, y - 3, w + 6, h + 6, 3, SC.frame, SC.ink, 1.6);
+    SD.rect(g, x, y, w, h, SC.glass);
+    g.globalAlpha = 0.55; SD.rect(g, x, y, w, h * 0.45, SC.glassHi); g.globalAlpha = 1;
+    SD.line(g, x + w / 2, y, x + w / 2, y + h, SC.frame, 2.4); SD.line(g, x, y + h * 0.55, x + w, y + h * 0.55, SC.frame, 2.4);
+    if (art) { SD.rect(g, x + 4, y + 4, w / 2 - 7, h * 0.55 - 7, '#fff7e0'); SD.circ(g, x + w / 4, y + h * 0.27, 4, art); }
+  },
+  // a door in a wall face: frame, two leaves (teal by default, the court's door), handles, a sign over it
+  door(g, x, y, w, h, col, sign) {
+    SD.rect(g, x - 4, y - 4, w + 8, h + 4, SC.frame);
+    SD.rect(g, x, y, w / 2 - 1, h, col || SC.door); SD.rect(g, x + w / 2 + 1, y, w / 2 - 1, h, col || SC.door);
+    g.globalAlpha = 0.35; SD.rect(g, x + 5, y + 8, w / 2 - 11, h * 0.32, SC.glassHi); SD.rect(g, x + w / 2 + 6, y + 8, w / 2 - 11, h * 0.32, SC.glassHi); g.globalAlpha = 1;
+    SD.circ(g, x + w / 2 - 6, y + h * 0.58, 2.2, SC.yellow); SD.circ(g, x + w / 2 + 6, y + h * 0.58, 2.2, SC.yellow);
+    if (sign) { SD.rr(g, x + w / 2 - 34, y - 22, 68, 15, 3, SC.ink); SD.text(g, sign, x + w / 2, y - 14.5, 9, '#fff'); }
+  },
+  // a doorway in a bottom wall (the way out): a mat and an arrow on the floor
+  mat(g, x, y, w, label) {
+    SD.rr(g, x, y, w, 20, 4, '#5b6170'); SD.rr(g, x + 3, y + 3, w - 6, 14, 3, null, 'rgba(255,255,255,0.25)', 1.2);
+    if (label) SD.text(g, label, x + w / 2, y + 10, 8, 'rgba(255,255,255,0.85)');
+  },
+  // a soft shadow on the ground under a prop
+  shadow(g, x, y, rx, ry, a) { g.globalAlpha = a == null ? 0.22 : a; SD.ell(g, x, y, rx, ry, '#14182a'); g.globalAlpha = 1; },
+  // ground paint: a ring of colour (a court round a pole), a label
+  ring(g, x, y, r, col, w) { SD.circ(g, x, y, r, null, col, w); SD.circ(g, x, y, r - w - 3, null, col, 1.6); },
+  leaves(g, x, y, w, h, n, seed) {
+    SD.scatter(g, x, y, w, h, n, seed, (c, px, py, r) => { c.save(); c.translate(px, py); c.rotate(r * 6.28); SD.ell(c, 0, 0, 3.2, 1.7, SC.leaf[Math.floor(r * 4) % 4]); c.restore(); });
+  },
+  chalk(g, x, y, kind, col) {
+    g.globalAlpha = 0.85; g.strokeStyle = col; g.lineWidth = 2; g.lineCap = 'round'; g.beginPath();
+    if (kind === 'star') { for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? 5 : 12; if (i) g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); else g.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } }
+    else if (kind === 'sun') { g.arc(x, y, 8, 0, Math.PI * 2); for (let i = 0; i < 8; i++) { const a = (i * Math.PI) / 4; g.moveTo(x + Math.cos(a) * 12, y + Math.sin(a) * 12); g.lineTo(x + Math.cos(a) * 17, y + Math.sin(a) * 17); } }
+    else if (kind === 'heart') { g.moveTo(x, y + 9); g.bezierCurveTo(x - 14, y - 2, x - 6, y - 12, x, y - 4); g.bezierCurveTo(x + 6, y - 12, x + 14, y - 2, x, y + 9); }
+    else { g.moveTo(x - 12, y); g.quadraticCurveTo(x, y - 12, x + 12, y); g.quadraticCurveTo(x, y + 12, x - 12, y); }
+    g.stroke(); g.globalAlpha = 1; g.lineCap = 'butt';
+  },
+};
+
+// ───────────────────────── props: the tall things, drawn in depth order with the kids ─────────────────────────
+// Each is { kind, x, y } (y: where it meets the ground, its depth) and draws itself about (x, y) in world units. box: what it covers
+// ([x0, y0, x1, y1] about its foot), so world.js can bake the still ones into sprites once. live: it moves (a ball on a rope, a
+// flag), so it is drawn every frame instead. Their solid parts are listed with the map's solids.
+const PROPS = {
+  tree: {
+    box: (p) => [-(p.r || 56) - 8, -(p.r || 56) * 2 - 46, (p.r || 56) + 8, 14],
+    draw(g, p) {
+      const R = p.r || 56, seed = Math.round(p.x * 7 + p.y * 13), r = U.rng(seed);
+      SD.shadow(g, 0, 4, R * 0.75, R * 0.22);
+      SD.rr(g, -9, -44, 18, 48, 6, SC.bark, SC.ink, 2); SD.line(g, -2, -38, -3, -6, SC.barkD, 2);
+      const cy = -44 - R * 0.75, blobs = [[0, 0, 1], [-0.5, 0.18, 0.62], [0.52, 0.16, 0.6], [-0.22, -0.42, 0.62], [0.3, -0.38, 0.58]];
+      SD.circ(g, 0, cy + 6, R + 2.5, SC.ink);
+      for (const [bx, by, br] of blobs) SD.circ(g, bx * R, cy + by * R, br * R + 2.5, SC.ink);
+      for (const [bx, by, br] of blobs) SD.circ(g, bx * R, cy + by * R, br * R, SC.canopy[0]);
+      for (const [bx, by, br] of blobs) SD.circ(g, bx * R - br * R * 0.18, cy + by * R - br * R * 0.2, br * R * 0.72, SC.canopy[1]);
+      for (let i = 0; i < 9; i++) SD.circ(g, (r() - 0.5) * R * 1.3, cy + (r() - 0.65) * R * 1.1, 4 + r() * 6, SC.canopy[2]);
+      if (p.autumn) for (let i = 0; i < 7; i++) SD.circ(g, (r() - 0.5) * R * 1.4, cy + (r() - 0.5) * R * 1.1, 3 + r() * 3, SC.leaf[i % 4]);
+    },
+  },
+  bigtree: { // the Old Tree: a wide old trunk, roots, a canopy you can stand under
+    box: () => [-150, -300, 150, 30],
+    draw(g, p) {
+      SD.shadow(g, 0, 10, 120, 34, 0.28);
+      for (const [dx, a] of [[-34, -0.5], [30, 0.45], [-8, 0.1]]) { g.save(); g.rotate(a * 0.4); SD.rr(g, dx - 8, -6, 16, 22, 7, SC.barkD, SC.ink, 2); g.restore(); }
+      SD.rr(g, -26, -110, 52, 118, 14, SC.bark, SC.ink, 2.4);
+      SD.line(g, -8, -100, -12, -10, SC.barkD, 3); SD.line(g, 10, -96, 14, -20, SC.barkD, 2.4); SD.ell(g, -2, -60, 6, 9, SC.barkD);
+      const cy = -190, blobs = [[0, 0, 1.0], [-0.62, 0.18, 0.62], [0.64, 0.14, 0.64], [-0.3, -0.45, 0.66], [0.34, -0.42, 0.62], [0, 0.34, 0.6]], R = 104, r = U.rng(77);
+      for (const [bx, by, br] of blobs) SD.circ(g, bx * R, cy + by * R, br * R + 3, SC.ink);
+      for (const [bx, by, br] of blobs) SD.circ(g, bx * R, cy + by * R, br * R, SC.canopy[3]);
+      for (const [bx, by, br] of blobs) SD.circ(g, bx * R - br * R * 0.15, cy + by * R - br * R * 0.18, br * R * 0.8, SC.canopy[0]);
+      for (const [bx, by, br] of blobs) SD.circ(g, bx * R - br * R * 0.28, cy + by * R - br * R * 0.32, br * R * 0.5, SC.canopy[1]);
+      for (let i = 0; i < 16; i++) SD.circ(g, (r() - 0.5) * R * 1.7, cy + (r() - 0.6) * R * 1.3, 5 + r() * 8, SC.canopy[2]);
+    },
+  },
+  pole: { // a tetherball pole: its ball swings on the rope (live); the King's Pole has a gold cap and a pennant
+    live: true,
+    box: () => [-40, -96, 40, 10],
+    draw(g, p, t) {
+      SD.shadow(g, 6, 3, 14, 5);
+      const top = -84, king = p.king;
+      SD.rr(g, -3.5, top, 7, -top + 2, 3, king ? '#e6c25a' : SC.steel, SC.ink, 1.6);
+      SD.line(g, -1, top + 4, -1, -4, 'rgba(255,255,255,0.5)', 1.4);
+      SD.circ(g, 0, top, 5, king ? SC.yellow : SC.steelD, SC.ink, 1.4);
+      if (king) { g.beginPath(); g.moveTo(1, top - 2); g.lineTo(26, top + 6); g.lineTo(1, top + 13); g.closePath(); g.fillStyle = SC.red; g.fill(); g.lineWidth = 1.4; g.strokeStyle = SC.ink; g.stroke(); SD.text(g, '♔', 10, top + 6, 8, '#fff6c8'); }
+      const a = Math.sin((t || 0) * 1.3 + p.x * 0.01) * 0.5, L = 46, bx = Math.sin(a) * L * 0.55, by = top + 4 + Math.cos(a) * L * 0.62;
+      SD.line(g, 0, top + 4, bx, by, '#ece7d8', 1.4);
+      SD.circ(g, bx, by + 7, 8, p.ball || SC.yellow, SC.ink, 1.6); SD.circ(g, bx - 2.5, by + 4.5, 2.4, 'rgba(255,255,255,0.6)');
+    },
+  },
+  flag: { live: true, box: () => [-10, -150, 60, 8],
+    draw(g, p, t) {
+      SD.shadow(g, 4, 2, 10, 4);
+      SD.rect(g, -2, -140, 4, 140, SC.steel); SD.circ(g, 0, -142, 4, SC.yellow, SC.ink, 1.2);
+      g.beginPath(); g.moveTo(2, -136);
+      for (let i = 0; i <= 8; i++) { const x = 2 + i * 6, y = -136 + Math.sin((t || 0) * 4 + i * 0.7) * 2.4; g.lineTo(x, y); }
+      for (let i = 8; i >= 0; i--) { const x = 2 + i * 6, y = -112 + Math.sin((t || 0) * 4 + i * 0.7) * 2.4; g.lineTo(x, y); }
+      g.closePath(); g.fillStyle = SC.blue; g.fill(); g.lineWidth = 1.2; g.strokeStyle = SC.ink; g.stroke();
+      SD.text(g, '★', 26, -124 + Math.sin((t || 0) * 4 + 3.5) * 2, 11, SC.yellow);
+    },
+  },
+  bench: { box: (p) => (p.v ? [-16, -56, 16, 50] : [-50, -28, 50, 14]),
+    draw(g, p) {
+      if (p.v) { SD.shadow(g, 4, 46, 16, 6); SD.rr(g, -12, -52, 24, 96, 4, SC.woodD, SC.ink, 1.6); for (let i = 0; i < 4; i++) SD.rect(g, -9, -48 + i * 23, 18, 18, SC.wood); return; }
+      SD.shadow(g, 0, 8, 46, 7);
+      SD.rr(g, -46, -24, 92, 12, 3, SC.woodD, SC.ink, 1.6); SD.rr(g, -46, -12, 92, 14, 3, SC.wood, SC.ink, 1.6);
+      SD.rect(g, -40, 2, 4, 8, SC.ink); SD.rect(g, 36, 2, 4, 8, SC.ink);
+    },
+  },
+  desk: { box: () => [-38, -40, 38, 12],
+    draw(g, p) {
+      SD.shadow(g, 0, 8, 34, 6);
+      SD.rect(g, -30, -6, 4, 14, SC.steelD); SD.rect(g, 26, -6, 4, 14, SC.steelD);
+      SD.rr(g, -35, -28, 70, 24, 3, SC.woodL, SC.ink, 1.6); SD.rect(g, -35, -8, 70, 5, SC.woodD);
+      if (p.book) { SD.rect(g, -20 + p.book * 3, -24, 16, 11, p.bookCol || SC.red); SD.rect(g, -18 + p.book * 3, -22, 12, 2, '#fff'); }
+      SD.rr(g, -12, -40, 24, 10, 3, SC.blue, SC.ink, 1.2); // the chair's back, pushed in
+    },
+  },
+  bigdesk: { box: () => [-62, -52, 62, 12],
+    draw(g, p) {
+      SD.shadow(g, 0, 8, 60, 8);
+      SD.rr(g, -58, -40, 116, 44, 4, SC.woodD, SC.ink, 1.8); SD.rr(g, -58, -40, 116, 26, 4, SC.wood, SC.ink, 1.8);
+      SD.rect(g, -44, -36, 22, 14, '#fffdf5'); SD.rect(g, 28, -46, 10, 12, SC.red); SD.circ(g, 33, -48, 7, '#e8423a', SC.ink, 1.2); // an apple
+      SD.rr(g, 2, -36, 18, 12, 2, SC.green);
+    },
+  },
+  table: { box: () => [-92, -50, 92, 40],
+    draw(g, p) {
+      SD.shadow(g, 0, 34, 88, 8);
+      SD.rr(g, -88, -40, 176, 12, 4, '#8fa1b8', SC.ink, 1.6); // the far bench
+      SD.rr(g, -88, -24, 176, 34, 5, '#eef2f7', SC.ink, 1.8); SD.rect(g, -88, 4, 176, 6, '#c8d2de');
+      SD.rr(g, -88, 18, 176, 12, 4, '#8fa1b8', SC.ink, 1.6); // the near bench
+      const r = U.rng(Math.round(p.x + p.y));
+      for (let i = 0; i < 4; i++) { const tx = -70 + i * 44 + r() * 10; SD.rr(g, tx, -18, 22, 16, 3, ['#ffcf5a', '#7fd0ff', '#ff9aa8', '#a6e36b'][i], SC.ink, 1); SD.circ(g, tx + 7, -11, 3, '#fff'); }
+    },
+  },
+  gatearch: { box: () => [-150, -150, 150, 16],
+    draw(g, p) {
+      for (const x of [-118, 82]) { SD.shadow(g, x + 18, 12, 26, 6); SD.rr(g, x, -96, 36, 104, 3, SC.brickD, SC.ink, 2); SD.bricks(g, x + 3, -92, x + 33, 4, x + 3); SD.rr(g, x - 4, -104, 44, 12, 3, SC.copingL, SC.ink, 1.6); }
+      SD.rr(g, -100, -142, 200, 30, 6, SC.door, SC.ink, 2.2); SD.rr(g, -94, -137, 188, 20, 4, null, 'rgba(255,255,255,0.35)', 1.4);
+      SD.text(g, 'WELCOME', 0, -127, 15, '#fff', { weight: 900 });
+      SD.line(g, -96, -112, -96, -96, SC.ink, 3); SD.line(g, 96, -112, 96, -96, SC.ink, 3);
+    },
+  },
+  bikerack: { box: () => [-48, -30, 48, 8],
+    draw(g) {
+      SD.shadow(g, 0, 4, 44, 5);
+      for (let i = 0; i < 5; i++) { g.beginPath(); g.arc(-36 + i * 18, -6, 8, Math.PI, 0); g.lineWidth = 3; g.strokeStyle = SC.steelD; g.stroke(); }
+      SD.line(g, -46, 2, 46, 2, SC.ink, 3);
+      // one bike, leaning
+      SD.circ(g, -30, -6, 9, null, SC.ink, 2.2); SD.circ(g, -6, -6, 9, null, SC.ink, 2.2); SD.line(g, -30, -6, -18, -18, SC.red, 3); SD.line(g, -18, -18, -6, -6, SC.red, 3); SD.line(g, -18, -18, -14, -24, SC.ink, 2);
+    },
+  },
+  sign: { box: () => [-46, -78, 46, 8],
+    draw(g, p) {
+      SD.shadow(g, 0, 4, 30, 5);
+      SD.rect(g, -24, -40, 4, 44, SC.woodD); SD.rect(g, 20, -40, 4, 44, SC.woodD);
+      SD.rr(g, -42, -76, 84, 40, 5, p.col || SC.board, SC.ink, 2);
+      const lines = String(p.text || '').split('\n');
+      lines.forEach((s, i) => SD.text(g, s, 0, -64 + i * 14 - (lines.length - 1) * 4, i ? 8 : 10, '#fff', { weight: i ? 700 : 900 }));
+    },
+  },
+  bush: { box: (p) => [-(p.r || 20) - 4, -(p.r || 20) * 1.6, (p.r || 20) + 4, 6],
+    draw(g, p) {
+      const R = p.r || 20;
+      SD.shadow(g, 0, 2, R, R * 0.3);
+      SD.circ(g, -R * 0.45, -R * 0.6, R * 0.62, SC.canopy[0], SC.ink, 1.6); SD.circ(g, R * 0.45, -R * 0.6, R * 0.62, SC.canopy[0], SC.ink, 1.6); SD.circ(g, 0, -R * 0.9, R * 0.7, SC.canopy[0], SC.ink, 1.6);
+      SD.circ(g, -R * 0.2, -R * 1.05, R * 0.4, SC.canopy[1]);
+      if (p.flowers) for (let i = 0; i < 5; i++) SD.circ(g, -R * 0.6 + i * R * 0.3, -R * (0.5 + (i % 2) * 0.5), 2.6, p.flowers);
+    },
+  },
+  fountain: { box: () => [-16, -40, 16, 6],
+    draw(g) { SD.shadow(g, 0, 3, 14, 4); SD.rr(g, -12, -30, 24, 32, 4, SC.steel, SC.ink, 1.6); SD.rr(g, -10, -36, 20, 10, 4, SC.steelD, SC.ink, 1.4); SD.circ(g, 0, -32, 2.5, SC.water); },
+  },
+  bins: { box: () => [-30, -40, 30, 6],
+    draw(g) { for (const [x, c, l] of [[-14, '#3d7fd8', '♻'], [14, '#5c6573', '']]) { SD.shadow(g, x, 3, 12, 4); SD.rr(g, x - 11, -32, 22, 34, 4, c, SC.ink, 1.6); SD.rect(g, x - 12, -36, 24, 6, SC.ink); if (l) SD.text(g, l, x, -16, 11, '#fff'); } },
+  },
+  plant: { box: () => [-22, -56, 22, 6],
+    draw(g) { SD.shadow(g, 0, 3, 14, 4); SD.rr(g, -12, -16, 24, 18, 4, '#c96f4a', SC.ink, 1.6); for (const [x, y, r] of [[-8, -30, 10], [8, -32, 10], [0, -44, 11]]) SD.circ(g, x, y, r, SC.canopy[1], SC.ink, 1.4); },
+  },
+  hoop: { box: () => [-36, -150, 36, 8],
+    draw(g) {
+      SD.shadow(g, 6, 4, 18, 5);
+      SD.rect(g, -4, -112, 8, 114, SC.steelD);
+      SD.rr(g, -34, -148, 68, 44, 3, '#ffffff', SC.ink, 2); SD.rr(g, -14, -132, 28, 18, 1, null, SC.red, 2);
+      SD.ell(g, 0, -104, 14, 4, null, SC.orange, 2.4);
+      for (let i = -2; i <= 2; i++) SD.line(g, i * 6, -102, i * 4, -88, 'rgba(255,255,255,0.8)', 1);
+    },
+  },
+  tball: { live: true, box: () => [-12, -12, 12, 12], // a loose ball on the ground (the practice pole's spare)
+    draw(g, p, t) { SD.shadow(g, 2, 7, 9, 3); SD.circ(g, 0, 0, 8, p.ball || SC.yellow, SC.ink, 1.6); SD.circ(g, -2.5, -2.5, 2.2, 'rgba(255,255,255,0.6)'); },
+  },
+  pond: { box: () => [-90, -50, 90, 50],
+    draw(g, p, t) {
+      SD.ell(g, 0, 0, 84, 44, '#7a6a4f'); SD.ell(g, 0, -2, 80, 40, SC.waterD); SD.ell(g, -6, -6, 70, 32, SC.water);
+      for (const [x, y] of [[-34, 6], [28, -10], [40, 14]]) { SD.ell(g, x, y, 10, 6, '#4ea446', SC.ink, 1); SD.circ(g, x + 4, y - 2, 2, '#ff9fc6'); }
+      g.globalAlpha = 0.5; SD.ell(g, -30, -14, 16, 4, '#d9f1ff'); g.globalAlpha = 1;
+    },
+  },
+  picnic: { box: () => [-56, -40, 56, 34],
+    draw(g) {
+      SD.shadow(g, 0, 28, 52, 8);
+      SD.rr(g, -52, -36, 104, 10, 3, SC.woodD, SC.ink, 1.4); SD.rr(g, -52, -22, 104, 30, 4, SC.wood, SC.ink, 1.8); SD.rr(g, -52, 14, 104, 10, 3, SC.woodD, SC.ink, 1.4);
+      SD.line(g, -52, -8, 52, -8, SC.woodD, 1.2);
+    },
+  },
+};
+
+// ───────────────────────── the maps ─────────────────────────
+// wall: the height of a top wall's face (where the floor starts)
+const SCHOOL = {
+  gate: {
+    name: 'Front Gate', w: 520, h: 780, outdoor: true, music: 'outside',
+    solids: [[0, 0, 26, 780], [494, 0, 26, 780], [0, 752, 520, 28], [26, 520, 158, 40], [336, 520, 158, 40], [26, 0, 160, 18], [334, 0, 160, 18]],
+    exits: [{ id: 'up', rect: [186, 0, 148, 16], to: 'yard', spot: 'fromGate', label: 'Playground' }],
+    zones: {},
+    objs: [
+      { id: 'sign', x: 108, y: 640, r: 40, name: 'School sign', text: (s) => s.sign('gate') },
+      { id: 'bikes', x: 410, y: 182, r: 44, name: 'Bike rack', text: () => ["Somebody's red bike. The bell still works. You don't ring it."] },
+    ],
+    spots: { start: [260, 712, 'up'], fromYard: [260, 46, 'down'], kiru: [300, 610, 'left'], path: [260, 380, 'up'] },
+    props: [
+      { kind: 'gatearch', x: 260, y: 548, solid: false },
+      { kind: 'tree', x: 92, y: 300, r: 54, autumn: true, solid: [92, 296, 14] }, { kind: 'tree', x: 430, y: 270, r: 58, solid: [430, 266, 14] },
+      { kind: 'tree', x: 440, y: 470, r: 48, autumn: true, solid: [440, 466, 13] }, { kind: 'tree', x: 82, y: 470, r: 46, solid: [82, 466, 13] },
+      { kind: 'flag', x: 362, y: 120, solid: [362, 118, 6] },
+      { kind: 'bikerack', x: 410, y: 160, solid: [362, 146, 96, 18] },
+      { kind: 'sign', x: 108, y: 630, text: 'Welcome back!\nRecess 10:15', col: SC.door, solid: [80, 622, 56, 12] },
+      { kind: 'bench', x: 420, y: 650, solid: [374, 630, 92, 22] },
+      { kind: 'bush', x: 170, y: 120, r: 18, flowers: '#ff9fc6', solid: [170, 116, 14] }, { kind: 'bush', x: 350, y: 220, r: 18, flowers: '#ffe680', solid: [350, 216, 14] },
+      { kind: 'bush', x: 160, y: 420, r: 16, solid: [160, 416, 12] }, { kind: 'bush', x: 362, y: 400, r: 16, flowers: '#9fe0ff', solid: [362, 396, 12] },
+    ],
+    paint(g, m) {
+      SD.grass(g, 0, 0, m.w, m.h, 11, false);
+      SD.rect(g, 0, 700, m.w, 80, SC.curb); for (let x = 0; x < m.w; x += 40) SD.line(g, x, 700, x, 780, SC.pathD, 1.2); // the pavement
+      SD.rect(g, 0, 752, m.w, 28, '#5d636f'); SD.line(g, 0, 752, m.w, 752, '#e8e2d2', 4); // the kerb and the street
+      SD.rr(g, 196, 0, 128, 720, 6, SC.path); // the path in
+      SD.rr(g, 120, 566, 280, 140, 18, SC.path); // the forecourt outside the gate
+      for (let y = 16; y < 700; y += 34) SD.line(g, 198, y, 322, y, SC.pathD, 1.2);
+      SD.line(g, 260, 0, 260, 700, 'rgba(0,0,0,0.05)', 2);
+      // the fence: posts and rails either side of the gate, and up the sides
+      const fence = (x0, y0, x1, y1) => { SD.line(g, x0, y0 - 14, x1, y1 - 14, SC.ink, 3); SD.line(g, x0, y0 - 4, x1, y1 - 4, SC.ink, 3); const n = Math.max(1, Math.round(Math.hypot(x1 - x0, y1 - y0) / 22)); for (let i = 0; i <= n; i++) SD.rect(g, x0 + ((x1 - x0) * i) / n - 2, y0 + ((y1 - y0) * i) / n - 22, 4, 24, '#3b4256'); };
+      fence(26, 548, 182, 548); fence(338, 548, 494, 548);
+      SD.rect(g, 0, 0, 26, 752, SC.grassD); SD.rect(g, 494, 0, 26, 752, SC.grassD);
+      SD.leaves(g, 0, 0, m.w, 700, 60, 21);
+      SD.rr(g, 220, 724, 80, 14, 4, null, '#ffffff88', 2); SD.text(g, 'SCHOOL', 260, 731, 8, '#ffffffaa');
+    },
+  },
+
+  yard: {
+    name: 'Playground', w: 1040, h: 1040, outdoor: true, wall: 176,
+    solids: [[0, 0, 1040, 176], [0, 176, 24, 864], [1016, 176, 24, 290], [1016, 576, 24, 464], [0, 1016, 440, 24], [600, 1016, 440, 24]],
+    exits: [
+      { id: 'door', rect: [486, 172, 68, 18], to: 'hall', spot: 'fromYard', label: 'Main Hall' },
+      { id: 'down', rect: [440, 1024, 160, 16], to: 'gate', spot: 'fromYard', label: 'Front Gate' },
+      { id: 'right', rect: [1024, 466, 16, 110], to: 'field', spot: 'fromYard', label: 'Field' },
+    ],
+    zones: {
+      entry: { r: [300, 760, 440, 260] }, beginner: { c: [210, 440, 150] }, challenge: { c: [480, 600, 150] }, king: { c: [780, 380, 160] },
+      wall: { r: [300, 176, 440, 140] },
+    },
+    objs: [
+      { id: 'kingplaque', x: 852, y: 470, r: 34, name: "King's Pole", text: (s) => s.sign('king') },
+      { id: 'beginsign', x: 210, y: 556, r: 30, name: 'Beginner Pole', text: () => ['BEGINNER POLE. Painted in green, a bit worn where everybody stands.'] },
+      { id: 'challsign', x: 480, y: 724, r: 30, name: 'Challenge Pole', text: () => ['CHALLENGE POLE. The paint is newer here. Somebody keeps touching it up.'] },
+      { id: 'foursq', x: 250, y: 820, r: 54, name: 'Four-square', text: () => ['A four-square court. Somebody chalked KING in the top square and somebody else crossed it out.'] },
+    ],
+    spots: {
+      fromHall: [520, 214, 'down'], fromGate: [520, 990, 'up'], fromField: [992, 520, 'left'], watch: [520, 860, 'up'],
+      beginner: [210, 440, 'down'], beginnerN: [210, 372, 'down'], beginnerE: [292, 452, 'left'], beginnerW: [126, 450, 'right'], beginnerS: [214, 520, 'up'],
+      challenge: [480, 600, 'down'], challengeN: [480, 526, 'down'], challengeE: [566, 610, 'left'], challengeW: [394, 610, 'right'], challengeS: [480, 684, 'up'],
+      king: [780, 380, 'down'], kingN: [780, 300, 'down'], kingE: [870, 392, 'left'], kingW: [690, 392, 'right'], kingS: [780, 468, 'up'],
+      bench: [110, 270, 'down'], benchR: [910, 690, 'right'], foursq: [250, 820, 'up'], hop: [660, 850, 'up'], wallL: [330, 230, 'down'], wallR: [700, 228, 'down'],
+      grass: [950, 400, 'left'], grassS: [946, 860, 'left'], gateIn: [520, 940, 'up'],
+    },
+    props: [
+      { kind: 'pole', x: 210, y: 440, ball: SC.green, solid: [210, 440, 9] },
+      { kind: 'pole', x: 480, y: 600, ball: SC.blue, solid: [480, 600, 9] },
+      { kind: 'pole', x: 780, y: 380, ball: SC.yellow, king: true, solid: [780, 380, 9] },
+      { kind: 'bench', x: 110, y: 240, solid: [62, 218, 96, 24] }, { kind: 'bench', x: 946, y: 690, v: true, solid: [932, 636, 28, 100] },
+      { kind: 'tree', x: 960, y: 270, r: 60, autumn: true, solid: [960, 266, 15] }, { kind: 'tree', x: 960, y: 900, r: 56, solid: [960, 896, 14] },
+      { kind: 'tree', x: 70, y: 960, r: 50, autumn: true, solid: [70, 956, 13] },
+      { kind: 'hoop', x: 70, y: 640, solid: [64, 634, 12, 12] },
+      { kind: 'bush', x: 300, y: 192, r: 16, flowers: '#ff9fc6', solid: [300, 190, 12] }, { kind: 'bush', x: 740, y: 192, r: 16, flowers: '#ffe680', solid: [740, 190, 12] },
+      { kind: 'bins', x: 410, y: 196, solid: [384, 186, 52, 14] },
+    ],
+    paint(g, m) {
+      SD.grass(g, 0, 0, m.w, m.h, 31, false);
+      SD.rr(g, 860, 470, 180, 102, 0, SC.path); for (let x = 870; x < 1040; x += 30) SD.line(g, x, 472, x, 570, SC.pathD, 1.2); // the path to the field
+      SD.rr(g, 444, 960, 152, 80, 0, SC.path);
+      // the blacktop
+      g.save(); SD.rr(g, 36, 176, 840, 800, 26, SC.tar); g.clip(); SD.tar(g, 36, 176, 840, 800, 41);
+      // cracks and patches
+      g.strokeStyle = 'rgba(10,11,14,0.4)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(120, 900); g.lineTo(160, 870); g.lineTo(150, 830); g.moveTo(700, 260); g.lineTo(730, 300); g.lineTo(726, 330); g.stroke();
+      SD.rr(g, 560, 880, 60, 34, 4, SC.tarL); SD.rr(g, 330, 300, 46, 26, 4, SC.tarD);
+      g.restore();
+      SD.rr(g, 36, 176, 840, 800, 26, null, '#2a2d33', 3);
+      // the three poles' courts
+      SD.ring(g, 210, 440, 82, SC.green, 6); SD.text(g, 'BEGINNER', 210, 548, 15, SC.green, { weight: 900 });
+      SD.ring(g, 480, 600, 88, SC.blue, 6); SD.text(g, 'CHALLENGE', 480, 714, 15, SC.blue, { weight: 900 });
+      SD.circ(g, 780, 380, 100, '#8c3a33'); SD.circ(g, 780, 380, 96, '#a3463d'); g.globalAlpha = 0.25; SD.tar(g, 690, 290, 180, 180, 5); g.globalAlpha = 1; // the rubber mat
+      g.save(); g.beginPath(); g.arc(780, 380, 96, 0, Math.PI * 2); g.clip(); SD.scatter(g, 684, 284, 192, 192, 260, 9, (c, px, py) => { c.fillStyle = 'rgba(0,0,0,0.12)'; c.fillRect(px, py, 2, 2); }); g.restore();
+      SD.ring(g, 780, 380, 92, SC.yellow, 7);
+      g.beginPath(); g.moveTo(752, 470); g.lineTo(756, 452); g.lineTo(768, 462); g.lineTo(780, 446); g.lineTo(792, 462); g.lineTo(804, 452); g.lineTo(808, 470); g.closePath(); g.fillStyle = SC.yellow; g.fill(); // a crown
+      SD.text(g, "KING'S POLE", 780, 494, 16, SC.yellow, { weight: 900, stroke: '#2a2d33', lw: 3 });
+      // four-square
+      g.lineWidth = 3; g.strokeStyle = SC.white; g.strokeRect(190, 760, 120, 120); SD.line(g, 250, 760, 250, 880, SC.white, 3); SD.line(g, 190, 820, 310, 820, SC.white, 3);
+      const fsq = [[192, 762, SC.red], [252, 762, SC.yellow], [192, 822, SC.blue], [252, 822, SC.green]];
+      g.globalAlpha = 0.25; for (const [x, y, c] of fsq) SD.rect(g, x, y, 56, 56, c); g.globalAlpha = 1;
+      SD.text(g, 'KING', 220, 790, 10, SC.white); SD.line(g, 204, 800, 236, 780, SC.white, 2);
+      // hopscotch
+      const hop = [[640, 780, 1], [640, 816, 2], [622, 852, 3], [658, 852, 4], [640, 888, 5], [622, 924, 6], [658, 924, 7]];
+      for (const [x, y, n] of hop) { g.strokeStyle = SC.yellow; g.lineWidth = 2.6; g.strokeRect(x - 18, y - 18, 36, 36); SD.text(g, String(n), x, y, 13, SC.yellow); }
+      // chalk, leaves, a drain
+      SD.chalk(g, 360, 860, 'star', SC.chalk[0]); SD.chalk(g, 120, 330, 'heart', SC.chalk[1]); SD.chalk(g, 610, 300, 'sun', SC.chalk[0]); SD.chalk(g, 360, 470, 'cloud', SC.chalk[2]);
+      SD.chalk(g, 700, 700, 'star', SC.chalk[3]); SD.chalk(g, 820, 640, 'heart', SC.chalk[2]);
+      SD.rr(g, 548, 820, 34, 22, 2, '#2c2e33'); for (let i = 0; i < 5; i++) SD.line(g, 552 + i * 6, 822, 552 + i * 6, 840, '#4a4d54', 2);
+      SD.leaves(g, 36, 176, 840, 800, 80, 61); SD.leaves(g, 880, 176, 160, 840, 40, 62);
+      // the school's front: coping, bricks, windows with the children's paintings, the door
+      SD.rect(g, 0, 0, m.w, 20, SC.coping); SD.rect(g, 0, 16, m.w, 6, SC.copingL);
+      SD.bricks(g, 0, 22, m.w, 160, 101);
+      SD.rect(g, 0, 160, m.w, 16, '#8e8b84'); // the plinth
+      const art = [SC.yellow, SC.red, SC.blue, SC.green, SC.orange, SC.purple];
+      for (let i = 0, x = 40; x < m.w - 60; x += 116, i++) { if (x > 420 && x < 600) continue; SD.window(g, x, 46, 70, 82, i % 2 ? art[i % 6] : null); }
+      SD.door(g, 488, 92, 64, 68, SC.door, 'MAIN HALL');
+      SD.rr(g, 612, 70, 60, 46, 3, SC.cork, SC.ink, 1.6); for (let i = 0; i < 5; i++) SD.rect(g, 618 + (i % 3) * 17, 76 + Math.floor(i / 3) * 18, 14, 14, ['#fff', '#ffe680', '#9fe0ff', '#ff9fc6', '#fff'][i]);
+    },
+  },
+
+  hall: {
+    name: 'Main Hall', w: 1120, h: 380, wall: 136,
+    solids: [[0, 0, 1120, 136], [0, 136, 30, 244], [1090, 136, 30, 244], [0, 344, 520, 36], [600, 344, 520, 36], [318, 136, 26, 18]],
+    exits: [
+      { id: 'out', rect: [520, 350, 80, 30], to: 'yard', spot: 'fromHall', label: 'Playground' },
+      { id: 'class', rect: [184, 132, 72, 16], to: 'class', spot: 'fromHall', label: 'Room 4B' },
+      { id: 'lunch', rect: [884, 132, 72, 16], to: 'lunch', spot: 'fromHall', label: 'Cafeteria' },
+    ],
+    zones: { board: { r: [360, 136, 140, 90] }, trophies: { r: [620, 136, 180, 90] }, bracket: { r: [960, 136, 130, 90] }, mid: { r: [470, 160, 200, 180] } },
+    objs: [
+      { id: 'rankings', x: 430, y: 158, r: 46, name: "Oliver's rankings", text: (s) => s.sign('rankings') },
+      { id: 'trophies', x: 710, y: 158, r: 56, name: 'Trophy case', text: (s) => s.sign('trophies') },
+      { id: 'bracket', x: 1028, y: 158, r: 40, name: 'Notice board', text: (s) => s.sign('bracket') },
+      { id: 'fountain', x: 331, y: 168, r: 26, name: 'Water fountain', text: () => ['You take a drink. Cold. Somebody has written "MILO WAS HERE" on the side in very small letters.'] },
+    ],
+    spots: {
+      fromYard: [560, 316, 'up'], fromClass: [220, 172, 'down'], fromLunch: [920, 172, 'down'],
+      board: [430, 180, 'up'], boardL: [380, 196, 'right'], boardR: [486, 196, 'left'], trophies: [710, 184, 'up'], lockersL: [100, 230, 'right'],
+      lockersR: [1040, 240, 'left'], mid: [560, 240, 'down'], midL: [470, 250, 'right'], midR: [650, 250, 'left'], bracket: [1028, 186, 'up'], bracketL: [980, 210, 'right'],
+    },
+    props: [{ kind: 'fountain', x: 331, y: 154, solid: false }, { kind: 'plant', x: 60, y: 168, solid: [60, 162, 14] }, { kind: 'plant', x: 1062, y: 168, solid: [1062, 162, 14] }],
+    paint(g, m) {
+      SD.tiles(g, 0, 136, m.w, 244, 32, SC.tile, SC.tileD);
+      g.globalAlpha = 0.14; SD.rect(g, 0, 136, m.w, 16, '#000'); g.globalAlpha = 1;
+      // the top wall: plaster over a teal dado, lockers, the doors, the boards
+      SD.rect(g, 0, 0, m.w, 136, SC.plaster); SD.rect(g, 0, 0, m.w, 12, SC.coping); SD.rect(g, 0, 88, m.w, 48, SC.teal); SD.rect(g, 0, 86, m.w, 4, SC.tealD);
+      const lockers = (x0, x1) => { for (let x = x0; x + 30 <= x1; x += 32) { SD.rr(g, x, 34, 30, 100, 2, (x / 32) % 2 ? SC.locker : SC.lockerL, SC.lockerD, 1.4); for (let i = 0; i < 3; i++) SD.line(g, x + 8, 44 + i * 4, x + 22, 44 + i * 4, SC.lockerD, 1.2); SD.rect(g, x + 22, 86, 3, 10, SC.steel); } };
+      lockers(40, 170); lockers(276, 318); lockers(500, 612); lockers(796, 870); lockers(980, 1086 - 0);
+      SD.door(g, 186, 52, 68, 84, SC.woodD, 'ROOM 4B'); SD.door(g, 886, 52, 68, 84, SC.door, 'CAFETERIA');
+      // Oliver's rankings: a cork board with the list pinned on it (what it says is the story's, world.js reads it out)
+      SD.rr(g, 372, 30, 116, 74, 4, SC.cork, SC.ink, 2); SD.rect(g, 384, 38, 54, 60, '#fffdf3'); SD.text(g, 'RANKINGS', 411, 45, 7, SC.ink);
+      for (let i = 0; i < 6; i++) SD.line(g, 388, 54 + i * 7, 432 - (i % 3) * 6, 54 + i * 7, '#7d859c', 1.6);
+      SD.rect(g, 444, 40, 36, 26, '#ffe680'); SD.rect(g, 446, 70, 34, 26, '#9fe0ff'); SD.circ(g, 411, 36, 2.2, SC.red); SD.circ(g, 462, 38, 2, SC.blue);
+      // the trophy case
+      SD.rr(g, 630, 22, 160, 108, 4, SC.woodD, SC.ink, 2); SD.rect(g, 638, 30, 144, 94, '#a9c6d6'); SD.line(g, 638, 76, 782, 76, SC.woodD, 3);
+      for (const [x, y, h] of [[656, 70, 24], [686, 70, 32], [720, 70, 20], [752, 70, 28], [668, 118, 22], [712, 118, 30], [756, 118, 18]]) { SD.rect(g, x - 2, y - 6, 4, 6, '#d6a53b'); SD.rr(g, x - 8, y - h, 16, h - 8, 4, '#f2c14e', SC.ink, 1); }
+      g.globalAlpha = 0.35; SD.rect(g, 640, 32, 30, 90, '#fff'); g.globalAlpha = 1;
+      // the notice board at the far end (the tournament's bracket goes up on it)
+      SD.rr(g, 980, 34, 96, 70, 4, SC.cork, SC.ink, 2); SD.rect(g, 990, 42, 34, 26, '#ff9fc6'); SD.rect(g, 1030, 46, 38, 30, '#fff'); SD.rect(g, 996, 74, 30, 22, '#a6e36b');
+      // the children's paintings, a clock
+      for (const [x, c] of [[28, SC.red], [580, SC.yellow], [880 - 30, SC.purple]]) { SD.rr(g, x, 40, 34, 26, 2, '#fff', SC.ink, 1.2); SD.circ(g, x + 17, 53, 7, c); }
+      SD.circ(g, 560, 50, 14, '#fff', SC.ink, 2); SD.line(g, 560, 50, 560, 41, SC.ink, 2); SD.line(g, 560, 50, 567, 54, SC.ink, 2);
+      // the bottom wall and the way out
+      SD.rect(g, 0, 344, m.w, 36, SC.coping); SD.rect(g, 0, 344, m.w, 6, SC.copingL);
+      SD.rect(g, 520, 344, 80, 36, SC.tileD); SD.mat(g, 524, 340, 72, 'OUT');
+      SD.rect(g, 0, 136, 30, 244, SC.coping); SD.rect(g, 1090, 136, 30, 244, SC.coping);
+    },
+  },
+
+  class: {
+    name: 'Room 4B', w: 640, h: 540, wall: 130,
+    solids: [[0, 0, 640, 130], [0, 130, 26, 410], [614, 130, 26, 410], [0, 506, 290, 34], [350, 506, 290, 34]],
+    exits: [{ id: 'out', rect: [290, 512, 60, 28], to: 'hall', spot: 'fromClass', label: 'Main Hall' }],
+    zones: { front: { r: [120, 130, 400, 110] }, room: { r: [26, 130, 588, 380] } },
+    objs: [
+      { id: 'blackboard', x: 320, y: 146, r: 70, name: 'Blackboard', text: (s) => s.sign('blackboard') },
+      { id: 'window', x: 90, y: 146, r: 40, name: 'Window', text: () => ['From here you can see the King\'s Pole. Nobody is on it.'] },
+    ],
+    spots: { fromHall: [320, 476, 'up'], teacher: [512, 214, 'down'], front: [320, 210, 'down'], back: [520, 470, 'left'], desk1: [168, 300, 'up'], desk2: [300, 382, 'up'], desk3: [436, 300, 'up'], window: [80, 260, 'right'], door: [380, 470, 'left'] },
+    props: [
+      { kind: 'bigdesk', x: 510, y: 186, solid: [452, 150, 116, 40] },
+      ...[[170, 286], [300, 286], [430, 286], [170, 370], [300, 370], [430, 370], [170, 454], [300, 454], [430, 454]].map(([x, y], i) => ({ kind: 'desk', x, y, book: i % 4, bookCol: [SC.red, SC.blue, SC.green, SC.orange][i % 4], solid: [x - 35, y - 30, 70, 30] })),
+      { kind: 'plant', x: 58, y: 486, solid: [58, 480, 14] },
+    ],
+    paint(g, m) {
+      SD.planks(g, 0, 130, m.w, 410, 51);
+      SD.rr(g, 120, 230, 400, 260, 10, '#b98d58'); g.globalAlpha = 0.18; SD.rr(g, 126, 236, 388, 248, 8, '#fff'); g.globalAlpha = 1; // the rug
+      SD.rect(g, 0, 0, m.w, 130, SC.plaster); SD.rect(g, 0, 0, m.w, 12, SC.coping); SD.rect(g, 0, 100, m.w, 30, SC.plasterD);
+      SD.window(g, 40, 30, 70, 60); SD.window(g, 540, 30, 70, 60);
+      SD.rr(g, 150, 22, 340, 82, 4, SC.woodD, SC.ink, 2); SD.rect(g, 158, 28, 324, 68, SC.board); SD.rect(g, 158, 90, 324, 6, SC.boardD); // the blackboard (its writing is drawn live: world.js)
+      SD.rect(g, 200, 100, 30, 4, '#fff'); SD.rect(g, 240, 100, 12, 4, SC.yellow);
+      SD.circ(g, 516, 18 + 0, 0, '#fff');
+      SD.rr(g, 118, 24, 24, 16, 2, SC.red); SD.rect(g, 118, 24, 24, 4, SC.blue); // a little flag
+      // the cubbies and the way out
+      SD.rect(g, 0, 506, m.w, 34, SC.coping); for (let x = 30; x < 280; x += 26) SD.rr(g, x, 508, 22, 20, 2, ['#ffcf5a', '#7fd0ff', '#ff9aa8', '#a6e36b'][(x / 26) % 4 | 0], SC.ink, 1);
+      for (let x = 360; x < 610; x += 26) SD.rr(g, x, 508, 22, 20, 2, ['#a6e36b', '#ffcf5a', '#7fd0ff', '#ff9aa8'][(x / 26) % 4 | 0], SC.ink, 1);
+      SD.rect(g, 290, 506, 60, 34, SC.tileD); SD.mat(g, 292, 502, 56, 'OUT');
+      SD.rect(g, 0, 130, 26, 410, SC.coping); SD.rect(g, 614, 130, 26, 410, SC.coping);
+    },
+  },
+
+  lunch: {
+    name: 'Cafeteria', w: 700, h: 560, wall: 134,
+    solids: [[0, 0, 700, 134], [0, 134, 26, 426], [674, 134, 26, 426], [0, 526, 320, 34], [380, 526, 320, 34]],
+    exits: [{ id: 'out', rect: [320, 532, 60, 28], to: 'hall', spot: 'fromLunch', label: 'Main Hall' }],
+    zones: { room: { r: [26, 134, 648, 392] } },
+    objs: [
+      { id: 'menu', x: 560, y: 150, r: 46, name: 'Menu board', text: () => ["Today: pizza triangles, apple slices, a carton of milk. Somebody has drawn a tetherball next to MILK."] },
+      { id: 'counter', x: 250, y: 150, r: 60, name: 'Serving counter', text: () => ['Trays, stacked. The lunch staff have gone, and somebody left one apple.'] },
+    ],
+    spots: { fromHall: [350, 498, 'up'], t1n: [230, 196, 'down'], t1s: [180, 302, 'up'], t2n: [470, 196, 'down'], t2s: [520, 302, 'up'], t3n: [230, 352, 'down'], t3s: [280, 470, 'up'], t4n: [470, 352, 'down'], t4s: [470, 470, 'up'], wall: [620, 200, 'left'], door: [420, 492, 'left'] },
+    props: [
+      { kind: 'table', x: 220, y: 250, solid: [130, 210, 184, 74] }, { kind: 'table', x: 480, y: 250, solid: [390, 210, 184, 74] },
+      { kind: 'table', x: 220, y: 410, solid: [130, 370, 184, 74] }, { kind: 'table', x: 480, y: 410, solid: [390, 370, 184, 74] },
+      { kind: 'bins', x: 630, y: 470, solid: [604, 460, 52, 14] }, { kind: 'plant', x: 60, y: 168, solid: [60, 162, 14] },
+    ],
+    paint(g, m) {
+      SD.tiles(g, 0, 134, m.w, 426, 28, '#f1ede3', '#e3dccb');
+      SD.rect(g, 0, 0, m.w, 134, '#f6eedd'); SD.rect(g, 0, 0, m.w, 12, SC.coping); SD.rect(g, 0, 96, m.w, 38, '#e7b85d'); SD.rect(g, 0, 94, m.w, 4, '#c79436');
+      // the serving counter along the wall
+      SD.rr(g, 80, 70, 340, 64, 4, SC.steelD, SC.ink, 2); SD.rect(g, 86, 76, 328, 26, SC.steel); g.globalAlpha = 0.4; SD.rect(g, 86, 76, 328, 8, '#fff'); g.globalAlpha = 1;
+      for (let i = 0; i < 5; i++) SD.rr(g, 100 + i * 62, 82, 46, 14, 2, ['#f0a84e', '#e8423a', '#a6e36b', '#f5deb3', '#ffd23f'][i], SC.ink, 1);
+      SD.circ(g, 396, 86, 6, '#e8423a', SC.ink, 1.2); // the apple
+      // the menu board, posters
+      SD.rr(g, 500, 24, 120, 72, 4, SC.woodD, SC.ink, 2); SD.rect(g, 508, 30, 104, 60, SC.board); SD.text(g, 'MENU', 560, 40, 9, SC.yellow);
+      for (let i = 0; i < 3; i++) SD.line(g, 518, 54 + i * 10, 600 - i * 10, 54 + i * 10, '#e8f0ea', 2);
+      SD.rr(g, 440, 30, 46, 56, 2, '#fff', SC.ink, 1.2); SD.text(g, 'EAT', 463, 46, 9, SC.green); SD.text(g, 'YOUR', 463, 58, 9, SC.orange); SD.text(g, 'GREENS', 463, 70, 8, SC.green);
+      SD.rr(g, 30, 30, 40, 50, 2, '#fff', SC.ink, 1.2); SD.circ(g, 50, 52, 12, SC.yellow); SD.text(g, '☺', 50, 52, 14, SC.ink);
+      SD.rect(g, 0, 526, m.w, 34, SC.coping); SD.rect(g, 320, 526, 60, 34, SC.tileD); SD.mat(g, 322, 522, 56, 'OUT');
+      SD.rect(g, 0, 134, 26, 426, SC.coping); SD.rect(g, 674, 134, 26, 426, SC.coping);
+    },
+  },
+
+  field: {
+    name: 'Field', w: 1060, h: 860, outdoor: true,
+    solids: [[0, 0, 1060, 30], [0, 30, 20, 352], [0, 482, 20, 378], [1040, 30, 20, 830], [0, 832, 1060, 28]],
+    exits: [{ id: 'left', rect: [0, 382, 16, 100], to: 'yard', spot: 'fromField', label: 'Playground' }],
+    zones: { tree: { c: [600, 360, 190] }, practice: { c: [290, 600, 130] }, pond: { c: [880, 640, 140] }, near: { r: [20, 330, 160, 200] } },
+    objs: [
+      { id: 'tree', x: 600, y: 398, r: 44, name: 'The Old Tree', text: (s) => s.sign('tree') },
+      { id: 'pond', x: 880, y: 600, r: 90, name: 'Pond', text: () => ['Two frogs and a lot of lily pads. One of the frogs looks like it is waiting for a match.'] },
+      { id: 'practice', x: 290, y: 600, r: 30, name: 'Practice Pole', text: () => ['An old pole out on the field. The paint is gone. Somebody practises here a lot.'] },
+    ],
+    spots: {
+      fromYard: [56, 432, 'right'], tree: [600, 432, 'down'], treeW: [496, 430, 'right'], treeE: [690, 456, 'left'], treeS: [606, 520, 'up'], benchT: [560, 486, 'up'],
+      practice: [290, 600, 'down'], practiceN: [290, 532, 'down'], practiceE: [370, 612, 'left'], practiceW: [208, 612, 'right'], practiceS: [296, 680, 'up'],
+      pond: [760, 600, 'right'], track: [200, 200, 'right'], trackE: [420, 120, 'down'], picnic: [830, 300, 'up'],
+    },
+    props: [
+      { kind: 'bigtree', x: 600, y: 380, solid: [600, 374, 30] },
+      { kind: 'bench', x: 560, y: 470, solid: [512, 450, 96, 22] },
+      { kind: 'pole', x: 290, y: 600, ball: SC.orange, solid: [290, 600, 9] },
+      { kind: 'pond', x: 880, y: 640, solid: [800, 604, 160, 72] },
+      { kind: 'picnic', x: 900, y: 250, solid: [846, 214, 108, 70] },
+      { kind: 'tree', x: 120, y: 760, r: 52, autumn: true, solid: [120, 756, 13] }, { kind: 'tree', x: 980, y: 820 - 30, r: 46, solid: [980, 786, 12] },
+      { kind: 'bush', x: 440, y: 790, r: 18, flowers: '#ff9fc6', solid: [440, 786, 13] }, { kind: 'bush', x: 520, y: 796, r: 16, flowers: '#ffe680', solid: [520, 792, 12] },
+      { kind: 'bush', x: 600, y: 790, r: 18, flowers: '#9fe0ff', solid: [600, 786, 13] },
+    ],
+    paint(g, m) {
+      SD.grass(g, 0, 0, m.w, m.h, 71, true);
+      // the track: an arc of the oval along the top left
+      g.save(); g.lineWidth = 46; g.strokeStyle = '#c96a4b'; g.beginPath(); g.ellipse(250, 240, 230, 150, 0, Math.PI * 0.95, Math.PI * 2.05); g.stroke();
+      g.lineWidth = 1.6; g.strokeStyle = 'rgba(255,255,255,0.8)'; for (const d of [-20, 0, 20]) { g.beginPath(); g.ellipse(250, 240, 230 + d, 150 + d, 0, Math.PI * 0.95, Math.PI * 2.05); g.stroke(); }
+      g.restore();
+      SD.rr(g, 0, 386, 140, 92, 0, SC.path); for (let x = 10; x < 140; x += 30) SD.line(g, x, 388, x, 476, SC.pathD, 1.2);
+      // a worn patch round the practice pole, a dirt path to the tree
+      SD.circ(g, 290, 600, 70, SC.dirt); SD.circ(g, 290, 600, 70, null, SC.dirtD, 2); SD.circ(g, 290, 600, 52, null, 'rgba(255,255,255,0.35)', 2);
+      g.lineWidth = 26; g.strokeStyle = SC.dirt; g.lineCap = 'round'; g.beginPath(); g.moveTo(140, 432); g.quadraticCurveTo(360, 470, 520, 470); g.stroke(); g.lineCap = 'butt';
+      // the garden beds along the bottom
+      for (const x of [380, 500, 620]) { SD.rr(g, x, 756, 104, 50, 6, '#7a5236'); SD.rr(g, x + 4, 760, 96, 42, 5, '#8a6142'); }
+      SD.leaves(g, 400, 220, 420, 300, 70, 81);
+      SD.rect(g, 0, 0, m.w, 30, SC.grassD); SD.rect(g, 0, 832, m.w, 28, SC.grassD); SD.rect(g, 1040, 0, 20, m.h, SC.grassD); SD.rect(g, 0, 0, 20, m.h, SC.grassD);
+    },
+  },
+};
+
+// ───────────────────────── walking ─────────────────────────
+const SCHOOL_R = 11; // a kid's feet, for walking into things
+// every solid of a map as shapes: its own rects and the props' (a rect [x, y, w, h] or a circle [x, y, r])
+function schoolSolids(m) {
+  if (m._solids) return m._solids;
+  const out = [];
+  for (const s of m.solids) out.push(s);
+  for (const p of m.props || []) if (p.solid) out.push(p.solid);
+  m._solids = out;
+  return out;
+}
+// does a circle at (x, y) of radius r touch any solid, or leave the map
+function schoolHit(m, x, y, r) {
+  if (x - r < 0 || y - r < 0 || x + r > m.w || y + r > m.h) return true;
+  const S = schoolSolids(m);
+  for (let i = 0; i < S.length; i++) {
+    const s = S[i];
+    if (s.length === 4) { const cx = U.clamp(x, s[0], s[0] + s[2]), cy = U.clamp(y, s[1], s[1] + s[3]); if ((x - cx) * (x - cx) + (y - cy) * (y - cy) < r * r) return true; }
+    else { const dx = x - s[0], dy = y - s[1], rr = r + s[2]; if (dx * dx + dy * dy < rr * rr) return true; }
+  }
+  return false;
+}
+// move a walker by (dx, dy), sliding along what it meets, one axis at a time, in steps no longer than half its radius (so it never
+// tunnels). others: circles [x, y, r] it may not walk through (the people standing about). Returns how far it actually went.
+function schoolStep(m, p, dx, dy, r, others) {
+  const blocked = (x, y) => {
+    if (schoolHit(m, x, y, r)) return true;
+    if (others) for (let i = 0; i < others.length; i++) { const o = others[i], ox = x - o[0], oy = y - o[1], rr = r + o[2]; if (ox * ox + oy * oy < rr * rr) return true; }
+    return false;
+  };
+  const n = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / (r * 0.5)));
+  const sx = dx / n, sy = dy / n, x0 = p.x, y0 = p.y;
+  for (let i = 0; i < n; i++) {
+    if (sx && !blocked(p.x + sx, p.y)) p.x += sx;
+    if (sy && !blocked(p.x, p.y + sy)) p.y += sy;
+  }
+  return Math.hypot(p.x - x0, p.y - y0);
+}
+// is (x, y) in a zone ({ r: [x, y, w, h] } or { c: [x, y, r] })
+function schoolIn(z, x, y) {
+  if (!z) return false;
+  if (z.r) return x >= z.r[0] && y >= z.r[1] && x <= z.r[0] + z.r[2] && y <= z.r[1] + z.r[3];
+  const dx = x - z.c[0], dy = y - z.c[1];
+  return dx * dx + dy * dy <= z.c[2] * z.c[2];
+}
+// the exit a walker at (x, y) is standing in, if any
+function schoolExitAt(m, x, y) {
+  for (const e of m.exits) if (x >= e.rect[0] - SCHOOL_R && y >= e.rect[1] - SCHOOL_R && x <= e.rect[0] + e.rect[2] + SCHOOL_R && y <= e.rect[1] + e.rect[3] + SCHOOL_R) return e;
+  return null;
+}
+// a map's spot by name ('yard.kingN' or a [map, x, y, face] already)
+function schoolSpot(ref) {
+  if (Array.isArray(ref)) return { map: ref[0], x: ref[1], y: ref[2], face: ref[3] || 'down' };
+  const i = String(ref).indexOf('.'), map = ref.slice(0, i), name = ref.slice(i + 1), m = SCHOOL[map], s = m && m.spots[name];
+  return s ? { map, x: s[0], y: s[1], face: s[2] || 'down' } : null;
+}
+// the way from one map to another, as the first exit to take (the maps' exits as a graph, breadth first): for the hint arrow
+function schoolRoute(from, to) {
+  if (from === to) return null;
+  const seen = new Set([from]), q = [[from, null]];
+  while (q.length) {
+    const [at, first] = q.shift();
+    for (const e of SCHOOL[at].exits) {
+      if (seen.has(e.to)) continue;
+      const f = first || e;
+      if (e.to === to) return f;
+      seen.add(e.to); q.push([e.to, f]);
+    }
+  }
+  return null;
+}
+
+// ════════ story.js ════════
+// story.js — Story mode: "King of the Pole", Josh's story (the vault note Projects/Tether Ball — King of the Pole), walked through
+// the school (school.js) and played at its poles. Josh, 2026-10-18: "take the story that I sent you and everything about how it
+// progresses and let's build that into a top-down two D game. Where you can walk around and talk to characters and then if you
+// talk to the certain challenge characters at the right time, then that's when you end up facing them ... let's also build the full
+// story system where as you go through it you start off encountering Milo and then maybe the next person, and then the next person,
+// and then you get to walk around and then discover some things or talk to people. And then when you enter certain place, that's
+// when the next scene starts ... Or maybe you talk to somebody and that's what starts off the scene. And you start the next rounds if
+// you say you're ready."
+//
+// The story is a list of STEPS, played in order. Each waits on a trigger: talking to someone (talk), walking into a zone of a map
+// (zone), or arriving in a map (enter). Then it plays its scene: the script's lines, verbatim, with a little staging (someone walks
+// over, someone leaves, the screen cuts to later). A match step plays the lines before the match and asks "Ready?": yes starts the
+// match against that character at that meeting (roster.js STORY and PHASES: the match number picks the phase), no leaves them
+// waiting. Win, and the lines after it play and the story moves on; lose, and the script's retry lines play and they wait for a
+// rematch. Matches 22 (Milo's Black Hole) moves on either way, as the script has an ending for both.
+//
+// Where everyone stands: each chapter has a home for everyone (CH_HOME), and a step can move people for itself (place) or send them
+// away (gone). When the story moves on, people walk to where the next step wants them. Talk to someone the story isn't waiting on
+// and they say what's on their mind (chat), which changes as the story does. A few things can be looked at (school.js objs): what
+// they say follows the story too (storySign).
+//
+// The script's own lines are verbatim, but the new kid is the character you make, so the few lines that call them "he" say "they"
+// (Sophie: "They learn quickly", Jackson: "defend them, they're not ready", Caleb: "They beat me", Tyler: "They got lucky").
+// What the kids say when you just talk to them (chat) and what the signs say are new: they aren't in the script, and Josh may want
+// to rewrite them. The first morning's greeting is Kiru's, the kids' sensei on the cast sheet, who isn't in the script either.
+
+CFG.story = {
+  rounds: 2, // a story match: first to this many rounds (Jackson's is the script's best of seven: first to four, whatever this says)
+  speed: 1, // how fast you walk (×)
+  typing: 1, // how fast the lines type out (× 45 letters a second; 0 shows each line at once)
+  skip: 0, // 1: a story match counts as won the moment it starts (to read the story through; dev only)
+};
+CFG_SCHEMA.push(
+  { path: 'story.rounds', label: 'Story match: first to', min: 1, max: 5, step: 1, group: 'Story', rank: -9.4, unit: '' },
+  { path: 'story.speed', label: 'Walking speed', min: 0.5, max: 2.5, step: 0.05, group: 'Story', rank: -9.4, unit: 'x' },
+  { path: 'story.typing', label: 'Lines type out at', min: 0, max: 3, step: 0.1, group: 'Story', rank: -9.4, unit: 'x', zero: 'at once' },
+  { path: 'story.skip', label: 'Skip story matches (counts a win)', type: 'toggle', min: 0, max: 1, step: 1, group: 'Story', rank: -9.4, unit: '' }
+);
+
+const STORY_CH = { 1: 'The New Kid', 2: 'The Strongest Kids', 3: 'The Price of Strength', 4: 'The Last Tournament', 5: 'King of the Pole', 6: 'One More Game' };
+const STORY_SAVE = 'tetherball.story.v1';
+
+// ───────────────────────── the 22 matches: their lines, from the script ─────────────────────────
+// pre: before the match (then "Ready?"); quips: what they say as they play (roster.js uses them for this match); lose: after a loss
+// (talk to them for a rematch); win: after a win. again: what they say when you come back for the rematch, before "Ready?".
+const STORY_MATCH = {
+  1: { key: 'milo',
+    pre: [['milo', 'I know the basics. Watch and learn.'], ['you', 'Okay.'], ['sophie', "Milo, don't show off."], ['milo', "That's half the fun!"]],
+    quips: ['Nice one!', 'My turn!', 'Watch this!'], cheer: [['sophie', 'Good timing!'], ['sophie', 'Careful, Milo!']],
+    lose: [['milo', "Again? You've got this."], ['you', "Let's try."]],
+    win: [['milo', "Wait—you've really never played?"], ['you', 'First time.'], ['milo', 'That was awesome!'], ['sophie', 'They learn quickly.'],
+      ['milo', 'And I am an excellent teacher.'], ['sophie', 'You spent most of that match yelling.'], ['milo', 'Inspirational yelling.'],
+      ['you', 'Are you two always like this?'], ['sophie', 'Pretty much.'], ['milo', 'Same time tomorrow?'], ['you', 'Sure.']] },
+  2: { key: 'emma',
+    pre: [['emma', 'Try not to follow where the ball was.'], ['you', 'Got it. I think.'], ['emma', "We'll see."]],
+    quips: ['Watch the angle!', 'Too wide!', 'Try again!'], cheer: [['milo', 'Stay sharp!']],
+    lose: [['emma', 'Watch the angle.'], ['you', 'Again.']],
+    win: [['emma', "Hm. I didn't expect that."], ['you', 'Me neither.'], ['emma', "You're fast. But you'll need more than speed against the older kids."],
+      ['milo', "See? Everybody's impressed."], ['emma', "I said fast. Don't put words in my mouth."], ['sophie', 'He does that.']] },
+  3: { key: 'marcus',
+    pre: [['marcus', "So you're the famous new kid."], ['you', 'Famous?'], ['marcus', "Around this pole? Sure. Let's see how long that lasts."]],
+    quips: ['Pick one!', 'Wrong one!', 'Gotcha!'], cheer: [['sophie', 'Follow the rope!']],
+    lose: [['marcus', 'Still confused?'], ['you', 'One more.']],
+    win: [['marcus', 'Lucky guess.'], ['you', 'I watched the rope.'], ['marcus', 'Whatever. Try that against Akira.'], ['milo', "He's busy."],
+      ['marcus', 'Afraid?'], ['milo', 'No! Strategically unavailable.']] },
+  4: { key: 'akira',
+    pre: [['akira', "Talent's nice. Training wins."]],
+    quips: ['Too slow!', 'Keep up!', 'Again!'],
+    lose: [['akira', 'Keep training.'], ['you', 'I will.']],
+    win: [['akira', 'Huh. Better than I expected.'], ['you', 'Thanks?'], ['akira', "Don't get comfortable. I'll figure you out."], ['milo', 'Nice compliment.'],
+      ['sophie', 'For Akira, it is.']] },
+  5: { key: 'felix',
+    pre: [['felix', 'You rely on that weird move, huh?'], ['you', 'Not really.'], ['felix', 'Prove it.']],
+    quips: ["Where'd it go?", 'Too late!', 'Find it!'],
+    lose: [['felix', 'Lost it again?'], ['you', "Let's play."]],
+    win: [['felix', 'Tch. Still think that special carries you.'], ['sophie', 'You lost the whole match.'], ['felix', 'I noticed.']] },
+  6: { key: 'ben',
+    pre: [['ben', "You've got some good moves."], ['you', 'So do you.'], ['ben', "Let's have fun."], ['milo', "He's so nice. It's terrifying."]],
+    quips: ['Here goes!', 'Good jump!', 'Nice return!'],
+    lose: [['ben', 'Try again?'], ['you', 'Yes.']],
+    win: [['ben', 'Good match.'], ['you', 'You too.'], ['noah', 'Ben, can we practice later?'], ['ben', 'Sure, Noah. You remembered what we worked on?'],
+      ['noah', 'Mostly.'], ['milo', "He's training Noah?"], ['sophie', 'People do practice without us.']] },
+  7: { key: 'harper',
+    pre: [['harper', "Everybody says you've got a special trick."], ['you', "It's just spin."], ['harper', "I don't care what you call it. Let's play."]],
+    quips: ['Keep moving!', 'Not yet!', 'Stay ready!'],
+    lose: [['harper', 'Stay alert.'], ['you', 'Right.']],
+    win: [['harper', 'Not bad. Better than I thought.'], ['you', 'Thanks.'], ['harper', "Don't take that as friendship."], ['you', "Wasn't going to."]] },
+  8: { key: 'akira',
+    pre: [['akira', "You've improved."], ['you', 'So have you.'], ['akira', "Good. I don't want an easy match."]],
+    quips: ["That's better!", 'Keep up!', 'My turn!'],
+    lose: [['akira', 'Almost had it.'], ['you', 'Again.']],
+    win: [['akira', "Okay. Now I'm interested."], ['you', "You weren't before?"], ['akira', "I was curious. There's a difference."]] },
+  9: { key: 'tyler',
+    pre: [['tyler', "Jackson says you're all hype."], ['you', 'Jackson talks about me?'], ['tyler', "Don't flatter yourself. I'm here to shut it down."]],
+    quips: ['All hype!', 'Too easy!', 'Burn out!'],
+    lose: [['tyler', 'Told you!'], ['you', 'Again.']],
+    win: [['tyler', "Cheap special. Doesn't count."], ['milo', 'You agreed to play.'], ['tyler', 'Keep talking, Milo. At least somebody here has a mouth for competing.'],
+      ['sophie', "He's really bad at losing."]] },
+  10: { key: 'mei',
+    pre: [['mei', "You're hard to read."], ['you', "That's what everybody says."], ['mei', "Let's see if you're good at reading back."]],
+    quips: ['Wait for it!', 'Too early!', 'Now!'],
+    lose: [['mei', 'Slow down.'], ['you', 'Got it.']],
+    win: [['mei', "So you really can't explain Slip?"], ['you', 'Just spin.'], ['mei', "You're going to drive everybody crazy."]] },
+  11: { key: 'caleb',
+    pre: [['caleb', 'Tyler talks too much.'], ['you', 'You think?'], ['caleb', "I don't. Show me what you've got."]],
+    quips: ['Eyes up!', 'Move!', 'Stay ready!'],
+    lose: [['caleb', 'Better focus.'], ['you', 'Right.']],
+    win: [['caleb', 'You earned that.'], ['tyler', 'They got lucky.'], ['caleb', 'No, Tyler. They beat me.'], ['tyler', 'Whatever.']] },
+  12: { key: 'akira',
+    pre: [['akira', "You've got Jackson's attention."], ['you', 'Unfortunately.'], ['akira', "Good. Means you're getting somewhere. Now focus on me."]],
+    quips: ['Full speed!', 'Not enough!', 'Stay sharp!'],
+    lose: [['akira', 'Stay focused.'], ['you', 'Again.']],
+    win: [['akira', "I'm not done chasing you."], ['you', 'Good.'], ['akira', "And don't underestimate Jackson. He's more dangerous than his crew."]] },
+  13: { key: 'marcus',
+    pre: [['marcus', "You got me once. Don't count on twice."], ['you', 'Okay.'], ['marcus', "That's all you've got to say?"]],
+    quips: ['Pick one!', 'Gotcha!', 'Guess again!'],
+    lose: [['marcus', 'Guess again.'], ['you', 'I will.']],
+    win: [['marcus', 'Ugh. I hate how calm you are.'], ['you', 'Thanks?'], ['marcus', "That wasn't a compliment."]] },
+  14: { key: 'emma',
+    pre: [['emma', "I've been waiting for another chance."], ['you', 'Me too.'], ['emma', 'This time I know what to watch for.']],
+    quips: ['Watch the angle!', 'Stay ready!', 'Good one!'],
+    lose: [['emma', 'Again?'], ['you', 'Again.']],
+    win: [['emma', "Okay. You've earned your spot here."], ['you', 'Thanks. You made me work for it.'], ['emma', 'Good.']] },
+  15: { key: 'felix',
+    pre: [['felix', 'Still relying on Slip?'], ['you', 'Still using Phantom?'], ['felix', "...Fair point. Let's play."]],
+    quips: ['Find it!', 'Too slow!', 'There it goes!'],
+    lose: [['felix', 'Missed it.'], ['you', 'Again.']],
+    win: [['felix', "Whatever. I still don't like that move."], ['sophie', "You don't have to."], ['felix', "Great. Then I won't."]] },
+  16: { key: 'ben',
+    pre: [['ben', 'Nice to see you made it this far.'], ['you', 'You too.'], ['ben', 'Give me your best.']],
+    quips: ['Good jump!', 'Strong return!', "Let's go!"],
+    lose: [['ben', 'Keep trying.'], ['you', 'Thanks.']],
+    win: [['ben', 'Well played.'], ['noah', 'That was incredible.'], ['ben', 'You ready for our practice tomorrow, Noah?'], ['noah', 'Definitely.']] },
+  17: { key: 'adaeze',
+    pre: [['adaeze', 'The crowd likes you.'], ['you', "I didn't invite them."], ['adaeze', "Fame makes people careless. Let's see if it has made you careless."]],
+    quips: ['Predictable.', 'Try again.', 'Too late.'],
+    lose: [['adaeze', 'Not ready.'], ['you', "We'll see."]],
+    win: [['adaeze', 'Hm. Enjoy the win while you can.'], ['you', 'I will.']] },
+  18: { key: 'harper',
+    pre: [['harper', 'Back again.'], ['you', 'Looks like it.'], ['harper', "This won't be the same match."]],
+    quips: ['Keep moving!', 'Stay ready!', 'Not yet!'],
+    lose: [['harper', 'Again?'], ['you', 'Again.']],
+    win: [['harper', "You learn quickly. Don't let it go to your head."], ['you', "I'll try not to."], ['harper', 'Good answer.']] },
+  19: { key: 'akira',
+    pre: [['akira', "So it's us again."], ['you', 'We keep meeting.'], ['akira', "You'd better be at your best."], ['you', 'You too.']],
+    quips: ['Full speed!', 'Keep up!', 'Not finished!'],
+    lose: [['akira', 'Not over yet.'], ['you', 'Again.']],
+    win: [['akira', "I'll get you next time."], ['you', 'Looking forward to it.'], ['akira', 'Beat Jackson. I want to challenge whoever comes out of this the strongest.']] },
+  20: { key: 'jackson', rounds: 4, // the script: "Best-of-seven series ... First to four games!"
+    pre: [['oliver', 'Former King Jackson versus the new challenger! First to four games!'], ['jackson', "I've waited a year for this."],
+      ['you', 'So have I. Well—less than a year.'], ['jackson', "This isn't funny."], ['you', "I wasn't joking."]],
+    quips: ['Not enough!', 'Try harder!', 'My title!', 'Too weak!'], cheer: [['tyler', 'Finish them!'], ['milo', "You've got this!"], ['sophie', 'Stay focused!']],
+    // the Sign of the Dragon: the first game you win in the series. Double Dragon is his from then on (world.js, main.js)
+    mid: [['narr', 'Jackson removes his upper kimono, revealing a dragon tattoo across his back.'], ['jackson', 'So you really can push me.'], ['tyler', 'Jackson...?'],
+      ['oliver', 'No way.'], ['milo', 'What?'], ['oliver', 'The Sign of the Dragon.'], ['sophie', 'The what?'], ['oliver', 'The Dragon Trials. Nobody ever finished them.'],
+      ['you', "What's it do?"], ['rei', 'You completed them, Jackson.'], ['jackson', 'Every trial. Every last one.'], ['caleb', 'You never told us.'],
+      ['jackson', "I wasn't training to impress you. I was training to beat Rei."], ['jackson', 'But first, you.'],
+      ['narr', 'Double Dragon becomes available to Jackson for the remainder of the series.']],
+    midQuips: ['Double Dragon!', 'Face the dragon!', 'Not finished!'], midCheer: [['milo', 'Two dragons?!'], ['sophie', 'Stay calm!']],
+    // the script's optional scene, "only if Jackson successfully counters Slip": a ball your Slip slipped off his hand, returned by
+    // his next swing (main.js plays it over the court at the next game's end)
+    slip: [['jackson', "Your trick's solved."], ['you', 'Really?'], ['jackson', "Swing twice. That's all."], ['you', 'Oh. Nice one.'], ['jackson', 'Stop acting surprised!']],
+    lose: [['jackson', 'Not ready.'], ['you', 'Another series.']],
+    win: [['jackson', "No. That's not how this ends."], ['tyler', 'That was a fluke!'], ['caleb', 'No. They won.'], ['tyler', "You're on whose side?"],
+      ['caleb', "The truth's."], ['jackson', 'I trained every day. I completed the Dragon Trials. I was supposed to face Rei.'], ['you', 'Jackson—'],
+      ['jackson', "Don't."], ['rei', 'Jackson.'], ['jackson', "Don't tell me it's okay."], ['rei', "I wasn't going to."],
+      ['jackson', "I'm stronger than I was. Stronger than I've ever been."], ['rei', 'I know.'], ['jackson', "Then why wouldn't you play me?"],
+      ['rei', "Because I didn't want to play anymore. It wasn't about you."], ['jackson', 'It was about me.'], ['rei', 'For you, maybe.'],
+      ['narr', "Jackson leaves. His pain isn't instantly resolved."]] },
+  21: { key: 'rei',
+    pre: [['rei', 'Congratulations.'], ['you', 'Thanks.'], ['rei', 'Ready for one last game?'], ['you', 'You really want to?'], ['rei', 'I do.'],
+      ['milo', 'You got this.'], ['sophie', 'Just play your game.'], ['oliver', 'The final championship!'], ['rei', "Let's enjoy this."], ['you', "Let's."]],
+    quips: ['Nice shot.', 'Good timing.', 'Well played.'], cheer: [['milo', 'Come on!'], ['sophie', 'Stay focused!'], ['oliver', 'Incredible!']],
+    lose: [['rei', 'Another game?'], ['you', 'Absolutely.']],
+    win: [['rei', 'That was wonderful.'], ['you', 'Really?'], ['rei', "I haven't enjoyed playing this much in a long time."], ['oliver', 'Your new King of the Pole!'],
+      ['milo', "That's my best friend!"], ['sophie', 'We know, Milo.'], ['rei', 'Take care of it.'], ['you', 'The title?'], ['rei', 'The playground.'], ['you', 'I will.']] },
+  22: { key: 'milo', either: true, // the script has an ending for both
+    pre: [['milo', "You're late."], ['you', 'You never gave me a time.'], ['milo', 'Details.'], ['you', "Your hand's better?"],
+      ['milo', 'Completely. And I finished what I was working on.'], ['you', 'What was it?'], ['milo', "You've always had that impossible little spin. I wanted something that was mine."],
+      ['you', 'You found it?'], ['milo', 'Oh, I found it.'], ['you', 'Then show me.'], ['milo', 'Gladly.']],
+    quips: ['Black Hole!', 'My turn!', 'Keep up!', "How's that?"], cheer: [['you', 'What?!'], ['you', 'Since when?!'], ['you', "That's amazing!"]],
+    lose: [['milo', 'YES! FINALLY!'], ['you', 'That was incredible.'], ['milo', 'I told you!']],
+    retry: [['milo', 'Another game?'], ['you', "You're on."]], // the script's retry lines: his own invitation in free play, after the end
+    win: [['milo', 'Seriously? Even with Black Hole?'], ['you', 'That was incredible.'], ['milo', "Next time, I'm winning."]] },
+};
+
+// ───────────────────────── where everyone is, chapter by chapter ─────────────────────────
+// A spot is 'map.name' (school.js spots). Someone left out of a chapter's home isn't at school that day (or isn't anywhere you'd see).
+const CH_HOME = {
+  1: { kiru: 'gate.kiru', milo: 'yard.beginnerS', sophie: 'yard.beginnerW', oliver: 'yard.bench', emma: 'yard.challengeE', marcus: 'yard.foursq',
+    akira: 'field.practiceN', felix: 'hall.lockersL', ben: 'field.practiceE', noah: 'field.practiceW', harper: 'lunch.t1n', mei: 'class.desk3',
+    adaeze: 'hall.trophies', jackson: 'field.trackE', tyler: 'field.track', caleb: 'field.picnic', rivera: 'class.teacher' },
+  2: { milo: 'yard.beginnerN', sophie: 'yard.beginnerW', oliver: 'yard.bench', emma: 'yard.challengeE', marcus: 'yard.foursq', akira: 'yard.challengeN',
+    felix: 'hall.lockersL', ben: 'field.practiceE', noah: 'field.practiceW', harper: 'lunch.t1n', mei: 'class.desk3', adaeze: 'hall.trophies',
+    jackson: 'field.trackE', tyler: 'field.track', caleb: 'field.picnic', rivera: 'class.teacher' },
+  3: { milo: 'yard.beginnerN', sophie: 'yard.beginnerE', oliver: 'hall.boardR', emma: 'field.treeE', marcus: 'yard.foursq', akira: 'yard.challengeE',
+    felix: 'hall.lockersL', ben: 'field.practiceE', noah: 'field.practiceW', harper: 'lunch.t2s', mei: 'class.desk3', adaeze: 'hall.trophies',
+    jackson: 'field.trackE', tyler: 'yard.challengeW', caleb: 'yard.wallR', rivera: 'class.teacher' },
+  4: { milo: 'yard.challengeS', sophie: 'yard.watch', oliver: 'yard.challengeW', rivera: 'yard.challengeE', emma: 'yard.wallL', marcus: 'yard.foursq',
+    akira: 'yard.kingS', felix: 'hall.lockersL', ben: 'field.practiceE', noah: 'field.practiceW', harper: 'lunch.t2s', mei: 'class.desk3', adaeze: 'hall.trophies',
+    jackson: 'hall.bracketL', tyler: 'hall.mid', caleb: 'hall.midR', rei: 'field.benchT' },
+  5: { milo: 'yard.kingS', sophie: 'yard.watch', oliver: 'yard.kingW', rivera: 'yard.kingE', emma: 'yard.wallL', marcus: 'yard.foursq', akira: 'yard.challengeE',
+    felix: 'yard.challengeW', ben: 'yard.benchR', noah: 'yard.grassS', harper: 'yard.hop', mei: 'yard.wallR', adaeze: 'yard.challengeS',
+    jackson: 'yard.kingN', tyler: 'yard.grass', caleb: 'yard.challengeN', rei: 'yard.beginnerE' },
+  6: { milo: 'yard.beginnerN', sophie: 'yard.beginnerW', oliver: 'hall.boardR', emma: 'yard.challengeE', marcus: 'yard.foursq', akira: 'yard.kingS',
+    felix: 'hall.lockersL', ben: 'field.practiceE', noah: 'field.practiceW', harper: 'lunch.t2s', mei: 'class.desk3', adaeze: 'hall.trophies',
+    jackson: 'field.treeE', tyler: 'field.track', caleb: 'field.picnic', rivera: 'class.teacher', rei: 'field.benchT' },
+};
+
+// what people say when the story isn't waiting on them, chapter by chapter (each talk says the next line, round and round). A step
+// can change someone's (chat), and the change lasts the rest of that chapter.
+const CH_CHAT = {
+  1: {
+    kiru: ["Morning. You must be the new student. The playground's up the path, through the gate.", 'Walk with the arrow keys or WASD. On a phone, drag your thumb anywhere, or tap where you want to go.', 'To talk to someone, walk up and press Space, or tap them. Go on. Recess is short.'],
+    sophie: ["Milo's harmless. Mostly.", "If he names your move, I'm sorry in advance."], milo: ['The Beginner Pole is where legends start. Probably.'],
+    oliver: ["Don't mind me. Just taking notes.", 'Interesting footwork. Very interesting.'], emma: ["I'm practising. Come back with a challenge."],
+    marcus: ["Four-square is for little kids. I'm here for the poles.", "The new kid, huh? We'll see."],
+    akira: ["Not now. I'm training.", "Come back when you've won something."], felix: ["You're the new kid? Huh.", "That locker's mine. Don't."],
+    ben: ["Hi! I'm Ben. That's Noah. We're practising.", 'Watch the ball, not the rope. That one took me a whole year.'], noah: ['Ben says watch the ball, not the rope.', "I'm going to be big like Ben someday."],
+    harper: ['The cafeteria is the only quiet place in this school.', "Don't sit there. That's my spot."], mei: ['You walk like somebody who just got here.', "I like watching people. Don't make it weird."],
+    adaeze: ['Three years of trophies, and one name on all of them.', 'Rei never even looks at these.'], jackson: ['Move.', "I'm busy."],
+    tyler: ['Who are you supposed to be?', "Jackson's running laps. Don't bother him."], caleb: ["Don't mind Tyler.", "He's loud. I'm not."],
+    rivera: ['Welcome to Room 4B! Recess is outside, though.', 'Play fairly. Play safely.'],
+  },
+  2: {
+    milo: ['Step one: become unstoppable.', "I'm going to be King. You can be... Vice King."], sophie: ["Oliver's already got a name for you. I'm so sorry."],
+    oliver: ['Rankings update at lunch. Be there.', "You're climbing. Slowly. But climbing."], emma: ["You beat me once. Don't get used to it."],
+    marcus: ["Akira's going to wipe the floor with you. I'll watch."], akira: ["I'll figure you out."], felix: ['Weird move. Still weird.'],
+    ben: ["Good luck out there! Noah's rooting for you."], noah: ['Ben is teaching me the stomp. Someday.'], harper: ['Not now.'],
+    mei: ["Everybody's talking about your spin."], adaeze: ['The crowd is starting to notice you.'], jackson: ['Talk is cheap.'],
+    tyler: ['"Invisible Spin." Sounds made up.'], caleb: ["Jackson's been working hard."], rivera: ['Wonderful energy on the playground today.'],
+  },
+  3: {
+    milo: ["I'm working on something. Can't tell you yet.", "My hand's fine. Stop looking at it."], sophie: ["Milo's staying after every day now. I don't like it."],
+    oliver: ['Celestial Invisible Wind Cyclone. I am workshopping it.'], emma: ["You've gotten better. I've been watching."], marcus: ['Still lucky.'],
+    akira: ["Jackson's crew keeps watching you. Don't let it get in your head."], felix: ['Phantom is still better.'],
+    ben: ['Noah landed his first stomp! Well. Most of one.'], noah: ["I'm practising every day. Like Milo!"], harper: ['Still not friends.'],
+    mei: ["I'm reading. You're still hard to read, though."], adaeze: ["I'm watching how you handle the attention."], jackson: ['Keep walking.'],
+    tyler: ["All hype. You'll see."], caleb: ["I don't pick fights. Tyler does."], rivera: ['Tournament sign-ups are coming soon!'],
+  },
+  4: {
+    milo: ['Win something for us.', 'Recovery is part of the work. Apparently.'], sophie: ["You're doing great. Don't tell Milo I said that."],
+    oliver: ['Historically, this is the most important tournament in history.', 'I am, technically, the commentator.'], rivera: ['Play fairly. Play safely.', 'Your next match is when your opponent is ready.'],
+    emma: ["Good luck. You'll need it on Jackson's side of the bracket."], marcus: ["Don't look at me. I'm watching."], akira: ["We'll meet in this bracket. Count on it."],
+    felix: ["Go on. I'm not stopping you."], ben: ["Noah's made a sign for you. It's mostly glitter."], noah: ['GO NEW KID! That is what my sign says.'],
+    harper: ['Focus on the next one, not the last one.'], mei: ["Everybody's reading you now. Good luck."], adaeze: ['The crowd likes a winner. Until it doesn\'t.'],
+    jackson: ["Save it. I'll get my chance."], tyler: ["He's the real champion. You'll see."], caleb: ['Focus on your own games.'], rei: ['Hello.'],
+  },
+  5: {
+    milo: ["You've got this!", "This is the best day of my life and I'm not even playing."], sophie: ['Stay focused!'], oliver: ['History. Is. Being. Made.'],
+    rivera: ['Play fairly. Play safely. And have fun out there.'], emma: ['Watch the angle.'], marcus: ['Pick one. Kidding. Go win.'], akira: ['Beat Jackson.'],
+    felix: ['Fine. Good luck.'], ben: ['Give it your best!'], noah: ['GO GO GO!'], harper: ['Stay ready.'], mei: ["Don't let him read you."], adaeze: ['Predictable. Go anyway.'],
+    tyler: ['Finish them!'], caleb: ['May the best one win.'], jackson: ["I've waited a year for this."], rei: ["Let's enjoy this."],
+  },
+  6: {
+    milo: ["I'm still going to be the strongest.", 'Same time tomorrow?'], sophie: ["He hasn't stopped saying Black Hole all week."],
+    oliver: ['New rankings are up. Top of the list: you. Second: still Milo, until he wins one.'], emma: ['Rematch? Any time.'], marcus: ['You got lucky. Three times.'],
+    akira: ["I'm not done chasing you."], felix: ["I still don't like that move."], ben: ['Noah wants a game! So do I.'], noah: ['Ben taught me the stomp! Watch! ...Okay, almost.'],
+    harper: ["Don't take this as friendship. But good game."], mei: ['You still drive everybody crazy.'], adaeze: ['Enjoy it while you can.'],
+    jackson: ["I'm still training. Not for a title. I don't know what for yet.", "Rei says I don't have to decide today."], tyler: ['That was a fluke. Probably.'],
+    caleb: ['You earned it.'], rivera: ['There is more to school than winning. But congratulations.'], rei: ['Take care of it.', 'The playground, I mean.'],
+  },
+};
+
+// ───────────────────────── the steps ─────────────────────────
+// id; ch: its chapter; goal: what the HUD says to do next; at: where the goal is (a spot, for the hint arrow) unless it's the
+// person to talk to; trigger: { talk: key } | { zone: 'map.zone' } | { enter: map }; start: put you here as the step begins (a new
+// day; title: its chapter card, caption: a card under it); place / gone: people moved for this step; chat: what someone says now;
+// scene: lines ([speaker, text]; speaker 'you', 'narr' or a roster key) and staging ({ walk: key, to: spot }, { leave: key, to:
+// spot }, { appear: key, at: spot }, { cut: 'Later...', you: spot, place: { key: spot } } (cut: true, a cut with no words),
+// { face: key, dir }, { end: chapter }).
+// match: a match step (STORY_MATCH's lines); talk: whom you talk to for it (its key); then: a scene after the match's own lines, once it
+// has moved the story on.
+const STORY_STEPS = [
+  // ── Chapter 1 — The New Kid ──
+  { id: 'arrive', ch: 1, title: true, start: 'gate.start', goal: 'Walk up the path to the playground.', at: 'yard.watch', trigger: { zone: 'yard.entry' },
+    place: { milo: 'yard.beginnerS', sophie: 'yard.beginnerW' },
+    scene: [['narr', 'You arrive at the elementary school playground, watching an unfamiliar tetherball game.'],
+      { walk: 'milo', to: 'yard.gateIn', near: true }, { walk: 'sophie', to: 'yard.watch', near: true },
+      ['milo', 'Hey! New kid!'], ['you', 'Me?'], ['milo', 'You play tetherball?'], ['you', 'Not really.'],
+      ['milo', "Then today's your lucky day! I'm Milo. Future King of the Pole."], ['sophie', 'He introduces himself like that to everyone.'],
+      ['milo', "It's called confidence."], ['sophie', "It's called repetition."], ['you', "I'm new here."], ['milo', "Perfect. Then you don't know how many times I've lost."],
+      ['sophie', 'Yet.'], ['milo', 'Sophie!'], ['sophie', "What? You're good. You're just not the King."], ['milo', "Not yet. Come on. I'll teach you."],
+      { walk: 'milo', to: 'yard.beginnerE' }, { walk: 'sophie', to: 'yard.beginnerW' }] },
+  { id: 'm1', ch: 1, match: 1, talk: 'milo', goal: 'Play Milo at the Beginner Pole.', place: { milo: 'yard.beginnerE', sophie: 'yard.beginnerW' } },
+  { id: 'poles', ch: 1, goal: 'Look round the playground.', at: 'yard.challengeS', trigger: { zone: 'yard.challenge' },
+    place: { milo: 'yard.challengeW', sophie: 'yard.challengeS', emma: 'yard.challengeE' },
+    scene: [['milo', "Beginner Pole. Challenge Pole. King's Pole."], ['you', 'Three poles?'], ['sophie', 'Different crowds. Same game.'],
+      ['milo', "The best players go for the King's Pole. That's where Rei used to defend her title."], ['you', 'Used to?'], ['milo', 'She barely plays anymore.'],
+      ['sophie', 'She still has the title, though.'], ['milo', 'And someday—'], ['sophie', "We know. You'll be King."], ['milo', "Glad you're listening."],
+      ['narr', 'Emma is practicing nearby.'], ['emma', 'Milo. Are you bringing me another challenge?'], ['milo', 'Better. A new opponent.'],
+      ['emma', "Then let's see if the newcomer can keep up."]] },
+  { id: 'm2', ch: 1, match: 2, talk: 'emma', goal: 'Play Emma at the Challenge Pole.', place: { milo: 'yard.challengeW', sophie: 'yard.challengeS', emma: 'yard.challengeE' } },
+  { id: 'oliver', ch: 1, goal: "Somebody's been taking notes on you. The bench by the wall.", trigger: { talk: 'oliver' },
+    place: { oliver: 'yard.bench', milo: 'yard.wallL', sophie: 'yard.beginnerN' },
+    scene: [['oliver', 'Two wins. New student. Unknown experience.'], ['you', 'Who are you?'], ['oliver', 'Oliver. I keep the rankings.'], ['sophie', 'Unofficial rankings.'],
+      ['oliver', 'Historically essential rankings.'], ['milo', 'Put me higher this time.'], ['oliver', 'Win more.'], ['milo', 'Harsh.'],
+      ['oliver', 'Want another challenge? Marcus is looking for someone to embarrass.']] },
+  { id: 'm3', ch: 1, match: 3, talk: 'marcus', goal: 'Marcus is looking for someone to embarrass. The four-square court.', place: { marcus: 'yard.foursq', milo: 'yard.beginnerS', sophie: 'yard.hop' } },
+  { id: 'legend', ch: 1, goal: "Somebody is playing at the King's Pole.", at: 'yard.kingS', trigger: { zone: 'yard.king' },
+    place: { rei: 'yard.kingN', oliver: 'yard.kingW', milo: 'yard.challengeN', sophie: 'yard.challengeE' },
+    scene: [['narr', "Rei finishes a casual game at the King's Pole. She leaves without making an announcement."], { leave: 'rei', to: 'yard.fromHall' },
+      ['you', 'Who was that?'], ['oliver', "Rei. Three years undefeated. Legend has it she doesn't even use her dominant hand."], ['you', 'Seriously?'],
+      ['sophie', "Legend has it. That's all."], ['milo', 'Still. Imagine being that good.'], ['you', 'I want to play her someday.'], ['milo', 'Get in line.'], { end: 1 }] },
+
+  // ── Chapter 2 — The Strongest Kids ──
+  { id: 'invite', ch: 2, title: true, start: 'gate.start', caption: 'The next day', goal: 'Milo has a training plan. The Beginner Pole.', at: 'yard.beginnerS', trigger: { zone: 'yard.beginner' },
+    place: { milo: 'yard.beginnerN', sophie: 'yard.beginnerW', akira: 'yard.challengeW' },
+    scene: [['milo', 'Training plan! Step one: become unstoppable.'], ['sophie', "What's step two?"], ['milo', 'Stay unstoppable.'],
+      { walk: 'akira', to: 'yard.beginnerE' }, ['akira', "That's not a plan."], ['milo', 'Who asked you?'], ['akira', "Akira. And I'm asking the new kid for a match."],
+      ['you', 'Sure.'], ['akira', "Good. Don't expect me to slow down."]] },
+  { id: 'm4', ch: 2, match: 4, talk: 'akira', goal: 'Play Akira.', place: { akira: 'yard.beginnerE', milo: 'yard.beginnerN', sophie: 'yard.beginnerW' } },
+  { id: 'spin', ch: 2, goal: 'Practise with Milo.', trigger: { talk: 'milo' }, place: { milo: 'yard.beginnerN', sophie: 'yard.beginnerW', oliver: 'yard.beginnerS' },
+    scene: [['narr', 'Milo tries to return Slip during practice.'], ['milo', 'Hey! My hand hit that!'], ['you', 'Really?'], ['milo', 'What are you doing to the ball?'],
+      ['you', 'I add a little spin.'], ['milo', 'I add spin!'], ['you', 'Maybe a little more?'], ['milo', 'How much more?!'], ['oliver', 'Fascinating. The Invisible Spin.'],
+      ['sophie', "Please don't name it."], ['oliver', 'Too late.']],
+    chat: { oliver: ['The Invisible Spin. It has a ring to it.'] } },
+  { id: 'm5', ch: 2, match: 5, talk: 'felix', goal: 'Somebody in the Main Hall has opinions about your move.', place: { felix: 'hall.lockersL', sophie: 'hall.midL' } },
+  { id: 'm6', ch: 2, match: 6, talk: 'ben', goal: 'Big Ben wants a friendly game out on the field.', place: { ben: 'field.practiceE', noah: 'field.practiceW', milo: 'field.practiceS', sophie: 'field.treeW' } },
+  { id: 'crew', ch: 2, goal: 'Something is going on at the Challenge Pole.', at: 'yard.challengeS', trigger: { zone: 'yard.challenge' },
+    place: { jackson: 'yard.challengeN', tyler: 'yard.challengeE', caleb: 'yard.challengeW', milo: 'yard.watch', sophie: 'yard.foursq', oliver: 'yard.hop', marcus: 'yard.wallL' },
+    scene: [['narr', 'Jackson stands with Tyler and Caleb as another player leaves the Challenge Pole.'], ['tyler', "Nobody's touching Jackson this year."],
+      ['caleb', "He's been working hard."], ['jackson', 'Not hard enough yet.'], ['tyler', "Hey, it's the new kid. You think you're special?"], ['you', "I didn't say that."],
+      ['tyler', 'Oliver did. "Invisible Spin." Sounds made up.'], { walk: 'milo', to: 'yard.challengeS', near: true }, ['milo', "It's real."],
+      ['jackson', "If your friend needs you to defend them, they're not ready."], ['sophie', "They didn't ask for defending."],
+      ['jackson', "Then prove yourselves at the poles. Talk's cheap."], { leave: 'jackson', to: 'yard.fromField' }, { leave: 'tyler', to: 'yard.fromField' }, { leave: 'caleb', to: 'yard.fromField' },
+      ['narr', 'After Jackson leaves.'], { walk: 'oliver', to: 'yard.challengeE' },
+      ['oliver', "Jackson was champion before Rei beat him. He's wanted another match ever since."], ['you', "Why won't she play him?"],
+      ['oliver', 'She stopped competing. Nobody really knows why.']],
+    chat: { tyler: ['"Invisible Spin." Sounds made up.'] } },
+  { id: 'm7', ch: 2, match: 7, talk: 'harper', goal: 'Harper has heard about your "special trick". She eats in the cafeteria.', place: { harper: 'lunch.t1n' } },
+  { id: 'm8', ch: 2, match: 8, talk: 'akira', goal: 'Akira wants a rematch at the Challenge Pole.', place: { akira: 'yard.challengeN', milo: 'yard.challengeS', sophie: 'yard.challengeW' } },
+  { id: 'refusal', ch: 2, goal: "Raised voices by the King's Pole.", at: 'yard.kingS', trigger: { zone: 'yard.king' },
+    place: { jackson: 'yard.kingW', rei: 'yard.kingE', tyler: 'yard.wallR', caleb: 'yard.grass' },
+    scene: [['jackson', "Rei. The final tournament. You're actually entering?"], ['rei', 'Yes.'], ['jackson', 'You ignored me all year.'],
+      ['rei', 'I told you. I needed to stop playing.'], ['jackson', 'Then you could have surrendered the title.'], ['rei', 'I said you could call yourself champion.'],
+      ['jackson', "I don't want you to call me champion. I want to beat you."], ['rei', 'Then earn your place in the tournament.'], ['jackson', 'I will.'],
+      { leave: 'rei', to: 'yard.fromHall' }, { leave: 'jackson', to: 'yard.fromField' }, { end: 2 }] },
+
+  // ── Chapter 3 — The Price of Strength ──
+  { id: 'name', ch: 3, title: true, start: 'gate.start', caption: 'A week later', goal: "Oliver has posted a new note in the Main Hall.", at: 'hall.board', trigger: { zone: 'hall.board' },
+    place: { oliver: 'hall.boardR', sophie: 'hall.boardL', milo: 'hall.midL' },
+    scene: [['narr', 'Oliver posts a new note.'], ['you', '"Invisible Wind Tornado"?'], ['oliver', "It captures your technique's elegance."],
+      ['sophie', 'It captures your ability to waste paper.'], ['milo', "I'd like a name."], ['oliver', 'For what special?'], ['milo', "...I'm working on one."]] },
+  { id: 'm9', ch: 3, match: 9, talk: 'tyler', goal: 'Tyler is waiting at the Challenge Pole to "shut it down".', place: { tyler: 'yard.challengeW', milo: 'yard.challengeS', sophie: 'yard.challengeE' } },
+  { id: 'after', ch: 3, goal: "Recess is over. Milo's still at the Beginner Pole.", at: 'yard.beginnerS', trigger: { zone: 'yard.beginner' },
+    place: { milo: 'yard.beginnerN', sophie: 'yard.beginnerE' },
+    scene: [['sophie', "You're staying after again?"], ['milo', 'Yep.'], ['sophie', "How's your hand?"], ['milo', 'Fine.'], ['sophie', 'Milo.'],
+      ['milo', "I'm getting closer. I can tell."], ['sophie', 'Close to what?'], ['milo', 'Not telling yet.']] },
+  { id: 'm10', ch: 3, match: 10, talk: 'mei', goal: 'Mei has been watching you. She reads in Room 4B.', place: { mei: 'class.desk3' } },
+  { id: 'trials', ch: 3, goal: 'Oliver is telling a legend under the Old Tree.', at: 'field.treeS', trigger: { zone: 'field.tree' },
+    place: { oliver: 'field.treeW', milo: 'field.benchT', sophie: 'field.treeE', jackson: 'field.trackE', tyler: 'field.track', caleb: 'field.picnic' },
+    scene: [['oliver', "Legend says there are Dragon Trials. Nobody's ever completed them."], ['milo', 'Are there actual dragons?'], ['sophie', "It's elementary school."],
+      ['milo', "That wasn't an answer."], ['oliver', 'The trials are supposed to grant a legendary technique.'], ['you', 'Like Slip?'],
+      ['oliver', 'A thousand times greater than the Celestial Invisible Wind Cyclone!'], ['you', 'It got longer.'],
+      ['narr', 'Jackson passes, overhearing.'], { walk: 'jackson', to: 'field.treeS', near: true }, { walk: 'tyler', to: 'field.pond' }, { walk: 'caleb', to: 'field.picnic' },
+      ['tyler', 'Those trials are fake.'], ['jackson', "You don't know that."], ['caleb', 'Do you?'], ['jackson', 'Keep walking.'],
+      { leave: 'jackson', to: 'field.fromYard' }, { leave: 'tyler', to: 'field.fromYard' }] },
+  { id: 'm11', ch: 3, match: 11, talk: 'caleb', goal: 'Caleb wants to see what you have got. The Challenge Pole.', place: { caleb: 'yard.challengeN', tyler: 'yard.challengeW' } },
+  { id: 'exhib', ch: 3, goal: "Jackson's crew has found Milo at the Beginner Pole.", at: 'yard.beginnerS', trigger: { zone: 'yard.beginner' },
+    place: { milo: 'yard.beginnerN', jackson: 'yard.beginnerE', tyler: 'yard.beginnerW', sophie: 'yard.wallL' },
+    scene: [['narr', 'Jackson spots Milo practicing.'], ['jackson', 'Still no special?'], ['milo', 'Not your business.'],
+      ['jackson', "Your friend got one by accident. You've been here for years."], ['milo', "Then maybe I'm overdue."], ['tyler', "That's hilarious."],
+      ['you', 'Leave him alone.'], ['jackson', 'He can speak for himself.'], ['milo', "I can. And I don't need your approval."],
+      ['narr', 'Jackson offers Milo an exhibition match.'], { cut: true }, // (the script: "The scene cuts from the challenge to its aftermath.")
+      ['jackson', 'Practice harder.'], ['milo', 'I will.'], ['you', 'That was unnecessary.'], ['jackson', 'Then beat me when it matters.'],
+      { leave: 'jackson', to: 'yard.fromField' }, { leave: 'tyler', to: 'yard.fromField' }, { leave: 'milo', to: 'yard.fromField' }],
+    chat: { sophie: ['He went to the Old Tree. He goes there when he needs to think.'] } },
+  { id: 'tree', ch: 3, goal: 'Milo went to sit under the Old Tree.', trigger: { talk: 'milo' }, place: { milo: 'field.benchT', sophie: 'yard.beginnerW' },
+    scene: [['narr', 'Later, Milo and you sit under the old tree.'], ['you', 'I could help you practice.'], ['milo', 'Thanks. But this part I need to figure out myself.'],
+      ['you', 'Why?'], ['milo', 'Because I want to know what I can do. Not just what you can do.'], ['you', "Okay. I'm still here if you need me."], ['milo', 'I know.']] },
+  { id: 'm12', ch: 3, match: 12, talk: 'akira', goal: 'Akira is waiting at the Challenge Pole.', place: { akira: 'yard.challengeN', milo: 'field.benchT' } },
+  { id: 'injury', ch: 3, goal: 'Sophie is waiting for Milo at the Beginner Pole.', at: 'yard.beginnerS', trigger: { zone: 'yard.beginner' },
+    place: { sophie: 'yard.beginnerW', milo: 'yard.fromHall' },
+    scene: [['narr', 'Milo arrives with his hand wrapped.'], { walk: 'milo', to: 'yard.beginnerN' }, ['sophie', "Milo, that doesn't look fine."], ['milo', "It's just sore."],
+      ['you', 'From training?'], ['milo', 'I thought I could finish it before the tournament.'], ['sophie', 'Finish what?'], ['milo', "I'll tell you when it's ready."],
+      ['sophie', "Promise you'll rest it and get it checked."], ['milo', '...Promise.'], { end: 3 }] },
+
+  // ── Chapter 4 — The Last Tournament ──
+  { id: 'announce', ch: 4, title: true, start: 'gate.start', caption: 'Monday', goal: 'Ms. Rivera has an announcement. Room 4B.', at: 'class.front', trigger: { zone: 'class.room' },
+    place: { rivera: 'class.teacher', oliver: 'class.desk1', milo: 'class.desk2', sophie: 'class.window', mei: 'class.desk3' },
+    scene: [['rivera', "The final tetherball tournament starts this week. Play fairly. Play safely. And remember, there's more to school than winning."],
+      ['oliver', 'History disagrees!'], ['rivera', 'Oliver.'], ['oliver', '...Yes, Ms. Rivera.']] },
+  { id: 'bracket', ch: 4, goal: 'The bracket is up on the notice board in the Main Hall.', at: 'hall.bracket', trigger: { zone: 'hall.bracket' },
+    place: { jackson: 'hall.bracketL', tyler: 'hall.mid', caleb: 'hall.midR', rivera: 'class.teacher' },
+    scene: [['narr', 'Rei is officially on the roster. Jackson reads the bracket with Tyler and Caleb.'], ['tyler', "You'll finally get your rematch."],
+      ['jackson', "Nobody's stopping me."], ['caleb', 'Then focus on your own games.'], ['jackson', 'I always do.']] },
+  { id: 'withdraw', ch: 4, goal: 'Ms. Rivera is talking to Milo on the playground.', at: 'yard.beginnerS', trigger: { zone: 'yard.beginner' },
+    place: { rivera: 'yard.beginnerE', milo: 'yard.beginnerN', sophie: 'yard.beginnerW' },
+    scene: [['rivera', "Milo, your hand hasn't healed enough. You can't compete until you're cleared."], ['milo', 'I know. I thought it would be better.'],
+      ['rivera', "You've worked hard. Now recovery is part of the work."], { leave: 'rivera', to: 'yard.fromHall' },
+      { cut: 'Later, Milo sits with you and Sophie.', you: 'field.treeS', place: { milo: 'field.benchT', sophie: 'field.treeE' } },
+      ['milo', 'I hate this.'], ['sophie', 'I know.'], ['milo', 'I was going to show everybody.'], ['you', 'You still can. Just not today.'], ['milo', 'Yeah. I guess.'],
+      ['sophie', "Don't make it worse trying to rush back."], ['milo', "Fine. But you'd better win something for us."], ['you', 'No pressure.'], ['milo', 'Massive pressure.']] },
+  { id: 'm13', ch: 4, match: 13, talk: 'marcus', goal: 'Tournament, round one: Marcus, at the Challenge Pole.', place: { marcus: 'yard.challengeN' } },
+  { id: 'm14', ch: 4, match: 14, talk: 'emma', goal: 'Tournament: Emma is next, at the Challenge Pole.', place: { emma: 'yard.challengeN', marcus: 'yard.wallL' } },
+  { id: 'm15', ch: 4, match: 15, talk: 'felix', goal: 'Tournament: Felix is next, at the Challenge Pole.', place: { felix: 'yard.challengeN', emma: 'yard.wallL', marcus: 'yard.foursq' } },
+  { id: 'm16', ch: 4, match: 16, talk: 'ben', goal: 'Tournament: Big Ben is next, at the Challenge Pole.', place: { ben: 'yard.challengeN', noah: 'yard.challengeS', milo: 'yard.watch', felix: 'yard.wallR' } },
+  { id: 'results', ch: 4, goal: 'Oliver has posted the results in the Main Hall.', at: 'hall.board', trigger: { zone: 'hall.board' },
+    place: { oliver: 'hall.boardR', tyler: 'hall.midL', caleb: 'hall.midR', jackson: 'hall.mid', ben: 'field.practiceE', noah: 'field.practiceW' },
+    scene: [['narr', "Oliver posts updated results, including Jackson advancing on the opposite side."], ['oliver', "Jackson's still unbeaten in the tournament."],
+      ['tyler', "Obviously. He's the real champion."], ['caleb', "Rei hasn't played him yet."], ['tyler', "Don't start."], ['jackson', "Save it. I'll get my chance."]] },
+  { id: 'm17', ch: 4, match: 17, talk: 'adaeze', goal: 'Tournament: Adaeze is next, at the Challenge Pole.', place: { adaeze: 'yard.challengeN', oliver: 'yard.challengeW' } },
+  { id: 'm18', ch: 4, match: 18, talk: 'harper', goal: 'Tournament: Harper is next, at the Challenge Pole.', place: { harper: 'yard.challengeN', adaeze: 'yard.wallR' } },
+  { id: 'reason', ch: 4, goal: 'Rei is sitting under the Old Tree.', trigger: { talk: 'rei' }, place: { rei: 'field.benchT', harper: 'yard.hop' },
+    scene: [['narr', 'Rei sits at the old tree. You approach.'], ['you', 'Can I ask you something?'], ['rei', 'Sure.'], ['you', 'Why did you stop playing?'],
+      ['rei', 'I used to love it. Then every match became about defending a title. I missed playing just because it was fun.'], ['you', 'Then why enter now?'],
+      ['rei', "It's my last year here. I'd like one good tournament before I go. And I think somebody else should carry this tradition forward."],
+      ['you', 'Jackson really wants to face you.'], ['rei', 'I know. I wish he could remember what he used to enjoy about the game.']] },
+  { id: 'm19', ch: 4, match: 19, talk: 'akira', goal: 'Tournament: Akira. Your rival is waiting at the Challenge Pole.', place: { akira: 'yard.challengeN', rei: 'field.benchT' } },
+  { id: 'challenge', ch: 4, goal: "The final is at the King's Pole.", at: 'yard.kingS', trigger: { zone: 'yard.king' },
+    place: { jackson: 'yard.kingN', tyler: 'yard.kingE', caleb: 'yard.kingW', sophie: 'yard.challengeN', milo: 'yard.challengeE', akira: 'yard.wallR' },
+    scene: [['narr', 'Jackson approaches with Tyler and Caleb.'], ['jackson', "So you're what's standing between me and Rei."], ['you', "I'm trying to win too."],
+      ['tyler', "You're in the way."], ['sophie', "That's how tournaments work."], ['caleb', 'Tyler, enough.'], ['jackson', "I trained for a year. I won't lose my chance now."],
+      ['you', "Then let's play."], { end: 4 }] },
+
+  // ── Chapter 5 — King of the Pole ──
+  { id: 'm20', ch: 5, title: true, match: 20, talk: 'jackson', goal: 'The final: Jackson, at the King\'s Pole. Best of seven.', place: { jackson: 'yard.kingN', tyler: 'yard.grass', caleb: 'yard.challengeN', rei: 'yard.beginnerE' },
+    then: [{ leave: 'jackson', to: 'yard.fromField' }] },
+  { id: 'm21', ch: 5, match: 21, talk: 'rei', goal: 'Rei is waiting at the King\'s Pole.', place: { rei: 'yard.kingN', jackson: 'field.treeE', tyler: 'field.track', caleb: 'field.picnic' } },
+  { id: 'kings', ch: 5, goal: 'Jackson is sitting alone by the Challenge Pole.', at: 'yard.challengeS', trigger: { zone: 'yard.challenge' },
+    place: { jackson: 'yard.challengeN', rei: 'yard.wallR', milo: 'yard.kingS', sophie: 'yard.kingW', oliver: 'yard.kingE' },
+    scene: [['narr', 'Later, Jackson sits alone by the Challenge Pole.'], { walk: 'rei', to: 'yard.challengeE' }, ['jackson', 'Here to congratulate me on second place?'], ['rei', 'No.'],
+      ['jackson', 'I might actually be better than you now.'], ['rei', 'You might.'], ['jackson', "Doesn't that bother you?"], ['rei', 'Not really.'],
+      ['jackson', "I don't understand you."], ['rei', 'I know.'], ['jackson', 'What do I do now?'], ['rei', "You don't have to decide today."], { end: 5 }] },
+
+  // ── Epilogue — One More Game ──
+  { id: 'm22', ch: 6, title: true, start: 'gate.start', caption: 'A few weeks later', match: 22, talk: 'milo', goal: 'Milo has arranged a meeting at the Beginner Pole.',
+    place: { milo: 'yard.beginnerN' }, gone: ['sophie'],
+    then: [['you', "How'd you learn that?"], ['milo', 'Practice. A ridiculous amount of practice.'], ['you', 'It paid off.'], ['milo', 'Yeah. It did.'],
+      ['milo', 'One question, though. How do you really do Slip?'], ['you', 'I add a little spin.'], ['milo', 'I knew you were going to say that.'], ['narr', 'You both laugh.'],
+      ['milo', 'Same time tomorrow?'], ['you', 'Of course.'], ['milo', "Good. I'm still going to be the strongest."], ['you', "You'll have to beat me."], ['milo', "That's the plan."], { end: 6 }] },
+];
+
+// ───────────────────────── the state ─────────────────────────
+// The story as you've played it: which step is next, where you are, which matches you've won, what you've seen. Saved on this
+// device as you go (STORY_SAVE). Pure: no DOM (the tests drive it in Node), and overworld.js asks it what to show.
+function createStory(store) {
+  const ls = store || { get() { return null; }, set() {} };
+  const st = { step: 0, map: 'gate', x: 0, y: 0, face: 'up', won: {}, lost: {}, talks: {}, seen: {}, ended: false, chapterShown: 0 };
+  const stepAt = (i) => STORY_STEPS[Math.min(i, STORY_STEPS.length - 1)];
+
+  function reset() {
+    st.step = 0; st.won = {}; st.lost = {}; st.talks = {}; st.seen = {}; st.ended = false; st.chapterShown = 0;
+    const s = schoolSpot(STORY_STEPS[0].start);
+    st.map = s.map; st.x = s.x; st.y = s.y; st.face = s.face;
+  }
+  function load() {
+    let o = null;
+    try { o = JSON.parse(ls.get(STORY_SAVE)); } catch (e) { o = null; }
+    if (!o || typeof o !== 'object' || !(o.step >= 0) || !SCHOOL[o.map]) return false;
+    reset();
+    st.step = Math.min(STORY_STEPS.length, Math.round(o.step)); st.map = o.map; st.x = +o.x || 0; st.y = +o.y || 0; st.face = o.face || 'down';
+    st.won = o.won || {}; st.lost = o.lost || {}; st.seen = o.seen || {}; st.ended = !!o.ended; st.chapterShown = o.chapterShown | 0;
+    if (schoolHit(SCHOOL[st.map], st.x, st.y, SCHOOL_R)) { const s = schoolSpot(startOf(st.step)); st.map = s.map; st.x = s.x; st.y = s.y; } // somewhere you can stand
+    return true;
+  }
+  function save() {
+    try { ls.set(STORY_SAVE, JSON.stringify({ step: st.step, map: st.map, x: Math.round(st.x), y: Math.round(st.y), face: st.face, won: st.won, lost: st.lost, seen: st.seen, ended: st.ended, chapterShown: st.chapterShown })); } catch (e) { /* a private window */ }
+  }
+  const has = () => { try { const o = JSON.parse(ls.get(STORY_SAVE)); return !!(o && o.step > 0); } catch (e) { return false; } };
+  // where a step would put you if you had to start it from nothing (a save in a wall): its own start, else the last one before it
+  function startOf(i) { for (let k = Math.min(i, STORY_STEPS.length - 1); k >= 0; k--) if (STORY_STEPS[k].start) return STORY_STEPS[k].start; return STORY_STEPS[0].start; }
+
+  // the step the story is waiting on (null once it's over)
+  const current = () => (st.step < STORY_STEPS.length ? STORY_STEPS[st.step] : null);
+  const chapter = () => { const s = current(); return s ? s.ch : 6; };
+  // who stands where right now: the chapter's homes, with the current step's moves on top (and anyone it sends away gone)
+  function cast() {
+    const s = current(), ch = chapter(), out = {};
+    const home = CH_HOME[st.ended ? 6 : ch] || {};
+    for (const k in home) out[k] = home[k];
+    if (s && !st.ended) {
+      if (s.place) for (const k in s.place) out[k] = s.place[k];
+      if (s.gone) for (const k of s.gone) delete out[k];
+    }
+    return out;
+  }
+  // what someone says when the story isn't waiting on them: this chapter's line, or one a step this chapter has given them
+  function chatOf(key) {
+    const ch = st.ended ? 6 : chapter();
+    let lines = (CH_CHAT[ch] && CH_CHAT[ch][key]) || null;
+    for (let i = 0; i <= Math.min(st.step, STORY_STEPS.length - 1); i++) { const s = STORY_STEPS[i]; if (s.ch === ch && s.chat && s.chat[key] && i < st.step) lines = s.chat[key]; }
+    if (!lines || !lines.length) return null;
+    const n = st.talks[key] = (st.talks[key] || 0) + 1;
+    return [[key, lines[(n - 1) % lines.length]]];
+  }
+  // what the current step waits on: 'talk' (and whom), 'zone', 'enter' or 'now'
+  function waitsOn() {
+    const s = current();
+    if (!s) return null;
+    if (s.match) return { talk: s.talk || STORY_MATCH[s.match].key };
+    return s.trigger || { now: true };
+  }
+  // the person or place the hint points at
+  function target() {
+    const s = current();
+    if (!s) return null;
+    const w = waitsOn();
+    if (w && w.talk) { const c = cast()[w.talk]; return c ? schoolSpot(c) : null; }
+    return s.at ? schoolSpot(s.at) : null;
+  }
+  // the story moves on: the step is done
+  function advance() { st.step++; st.talks = {}; if (st.step >= STORY_STEPS.length) st.ended = true; save(); }
+  function won(n) { st.won[n] = (st.won[n] || 0) + 1; }
+  function lost(n) { st.lost[n] = (st.lost[n] || 0) + 1; }
+  const wins = () => Object.keys(st.won).length;
+
+  // what a sign or a board says, by what has happened
+  function sign(id) {
+    const name = typeof youName === 'function' ? youName() : 'You', w = wins(), champ = !!st.won[21];
+    if (id === 'gate') return ['WELCOME BACK! Recess is at 10:15. Play fairly. Play safely.'];
+    if (id === 'king') return champ ? [`KING'S POLE. Champion: ${name}.`, 'Somebody has already chalked a crown next to it.'] : ["KING'S POLE. Champion: Rei. Three years undefeated.", 'The paint round the pole is gold. Nobody stands inside the ring unless they mean it.'];
+    if (id === 'rankings') {
+      const top = champ ? [name, 'Rei', 'Jackson', 'Akira'] : w >= 20 ? ['Rei', name, 'Jackson', 'Akira'] : w >= 12 ? ['Rei', 'Jackson', name, 'Akira'] : w >= 6 ? ['Rei', 'Jackson', 'Akira', 'Adaeze'] : ['Rei', 'Jackson', 'Akira', 'Adaeze'];
+      const spin = st.step > stepIndex('name') ? 'Invisible Wind Tornado' : st.step > stepIndex('spin') ? 'the Invisible Spin' : 'unknown technique';
+      const you = top.indexOf(name) >= 0 ? '' : ` New student: ${w} ${w === 1 ? 'win' : 'wins'} (${spin}). Climbing.`;
+      return [`OLIVER'S UNOFFICIAL RANKINGS. 1. ${top[0]}  2. ${top[1]}  3. ${top[2]}  4. ${top[3]}.${you}`, 'At the bottom, in smaller writing: "Milo: working on something."'];
+    }
+    if (id === 'trophies') return champ ? ['Three years of trophies with REI on them, and one older one that says JACKSON.', "At the end, there's a new space. It's waiting for you."] : ['Three years of trophies with REI on them, and one older one that says JACKSON.'];
+    if (id === 'bracket') {
+      if (chapter() < 4 && !st.ended) return ['LOST: one blue mitten. CHESS CLUB: Thursdays. Somebody has drawn a dragon in the corner.'];
+      return [st.won[21] ? 'FINAL TETHERBALL TOURNAMENT. Champion: ' + name + '.' : "FINAL TETHERBALL TOURNAMENT. Your side: Marcus, Emma, Felix, Big Ben, Adaeze, Harper, Akira. The other side: Jackson, all the way down. Rei waits at the top."];
+    }
+    if (id === 'blackboard') return [boardText().join(' ')];
+    if (id === 'tree') return st.won[22] || st.ended ? ['The Old Tree. Low on the trunk, somebody has carved a tiny black circle.'] : ['The Old Tree. Lots of initials carved low on the trunk. One of them is a tiny crown.'];
+    return [''];
+  }
+  // the blackboard's writing (overworld.js draws it on the board)
+  function boardText() {
+    const ch = st.ended ? 6 : chapter();
+    if (ch >= 6) return ['Have a great summer!', '— Ms. Rivera'];
+    if (ch >= 4) return ['FINAL TETHERBALL TOURNAMENT', 'Play fairly. Play safely.'];
+    if (ch === 3) return ['Spelling test Friday', 'Tournament sign-ups soon!'];
+    return ['Welcome to Room 4B!', 'Spelling test Friday'];
+  }
+  const stepIndex = (id) => STORY_STEPS.findIndex((s) => s.id === id);
+
+  reset();
+  return { st, reset, load, save, has, current, chapter, cast, chatOf, waitsOn, target, advance, won, lost, wins, sign, boardText, stepIndex, startOf };
+}
+
+// the phase a story match is played at: its meeting among that character's (roster.js PHASES; 0 for one met once)
+function storyPhase(n) {
+  const m = STORY_MATCH[n];
+  if (!m || typeof PHASES === 'undefined' || !PHASES[m.key]) return 0;
+  return Math.max(0, PHASES[m.key].indexOf(n));
+}
+
+// ════════ overworld.js ════════
+// overworld.js — Story mode's runtime: you, walking round the school (school.js), everyone in the story standing about and
+// walking where the story sends them (story.js), talking, the scenes, the chapter cards, and the hand-over to a match (main.js plays
+// it on the court, then hands back the result).
+//
+// The picture is three-quarter top-down on the game's own canvas. Each map's ground is baked once per size into a canvas; the tall
+// things (trees, poles, desks) and the people are drawn over it in depth order, by where their feet are. People are drawn on the
+// match's own rig (ninja.js) with the cast sheet's looks (roster.js castLook), so Akira on the playground is the Akira you play:
+// they walk with their legs and arms, stand the way they stand in a match (rosterIdleOf), turn to look at you, and show the back of
+// their head walking away (the kit's 'back' face).
+//
+// Controls. Keyboard: arrows or WASD walk, Space, Enter or E talks and moves the lines on, Escape is the menu. Touch: drag a thumb
+// anywhere and a stick comes up under it; tap the ground to walk there, tap someone to walk over and talk to them; tap anywhere to
+// move the lines on. The Talk button comes up whenever someone (or something) is in reach.
+//
+// What the story waits on is in the top bar (the chapter, the goal); the person it waits on wears a "!", a place it waits on glows on
+// the ground, and an arrow at the screen's edge points the way when it is off screen (to the exit, when it is in another map).
+// opts: { canvas, onMatch(n, friendly), onMenu(), store }. API: open(fresh), close(), frame(dt), matchResult(n, won), say(lines, done)
+// (the lines over the court: Jackson's mid-series scenes), abandon() (a match left for the menu), info() (the menu's Story card), and
+// test hooks. While a match plays, all of this is hidden and the court is the screen.
+
+const OW_FACES = ['open', 'blink', 'happy', 'sad', 'fierce', 'back'];
+const OW = {
+  speed: 128, // wu/s, a walk (× CFG.story.speed)
+  npcSpeed: 150, // wu/s, someone walking where the story sends them
+  approach: 240, // wu: someone a scene sends over from further than this starts from this far out (a scene never waits on a long walk)
+  reach: 46, // wu between feet to talk
+  kid: 0.3, // wu per rig sheet unit for a kid of the sheet's 0.82: about 64 wu from sole to the top of the head
+  stride: 34, // wu walked per step cycle (two steps)
+};
+
+function createOverworld(doc, opts) {
+  const canvas = opts.canvas, ctx = canvas.getContext('2d');
+  const story = createStory(opts.store);
+  const app = doc.getElementById('app') || doc.body;
+  const S = { on: false, mode: 'walk', t: 0, map: SCHOOL.gate, name: 'gate', camX: 260, camY: 600, Z: 1, K: 1, W: 390, H: 844, fade: 0, fadeTo: 0, fadeK: null, saveT: 0, card: null };
+  const you = { key: 'you', x: 260, y: 700, face: 'up', moving: false, phase: 0, tx: NaN, ty: NaN, talkTo: null, stuck: 0, rig: null, look: null, scale: OW.kid, blink: 3 };
+  const people = new Map(); // key → { key, e, map, x, y, face, goal, leave, phase, moving, rig, look, scale, blink, stuck, mood }
+  const keys = { up: false, down: false, left: false, right: false };
+  const stick = { on: false, id: -1, x0: 0, y0: 0, x: 0, y: 0, t0: 0, moved: false };
+
+  // ───────────────────────── the DOM: the bar, the Talk button, the lines, the cards, the touch layer ─────────────────────────
+  const el = (tag, cls, txt) => { const e = doc.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  const root = el('div', 'st'); root.id = 'story'; root.hidden = true;
+  const touch = el('div', 'st-touch'); touch.setAttribute('aria-hidden', 'true');
+  const bar = el('div', 'st-bar'), goalEl = el('div', 'st-goal'), chEl = el('small', 'st-ch'), txtEl = el('b', 'st-txt');
+  goalEl.append(chEl, txtEl);
+  const menuBtn = el('button', 'st-menu ib'); menuBtn.type = 'button'; menuBtn.setAttribute('aria-label', 'Menu');
+  menuBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6.2 9.6V19h4.3v-5h3v5h4.3V9.6"/></svg>';
+  bar.append(goalEl, menuBtn);
+  const act = el('button', 'st-act'); act.type = 'button'; act.hidden = true;
+  const talk = el('div', 'st-talk'); talk.hidden = true; talk.setAttribute('role', 'dialog'); talk.setAttribute('aria-live', 'polite');
+  const faceEl = el('div', 'st-face'), bodyEl = el('div', 'st-body'), nameEl = el('b', 'st-name'), lineEl = el('p', 'st-line'), moreEl = el('i', 'st-more', '▼');
+  const choicesEl = el('div', 'st-choices');
+  bodyEl.append(nameEl, lineEl, choicesEl); talk.append(faceEl, bodyEl, moreEl);
+  const card = el('div', 'st-card'); card.hidden = true;
+  const cardK = el('small', 'st-ck'), cardH = el('h2', 'st-ch2'), cardP = el('p', 'st-cp');
+  card.append(cardK, cardH, cardP);
+  const fadeEl = el('div', 'st-fade');
+  // the controls, once: on the first morning until you have walked a few steps
+  const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+  const tip = el('small', 'st-how', coarse ? 'Drag anywhere to walk · Tap someone to talk' : 'Arrow keys or WASD to walk · Space to talk');
+  tip.hidden = true; goalEl.appendChild(tip); // (a third line in the bar)
+  root.append(touch, bar, act, talk, card, fadeEl);
+  app.appendChild(root);
+  menuBtn.addEventListener('click', () => { if (opts.onMenu) opts.onMenu(); });
+
+  // ───────────────────────── looks and rigs ─────────────────────────
+  const looks = new Map();
+  const entry = (key) => ROSTER[ROSTER_BY[key]];
+  const revealed = () => story.st.won[20] > 0 || story.st.step > story.stepIndex('m20'); // Jackson after his series: the kimono stays off
+  function lookOf(key) {
+    const e = entry(key);
+    if (e.native === 'kiru') return KIRU_LOOK;
+    if (e.native === 'kage') return KAGE_LOOK;
+    const form = key === 'jackson' && revealed() ? 1 : 0, id = key === 'you' ? 'you:' + JSON.stringify(rosterYou()) : key + ':' + form;
+    let L = looks.get(id);
+    if (!L) {
+      if (key === 'you') { for (const k of looks.keys()) if (k.startsWith('you:')) looks.delete(k); const o = rosterYou(); L = castLook(() => youDraw(o), e.accent, OW_FACES); }
+      else { const c = CASTKIT.CAST.find((x) => x.key === e.cast), d = c.looks[Math.min(form, c.looks.length - 1)]; L = castLook(d.draw, e.accent, OW_FACES); }
+      looks.set(id, L);
+    }
+    return L;
+  }
+  function rigFor(a) {
+    const L = lookOf(a.key);
+    if (!a.rig || a.look !== L) { a.look = L; a.rig = createNinja(doc, L); }
+    return a.rig;
+  }
+  const scaleOf = (key) => { const e = entry(key); return OW.kid * U.clamp((e && e.h) || 0.82, 0.55, 1.2) / 0.82; };
+
+  // ───────────────────────── people ─────────────────────────
+  function person(key) {
+    let a = people.get(key);
+    if (!a) {
+      a = { key, e: entry(key), map: '', x: 0, y: 0, face: 'down', goal: null, leave: false, phase: 0, moving: false, rig: null, look: null, scale: scaleOf(key), blink: 2 + Math.random() * 3, stuck: 0, gone: true, t0: Math.random() * 10 };
+      people.set(key, a);
+    }
+    return a;
+  }
+  const onScreen = (x, y, pad) => Math.abs(x - S.camX) < S.W / S.Z / 2 + (pad || 0) && Math.abs(y - S.camY) < S.H / S.Z / 2 + (pad || 0);
+  // everyone where the story wants them now: those in this map and in sight walk there, everyone else is simply there
+  function arrange(instant) {
+    const c = story.cast();
+    for (const [k, a] of people) if (!c[k] && !a.gone) {
+      if (!instant && a.map === S.name && onScreen(a.x, a.y, 20)) { const ex = nearestExit(a); a.goal = { x: ex.x, y: ex.y }; a.leave = true; } else a.gone = true;
+    }
+    for (const k in c) {
+      const sp = schoolSpot(c[k]);
+      if (!sp) continue;
+      const a = person(k);
+      rigFor(a); // (their look starts loading now, wherever they are)
+      const seen = !a.gone && a.map === S.name && sp.map === S.name && onScreen(a.x, a.y, 40);
+      if (!instant && seen && Math.hypot(a.x - sp.x, a.y - sp.y) > 6) { a.goal = { x: sp.x, y: sp.y, face: sp.face }; a.leave = false; }
+      else { a.map = sp.map; a.x = sp.x; a.y = sp.y; a.face = sp.face; a.goal = null; a.leave = false; }
+      a.gone = false;
+    }
+  }
+  function nearestExit(a) {
+    const m = SCHOOL[a.map] || S.map;
+    let best = null, bd = 1e9;
+    for (const e of m.exits) { const x = e.rect[0] + e.rect[2] / 2, y = e.rect[1] + e.rect[3] / 2, d = Math.hypot(x - a.x, y - a.y); if (d < bd) { bd = d; best = { x, y }; } }
+    return best || { x: a.x, y: a.y };
+  }
+  const here = () => { const out = []; for (const a of people.values()) if (!a.gone && a.map === S.name) out.push(a); return out; };
+  // the circles you may not walk through: everyone standing in this map
+  const blockers = (except) => { const out = []; for (const a of here()) if (a !== except) out.push([a.x, a.y, 12]); return out; };
+
+  // ───────────────────────── maps ─────────────────────────
+  const bake = { name: '', k: 0, cv: null, props: new Map() };
+  function setMap(name, x, y, face) {
+    S.name = name; S.map = SCHOOL[name];
+    you.x = x; you.y = y; if (face) you.face = face; you.tx = NaN; you.talkTo = null;
+    story.st.map = name; story.st.x = x; story.st.y = y; story.st.face = you.face;
+    S.camX = x; S.camY = y; clampCam(true);
+  }
+  function useExit(ex) {
+    const sp = schoolSpot(ex.to + '.' + ex.spot);
+    S.mode = 'fade';
+    fade(() => { setMap(sp.map, sp.x, sp.y, sp.face); story.save(); }, () => { S.mode = 'walk'; hud(); });
+  }
+
+  // ───────────────────────── the story: steps, scenes, matches ─────────────────────────
+  const run = { q: [], i: 0, done: null, wait: null };
+  function play(items, done) {
+    run.q = (items || []).slice(); run.i = 0; run.done = done || null; run.wait = null;
+    S.mode = 'scene'; you.tx = NaN; stopWalking();
+    next();
+  }
+  function next() {
+    while (run.i < run.q.length) {
+      const it = run.q[run.i++];
+      if (Array.isArray(it)) { line(it[0], it[1]); return; }
+      if (it.walk || it.leave) {
+        const a = person(it.walk || it.leave);
+        if (a.gone || a.map !== S.name) { if (it.leave) a.gone = true; continue; }
+        let to = it.to ? schoolSpot(it.to) : null;
+        if (it.near) { const dx = a.x - you.x, dy = a.y - you.y, d = Math.hypot(dx, dy) || 1; to = { x: you.x + (dx / d) * 40, y: you.y + (dy / d) * 34, face: null }; }
+        if (it.leave && to && to.map && to.map !== S.name) to = null;
+        if (!to) { if (it.leave) a.gone = true; continue; }
+        const far = Math.hypot(a.x - to.x, a.y - to.y);
+        if (!it.leave && far > OW.approach) { const k = OW.approach / far; a.x = to.x + (a.x - to.x) * k; a.y = to.y + (a.y - to.y) * k; }
+        a.goal = { x: to.x, y: to.y, face: to.face }; a.leave = !!it.leave; a.stuck = 0;
+        hideTalk();
+        run.wait = { a, until: S.t + (it.leave ? 3.5 : 4) };
+        return;
+      }
+      if (it.appear) { const a = person(it.appear), sp = schoolSpot(it.at); a.map = sp.map; a.x = sp.x; a.y = sp.y; a.face = sp.face; a.gone = false; continue; }
+      if (it.face) { const a = it.face === 'you' ? you : person(it.face); a.face = it.dir; continue; }
+      if (it.cut) {
+        hideTalk();
+        fade(() => {
+          if (it.you) { const sp = schoolSpot(it.you); setMap(sp.map, sp.x, sp.y, sp.face); }
+          if (it.place) for (const k in it.place) { const a = person(k), sp = schoolSpot(it.place[k]); a.map = sp.map; a.x = sp.x; a.y = sp.y; a.face = sp.face; a.gone = false; a.goal = null; }
+        }, () => { if (typeof it.cut === 'string') line('narr', it.cut); else next(); });
+        return;
+      }
+      if (it.end) { hideTalk(); showCard(it.end === 6 ? 'The End' : 'End of chapter ' + it.end, it.end === 6 ? 'King of the Pole' : STORY_CH[it.end], '', next); return; }
+    }
+    const d = run.done;
+    run.q = []; run.done = null; run.wait = null;
+    hideTalk();
+    S.mode = 'walk';
+    if (d) d();
+    hud();
+  }
+  // the current step's trigger fired (or you talked to whom it waits on)
+  function begin(s) {
+    if (s.match) { matchStep(s); return; }
+    play(s.scene, () => { story.advance(); activate(); });
+  }
+  function matchStep(s) {
+    const M = STORY_MATCH[s.match], again = !!story.st.seen[s.id];
+    rosterLookOf(entry(M.key), 0); rosterLookOf(entry('you'), 0); // (the court's looks: loading while the lines play)
+    story.st.seen[s.id] = 1;
+    const nm = entry(M.key).name;
+    play(again ? [] : M.pre, () => choose(story.st.lost[s.match] ? 'Rematch ' + nm + '?' : 'Ready to play ' + nm + '?', ['Ready!', 'Not yet'], (i) => {
+      if (i !== 0) { play([[M.key, 'Whenever you are.']]); return; }
+      launch(s.match, false);
+    }));
+  }
+  let friendly = null; // a match in free play after the end: { key, n }
+  function launch(n, isFriendly) {
+    S.mode = 'match'; stopWalking();
+    story.save();
+    hideTalk(); act.hidden = true;
+    root.hidden = true; doc.body.classList.remove('st-on'); // the court is the screen
+    if (opts.onMatch) opts.onMatch(n, isFriendly);
+  }
+  // main.js hands back the result (withMid: the match was skipped, so the lines it would have played over the court come first)
+  function matchResult(n, won, withMid) {
+    S.mode = 'walk';
+    root.hidden = !S.on; root.classList.remove('over'); if (S.on) doc.body.classList.add('st-on');
+    if (friendly) {
+      const f = friendly; friendly = null;
+      play([[f.key, won ? 'Good game. Again sometime?' : 'Good game! I needed that one.']]);
+      return;
+    }
+    const M = STORY_MATCH[n], s = story.current();
+    if (!M || !s || s.match !== n) { hud(); return; }
+    if (won) story.won(n); else story.lost(n);
+    story.save();
+    const on = won || M.either;
+    play((withMid && M.mid ? M.mid : []).concat(won ? M.win : M.lose), () => {
+      if (!on) { hud(); return; } // they wait for the rematch
+      play(s.then || [], () => { story.advance(); activate(); });
+    });
+  }
+  // the current step begins: its chapter card, a new day (you back at the gate), everyone to their places
+  function activate(load) {
+    const s = story.current();
+    const steps = [];
+    if (s && s.title && story.st.chapterShown < s.ch) steps.push((k) => { story.st.chapterShown = s.ch; showCard(s.ch === 6 ? 'Epilogue' : 'Chapter ' + s.ch, STORY_CH[s.ch], s.caption || '', k); });
+    else if (s && s.caption && s.start && !load) steps.push((k) => showCard('', '', s.caption, k));
+    if (s && s.start && !load) steps.push((k) => fade(() => { const sp = schoolSpot(s.start); setMap(sp.map, sp.x, sp.y, sp.face); arrange(true); }, k));
+    if (!s && !story.st.chapterShown7) steps.push((k) => { story.st.chapterShown7 = true; showCard('Free play', 'Talk to anyone for a match', 'The whole school is yours. Thanks for playing.', k); });
+    let i = 0;
+    const go = () => { if (i < steps.length) { S.mode = 'card'; steps[i++](go); return; } S.mode = 'walk'; arrange(!!load); hud(); story.save(); };
+    go();
+  }
+
+  // ───────────────────────── talking ─────────────────────────
+  let typing = null; // { text, n, t } the line typing out
+  function line(who, text) {
+    const nar = who === 'narr', e = nar ? null : entry(who);
+    const nm = nar ? '' : who === 'you' ? youName() : e.name;
+    talk.hidden = false; talk.classList.toggle('narr', nar); choicesEl.innerHTML = ''; choicesEl.hidden = true; moreEl.hidden = false;
+    nameEl.textContent = nm; nameEl.style.color = nar ? '' : e.accent;
+    const pid = nar ? '' : who === 'you' ? 'you:' + JSON.stringify(rosterYou()) : who;
+    if (faceEl.dataset.p !== pid) { faceEl.dataset.p = pid; faceEl.innerHTML = nar ? '' : rosterPortrait(e, true) || ''; }
+    faceEl.hidden = nar;
+    const sp = CFG.story.typing;
+    typing = { text: String(text), n: sp > 0 ? 0 : String(text).length, t: 0 };
+    lineEl.textContent = typing.text.slice(0, typing.n);
+    lineEl.setAttribute('aria-label', (nm ? nm + ': ' : '') + typing.text);
+    // the speaker and you look at each other
+    if (!nar && who !== 'you') { const a = people.get(who); if (a && !a.gone && a.map === S.name && !a.goal) { faceToward(a, you.x, you.y); faceToward(you, a.x, a.y); } }
+  }
+  function hideTalk() { talk.hidden = true; typing = null; choosing = null; }
+  let choosing = null; // { n, pick, cb }
+  function choose(q, options, cb) {
+    line('narr', q);
+    talk.classList.add('ask'); moreEl.hidden = true;
+    typing.n = typing.text.length; lineEl.textContent = typing.text;
+    choicesEl.hidden = false; choicesEl.innerHTML = '';
+    choosing = { n: options.length, pick: 0, cb };
+    S.mode = 'ask'; stopWalking(); // (you stay put until you answer)
+    options.forEach((o, i) => { const b = el('button', 'st-opt' + (i === 0 ? ' go' : ''), o); b.type = 'button'; b.addEventListener('click', (ev) => { ev.stopPropagation(); pick(i); }); choicesEl.appendChild(b); });
+    try { choicesEl.firstChild.focus({ preventScroll: true }); } catch (e) { /* no focus */ }
+  }
+  function pick(i) {
+    if (!choosing) return;
+    const c = choosing; choosing = null; talk.classList.remove('ask');
+    S.mode = 'walk'; hideTalk();
+    c.cb(i);
+    hud();
+  }
+  // a tap, Space or Enter: finish the line typing out, or move on
+  function advance() {
+    if (S.card) { closeCard(); return; }
+    if (choosing || S.mode === 'fade') return;
+    if (typing && typing.n < typing.text.length) { typing.n = typing.text.length; lineEl.textContent = typing.text; return; }
+    if (S.mode === 'scene' && !run.wait) next();
+    else if (S.mode === 'talk') { S.mode = 'walk'; hideTalk(); hud(); }
+  }
+  // what's in reach: the person (or thing) nearest your feet
+  function inReach() {
+    let best = null, bd = OW.reach;
+    for (const a of here()) { if (a.goal) continue; const d = Math.hypot(a.x - you.x, a.y - you.y); if (d < bd) { bd = d; best = { a }; } }
+    if (!best) for (const o of S.map.objs) { const d = Math.hypot(o.x - you.x, o.y - you.y) - o.r; if (d < 20 && d < bd) { bd = d; best = { o }; } }
+    return best;
+  }
+  function interact(t) {
+    t = t || inReach();
+    if (!t || S.mode !== 'walk') return;
+    stopWalking();
+    if (t.o) { faceToward(you, t.o.x, t.o.y); play(t.o.text(story).map((s) => ['narr', s])); return; }
+    const a = t.a, s = story.current(), w = story.waitsOn();
+    faceToward(a, you.x, you.y); faceToward(you, a.x, a.y);
+    if (s && w && w.talk === a.key) { begin(s); return; }
+    const lines = story.chatOf(a.key) || [[a.key, '...']];
+    if (story.st.ended && a.key !== 'kiru' && lastMatchOf(a.key)) {
+      const M = STORY_MATCH[lastMatchOf(a.key)]; // free play: a friendly, as their last match was (Milo asks as the script's retry does)
+      play(M.retry || lines, () => choose('Play ' + a.e.name + '?', ['Play!', 'Not now'], (i) => { if (i === 0) { friendly = { key: a.key, n: lastMatchOf(a.key) }; launch(friendly.n, true); } }));
+      return;
+    }
+    play(lines);
+  }
+  // the last story match a character plays in (free play replays it), or 0
+  function lastMatchOf(key) { let n = 0; for (const k in STORY_MATCH) if (STORY_MATCH[k].key === key) n = +k; return n; }
+
+  // ───────────────────────── cards and fades ─────────────────────────
+  function showCard(kick, head, sub, done) {
+    S.card = { done, until: S.t + (head ? 2.6 : 1.6) };
+    cardK.textContent = kick; cardH.textContent = head; cardP.textContent = sub; cardH.hidden = !head; cardK.hidden = !kick; cardP.hidden = !sub;
+    card.hidden = false; card.classList.remove('out'); hideTalk();
+  }
+  function closeCard() { const c = S.card; if (!c) return; S.card = null; card.classList.add('out'); setTimeout(() => { if (!S.card) card.hidden = true; }, 260); if (c.done) c.done(); }
+  function fade(mid, done) { S.fadeTo = 1; S.fadeK = { mid, done, phase: 0 }; }
+
+  // ───────────────────────── input ─────────────────────────
+  const KEYS = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
+  function onKey(e, down) {
+    if (!S.on || S.mode === 'match') return; // (a match's keys are the court's)
+    if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    const k = KEYS[e.code];
+    if (k) { keys[k] = down; if (down) { you.tx = NaN; e.preventDefault(); } if (choosing && down) { const d = k === 'left' || k === 'up' ? -1 : 1; choosing.pick = (choosing.pick + d + choosing.n) % choosing.n; try { choicesEl.children[choosing.pick].focus({ preventScroll: true }); } catch (err) { /* */ } } return; }
+    if (!down || e.repeat) return;
+    if (e.key === ' ' || e.key === 'Enter' || e.key === 'e' || e.key === 'E') {
+      if (choosing) { if (e.target && e.target.classList && e.target.classList.contains('st-opt')) return; e.preventDefault(); pick(choosing.pick); return; }
+      e.preventDefault();
+      if (S.mode === 'walk') interact(); else advance();
+    } else if (e.key === 'Escape') { if (opts.onMenu) opts.onMenu(); }
+  }
+  window.addEventListener('keydown', (e) => onKey(e, true));
+  window.addEventListener('keyup', (e) => onKey(e, false));
+  touch.addEventListener('pointerdown', (e) => {
+    if (!S.on) return;
+    if (S.mode !== 'walk') { advance(); return; }
+    if (stick.on) return;
+    stick.on = true; stick.id = e.pointerId; stick.x0 = stick.x = e.clientX; stick.y0 = stick.y = e.clientY; stick.t0 = performance.now(); stick.moved = false;
+    try { touch.setPointerCapture(e.pointerId); } catch (err) { /* */ }
+  });
+  touch.addEventListener('pointermove', (e) => {
+    if (!stick.on || e.pointerId !== stick.id) return;
+    stick.x = e.clientX; stick.y = e.clientY;
+    if (Math.hypot(stick.x - stick.x0, stick.y - stick.y0) > 12) { stick.moved = true; you.tx = NaN; you.talkTo = null; }
+  });
+  const end = (e) => {
+    if (!stick.on || e.pointerId !== stick.id) return;
+    const tap = !stick.moved && performance.now() - stick.t0 < 450;
+    stick.on = false; stick.id = -1;
+    if (tap && S.mode === 'walk') tapAt(e.clientX, e.clientY);
+  };
+  touch.addEventListener('pointerup', end); touch.addEventListener('pointercancel', (e) => { stick.on = false; stick.id = -1; });
+  talk.addEventListener('click', () => advance());
+  card.addEventListener('click', () => advance());
+  act.addEventListener('click', (e) => { e.stopPropagation(); interact(); });
+  // a tap on the ground: walk there; on someone (their figure, not just their feet): walk over and talk
+  function tapAt(cx, cy) {
+    const r = canvas.getBoundingClientRect(), sx = cx - r.left, sy = cy - r.top;
+    const wx = S.camX + (sx - S.W / 2) / S.Z, wy = S.camY + (sy - S.H / 2) / S.Z;
+    let hit = null, hd = 1e9;
+    for (const a of here()) { const h = 210 * a.scale; if (wx > a.x - 22 && wx < a.x + 22 && wy > a.y - h && wy < a.y + 8) { const d = Math.abs(wy - (a.y - h / 2)); if (d < hd) { hd = d; hit = a; } } }
+    if (!hit) for (const o of S.map.objs) if (Math.hypot(o.x - wx, o.y - wy) < o.r) { hit = { o }; break; }
+    if (hit && hit.o) { you.tx = hit.o.x; you.ty = hit.o.y + hit.o.r * 0.6; you.talkTo = hit; return; }
+    if (hit) { you.tx = hit.x; you.ty = hit.y + 26; you.talkTo = { a: hit }; return; }
+    you.tx = wx; you.ty = wy; you.talkTo = null;
+  }
+  function stopWalking() { keys.up = keys.down = keys.left = keys.right = false; you.tx = NaN; you.talkTo = null; you.moving = false; stick.on = false; }
+
+  // ───────────────────────── the frame ─────────────────────────
+  function faceToward(a, x, y) { const dx = x - a.x, dy = y - a.y; a.face = Math.abs(dx) > Math.abs(dy) * 1.1 ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down'; }
+  function update(dt) {
+    S.t += dt;
+    // fades: out, the change, in
+    if (S.fadeK) {
+      const F = S.fadeK;
+      S.fade = Math.min(1, S.fade + dt / 0.22);
+      if (S.fade >= 1 && F.phase === 0) { F.phase = 1; if (F.mid) F.mid(); }
+      if (F.phase === 1) { S.fadeK = null; S.fadeTo = 0; F.after = F.done; S.fadeAfter = F.done; }
+    } else if (S.fade > 0) { S.fade = Math.max(0, S.fade - dt / 0.26); if (S.fade === 0 && S.fadeAfter) { const d = S.fadeAfter; S.fadeAfter = null; d(); } }
+    fadeEl.style.opacity = String(S.fade);
+    if (S.card && S.t > S.card.until) closeCard();
+    if (typing && typing.n < typing.text.length) { typing.t += dt * 45 * Math.max(0.1, CFG.story.typing); const n = Math.min(typing.text.length, Math.floor(typing.t)); if (n !== typing.n) { typing.n = n; lineEl.textContent = typing.text.slice(0, n); } }
+    if (typing) moreEl.style.opacity = typing.n >= typing.text.length ? '1' : '0';
+    // you
+    let vx = 0, vy = 0, k = 1;
+    if (S.mode === 'walk') {
+      if (keys.left) vx -= 1; if (keys.right) vx += 1; if (keys.up) vy -= 1; if (keys.down) vy += 1;
+      if (stick.on && stick.moved) { const dx = stick.x - stick.x0, dy = stick.y - stick.y0, d = Math.hypot(dx, dy); if (d > 6) { vx = dx / d; vy = dy / d; k = U.clamp(d / 56, 0.35, 1); } }
+      else if (you.tx === you.tx) {
+        const dx = you.tx - you.x, dy = you.ty - you.y, d = Math.hypot(dx, dy);
+        if (you.talkTo && you.talkTo.a && Math.hypot(you.talkTo.a.x - you.x, you.talkTo.a.y - you.y) < OW.reach - 4) { const t = you.talkTo; you.tx = NaN; you.talkTo = null; interact(t); }
+        else if (you.talkTo && you.talkTo.o && Math.hypot(you.talkTo.o.x - you.x, you.talkTo.o.y - you.y) - you.talkTo.o.r < 18) { const t = you.talkTo; you.tx = NaN; you.talkTo = null; interact(t); }
+        else if (d < 4) you.tx = NaN;
+        else { vx = dx / d; vy = dy / d; k = Math.min(1, d / 30 + 0.3); }
+      }
+    }
+    const l = Math.hypot(vx, vy);
+    you.moving = l > 0.01;
+    if (you.moving) {
+      vx /= l; vy /= l;
+      const sp = OW.speed * U.clamp(+CFG.story.speed || 1, 0.3, 3) * k * dt;
+      const went = schoolStep(S.map, you, vx * sp, vy * sp, SCHOOL_R, blockers(null));
+      you.phase += went / OW.stride * Math.PI * 2;
+      if (Math.abs(vx) > Math.abs(vy) * 1.1) you.face = vx < 0 ? 'left' : 'right'; else you.face = vy < 0 ? 'up' : 'down';
+      if (you.tx === you.tx) { you.stuck = went < sp * 0.15 ? you.stuck + dt : 0; if (you.stuck > 0.4) { const t = you.talkTo; you.tx = NaN; you.stuck = 0; you.talkTo = null; if (t) interact(t); } }
+      const ex = schoolExitAt(S.map, you.x, you.y);
+      if (ex && S.mode === 'walk') { stopWalking(); useExit(ex); }
+      S.saveT += dt; if (S.saveT > 4) { S.saveT = 0; story.st.map = S.name; story.st.x = you.x; story.st.y = you.y; story.st.face = you.face; story.save(); }
+    }
+    // the story's triggers
+    if (S.mode === 'walk') {
+      const s = story.current(), w = story.waitsOn();
+      if (s && w) {
+        if (w.zone) { const [m, z] = w.zone.split('.'); if (S.name === m && schoolIn(SCHOOL[m].zones[z], you.x, you.y)) begin(s); }
+        else if (w.enter && S.name === w.enter) begin(s);
+      }
+    }
+    // everyone else
+    for (const a of here()) {
+      if (a.goal) {
+        const dx = a.goal.x - a.x, dy = a.goal.y - a.y, d = Math.hypot(dx, dy);
+        if (d < 3) { a.x = a.goal.x; a.y = a.goal.y; if (a.goal.face) a.face = a.goal.face; a.goal = null; a.moving = false; if (a.leave) { a.gone = true; a.leave = false; } }
+        else {
+          const sp = Math.min(d, OW.npcSpeed * dt), ox = a.x, oy = a.y;
+          const went = schoolStep(S.map, a, (dx / d) * sp, (dy / d) * sp, SCHOOL_R - 3, null);
+          a.moving = true; a.phase += went / OW.stride * Math.PI * 2;
+          faceToward(a, a.goal.x, a.goal.y);
+          a.stuck = went < sp * 0.2 ? a.stuck + dt : 0;
+          if (a.stuck > 0.8) { a.x = a.goal.x; a.y = a.goal.y; a.stuck = 0; } // a corner the straight line can't get round: there they are
+          if (Math.hypot(a.x - ox, a.y - oy) < 1e-6 && d > 3 && a.stuck > 0.5) { a.x = a.goal.x; a.y = a.goal.y; }
+        }
+      } else {
+        a.moving = false;
+        if (Math.hypot(a.x - you.x, a.y - you.y) < 96 && (S.mode === 'walk' || S.mode === 'scene') && a.e.idle !== 'still') faceToward(a, you.x, you.y);
+      }
+      a.blink -= dt; if (a.blink < -0.12) a.blink = 2 + Math.random() * 3.5;
+    }
+    if (run.wait && (!run.wait.a.goal || S.t > run.wait.until)) {
+      const a = run.wait.a;
+      if (a.goal) { a.x = a.goal.x; a.y = a.goal.y; if (a.goal.face) a.face = a.goal.face; a.goal = null; if (a.leave) { a.gone = true; a.leave = false; } }
+      run.wait = null; next();
+    }
+    // the controls tip: the first morning, until you've walked 80 or ten seconds have gone
+    if (S.tip && S.mode === 'walk') { S.tip.t += dt; if (you.moving) S.tip.went += OW.speed * dt; if (S.tip.went > 80 || S.tip.t > 10) S.tip = null; }
+    const showTip = !!S.tip && S.mode === 'walk';
+    if (tip.hidden === showTip) tip.hidden = !showTip;
+    // the Talk button
+    const r = S.mode === 'walk' ? inReach() : null;
+    const want = r ? (r.o ? 'Look: ' + r.o.name : (story.waitsOn() && story.waitsOn().talk === r.a.key ? 'Talk to ' : 'Talk to ') + (r.a.key === 'you' ? '' : r.a.e.name)) : '';
+    if (act.textContent !== want) act.textContent = want;
+    act.hidden = !want;
+    camFollow(dt);
+  }
+  // the camera: on you, eased, held inside the map (a map smaller than the screen sits in its middle). You stay in the band the bar
+  // and the lines leave visible: the map may scroll out from under them, so nobody talks from behind the box
+  function zoom() { return U.clamp(Math.min(S.W / 400, S.H / 560), 0.82, 2.2); }
+  function insets() { return { t: bar.offsetTop + bar.offsetHeight || 70, b: talk.hidden ? 0 : Math.max(0, S.H - talk.offsetTop + 10) }; }
+  function clampCam(snap) {
+    const m = S.map, Z = S.Z, vw = S.W / Z, vh = S.H / Z, I = insets(), t = I.t / Z, b = I.b / Z;
+    const tx = m.w <= vw ? m.w / 2 : U.clamp(you.x, vw / 2, m.w - vw / 2);
+    const ty = m.h <= vh - t - b ? m.h / 2 - (t - b) / 2 : U.clamp(you.y - 20 - (t - b) / 2, vh / 2 - t, m.h - vh / 2 + b);
+    if (snap) { S.camX = tx; S.camY = ty; }
+    return { tx, ty };
+  }
+  function camFollow(dt) { const t = clampCam(false), k = 1 - Math.exp(-dt * 7); S.camX += (t.tx - S.camX) * k; S.camY += (t.ty - S.camY) * k; }
+
+  // ───────────────────────── drawing ─────────────────────────
+  function ensureBake() {
+    const m = S.map, kmax = Math.min(S.Z * S.K, 2), lim = Math.min(4096 / Math.max(m.w, m.h), Math.sqrt(9e6 / (m.w * m.h)));
+    const k = Math.max(0.5, Math.min(kmax, lim));
+    if (bake.name === S.name && Math.abs(bake.k - k) < 0.01 && bake.cv) return;
+    bake.name = S.name; bake.k = k; bake.props.clear();
+    const cv = bake.cv || doc.createElement('canvas');
+    cv.width = Math.ceil(m.w * k); cv.height = Math.ceil(m.h * k);
+    const g = cv.getContext('2d');
+    g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, m.w, m.h); g.lineJoin = 'round';
+    m.paint(g, m);
+    for (const ex of m.exits) exitSign(g, m, ex); // where the exits go, painted on the ground
+    bake.cv = cv;
+  }
+  // where a door's label is painted, just inside it, and which way its arrow points
+  function signAt(m, ex) {
+    const cx = ex.rect[0] + ex.rect[2] / 2, cy = ex.rect[1] + ex.rect[3] / 2;
+    let x = cx, y = cy, a = 0;
+    if (ex.rect[1] + ex.rect[3] >= m.h - 2) { y = ex.rect[1] - 16; a = Math.PI / 2; } else if (ex.rect[1] <= 2) { y = ex.rect[3] + 18; a = -Math.PI / 2; }
+    else if (ex.rect[0] <= 2) { x = ex.rect[2] + 30; a = Math.PI; } else if (ex.rect[0] + ex.rect[2] >= m.w - 2) { x = ex.rect[0] - 30; a = 0; } else { y = ex.rect[1] + ex.rect[3] + 18; a = -Math.PI / 2; }
+    return { x, y, a };
+  }
+  function exitSign(g, m, ex) {
+    const { x, y, a } = signAt(m, ex);
+    g.save(); g.translate(x, y); g.globalAlpha = 0.9;
+    SD.rr(g, -36, -9, 72, 18, 9, 'rgba(20,24,40,0.55)'); SD.text(g, ex.label, 0, 0.5, 9, '#fff');
+    g.rotate(a); g.beginPath(); g.moveTo(44, 0); g.lineTo(36, -6); g.lineTo(36, 6); g.closePath(); g.fillStyle = 'rgba(255,255,255,0.85)'; g.fill();
+    g.restore(); g.globalAlpha = 1;
+  }
+  function propSprite(p) {
+    let sp = bake.props.get(p);
+    if (sp) return sp;
+    const P = PROPS[p.kind], b = P.box(p), k = bake.k, cv = doc.createElement('canvas');
+    cv.width = Math.max(1, Math.ceil((b[2] - b[0]) * k)); cv.height = Math.max(1, Math.ceil((b[3] - b[1]) * k));
+    const g = cv.getContext('2d'); g.setTransform(k, 0, 0, k, -b[0] * k, -b[1] * k); g.lineJoin = 'round';
+    P.draw(g, p, 0);
+    sp = { cv, b }; bake.props.set(p, sp);
+    return sp;
+  }
+  const items = [];
+  const wt = () => ctx.setTransform(S.K * S.Z, 0, 0, S.K * S.Z, S.K * (S.W / 2 - S.camX * S.Z), S.K * (S.H / 2 - S.camY * S.Z)); // world units
+  function draw() {
+    S.W = canvas.clientWidth || S.W; S.H = canvas.clientHeight || S.H; S.K = canvas.width / S.W; S.Z = zoom();
+    ensureBake();
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = S.map.outdoor ? '#3f6f35' : '#1a1d27'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    wt();
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(bake.cv, 0, 0, S.map.w, S.map.h);
+    if (S.name === 'class') boardWriting();
+    goalRing();
+    // depth order: props and people by where they meet the ground
+    items.length = 0;
+    for (const p of S.map.props) items.push({ y: p.y, p });
+    for (const a of here()) items.push({ y: a.y, a });
+    items.push({ y: you.y, a: you });
+    items.sort((i, j) => i.y - j.y);
+    for (const it of items) {
+      if (it.p) {
+        const P = PROPS[it.p.kind];
+        if (P.live) { wt(); ctx.save(); ctx.translate(it.p.x, it.p.y); ctx.lineJoin = 'round'; P.draw(ctx, it.p, S.t); ctx.restore(); }
+        else { const sp = propSprite(it.p); wt(); ctx.drawImage(sp.cv, it.p.x + sp.b[0], it.p.y + sp.b[1], sp.b[2] - sp.b[0], sp.b[3] - sp.b[1]); }
+      } else drawPerson(it.a);
+    }
+    wt(); marks();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    edgeArrow();
+    if (stick.on && stick.moved) joystick();
+  }
+  function drawPerson(a) {
+    const R = rigFor(a), s = a.scale * S.Z, sx = S.W / 2 + (a.x - S.camX) * S.Z, sy = S.H / 2 + (a.y - S.camY) * S.Z;
+    if (sx < -60 || sx > S.W + 60 || sy < -10 || sy > S.H + 90) return;
+    wt(); SD.shadow(ctx, a.x, a.y, 15 * a.scale / OW.kid, 5 * a.scale / OW.kid, 0.24);
+    const P = Object.assign({}, R.REST);
+    P.x = sx; P.y = sy; P.s = s; P.t = S.t + (a.t0 || 0);
+    P.mir = a.face === 'right' ? -1 : 1;
+    P.face = a.face === 'up' ? 'back' : a.blink < 0 ? 'blink' : 'open';
+    if (a.moving) walkPose(P, a.phase);
+    else if (a.e && a.e.idle && a.key !== 'you') rosterIdleOf(a.e, P, P.t);
+    else { const b = Math.sin(P.t * 1.6) * 0.012; P.sqy = 1 + b; P.sqx = 1 - b * 0.5; }
+    if (a.look.ready === false || !R.ensureArt(s * S.K)) return; // (their layers are still coming in: the shadow, then them. Kiru and Kage are drawn, not loaded)
+    R.drawRig(ctx, S.K, S.K, P);
+  }
+  // a step: the feet lift in turn, the arms swing against them, the body bobs
+  function walkPose(P, ph) {
+    const sn = Math.sin(ph), cs = Math.cos(ph);
+    P.lay = 223.5 - Math.max(0, sn) * 10; P.ray = 223.5 - Math.max(0, -sn) * 10; P.lax = 85 + cs * 5; P.rax = 115 - cs * 5;
+    P.lknee = 3 + Math.max(0, sn) * 6; P.rknee = 3 + Math.max(0, -sn) * 6;
+    P.fx = 52 + cs * 3; P.fy = 186 - sn * 7; P.bx = 149 - cs * 3; P.by = 192 + sn * 7;
+    P.y -= Math.abs(sn) * 3.2 * P.s; P.tilt = sn * 0.03;
+  }
+  // over everyone: the "!" over whom the story waits on, a name over whoever is close
+  function marks() {
+    const w = story.waitsOn();
+    for (const a of here()) {
+      const h = 210 * a.scale, d = Math.hypot(a.x - you.x, a.y - you.y), top = a.y - h - 6;
+      if (w && w.talk === a.key && S.mode === 'walk') {
+        const b = Math.sin(S.t * 5) * 3;
+        SD.rr(ctx, a.x - 9, top - 26 + b, 18, 22, 6, '#ffd23f', '#2a2f45', 2); SD.text(ctx, '!', a.x, top - 15 + b, 15, '#2a2f45', { weight: 900 });
+      } else if (d < 92 && S.mode === 'walk') {
+        ctx.globalAlpha = U.clamp((92 - d) / 30, 0, 1);
+        SD.text(ctx, a.e.name, a.x, top - 4, 9, '#fff', { stroke: 'rgba(20,24,40,0.85)', lw: 3 });
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+  // a place the story waits on, in this map: a soft ring on the ground
+  function goalRing() {
+    const s = story.current(), w = story.waitsOn();
+    if (!s || !w || S.mode !== 'walk' || !(w.zone || w.enter) || !s.at) return;
+    const sp = schoolSpot(s.at);
+    if (!sp || sp.map !== S.name) return;
+    const p = 0.5 + 0.5 * Math.sin(S.t * 3);
+    ctx.globalAlpha = 0.35 + 0.25 * p; SD.ell(ctx, sp.x, sp.y, 26 + p * 6, 10 + p * 2, null, '#ffd23f', 3); ctx.globalAlpha = 1;
+  }
+  // the edge arrow: toward the goal when it is off screen, or toward the exit that leads to it
+  function edgeArrow() {
+    if (S.mode !== 'walk') return;
+    const tg = story.target();
+    if (!tg) return;
+    let x = tg.x, y = tg.y, label = '';
+    if (tg.map !== S.name) {
+      const ex = schoolRoute(S.name, tg.map);
+      if (!ex) return;
+      x = ex.rect[0] + ex.rect[2] / 2; y = ex.rect[1] + ex.rect[3] / 2; label = ex.label;
+      const sg = signAt(S.map, ex); if (onScreen(sg.x, sg.y, -30)) label = ''; // (its label is painted on the ground in sight already)
+    }
+    const sx = S.W / 2 + (x - S.camX) * S.Z, sy = S.H / 2 + (y - S.camY) * S.Z, m = 34, top = 84;
+    if (sx > m && sx < S.W - m && sy > top && sy < S.H - 110) return; // in sight: the "!" or the ring says where
+    const cx = S.W / 2, cy = (S.H + top - 110) / 2, ang = Math.atan2(sy - cy, sx - cx);
+    const hx = (S.W / 2 - m), hy = (S.H - top - 110) / 2 - 10, tt = Math.min(Math.abs(hx / (Math.cos(ang) || 1e-6)), Math.abs(hy / (Math.sin(ang) || 1e-6)));
+    const ax = cx + Math.cos(ang) * tt, ay = cy + Math.sin(ang) * tt, b = Math.sin(S.t * 5) * 3;
+    ctx.setTransform(S.K, 0, 0, S.K, 0, 0);
+    ctx.save(); ctx.translate(ax + Math.cos(ang) * b, ay + Math.sin(ang) * b); ctx.rotate(ang);
+    ctx.beginPath(); ctx.moveTo(16, 0); ctx.lineTo(-8, -11); ctx.lineTo(-3, 0); ctx.lineTo(-8, 11); ctx.closePath();
+    ctx.fillStyle = '#ffd23f'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = '#2a2f45'; ctx.stroke();
+    ctx.restore();
+    if (label) SD.text(ctx, label, ax - Math.cos(ang) * 30, ay - Math.sin(ang) * 22, 11, '#fff', { stroke: 'rgba(20,24,40,0.9)', lw: 3.5 });
+  }
+  function joystick() {
+    ctx.setTransform(S.K, 0, 0, S.K, 0, 0);
+    const r = canvas.getBoundingClientRect(), x0 = stick.x0 - r.left, y0 = stick.y0 - r.top, dx = stick.x - stick.x0, dy = stick.y - stick.y0, d = Math.hypot(dx, dy), k = d > 48 ? 48 / d : 1;
+    ctx.globalAlpha = 0.5; SD.circ(ctx, x0, y0, 48, 'rgba(20,24,40,0.35)', 'rgba(255,255,255,0.7)', 2.5);
+    ctx.globalAlpha = 0.85; SD.circ(ctx, x0 + dx * k, y0 + dy * k, 20, 'rgba(255,255,255,0.85)', '#2a2f45', 2); ctx.globalAlpha = 1;
+  }
+  // Room 4B's blackboard: what Ms. Rivera has written, by the story
+  function boardWriting() {
+    const t = story.boardText();
+    SD.text(ctx, t[0], 320, 50, 13, '#f4f1e6', { weight: 700 });
+    if (t[1]) SD.text(ctx, t[1], 320, 72, 10, '#d9f0e0', { weight: 600 });
+  }
+
+  // ───────────────────────── the bar ─────────────────────────
+  function hud() {
+    const s = story.current();
+    const ch = s ? s.ch : 6;
+    chEl.textContent = !s ? 'Free play' : ch === 6 ? 'Epilogue · ' + STORY_CH[6] : 'Chapter ' + ch + ' · ' + STORY_CH[ch];
+    txtEl.textContent = s ? s.goal : 'Talk to anyone for a match. ' + S.map.name + '.';
+  }
+
+  // ───────────────────────── open, close, frame ─────────────────────────
+  function open(fresh) {
+    S.on = true; root.hidden = false; doc.body.classList.add('st-on');
+    you.scale = scaleOf('you'); // (the new kid's height is the sheet's)
+    if (fresh || !story.load()) story.reset();
+    const s = story.current();
+    setMap(story.st.map, story.st.x || schoolSpot(story.startOf(story.st.step)).x, story.st.y || schoolSpot(story.startOf(story.st.step)).y, story.st.face);
+    if (fresh || !(story.st.step > 0 || story.st.chapterShown > 0)) { const sp = schoolSpot(STORY_STEPS[0].start); setMap(sp.map, sp.x, sp.y, sp.face); }
+    people.clear(); bake.name = '';
+    S.mode = 'walk'; S.card = null; card.hidden = true; hideTalk();
+    S.tip = story.st.step === 0 ? { t: 0, went: 0 } : null;
+    arrange(true);
+    activate(!fresh && story.st.chapterShown >= (s ? s.ch : 6));
+    hud();
+  }
+  function close() {
+    if (S.on && S.mode !== 'match') { story.st.map = S.name; story.st.x = you.x; story.st.y = you.y; }
+    S.on = false; root.hidden = true; root.classList.remove('over'); doc.body.classList.remove('st-on'); stopWalking(); story.save();
+  }
+  // a match left for the menu: the story waits where it was (talk to them again for it)
+  function abandon() {
+    run.q = []; run.done = null; run.wait = null; friendly = null; hideTalk();
+    root.classList.remove('over');
+    if (S.mode === 'match' || S.mode === 'scene') S.mode = 'walk';
+  }
+  // noDraw: a test stepping many frames draws only the last
+  function frame(dt, noDraw) {
+    if (!S.on) return;
+    if (S.mode === 'match') return;
+    update(Math.min(dt, 1 / 20));
+    if (!noDraw) draw();
+  }
+  // lines over the court (Jackson's mid-series scenes): the same box, then done(); the court stays the screen
+  function say(lines, done) {
+    root.hidden = false; root.classList.add('over');
+    play(lines, () => { root.classList.remove('over'); root.hidden = true; S.mode = 'match'; if (done) done(); });
+  }
+  // what the start menu's Story card says: a story saved on this device (where it is), or none yet
+  function info() {
+    const on = story.has() || story.st.step > 0;
+    if (!on) return { has: false, chapter: '', goal: '' };
+    if (!S.on) story.load();
+    const s = story.current();
+    return { has: true, chapter: s ? (s.ch === 6 ? 'Epilogue · ' + STORY_CH[6] : 'Chapter ' + s.ch + ' · ' + STORY_CH[s.ch]) : 'Free play', goal: s ? s.goal : 'The story is over. Talk to anyone for a match.' };
+  }
+  // a frame while the court is on screen (say() is running over it): only the lines move
+  function overFrame(dt) {
+    if (S.mode !== 'scene' && !typing) return;
+    if (typing && typing.n < typing.text.length) { typing.t += dt * 45 * Math.max(0.1, CFG.story.typing); const n = Math.min(typing.text.length, Math.floor(typing.t)); if (n !== typing.n) { typing.n = n; lineEl.textContent = typing.text.slice(0, n); } }
+    if (typing) moreEl.style.opacity = typing.n >= typing.text.length ? '1' : '0';
+  }
+
+  return {
+    open, close, frame, overFrame, matchResult, say, abandon, info, story,
+    get on() { return S.on; }, get mode() { return S.mode; }, set mode(m) { S.mode = m; },
+    get busy() { return S.mode === 'scene' || !!S.card; },
+    // test hooks
+    S, you, people, advance, interact: (key) => { const a = people.get(key); if (a) interact({ a }); }, tapAt, keys, setMap, arrange, activate, choose: (i) => pick(i),
+    get talking() { return !talk.hidden; }, get line() { return talk.hidden ? '' : nameEl.textContent + ': ' + (typing ? typing.text : ''); },
+    get choosing() { return !!choosing; }, get act() { return act.hidden ? '' : act.textContent; }, get card() { return S.card ? cardH.textContent || cardP.textContent : ''; },
+  };
 }
 
 // ════════ ui.js ════════
@@ -14832,8 +16806,9 @@ function createUI(root, opts) {
 // allow slower mobile phones to run it").
 //
 // Three screens over the court, which waits behind them (main.js stops the clock while the menu is up):
-//   home   who plays whom (tap it to change), Play, Characters, Create your character, Dev settings (the Feel panel, over the
-//          menu), the mode (versus or the time trial) and Graphics.
+//   home   the Story (story mode, overworld.js: start it, or continue where you left it, or start again), who plays whom (tap it to
+//          change), Play, Characters, Create your character, Dev settings (the Feel panel, over the menu), the mode (versus or the
+//          time trial) and Graphics.
 //   pick   everyone in the story in a grid: tap one for your side, then one for the other (the toggle says which side a tap sets).
 //   make   the character creator: you are the new kid, and nobody draws you but you. Skin, hair and its colour, eyes, mouth, the gi,
 //          the belt, the trainers, extras and a name, drawn live by the cast sheet's own kit (roster.js youDraw). Saved on this
@@ -14899,6 +16874,7 @@ function createMenu(doc, opts) {
     const head = el('header', 'm-title');
     head.append(el('div', 'm-kick', 'Tetherball'), el('h1', '', 'King of the Pole'));
     s.appendChild(head);
+    if (opts.storyInfo) s.appendChild(storyCard());
     const vs = btn('m-vs', '', () => show('pick'));
     vs.setAttribute('aria-label', 'Change characters: ' + nameOf(rosterEntry('you')) + ' against ' + nameOf(rosterEntry('opp')));
     const one = (sd, lab) => {
@@ -14923,6 +16899,24 @@ function createMenu(doc, opts) {
     s.appendChild(seg('Graphics', ['Auto', 'Low', 'Medium', 'High'], () => Math.round(CFG.gfx.quality), (i) => { CFG.gfx.quality = i; changed(); }, 'm-gfx'));
     s.appendChild(el('p', 'm-note', 'Low is for older phones. Auto lowers the resolution by itself if the game ever runs slow.'));
     return s;
+  }
+  // the story: Start the story, or Continue story and New story (which asks twice: it starts again from the first morning)
+  function storyCard() {
+    const si = opts.storyInfo(), c = el('div', 'm-story');
+    c.append(el('div', 'm-sk', si.has ? 'Story · ' + si.chapter : 'Story mode'),
+      el('p', 'm-sp', si.has ? si.goal : "You're the new kid. Walk the school, meet everyone, and play your way to the King's Pole."));
+    const row = el('div', 'm-srow');
+    row.appendChild(btn('m-btn go m-st', si.has ? 'Continue story' : 'Start the story', () => { close(); if (opts.onStory) opts.onStory(false); }));
+    if (si.has) {
+      let armed = 0;
+      const nb = btn('m-btn new', 'New story', () => {
+        if (performance.now() > armed) { armed = performance.now() + 3000; nb.textContent = 'Start over?'; setTimeout(() => { if (performance.now() > armed - 20) nb.textContent = 'New story'; }, 3000); return; }
+        close(); if (opts.onStory) opts.onStory(true);
+      });
+      row.appendChild(nb);
+    }
+    c.appendChild(row);
+    return c;
   }
   // a row of choices: label, option names, the current index, what a tap does
   function seg(label, names, get, set, id) {
@@ -15127,7 +17121,7 @@ function createMenu(doc, opts) {
     root.dataset.screen = name;
     root.scrollTop = 0;
     shownPick = pickKey();
-    const f = s.querySelector('.m-back, .m-btn.go');
+    const f = s.querySelector('.m-back, .m-acts .m-btn.go, .m-foot .m-btn.go');
     if (f && f.focus) try { f.focus({ preventScroll: true }); } catch (e) { /* old browsers */ }
   }
   const pickKey = () => Math.round(CFG.roster.you) + '/' + Math.round(CFG.roster.opp) + '/' + youSig() + '/' + CFG.match.opponent + '/' + CFG.gfx.quality;
@@ -15191,6 +17185,12 @@ function createMenu(doc, opts) {
 // asks it on the pace clock (paceT: real ms as the stopwatch counts them), which the 140 ms debounce reads too. While your delay
 // runs, a ring round the ball empties and Kiru drops out of his ready stance; a swipe through the ball in it flashes the ring
 // (and the first time in a match, a word on why). Kage waits too, by the setting.
+//
+// Story mode (overworld.js, story.js, school.js) draws the school on this same canvas while you walk it: the court waits, and its
+// HUD is hidden. A match the story starts (SM) is played here: who plays each side, the opponent's phase (their meeting in the
+// story), the rounds and their lines are set for it and put back after, the round's end says Continue once the match is over, and
+// the result goes back to the story. Jackson's series (match 20) holds his specials back until the first game you win in it: then
+// the Sign of the Dragon plays over the court, his kimono comes off, and Double Dragon is his for the rest of it.
 (function boot() {
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -15232,8 +17232,21 @@ function createMenu(doc, opts) {
     onPlay() { audio.unlock(); rosterSync(); resetAll(); },
     onDev() { if (!ui.tuner.isOpen()) ui.tuner.open(); },
     save() { ui.tuner.save(); },
+    onStory(fresh) { audio.unlock(); if (ui.tuner.isOpen()) ui.tuner.close(); story.open(fresh); },
+    storyInfo() { return story.info(); },
   });
-  document.getElementById('bMenu').addEventListener('click', () => { if (ui.tuner.isOpen()) ui.tuner.close(); menu.open('home'); });
+  // story mode (overworld.js): the school, walked on this canvas between the story's matches, and saved on this device
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* a private window: kept for the session */ } } };
+  const story = createOverworld(document, { canvas, store, onMatch: storyMatch, onMenu: openMenu });
+  // the menu, from the court or the school: a story match left for it is abandoned (the story waits where it was), and the story
+  // keeps your place
+  function openMenu() {
+    if (ui.tuner.isOpen()) ui.tuner.close();
+    if (SM) storyRestore(true);
+    if (story.on) story.close();
+    menu.open('home');
+  }
+  document.getElementById('bMenu').addEventListener('click', openMenu);
   // after createUI: the panel has applied the saved settings, and the URL wins over them for this load only
   const forced = hash.indexOf('solo') >= 0 ? 0 : hash.indexOf('versus') >= 0 ? 1 : -1;
   input.onGesture(() => audio.unlock());
@@ -15275,6 +17288,7 @@ function createMenu(doc, opts) {
   const view = { fx, input, time: tw, now: 0, actors: [], halves: 0, world, charged: '', overBall: null, attacks: null, quake: 0 };
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1, fire: 0 };
+  const SCHOOL_TICK = { speed01: 0, pan: 0, timeScale: 1, fire: 0 }; // the audio's frame in the school: no ball, full speed
   const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false, fireArmed: false, ft: -1 };
   const kinfo = { ready: false, armed: false, fire: false, down: 0, slowed: false, ft: -1 }, kiruHit = { half: false, kage: null, special: false };
   let toldHot = false, toldVolley = false, toldHole = false; // shown this match: the "let it pass" hint for Kage's fireball, the first fire volley's, his black hole's
@@ -15312,7 +17326,7 @@ function createMenu(doc, opts) {
   const kiruOn = () => CFG.kiru.on > 0;
 
   function pickRules() {
-    const want = (forced >= 0 ? forced : CFG.match.opponent) > 0 ? versus : game;
+    const want = (SM ? 1 : forced >= 0 ? forced : CFG.match.opponent) > 0 ? versus : game;
     if (want === rules) return false;
     rules = want;
     return true;
@@ -15350,10 +17364,15 @@ function createMenu(doc, opts) {
     ui.hideResult();
     ui.hint(hintText());
     lastHitAt = -1e9; prevPhase = 'idle'; hintUntil = 0;
+    // a story match: from the second round, a friend's cheer from the script
+    if (SM) SM.slipped = false;
+    const ch = SM && vs() && SM.cheer;
+    if (ch && versus.snap.round > 1) { const c = ch[(versus.snap.round - 2) % ch.length]; ui.hint(storyName(c[0]) + ': ' + c[1]); hintUntil = performance.now() + 2600; }
   }
   // a new match (or a new solo round)
   function resetAll() {
     rosterNewMatch(); // a new match: Jackson's kimono back on
+    if (SM) storySeries();
     pickRules();
     pickSide();
     if (vs()) versus.reset(); else game.reset();
@@ -15366,7 +17385,74 @@ function createMenu(doc, opts) {
   }
   // the show is over and was tapped (or its time ran out): next round, or a new match once it is over
   function nextRound() {
-    if (vs() && versus.state === 'wound' && !versus.snap.matchOver) { versus.nextRound(); startRally(); } else resetAll();
+    if (SM && SM.saying) return; // the Sign of the Dragon is playing over the court
+    if (vs() && versus.state === 'wound' && !versus.snap.matchOver) {
+      if (SM && storyBreak()) return;
+      versus.nextRound(); startRally();
+    } else if (SM && vs() && versus.snap.matchOver) storyEnd(versus.snap.winner === 'you');
+    else resetAll();
+  }
+
+  // ---- a story match (overworld.js asks for it, and hears how it went) ----
+  // SM: { n (its number in the story), friendly (free play, after the end), M (story.js STORY_MATCH[n]), keep (the settings it
+  // changes, as they were), mid (Jackson's series: 1 until the Sign of the Dragon, then 2), slip (his "Figures Out Slip": 0, 1 due
+  // once he has returned a ball your Slip slipped off his hand, 2 played), cheer (the friends' lines now), saying (lines over the court) }
+  let SM = null;
+  const storyName = (key) => (key === 'you' ? youName() : ROSTER[ROSTER_BY[key]].name);
+  function storyMatch(n, friendly) {
+    const M = STORY_MATCH[n], c = CFG.chars[M.key];
+    SM = { n, friendly: !!friendly, M, mid: 0, slip: 0, slipped: false, cheer: null, saying: false,
+      keep: { you: CFG.roster.you, opp: CFG.roster.opp, phase: c.phase, rounds: CFG.match.rounds, opponent: CFG.match.opponent, ek: CFG.energy.kage } };
+    if (CFG.story.skip > 0 && !friendly) { const k = SM; SM = null; story.matchResult(n, true, !!k.M.mid); return; } // reading it through (dev)
+    CFG.roster.you = ROSTER_BY.you; CFG.roster.opp = ROSTER_BY[M.key];
+    if (PHASES[M.key]) c.phase = storyPhase(n); // their meeting in the story is the phase they play
+    CFG.match.rounds = M.rounds || Math.round(CFG.story.rounds) || 2;
+    CFG.match.opponent = 1;
+    rosterSync(); ui.names(oppName(), rosterAccent('opp')); ui.tuner.refresh();
+    resetAll();
+  }
+  // the series' own state, at its start and on a restart: Jackson's specials held back until the Sign of the Dragon, and the lines
+  // the script gives the match
+  function storySeries() {
+    const M = SM.M;
+    SM.mid = M.mid && !SM.friendly ? 1 : 0; SM.slip = SM.friendly ? 2 : 0; SM.slipped = false; SM.saying = false;
+    CFG.energy.kage = SM.mid ? 0 : SM.keep.ek;
+    ROSTER_QUIPS = M.quips || null; SM.cheer = M.cheer || null;
+    if (SM.friendly && M.mid) { rosterReveal('kage'); ROSTER_QUIPS = M.midQuips || ROSTER_QUIPS; SM.cheer = M.midCheer || SM.cheer; } // a friendly after the end: Jackson as he finished it
+  }
+  // between two games of a story match, a scene that is due plays over the court before the next one. Jackson's series has two:
+  // the Sign of the Dragon after the first game you win (his kimono comes off as it starts, and Double Dragon is his from the next
+  // game on), and, once he has returned your Slip, "Jackson Figures Out Slip". False: nothing is due
+  function storyBreak() {
+    const M = SM.M, lines = [];
+    const dragon = SM.mid === 1 && versus.snap.winner === 'you';
+    if (dragon) { SM.mid = 2; lines.push(...M.mid); rosterReveal('kage'); }
+    if (SM.slip === 1) { SM.slip = 2; lines.push(...M.slip); }
+    if (!lines.length) return false;
+    SM.saying = true;
+    ui.hideResult();
+    story.say(lines, () => {
+      if (!SM) return;
+      SM.saying = false;
+      if (dragon) { CFG.energy.kage = SM.keep.ek; ROSTER_QUIPS = M.midQuips || M.quips || null; SM.cheer = M.midCheer || M.cheer || null; }
+      versus.nextRound(); startRally();
+    });
+    return true;
+  }
+  // put back what a story match changed (abandoned: left for the menu, and the story hears nothing)
+  function storyRestore(abandoned) {
+    const k = SM.keep, c = CFG.chars[SM.M.key];
+    CFG.roster.you = k.you; CFG.roster.opp = k.opp; c.phase = k.phase; CFG.match.rounds = k.rounds; CFG.match.opponent = k.opponent; CFG.energy.kage = k.ek;
+    ROSTER_QUIPS = null;
+    if (abandoned) story.abandon();
+    SM = null;
+    rosterSync(); ui.names(oppName(), rosterAccent('opp')); ui.tuner.refresh(); ui.tuner.save();
+    resetAll();
+  }
+  function storyEnd(won) {
+    const n = SM.n;
+    storyRestore(false);
+    story.matchResult(n, won);
   }
 
   // ---- a hit, from either player: a finger's swipe, or Kage's fist ----
@@ -15394,6 +17480,7 @@ function createMenu(doc, opts) {
     const slip = vs() ? supers.intercept(k, hand, world) : ''; // a slip super: this touch slips off (or a warp, a beat after a slip: nothing can touch it)
     if (slip === 'slip') { onSlip(now); if (!you && CFG.supers.slip.again > 0) kage.onSlip(); } // he gets a reflex second swing, as your follow-through does
     const res = slip ? null : applyHit(world, hand);
+    if (SM && !you && SM.slip === 0 && SM.M.slip) { if (slip === 'slip') SM.slipped = true; else if (res && SM.slipped) SM.slip = 1; } // Jackson returned your Slip: his scene is due
     if (!res) {
       if (autoS) energy.arm('you', false);
       if (autoF) { fire.arm('you', false); energy.arm('you', false, true); }
@@ -15764,7 +17851,7 @@ function createMenu(doc, opts) {
     else if (c === 'charge2') audio.finale('powerUp', kg, (FINALE.BURST2 - FINALE.CHARGE2) / sp);
     else if (c === 'burst2') { audio.finale('fanfare', kg); audio.vibrate([40, 30, 90, 30, 140]); }
     else if (c === 'firework') audio.finale('firework', kg);
-    else if (c === 'ready') ui.resultReady(finale.next);
+    else if (c === 'ready') ui.resultReady(SM && rules.snap.matchOver ? 'Continue' : finale.next); // a story match: back to the school
   }
 
   // The court's size is on the Feel panel (pole, rope, ball): a change re-ties the rope and replays the round. The tie point
@@ -15968,6 +18055,13 @@ function createMenu(doc, opts) {
       return;
     }
     menuKey = '';
+    if (story.on && !SM) { // story mode: the school is the screen (overworld.js), and the court waits; the music plays on
+      const dt = (now - last) / 1000;
+      last = now;
+      story.frame(dt > 0 ? dt : 0);
+      audio.tick(dt > 0 && dt < 0.5 ? dt : 0, SCHOOL_TICK);
+      return;
+    }
     let realDt = (now - last) / 1000;
     last = now;
     if (!(realDt > 0)) realDt = 0;
@@ -15975,6 +18069,7 @@ function createMenu(doc, opts) {
     if (realDt > 1 / 30) realDt = 1 / 30; // a hidden tab or a hiccup must not teleport the ball
     const t0 = performance.now();
     step(realDt, now, true, clockDt);
+    if (SM) story.overFrame(realDt); // the Sign of the Dragon's lines, typing out over the court
     const w = performance.now() - t0;
     work[wi] = w; wi = (wi + 1) % work.length; if (wn < work.length) wn++;
     perf.fps = clockDt > 0 ? 1 / clockDt : 0; // the real frame rate, not the clamped one
@@ -15988,6 +18083,7 @@ function createMenu(doc, opts) {
   document.addEventListener('visibilitychange', () => { last = performance.now(); });
   window.addEventListener('keydown', (e) => { // not while a Feel-panel slider or the paste box has focus
     if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (story.on && !SM) return; // the school has its own keys (overworld.js)
     if (e.key === 'r' || e.key === 'R') resetAll();
     else if ((e.key === 'e' || e.key === 'E') && !e.repeat) armSpecial();
     else if ((e.key === 'f' || e.key === 'F') && !e.repeat) armFire();
@@ -16021,6 +18117,11 @@ function createMenu(doc, opts) {
     },
     reset: resetAll,
     next: nextRound,
+    story, // story mode (overworld.js), its script and its school, for tests
+    storyData: { STEPS: STORY_STEPS, MATCH: STORY_MATCH, SCHOOL, spot: schoolSpot, route: schoolRoute, hit: schoolHit, phase: storyPhase },
+    get storyMatch() { return SM; },
+    // advance the school by ms in 1/60 s frames (drawing the last), as the frame loop does while you walk it
+    storyAdvance(ms) { const n = Math.max(1, Math.round(ms / 16.667)); for (let i = 0; i < n; i++) story.frame(1 / 60, i < n - 1); },
   };
 
   watchCourt();
