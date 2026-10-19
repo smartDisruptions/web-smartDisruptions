@@ -513,6 +513,7 @@ body.st-on #hud, body.st-on #result { display: none; }
 .st-ch { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 10px/1.1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
 .st-txt { display: block; margin-top: 4px; font: 700 14px/1.28 var(--ui); color: var(--text); }
 .st-menu { flex: none; margin: -2px -3px 0 0; }
+.st-dev { flex: none; margin: -2px -6px 0 0; } /* the developer settings, beside the menu */
 .st-how { display: block; margin-top: 5px; font: 700 12px/1.3 var(--ui); color: var(--dim); }
 .st-act { position: absolute; right: max(14px, calc(var(--sr) + 12px)); bottom: calc(var(--sb) + 20px); max-width: calc(100% - 28px); min-height: 54px; padding: 0 22px;
   border: 0; border-radius: 99px; background: linear-gradient(180deg, #ffc24a, var(--accent)); color: var(--ink); font: 900 16px/1 var(--ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -1831,6 +1832,11 @@ const MUSIC_TRACKS = [
   {name: 'recess-overture', label: 'Recess Overture', short: 'Overture', file: 'music/recess-overture.js', take: 2, bpm: 127.998, trimmed: 0, loopStart: 30.044458333333335, loopEnd: 75.04516666666666, seconds: 75.3452, gain: 0.2265},
   {name: 'field-day', label: 'Field Day', short: 'Field Day', file: 'music/field-day.js', take: 3, bpm: 127.974, trimmed: 0, loopStart: 25.834479166666668, loopEnd: 70.843625, seconds: 71.1436, gain: 0.2371},
   {name: 'showdown', label: 'Showdown', short: 'Showdown', file: 'music/showdown.js', take: 4, bpm: 128.014, trimmed: 0, loopStart: 45.04708333333333, loopEnd: 75.04379166666666, seconds: 75.3438, gain: 0.2213},
+  {name: 'sunrise', label: 'Sunrise', short: 'Sunrise', file: 'music/sunrise.js', take: 3, bpm: 75.988, trimmed: 0, loopStart: 22.13675, loopEnd: 72.67104166666667, seconds: 72.971, gain: 0.2951},
+  {name: 'playground', label: 'Playground', short: 'Playground', file: 'music/playground.js', take: 1, bpm: 111.974, trimmed: 0, loopStart: 36.189145833333335, loopEnd: 70.48283333333333, seconds: 70.7828, gain: 0.3428},
+  {name: 'hallway', label: 'Hallway', short: 'Hallway', file: 'music/hallway.js', take: 1, bpm: 95.99, trimmed: 0, loopStart: 22.538354166666668, loopEnd: 62.542520833333334, seconds: 62.8425, gain: 0.4169},
+  {name: 'lunch-bell', label: 'Lunch Bell', short: 'Lunch Bell', file: 'music/lunch-bell.js', take: 3, bpm: 119.974, trimmed: 0, loopStart: 27.521958333333334, loopEnd: 75.53235416666666, seconds: 75.8324, gain: 0.3981},
+  {name: 'old-tree', label: 'Old Tree', short: 'Old Tree', file: 'music/old-tree.js', take: 1, bpm: 83.996, trimmed: 0, loopStart: 27.536145833333332, loopEnd: 73.25260416666667, seconds: 73.5526, gain: 0.2786},
 ];
 const MUSIC_DEFAULT = 3; // showdown
 const MUSIC_CREDIT = 'Music generated with ElevenLabs Music';
@@ -1846,13 +1852,16 @@ const MUSIC_CREDIT = 'Music generated with ElevenLabs Music';
 //   music ─► fade ─► low-pass ─► level ─┘ (straight into the master: the ball's pan is not the music's)
 //   (volume sits BEFORE the limiter, so even the loudest Feel-panel setting cannot clip the output)
 //
-// The music is a recording too: four epic violin and piano takes from ElevenLabs Music, picked on the Feel panel's "Music track"
-// (MUSIC_TRACKS, from musictracks.js; each take is music/<name>.js beside the page, made by tools/music.mjs from assets/music/).
+// The music is a recording too: ElevenLabs Music takes (MUSIC_TRACKS, from musictracks.js; each is music/<name>.js beside the
+// page, made by tools/music.mjs from assets/music/), four epic violin and piano ones for the court, on the Feel panel's "Music
+// track", and five for the start menu and the school's places. The game says which it wants where (music.use: main.js asks for
+// the menu's, each place's and a story match's, from the Music by place group); a quick match plays the Music track.
 // The page asks for the picked track's file (createAudio({ musicFetch: true })) and the game starts without waiting: it is decoded
 // at the first gesture and swells in, plays its intro once, then loops on the take's points (the seam is baked into the file).
 // It sits under the hits, and in slow-mo it muffles and dips with the time scale, so the hit cuts through. Muted, switched off or
 // at 0 it stops and remembers where; it picks up from there. Another track picked: the old one fades out and is let go, and the
-// new one is fetched (only now), decoded and played from its top.
+// new one is fetched (only now, unless music.fetch asked for it ahead), decoded and played from its top. Walking from one place
+// to another (use(i, true)), the old one takes about a second to go, so the two cross.
 //
 // Every sound has its own level on the Feel panel's Audio group, under the master volume: turn them all down and the game is
 // silent. (The perfect hit's ring, the rope's snap and ticks, the pole, the floor and the round's sting once had none, so with
@@ -1943,7 +1952,7 @@ CFG_SCHEMA.push(
   };
   const takes = ['Soft', 'Hard', 'Perfect', 'Graze', 'Reversal'];
   const sounds = [].concat(
-    (typeof MUSIC_TRACKS !== 'undefined' ? MUSIC_TRACKS : []).map((t, i) => ({ id: t.name, cat: 'Music', label: t.short || t.label, title: t.label, when: "The game's music, when it is the Audio group's Music track", vars: ['From the top', 'The loop', 'The loop join'], music: i, gate: ['audio.music'] })),
+    (typeof MUSIC_TRACKS !== 'undefined' ? MUSIC_TRACKS : []).map((t, i) => ({ id: t.name, cat: 'Music', label: t.short || t.label, title: t.label, when: "The game's music: the court's when it is the Audio group's Music track, and wherever Music by place plays it", vars: ['From the top', 'The loop', 'The loop join'], music: i, gate: ['audio.music'] })),
     [{ id: 'hit', cat: 'Hits', label: 'Synth', title: 'Synth hit', when: 'Every hit, with Hit sound on Synth', vars: takes, def: 1, gate: ['audio.hitBody', 'audio.hitCrack'] }],
     (typeof HIT_SOUNDS !== 'undefined' ? HIT_SOUNDS : []).map((v, i) => ({ id: v.name, cat: 'Hits', label: v.label, title: v.label + ' hit', when: 'Every hit, with Hit sound on ' + v.label, vars: takes, def: 1, voice: i, gate: ['audio.hitBody', 'audio.hitCrack'] })),
     [
@@ -2034,8 +2043,9 @@ function createAudio(opts) {
   // missing); gen tells a decode that finishes after the track changed to drop its buffer; the playing source and its fade; where
   // it started (t0, at offset off); swell: how slowly the next start comes in
   const TRACKS = typeof MUSIC_TRACKS !== 'undefined' ? MUSIC_TRACKS : []; // once: tick() must not allocate, not even an empty list
-  // (rate: the track's pitch on the soundboard, a turntable's: it plays faster too; to: where its level node feeds)
-  const MU = { cur: -1, bytes: null, bytesFor: -1, buf: null, state: 'none', asked: {}, miss: {}, gen: 0, ready: null, src: null, fade: null, lp: null, g: null, t0: 0, off: 0, rate: 1, to: null, swell: 0.5, played: false, vG: -1, vF: -1 };
+  // (rate: the track's pitch on the soundboard, a turntable's: it plays faster too; to: where its level node feeds; over: the track
+  // the game asks for (use: -1 none, -2 the Feel panel's Music track); out: how slowly the next stop lets the playing one go)
+  const MU = { cur: -1, bytes: null, bytesFor: -1, buf: null, state: 'none', asked: {}, miss: {}, gen: 0, ready: null, src: null, fade: null, lp: null, g: null, t0: 0, off: 0, rate: 1, to: null, swell: 0.5, played: false, vG: -1, vF: -1, over: -2, out: 0.04 };
   const LADDER = [0, 2, 4, 7, 9, 12, 14, 16]; // semitones above A4, one rung per turn of rope
   // the soundboard: the sounds by id, each edited sound's insert, a track played on its own (PV: i, which take, its buffer, its
   // state none → fetching → decoding → ready → playing, or failed / missing), the takes queued to play later (a climb of rope
@@ -2904,9 +2914,20 @@ function createAudio(opts) {
   //   source (looped) ─► fade (in, out, pause) ─► low-pass (slow-mo) ─► level (Music volume × its gain, the slow-mo dip) ─► master
   function musicOn() { return CFG.audio.musicOn >= 0.5 && level('music') > 0; }
   function tracks() { return TRACKS; }
-  function pick() { // the picked track, or -1 with none in the build
-    const n = tracks().length, v = +CFG.audio.musicTrack, i = v >= 0 ? Math.floor(v) : 0;
-    return n ? (i < n ? i : n - 1) : -1;
+  function pick() { // the track to play: the one the game asks for, else the Feel panel's; -1 for none (or none in the build)
+    const n = tracks().length;
+    if (!n || MU.over === -1) return -1;
+    const v = MU.over >= 0 ? MU.over : +CFG.audio.musicTrack, i = v >= 0 ? Math.floor(v) : 0;
+    return i < n ? i : n - 1;
+  }
+  // the track the game asks for now: an index into MUSIC_TRACKS, -1 for none, null for the Feel panel's Music track. slow: a
+  // change lets the old one go over about a second (a time constant of 0.3 s), not the Feel panel's quick 0.15 s
+  function use(i, slow) {
+    const n = tracks().length, v = i == null ? -2 : !(i >= 0) ? -1 : Math.min(Math.floor(i), n - 1);
+    if (v === MU.over) return;
+    const was = pick();
+    MU.over = v;
+    if (slow && pick() !== was) MU.out = 0.3;
   }
   function dataOf(name) { // a track's recording (base64), once it is here
     const from = opts.musicData || (typeof window !== 'undefined' ? window.TETHER_MUSIC : null);
@@ -2945,6 +2966,7 @@ function createAudio(opts) {
   }
   function select(i, now) { // another track: let the old one go (its buffer too), and start the new one from its top
     if (now != null) musicStop(now);
+    MU.out = 0.04;
     MU.cur = i; MU.buf = null; MU.state = 'none'; MU.off = 0; MU.gen++;
     MU.swell = MU.played ? 0.2 : 0.5;
     if (MU.bytesFor !== i) { MU.bytes = null; MU.bytesFor = -1; }
@@ -2982,17 +3004,17 @@ function createAudio(opts) {
     s.connect(fd); fd.connect(MU.lp); s.start(t, MU.off);
     MU.src = s; MU.fade = fd; MU.t0 = t; MU.played = true; MU.swell = 0.08;
   }
-  function musicStop(now) {
-    if (!MU.src) return;
-    const s = MU.src, fd = MU.fade;
-    MU.off = musicAt(now); MU.src = null; MU.fade = null;
-    fd.gain.setTargetAtTime(0, now, 0.04);
+  function musicStop(now) { // (out: how slowly; back to quick after, played or not, so a slow change asked for never lingers)
+    if (!MU.src) { MU.out = 0.04; return; }
+    const s = MU.src, fd = MU.fade, tc = MU.out;
+    MU.off = musicAt(now); MU.src = null; MU.fade = null; MU.out = 0.04;
+    fd.gain.setTargetAtTime(0, now, tc);
     s.onended = function () { s.disconnect(); fd.disconnect(); };
-    s.stop(now + 0.3);
+    s.stop(now + Math.max(0.3, tc * 7)); // (60 dB down by then)
   }
   function musicTick(now, ts) {
     const i = pick();
-    if (i < 0) return;
+    if (i < 0) { musicStop(now); return; } // none here: it stops where it is (the same track picks up from there)
     if (i !== MU.cur) select(i, now);
     if (!musicOn()) { musicStop(now); return; }
     if (MU.state === 'none' || MU.state === 'missing') loadMusic(i);
@@ -3298,6 +3320,9 @@ function createAudio(opts) {
       get ready() { return MU.ready || Promise.resolve(); }, get state() { return MU.state; }, get playing() { return !!MU.src; },
       get at() { return ctx && MU.src ? musicAt(ctx.currentTime) : MU.off; },
       get track() { const t = tracks()[MU.cur]; return t ? t.name : null; }, get label() { const t = tracks()[MU.cur]; return t ? t.label : null; },
+      // what the game asks for (use above): use(i, slow), and asked (-2 the Feel panel's Music track, -1 none, else the index);
+      // fetch(i): load a track's file ahead (the next place's), so it can start the moment it is wanted
+      use: safe(use), get asked() { return MU.over; }, fetch: safe(want),
     },
     // the soundboard (the Feel panel's Soundboard group): play(id, take) plays a pad, stop() ends what it started, why(id) says
     // why a pad would be silent (or ''); playing is the track it is playing on its own (its name, or null) and state that one's
@@ -14295,7 +14320,7 @@ const PROPS = {
 // wall: the height of a top wall's face (where the floor starts)
 const SCHOOL = {
   gate: {
-    name: 'Front Gate', w: 520, h: 780, outdoor: true, music: 'outside',
+    name: 'Front Gate', w: 520, h: 780, outdoor: true,
     solids: [[0, 0, 26, 780], [494, 0, 26, 780], [0, 752, 520, 28], [26, 520, 158, 40], [336, 520, 158, 40], [26, 0, 160, 18], [334, 0, 160, 18]],
     exits: [{ id: 'up', rect: [186, 0, 148, 16], to: 'yard', spot: 'fromGate', label: 'Playground' }],
     zones: {},
@@ -14679,6 +14704,23 @@ CFG_SCHEMA.push(
   { path: 'story.typing', label: 'Lines type out at', min: 0, max: 3, step: 0.1, group: 'Story', rank: -9.4, unit: 'x', zero: 'at once' },
   { path: 'story.skip', label: 'Skip story matches (counts a win)', type: 'toggle', min: 0, max: 1, step: 1, group: 'Story', rank: -9.4, unit: '' }
 );
+
+// The music by place. Josh, 2026-10-18: "Add some slow, happier music to the beginning of the game. Use piano and violin as well.
+// And then add different music for maybe the different environments. Put these different music and make them editable in
+// developer settings." Which track plays on the start menu, in each of the school's places, and in a story match (main.js asks
+// audio.js for it as you go): an index into MUSIC_TRACKS (musictracks.js), one past the last for none. A story match's 0 is the
+// Audio group's Music track, the one a quick match plays, so the court sounds the same either way until this says otherwise.
+const PLACE_MUSIC = [['menu', 'Start menu', 'sunrise'], ['gate', '', 'sunrise'], ['yard', '', 'playground'], ['hall', '', 'hallway'], ['class', '', 'hallway'], ['lunch', '', 'lunch-bell'], ['field', '', 'old-tree']];
+CFG.placeMusic = { match: 0 };
+if (typeof MUSIC_TRACKS !== 'undefined' && MUSIC_TRACKS.length > 1) {
+  const names = MUSIC_TRACKS.map((t) => t.short || t.label), n = MUSIC_TRACKS.length;
+  for (const [k, label, track] of PLACE_MUSIC) {
+    const i = MUSIC_TRACKS.findIndex((t) => t.name === track);
+    CFG.placeMusic[k] = i >= 0 ? i : n;
+    CFG_SCHEMA.push({ path: 'placeMusic.' + k, label: label || SCHOOL[k].name, type: 'choice', options: names.concat('None'), min: 0, max: n, step: 1, group: 'Music by place', rank: -9.35, unit: '' });
+  }
+  CFG_SCHEMA.push({ path: 'placeMusic.match', label: 'Story matches', type: 'choice', options: ['Same as Audio'].concat(names, 'None'), min: 0, max: n + 1, step: 1, group: 'Music by place', rank: -9.35, unit: '' });
+}
 
 const STORY_CH = { 1: 'The New Kid', 2: 'The Strongest Kids', 3: 'The Price of Strength', 4: 'The Last Tournament', 5: 'King of the Pole', 6: 'One More Game' };
 const STORY_SAVE = 'tetherball.story.v1';
@@ -15207,7 +15249,9 @@ function storyPhase(n) {
 //
 // What the story waits on is in the top bar (the chapter, the goal); the person it waits on wears a "!", a place it waits on glows on
 // the ground, and an arrow at the screen's edge points the way when it is off screen (to the exit, when it is in another map).
-// opts: { canvas, onMatch(n, friendly), onMenu(), store }. API: open(fresh), close(), frame(dt), matchResult(n, won), say(lines, done)
+// The bar's gear is the game's developer settings (opts.onDev: the Feel panel, at the Story and Music by place groups); while the
+// panel is open (opts.cover() is its rectangle) the camera keeps you in the part of the school it leaves in view.
+// opts: { canvas, onMatch(n, friendly), onMenu(), onDev(), cover(), store }. API: open(fresh), close(), frame(dt), matchResult(n, won), say(lines, done)
 // (the lines over the court: Jackson's mid-series scenes), abandon() (a match left for the menu), info() (the menu's Story card), and
 // test hooks. While a match plays, all of this is hidden and the court is the screen.
 
@@ -15239,7 +15283,9 @@ function createOverworld(doc, opts) {
   goalEl.append(chEl, txtEl);
   const menuBtn = el('button', 'st-menu ib'); menuBtn.type = 'button'; menuBtn.setAttribute('aria-label', 'Menu');
   menuBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6.2 9.6V19h4.3v-5h3v5h4.3V9.6"/></svg>';
-  bar.append(goalEl, menuBtn);
+  const devBtn = el('button', 'st-dev ib'); devBtn.type = 'button'; devBtn.setAttribute('aria-label', 'Developer settings'); devBtn.setAttribute('aria-controls', 'panel'); devBtn.setAttribute('aria-expanded', 'false');
+  devBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.43 5.18 L10.53 2.72 L13.47 2.72 L13.57 5.18 A7 7 0 0 1 15.71 6.06 L17.53 4.4 L19.6 6.47 L17.94 8.29 A7 7 0 0 1 18.82 10.43 L21.28 10.53 L21.28 13.47 L18.82 13.57 A7 7 0 0 1 17.94 15.71 L19.6 17.53 L17.53 19.6 L15.71 17.94 A7 7 0 0 1 13.57 18.82 L13.47 21.28 L10.53 21.28 L10.43 18.82 A7 7 0 0 1 8.29 17.94 L6.47 19.6 L4.4 17.53 L6.06 15.71 A7 7 0 0 1 5.18 13.57 L2.72 13.47 L2.72 10.53 L5.18 10.43 A7 7 0 0 1 6.06 8.29 L4.4 6.47 L6.47 4.4 L8.29 6.06 A7 7 0 0 1 10.43 5.18Z"/><circle cx="12" cy="12" r="2.7"/></svg>';
+  bar.append(goalEl, devBtn, menuBtn);
   const act = el('button', 'st-act'); act.type = 'button'; act.hidden = true;
   const talk = el('div', 'st-talk'); talk.hidden = true; talk.setAttribute('role', 'dialog'); talk.setAttribute('aria-live', 'polite');
   const faceEl = el('div', 'st-face'), bodyEl = el('div', 'st-body'), nameEl = el('b', 'st-name'), lineEl = el('p', 'st-line'), moreEl = el('i', 'st-more', '▼');
@@ -15256,6 +15302,7 @@ function createOverworld(doc, opts) {
   root.append(touch, bar, act, talk, card, fadeEl);
   app.appendChild(root);
   menuBtn.addEventListener('click', () => { if (opts.onMenu) opts.onMenu(); });
+  devBtn.addEventListener('click', () => { if (opts.onDev) opts.onDev(); });
 
   // ───────────────────────── looks and rigs ─────────────────────────
   const looks = new Map();
@@ -15647,12 +15694,20 @@ function createOverworld(doc, opts) {
     camFollow(dt);
   }
   // the camera: on you, eased, held inside the map (a map smaller than the screen sits in its middle). You stay in the band the bar
-  // and the lines leave visible: the map may scroll out from under them, so nobody talks from behind the box
+  // and the lines leave visible: the map may scroll out from under them, so nobody talks from behind the box. The settings panel
+  // open over the school takes the bottom (a drawer) or the right (docked beside it) out of that band too; full screen, it hides it all
   function zoom() { return U.clamp(Math.min(S.W / 400, S.H / 560), 0.82, 2.2); }
-  function insets() { return { t: bar.offsetTop + bar.offsetHeight || 70, b: talk.hidden ? 0 : Math.max(0, S.H - talk.offsetTop + 10) }; }
+  function insets() {
+    const I = { t: bar.offsetTop + bar.offsetHeight || 70, b: talk.hidden ? 0 : Math.max(0, S.H - talk.offsetTop + 10), r: 0 };
+    const c = opts.cover ? opts.cover() : null;
+    if (!c !== !devBtn.dataset.on) { devBtn.dataset.on = c ? '1' : ''; devBtn.setAttribute('aria-expanded', c ? 'true' : 'false'); } // (lit while it is open)
+    if (c && c.width < S.W * 0.9) I.r = U.clamp(S.W - c.left, 0, S.W * 0.6);
+    else if (c && c.top > I.t + 60) I.b = Math.max(I.b, S.H - c.top + 10);
+    return I;
+  }
   function clampCam(snap) {
-    const m = S.map, Z = S.Z, vw = S.W / Z, vh = S.H / Z, I = insets(), t = I.t / Z, b = I.b / Z;
-    const tx = m.w <= vw ? m.w / 2 : U.clamp(you.x, vw / 2, m.w - vw / 2);
+    const m = S.map, Z = S.Z, vw = S.W / Z, vh = S.H / Z, I = insets(), t = I.t / Z, b = I.b / Z, r = I.r / Z;
+    const tx = m.w <= vw - r ? m.w / 2 + r / 2 : U.clamp(you.x + r / 2, vw / 2, m.w - vw / 2 + r);
     const ty = m.h <= vh - t - b ? m.h / 2 - (t - b) / 2 : U.clamp(you.y - 20 - (t - b) / 2, vh / 2 - t, m.h - vh / 2 + b);
     if (snap) { S.camX = tx; S.camY = ty; }
     return { tx, ty };
@@ -16775,7 +16830,8 @@ function createUI(root, opts) {
     ta.addEventListener('paste', () => setTimeout(() => { if (!ta.readOnly && parse(ta.value)) applyPasted(); }, 0));
     // typing JSON must not reach the page's own hotkeys (main.js resets the round on "r")
     ta.addEventListener('keydown', (e) => { if (e.key !== 'Escape') e.stopPropagation(); });
-    doc.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) { close(); gearBtn.focus(); } });
+    // (and that Escape is spent: in the school it would go on to the menu, overworld.js)
+    doc.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) { e.stopPropagation(); close(); gearBtn.focus(); } });
     window.addEventListener('pagehide', save);
 
     // Saved numbers take effect now: createUI runs after every module has declared its section. The defaults must be
@@ -16789,12 +16845,21 @@ function createUI(root, opts) {
 
     // tests, and a way in from elsewhere: show a group's sub (the Specials' "Zap"), or which one shows
     function showSub(group, name) { for (const P of subs) if (P.g === group && P.wraps.has(name)) { subShow(P, name, true); return true; } return false; }
+    // open these groups (remembered, as a tap on them would be) and scroll the first to the top: the story's gear opens the panel at
+    // Story and Music by place. How many it found
+    function showGroups(names) {
+      let first = null, n = 0;
+      for (let i = 0; i < listEl.children.length; i++) { const d = listEl.children[i]; if (names.indexOf(d.dataset.g) >= 0) { d.open = true; n++; if (!first) first = d; } }
+      saveGroups();
+      if (first) body.scrollTop += first.getBoundingClientRect().top - body.getBoundingClientRect().top - 6;
+      return n;
+    }
     function subOf(group) { for (const P of subs) if (P.g === group) return P.cur; return null; }
 
     // another side's character came in (roster.js): the rows that show whoever plays a side show them now
     function refresh() { if (built >= 0) paintAll(); }
 
-    return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save, tick, showSub, subOf, refresh, get board() { return board; } };
+    return { open, close, toggle, isOpen, isFull, setFull, filter, copy, paste, reset, save, tick, showSub, showGroups, subOf, refresh, get board() { return board; } };
   })();
 
   return { update, energy, fire, viewport, row: syncRow, showResult, resultReady, hideResult, hint, setMuted, tuner, names, get resultIsReady() { return ready; } };
@@ -17191,6 +17256,11 @@ function createMenu(doc, opts) {
 // story), the rounds and their lines are set for it and put back after, the round's end says Continue once the match is over, and
 // the result goes back to the story. Jackson's series (match 20) holds his specials back until the first game you win in it: then
 // the Sign of the Dragon plays over the court, his kimono comes off, and Double Dragon is his for the rest of it.
+//
+// The music follows where you are (story.js CFG.placeMusic, the Feel panel's Music by place): the start menu's, each place's in the
+// school, a story match's; a quick match plays the Audio group's Music track. Walking from place to place the old track takes a
+// second to go, and the places next door have their music fetched ahead. The story's bar has a gear: the Feel panel, opened at the
+// Story and Music by place groups, with the school kept in view beside it.
 (function boot() {
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -17237,7 +17307,11 @@ function createMenu(doc, opts) {
   });
   // story mode (overworld.js): the school, walked on this canvas between the story's matches, and saved on this device
   const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* a private window: kept for the session */ } } };
-  const story = createOverworld(document, { canvas, store, onMatch: storyMatch, onMenu: openMenu });
+  const story = createOverworld(document, {
+    canvas, store, onMatch: storyMatch, onMenu: openMenu,
+    onDev() { if (ui.tuner.isOpen()) ui.tuner.close(); else { ui.tuner.open(); ui.tuner.showGroups(['Story', 'Music by place']); } },
+    cover: () => (ui.tuner.isOpen() ? panelEl.getBoundingClientRect() : null), // the panel over the school: the camera keeps you beside it
+  });
   // the menu, from the court or the school: a story match left for it is abandoned (the story waits where it was), and the story
   // keeps your place
   function openMenu() {
@@ -17250,6 +17324,9 @@ function createMenu(doc, opts) {
   // after createUI: the panel has applied the saved settings, and the URL wins over them for this load only
   const forced = hash.indexOf('solo') >= 0 ? 0 : hash.indexOf('versus') >= 0 ? 1 : -1;
   input.onGesture(() => audio.unlock());
+  // the menu's music (and the school's) can start with the first touch or key anywhere, not only on the court: a browser lets sound
+  // start only from a gesture, and a phone only from the lift of a touch
+  for (const t of ['pointerdown', 'pointerup', 'keydown']) document.addEventListener(t, () => audio.unlock(), true);
 
   // ---- size ----
   let quality = 1; // the governor steps this 1 → .75 → .5 only if the main thread is genuinely slow
@@ -18006,6 +18083,7 @@ function createMenu(doc, opts) {
     tick.pan = Math.max(-1, Math.min(1, (ballScr.x / cam.w) * 2 - 1));
     tick.timeScale = scale;
     tick.fire = vs() ? (fire.snap.lit ? fire.snap.litK : fire.snap.volley ? 0.6 : 0) : 0;
+    audio.music.use(musicWanted(), true);
     audio.tick(realDt, tick);
 
     if (hintUntil && now > hintUntil) { hintUntil = 0; ui.hint(hintText()); }
@@ -18037,6 +18115,27 @@ function createMenu(doc, opts) {
     }
   }
 
+  // ---- the music for where you are (story.js CFG.placeMusic): a track's index, -1 for none, or null for the Audio group's pick ----
+  const MUSIC_N = typeof MUSIC_TRACKS !== 'undefined' ? MUSIC_TRACKS.length : 0;
+  const placeTrack = (v) => { const i = Math.round(v); return i >= MUSIC_N ? -1 : i > 0 ? i : 0; };
+  function musicWanted() {
+    const P = CFG.placeMusic;
+    if (MUSIC_N < 2 || !P) return null;
+    if (menu.isOpen) return placeTrack(P.menu);
+    if (SM) return P.match >= 0.5 ? placeTrack(P.match - 1) : null;
+    if (story.on) { const v = P[story.S.name]; return v != null ? placeTrack(v) : null; }
+    return null;
+  }
+  // the places next door: their music fetched ahead (each file once), so walking in it starts as the screen comes back. Only once
+  // this place's own is playing (or it has none), so they never hold it up
+  let nearOf = '';
+  function fetchNear() {
+    const name = story.S.name, m = SCHOOL[name];
+    if (name === nearOf || !m || MUSIC_N < 2 || !(audio.music.playing || audio.music.asked === -1)) return;
+    nearOf = name;
+    for (let i = 0; i < m.exits.length; i++) { const v = CFG.placeMusic[m.exits[i].to]; if (v != null && placeTrack(v) >= 0) audio.music.fetch(placeTrack(v)); }
+  }
+
   // ---- the frame loop, with a governor that watches main-thread WORK (not frame interval:
   //      a 30 fps embed cap would otherwise read as a slow phone) ----
   const work = new Float32Array(90);
@@ -18047,11 +18146,14 @@ function createMenu(doc, opts) {
     requestAnimationFrame(frame);
     if (manual) return;
     if (CFG.gfx.quality !== gfxPick) { gfxPick = CFG.gfx.quality; quality = 1; scene.setQuality(1); resize(); wn = 0; lastDown = now; } // a new graphics setting: from the top
-    if (menu.isOpen) { // the menu is up: the court waits behind it, drawn again only when who is on it changes
+    if (menu.isOpen) { // the menu is up: the court waits behind it, drawn again only when who is on it changes; its music plays
       watchRules(); menu.sync();
       const k = Math.round(CFG.roster.you) + '/' + rosterBakeKey();
       if (k !== menuKey) { menuKey = k; step(0.001, now, true, 0); }
+      const dt = (now - last) / 1000;
       last = now;
+      audio.music.use(musicWanted(), true);
+      audio.tick(dt > 0 && dt < 0.5 ? dt : 0, SCHOOL_TICK);
       return;
     }
     menuKey = '';
@@ -18059,7 +18161,9 @@ function createMenu(doc, opts) {
       const dt = (now - last) / 1000;
       last = now;
       story.frame(dt > 0 ? dt : 0);
+      audio.music.use(musicWanted(), true);
       audio.tick(dt > 0 && dt < 0.5 ? dt : 0, SCHOOL_TICK);
+      fetchNear();
       return;
     }
     let realDt = (now - last) / 1000;
@@ -18122,6 +18226,7 @@ function createMenu(doc, opts) {
     get storyMatch() { return SM; },
     // advance the school by ms in 1/60 s frames (drawing the last), as the frame loop does while you walk it
     storyAdvance(ms) { const n = Math.max(1, Math.round(ms / 16.667)); for (let i = 0; i < n; i++) story.frame(1 / 60, i < n - 1); },
+    musicWanted, // the track the music should be on now (see above)
   };
 
   watchCourt();
