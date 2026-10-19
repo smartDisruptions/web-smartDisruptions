@@ -734,6 +734,10 @@ const CFG = {
 const CFG_SCHEMA = [];
 // Settings that moved: an old saved name → where it lives now, so a snapshot saved before the move still lands (roster.js)
 const CFG_ALIAS = {};
+// Settings borrowed for a while, by path, with the value they go back to: a story match plays You against its opponent, first to
+// its length (main.js). A snapshot (Copy, and the save) carries the value to go back to, so settings copied or saved mid-match are
+// still the player's own (Josh's of 2026-10-18 were copied in Jackson's series, and had him as the opponent, first to four)
+const CFG_HELD = {};
 
 // ---- helpers the panel and main.js use (pure) ----
 function cfgGet(path) {
@@ -763,7 +767,7 @@ function cfgDefault(path) {
 function cfgSnapshotTuned() {
   const o = {};
   for (let i = 0; i < CFG_SCHEMA.length; i++) {
-    const s = CFG_SCHEMA[i], v = cfgGet(s.path);
+    const s = CFG_SCHEMA[i], v = s.path in CFG_HELD ? CFG_HELD[s.path] : cfgGet(s.path);
     if (s.view) continue;
     if (s.sparse && CFG_DEFAULT && v === cfgDefault(s.path)) continue;
     o[s.path] = v;
@@ -1904,7 +1908,7 @@ CFG.audio = {
   fire: 1, // fire volleys and the fireball (fire.js): the ball catching fire and crackling, a volley won, a swing charging, a burn, a fire going out
   hitVoice: 2, // the hit: 0 the synth below, 1.. a sampled voice from hitsounds.js (Thump, Smack, Boom, Taiko: deeper)
   hitPitch: 1, // × a sampled voice's pitch: under 1 is deeper still
-  haptics: 1, // 1 = vibrate where the browser can
+  haptics: 0, // 1 = vibrate where the browser can (off: Josh's, 2026-10-18)
   maxNodes: 60, // voice-node cap: past it the quiet effects are skipped, so a pile-up can never swamp a phone (a rapid round peaks near 40)
   seed: 20260713, // variation between hits is seeded, so renders repeat
 };
@@ -2005,15 +2009,16 @@ CFG_SCHEMA.push(
     ]
   );
   // each sound's edits: pitch in semitones, volume (unless it has one in the Audio group), tone -10 (darker) .. +10 (brighter).
-  // Most start flat; Josh's own edits are the defaults for three of them (his settings, 2026-10-16): a brighter, louder stomp,
-  // a quake an octave down, and the defeat trombone silenced.
-  const BOARD_DEFAULTS = { stomp: { pitch: 1, vol: 2, tone: 9 }, quake: { pitch: -12, vol: 1.35, tone: -2 }, defeat: { pitch: -12, vol: 0, tone: -10 } };
+  // Most start flat; Josh's own edits are the defaults for four of them (his settings, 2026-10-16): a brighter, louder stomp,
+  // a quake an octave down, and the defeat trombone silenced; and (2026-10-18) the fireworks lower, darker and louder.
+  const BOARD_DEFAULTS = { stomp: { pitch: 1, vol: 2, tone: 9 }, quake: { pitch: -12, vol: 1.35, tone: -2 }, defeat: { pitch: -12, vol: 0, tone: -10 },
+    firework: { pitch: -10, vol: 1.3, tone: -6 } };
   // Copy leaves these out while they are at their defaults (sparse): a hundred zeros would bury the rest of the snapshot.
   CFG.board = {};
   for (let i = 0; i < sounds.length; i++) {
     const s = sounds[i], p = 'board.' + s.id + '.';
     CFG.board[s.id] = s.vol ? { pitch: 0, tone: 0 } : { pitch: 0, vol: 1, tone: 0 };
-    const own = BOARD_DEFAULTS[s.id]; // Josh's own edits, as the defaults (2026-10-16)
+    const own = BOARD_DEFAULTS[s.id]; // Josh's own edits, as the defaults (2026-10-16 and 2026-10-18)
     if (own) Object.assign(CFG.board[s.id], own);
     CFG_SCHEMA.push({ path: p + 'pitch', label: 'Pitch', min: -12, max: 12, step: 1, group: 'Soundboard', unit: 'st', signed: true, sound: s, sparse: true });
     if (!s.vol) CFG_SCHEMA.push({ path: p + 'vol', label: 'Volume', min: 0, max: 2, step: 0.05, group: 'Soundboard', unit: 'x', sound: s, sparse: true });
@@ -6060,9 +6065,10 @@ function createVersus() {
 
 CFG.pace = {
   on: 1, // 1 = the delay is on
-  burst: 2, // quick hits allowed in a row before it
-  quickMs: 450, // a hit within this long of your last one is a quick one
-  waitMs: 400, // the delay: after a run of quick hits, the next one needs this long since your last
+  burst: 1, // quick hits allowed in a row before it (Josh's 1, 150 and 725, 2026-10-18: a run of one, so each of your hits makes
+  // the next of yours wait 725 ms unless the other player touches the ball between, and quickMs no longer matters; 2/450/400 before)
+  quickMs: 150, // a hit within this long of your last one is a quick one
+  waitMs: 725, // the delay: after a run of quick hits, the next one needs this long since your last
   kage: 1, // 1 = Kage waits too
   cue: 1, // 1 = a ring round the ball shows your delay running out
 };
@@ -6128,9 +6134,9 @@ function createPace() {
 
 CFG.energy = {
   on: 1, // 1 = energy bars and specials (versus only)
-  hits: 8, // your hits that fill your bar (Josh's 8, 2026-10-16, when it counted volleys)
-  lv1: 30, // your opponent's hits that fill theirs at level 1...
-  lv20: 6, // ...and at level 20: a straight line between, so 19 at level 10 and 7 at level 19 (oppHits)
+  hits: 7, // your hits that fill your bar (Josh's 7, 2026-10-18; 8 on 2026-10-16, when it counted volleys)
+  lv1: 7, // your opponent's hits that fill theirs at level 1 (Josh's 7, 2026-10-18: it was 30)...
+  lv20: 6, // ...and at level 20: a straight line between, so 7 up to level 10 and 6 from level 11 (oppHits)
   boost: 1.2, // a special hit leaves the hand this much harder
   mph: 0, // ...or at this speed (0: as hit, boosted): its Ball speed, as every special has one
   charge: 1.5, // s of game time the ball carries a special's charge, if the other player does not touch it first
@@ -6390,11 +6396,11 @@ CFG.supers = {
   },
   phantom: {
     show: 0.12, // what is left to see of the ball
-    after: 0.05, // s off the hand before it fades
+    after: 0, // s off the hand before it fades (Josh's 0, 2026-10-18: at once)
     rope: 1, // 1: its rope fades with it
     shadow: 0, // 0 its shadow shows, 1 faint, 2 gone
     gravity: 0, // × gravity on it (0: it floats)
-    speed: 1.6, // × its speed off the hand
+    speed: 2, // × its speed off the hand (Josh's 2, 2026-10-18; 1.6 on 2026-10-16)
     sight: 1, // × how far off Kage sees it
     flicker: 0, // 1: it flickers into view now and then
   },
@@ -13429,17 +13435,17 @@ const ROSTER = [
       lost: ['You learn quickly.', 'Not bad.'], matchWon: ["Don't take that as friendship.", 'Just play.'], matchLost: ['You learn quickly.', 'Not friendship. Respect.'],
       serve: ['Just play.', "Let's go."], special: ['Whirlwind.', 'Hold onto something.'] } },
   { key: 'mei', name: 'Mei', short: 'Mei', role: 'Reads people', cast: 'mei', special: RS.warp, sig: 'raijin', accent: '#2ef2ff', idle: 'tilt',
-    ai: { difficulty: 9, accuracy: 0.9, composure: 0.5, power: 1.1, reaction: 1.2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
+    ai: { difficulty: 7, accuracy: 0.9, composure: 0.5, power: 1.1, reaction: 1.2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
     lines: { hit: ["You're hard to read.", 'Hm.'], smash: ['Wait for it.'], whiff: ['...Interesting.'], won: ['Read you.', 'Wait for it.'],
       lost: ["You're hard to read.", 'Hm.'], matchWon: ['Wait for it.', 'I read you.'], matchLost: ["You're going to drive everybody crazy.", "Can't read you."],
       serve: ['Wait for it.', 'Ready?'], special: ['Wait for it.', 'Blink.'] } },
   { key: 'adaeze', name: 'Adaeze', short: 'Adaeze', role: 'The cool customer', cast: 'adaeze', special: RS.sig, sig: 'shadow', accent: '#e93dff', idle: 'cross',
-    ai: { difficulty: 12, accuracy: 0.9, composure: 0.4, power: 1.4, reaction: 1.5, recovery: 0.9, speed: 2.1, jump: 1.7 }, moods: { fierce: 'smirk', happy: 'smirk', sad: 'flat' },
+    ai: { difficulty: 7, accuracy: 0.9, composure: 0.4, power: 1.4, reaction: 1.5, recovery: 0.9, speed: 2.1, jump: 1.7 }, moods: { fierce: 'smirk', happy: 'smirk', sad: 'flat' },
     lines: { hit: ['Too late.', 'Careless.'], smash: ['Too late.'], whiff: ['...'], won: ['Fame makes people careless.', 'Careless.'],
       lost: ['Enjoy it while you can.', 'Hm.'], matchWon: ['Fame makes people careless.', 'Too late.'], matchLost: ['Enjoy the win while you can.', 'Hm. Not careless.'],
       serve: ['Show me.', 'Ready.'], special: ['Shadow Cut.', 'Too late.'] } },
   { key: 'jackson', name: 'Jackson', short: 'Jackson', role: 'The Former King', cast: 'jackson', special: RS.dragon, sig: 'raijin', accent: '#ff8a1c', idle: 'regal', reveal: 1,
-    ai: { difficulty: 15, accuracy: 0.95, composure: 0.8, power: 1.7, reaction: 1.5, recovery: 0.8, speed: 2.1, jump: 1.7 }, moods: { fierce: 'snarl', happy: 'smirk', sad: 'flat' },
+    ai: { difficulty: 7, accuracy: 0.85, composure: 0.8, power: 1.7, reaction: 1.5, recovery: 0.8, speed: 2.1, jump: 1.7 }, moods: { fierce: 'snarl', happy: 'smirk', sad: 'flat' },
     lines: { hit: ["Don't call me champion.", 'Again.'], smash: ['A whole year of training.', 'Feel that?'], whiff: ['Tch.', 'Again.'], won: ['I want to beat you.', "That's one."],
       lost: ['Good. Make it hard.', 'Again.'], matchWon: ['The Former King is back.', 'Remember that.'], matchLost: ['...Good match.', 'Next year.'],
       serve: ["Let's settle it.", 'Best of seven.'], special: ['The Sign of the Dragon.', 'Double Dragon.'] } },
@@ -13449,11 +13455,11 @@ const ROSTER = [
       lost: ["Cheap special. Doesn't count.", "That's not fair!"], matchWon: ['Told you!', 'Nobody touches us!'], matchLost: ["Cheap special. Doesn't count.", 'Rematch! Rematch!'],
       serve: ['Ready to lose?', 'Here comes the heat!'], special: ['POWER UP!', 'Blast!'] } },
   { key: 'caleb', name: 'Caleb', short: 'Caleb', role: "Jackson's crew, quiet", cast: 'caleb', special: RS.spike, sig: 'raijin', accent: '#ff4b6e', idle: 'still',
-    ai: { difficulty: 9, accuracy: 0.9, composure: 0.6, power: 1.4, reaction: 2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
+    ai: { difficulty: 7, accuracy: 0.9, composure: 0.6, power: 1.4, reaction: 2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
     lines: { hit: ['Clean.', 'Okay.'], smash: ['Spike.'], whiff: ['My fault.'], won: ['Fair point.', 'Earned it.'], lost: ['You earned that.', 'Fair.'],
       matchWon: ['Good match.', 'Earned it.'], matchLost: ['No, Tyler. That was fair.', 'You earned it.'], serve: ['Ready?', "Let's play."], special: ['Spike.', 'Heads up.'] } },
   { key: 'rei', name: 'Rei', short: 'Rei', role: 'The Silent Champion', cast: 'rei', special: RS.ray, sig: 'raijin', accent: '#ffe066', idle: 'calm',
-    ai: { difficulty: 18, accuracy: 1, composure: 0.2, power: 1.6, reaction: 1, recovery: 0.7, speed: 2.2, jump: 1.8 }, moods: { fierce: 'soft', happy: 'smile', sad: 'soft' },
+    ai: { difficulty: 8, accuracy: 1, composure: 0.2, power: 1.6, reaction: 1, recovery: 0.7, speed: 2.2, jump: 1.8 }, moods: { fierce: 'soft', happy: 'smile', sad: 'soft' },
     lines: { hit: ['...', 'Mm.'], smash: ['For fun.'], whiff: ['Hm.'], won: ['Mm.', 'For fun.'], lost: ['Good.', 'Nice.'],
       matchWon: ['Thank you for the match.', 'That was fun.'], matchLost: ['Take care of it. The playground.', "It's yours now."],
       serve: ["Let's play. For fun."], special: ['Ray of Light.', 'Look up.'] } },
@@ -13486,20 +13492,21 @@ for (const e of ROSTER) {
 }
 // ───────────────────────── the story's order, and phases ─────────────────────────
 // The 22 matches of "King of the Pole" in the order the script plays them (the vault note): who you face, the special they throw
-// in that match (Milo has none until the epilogue, where his Black Hole is the reveal), and the level that fits where it falls:
-// chapter 1 at 4–5, chapter 2 at 6–10, chapter 3 at 7–12, the tournament at 10–14, Jackson and Rei at 15 and 18, and Milo's one
-// more game at 14. Each character met once already plays at their match's level.
+// in that match (Milo has none until the epilogue, where his Black Hole is the reveal), the level they play it at, and (ai) any
+// of the brain's settings that meeting plays differently. The levels are Josh's (2026-10-18), after playing it: chapter 1 at
+// 4–5, chapter 2 at 5–7, chapter 3 at 6–7, the tournament at 7–9, Jackson and Rei at 7 and 8, and Milo's one more game at 10
+// (they rose from 4 to Rei's 18 before). Each character met once already plays at their match's level.
 const STORY = [
-  { key: 'milo', special: RS.sig, level: 4 }, { key: 'emma', special: RS.swerve, level: 5 }, { key: 'marcus', special: RS.decoys, level: 5 }, // chapter 1
-  { key: 'akira', special: RS.zap, level: 8 }, { key: 'felix', special: RS.phantom, level: 6 }, { key: 'ben', special: RS.stomp, level: 7 }, // chapter 2
-  { key: 'harper', special: RS.wind, level: 8 }, { key: 'akira', special: RS.zap, level: 10 },
-  { key: 'tyler', special: RS.blast, level: 7 }, { key: 'mei', special: RS.warp, level: 9 }, { key: 'caleb', special: RS.spike, level: 9 }, // chapter 3
-  { key: 'akira', special: RS.zap, level: 12 },
-  { key: 'marcus', special: RS.decoys, level: 10 }, { key: 'emma', special: RS.swerve, level: 11 }, { key: 'felix', special: RS.phantom, level: 11 }, // chapter 4
-  { key: 'ben', special: RS.stomp, level: 12 }, { key: 'adaeze', special: RS.sig, level: 12 }, { key: 'harper', special: RS.wind, level: 13 },
-  { key: 'akira', special: RS.zap, level: 14 },
-  { key: 'jackson', special: RS.dragon, level: 15 }, { key: 'rei', special: RS.ray, level: 18 }, // chapter 5
-  { key: 'milo', special: RS.hole, level: 14 }, // the epilogue
+  { key: 'milo', special: RS.sig, level: 5 }, { key: 'emma', special: RS.swerve, level: 4 }, { key: 'marcus', special: RS.decoys, level: 5 }, // chapter 1
+  { key: 'akira', special: RS.zap, level: 5 }, { key: 'felix', special: RS.phantom, level: 6 }, { key: 'ben', special: RS.stomp, level: 7 }, // chapter 2
+  { key: 'harper', special: RS.wind, level: 6 }, { key: 'akira', special: RS.zap, level: 6 },
+  { key: 'tyler', special: RS.blast, level: 7 }, { key: 'mei', special: RS.warp, level: 7 }, { key: 'caleb', special: RS.spike, level: 7 }, // chapter 3
+  { key: 'akira', special: RS.zap, level: 6 },
+  { key: 'marcus', special: RS.decoys, level: 8 }, { key: 'emma', special: RS.swerve, level: 8 }, { key: 'felix', special: RS.phantom, level: 9 }, // chapter 4
+  { key: 'ben', special: RS.stomp, level: 8 }, { key: 'adaeze', special: RS.sig, level: 7 }, { key: 'harper', special: RS.wind, level: 8, ai: { accuracy: 0.8 } },
+  { key: 'akira', special: RS.zap, level: 7 },
+  { key: 'jackson', special: RS.dragon, level: 7 }, { key: 'rei', special: RS.ray, level: 8 }, // chapter 5
+  { key: 'milo', special: RS.hole, level: 10 }, // the epilogue
 ];
 // Josh, 2026-10-18: "Akira shows up 4 times. So he should have 4 phases of difficulty. Add phases to every character that shows up
 // more than once. Their successive phase should match where they are in the game. I should be able to choose which phase I'm up
@@ -13511,6 +13518,9 @@ const PHASES = {}; // key → the story's match numbers they play in, for each o
 STORY.forEach((m, i) => { (PHASES[m.key] = PHASES[m.key] || []).push(i + 1); });
 for (const key in PHASES) if (PHASES[key].length < 2) delete PHASES[key];
 const PHASED = AI_KEYS.concat('special');
+// the meeting each one plays outside the story (their phase picked): the first, except Josh's picks (2026-10-18): Milo, Emma and
+// Marcus as they are met again, in the epilogue and the tournament
+const PHASE_PICK = { milo: 1, emma: 1, marcus: 1 };
 const phaseOf = (key) => U.clamp(Math.round(CFG.chars[key].phase) || 0, 0, PHASES[key].length - 1) + 1; // 1-based
 for (const key in PHASES) {
   const c = CFG.chars[key];
@@ -13518,8 +13528,9 @@ for (const key in PHASES) {
     const p = c['p' + (j + 1)] = {};
     for (const k of AI_KEYS) p[k] = c[k];
     p.difficulty = STORY[n - 1].level; p.special = STORY[n - 1].special;
+    Object.assign(p, STORY[n - 1].ai);
   });
-  c.phase = 0;
+  c.phase = PHASE_PICK[key] || 0;
   for (const k of PHASED) {
     CFG_ALIAS['chars.' + key + '.' + k] = 'chars.' + key + '.p1.' + k; // a save from before phases was their first meeting's
     Object.defineProperty(c, k, { get: () => c['p' + phaseOf(key)][k], set: (v) => { c['p' + phaseOf(key)][k] = v; }, enumerable: true, configurable: true });
@@ -14696,7 +14707,8 @@ function schoolRoute(from, to) {
 // to rewrite them. The first morning's greeting is Kiru's, the kids' sensei on the cast sheet, who isn't in the script either.
 
 CFG.story = {
-  rounds: 2, // a story match: first to this many rounds (Jackson's is the script's best of seven: first to four, whatever this says)
+  rounds: 3, // a story match: first to this many rounds (Josh's 3, 2026-10-18; Jackson's is the script's best of seven: first to
+  // four, whatever this says)
   speed: 1, // how fast you walk (×)
   typing: 1, // how fast the lines type out (× 45 letters a second; 0 shows each line at once)
   skip: 0, // 1: a story match counts as won the moment it starts (to read the story through; dev only)
@@ -15976,7 +15988,7 @@ CFG_SCHEMA.push(
 // the finger to lift, and drops a tap whose thumb is still sliding from a swipe, or one made while another finger is on the court),
 // and each takes a tap well past what it draws: out to the screen's edge on the outside, `reach` px on the other sides.
 CFG.buttons = {
-  where: 3, // 0 top right, 1 top left, 2 bottom right, 3 bottom left (Josh's pick, 2026-10-16)
+  where: 0, // 0 top right, 1 top left, 2 bottom right, 3 bottom left (Josh's pick: top right, 2026-10-18; bottom left 2026-10-16)
   size: 96, // px: your special button's height (84 % of it on a short screen); the flame is 74 % of it. A row too wide shrinks
   shape: 1, // 0 round, 1 wide (a tile half as wide again as it is tall: more to hit)
   reach: 20, // px round each of yours that still counts as a tap
@@ -17484,6 +17496,9 @@ function createMenu(doc, opts) {
     SM = { n, friendly: !!friendly, M, mid: 0, slip: 0, slipped: false, cheer: null, saying: false,
       keep: { you: CFG.roster.you, opp: CFG.roster.opp, phase: c.phase, rounds: CFG.match.rounds, opponent: CFG.match.opponent, ek: CFG.energy.kage } };
     if (CFG.story.skip > 0 && !friendly) { const k = SM; SM = null; story.matchResult(n, true, !!k.M.mid); return; } // reading it through (dev)
+    const k = SM.keep, held = { 'roster.you': k.you, 'roster.opp': k.opp, 'match.rounds': k.rounds, 'match.opponent': k.opponent, 'energy.kage': k.ek };
+    if (PHASES[M.key]) held['chars.' + M.key + '.phase'] = k.phase;
+    Object.assign(CFG_HELD, held); // a snapshot meanwhile is the settings as they go back (config.js)
     CFG.roster.you = ROSTER_BY.you; CFG.roster.opp = ROSTER_BY[M.key];
     if (PHASES[M.key]) c.phase = storyPhase(n); // their meeting in the story is the phase they play
     CFG.match.rounds = M.rounds || Math.round(CFG.story.rounds) || 2;
@@ -17523,6 +17538,7 @@ function createMenu(doc, opts) {
   function storyRestore(abandoned) {
     const k = SM.keep, c = CFG.chars[SM.M.key];
     CFG.roster.you = k.you; CFG.roster.opp = k.opp; c.phase = k.phase; CFG.match.rounds = k.rounds; CFG.match.opponent = k.opponent; CFG.energy.kage = k.ek;
+    for (const p in CFG_HELD) delete CFG_HELD[p];
     ROSTER_QUIPS = null;
     if (abandoned) story.abandon();
     SM = null;
