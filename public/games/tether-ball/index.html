@@ -514,6 +514,9 @@ body.st-on #hud, body.st-on #result { display: none; }
 .st-txt { display: block; margin-top: 4px; font: 700 14px/1.28 var(--ui); color: var(--text); }
 .st-menu { flex: none; margin: -2px -3px 0 0; }
 .st-dev { flex: none; margin: -2px -6px 0 0; } /* the developer settings, beside the menu */
+/* the settings over the school: opaque, so a scene's lines under the drawer do not ghost through it (over the court, its 1 % is the court's) */
+body.st-on #panel { background: rgb(16,20,30); }
+body.st-on #panel.full { background: rgb(12,15,24); }
 .st-how { display: block; margin-top: 5px; font: 700 12px/1.3 var(--ui); color: var(--dim); }
 .st-act { position: absolute; right: max(14px, calc(var(--sr) + 12px)); bottom: calc(var(--sb) + 20px); max-width: calc(100% - 28px); min-height: 54px; padding: 0 22px;
   border: 0; border-radius: 99px; background: linear-gradient(180deg, #ffc24a, var(--accent)); color: var(--ink); font: 900 16px/1 var(--ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
