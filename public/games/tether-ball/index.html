@@ -1844,6 +1844,11 @@ const MUSIC_TRACKS = [
   {name: 'hallway', label: 'Hallway', short: 'Hallway', file: 'music/hallway.js', take: 1, bpm: 95.99, trimmed: 0, loopStart: 22.538354166666668, loopEnd: 62.542520833333334, seconds: 62.8425, gain: 0.4169},
   {name: 'lunch-bell', label: 'Lunch Bell', short: 'Lunch Bell', file: 'music/lunch-bell.js', take: 3, bpm: 119.974, trimmed: 0, loopStart: 27.521958333333334, loopEnd: 75.53235416666666, seconds: 75.8324, gain: 0.3981},
   {name: 'old-tree', label: 'Old Tree', short: 'Old Tree', file: 'music/old-tree.js', take: 1, bpm: 83.996, trimmed: 0, loopStart: 27.536145833333332, loopEnd: 73.25260416666667, seconds: 73.5526, gain: 0.2786},
+  {name: 'kotp-boombap-a', label: 'King of the Pole (boom-bap A)', short: 'Boom-bap A', file: 'music/kotp-boombap-a.js', take: 3, bpm: 92.002, trimmed: 0, loopStart: 33.9763125, loopEnd: 143.53914583333332, seconds: 143.8391, gain: 0.2483},
+  {name: 'kotp-boombap-b', label: 'King of the Pole (boom-bap B)', short: 'Boom-bap B', file: 'music/kotp-boombap-b.js', take: 4, bpm: 91.996, trimmed: 0, loopStart: 39.168145833333334, loopEnd: 143.5205, seconds: 143.8205, gain: 0.2399},
+  {name: 'kotp-trap-a', label: 'King of the Pole (orchestral trap A)', short: 'Trap A', file: 'music/kotp-trap-a.js', take: 1, bpm: 74.992, trimmed: 0, loopStart: 59.230354166666665, loopEnd: 145.6395625, seconds: 145.9396, gain: 0.2483},
+  {name: 'kotp-trap-b', label: 'King of the Pole (orchestral trap B)', short: 'Trap B', file: 'music/kotp-trap-b.js', take: 2, bpm: 75.01, trimmed: 0, loopStart: 64.03545833333334, loopEnd: 140.82522916666667, seconds: 141.1252, gain: 0.2483},
+  {name: 'kotp-trap-c', label: 'King of the Pole (orchestral trap C)', short: 'Trap C', file: 'music/kotp-trap-c.js', take: 3, bpm: 74.998, trimmed: 0, loopStart: 70.429875, loopEnd: 144.03183333333334, seconds: 144.3318, gain: 0.2317},
 ];
 const MUSIC_DEFAULT = 3; // showdown
 const MUSIC_CREDIT = 'Music generated with ElevenLabs Music';
@@ -14725,7 +14730,7 @@ CFG_SCHEMA.push(
 // developer settings." Which track plays on the start menu, in each of the school's places, and in a story match (main.js asks
 // audio.js for it as you go): an index into MUSIC_TRACKS (musictracks.js), one past the last for none. A story match's 0 is the
 // Audio group's Music track, the one a quick match plays, so the court sounds the same either way until this says otherwise.
-const PLACE_MUSIC = [['menu', 'Start menu', 'sunrise'], ['gate', '', 'sunrise'], ['yard', '', 'playground'], ['hall', '', 'hallway'], ['class', '', 'hallway'], ['lunch', '', 'lunch-bell'], ['field', '', 'old-tree']];
+const PLACE_MUSIC = [['menu', 'Start menu', 'kotp-boombap-b'], ['gate', '', 'sunrise'], ['yard', '', 'playground'], ['hall', '', 'hallway'], ['class', '', 'hallway'], ['lunch', '', 'lunch-bell'], ['field', '', 'old-tree']];
 CFG.placeMusic = { match: 0 };
 if (typeof MUSIC_TRACKS !== 'undefined' && MUSIC_TRACKS.length > 1) {
   const names = MUSIC_TRACKS.map((t) => t.short || t.label), n = MUSIC_TRACKS.length;
