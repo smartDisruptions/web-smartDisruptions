@@ -7,7 +7,7 @@ import { buildRoom } from '@/components/build/rooms';
 import { shareMeta } from '@/lib/shareCard';
 import ShojiBrowser from './ShojiBrowser';
 import MiniSite from './MiniSite';
-import GuideWall from './GuideWall';
+import SampleWall from './SampleWall';
 import '@/components/build/build-band.css';
 import './websites.css';
 
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 // /build-websites — 網 ("net, web"). The header is the shoji browser: a tiny
 // dojo website inside a browser framed like a shoji screen. Slide its edge
 // and the site reflows from desktop to tablet to phone; flip it between
-// Sketch, Code and Ship. Under it, the websites list, then the guides (an
-// honest empty wall until the first one exists; see ./guides.ts), then the
+// Sketch, Code and Ship. Under it, the websites list, then the samples
+// (websites for businesses that do not exist; see ./samples.ts), then the
 // other two Build rooms. Styles: ./websites.css (bw-*).
 export default function BuildWebsitesPage() {
   return (
@@ -81,7 +81,7 @@ export default function BuildWebsitesPage() {
         </aside>
       </section>
 
-      <GuideWall />
+      <SampleWall />
 
       <BuildTrio current="websites" />
     </div>

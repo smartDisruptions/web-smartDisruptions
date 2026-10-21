@@ -1427,11 +1427,16 @@
   }
 }
 
-/* ── The guides wall ────────────────────────────────────────────────────── */
+/* ── The samples wall ───────────────────────────────────────────────────── */
 /* On the Build pages' band (build-band.css), which sets its spacing. */
-.bw-guides {
+.bw-samples {
   content-visibility: auto;
-  contain-intrinsic-size: auto 560px;
+  contain-intrinsic-size: auto 1400px;
+}
+@media (min-width: 64rem) {
+  .bw-samples {
+    contain-intrinsic-size: auto 760px;
+  }
 }
 .bw-h2 {
   margin-top: 0.5rem;
@@ -1439,7 +1444,7 @@
   line-height: 1.1;
   color: var(--sd-text-primary);
 }
-.bw-guides-lede {
+.bw-samples-lede {
   margin-top: 0.6rem;
   max-width: 36rem;
   font-size: 1.02rem;
@@ -1449,11 +1454,12 @@
 /* A shoji screen: the grid's gaps are its kumiko, the cells its panes. */
 .bw-shoji {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 7px;
   margin-top: 1.4rem;
   padding: 9px;
   border-radius: 10px;
+  list-style: none;
   background-color: #b99466;
   background-image:
     repeating-linear-gradient(
@@ -1467,6 +1473,11 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     0 0 0 1px rgba(138, 103, 65, 0.5),
     0 26px 50px -34px var(--sd-card-shadow);
+}
+@media (min-width: 64rem) {
+  .bw-shoji {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 :root[data-theme='dark'] .bw-shoji {
   background-color: #2a2440;
@@ -1486,9 +1497,6 @@
 }
 .bw-pane {
   position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 8.5rem;
   border-radius: 3px;
   background-color: #fbf6ea;
   background-image:
@@ -1514,84 +1522,118 @@
     var(--sd-noise);
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
 }
-@media (min-width: 48rem) {
-  .bw-pane {
-    min-height: 13rem;
-  }
-}
-.bw-pane-empty {
+
+/* One sample: the picture set in the paper, then the words. On a tablet the
+   pane lies on its side, picture left. */
+.bw-sample {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0.5rem;
+  gap: 1rem;
+  padding: 0.75rem 0.75rem 1.2rem;
 }
-.bw-enso {
-  width: min(62%, 7rem);
-  height: auto;
-  color: var(--sd-pen);
-  opacity: 0.88;
-}
-.bw-pane-note {
-  font-family: var(--font-read);
-  font-size: 0.8rem;
-  font-style: italic;
-  line-height: 1.3;
-  text-align: center;
-  color: #5e5140;
-}
-:root[data-theme='dark'] .bw-pane-note {
-  color: #a6abc8;
-}
-@media (min-width: 48rem) {
-  .bw-pane-note {
-    font-size: 0.95rem;
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .bw-sample {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 1.4rem;
+    padding: 0.85rem 1.4rem 0.85rem 0.85rem;
   }
 }
-.bw-shoji-list {
-  list-style: none;
+.bw-sample-pic {
+  overflow: clip;
+  border-radius: 2px;
+  aspect-ratio: 8 / 5;
+  background-color: #1a1712;
+  box-shadow:
+    0 0 0 1px rgba(60, 40, 20, 0.28),
+    0 10px 22px -14px rgba(60, 40, 20, 0.55);
 }
-@media (max-width: 47.99rem) {
-  .bw-shoji-list {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .bw-shoji-list .bw-pane {
-    min-height: 0;
-  }
-  .bw-pane-blank {
-    display: none;
-  }
+:root[data-theme='dark'] .bw-sample-pic {
+  box-shadow:
+    0 0 0 1px rgba(155, 176, 255, 0.16),
+    0 10px 22px -14px rgba(0, 0, 0, 0.8);
 }
-.bw-guide {
-  display: grid;
-  align-content: start;
-  gap: 0.45rem;
+.bw-sample-pic img {
+  display: block;
   width: 100%;
   height: 100%;
-  padding: 1.15rem 1.2rem 1.25rem;
-  border-radius: 3px;
-  color: var(--sd-text-primary);
+  object-fit: cover;
+  object-position: top left;
 }
-.bw-guide-date {
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .bw-sample-pic img {
+    transition: scale 0.6s var(--ease-out-expo);
+  }
+  .bw-sample:hover .bw-sample-pic img {
+    scale: 1.035;
+  }
+}
+.bw-sample-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-inline: 0.45rem;
+}
+.bw-sample-kind {
   font-size: 0.7rem;
   font-weight: 750;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--sd-pen-ink);
 }
-.bw-guide-title {
-  font-size: 1.2rem;
-  line-height: 1.2;
+.bw-sample-name {
+  font-size: 1.3rem;
+  line-height: 1.15;
+  color: var(--sd-text-primary);
 }
-.bw-guide-sum {
-  font-size: 0.95rem;
+.bw-sample-sum {
+  font-size: 0.97rem;
   line-height: 1.55;
   color: var(--sd-text-secondary);
 }
-.bw-guide-go {
-  margin-top: 0.3rem;
-  font-size: 0.88rem;
+/* Pushed to the foot of the pane, so the links line up across a row. */
+.bw-sample-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.3rem;
+  margin-top: auto;
+  padding-top: 0.45rem;
+  font-size: 0.92rem;
   font-weight: 700;
+}
+.bw-sample-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
   color: var(--sd-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+.bw-sample-links a:hover {
+  text-decoration-color: currentColor;
+}
+/* The visit link reaches over the whole pane, so the picture opens the site
+   too; "How I built it" sits above it. */
+.bw-sample-go::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 3px;
+}
+.bw-sample-go:focus-visible {
+  outline: none;
+}
+.bw-sample-go:focus-visible::after {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 3px;
+}
+.bw-sample-how {
+  position: relative;
+  z-index: 2;
 }
