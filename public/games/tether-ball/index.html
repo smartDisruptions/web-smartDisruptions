@@ -410,6 +410,15 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
   padding: calc(var(--st) + 14px) max(16px, calc(var(--sr) + 12px)) calc(var(--sb) + 16px) max(16px, calc(var(--sl) + 12px));
   background: radial-gradient(120% 70% at 50% 0%, rgba(58,44,110,.55), transparent 60%), radial-gradient(90% 60% at 50% 110%, rgba(255,176,32,.12), transparent 60%), rgba(9,11,19,.95); }
 #app.menu-up #panel { z-index: 7; } /* Dev settings opens over the menu */
+/* Tap to start: over the menu on load, where the browser wants a tap before any sound (menu.js gate) */
+.m-gate { position: absolute; inset: 0; z-index: 9; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; padding: 24px; text-align: center; cursor: pointer; outline: none;
+  background: radial-gradient(120% 70% at 50% 0%, rgba(58,44,110,.55), transparent 60%), radial-gradient(90% 60% at 50% 110%, rgba(255,176,32,.12), transparent 60%), #090b13; }
+.m-gate .m-title h1 { font-size: clamp(38px, 12vw, 64px); }
+.m-gate .m-start { display: inline-flex; align-items: center; justify-content: center; min-width: 230px; animation: gatePulse 1.6s ease-in-out infinite; }
+.m-gate:focus-visible .m-start { outline: 2px solid #fff; outline-offset: 3px; }
+.m-gate .m-note { margin: 0; }
+@keyframes gatePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) { .m-gate .m-start { animation: none; } }
 .m-scr { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; min-height: 100%; }
 .m-title { text-align: center; padding: 6px 0 2px; }
 .m-kick { font: 800 12px/1 var(--ui); letter-spacing: .32em; text-transform: uppercase; color: var(--accent); }
@@ -1877,6 +1886,10 @@ const MUSIC_CREDIT = 'Music generated with ElevenLabs Music';
 // the menu's, each place's and a story match's, from the Music by place group); a quick match plays the Music track.
 // The page asks for the picked track's file (createAudio({ musicFetch: true })) and the game starts without waiting: it is decoded
 // at the first gesture and swells in, plays its intro once, then loops on the take's points (the seam is baked into the file).
+// prime() (main.js, as the start menu opens on load) makes the context without a gesture: where the browser lets a page play
+// sound before a tap it runs at once, and the menu's song starts by itself; where it doesn't (every phone), the track is still
+// decoded while the context waits, so the first tap starts it at once (Josh, 2026-10-21: "the start menu music doesn't
+// automatically start to play").
 // It sits under the hits, and in slow-mo it muffles and dips with the time scale, so the hit cuts through. Muted, switched off or
 // at 0 it stops and remembers where; it picks up from there. Another track picked: the old one fades out and is let go, and the
 // new one is fetched (only now, unless music.fetch asked for it ahead), decoded and played from its top. Walking from one place
@@ -2178,6 +2191,12 @@ function createAudio(opts) {
     if (fresh) { try { hit({ power: p, quality: q, reversed: r }); } catch (e) { fail(e); } }
   }
 
+  // before any gesture: the context, and a try at running it (a browser that allows sound unprompted lets it; the others leave it
+  // suspended until unlock). Not a gesture: S.gestured stays as it was
+  function prime() {
+    if (!ctx) build();
+    if (ctx && !S.offline && ctx.state !== 'running') resume();
+  }
   function unlock() {
     S.gestured = true;
     try { if (typeof navigator !== 'undefined' && navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* the silent switch stays in charge */ }
@@ -3264,7 +3283,11 @@ function createAudio(opts) {
   function tickBody(dt, p) {
     if (!ctx) return;
     if (S.muted) { ambStop(); musicStop(ctx.currentTime); if (PV.i >= 0) pvStop(ctx.currentTime); BQ.length = 0; return; }
-    if (!S.offline && ctx.state !== 'running') { if (++S.nudge % 30 === 1) resume(); return; }
+    if (!S.offline && ctx.state !== 'running') {
+      if (++S.nudge % 30 === 1) resume();
+      if (musicOn() && pick() >= 0) loadMusic(pick()); // decoded while it waits, so the first tap starts it at once
+      return;
+    }
     const now = ctx.currentTime, C = CFG.audio;
     const mv = volume();
     if (master && A.vol !== mv) { A.vol = mv; master.gain.setTargetAtTime(mv, now, 0.02); } // the Feel panel retunes live
@@ -3329,7 +3352,7 @@ function createAudio(opts) {
   function safe(fn) { return function (a, b) { try { return fn(a, b); } catch (e) { fail(e); } }; }
 
   return {
-    unlock: safe(unlock), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
+    unlock: safe(unlock), prime: safe(prime), setMuted: safe(setMuted), hit: safe(hit), release: safe(release), snap: safe(snap), ground: safe(ground), pole: safe(pole),
     wound: safe(wound), wrapTick: safe(wrapTick), flash: safe(flash), special: safe(special), superCast: safe(superCast), superFx: safe(superFx), legend: safe(legend), energy: safe(energy), fire: safe(fire), vibrate, stats,
     finale: function (kind, k, d) { try { finaleSound(kind, k, d); } catch (e) { fail(e); } }, // the show's (finale.js)
     voices: { get ready() { return Promise.all([HV.ready, LV.ready]); }, // the hit voices and the big specials' sounds, decoded
@@ -3355,6 +3378,7 @@ function createAudio(opts) {
     tick(dt, p) { try { if (musicOn()) want(pick()); tickBody(dt, p); } catch (e) { fail(e); } },
     get muted() { return S.muted; },
     get state() { return ctx ? ctx.state : 'none'; },
+    get running() { return !!ctx && (S.offline || ctx.state === 'running'); }, // sound can play now (no tap needed)
   };
 }
 
@@ -14997,6 +15021,7 @@ function createUI(root, opts) {
 // allow slower mobile phones to run it").
 //
 // Three screens over the court, which waits behind them (main.js stops the clock while the menu is up):
+// On load, where the browser needs a tap before any sound, a Tap to start screen covers it first (gate, below).
 //   home   the Story (story mode, overworld.js: start it, or continue where you left it, or start again), who plays whom (tap it to
 //          change), Play, Characters, Create your character, Dev settings (the Feel panel, over the menu), the mode (versus or the
 //          time trial) and Graphics.
@@ -15326,8 +15351,35 @@ function createMenu(doc, opts) {
   function sync() { if (!root.hidden && screen !== 'make' && pickKey() !== shownPick) show(screen); }
   doc.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !root.hidden && screen !== 'home') { e.stopPropagation(); show('home'); } });
 
+  // ───────────── the gate: Tap to start ─────────────
+  // A browser plays a page's sound only once it has been tapped, clicked or typed on: every phone asks for it, a desktop one may
+  // not (main.js tries first, audio.js prime). Where it does, and the menu opens on load with music to play, this screen over the
+  // menu asks for that tap, and the tap that lifts it starts the music (main.js unlocks the sound on any tap or key). Josh,
+  // 2026-10-21: "When I start the game in either dev or prod, the start menu music doesn't automatically start to play."
+  let gateEl = null;
+  function gate(on) {
+    if (!on) {
+      if (gateEl) { gateEl.remove(); gateEl = null; doc.removeEventListener('keydown', gateKey, true); app.classList.remove('gate-up'); }
+      return;
+    }
+    if (gateEl) return;
+    const fine = typeof matchMedia === 'function' && matchMedia('(hover: hover) and (pointer: fine)').matches; // a mouse: Click
+    const word = fine ? 'Click to start' : 'Tap to start';
+    const g = el('div', 'm-gate'), head = el('header', 'm-title');
+    g.setAttribute('role', 'button'); g.setAttribute('aria-label', word); g.tabIndex = 0;
+    head.append(el('div', 'm-kick', 'Tetherball'), el('h1', '', 'King of the Pole'));
+    g.append(head, el('span', 'm-btn go m-start', word), el('p', 'm-note', 'Sound on 🔊'));
+    g.addEventListener('click', lift);
+    doc.addEventListener('keydown', gateKey, true);
+    app.appendChild(g); app.classList.add('gate-up');
+    gateEl = g;
+    try { g.focus({ preventScroll: true }); } catch (e) { /* old browsers */ }
+  }
+  function lift() { gate(false); if (opts.onStart) opts.onStart(); const f = root.querySelector('.m-acts .m-btn.go'); if (f && f.focus) try { f.focus({ preventScroll: true }); } catch (e) { /* old browsers */ } }
+  function gateKey(e) { if (e.repeat) return; e.preventDefault(); e.stopPropagation(); lift(); } // any key: Enter, Space, or another
+
   const auto = typeof navigator !== 'undefined' && navigator.webdriver && !/[?&]menu=1/.test(location.search || '');
-  return { open, close, show, sync, get isOpen() { return !root.hidden; }, get screen() { return screen; }, autoSkip: !!auto };
+  return { open, close, show, sync, gate, get gated() { return !!gateEl; }, get isOpen() { return !root.hidden; }, get screen() { return screen; }, autoSkip: !!auto };
 }
 
 // ════════ main.js ════════
@@ -15431,6 +15483,7 @@ function createMenu(doc, opts) {
   // PROD) has neither the story nor Dev settings to offer
   const menu = createMenu(document, Object.assign({
     onPlay() { audio.unlock(); rosterSync(); resetAll(); },
+    onStart() { audio.unlock(); }, // Tap to start lifted (a click: the browser's gesture)
     save() { ui.tuner.save(); },
   }, PROD ? {} : {
     onDev() { if (!ui.tuner.isOpen()) ui.tuner.open(); },
@@ -16288,6 +16341,7 @@ function createMenu(doc, opts) {
     if (manual) return;
     if (CFG.gfx.quality !== gfxPick) { gfxPick = CFG.gfx.quality; quality = 1; scene.setQuality(1); resize(); wn = 0; lastDown = now; } // a new graphics setting: from the top
     if (menu.isOpen) { // the menu is up: the court waits behind it, drawn again only when who is on it changes; its music plays
+      if (menu.gated && audio.running) menu.gate(false); // the sound started without the tap after all
       watchRules(); menu.sync();
       const k = Math.round(CFG.roster.you) + '/' + rosterBakeKey();
       if (k !== menuKey) { menuKey = k; step(0.001, now, true, 0); }
@@ -16374,7 +16428,14 @@ function createMenu(doc, opts) {
 
   watchCourt();
   resetAll();
-  if (!menu.autoSkip) menu.open('home');
+  if (!menu.autoSkip) {
+    menu.open('home');
+    // the menu's song: it starts by itself where the browser lets a page play sound unprompted (audio.js prime); where it wants a
+    // tap first, as every phone does, Tap to start asks for it (menu.js gate), and the song is decoded meanwhile
+    audio.prime();
+    const song = musicWanted();
+    if (!audio.running && song != null && song >= 0 && CFG.audio.musicOn >= 0.5) menu.gate(true);
+  }
   requestAnimationFrame(frame);
 })();
 
