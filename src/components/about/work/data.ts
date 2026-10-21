@@ -1,5 +1,10 @@
 import { apps, GAME_SLUGS, getAppBySlug, type App } from '@/data/apps';
-import { getProjectBySlug, projects, type Project } from '@/data/projects';
+import {
+  getProjectBySlug,
+  projects,
+  type Project,
+  type ProjectPart,
+} from '@/data/projects';
 import { BUILT_COVERED, builtCatalogueApps } from '@/data/built';
 import {
   FEATURED_SLUGS,
@@ -170,6 +175,24 @@ export const games: App[] = GAME_SLUGS.filter(
 )
   .map((slug) => apps.find((a) => a.slug === slug))
   .filter((a): a is App => a !== undefined);
+
+const projectParts = projects.flatMap((p) => p.parts);
+const partsOf = (kind: ProjectPart['kind']) =>
+  projectParts.filter((part) => part.kind === kind).length;
+
+/**
+ * What the receipt counts (Josh's call, 2026-10-21): websites, apps and
+ * games, nothing else. A project counts once for each of its parts, so
+ * Broom & Blade is a website and a game, as the Arcade's archive and the home
+ * page's "games in the arcade" already count it. The Arcade and Kiru are
+ * parts of this site rather than things of their own, so neither is counted;
+ * the Arcade's games are, one by one.
+ */
+export const counts = {
+  websites: partsOf('Website'),
+  apps: partsOf('App') + builtCatalogueApps.length,
+  games: partsOf('Game') + games.length,
+};
 
 /**
  * Everything on one wall: the four, everything else, then the games. Each
