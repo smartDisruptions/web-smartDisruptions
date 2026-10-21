@@ -504,10 +504,16 @@
   margin-top: 0.95rem;
 }
 
-/* ── The shelf ──────────────────────────────────────────────────────────── */
-/* On the Build pages' band (build-band.css), which sets its spacing. */
+/* ── The shelf: the samples ────────────────────────────────────────────── */
+/* On the Build pages' band (build-band.css), which sets its spacing. The
+   cards are SampleCard's (build-samples.css); this is the slots round them. */
 .bg-shelf {
-  contain-intrinsic-size: auto 560px;
+  contain-intrinsic-size: auto 1500px;
+}
+@media (min-width: 64rem) {
+  .bg-shelf {
+    contain-intrinsic-size: auto 760px;
+  }
 }
 .bg-shelf-title {
   margin-top: 0.55rem;
@@ -523,95 +529,60 @@
 }
 .bg-slots {
   position: relative;
-  display: grid;
-  gap: 0.85rem;
   margin-top: 4.25rem;
 }
-@media (min-width: 48rem) {
-  .bg-slots {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.bg-slot-list {
+  gap: 0.85rem;
+}
+@media (min-width: 64rem) {
+  .bg-slot-list {
     gap: 1rem;
   }
 }
-/* Kiru sits on the end of the shelf, legs over the edge, waiting with you. */
+/* Kiru sits on the end of the shelf, legs over the edge. */
 .bg-shelf-kiru {
   position: absolute;
-  z-index: 1;
+  z-index: 3;
   right: 0.75rem;
   top: -4.35rem;
   width: 5.4rem;
   height: auto;
   pointer-events: none;
 }
+/* A slot is a level in the editor: its number on a chip in the corner, and
+   the editor's dot grid faint behind the words. */
 .bg-slot {
-  position: relative;
-  min-height: 9rem;
-  display: grid;
-  align-content: space-between;
-  gap: 0.6rem;
-  padding: 1.05rem 1.15rem 1.1rem;
+  border: 1px solid var(--sd-border);
   border-radius: var(--radius-xl);
-}
-.bg-slot-n {
-  color: var(--sd-text-secondary);
-  font: 400 1.9rem/1 var(--font-display);
-  font-size-adjust: 0.5;
-}
-/* An empty slot is a level nobody has built yet: the editor's dot grid,
-   dashed edges, and the honest word. */
-.bg-empty {
-  border: 1.5px dashed var(--sd-border-strong);
-  background-color: color-mix(in srgb, var(--sd-surface) 60%, transparent);
+  background-color: var(--sd-surface);
   background-image: radial-gradient(
     circle,
-    var(--sd-border-strong) 1.1px,
-    transparent 1.6px
+    color-mix(in srgb, var(--sd-border-strong) 55%, transparent) 1px,
+    transparent 1.5px
   );
   background-size: 16px 16px;
   background-position: 8px 8px;
+  box-shadow: 0 18px 40px -30px var(--sd-card-shadow);
 }
-.bg-empty-label {
-  color: var(--sd-text-secondary);
-  font: 750 0.7rem/1 var(--font-sans);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.bg-slot .bs-pic {
+  border-radius: 9px;
 }
-/* On a phone an empty slot is one short row: nothing to show yet, so it
-   doesn't take a screenful to say so. */
-@media (max-width: 47.99rem) {
-  .bg-empty {
-    min-height: 4.5rem;
-    grid-template-columns: 3.3rem 1fr;
-    align-content: center;
-    align-items: center;
-    gap: 1.1rem;
+.bg-slot-n {
+  position: absolute;
+  z-index: 2;
+  top: 1.2rem;
+  left: 1.2rem;
+  padding: 0.32rem 0.5rem 0.26rem;
+  border-radius: 7px;
+  background: rgba(8, 10, 24, 0.74);
+  color: #fff;
+  font: 400 0.95rem/1 var(--font-display);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .bg-slot-n {
+    top: 1.3rem;
+    left: 1.3rem;
   }
-}
-.bg-guide {
-  color: var(--sd-text-primary);
-}
-.bg-guide-title {
-  font-size: 1.25rem;
-  line-height: 1.2;
-  word-spacing: 0.06em;
-}
-.bg-guide-line {
-  color: var(--sd-text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-.bg-guide-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--sd-text-secondary);
-  font-size: 0.85rem;
-}
-.bg-guide-go {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: var(--sd-accent);
-  font-weight: 700;
 }

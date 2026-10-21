@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import Kanji from '@/components/brand/Kanji';
 import Kiru from '@/components/kiru/Kiru';
 import SubscribeForm from '@/components/SubscribeForm';
 import BuildTrio from '@/components/build/BuildTrio';
+import SampleCard from '@/components/build/SampleCard';
 import { buildRoom } from '@/components/build/rooms';
-import { IconArrowRight } from '@/components/icons';
 import { shareMeta } from '@/lib/shareCard';
 import LevelToy from './LevelToy';
-import { GUIDES } from './guides';
+import { SAMPLES } from './samples';
 import '@/components/build/build-band.css';
 import './build-games.css';
 
@@ -38,23 +37,14 @@ export const metadata: Metadata = {
  * points you at the games list, which sits right under the cabinet (beside it
  * on a desktop).
  *
- * Below: the shelf for the guides. It is honestly empty until Josh adds the
- * first one to GUIDES in ./guides.ts, and the empty slots are drawn as what
- * they are. Then the three Build rooms. Styles: ./build-games.css (bg-*).
+ * Below: the samples, three of my games in the shelf's numbered slots, with
+ * Kiru sitting on the end (./samples.ts, cards by SampleCard). Then the
+ * three Build rooms. Styles: ./build-games.css (bg-*).
  */
 
-const SLOTS = 3;
 const pad = (n: number) => String(n).padStart(2, '0');
-const day = (d: string) =>
-  new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    timeZone: 'UTC',
-  });
 
 export default function BuildGamesPage() {
-  const empty = Math.max(0, SLOTS - GUIDES.length);
   return (
     <div className="bg-page">
       <section className="bg-hero" aria-labelledby="bg-title">
@@ -100,43 +90,27 @@ export default function BuildGamesPage() {
         className="bg-shelf build-band sd-defer"
         aria-labelledby="bg-shelf-title"
       >
-        <p className="sd-kicker">The guides</p>
+        <p className="sd-kicker">Samples</p>
         <h2 id="bg-shelf-title" className="bg-shelf-title font-display">
-          The shelf
+          Three games, free to play.
         </h2>
         <p className="bg-shelf-note font-read">
-          {GUIDES.length === 0
-            ? 'Empty for now. The first guide goes in slot one.'
-            : `${GUIDES.length === 1 ? 'One guide' : `${GUIDES.length} guides`} so far, newest first.`}
+          Each one runs in your browser, with nothing to install. Path Not
+          Taken is still an early test.
         </p>
 
         <div className="bg-slots">
           <Kiru pose="sit" className="bg-shelf-kiru" />
-          {GUIDES.map((g, i) => (
-            <Link
-              key={g.href}
-              href={g.href}
-              className="sd-card bg-slot bg-guide"
-            >
-              <span className="bg-slot-n" aria-hidden="true">
-                {pad(i + 1)}
-              </span>
-              <span className="bg-guide-title font-display">{g.title}</span>
-              <span className="bg-guide-line">{g.line}</span>
-              <span className="bg-guide-meta">
-                <time dateTime={g.date}>{day(g.date)}</time>
-                <span className="bg-guide-go">
-                  Read it <IconArrowRight size={16} />
+          <ul className="bs-list bg-slot-list" role="list">
+            {SAMPLES.map((s, i) => (
+              <li key={s.key} className="bs-card bg-slot">
+                <span className="bg-slot-n" aria-hidden="true">
+                  {pad(i + 1)}
                 </span>
-              </span>
-            </Link>
-          ))}
-          {Array.from({ length: empty }, (_, i) => (
-            <div key={i} className="bg-slot bg-empty" aria-hidden="true">
-              <span className="bg-slot-n">{pad(GUIDES.length + i + 1)}</span>
-              <span className="bg-empty-label">Empty slot</span>
-            </div>
-          ))}
+                <SampleCard sample={s} />
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
