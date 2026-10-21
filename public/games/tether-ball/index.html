@@ -724,9 +724,10 @@ const CFG = {
 };
 
 // The Feel panel's schema: [{ path:'hit.vMax', label:'Max ball speed', min, max, step, group:'Hit', unit:'m/s' }]
-// (optional: type 'toggle' / 'choice' with options, rank for the group's place, signed to show a + on positive values, sparse
-// to leave it out of a snapshot at its default, sound for the soundboard's entries: see ui.js and audio.js; view for a row that
-// shows a setting stored under another path, real() naming it: roster.js's Kage and Kiru rows show whoever plays that side. A view
+// (optional: type 'toggle' / 'choice' with options (omit: the options it draws no button for), rank for the group's place,
+// signed to show a + on positive values, sparse to leave it out of a snapshot at its default, sound for the soundboard's
+// entries: see ui.js and audio.js; view for a row that shows a setting stored under another path, real() naming it: roster.js's
+// Kage and Kiru rows show whoever plays that side. A view
 // is never saved, applied or reset itself: the path it shows is; hide for a setting the panel stores, saves and resets but draws
 // no row for (it is shown through a view). rev for a slider drawn high to low: on the opponent's rows a
 // lower number can be the harder one (Reaction time, Rattled, Recovery), and right is always harder (Josh, 2026-10-18). Only the
@@ -13332,7 +13333,7 @@ function createKiru(doc) {
 
 // ════════ roster.js ════════
 // roster.js — everyone in Josh's story, "Tetherball: King of the Pole" (the vault note Projects/Tether Ball — King of the Pole),
-// as someone you can play or play against (Josh, 2026-10-17: "Allow me to pick which character to play or play against. Tie each
+// as someone you can play or play against, but for the four who are in the story only (npc, below) (Josh, 2026-10-17: "Allow me to pick which character to play or play against. Tie each
 // character to their listed skill and abilities. Give appropriate models and animations to reflect who the character is.")
 //
 // Kiru (kiru.js) and Kage (kage.js) stay what plays each half: your half is still the flash-step avatar that follows your swipes,
@@ -13377,6 +13378,9 @@ const KID_LINES = {
 // sounds Shadow Cut, else Raijin). accent: their colour on the court. h: height against Kiru (the sheet's). ai: the brain's skill as
 // your opponent (kage.js kageSkill's settings), set by who they are in the story. idle: how they stand (rosterIdle).
 // moods: the mouth each makes in a strike, a win and a loss (the kit's MOUTH).
+// npc: in the story only. Sophie, Oliver, Noah and Ms. Rivera talk and stand around the school, but nobody plays them: they have
+// no special, skill or match lines, no settings, and no card in the picker (Josh, 2026-10-20: "They aren't really characters with
+// any powers that you play in the game"). They keep their places here, so a pick saved of anyone else still lands on them.
 const ROSTER = [
   { key: 'you', name: 'You', short: 'You', role: 'The new kid', special: RS.slip, sig: 'raijin', accent: '#c4ff4d', h: 0.80, idle: 'newkid',
     ai: { difficulty: 9, accuracy: 0.85, composure: 0.8, power: 1.3, reaction: 2, recovery: 1, speed: 2, jump: 1.6 },
@@ -13394,16 +13398,8 @@ const ROSTER = [
     lines: { hit: ['Future King!', 'Easy!', 'Yeah!'], smash: ['KING OF THE POLE!', 'Did you SEE that?'], whiff: ["That didn't count!", 'Wait, wait!'],
       won: ['Future King, baby!', 'Told you!'], lost: ['I was warming up.', "That one didn't count."], matchWon: ['Future King of the Pole!', 'Bow down!'],
       matchLost: ['Rematch. Tomorrow.', "I'm working on something."], serve: ['Watch and learn.', 'Future King serving!'], special: ['Okay. Time to show you.', "You're not ready."] } },
-  { key: 'sophie', name: 'Sophie', short: 'Sophie', role: 'Keeps everyone honest', cast: 'sophie', special: RS.sig, sig: 'raijin', accent: '#ff5d73', idle: 'hips',
-    ai: { difficulty: 3, accuracy: 0.7, composure: 1, power: 1, reaction: 3, recovery: 1, speed: 1.7, jump: 1.4 }, moods: { fierce: 'flat', happy: 'smile', sad: 'flat' },
-    lines: { hit: ['Follow the rope.', 'Obviously.'], smash: ['Repetition.', 'See?'], whiff: ['That was on purpose.', 'Hm.'], won: ['Keep up.', 'Told you.'],
-      lost: ['Fine. Again.', 'Lucky.'], matchWon: ["It's called repetition.", 'Good match. Mostly mine.'], matchLost: ["Okay, you're good.", 'Rest your hand, Milo.'],
-      serve: ['Follow the rope.', 'Watch the ball.'], special: ['Watch this.', 'Pay attention.'] } },
-  { key: 'oliver', name: 'Oliver', short: 'Oliver', role: 'Keeps the rankings', cast: 'oliver', special: RS.sig, sig: 'raijin', accent: '#ffd23f', idle: 'clipboard',
-    ai: { difficulty: 2, accuracy: 0.6, composure: 1.6, power: 0.9, reaction: 3, recovery: 1.2, speed: 1.4, jump: 1.2 }, moods: { fierce: 'open', happy: 'grin', sad: 'open' },
-    lines: { hit: ['Recording that.', 'Noted!', 'Historically essential!'], smash: ['That goes in the rankings!', 'Legendary!'], whiff: ['Unrecorded.', 'Statistically unlikely.'],
-      won: ['Point: Oliver!', 'Officially mine.'], lost: ['That stays off the record.', 'Updating rankings...'], matchWon: ['A historic upset!', 'Rankings updated!'],
-      matchLost: ["You're moving up the rankings.", 'That deserves a name.'], serve: ['Match begins... now!', 'Ladies and gentlemen!'], special: ['The Invisible Spin!', 'Witness this!'] } },
+  { key: 'sophie', name: 'Sophie', short: 'Sophie', role: 'Keeps everyone honest', cast: 'sophie', accent: '#ff5d73', idle: 'hips', npc: 1 },
+  { key: 'oliver', name: 'Oliver', short: 'Oliver', role: 'Keeps the rankings', cast: 'oliver', accent: '#ffd23f', idle: 'clipboard', npc: 1 },
   { key: 'emma', name: 'Emma', short: 'Emma', role: 'Practises alone', cast: 'emma', special: RS.swerve, sig: 'raijin', accent: '#36f2b4', idle: 'still',
     ai: { difficulty: 5, accuracy: 0.95, composure: 0.6, power: 1.1, reaction: 2, recovery: 1, speed: 1.9, jump: 1.5 }, moods: { fierce: 'flat', happy: 'smile', sad: 'flat' },
     lines: { hit: ['Watch the angle.', 'Precise.'], smash: ['Fast. Like I said.'], whiff: ['Hm. Off by a little.'], won: ['Try not to follow where the ball was.', 'Angle.'],
@@ -13429,11 +13425,7 @@ const ROSTER = [
     lines: { hit: ['Nice one!', 'Good hit!'], smash: ['Oops, sorry!', 'Big one!'], whiff: ['Ha! Missed!', 'Whoops.'], won: ['Good point!', "Let's have fun!"],
       lost: ['Nice move!', 'Ooh, good one.'], matchWon: ['Good match!', 'That was fun!'], matchLost: ['Good match!', "You're really good!"],
       serve: ["Let's have fun.", 'Ready, friend?'], special: ['Stomp!', 'Hold on tight!'] } },
-  { key: 'noah', name: 'Noah', short: 'Noah', role: "Big Ben's student", cast: 'noah', special: RS.sig, sig: 'raijin', accent: '#5ac8ff', idle: 'fidget',
-    ai: { difficulty: 2, accuracy: 0.5, composure: 1.8, power: 0.8, reaction: 3, recovery: 1.3, speed: 1.5, jump: 1.3 }, moods: { fierce: 'open', happy: 'open', sad: 'frown' },
-    lines: { hit: ['I did it!', 'Like Ben said!'], smash: ['Whoa! Did you see?'], whiff: ['Um...', 'Oops!'], won: ['That was incredible!', 'Ben! Did you see?'],
-      lost: ['I mostly remembered.', 'Oh no.'], matchWon: ['That was incredible!', 'I won?!'], matchLost: ["I'm ready for tomorrow's practice.", 'That was incredible.'],
-      serve: ['Um, ready?', 'Here goes!'], special: ['Like Ben taught me!', 'Okay okay okay!'] } },
+  { key: 'noah', name: 'Noah', short: 'Noah', role: "Big Ben's student", cast: 'noah', accent: '#5ac8ff', idle: 'fidget', npc: 1 },
   { key: 'harper', name: 'Harper', short: 'Harper', role: 'Not here for friends', cast: 'harper', special: RS.wind, sig: 'raijin', accent: '#9ff0ff', idle: 'cross',
     ai: { difficulty: 8, accuracy: 0.85, composure: 1, power: 1.4, reaction: 2, recovery: 1, speed: 2.3, jump: 1.8 }, moods: { fierce: 'flat', happy: 'smirk', sad: 'flat' },
     lines: { hit: ['Just play.', 'Whatever.'], smash: ['Not bad.', 'Blown away.'], whiff: ["Don't.", 'Hmph.'], won: ['Not bad.', "Don't take that as friendship."],
@@ -13468,11 +13460,7 @@ const ROSTER = [
     lines: { hit: ['...', 'Mm.'], smash: ['For fun.'], whiff: ['Hm.'], won: ['Mm.', 'For fun.'], lost: ['Good.', 'Nice.'],
       matchWon: ['Thank you for the match.', 'That was fun.'], matchLost: ['Take care of it. The playground.', "It's yours now."],
       serve: ["Let's play. For fun."], special: ['Ray of Light.', 'Look up.'] } },
-  { key: 'rivera', name: 'Ms. Rivera', short: 'Rivera', role: 'Runs the tournament', cast: 'rivera', special: RS.sig, sig: 'raijin', accent: '#4cb3ad', idle: 'teacher',
-    ai: { difficulty: 6, accuracy: 0.85, composure: 0.5, power: 1.2, reaction: 2, recovery: 1, speed: 1.5, jump: 1.1 }, moods: { fierce: 'flat', happy: 'smile', sad: 'soft' },
-    lines: { hit: ['Play fairly!', 'Nicely done.'], smash: ['Careful now!'], whiff: ['Oh dear.'], won: ['Play safely!', 'Point to the staff room.'],
-      lost: ['Well played!', 'Lovely.'], matchWon: ["There's more to school than winning.", 'Good sportsmanship!'], matchLost: ['Well played. Recovery is part of the work.', 'Lovely match.'],
-      serve: ['Play fairly. Play safely.', 'Ready, class?'], special: ['Class is in session.', 'Watch closely, class.'] } },
+  { key: 'rivera', name: 'Ms. Rivera', short: 'Rivera', role: 'Runs the tournament', cast: 'rivera', accent: '#4cb3ad', idle: 'teacher', npc: 1 },
 ];
 const ROSTER_BY = {};
 for (let i = 0; i < ROSTER.length; i++) {
@@ -13490,6 +13478,7 @@ CFG.roster = {
 const AI_KEYS = ['difficulty', 'accuracy', 'composure', 'power', 'reaction', 'recovery', 'speed', 'jump'];
 CFG.chars = {};
 for (const e of ROSTER) {
+  if (e.npc) continue; // in the story only: nobody plays them
   const c = CFG.chars[e.key] = {};
   for (const k of AI_KEYS) c[k] = e.ai ? e.ai[k] : CFG.kage[k];
   c.size = e.native === 'kiru' ? CFG.kiru.size : e.native === 'kage' ? CFG.kage.size : Math.round(U.clamp(e.h * 1.75, 1.1, 2.2) * 20) / 20;
@@ -13547,6 +13536,11 @@ function charPath(key, field) { return PHASES[key] && PHASED.indexOf(field) >= 0
 function rosterMatch(key) { return PHASES[key] ? PHASES[key][phaseOf(key) - 1] : 0; }
 
 const rosterAt = (i) => ROSTER[U.clamp(Math.round(i) || 0, 0, ROSTER.length - 1)];
+// a pick of one who is in the story only (a save from before 2026-10-20, when they were in the picker) is Kiru or Kage again
+{
+  const pick = { you: CFG.roster.you, opp: CFG.roster.opp }, was = { you: ROSTER_BY.kiru, opp: ROSTER_BY.kage };
+  for (const k in pick) Object.defineProperty(CFG.roster, k, { get: () => pick[k], set: (v) => { pick[k] = rosterAt(v).npc ? was[k] : v; }, enumerable: true, configurable: true });
+}
 function rosterEntry(side) { return rosterAt(side === 'opp' || side === 'kage' || side === 'cpu' ? CFG.roster.opp : CFG.roster.you); }
 const rosterProf = (side) => CFG.chars[rosterEntry(side).key];
 
@@ -13577,11 +13571,13 @@ const rosterProf = (side) => CFG.chars[rosterEntry(side).key];
 // The Characters tab: who plays each side, then each character's own settings (a chip each, in their colour)
 {
   const G = 'Characters', R = -9.5, names = ROSTER.map((e) => e.name), sn = SUPERS.slice(1).map((x) => x.name);
+  const omit = ROSTER.map((e, i) => (e.npc ? i : -1)).filter((i) => i >= 0); // the story-only: no button (ui.js), the rest keep their numbers
   CFG_SCHEMA.push(
-    { path: 'roster.you', label: 'You play as', type: 'choice', options: names, min: 0, max: names.length - 1, step: 1, group: G, rank: R, unit: '', follow: true },
-    { path: 'roster.opp', label: 'You play against', type: 'choice', options: names, min: 0, max: names.length - 1, step: 1, group: G, rank: R, unit: '', follow: true }
+    { path: 'roster.you', label: 'You play as', type: 'choice', options: names, omit, min: 0, max: names.length - 1, step: 1, group: G, rank: R, unit: '', follow: true },
+    { path: 'roster.opp', label: 'You play against', type: 'choice', options: names, omit, min: 0, max: names.length - 1, step: 1, group: G, rank: R, unit: '', follow: true }
   );
   for (const e of ROSTER) {
+    if (e.npc) continue;
     const row = (field, label, min, max, step, unit, extra) => Object.assign({ path: 'chars.' + e.key + '.' + field, label, min, max, step, group: G, rank: R, unit, sub: e.name, subTint: e.accent }, extra || {});
     const card = [
       row('special', 'Special', 0, sn.length, 1, '', { type: 'choice', options: [e.sig === 'shadow' ? 'Shadow cut' : 'Raijin'].concat(sn) }),
@@ -16477,6 +16473,7 @@ function createUI(root, opts) {
           chip.style.background = 'radial-gradient(circle at 50% 62%, ' + sw[0] + ' 0 22%, ' + sw[1] + ' 48%, ' + sw[2] + ' 100%)';
           b.classList.add('swatch'); b.setAttribute('aria-label', names[i]); b.title = names[i]; b.appendChild(chip);
         } else b.textContent = names[i];
+        if (s.omit && s.omit.indexOf(i) >= 0) b.style.display = 'none'; // a choice that isn't one (roster.js's story-only), kept so the rest keep their places
         b.addEventListener('click', () => setNum(r, i));
         r.opts.push(b); seg.appendChild(b);
       }
@@ -17023,6 +17020,7 @@ function createMenu(doc, opts) {
     const grid = el('div', 'm-grid');
     grid.setAttribute('role', 'list');
     for (let i = 0; i < ROSTER.length; i++) {
+      if (ROSTER[i].npc) continue; // in the story only (roster.js): nobody plays them
       const e = ROSTER[i], c = btn('m-card', '');
       c.dataset.i = String(i); c.setAttribute('role', 'listitem');
       c.style.setProperty('--acc', e.accent);
