@@ -13522,8 +13522,10 @@ STORY.forEach((m, i) => { (PHASES[m.key] = PHASES[m.key] || []).push(i + 1); });
 for (const key in PHASES) if (PHASES[key].length < 2) delete PHASES[key];
 const PHASED = AI_KEYS.concat('special');
 // the meeting each one plays outside the story (their phase picked): the first, except Josh's picks (2026-10-18): Milo, Emma and
-// Marcus as they are met again, in the epilogue and the tournament
-const PHASE_PICK = { milo: 1, emma: 1, marcus: 1 };
+// Marcus as they are met again, in the epilogue and the tournament. The prod version (config.js PROD) plays Milo as you first
+// meet him, match 1 (Josh, 2026-10-21: "Update milo so that you play against the match 1 version of milo in the character selection
+// in prod"): level 5, and his lightning, not the Black Hole
+const PHASE_PICK = { milo: PROD ? 0 : 1, emma: 1, marcus: 1 };
 const phaseOf = (key) => U.clamp(Math.round(CFG.chars[key].phase) || 0, 0, PHASES[key].length - 1) + 1; // 1-based
 for (const key in PHASES) {
   const c = CFG.chars[key];
