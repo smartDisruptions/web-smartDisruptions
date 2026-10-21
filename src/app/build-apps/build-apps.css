@@ -1283,99 +1283,36 @@
   margin-top: 1rem;
 }
 
-/* ── The shelf: guides, and the honest empty state ─────────────────────── */
-/* On the Build pages' band (build-band.css), which sets its spacing. */
-.ba-shelf-head {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 1rem;
-}
+/* ── The shelf: the samples ────────────────────────────────────────────── */
+/* On the Build pages' band (build-band.css), which sets its spacing. The
+   cards are SampleCard's (build-samples.css); this is the shelf they stand
+   on: three across on one lacquer plank on a desktop, and each on a plank of
+   its own when they stack. */
 .ba-shelf-title {
   margin-top: 0.5rem;
   font-size: clamp(1.6rem, 6vw, 2.2rem);
   color: var(--sd-text-primary);
 }
-.ba-shelf-count {
-  flex: none;
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-  background: var(--sd-fill);
-  font: 800 0.72rem/1 var(--font-sans);
-  letter-spacing: 0.04em;
+.ba-shelf-note {
+  margin-top: 0.45rem;
+  max-width: 34rem;
+  font-size: 1.02rem;
+  line-height: 1.55;
   color: var(--sd-text-secondary);
 }
-.ba-guides {
-  display: grid;
-  gap: 0.85rem;
-  margin-top: 1.25rem;
-}
-@media (min-width: 48rem) {
-  .ba-guides {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (min-width: 64rem) {
-  .ba-guides {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-  }
-}
-.ba-guide {
-  display: grid;
-  align-content: start;
-  gap: 0.45rem;
-  min-height: 11rem;
-  height: 100%;
-  padding: 1.2rem 1.25rem;
-  color: var(--sd-text-primary);
-}
-.ba-guide-tag {
-  font: 750 0.68rem/1 var(--font-sans);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--sd-accent);
-}
-.ba-guide-title {
-  font-size: 1.25rem;
-  line-height: 1.2;
-}
-.ba-guide-line {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--sd-text-secondary);
-}
-.ba-guide-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 0.6rem;
-  font: 600 0.8rem/1 var(--font-sans);
-  color: var(--sd-text-secondary);
-}
-.ba-guide-go {
-  color: var(--sd-pen-ink);
-  transition: translate 0.4s var(--ease-out-expo);
-}
-.ba-guide:hover .ba-guide-go {
-  translate: 4px 0;
-}
-
-/* Empty: a lacquer shelf with nothing on it yet, and the places where the
-   guides will stand. No titles until there are guides. */
-.ba-empty {
+.ba-rack {
   position: relative;
   margin-top: 4.75rem;
 }
 @media (min-width: 48rem) {
-  .ba-empty {
+  .ba-rack {
     margin-top: 6rem;
   }
 }
-.ba-empty-kiru {
+/* Kiru sits on the first app, legs over its edge. */
+.ba-rack-kiru {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   bottom: calc(100% - 1.15rem);
   left: 1.5rem;
   width: 5.6rem;
@@ -1383,54 +1320,33 @@
   pointer-events: none;
 }
 @media (min-width: 48rem) {
-  .ba-empty-kiru {
+  .ba-rack-kiru {
     left: 3rem;
     width: 6.4rem;
   }
 }
-.ba-empty-slots {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.6rem;
+.ba-samples {
+  gap: 2.6rem;
   padding: 0 0.6rem;
 }
-@media (min-width: 48rem) {
-  .ba-empty-slots {
+@media (min-width: 64rem) {
+  .ba-samples {
     gap: 1rem;
     padding: 0 1.25rem;
   }
 }
-.ba-empty-slot {
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: 5.5rem;
-  border: 1.5px dashed var(--sd-border-strong);
+.ba-sample {
+  border: 1.5px solid var(--sd-border-strong);
   border-bottom: 0;
   border-radius: 14px 14px 0 0;
-  color: var(--sd-text-secondary);
+  background-color: var(--sd-surface);
 }
-@media (min-width: 48rem) {
-  .ba-empty-slot {
-    height: 7.5rem;
-  }
-}
-.ba-empty-slot svg {
-  width: 2.2rem;
-  height: 2.2rem;
-  opacity: 0.18;
-}
-.ba-empty-slot:first-child {
-  border-color: color-mix(in srgb, var(--sd-pen) 55%, transparent);
-  background: color-mix(in srgb, var(--sd-pen) 5%, transparent);
-}
-.ba-empty-slot:first-child svg {
-  color: var(--sd-pen);
-  opacity: 0.5;
+.ba-sample .bs-pic {
+  border-radius: 8px;
 }
 /* The plank: lacquer with a gold edge. An object, so it holds its colours. */
-.ba-plank {
-  position: relative;
+.ba-plank,
+.ba-sample::after {
   height: 0.9rem;
   border-radius: 6px;
   background: linear-gradient(#2a2430, #141118 55%, #0c0a0e);
@@ -1438,11 +1354,15 @@
     inset 0 1.5px 0 #d2a24a,
     0 18px 30px -18px var(--sd-card-shadow);
 }
-:root[data-theme='dark'] .ba-plank {
+:root[data-theme='dark'] .ba-plank,
+:root[data-theme='dark'] .ba-sample::after {
   box-shadow:
     inset 0 1.5px 0 #d2a24a,
     0 0 0 1px rgba(160, 182, 255, 0.18),
     0 18px 30px -18px var(--sd-card-shadow);
+}
+.ba-plank {
+  position: relative;
 }
 .ba-plank::before,
 .ba-plank::after {
@@ -1460,38 +1380,16 @@
 .ba-plank::after {
   right: 8%;
 }
-.ba-empty-note {
-  display: grid;
-  gap: 0.35rem;
-  max-width: 34rem;
-  margin: 2.6rem auto 0;
-  text-align: center;
-}
-.ba-empty-line {
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: var(--sd-text-secondary);
-}
-.ba-empty-line b {
-  color: var(--sd-text-primary);
-  font-weight: 650;
-}
-.ba-empty-link {
-  justify-self: center;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 44px;
-  padding: 0 0.5rem;
-  font-weight: 700;
-  color: var(--sd-accent);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 1.5px;
-}
-.ba-empty-link:hover {
-  color: var(--sd-accent-hover);
-}
-.ba-empty-link:active {
-  scale: 0.97;
+/* Stacked, each app stands on its own short plank. */
+@media (max-width: 63.99rem) {
+  .ba-sample::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: -0.6rem;
+    right: -0.6rem;
+  }
+  .ba-plank {
+    display: none;
+  }
 }

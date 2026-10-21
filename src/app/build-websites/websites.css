@@ -1430,6 +1430,7 @@
 /* ── The samples wall ───────────────────────────────────────────────────── */
 /* On the Build pages' band (build-band.css), which sets its spacing. */
 .bw-samples {
+  --bs-ratio: 8 / 5;
   content-visibility: auto;
   contain-intrinsic-size: auto 1400px;
 }
@@ -1451,15 +1452,13 @@
   line-height: 1.6;
   color: var(--sd-text-secondary);
 }
-/* A shoji screen: the grid's gaps are its kumiko, the cells its panes. */
+/* A shoji screen: the grid's gaps are its kumiko, the cells its panes. The
+   grid itself is the samples list's (build-samples.css). */
 .bw-shoji {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
   gap: 7px;
   margin-top: 1.4rem;
   padding: 9px;
   border-radius: 10px;
-  list-style: none;
   background-color: #b99466;
   background-image:
     repeating-linear-gradient(
@@ -1473,11 +1472,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     0 0 0 1px rgba(138, 103, 65, 0.5),
     0 26px 50px -34px var(--sd-card-shadow);
-}
-@media (min-width: 64rem) {
-  .bw-shoji {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 :root[data-theme='dark'] .bw-shoji {
   background-color: #2a2440;
@@ -1521,119 +1515,4 @@
     ),
     var(--sd-noise);
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* One sample: the picture set in the paper, then the words. On a tablet the
-   pane lies on its side, picture left. */
-.bw-sample {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0.75rem 0.75rem 1.2rem;
-}
-@media (min-width: 40rem) and (max-width: 63.99rem) {
-  .bw-sample {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 1.4rem;
-    padding: 0.85rem 1.4rem 0.85rem 0.85rem;
-  }
-}
-.bw-sample-pic {
-  overflow: clip;
-  border-radius: 2px;
-  aspect-ratio: 8 / 5;
-  background-color: #1a1712;
-  box-shadow:
-    0 0 0 1px rgba(60, 40, 20, 0.28),
-    0 10px 22px -14px rgba(60, 40, 20, 0.55);
-}
-:root[data-theme='dark'] .bw-sample-pic {
-  box-shadow:
-    0 0 0 1px rgba(155, 176, 255, 0.16),
-    0 10px 22px -14px rgba(0, 0, 0, 0.8);
-}
-.bw-sample-pic img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top left;
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .bw-sample-pic img {
-    transition: scale 0.6s var(--ease-out-expo);
-  }
-  .bw-sample:hover .bw-sample-pic img {
-    scale: 1.035;
-  }
-}
-.bw-sample-text {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.4rem;
-  padding-inline: 0.45rem;
-}
-.bw-sample-kind {
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--sd-pen-ink);
-}
-.bw-sample-name {
-  font-size: 1.3rem;
-  line-height: 1.15;
-  color: var(--sd-text-primary);
-}
-.bw-sample-sum {
-  font-size: 0.97rem;
-  line-height: 1.55;
-  color: var(--sd-text-secondary);
-}
-/* Pushed to the foot of the pane, so the links line up across a row. */
-.bw-sample-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1.3rem;
-  margin-top: auto;
-  padding-top: 0.45rem;
-  font-size: 0.92rem;
-  font-weight: 700;
-}
-.bw-sample-links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-height: 2.75rem;
-  color: var(--sd-accent);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
-  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
-}
-.bw-sample-links a:hover {
-  text-decoration-color: currentColor;
-}
-/* The visit link reaches over the whole pane, so the picture opens the site
-   too; "How I built it" sits above it. */
-.bw-sample-go::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: 3px;
-}
-.bw-sample-go:focus-visible {
-  outline: none;
-}
-.bw-sample-go:focus-visible::after {
-  outline: 2.5px solid var(--sd-pen);
-  outline-offset: 3px;
-}
-.bw-sample-how {
-  position: relative;
-  z-index: 2;
 }

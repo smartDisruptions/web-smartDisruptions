@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import SubscribeForm from '@/components/SubscribeForm';
 import BuildTrio from '@/components/build/BuildTrio';
+import SampleCard from '@/components/build/SampleCard';
 import { buildRoom } from '@/components/build/rooms';
-import { IconArrowRight } from '@/components/icons';
 import { shareMeta } from '@/lib/shareCard';
 import Vessel from './Vessel';
-import { GUIDES, type Guide } from './guides';
+import { SAMPLES } from './samples';
 import '@/components/build/build-band.css';
 import './build-apps.css';
 
@@ -25,60 +24,12 @@ export const metadata: Metadata = {
 };
 
 // /build-apps — 器, "vessel, instrument". The header is a phone you can take
-// apart (Vessel.tsx), with the apps list right under it; then the shelf where
-// the guides will go (guides.ts), honestly empty until the first one; then
-// the strip to the other two Build rooms. Styles: ./build-apps.css (ba-*).
-
-const MONTH = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  year: 'numeric',
-  timeZone: 'UTC',
-});
-const when = (iso: string) => MONTH.format(new Date(`${iso}T12:00:00Z`));
-
-function GuideCard({ guide }: { guide: Guide }) {
-  return (
-    <li>
-      <Link href={guide.href} className="sd-card ba-guide">
-        {guide.tag && <span className="ba-guide-tag">{guide.tag}</span>}
-        <span className="ba-guide-title font-display">{guide.title}</span>
-        <span className="ba-guide-line">{guide.line}</span>
-        <span className="ba-guide-foot">
-          <time dateTime={guide.date}>{when(guide.date)}</time>
-          <IconArrowRight size={20} className="ba-guide-go" />
-        </span>
-      </Link>
-    </li>
-  );
-}
-
-function EmptyShelf() {
-  return (
-    <div className="ba-empty">
-      <Kiru pose="sit" className="ba-empty-kiru" />
-      <div className="ba-empty-slots" aria-hidden>
-        {[0, 1, 2].map((i) => (
-          <span key={i} className="ba-empty-slot">
-            <Kanji char="器" />
-          </span>
-        ))}
-      </div>
-      <div className="ba-plank" aria-hidden />
-      <div className="ba-empty-note">
-        <p className="ba-empty-line font-read">
-          <b>Nothing on the shelf yet.</b> The first app guide goes right here.
-        </p>
-        <a href="#ba-list" className="ba-empty-link">
-          Get it by email
-          <IconArrowRight size={18} />
-        </a>
-      </div>
-    </div>
-  );
-}
+// apart (Vessel.tsx), with the apps list right under it; then the shelf,
+// with three of my apps standing on it (./samples.ts, cards by SampleCard);
+// then the strip to the other two Build rooms. Styles: ./build-apps.css
+// (ba-*).
 
 export default function BuildAppsPage() {
-  const count = GUIDES.length;
   return (
     <div className="ba-page">
       <section className="ba-hero" aria-labelledby="ba-title">
@@ -109,8 +60,8 @@ export default function BuildAppsPage() {
             Get each guide when it&rsquo;s done.
           </h2>
           <p className="ba-list-body font-read">
-            This page is mostly empty for now. Leave your email and each new app
-            guide comes to you: one email per new guide, nothing else.
+            The guides aren&rsquo;t written yet. Leave your email and each new
+            app guide comes to you: one email per new guide, nothing else.
           </p>
           <SubscribeForm
             source={ROOM.source}
@@ -122,30 +73,25 @@ export default function BuildAppsPage() {
       </section>
 
       <section className="ba-shelf build-band" aria-labelledby="ba-shelf-title">
-        <div className="ba-shelf-head">
-          <div>
-            <p className="sd-kicker">The guides</p>
-            <h2 id="ba-shelf-title" className="ba-shelf-title font-display">
-              App guides
-            </h2>
-          </div>
-          <span className="ba-shelf-count">
-            {count === 0
-              ? 'None yet'
-              : count === 1
-                ? '1 guide'
-                : `${count} guides`}
-          </span>
-        </div>
-        {count > 0 ? (
-          <ul className="ba-guides" role="list">
-            {GUIDES.map((g) => (
-              <GuideCard key={g.href} guide={g} />
+        <p className="sd-kicker">Samples</p>
+        <h2 id="ba-shelf-title" className="ba-shelf-title font-display">
+          Three apps you can try.
+        </h2>
+        <p className="ba-shelf-note font-read">
+          Each one is live, so you can open it and use it.
+        </p>
+
+        <div className="ba-rack">
+          <Kiru pose="sit" className="ba-rack-kiru" />
+          <ul className="bs-list ba-samples" role="list">
+            {SAMPLES.map((s) => (
+              <li key={s.key} className="bs-card ba-sample">
+                <SampleCard sample={s} />
+              </li>
             ))}
           </ul>
-        ) : (
-          <EmptyShelf />
-        )}
+          <div className="ba-plank" aria-hidden />
+        </div>
       </section>
 
       <BuildTrio current="apps" />
