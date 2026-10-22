@@ -10247,19 +10247,29 @@ function createNinja(doc, look) {
   };
 
   // ───────────────────────── the rig, in sheet units ─────────────────────────
-  // limb(): the sheet's two-stroke capsule, shoulder → fist, bowed by `bend` (units, sideways)
+  // limb(): the sheet's two-stroke capsule, shoulder → fist, bowed by `bend` (units, sideways). Returns the line it ends on
+  // (radians), which the fist lies along.
   function limb(ctx, sx, sy, hx, hy, bend, col, w) {
     const dx = hx - sx, dy = hy - sy, d = Math.sqrt(dx * dx + dy * dy) || 1;
     const mx = (sx + hx) / 2 - (dy / d) * bend, my = (sy + hy) / 2 + (dx / d) * bend;
     ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, hx, hy);
     ctx.strokeStyle = N.L; ctx.lineWidth = w + 7; ctx.stroke();
     ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke();
+    return Math.atan2(hy - my, hx - mx);
   }
-  function fist(ctx, x, y, r, col, sh) {
-    ctx.beginPath(); ctx.ellipse(x, y, r, r, 0, 0, TAU);
-    ctx.lineWidth = 4; ctx.strokeStyle = N.L; ctx.stroke(); ctx.fillStyle = col || C.fist; ctx.fill();
-    ctx.beginPath(); ctx.moveTo(x - 6, y - 2.5); ctx.quadraticCurveTo(x, y + 0.5, x + 6, y - 2.5);
-    ctx.lineWidth = 2; ctx.strokeStyle = sh || C.fistS; ctx.stroke();
+  // A fist, along the arm's line a: squared and wider than the wrist, three finger lines at the knuckles, the thumb across the
+  // fingers on the side the arm turns toward (forward as it hangs, on top as it punches). r is its size (9.5 the rig's own).
+  // It was a round ball with a crease across it, which at the end of a long arm read as something else (Josh, 2026-10-22: "change
+  // the look of the fist or the hand for all the characters"). The cast kit draws the same hand (castkit.js fist).
+  let FIST = null; // its paths, in its own frame (x along the arm, y toward the thumb), made at the first draw
+  function fist(ctx, x, y, r, a, col, sh) {
+    if (!FIST) FIST = { body: H.rrect(-9, -13, 21, 25, 8.5), lines: new Path2D('M12 -7H5.5M12 -1.5H5.5M12 4H5.5'), thumb: H.rrect(-3, 6, 15, 7.5, 3.75) };
+    const k = r / 9.5;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(a); if (k !== 1) ctx.scale(k, k);
+    ctx.lineWidth = 4; ctx.strokeStyle = N.L; ctx.stroke(FIST.body); ctx.fillStyle = col || C.fist; ctx.fill(FIST.body);
+    ctx.lineWidth = 2; ctx.strokeStyle = sh || C.fistS; ctx.stroke(FIST.lines);
+    ctx.lineWidth = 2.6; ctx.strokeStyle = N.L; ctx.stroke(FIST.thumb); ctx.fill(FIST.thumb);
+    ctx.restore();
   }
   function leg(ctx, hx, hy, ax, ay, knee, col) {
     const w = C.legW || 18;
@@ -10295,7 +10305,8 @@ function createNinja(doc, look) {
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.save(); headFrame(ctx, P); look.tails(H, ctx, P); ctx.restore(); // the tails ride the head, behind everything
     if (art.back) blit(ctx, art.back);
-    limb(ctx, N.SH_B.x, N.SH_B.y, P.bx, P.by, P.bBend, C.armB, C.armW || 15); fist(ctx, P.bx, P.by, 9.5, C.fistB, C.fistBS);
+    const aw = C.armW || 15, hk = 9.5 * (aw / 15); // a thicker arm, a bigger hand (Big Ben's)
+    fist(ctx, P.bx, P.by, hk, limb(ctx, N.SH_B.x, N.SH_B.y, P.bx, P.by, P.bBend, C.armB, aw), C.fistB, C.fistBS);
     leg(ctx, N.HIP_B.x, N.HIP_B.y, P.rax, P.ray, P.rknee, C.legB); leg(ctx, N.HIP_F.x, N.HIP_F.y, P.lax, P.lay, P.lknee, C.legF);
     shoe(ctx, P.rax, P.ray, P.rrot); shoe(ctx, P.lax, P.lay, P.lrot);
     blit(ctx, art.torso);
@@ -10306,7 +10317,7 @@ function createNinja(doc, look) {
       ctx.strokeStyle = C.smear; ctx.lineWidth = 22; ctx.stroke();
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     }
-    limb(ctx, N.SH_F.x, N.SH_F.y, P.fx, P.fy, P.fBend, C.armF, C.armW || 15); fist(ctx, P.fx, P.fy, 9.5 + 2 * P.smear);
+    fist(ctx, P.fx, P.fy, hk + 2 * P.smear, limb(ctx, N.SH_F.x, N.SH_F.y, P.fx, P.fy, P.fBend, C.armF, aw));
   }
   function frame(ctx, kx, ky, P) {
     ctx.setTransform(kx, 0, 0, ky, 0, 0);
@@ -10366,7 +10377,7 @@ function createNinja(doc, look) {
     // the scratch canvas is drawn over whole every time it is used (a flash, a glow, a clone): sized for what is asked, not the
     // room to grow, which costs every one of those draws half as much again (Kage's cost per frame went from 0.06–0.12 ms to
     // 0.21–0.45 ms with it)
-    if (ok && look.tint) { p = part(-34, -24, 294, 250, k * TINT_K, art.tint); if (p) art.tint = p; else ok = false; } // wide enough for a fist at full stretch
+    if (ok && look.tint) { p = part(-48, -24, 294, 250, k * TINT_K, art.tint); if (p) art.tint = p; else ok = false; } // wide enough for a fist at full stretch
     else if (!look.tint) { free(art.tint); art.tint = null; }
     if (!ok) { art.torso = null; art.k = 0; refused = RETRY; return false; } // (art.torso null: the whole bake again, next time)
     art.k = kb; art.key = key;
@@ -10635,7 +10646,17 @@ function leg(hx, hy, ax, ay, col, w = 18, knee = 3) {
   return ln(p, L, w + 6) + ln(p, col, w);
 }
 const shoe = (x, y, col = INK, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})">${sp(SHOE, col, 5)}</g>`;
-const fist = (x, y, col = WRAP, sh = WRAP_S, r = 9.5) => se(x, y, r, r, col, 4) + ln(`M${x - 6} ${y - 2.5}Q${x} ${y + 0.5} ${x + 6} ${y - 2.5}`, sh, 2);
+// The line an arm ends on (degrees): the hand lies along it.
+const armAng = (sx, sy, hx, hy, bend) => { const dx = hx - sx, dy = hy - sy, d = Math.hypot(dx, dy) || 1; return f1(Math.atan2(hy - (sy + hy) / 2 - dx / d * bend, hx - (sx + hx) / 2 + dy / d * bend) * 180 / Math.PI); };
+const REST_F = armAng(73, 156, 50, 184, 10), REST_B = armAng(127, 156, 151, 193, -9);
+// A fist, along its arm's line a: squared and wider than the wrist, three finger lines at the knuckles, the thumb across the
+// fingers on the side the arm turns toward. Without a, a hand left of centre lies along the front arm at rest, else the back.
+// `over` is drawn on the hand under the thumb, in its own frame (x along the arm): a bandage. It was a round ball with a crease
+// across it, which at the end of a long arm read as something else (Josh, 2026-10-22, in Tether Ball: "change the look of the
+// fist or the hand for all the characters"). The game's rig draws the same hand (Tools/tether-ball/src/ninja.js fist).
+const fist = (x, y, col = WRAP, sh = WRAP_S, r = 9.5, a = x < 100 ? REST_F : REST_B, over = '') =>
+  `<g transform="translate(${x} ${y}) rotate(${a})${r !== 9.5 ? ` scale(${f1(r / 9.5)})` : ''}">`
+  + sr(-9, -13, 21, 25, 8.5, col, 4) + ln('M12 -7H5.5M12 -1.5H5.5M12 4H5.5', sh, 2) + over + sr(-3, 6, 15, 7.5, 3.75, col, 2.6) + '</g>';
 const rim = (op = 0.75, c = RIM) => ln(RIMP, c, 3.2, `opacity="${op}"`);
 const cheeks = (op = 0.5, c = BLUSH, y = 107) => el(57, y, 7, 3.4, c, `opacity="${op}"`) + el(143, y, 7, 3.4, c, `opacity="${op}"`);
 const brows = (bo = 78, bi = 84, c = INK, w = 5, curve = 0) => { const bm = (bo + bi) / 2 + curve; return ln(`M61 ${bo}Q74 ${bm} 87 ${bi}M139 ${bo}Q126 ${bm} 113 ${bi}`, c, w); };
@@ -10874,8 +10895,9 @@ function ninja(o) {
   const shoes = Object.assign({ type: 'tabi', col: INK, sole: P.straw[1] }, o.shoes);
   const sword = o.sword === null ? null : Object.assign({ handle: INK, wrap: RED, tsuba: GOLD, saya: '#3a1f2a' }, o.sword);
   const fx = Object.assign({ motif: '', motifF: '', back: '', headBack: '', overBody: '', onArm: '', overHead: '', overFace: '', heldB: '', heldF: '', front: '', top: '' }, o.fx);
-  const handArt = (x, y, k) => k === 'wrap' ? fist(x, y) : k === 'skin' ? fist(x, y, sk[0], sk[1]) : k === 'glove' ? fist(x, y, '#2b2733', '#17141c')
-    : k === 'none' ? '' : Array.isArray(k) ? fist(x, y, k[0], k[1]) : k;
+  const handArt = (a, k) => { const t = armAng(a.sx, a.sy, a.x, a.y, a.bend), r = 9.5 * a.w / 15, x = a.x, y = a.y; // a thicker arm, a bigger hand
+    return k === 'wrap' ? fist(x, y, WRAP, WRAP_S, r, t) : k === 'skin' ? fist(x, y, sk[0], sk[1], r, t) : k === 'glove' ? fist(x, y, '#2b2733', '#17141c', r, t)
+      : k === 'none' ? '' : Array.isArray(k) ? fist(x, y, k[0], k[1], r, t) : k; };
   const headShape = head === 'hood' ? HOOD : head === 'bald' ? HOOD : hair.cap === 'spiky' ? spikyCap(hair.spikes || 9, hair.cut) : hair.cap === 'full' ? HOOD : hairCap(hair.cut);
   // the sheet stacks everything into s; GAME sorts the same pieces into layers (put: onto the sheet, or onto a layer, or for a
   // layer of null onto the sheet alone)
@@ -10904,7 +10926,7 @@ function ninja(o) {
   // back arm
   armS += limb(aB.sx, aB.sy, aB.x, aB.y, aB.bend, aB.col, aB.w);
   if (aB.sleeve) armS += sleeve(aB.sx, aB.sy, aB.x, aB.y, aB.sleeve[0], aB.sleeve[1], aB.sleeveOpt);
-  armS += fx.heldB + handArt(aB.x, aB.y, aB.hand);
+  armS += fx.heldB + handArt(aB, aB.hand);
   // legs and feet (a long robe hides the legs)
   const robe = body.robe;
   if (legs.show && !robe) {
@@ -11020,7 +11042,7 @@ function ninja(o) {
   put('head', h);
   // front arm
   put(null, W + limb(aF.sx, aF.sy, aF.x, aF.y, aF.bend, aF.col, aF.w) + (aF.sleeve ? sleeve(aF.sx, aF.sy, aF.x, aF.y, aF.sleeve[0], aF.sleeve[1], aF.sleeveOpt) : '')
-    + fx.heldF + handArt(aF.x, aF.y, aF.hand) + We + fx.front + fx.motifF);
+    + fx.heldF + handArt(aF, aF.hand) + We + fx.front + fx.motifF);
   if (o.tone === 'kuroda' && !QUIET) put(null, ember(0.8, head === 'bare'));   // a bald head ends where a hood does, so it takes the hood's line
   if (!GAME) return s;
   // the colours the rig draws live: a hand's is its own (handCol) for a drawn one (a bandage, a sleeve), else what it is made of
@@ -11212,7 +11234,7 @@ const shorts = (col, dark) => sp('M67 194 Q100 202 133 194 L131 211 Q118 215 104
 const socks = (col = '#ffffff', stripe = null) => [85, 115].map((x) => sr(x - 9.5, 210, 19, 8, 3, col, 3) + (stripe ? ln(`M${x - 8} 213.5 H${x + 8}`, stripe, 2) : '')).join('');
 // a wrapped hand (a bandage over the knuckles): pass as a hand
 const bandHand = (x, y) => se(x, y, 9.8, 9.8, '#f6f3ea', 4) + ln(`M${x - 8} ${y - 3}L${x + 8} ${y + 1}M${x - 8} ${y + 3}L${x + 7} ${y + 6}M${x - 6} ${y - 7}L${x + 6} ${y - 5}`, '#d8d0bd', 1.6);
-const tapeHand = (x, y, sk, tape = '#f1f1ee') => fist(x, y, sk[0], sk[1]) + ln(`M${x - 8} ${y - 4}L${x + 8} ${y - 6}M${x - 8.5} ${y + 1}L${x + 8.5} ${y - 1}`, tape, 3.4);
+const tapeHand = (x, y, sk, tape = '#f1f1ee') => fist(x, y, sk[0], sk[1], 9.5, undefined, ln('M-4.5 -12V11M0.5 -12.5V11.5', tape, 3.4));
 
 // ── faces ──
 const ring = (cx, cy, rx, ry, col, w, fill = 'none', x = '') => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${col}" stroke-width="${w}" ${x}/>`;
@@ -11880,7 +11902,7 @@ function defsFor(markup) {
 // has its own, inlined into it
 function forget(prefixes) { for (const k of [...DEFS.keys()]) if (prefixes.some((p) => k.startsWith(p))) DEFS.delete(k); }
 return { CAST, GROUPS, SPECIAL, SKINS, HAIRS, CREAM, P, INK, L, MOUTH, FRINGE, STAR, kid, layers, defsFor, forget, sp, se, sr, ln, fl, el, ci, f1, rot,
-  puffs, twinBuns, bob, curls, braids, pigtails, cowlick, glasses, freckles, bandaid, bow, buzz, lanyard, crown, mystery, tball,
+  limb, fist, armAng, puffs, twinBuns, bob, curls, braids, pigtails, cowlick, glasses, freckles, bandaid, bow, buzz, lanyard, crown, mystery, tball,
   afro, mohawk, hightop, locs, locTips, cornrows, quiff, twists, sideTail, wavy, shag };
 })();
 
@@ -14300,13 +14322,16 @@ function rosterPortrait(e, crop) {
 // The kids are drawn big-headed (the cast sheet's head covers x 20–180, y 20–150 of the rig's sheet), and the front arm is drawn
 // over the head, so a hand stays below the face or out past the head (x under 15, the elbow bowed outward); the back arm is drawn
 // behind, and shows only out past the head on its side (x over 185) or below it.
+// No arm is held out straight in front and raised: Harper's flick of the hand did that, and it looked like a Nazi salute (Josh,
+// 2026-10-22). A raised fist is bowed at the elbow (FIST_UP), a point goes down at the one they beat, and an arm only passes
+// through level in a swing or a punch, never stays there.
 const VICTORY = (() => {
   const s = Math.sin, c = Math.cos, ab = Math.abs, TAU = Math.PI * 2, L = (a, b, k) => a + (b - a) * k;
   const cl = (x) => (x < 0 ? 0 : x > 1 ? 1 : x), ease = (x) => { x = cl(x); return x * x * (3 - 2 * x); };
   const pulse = (u, a, b) => (u >= a && u < b ? s((Math.PI * (u - a)) / (b - a)) : 0); // 0 → 1 → 0 between a and b
   const arms = (P, fx, fy, fb, bx, by, bb) => { P.fx = fx; P.fy = fy; P.fBend = fb; P.bx = bx; P.by = by; P.bBend = bb; };
   const crossed = (P) => arms(P, 116, 164, -10, 86, 160, -9); // arms folded across the chest (kage.js's CROSS)
-  const FIST_UP = [6, 58, -28], BACK_UP = [194, 58, 28], HIP_F = [64, 196, 18], HIP_B = [136, 196, -18];
+  const FIST_UP = [8, 56, -36], BACK_UP = [192, 56, 36], HIP_F = [64, 196, 18], HIP_B = [136, 196, -18];
   const blendF = (P, a, b, k) => { P.fx = L(a[0], b[0], k); P.fy = L(a[1], b[1], k); P.fBend = L(a[2], b[2], k); };
   const blendB = (P, a, b, k) => { P.bx = L(a[0], b[0], k); P.by = L(a[1], b[1], k); P.bBend = L(a[2], b[2], k); };
   return {
@@ -14321,23 +14346,25 @@ const VICTORY = (() => {
       },
       up: (u) => { const q = u % 1.9; return q < 0.6 ? 0.12 * s((Math.PI * q) / 0.6) : 0; },
     },
-    // Milo, future King of the Pole: up on his toes, a finger to the sky (number one), then his arms spread wide, chin up: all his
+    // Milo, future King of the Pole: up on his toes, a fist to the sky (number one), then his arms spread wide, chin up: all his
     milo: {
       pose(P, u, rt) {
         const q = u % 2.2, b = ab(s(u * 6)), w = ease((q - 1.1) / 0.2) * (1 - ease((q - 2.0) / 0.2));
         P.face = 'happy'; P.lift = 0.5;
-        blendF(P, [2, 34, -30], [-6, 166, 4], w); blendB(P, HIP_B, [206, 166, -4], w);
+        blendF(P, [8, 42, -44], [-6, 166, 4], w); blendB(P, HIP_B, [206, 166, -4], w);
         P.headTilt += -0.09 * w + s(u * 3) * 0.03 * (1 - w);
         P.lay -= 5 * b; P.ray -= 5 * b; P.lknee += 3 * b; P.rknee += 3 * b;
       },
       up: (u) => 0.05 * ab(s(u * 6)),
     },
-    // Emma, who practises alone: her swing again, slow and exact, the way she drills it, and a small nod at how it went
+    // Emma, who practises alone: her swing again, slow and exact, the way she drills it, the arm dropping back to her side after
+    // it, and a small nod at how it went
     emma: {
       pose(P, u, rt) {
-        const q = u % 2.4, sw = ease((q - 0.2) / 1.0), nod = pulse(q, 1.45, 1.9);
+        const q = u % 2.4, wind = ease(q / 0.2), sw = ease((q - 0.2) / 1.0), drop = ease((q - 1.25) / 0.35), nod = pulse(q, 1.45, 1.9);
+        const hx = L(150, -4, sw), hy = L(178, 160, sw) + 10 * s(Math.PI * sw), hb = L(-14, 6, sw);
         P.face = nod > 0.2 ? 'happy' : 'open'; P.lift = 0.3;
-        arms(P, L(150, -6, sw), L(178, 152, sw) + 10 * s(Math.PI * sw), L(-14, 6, sw), 146, 190, -10);
+        arms(P, L(L(52, hx, wind), 52, drop), L(L(186, hy, wind), 186, drop), L(L(10, hb, wind), 10, drop), 146, 190, -10);
         P.tilt += -P.mir * 0.05 * s(Math.PI * sw); P.lknee += 6 * s(Math.PI * sw);
         P.headDy += 5 * nod; P.headTilt += 0.04 * nod;
       },
@@ -14390,15 +14417,17 @@ const VICTORY = (() => {
       up: () => 0,
     },
     // Harper, not here for friends: arms folded, chin up and her head turned from you, powering up and staying lit; now and then
-    // a flick of the hand, done with you
+    // she brushes her shoulder off, twice, done with you. (It was a flick of the hand out in front of her, the arm straight and
+    // raised, and it looked like a Nazi salute: Josh, 2026-10-22. No celebration holds an arm out straight and raised.)
     harper: {
       hold: true,
       pose(P, u, rt) {
-        const q = u % 3, fl = pulse(q, 1.9, 2.35);
+        const q = u % 3, up = ease((q - 1.75) / 0.18) * (1 - ease((q - 2.6) / 0.2));
+        const br = q >= 1.95 && q < 2.55 ? Math.max(0, s((TAU * (q - 1.95)) / 0.3)) : 0; // two flicks off the shoulder
         P.face = 'fierce'; P.wind = 0.6 + 0.3 * s(rt * 3); P.lift = 0.6;
         crossed(P);
-        if (fl > 0) blendF(P, [116, 164, -10], [-6, 136, 10], fl);
-        P.headTilt -= 0.12; P.tilt += P.mir * 0.05; P.lax = 92; P.rax = 124; P.rrot = 0.12; P.sqy *= 1 + 0.008 * s(rt * 2);
+        if (up > 0) blendF(P, [116, 164, -10], [L(126, 168, br), L(150, 172, br), L(12, 16, br)], up); // her hand at her far shoulder
+        P.headTilt -= 0.12 + 0.04 * up; P.tilt += P.mir * 0.05; P.lax = 92; P.rax = 124; P.rrot = 0.12; P.sqy *= 1 + 0.008 * s(rt * 2);
       },
       up: () => 0,
     },
@@ -14407,19 +14436,21 @@ const VICTORY = (() => {
       pose(P, u, rt) {
         const q = u % 2.4, k = ease((q - 1.1) / 0.18) * (1 - ease((q - 2.2) / 0.2));
         P.face = q < 0.5 ? 'open' : 'happy'; P.lift = 0.4;
-        blendF(P, [14, 112 + (q < 0.6 ? 2 * s(q * 18) : 0), -24], [-10, 150, 0], k);
+        blendF(P, [14, 112 + (q < 0.6 ? 2 * s(q * 18) : 0), -24], [-6, 172, 6], k); // the point: down at the one she beat, on their knees
         P.bx = 146; P.by = 192; P.bBend = -8;
         P.headTilt += 0.14 + s(rt * 0.9) * 0.02;
       },
       up: () => 0,
     },
-    // Adaeze, the cool customer: one hand on her hip, the shadow still on her; two fingers to her brow and away, a salute, unbothered
+    // Adaeze, the cool customer: one hand on her hip, the shadow still on her; one slow cut through the air with the other hand,
+    // from her far shoulder down to her front hip, as her Shadow Cut goes, and back to the hip, unbothered. (It was two fingers to
+    // her brow and out, a salute, which left the arm straight out and raised: Josh, 2026-10-22, on Harper's.)
     adaeze: {
       hold: true,
       pose(P, u, rt) {
-        const q = u % 2.8, to = ease((q - 0.9) / 0.25), off = ease((q - 1.5) / 0.2), back = ease((q - 2.3) / 0.35);
+        const q = u % 2.8, up = ease((q - 0.8) / 0.3), cut = ease((q - 1.25) / 0.3), back = ease((q - 2.1) / 0.4);
         P.face = q > 1.5 && q < 2.4 ? 'happy' : 'fierce'; P.lift = 0.5; P.wind = 0.5;
-        blendF(P, HIP_F, [16, 96, -24], to); if (off > 0) blendF(P, [16, 96, -24], [-14, 82, -30], off); if (back > 0) blendF(P, [-14, 82, -30], HIP_F, back);
+        blendF(P, HIP_F, [118, 152, 14], up); if (cut > 0) blendF(P, [118, 152, 14], [26, 200, 8], cut); if (back > 0) blendF(P, [26, 200, 8], HIP_F, back);
         P.bx = 124; P.by = 190; P.bBend = -6; // the other behind her
         P.headTilt -= 0.06; P.tilt += P.mir * 0.03; P.headDy += 2 * ab(s(u * 1.6));
       },
@@ -14447,26 +14478,27 @@ const VICTORY = (() => {
       },
       up: (u) => 0.2 * ab(s(u * Math.PI * 2.2)),
     },
-    // Caleb, Jackson's crew and quiet: down in a fighter's guard, the front fist out at the one he beat, the back one cocked at his
-    // hip, the power building in him and staying; a single nod
+    // Caleb, Jackson's crew and quiet: down in a fighter's guard, the front fist up by his chin with the elbow down, the back one
+    // cocked at his hip, the power building in him and staying; a single nod
     caleb: {
       hold: true,
       pose(P, u, rt) {
         const q = u % 2.6, nod = pulse(q, 1.6, 2.0);
         P.face = 'fierce'; P.lift = 0.5; P.wind = 0.4;
-        arms(P, 14, 166, 6, 150, 190, -14);
+        arms(P, 30, 152, -16, 150, 190, -14);
         P.lax = 62; P.lay = 218; P.lknee = 12; P.rax = 136; P.ray = 220; P.rknee = -10; P.y += 5 * P.s; P.tilt += -P.mir * 0.05;
         P.x += s(rt * 61) * 0.9 * P.s; P.headDy += 4 * nod + 2;
       },
       up: () => 0,
     },
-    // Rei, the silent champion: one hand behind her back, as ever; a small bow, then the other hand rising, palm up, in the light
+    // Rei, the silent champion: one hand behind her back, as ever; a small bow, then the other hand to her heart, in the light.
+    // (Her hand used to rise out in front of her, palm up, and was held there: an arm held out, which this rig can't open.)
     rei: {
       hold: true,
       pose(P, u, rt) {
-        const q = u % 3.4, bow = pulse(q, 0.1, 1.1), rise = ease((q - 1.3) / 0.6) * (1 - ease((q - 3) / 0.4));
+        const q = u % 3.4, bow = pulse(q, 0.1, 1.1), rise = ease((q - 1.3) / 0.5) * (1 - ease((q - 3) / 0.4));
         P.face = 'open'; P.lift = 0.6; P.wind = 0.3 + 0.2 * s(rt * 1.2);
-        arms(P, L(52, -8, rise), L(188, 140, rise), L(6, -10, rise), 124, 188, -6);
+        arms(P, L(52, 102, rise), L(188, 168, rise), L(6, 14, rise), 124, 188, -6);
         P.tilt += -P.mir * 0.16 * bow; P.headTilt -= 0.12 * bow; P.headDy += 3 * bow;
         P.sqy *= 1 + 0.01 * s(rt * 1.1); P.headTilt += 0.03;
       },
@@ -17111,6 +17143,7 @@ function createMenu(doc, opts) {
     get storyMatch() { return SM; },
     get arcade() { return AR; }, arcadeStart, arcadeNext, // the arcade (tests)
     victory: { VICTORY, of: victoryOf, glow: finaleGlow, pal: finalePal, own: FINALE_OWN }, // the victory scenes and their colours (tests)
+    kit: CASTKIT, // the cast kit (tests: its hand)
     // advance the school by ms in 1/60 s frames (drawing the last), as the frame loop does while you walk it
     storyAdvance(ms) { const n = Math.max(1, Math.round(ms / 16.667)); for (let i = 0; i < n; i++) story.frame(1 / 60, i < n - 1); },
     musicWanted, // the track the music should be on now (see above)
