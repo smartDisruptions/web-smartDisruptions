@@ -424,7 +424,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 .m-kick { font: 800 12px/1 var(--ui); letter-spacing: .32em; text-transform: uppercase; color: var(--accent); }
 .m-title h1 { margin: 6px 0 0; font: 900 clamp(30px, 9vw, 44px)/1.02 var(--ui); letter-spacing: -.01em; text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 0 24px rgba(155,176,255,.25); }
 .m-vs { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; width: 100%; padding: 12px 10px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); text-align: center; }
-.m-vs:active { transform: scale(.985); }
 .m-who { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
 .m-who .pt { width: min(132px, 34vw); }
 .m-who .pt svg, .m-who .pt img { animation: m-bob 2.6s ease-in-out infinite; }
@@ -442,6 +441,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 .m-btn:active { background: rgba(255,255,255,.15); }
 .m-btn.go { min-height: 58px; background: linear-gradient(180deg, #ffc24a, var(--accent)); border-color: transparent; color: var(--ink); font-size: 19px; box-shadow: 0 6px 24px rgba(255,176,32,.28); }
 .m-btn.go:active { filter: brightness(.92); }
+.m-btn.arc { min-height: 56px; border-color: transparent; background: linear-gradient(180deg, #b45cff, #7a2cff); color: #fff; font-size: 18px; box-shadow: 0 6px 22px rgba(122,44,255,.3); }
+.m-btn.arc:active { filter: brightness(.9); }
 .m-seg { display: flex; flex-direction: column; gap: 6px; }
 .m-lab { font: 800 11px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
 .m-opts { display: flex; gap: 4px; padding: 3px; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid var(--line); }
@@ -572,6 +573,93 @@ body.st-on #panel.full { background: rgb(12,15,24); }
 .m-story .m-srow { display: flex; gap: 8px; }
 .m-story .m-srow .m-btn { flex: 1; }
 .m-story .m-srow .m-btn.new { flex: none; }
+
+/* the arcade (menu.js arcade): who you play it as, and the ladder you'd climb */
+.m-lead { margin: 0; font: 600 14px/1.4 var(--ui); color: var(--text); }
+.m-arc .m-lead { color: var(--dim); }
+.m-ladder { display: flex; flex-direction: column; gap: 8px; }
+.m-steps { display: flex; gap: 6px; margin: 0; padding: 2px 0 6px; list-style: none; overflow-x: auto; scrollbar-width: none; counter-reset: step; }
+.m-steps::-webkit-scrollbar { display: none; }
+.m-step { flex: 0 0 66px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px 6px; border-radius: 12px; background: linear-gradient(180deg, color-mix(in srgb, var(--acc) 18%, transparent), rgba(255,255,255,.02)); counter-increment: step; position: relative; }
+.m-step::before { content: counter(step); position: absolute; top: 3px; left: 5px; font: 900 10px/1 var(--ui); color: var(--dim); }
+.m-step .pt { width: 52px; }
+.m-step b { font: 800 11px/1.1 var(--ui); max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-step small { font: 700 10px/1 var(--ui); color: var(--dim); }
+.m-step:last-child { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 60%, transparent); }
+/* an arcade match lost, or the arcade cleared */
+.m-over { justify-content: center; text-align: center; gap: 12px; }
+.m-over .m-lead { color: var(--dim); }
+.m-ofig { align-self: center; width: min(240px, 60vw); aspect-ratio: 288 / 264; background: radial-gradient(55% 55% at 50% 50%, color-mix(in srgb, var(--acc) 30%, transparent), transparent 72%); }
+.m-ofig .pt { aspect-ratio: auto; width: 100%; height: 100%; }
+.m-ofig svg, .m-ofig img { animation: m-bob 2.6s ease-in-out infinite; }
+.m-over.clear .m-title h1 { color: #ffd54a; text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 0 28px rgba(255,213,74,.45); }
+
+/* the versus intro (menu.js versus): two halves in the players' colours slam in, VS slams down, then it splits onto the court */
+.menu[data-screen="vs"] { padding: 0; overflow: hidden; background: none; touch-action: none; }
+.m-vsi { position: absolute; inset: 0; overflow: hidden; cursor: pointer; animation: viShake .32s .38s linear both; }
+.vi-half { position: absolute; inset: 0; display: flex; overflow: hidden; }
+.vi-half::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255,255,255,.07) 0 2px, transparent 2px 26px); animation: viLines .5s linear infinite; }
+.vi-half.l { background: linear-gradient(160deg, #0b0e18 10%, color-mix(in srgb, var(--a) 62%, #0b0e18) 100%); clip-path: polygon(0 54%, 100% 40%, 100% 100%, 0 100%); animation: viInL .3s cubic-bezier(.2,.9,.25,1.08) both; align-items: flex-end; justify-content: flex-start; }
+.vi-half.r { background: linear-gradient(340deg, #0b0e18 10%, color-mix(in srgb, var(--b) 62%, #0b0e18) 100%); clip-path: polygon(0 0, 100% 0, 100% 40%, 0 54%); animation: viInR .3s .04s cubic-bezier(.2,.9,.25,1.08) both; align-items: flex-start; justify-content: flex-end; }
+.vi-fig { position: relative; width: min(64vw, 46vh); aspect-ratio: 288 / 264; margin: 0 -4vw 2vh; filter: drop-shadow(0 10px 18px rgba(0,0,0,.45)); animation: viPopL .42s .12s cubic-bezier(.2,.9,.3,1.25) both; }
+.vi-half.r .vi-fig { margin: calc(var(--st) + 4vh) -4vw 0; transform: scaleX(-1); animation-name: viPopR; }
+.vi-fig .pt { aspect-ratio: auto; width: 100%; height: 100%; }
+.vi-name { position: absolute; display: flex; flex-direction: column; gap: 3px; animation: viName .3s .5s cubic-bezier(.2,.9,.3,1.1) both; }
+.vi-half.l .vi-name { right: max(18px, var(--sr)); bottom: calc(var(--sb) + 12vh); align-items: flex-end; text-align: right; }
+.vi-half.r .vi-name { left: max(18px, var(--sl)); top: calc(var(--st) + 30vh); align-items: flex-start; text-align: left; animation-name: viNameR; }
+.vi-name b { font: 900 clamp(30px, 10vw, 54px)/.95 var(--ui); letter-spacing: -.01em; text-transform: uppercase; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.4), 0 0 26px rgba(0,0,0,.35); }
+.vi-name i { font: 800 clamp(13px, 3.6vw, 17px)/1 var(--ui); font-style: normal; letter-spacing: .06em; text-transform: uppercase; text-shadow: 0 2px 0 rgba(0,0,0,.5); }
+.vi-name small { font: 800 12px/1 var(--ui); letter-spacing: .14em; color: rgba(255,255,255,.75); }
+.vi-x { position: absolute; left: 50%; top: 47%; transform: translate(-50%, -50%); font: 900 clamp(70px, 24vw, 140px)/1 var(--ui); font-style: italic; letter-spacing: -.04em; color: #fff;
+  -webkit-text-stroke: 4px #0b0e18; paint-order: stroke fill; text-shadow: 6px 6px 0 color-mix(in srgb, var(--a) 70%, transparent), -6px -6px 0 color-mix(in srgb, var(--b) 70%, transparent), 0 0 40px rgba(255,255,255,.35);
+  animation: viSlam .26s .38s cubic-bezier(.3,1.5,.5,1) both; }
+.vi-stage { position: absolute; left: 50%; top: calc(var(--st) + 14px); transform: translateX(-50%); padding: 8px 16px; border-radius: 99px; background: rgba(9,11,19,.82); border: 1px solid rgba(255,255,255,.18); white-space: nowrap;
+  font: 900 13px/1 var(--ui); letter-spacing: .2em; text-transform: uppercase; color: #ffd54a; animation: viDrop .3s .55s cubic-bezier(.2,.9,.3,1.2) both; }
+.vi-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; animation: viFlash .28s .38s ease-out forwards; } /* (forwards: nothing white before the slam) */
+.vi-ladder { position: absolute; left: 50%; bottom: calc(var(--sb) + 10px); transform: translateX(-50%); display: flex; gap: 3px; margin: 0; padding: 4px 6px; list-style: none; border-radius: 12px; background: rgba(9,11,19,.7); animation: viFade .3s .6s both; }
+.vi-ladder li { width: 24px; border-radius: 6px; background: color-mix(in srgb, var(--acc) 22%, transparent); }
+.vi-ladder li .pt { width: 24px; }
+.vi-ladder li.done { opacity: .35; filter: grayscale(1); }
+.vi-ladder li.now { box-shadow: 0 0 0 2px #ffd54a; transform: scale(1.18); }
+/* splitting open onto the court */
+.m-vsi.out { animation: none; }
+.m-vsi.out .vi-half.l { animation: viOutL .3s cubic-bezier(.6,0,.8,.4) both; }
+.m-vsi.out .vi-half.r { animation: viOutR .3s cubic-bezier(.6,0,.8,.4) both; }
+.m-vsi.out .vi-x { animation: viBlow .28s ease-in both; }
+.m-vsi.out .vi-stage, .m-vsi.out .vi-ladder { animation: viGone .2s ease-in both; }
+@keyframes viInL { from { transform: translateX(-105%); } to { transform: none; } }
+@keyframes viInR { from { transform: translateX(105%); } to { transform: none; } }
+@keyframes viOutL { from { transform: none; } to { transform: translate(-105%, 8%); } }
+@keyframes viOutR { from { transform: none; } to { transform: translate(105%, -8%); } }
+@keyframes viPopL { from { opacity: 0; transform: translate(-30%, 12%) scale(.7); } to { opacity: 1; transform: none; } }
+@keyframes viPopR { from { opacity: 0; transform: scaleX(-1) translate(-30%, -12%) scale(.7); } to { opacity: 1; transform: scaleX(-1); } }
+@keyframes viSlam { from { opacity: 0; transform: translate(-50%, -50%) scale(3.2) rotate(-14deg); } to { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-6deg); } }
+@keyframes viBlow { from { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-6deg); } to { opacity: 0; transform: translate(-50%, -50%) scale(2.4) rotate(-6deg); } }
+@keyframes viFlash { from { opacity: .85; } to { opacity: 0; } }
+@keyframes viShake { 0%, 100% { transform: none; } 20% { transform: translate(-7px, 4px); } 40% { transform: translate(6px, -5px); } 60% { transform: translate(-4px, 3px); } 80% { transform: translate(3px, -2px); } }
+@keyframes viName { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+@keyframes viNameR { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+@keyframes viDrop { from { opacity: 0; transform: translate(-50%, -24px); } to { opacity: 1; transform: translateX(-50%); } }
+@keyframes viFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes viGone { to { opacity: 0; } }
+@keyframes viLines { from { background-position: 0 0; } to { background-position: 56px 0; } }
+/* a wide screen: the two halves side by side, split on a slant */
+@media (orientation: landscape) {
+  .vi-half.l { clip-path: polygon(0 0, 56% 0, 44% 100%, 0 100%); align-items: center; justify-content: flex-start; }
+  .vi-half.r { clip-path: polygon(56% 0, 100% 0, 100% 100%, 44% 100%); align-items: center; justify-content: flex-end; }
+  .vi-fig { width: min(40vw, 62vh); margin: 4vh 0 0 max(2vw, var(--sl)); }
+  .vi-half.r .vi-fig { margin: 4vh max(2vw, var(--sr)) 0 0; }
+  .vi-half.l .vi-name { right: auto; left: max(20px, calc(var(--sl) + 12px)); bottom: calc(var(--sb) + 18px); align-items: flex-start; text-align: left; }
+  .vi-half.r .vi-name { left: auto; right: max(20px, calc(var(--sr) + 12px)); top: auto; bottom: calc(var(--sb) + 18px); align-items: flex-end; text-align: right; }
+  .vi-name b { font-size: clamp(28px, 6vh, 50px); }
+  .vi-x { top: 50%; font-size: clamp(70px, 22vh, 150px); }
+  .vi-ladder { bottom: auto; top: calc(var(--st) + 52px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .m-vsi, .vi-half::before { animation: none; }
+  .vi-half.l, .vi-half.r, .vi-fig, .vi-name, .vi-stage, .vi-ladder, .vi-x { animation-duration: .01s; }
+  .vi-flash { display: none; }
+}
 </style>
 </head>
 <body>
@@ -9235,10 +9323,12 @@ const FINALE = {
   KNEEL: 0.42, // and goes down onto their knees
   big: (kind) => kind === 'match' || kind === 'best',
 };
-// the winner's power-up glow at t (0..1): it builds through the charge, peaks at the burst and settles to an afterglow
-function finaleGlow(t, kind) {
+// the winner's power-up glow at t (0..1): it builds through the charge, peaks at the burst and settles to an afterglow (who: the
+// side; one who keeps powering up through their celebration, victory.js hold, stays lit and pulsing)
+function finaleGlow(t, kind, who) {
   const F = FINALE;
   if (!(t >= F.CHARGE)) return 0;
+  if (who && FINALE_OWN.hold[who === 'kage' ? 'kage' : 'you'] && t >= (F.big(kind) ? F.CHEER2 : F.CHEER)) return Math.max(finaleGlow(t, kind), 0.62 + 0.16 * Math.sin(t * 4.2));
   if (t < F.BURST) return U.easeIn((t - F.CHARGE) / (F.BURST - F.CHARGE), 1.6);
   if (!F.big(kind)) return U.lerp(1, 0.3, U.clamp01((t - F.BURST) / 0.6));
   if (t < F.CHARGE2) return U.lerp(1, 0.4, U.clamp01((t - F.BURST) / 0.25));
@@ -9252,8 +9342,18 @@ const FINALE_PAL = {
   kage: ['#e93dff', '#ffa8ff', '#ffffff', '#7a2cff'], kageBig: ['#b45cff', '#e6c0ff', '#ffffff', '#e93dff'],
 };
 function finalePal(who, kind, t) {
-  const big = FINALE.big(kind) && t >= FINALE.CHARGE2;
+  const big = FINALE.big(kind) && t >= FINALE.CHARGE2, own = FINALE_OWN.pal[who === 'kage' ? 'kage' : 'you'];
+  if (own && !big) return own;
   return who === 'kage' ? (big ? FINALE_PAL.kageBig : FINALE_PAL.kage) : big ? FINALE_PAL.youBig : FINALE_PAL.you;
+}
+// Whoever isn't Kiru or Kage powers up in their own colour (main.js sets it as the show starts, from the roster): their accent
+// for the aura, lightened for the tint, white at the core, deepened under it. A match's second power is still gold or violet.
+// hold: they keep glowing through their celebration (victory.js)
+const FINALE_OWN = { pal: { you: null, kage: null }, hold: { you: false, kage: false } };
+function finaleColours(youAcc, kageAcc, holdYou, holdKage) {
+  const pal = (a) => (a ? [a, U.mix(a, '#ffffff', 0.55), '#ffffff', U.mix(a, '#1a0d30', 0.35)] : null);
+  FINALE_OWN.pal.you = pal(youAcc); FINALE_OWN.pal.kage = pal(kageAcc);
+  FINALE_OWN.hold.you = !!holdYou; FINALE_OWN.hold.kage = !!holdKage;
 }
 // The parts both characters play the same way (kiru.js and kage.js call these from their pose and their draw). R: their rig
 // (ninja.js), P: the pose, t: the show's clock, rt: their own real clock (s), for the breathing.
@@ -9279,7 +9379,7 @@ function finaleGloom(R, ctx, kx, ky, P, t, kind, rt) {
 }
 // the winner's power-up on them: an aura behind (over false) and the glow over them (over true), in their show colours
 function finaleAura(R, ctx, kx, ky, P, t, kind, who, pulse, over) {
-  const g = finaleGlow(t, kind);
+  const g = finaleGlow(t, kind, who);
   if (!(g > 0.01)) return;
   const p = finalePal(who, kind, t);
   if (over) R.drawTint(ctx, kx, ky, P, p[1], g * (0.26 + 0.16 * pulse), true);
@@ -9320,7 +9420,7 @@ function createFinale(doc) {
   let nCue = 0, nextCue = 0;
   const out = []; // this frame's cues for main.js (drain)
   const st = {
-    on: false, show: true, t: 0, kind: 'round', big: false, vs: true, winner: 'you', W: null, L: null, ready: false, sinceReady: 0, end: F.READY,
+    on: false, show: true, t: 0, kind: 'round', big: false, vs: true, winner: 'you', W: null, L: null, own: false, ready: false, sinceReady: 0, end: F.READY,
     zoom: 0, fit: 1, focX: 0, focY: 0, panX: 0, panY: 0,
     boltT: -9, boltNew: false, jagT: 0, sl1: -9, sl2: -9, xNew: false, burstT: -9, burst2T: -9, titleT: -9, statsT: -9, landT: -9,
     flashA: 0, flashC: '#ffffff', fwNext: 0, fwEnd: -1, conf: false, skipped: false, side: 1,
@@ -9362,24 +9462,26 @@ function createFinale(doc) {
 
   // ---- the show ----
   // info: { kind 'round' | 'match' | 'solo' | 'best', winner 'you' | 'kage', vs, W, L (the winner's and the loser's bodies, or
-  // null: kiru.body / kage.body), snap (the rules' snap), kageSide, prev (solo: the best before this run, ms, or 0) }
+  // null: kiru.body / kage.body), snap (the rules' snap), kageSide, prev (solo: the best before this run, ms, or 0), own (the
+  // winner isn't Kiru or Kage: they play their own move, victory.js, so no lightning and no cuts; a 'flourish' cue as it starts) }
   function start(info) {
     reset();
     st.on = true; st.show = CFG.finale.on > 0; st.kind = info.kind || 'round'; st.big = F.big(st.kind); st.vs = !!info.vs;
-    st.winner = info.winner === 'kage' ? 'kage' : 'you'; st.W = info.W || null; st.L = info.L || null;
+    st.winner = info.winner === 'kage' ? 'kage' : 'you'; st.W = info.W || null; st.L = info.L || null; st.own = !!info.own;
     words(info);
     // the cues, in order
     nCue = 0; nextCue = 0;
     const cue = (n, t) => { if (nCue < N_CUE) { cueN[nCue] = n; cueT[nCue] = t; nCue++; } };
     if (!st.show) { cue('title', 0.35); cue('stats', 0.4); cue('ready', 0.8); st.end = 0.8; }
     else {
-      const k = st.winner === 'kage', av = !!st.W;
+      const k = st.winner === 'kage', av = !!st.W, mv = av && !st.own; // (their own move: no strike of Kiru's or Kage's)
       if (st.L) cue('flinch', F.FLINCH);
       if (av) cue('move', F.MOVE);
       if (k) cue('defeat', F.KNEEL + 0.08);
-      if (av && k) cue('slash1', F.SLASH);
-      if (av) cue(k ? 'slash2' : 'strike', F.STRIKE);
-      if (av && !k) cue('land', F.LAND);
+      if (av && st.own) cue('flourish', F.MOVE + 0.12);
+      if (mv && k) cue('slash1', F.SLASH);
+      if (mv) cue(k ? 'slash2' : 'strike', F.STRIKE);
+      if (mv && !k) cue('land', F.LAND);
       if (av) { cue('charge', F.CHARGE); cue('burst', F.BURST); }
       if (st.big) {
         if (av) cue('charge2', F.CHARGE2);
@@ -9827,7 +9929,7 @@ function createFinale(doc) {
     const t = st.t, W = st.W;
     ctx.save();
     if (W) {
-      const g = finaleGlow(t, st.kind);
+      const g = finaleGlow(t, st.kind, st.winner);
       if (g > 0.01) { // the floor lit under them
         const col = pal[0];
         if (GR.poolC !== col || !GR.pool) { GR.poolC = col; GR.pool = radial(ctx, [0, U.rgba(pal[1], 0.9), 0.4, U.rgba(col, 0.45), 1, U.rgba(col, 0)]); }
@@ -12441,7 +12543,8 @@ function createKage(doc) {
         st.fdx = dx / d; st.fdz = dz / d; st.specialRt = st.rt; st.x = st.stageX; st.z = st.stageZ;
       }
       if (big && p < F.LAND2 && t >= F.LAND2) st.tLand = st.t;
-      st.y = finHeight(t, big) * k;
+      const V = victoryOf('opp'); // not Kage: whoever plays this half has their own (victory.js)
+      st.y = (V ? victoryHeight(V, t, big) : finHeight(t, big)) * k;
     } else if (!finaleFling(st, t, p, st.side, k) && p < F.FLINCH + F.FLING && t >= F.FLINCH + F.FLING) st.tLand = st.t; // thrown out front, landing hard
     st.ftPrev = t;
   }
@@ -12455,6 +12558,13 @@ function createKage(doc) {
     }
     return 0;
   }
+  // whoever else plays this half (victory.js): off the floor in their own move and celebration, a match's hover as his
+  function victoryHeight(V, t, big) {
+    const F = FINALE, c0 = big ? F.CHEER2 : F.CHEER;
+    if (t >= F.MOVE && t < F.CHARGE) return V.up(t - F.MOVE);
+    if (big && t >= F.CHARGE2 && t < F.LAND2) return finHeight(t, big);
+    return t >= c0 ? V.up(t - c0) : 0;
+  }
   // his pose through the show (sheet units: the rig's REST is fx 50 / 184, bx 151 / 193, ankles 85 / 115 at 223.5). Arms crossed:
   // the front fist across his chest (the back one is behind him)
   const CROSS_X = 116, CROSS_Y = 164;
@@ -12465,6 +12575,21 @@ function createKage(doc) {
     if (t < F.MOVE) { // it is won: arms up where he stands
       const k = U.clamp01(t / 0.12);
       P.fx = U.lerp(50, 64, k); P.fy = U.lerp(184, 112, k); P.bx = U.lerp(151, 138, k); P.by = U.lerp(193, 112, k); P.lift = 1;
+      return;
+    }
+    const V = victoryOf('opp');
+    if (V && t < F.CHARGE) { victoryPose(V, P, t - F.MOVE, st.rt, 0.14); return; } // their own move, in place of the cuts
+    if (V && t < F.BURST) { // from it into the power stance, charging
+      victoryPose(V, P, F.CHARGE - F.MOVE, st.rt, 0);
+      const g = U.clamp01((t - F.CHARGE) / (F.BURST - F.CHARGE));
+      R.stance(P, U.easeInOut(U.clamp01((t - F.CHARGE) / 0.14)), g > 0 ? 0.3 + 0.7 * g : 0, st.rt);
+      P.wind = 0.4 + 0.6 * g; P.lift = 0.5 + 0.5 * g;
+      return;
+    }
+    if (V && t >= (big ? F.CHEER2 : F.CHEER)) { // and their celebration, out of the burst
+      const c0 = big ? F.CHEER2 : F.CHEER;
+      R.burstY(P, 1);
+      victoryPose(V, P, t - c0, st.rt, 0.22);
       return;
     }
     if (t < F.SLASH) { // wound up for the first cut: the fist cocked high over his back shoulder
@@ -13070,7 +13195,8 @@ function createKiru(doc) {
       }
       if (p < F.STRIKE && t >= F.STRIKE) { st.arriveRt = st.rt; st.arriveA = 0.6; } // the lightning lands on him: white-hot
       if ((p < F.LAND && t >= F.LAND) || (big && p < F.LAND2 && t >= F.LAND2)) st.tLand = st.t;
-      st.y = finHeight(t, big) * G.k;
+      const V = victoryOf('you'); // not Kiru: whoever you play has their own (victory.js)
+      st.y = (V ? victoryHeight(V, t, big) : finHeight(t, big)) * G.k;
     } else if (!finaleFling(st, t, p, st.side, G.k) && p < F.FLINCH + F.FLING && t >= F.FLINCH + F.FLING) st.tLand = st.t; // thrown out front, landing hard
     return out;
   }
@@ -13090,6 +13216,13 @@ function createKiru(doc) {
     const c0 = big ? F.CHEER2 : F.CHEER;
     return t >= c0 ? 0.16 * Math.abs(Math.sin((Math.PI * (t - c0)) / 0.5)) : 0;
   }
+  // whoever else you play (victory.js): off the floor in their own move and celebration, a match's hover as his
+  function victoryHeight(V, t, big) {
+    const F = FINALE, c0 = big ? F.CHEER2 : F.CHEER;
+    if (t >= F.MOVE && t < F.CHARGE) return V.up(t - F.MOVE);
+    if (big && t >= F.CHARGE2 && t < F.LAND2) return finHeight(t, big);
+    return t >= c0 ? V.up(t - c0) : 0;
+  }
   // his pose through the show (sheet units: the rig's REST is fx 50 / 184, bx 151 / 193, ankles 85 / 115 at 223.5)
   function finPose(P) {
     const F = FINALE, t = st.ft, big = F.big(st.finKind);
@@ -13098,6 +13231,21 @@ function createKiru(doc) {
     if (t < F.MOVE) { // it is won: a fist pump where he stands
       const k = U.clamp01(t / 0.12);
       P.face = 'happy'; P.fx = U.lerp(50, 30, k); P.fy = U.lerp(184, 112, k); P.fBend = 6; P.bx = U.lerp(151, 142, k); P.by = U.lerp(193, 184, k);
+      return;
+    }
+    const V = victoryOf('you');
+    if (V && t < F.CHARGE) { victoryPose(V, P, t - F.MOVE, st.rt, 0.14); return; } // their own move, in place of the uppercut
+    if (V && t < F.BURST) { // from it into the power stance, charging
+      victoryPose(V, P, F.CHARGE - F.MOVE, st.rt, 0);
+      const g = U.clamp01((t - F.CHARGE) / (F.BURST - F.CHARGE));
+      R.stance(P, U.easeInOut(U.clamp01((t - F.CHARGE) / 0.14)), g > 0 ? 0.3 + 0.7 * g : 0, st.rt);
+      P.face = 'fierce'; P.wind = 0.4 + 0.6 * g; P.lift = 0.5 + 0.5 * g;
+      return;
+    }
+    if (V && t >= (big ? F.CHEER2 : F.CHEER)) { // and their celebration, out of the burst
+      const c0 = big ? F.CHEER2 : F.CHEER;
+      R.burstY(P, 1);
+      victoryPose(V, P, t - c0, st.rt, 0.22);
       return;
     }
     if (t < F.RISE) { // he gathers himself for it: down low, the fist cocked
@@ -14090,6 +14238,257 @@ function rosterPortrait(e, crop) {
   return `<svg viewBox="${vb}" aria-hidden="true"><defs>${CASTKIT.defsFor(m)}</defs><g>${m}</g></svg>`;
 }
 
+// ════════ victory.js ════════
+// victory.js — everyone's own victory scene (Josh, 2026-10-22): "for the ending of the match, add unique animations for every
+// character during their victory scene. That way, every character that you have in the game has their own victory dance, or not
+// even a dance, maybe they're just powering up and looking tough for certain characters."
+//
+// Kiru and Kage keep the shows they had (kiru.js, kage.js): the uppercut that pulls the lightning down and the cheer, the two
+// shadow cuts in an X and the taunt. Everyone else plays their own, on whichever half they won it: out to the front as before, then
+// the opening of their celebration in place of the strike, the power-up and the burst everyone has (in their own colour,
+// finale.js finaleColours), and their celebration again, looping until the next round. The ones who power up and look tough
+// (hold) keep glowing through it.
+//
+// VICTORY[key] = { hold (they keep powering up), pose(P, u, rt) (the rig's pose at u s into it: sheet units, the rig's REST is
+// fx 50 / 184, bx 151 / 193, ankles 85 / 115 at 223.5; front = toward the one they beat), up(u) (m off the floor, at 1.75 m tall) }.
+// victoryOf(side) is the one for whoever plays that side ('you' or 'opp'), or null for Kiru and Kage.
+
+// The kids are drawn big-headed (the cast sheet's head covers x 20–180, y 20–150 of the rig's sheet), and the front arm is drawn
+// over the head, so a hand stays below the face or out past the head (x under 15, the elbow bowed outward); the back arm is drawn
+// behind, and shows only out past the head on its side (x over 185) or below it.
+const VICTORY = (() => {
+  const s = Math.sin, c = Math.cos, ab = Math.abs, TAU = Math.PI * 2, L = (a, b, k) => a + (b - a) * k;
+  const cl = (x) => (x < 0 ? 0 : x > 1 ? 1 : x), ease = (x) => { x = cl(x); return x * x * (3 - 2 * x); };
+  const pulse = (u, a, b) => (u >= a && u < b ? s((Math.PI * (u - a)) / (b - a)) : 0); // 0 → 1 → 0 between a and b
+  const arms = (P, fx, fy, fb, bx, by, bb) => { P.fx = fx; P.fy = fy; P.fBend = fb; P.bx = bx; P.by = by; P.bBend = bb; };
+  const crossed = (P) => arms(P, 116, 164, -10, 86, 160, -9); // arms folded across the chest (kage.js's CROSS)
+  const FIST_UP = [6, 58, -28], BACK_UP = [194, 58, 28], HIP_F = [64, 196, 18], HIP_B = [136, 196, -18];
+  const blendF = (P, a, b, k) => { P.fx = L(a[0], b[0], k); P.fy = L(a[1], b[1], k); P.fBend = L(a[2], b[2], k); };
+  const blendB = (P, a, b, k) => { P.bx = L(a[0], b[0], k); P.by = L(a[1], b[1], k); P.bBend = L(a[2], b[2], k); };
+  return {
+    // You, the new kid: the Invisible Wind Tornado from the story, two turns on one foot with the arms flung out, landing with a
+    // fist up and the other on the hip
+    you: {
+      pose(P, u, rt) {
+        const q = u % 1.9, sp = cl(q / 0.6), land = ease((q - 0.6) / 0.18);
+        P.face = q < 0.6 ? 'fierce' : 'happy'; P.wind = 0.9; P.lift = 0.8;
+        if (q < 0.6) { arms(P, -2, 150, 0, 202, 150, 0); P.sqx *= c(TAU * 2 * ease(sp)); P.lax = 98; P.lay = 222; P.rax = 110; P.ray = 204; P.rknee = 16; }
+        else { blendF(P, [-2, 150, 0], FIST_UP, land); blendB(P, [202, 150, 0], HIP_B, land); P.headTilt += 0.06 * land; }
+      },
+      up: (u) => { const q = u % 1.9; return q < 0.6 ? 0.12 * s((Math.PI * q) / 0.6) : 0; },
+    },
+    // Milo, future King of the Pole: up on his toes, a finger to the sky (number one), then his arms spread wide, chin up: all his
+    milo: {
+      pose(P, u, rt) {
+        const q = u % 2.2, b = ab(s(u * 6)), w = ease((q - 1.1) / 0.2) * (1 - ease((q - 2.0) / 0.2));
+        P.face = 'happy'; P.lift = 0.5;
+        blendF(P, [2, 34, -30], [-6, 166, 4], w); blendB(P, HIP_B, [206, 166, -4], w);
+        P.headTilt += -0.09 * w + s(u * 3) * 0.03 * (1 - w);
+        P.lay -= 5 * b; P.ray -= 5 * b; P.lknee += 3 * b; P.rknee += 3 * b;
+      },
+      up: (u) => 0.05 * ab(s(u * 6)),
+    },
+    // Emma, who practises alone: her swing again, slow and exact, the way she drills it, and a small nod at how it went
+    emma: {
+      pose(P, u, rt) {
+        const q = u % 2.4, sw = ease((q - 0.2) / 1.0), nod = pulse(q, 1.45, 1.9);
+        P.face = nod > 0.2 ? 'happy' : 'open'; P.lift = 0.3;
+        arms(P, L(150, -6, sw), L(178, 152, sw) + 10 * s(Math.PI * sw), L(-14, 6, sw), 146, 190, -10);
+        P.tilt += -P.mir * 0.05 * s(Math.PI * sw); P.lknee += 6 * s(Math.PI * sw);
+        P.headDy += 5 * nod; P.headTilt += 0.04 * nod;
+      },
+      up: () => 0,
+    },
+    // Marcus, who wants an audience: arms flung out wide for the crowd, then a deep theatrical bow, one hand across his middle
+    marcus: {
+      pose(P, u, rt) {
+        const q = u % 2.4, bow = pulse(q, 0.9, 2.2), k = ease(q / 0.2) * (1 - ease((q - 0.85) / 0.15));
+        P.face = 'happy'; P.lift = 0.5;
+        arms(P, -6, L(166, 112, k), -18 * k, 206, L(166, 112, k), 18 * k);
+        P.headTilt += 0.1 * k; P.y -= 4 * P.s * ab(s(q * 7)) * k;
+        if (bow > 0) { blendF(P, [P.fx, P.fy, P.fBend], [96, 192, 16], bow); blendB(P, [P.bx, P.by, P.bBend], [204, 150, 6], bow); P.tilt += -P.mir * 0.42 * bow; P.headTilt -= 0.22 * bow; P.headDy += 6 * bow; P.lknee += 8 * bow; }
+      },
+      up: () => 0,
+    },
+    // Akira, the rival: on his toes, a jab, a jab and a cross at the one he beat, then the front fist up
+    akira: {
+      pose(P, u, rt) {
+        const q = u % 1.8, b = ab(s(u * 7)), j = Math.max(pulse(q, 0.05, 0.25), pulse(q, 0.3, 0.5)), x = pulse(q, 0.55, 0.85), up = ease((q - 0.95) / 0.15);
+        P.face = up > 0.5 ? 'happy' : 'fierce'; P.lift = 0.5;
+        arms(P, L(58, -4, j), L(160, 156, j), 6, L(141, 6, x), L(165, 150, x), -6);
+        P.tilt += -P.mir * 0.08 * x;
+        if (up > 0) blendF(P, [58, 160, 6], FIST_UP, up);
+        P.lay -= 4 * b; P.ray -= 4 * b;
+      },
+      up: (u) => 0.03 * ab(s(u * 7)),
+    },
+    // Felix, who calls it a weird move: hands still in his hoodie pocket, a big shrug, then leaning back with one palm up: "eh"
+    felix: {
+      pose(P, u, rt) {
+        const q = u % 2.6, sh = pulse(q, 0.1, 0.9), eh = ease((q - 1.1) / 0.3) * (1 - ease((q - 2.3) / 0.3));
+        P.face = eh > 0.5 ? 'happy' : 'open'; P.lift = 0.2;
+        arms(P, L(86, -4, eh), L(184, 168, eh), L(8, -6, eh), 114, 184, -8);
+        P.headDy -= 5 * sh; P.sqy *= 1 + 0.03 * sh; P.headTilt += 0.08 * sh + 0.1 * eh;
+        P.tilt += P.mir * 0.09 * eh;
+      },
+      up: () => 0,
+    },
+    // Big Ben, biggest and nicest: a double-biceps flex either side of his head, then a stomp that shakes him to the floor and back
+    ben: {
+      pose(P, u, rt) {
+        const q = u % 2.2, fl = ease(q / 0.25) * (1 - ease((q - 1.25) / 0.2)), lift = pulse(q, 1.3, 1.75), stamp = q >= 1.75 && q < 2.05 ? Math.exp(-(q - 1.75) * 14) : 0;
+        P.face = 'happy'; P.lift = 0.4;
+        blendF(P, [50, 184, 10], [0, 100, -34], fl); blendB(P, [151, 193, -9], [200, 100, 34], fl);
+        P.sqx *= 1 + 0.05 * fl;
+        P.lay -= 24 * lift; P.lknee += 22 * lift; P.lax -= 4 * lift;
+        P.sqy *= 1 - 0.08 * stamp; P.sqx *= 1 + 0.06 * stamp; P.y += 6 * P.s * stamp; P.x += s(q * 90) * 3 * P.s * stamp;
+      },
+      up: () => 0,
+    },
+    // Harper, not here for friends: arms folded, chin up and her head turned from you, powering up and staying lit; now and then
+    // a flick of the hand, done with you
+    harper: {
+      hold: true,
+      pose(P, u, rt) {
+        const q = u % 3, fl = pulse(q, 1.9, 2.35);
+        P.face = 'fierce'; P.wind = 0.6 + 0.3 * s(rt * 3); P.lift = 0.6;
+        crossed(P);
+        if (fl > 0) blendF(P, [116, 164, -10], [-6, 136, 10], fl);
+        P.headTilt -= 0.12; P.tilt += P.mir * 0.05; P.lax = 92; P.rax = 124; P.rrot = 0.12; P.sqy *= 1 + 0.008 * s(rt * 2);
+      },
+      up: () => 0,
+    },
+    // Mei, who reads people: two fingers to her temple, her head on one side, then a point at the one she beat, a knowing smile
+    mei: {
+      pose(P, u, rt) {
+        const q = u % 2.4, k = ease((q - 1.1) / 0.18) * (1 - ease((q - 2.2) / 0.2));
+        P.face = q < 0.5 ? 'open' : 'happy'; P.lift = 0.4;
+        blendF(P, [14, 112 + (q < 0.6 ? 2 * s(q * 18) : 0), -24], [-10, 150, 0], k);
+        P.bx = 146; P.by = 192; P.bBend = -8;
+        P.headTilt += 0.14 + s(rt * 0.9) * 0.02;
+      },
+      up: () => 0,
+    },
+    // Adaeze, the cool customer: one hand on her hip, the shadow still on her; two fingers to her brow and away, a salute, unbothered
+    adaeze: {
+      hold: true,
+      pose(P, u, rt) {
+        const q = u % 2.8, to = ease((q - 0.9) / 0.25), off = ease((q - 1.5) / 0.2), back = ease((q - 2.3) / 0.35);
+        P.face = q > 1.5 && q < 2.4 ? 'happy' : 'fierce'; P.lift = 0.5; P.wind = 0.5;
+        blendF(P, HIP_F, [16, 96, -24], to); if (off > 0) blendF(P, [16, 96, -24], [-14, 82, -30], off); if (back > 0) blendF(P, [-14, 82, -30], HIP_F, back);
+        P.bx = 124; P.by = 190; P.bBend = -6; // the other behind her
+        P.headTilt -= 0.06; P.tilt += P.mir * 0.03; P.headDy += 2 * ab(s(u * 1.6));
+      },
+      up: () => 0,
+    },
+    // Jackson, the former king: fists closed at his sides, chest out, chin up, the dragon's fire still on him; a slow fist to his chest
+    jackson: {
+      hold: true,
+      pose(P, u, rt) {
+        const q = u % 3.2, fist = pulse(q, 1.2, 2.6), br = s(rt * 1.4);
+        P.face = 'fierce'; P.lift = 0.7; P.wind = 0.5 + 0.2 * br;
+        arms(P, L(54, 92, fist), L(191, 168, fist), L(5, 22, fist), 147, 198, -5);
+        P.sqy *= 1.02 + 0.012 * br; P.headTilt -= 0.08; P.headDy -= 2; P.lax = 80; P.rax = 120;
+      },
+      up: () => 0,
+    },
+    // Tyler, Jackson's crew and loud: jumping up and down, both fists pumping in turn over his head, shouting it
+    tyler: {
+      pose(P, u, rt) {
+        const a = s(u * TAU * 2.2), fu = Math.max(0, a), bu = Math.max(0, -a);
+        P.face = 'happy'; P.lift = 0.9; P.wind = 0.6;
+        blendF(P, [36, 160, 8], FIST_UP, fu); blendB(P, [164, 160, -8], BACK_UP, bu);
+        P.headTilt += 0.1 * s(u * TAU * 1.1);
+        P.lay -= 8 * ab(a); P.ray -= 8 * ab(a);
+      },
+      up: (u) => 0.2 * ab(s(u * Math.PI * 2.2)),
+    },
+    // Caleb, Jackson's crew and quiet: down in a fighter's guard, the front fist out at the one he beat, the back one cocked at his
+    // hip, the power building in him and staying; a single nod
+    caleb: {
+      hold: true,
+      pose(P, u, rt) {
+        const q = u % 2.6, nod = pulse(q, 1.6, 2.0);
+        P.face = 'fierce'; P.lift = 0.5; P.wind = 0.4;
+        arms(P, 14, 166, 6, 150, 190, -14);
+        P.lax = 62; P.lay = 218; P.lknee = 12; P.rax = 136; P.ray = 220; P.rknee = -10; P.y += 5 * P.s; P.tilt += -P.mir * 0.05;
+        P.x += s(rt * 61) * 0.9 * P.s; P.headDy += 4 * nod + 2;
+      },
+      up: () => 0,
+    },
+    // Rei, the silent champion: one hand behind her back, as ever; a small bow, then the other hand rising, palm up, in the light
+    rei: {
+      hold: true,
+      pose(P, u, rt) {
+        const q = u % 3.4, bow = pulse(q, 0.1, 1.1), rise = ease((q - 1.3) / 0.6) * (1 - ease((q - 3) / 0.4));
+        P.face = 'open'; P.lift = 0.6; P.wind = 0.3 + 0.2 * s(rt * 1.2);
+        arms(P, L(52, -8, rise), L(188, 140, rise), L(6, -10, rise), 124, 188, -6);
+        P.tilt += -P.mir * 0.16 * bow; P.headTilt -= 0.12 * bow; P.headDy += 3 * bow;
+        P.sqy *= 1 + 0.01 * s(rt * 1.1); P.headTilt += 0.03;
+      },
+      up: () => 0,
+    },
+  };
+})();
+
+// the victory scene for whoever plays that side ('you' | 'opp'): theirs, or null for Kiru and Kage (who keep their own)
+function victoryOf(side) {
+  const e = typeof rosterEntry === 'function' ? rosterEntry(side) : null;
+  return e && !e.native ? VICTORY[e.key] || null : null;
+}
+// lay it over the pose: P as the show had it, eased into theirs over blend s from u 0 (0: at once)
+const VICTORY_KEYS = ['fx', 'fy', 'fBend', 'bx', 'by', 'bBend', 'lax', 'lay', 'lrot', 'lknee', 'rax', 'ray', 'rrot', 'rknee', 'tilt', 'headTilt', 'headDy', 'sqx', 'sqy', 'x', 'y', 'lift', 'wind'];
+const VICTORY_WAS = {};
+function victoryPose(V, P, u, rt, blend) {
+  const k = blend > 0 ? U.easeInOut(U.clamp01(u / blend)) : 1;
+  if (k < 1) for (const n of VICTORY_KEYS) VICTORY_WAS[n] = P[n];
+  V.pose(P, u, rt);
+  if (k < 1) for (const n of VICTORY_KEYS) P[n] = U.lerp(VICTORY_WAS[n], P[n], k);
+}
+
+// ════════ arcade.js ════════
+// arcade.js — the arcade (Josh, 2026-10-22): "remove the character option on the start menu, and let's replace it with an arcade
+// selection. When you click on the arcade, you have the character selection, but you can't select Jackson or Ray ... The actual
+// arcade game should be a progression of what the story was. So it should start with the lowest ranked character and move all
+// the way to the highest ranked character that you play. For characters that you play multiple times, rank them according to the
+// strongest version of them."
+//
+// The ladder is everyone you face in King of the Pole (roster.js STORY), each once, in the meeting they are strongest in: their
+// highest level among their phases (of two at the same level, the later one, as the story tells it), so Akira is his match 19,
+// Milo his epilogue with the Black Hole. They run weakest first, by that level, and by the story's order where two levels tie.
+// The levels are the settings' own (each phase's Difficulty), so a level changed in the dev settings moves them on the ladder.
+// Whoever you play as is left off it. Jackson and Rei can't be picked to play as: they are opponents only (ARCADE_NOT).
+//
+// main.js plays it (AR): each stage is a match against the next one on the ladder, at that phase, first to arcade.rounds, after
+// the versus intro (menu.js versus). Win and the next stage's intro plays; beat the last and the arcade is cleared; lose and you
+// may try that stage again or stop. What a stage borrows (the opponent, their phase, the length and the mode) goes back after,
+// as a story match's does (config.js CFG_HELD); who you picked to play as stays picked.
+
+CFG.arcade = {
+  rounds: 2, // an arcade match: first to this many rounds (best of three)
+  intro: 1, // 1 = the versus intro before every match (the arcade's, Play's)
+};
+CFG_SCHEMA.push(
+  { path: 'arcade.rounds', label: 'Arcade match: first to', min: 1, max: 5, step: 1, group: 'Match', rank: -3, unit: 'rounds' },
+  { path: 'arcade.intro', label: 'Versus intro', type: 'toggle', min: 0, max: 1, step: 1, group: 'Match', rank: -3, unit: '' }
+);
+
+const ARCADE_NOT = { jackson: 1, rei: 1 }; // the arcade's last opponents: nobody plays as them in it
+// who may be picked to play the arcade as: anyone who plays (roster.js rosterPlays), but Jackson and Rei
+const arcadePlays = (e) => !!e && rosterPlays(e) && !ARCADE_NOT[e.key];
+
+// The ladder, weakest first, without youKey: [{ key, phase (0-based, −1 for one met once), level, match (its number in the story) }]
+function arcadeLadder(youKey) {
+  const best = {};
+  STORY.forEach((m, i) => {
+    const ph = PHASES[m.key] ? PHASES[m.key].indexOf(i + 1) : -1, c = CFG.chars[m.key];
+    const lv = +(ph >= 0 ? c['p' + (ph + 1)].difficulty : c.difficulty) || m.level;
+    const b = best[m.key];
+    if (!b || lv >= b.level) best[m.key] = { key: m.key, phase: ph, level: lv, match: i + 1 };
+  });
+  return Object.keys(best).map((k) => best[k]).filter((s) => s.key !== youKey).sort((a, b) => a.level - b.level || a.match - b.match);
+}
+
 // ════════ placemusic.js ════════
 // placemusic.js — which track plays where: the start menu, each of the school's places, a story match (main.js asks audio.js for it
 // as you go). Its own module because the prod version keeps the start menu's (Josh's King of the Pole song) and drops the school
@@ -15053,17 +15452,21 @@ function createUI(root, opts) {
 // settings ... Allow me to pick which character to play or play against ... Give low, medium, high graphic settings if needed to
 // allow slower mobile phones to run it").
 //
-// Three screens over the court, which waits behind them (main.js stops the clock while the menu is up):
+// Screens over the court, which waits behind them (main.js stops the clock while the menu is up):
 // On load, where the browser needs a tap before any sound, a Tap to start screen covers it first (gate, below).
-//   home   the Story (story mode, overworld.js: start it, or continue where you left it, or start again), who plays whom (tap it to
-//          change), Play, Characters, Create your character, Dev settings (the Feel panel, over the menu), the mode (versus or the
-//          time trial) and Graphics.
-//   pick   everyone in the story in a grid: tap one for your side, then one for the other (the toggle says which side a tap sets).
-//   make   the character creator: you are the new kid, and nobody draws you but you. Skin, hair and its colour, eyes, mouth, the gi,
-//          the belt, the trainers, extras and a name, drawn live by the cast sheet's own kit (roster.js youDraw). Saved on this
-//          device (localStorage), and picked as your side when you save.
-// The prod version (config.js PROD) has no Story card and no Dev settings (main.js passes no onStory or onDev), and its pick has
-// neither Kiru nor Kage (roster.js rosterPlays) nor a story match on a card.
+//   home    the Story (story mode, overworld.js: start it, or continue where you left it, or start again), who plays whom in Play,
+//           Play, Arcade, Create your character, Dev settings (the Feel panel, over the menu), the mode (versus or the time trial)
+//           and Graphics. (Josh, 2026-10-22: the Characters button and its screen are gone, and the Arcade is where you pick.)
+//   arcade  the arcade's character select (arcade.js): everyone who plays but Jackson and Rei, and the ladder you'd climb as the
+//           one picked, weakest first. Start plays it (main.js AR).
+//   make    the character creator: you are the new kid, and nobody draws you but you. Skin, hair and its colour, eyes, mouth, the
+//           gi, the belt, the trainers, extras and a name, drawn live by the cast sheet's own kit (roster.js youDraw). Saved on this
+//           device (localStorage), and picked as your side when you save.
+//   vs      the versus intro before a match (versus, below): two halves in the players' colours slam in, the two of them, VS, their
+//           names and specials, the stage; then it splits open onto the court. A tap or a key skips it.
+//   over    an arcade stage lost (try it again, or stop) or the arcade cleared.
+// The prod version (config.js PROD) has no Story card and no Dev settings (main.js passes no onStory or onDev), and its arcade
+// has neither Kiru nor Kage to pick (roster.js rosterPlays).
 // Who plays each side is CFG.roster (roster.js), saved with the rest of the settings. Under a test driver (navigator.webdriver)
 // the menu stays shut unless the URL asks for it (?menu=1), so the suites start on the court as they always have.
 
@@ -15087,7 +15490,7 @@ function createMenu(doc, opts) {
   const root = el('div', 'menu');
   root.id = 'menu'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', 'Tetherball menu'); root.hidden = true;
   app.appendChild(root);
-  let screen = '', side = 'you', draft = null, shownPick = '';
+  let screen = '', draft = null, shownPick = '', over = null, makeFrom = 'home'; // makeFrom: the screen the creator goes back to
 
   // ── portraits: a kid from the sheet's kit as SVG markup; Kage, who isn't on that sheet, drawn once on his own rig ──
   const portraits = new Map();
@@ -15126,8 +15529,8 @@ function createMenu(doc, opts) {
     head.append(el('div', 'm-kick', 'Tetherball'), el('h1', '', 'King of the Pole'));
     s.appendChild(head);
     if (opts.storyInfo) s.appendChild(storyCard());
-    const vs = btn('m-vs', '', () => show('pick'));
-    vs.setAttribute('aria-label', 'Change characters: ' + nameOf(rosterEntry('you')) + ' against ' + nameOf(rosterEntry('opp')));
+    const vs = el('div', 'm-vs'); // who plays whom when you press Play (the arcade picks its own)
+    vs.setAttribute('role', 'group'); vs.setAttribute('aria-label', 'Play: ' + nameOf(rosterEntry('you')) + ' against ' + nameOf(rosterEntry('opp')));
     const one = (sd, lab) => {
       const e = rosterEntry(sd), f = el('span', 'm-who ' + sd);
       place(f, e, true);
@@ -15141,9 +15544,9 @@ function createMenu(doc, opts) {
     s.appendChild(vs);
     const acts = el('div', 'm-acts');
     acts.append(
-      btn('m-btn go', 'Play', () => { close(); if (opts.onPlay) opts.onPlay(); }),
-      btn('m-btn', 'Characters', () => show('pick')),
-      btn('m-btn', 'Create your character', () => show('make')));
+      btn('m-btn go', 'Play', () => { if (opts.onPlay) opts.onPlay(); else close(); }),
+      btn('m-btn arc', 'Arcade', () => show('arcade')),
+      btn('m-btn', 'Create your character', () => { makeFrom = 'home'; show('make'); }));
     if (opts.onDev) acts.appendChild(btn('m-btn', 'Dev settings', () => opts.onDev()));
     s.appendChild(acts);
     s.appendChild(seg('Mode', ['Versus', 'Time trial'], () => (CFG.match.opponent > 0 ? 0 : 1), (i) => { CFG.match.opponent = i === 0 ? 1 : 0; changed(); }, 'm-mode'));
@@ -15180,50 +15583,61 @@ function createMenu(doc, opts) {
     return w;
   }
 
-  // ───────────── pick ─────────────
-  function pick() {
-    const s = el('div', 'm-scr m-pick');
-    s.appendChild(bar('Characters', () => show('home')));
-    const tg = seg('Pick for', ['You', 'Opponent'], () => (side === 'you' ? 0 : 1), (i) => { side = i ? 'opp' : 'you'; paintGrid(); }, 'm-side');
-    s.appendChild(tg);
+  // ───────────── arcade: who you play it as, and the ladder ─────────────
+  // a character's card (the grid's): their portrait, name, special, and their level or role
+  function card(i, e) {
+    const c = btn('m-card', '');
+    c.dataset.i = String(i); c.setAttribute('role', 'listitem');
+    c.style.setProperty('--acc', e.accent);
+    place(c, e, true);
+    const t = el('span', 'm-ct');
+    const sp = el('i', '', spName(e)); sp.style.color = spCol(e);
+    t.append(el('b', '', nameOf(e)), sp, el('small', '', e.role));
+    c.appendChild(t);
+    c.appendChild(el('span', 'm-tag you', 'You'));
+    return c;
+  }
+  function arcade() {
+    const s = el('div', 'm-scr m-pick m-arc');
+    s.appendChild(bar('Arcade', () => show('home')));
+    s.appendChild(el('p', 'm-lead', 'Pick who you play as. Then beat everyone from the story, one match each, weakest first, up to the strongest.'));
     const grid = el('div', 'm-grid');
-    grid.setAttribute('role', 'list');
+    grid.setAttribute('role', 'list'); grid.setAttribute('aria-label', 'Play the arcade as');
     for (let i = 0; i < ROSTER.length; i++) {
-      if (!rosterPlays(ROSTER[i])) continue; // in the story only, or Kiru and Kage in the prod version (roster.js)
-      const e = ROSTER[i], c = btn('m-card', '');
-      c.dataset.i = String(i); c.setAttribute('role', 'listitem');
-      c.style.setProperty('--acc', e.accent);
-      place(c, e, true);
-      const t = el('span', 'm-ct');
-      const sp = el('i', '', spName(e)); sp.style.color = spCol(e);
-      const lv = e.key === 'kage' || e.ai ? 'Lv ' + Math.round(CFG.chars[e.key].difficulty) : '', m = PROD ? 0 : rosterMatch(e.key); // (no story in prod)
-      // a character met more than once leads with the phase picked (its story match), so a long role is what gets cut
-      // (in the prod version, with no story match to lead with, the level leads, for the same reason)
-      t.append(el('b', '', nameOf(e)), sp, el('small', '', m ? 'Match ' + m + ' · ' + lv + ' · ' + e.role : PROD && lv ? lv + ' · ' + e.role : e.role + (lv ? ' · ' + lv : '')));
-      c.appendChild(t);
-      c.append(el('span', 'm-tag you', 'You'), el('span', 'm-tag opp', 'Opponent'));
-      c.addEventListener('click', () => {
-        CFG.roster[side] = i; changed();
-        if (side === 'you') side = 'opp';
-        tg.querySelectorAll('.m-opt').forEach((b, k) => b.setAttribute('aria-checked', (k === 1) === (side === 'opp') ? 'true' : 'false'));
-        paintGrid();
-      });
-      if (e.key === 'you') { const ed = btn('m-edit', 'Edit', (ev) => { ev.stopPropagation(); show('make'); }); ed.setAttribute('aria-label', 'Edit your character'); c.appendChild(ed); }
+      const e = ROSTER[i];
+      if (!arcadePlays(e)) continue; // in the story only, Jackson and Rei (the arcade's last), and Kiru and Kage in the prod version
+      const c = card(i, e);
+      c.addEventListener('click', () => { CFG.roster.you = i; changed(); paint(); });
+      if (e.key === 'you') { const ed = btn('m-edit', 'Edit', (ev) => { ev.stopPropagation(); makeFrom = 'arcade'; show('make'); }); ed.setAttribute('aria-label', 'Edit your character'); c.appendChild(ed); }
       grid.appendChild(c);
     }
     s.appendChild(grid);
+    const lad = el('section', 'm-ladder'), lh = el('h3', 'm-lab', ''), row = el('ol', 'm-steps');
+    lad.append(lh, row);
+    s.appendChild(lad);
     const foot = el('div', 'm-foot');
-    foot.append(btn('m-btn go', 'Play', () => { close(); if (opts.onPlay) opts.onPlay(); }));
+    const go = btn('m-btn go', 'Start the arcade', () => { if (opts.onArcade) opts.onArcade(); });
+    foot.append(go);
     s.appendChild(foot);
-    function paintGrid() {
-      grid.querySelectorAll('.m-card').forEach((c) => {
-        const i = +c.dataset.i;
-        c.classList.toggle('is-you', i === Math.round(CFG.roster.you)); c.classList.toggle('is-opp', i === Math.round(CFG.roster.opp));
-        c.setAttribute('aria-pressed', (side === 'you' ? i === Math.round(CFG.roster.you) : i === Math.round(CFG.roster.opp)) ? 'true' : 'false');
+    // the picked card, and the ladder as the one picked climbs it (a pick that can't play the arcade is the default's: You)
+    function paint() {
+      if (!arcadePlays(rosterEntry('you'))) CFG.roster.you = ROSTER_BY.you;
+      const yi = Math.round(CFG.roster.you);
+      grid.querySelectorAll('.m-card').forEach((c) => { const on = +c.dataset.i === yi; c.classList.toggle('is-you', on); c.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+      const L = arcadeLadder(rosterEntry('you').key);
+      lh.textContent = L.length + ' matches, weakest first';
+      row.textContent = '';
+      L.forEach((st, n) => {
+        const e = ROSTER[ROSTER_BY[st.key]], li = el('li', 'm-step');
+        li.style.setProperty('--acc', e.accent);
+        place(li, e, true);
+        li.append(el('b', '', e.name), el('small', '', 'Lv ' + st.level));
+        li.setAttribute('aria-label', 'Match ' + (n + 1) + ': ' + e.name + ', level ' + st.level);
+        row.appendChild(li);
       });
-      grid.dataset.side = side;
+      go.setAttribute('aria-label', 'Start the arcade as ' + nameOf(rosterEntry('you')));
     }
-    paintGrid();
+    paint();
     return s;
   }
   function bar(title, back) {
@@ -15247,7 +15661,7 @@ function createMenu(doc, opts) {
   function make() {
     draft = Object.assign({}, YOU_DEFAULT, rosterYou(), { extras: (rosterYou().extras || []).slice() });
     const K = CASTKIT, s = el('div', 'm-scr m-make');
-    s.appendChild(bar('Create your character', () => show('home')));
+    s.appendChild(bar('Create your character', () => show(makeFrom)));
     const top = el('div', 'm-mk-top'), stage = el('div', 'm-stage'), fig = el('div', 'm-fig');
     stage.appendChild(fig);
     const nm = el('input', 'm-name');
@@ -15357,7 +15771,7 @@ function createMenu(doc, opts) {
       btn('m-btn go', 'Save', () => {
         rosterSetYou(draft); ls.set(YOU_KEY, JSON.stringify(rosterYou()));
         CFG.roster.you = ROSTER_BY.you; changed();
-        portraits.clear(); show('home');
+        portraits.clear(); show(makeFrom);
       }));
     s.appendChild(foot);
     redraw();
@@ -15369,20 +15783,122 @@ function createMenu(doc, opts) {
   function show(name) {
     screen = name;
     root.textContent = '';
-    const s = name === 'pick' ? pick() : name === 'make' ? make() : home();
+    const s = name === 'arcade' ? arcade() : name === 'make' ? make() : name === 'over' ? overScr() : home();
     root.appendChild(s);
     root.dataset.screen = name;
     root.scrollTop = 0;
     shownPick = pickKey();
-    const f = s.querySelector('.m-back, .m-acts .m-btn.go, .m-foot .m-btn.go');
+    const f = s.querySelector('.m-back, .m-acts .m-btn.go, .m-foot .m-btn.go, .m-over .m-btn.go');
     if (f && f.focus) try { f.focus({ preventScroll: true }); } catch (e) { /* old browsers */ }
   }
   const pickKey = () => Math.round(CFG.roster.you) + '/' + Math.round(CFG.roster.opp) + '/' + youSig() + '/' + CFG.match.opponent + '/' + CFG.gfx.quality;
   function open(name) { root.hidden = false; app.classList.add('menu-up'); show(name || 'home'); }
-  function close() { root.hidden = true; app.classList.remove('menu-up'); screen = ''; }
+  function close() { endVersus(); root.hidden = true; app.classList.remove('menu-up'); screen = ''; delete root.dataset.screen; }
   // every frame while it is up (main.js): a pick changed elsewhere (the Characters tab) shows here too
-  function sync() { if (!root.hidden && screen !== 'make' && pickKey() !== shownPick) show(screen); }
-  doc.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !root.hidden && screen !== 'home') { e.stopPropagation(); show('home'); } });
+  function sync() { if (!root.hidden && (screen === 'home' || screen === 'arcade') && pickKey() !== shownPick) show(screen); }
+  doc.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || root.hidden || screen === 'home' || screen === 'vs') return; // (the intro takes any key: versus)
+    e.stopPropagation();
+    if (screen === 'over') { if (opts.onArcadeQuit) opts.onArcadeQuit(); } else show('home');
+  });
+
+  // ───────────── over: an arcade stage lost, or the arcade cleared ─────────────
+  // info: { clear, opp (who beat you), stage (1-based), of, you }
+  function overScr() {
+    const o = over || {}, s = el('div', 'm-scr m-over' + (o.clear ? ' clear' : ''));
+    const you = rosterEntry('you'), e = o.clear ? you : o.opp || rosterEntry('opp');
+    const fig = el('div', 'm-ofig');
+    fig.style.setProperty('--acc', e.accent);
+    place(fig, e, false);
+    const head = el('header', 'm-title');
+    if (o.clear) {
+      head.append(el('div', 'm-kick', 'Arcade clear'), el('h1', '', 'King of the Pole'));
+      s.append(head, fig, el('p', 'm-lead', nameOf(you) + ' beat all ' + o.of + ', from the weakest to the strongest.'));
+    } else {
+      head.append(el('div', 'm-kick', 'Match ' + o.stage + ' of ' + o.of), el('h1', '', e.name + ' wins'));
+      s.append(head, fig, el('p', 'm-lead', 'Take them on again, or stop here.'));
+    }
+    const acts = el('div', 'm-acts');
+    if (o.clear) acts.append(btn('m-btn go', 'Play it again', () => show('arcade')), btn('m-btn', 'Menu', () => show('home')));
+    else acts.append(btn('m-btn go', 'Try again', () => { if (opts.onArcadeRetry) opts.onArcadeRetry(); }), btn('m-btn', 'Stop', () => { if (opts.onArcadeQuit) opts.onArcadeQuit(); }));
+    s.appendChild(acts);
+    return s;
+  }
+  function arcadeOver(info) { over = info || {}; open('over'); }
+
+  // ───────────── vs: the versus intro ─────────────
+  // Josh, 2026-10-22: "during the versus screen of the match, as you start the match, give a short but cool start animation".
+  // info: { you, opp (roster entries), stage, of (the arcade's: 1-based, and how many), rounds, ladder (arcade.js arcadeLadder) }.
+  // Two halves in the players' colours slam in on a slant, the two of them pop up, VS slams down with a flash, their names and
+  // specials slide in, the stage drops in above; at OUT the halves split apart onto the court and done() runs. About two seconds;
+  // a tap or a key after the first beat cuts straight to the split. sound(kind) at 'in', 'vs' and 'out' (main.js plays them).
+  const VS_T = { VS: 380, OUT: 1650, END: 1950, SKIP: 320, CUT: 260 };
+  let vsDone = null, vsTimers = [], vsAt = 0, vsOut = false;
+  function versus(info, done) {
+    endVersus();
+    info = info || {};
+    root.hidden = false; app.classList.add('menu-up');
+    screen = 'vs'; root.textContent = ''; root.dataset.screen = 'vs'; root.scrollTop = 0;
+    const you = info.you || rosterEntry('you'), opp = info.opp || rosterEntry('opp');
+    const v = el('div', 'm-vsi');
+    v.style.setProperty('--a', you.accent); v.style.setProperty('--b', opp.accent);
+    v.setAttribute('role', 'img');
+    const stage = info.of ? (info.stage === info.of ? 'Final match' : 'Match ' + info.stage + ' of ' + info.of) : 'First to ' + Math.max(1, info.rounds | 0);
+    v.setAttribute('aria-label', nameOf(you) + ' versus ' + nameOf(opp) + '. ' + stage + '.');
+    const half = (e, cls, lv) => {
+      const h = el('div', 'vi-half ' + cls), f = el('div', 'vi-fig');
+      place(f, e, false);
+      const n = el('div', 'vi-name'), sp = el('i', '', spName(e));
+      sp.style.color = spCol(e);
+      n.append(el('b', '', nameOf(e)), sp);
+      if (lv) n.appendChild(el('small', '', lv));
+      h.append(f, n);
+      return h;
+    };
+    const lv = opp.key === 'kage' || opp.ai ? 'Lv ' + Math.round(CFG.chars[opp.key].difficulty) : '';
+    v.append(half(you, 'l', ''), half(opp, 'r', lv), el('div', 'vi-x', 'VS'), el('div', 'vi-stage', stage), el('div', 'vi-flash'));
+    if (info.ladder && info.of) { // the ladder along the bottom: beaten, this one, to come
+      const row = el('ol', 'vi-ladder');
+      info.ladder.forEach((st, n) => {
+        const e = ROSTER[ROSTER_BY[st.key]], li = el('li', n < info.stage - 1 ? 'done' : n === info.stage - 1 ? 'now' : '');
+        li.style.setProperty('--acc', e.accent);
+        place(li, e, true);
+        row.appendChild(li);
+      });
+      v.appendChild(row);
+    }
+    root.appendChild(v);
+    vsDone = done || null; vsAt = performance.now(); vsOut = false;
+    const snd = (k) => { if (opts.onVersusSound) opts.onVersusSound(k); };
+    snd('in');
+    vsTimers.push(setTimeout(() => snd('vs'), VS_T.VS));
+    vsTimers.push(setTimeout(() => cutVersus(false), VS_T.OUT));
+    v.addEventListener('pointerdown', skipVersus);
+    doc.addEventListener('keydown', vsKey, true);
+  }
+  function vsKey(e) { if (screen !== 'vs') return; e.preventDefault(); e.stopPropagation(); if (!e.repeat) skipVersus(); }
+  function skipVersus() { if (performance.now() - vsAt >= VS_T.SKIP) cutVersus(true); }
+  // the halves split apart onto the court, and the match starts
+  function cutVersus(skip) {
+    if (vsOut || screen !== 'vs') return;
+    vsOut = true;
+    const v = root.querySelector('.m-vsi');
+    if (v) v.classList.add('out');
+    if (opts.onVersusSound) opts.onVersusSound('out');
+    vsTimers.push(setTimeout(finishVersus, skip ? VS_T.CUT : VS_T.END - VS_T.OUT));
+  }
+  function finishVersus() {
+    const d = vsDone;
+    vsDone = null;
+    close();
+    if (d) d();
+  }
+  function endVersus() { // (close: an intro cut short leaves nothing behind)
+    for (const t of vsTimers) clearTimeout(t);
+    vsTimers = [];
+    doc.removeEventListener('keydown', vsKey, true);
+    vsDone = null;
+  }
 
   // ───────────── the gate: Tap to start ─────────────
   // A browser plays a page's sound only once it has been tapped, clicked or typed on: every phone asks for it, a desktop one may
@@ -15412,7 +15928,7 @@ function createMenu(doc, opts) {
   function gateKey(e) { if (e.repeat) return; e.preventDefault(); e.stopPropagation(); lift(); } // any key: Enter, Space, or another
 
   const auto = typeof navigator !== 'undefined' && navigator.webdriver && !/[?&]menu=1/.test(location.search || '');
-  return { open, close, show, sync, gate, get gated() { return !!gateEl; }, get isOpen() { return !root.hidden; }, get screen() { return screen; }, autoSkip: !!auto };
+  return { open, close, show, sync, gate, versus, arcadeOver, skipVersus, get gated() { return !!gateEl; }, get isOpen() { return !root.hidden; }, get screen() { return screen; }, autoSkip: !!auto };
 }
 
 // ════════ main.js ════════
@@ -15518,7 +16034,11 @@ function createMenu(doc, opts) {
   // rest of the settings. It opens on load, but not under a test driver unless the URL asks (?menu=1). The prod version (config.js
   // PROD) has neither the story nor Dev settings to offer
   const menu = createMenu(document, Object.assign({
-    onPlay() { audio.unlock(); rosterSync(); resetAll(); },
+    onPlay() { audio.unlock(); rosterSync(); resetAll(); versusIntro(null); },
+    onArcade() { audio.unlock(); arcadeStart(); },
+    onArcadeRetry() { audio.unlock(); arcadeStage(); },
+    onArcadeQuit() { arcadeRestore(); menu.open('home'); },
+    onVersusSound: versusSound,
     onStart() { audio.unlock(); }, // Tap to start lifted (a click: the browser's gesture)
     save() { ui.tuner.save(); },
   }, PROD ? {} : {
@@ -15539,6 +16059,7 @@ function createMenu(doc, opts) {
   function openMenu() {
     if (ui.tuner.isOpen()) ui.tuner.close();
     if (SM) storyRestore(true);
+    if (AR) arcadeRestore(); // an arcade left for the menu ends there
     if (story && story.on) story.close();
     menu.open('home');
   }
@@ -15577,7 +16098,7 @@ function createMenu(doc, opts) {
   // ---- state ----
   let lastHitAt = -1e9, prevPhase = 'idle', hintUntil = 0, sideWarnAt = -1e9;
   // the show at the end of a round (finale.js): what it is told as it starts
-  const FIN = { kind: 'round', winner: 'you', vs: true, W: null, L: null, snap: null, kageSide: -1, prev: 0 };
+  const FIN = { kind: 'round', winner: 'you', vs: true, W: null, L: null, snap: null, kageSide: -1, prev: 0, own: false };
   // the pace clock (ms, real time as the stopwatch counts it): the hit delay and the debounce run on it. lastHitAt is on it too.
   // paceFlash: when a swipe last went through the ball while your delay ran; toldPace: the word on why, once a match
   let paceT = 0, paceFlash = -1e9, toldPace = false;
@@ -15625,7 +16146,7 @@ function createMenu(doc, opts) {
   const kiruOn = () => CFG.kiru.on > 0;
 
   function pickRules() {
-    const want = (SM ? 1 : forced >= 0 ? forced : CFG.match.opponent) > 0 ? versus : game;
+    const want = (SM || AR ? 1 : forced >= 0 ? forced : CFG.match.opponent) > 0 ? versus : game;
     if (want === rules) return false;
     rules = want;
     return true;
@@ -15689,7 +16210,68 @@ function createMenu(doc, opts) {
       if (SM && storyBreak()) return;
       versus.nextRound(); startRally();
     } else if (SM && vs() && versus.snap.matchOver) storyEnd(versus.snap.winner === 'you');
+    else if (AR && vs() && versus.snap.matchOver) arcadeNext(versus.snap.winner === 'you');
     else resetAll();
+  }
+
+  // ---- the versus intro (menu.js versus): before a match from Play, and each arcade match. The court is set up behind it and
+  // waits (the menu is up), and the rally starts as it splits open. Off (arcade.intro 0), the match starts at once ----
+  function versusIntro(st) {
+    if (!(CFG.arcade.intro > 0) || !vs()) { menu.close(); return; } // (the time trial has nobody to face)
+    menu.versus({ you: rosterEntry('you'), opp: rosterEntry('opp'), rounds: versus.snap.rounds, stage: st ? AR.i + 1 : 0, of: st ? AR.list.length : 0, ladder: st ? AR.list : null }, () => {});
+  }
+  function versusSound(k) {
+    if (k === 'in') audio.flash(1.4, 0.55); // the halves rushing in
+    else if (k === 'vs') { audio.special('thunder'); audio.vibrate([20, 30, 40]); } // VS slams down
+    else if (k === 'out') audio.flash(1.8, 0.45); // and split apart
+  }
+
+  // ---- the arcade (arcade.js): everyone you face in the story, each once at their strongest, weakest first ----
+  // AR: { list (arcadeLadder: who, their phase, level), i (the match being played, 0-based), keep (what it borrows, as it was) }.
+  // Who you picked to play as stays picked; the opponent, their phase, the match's length and the mode are borrowed (CFG_HELD) and
+  // go back when it ends, cleared, stopped or left for the menu
+  let AR = null;
+  function arcadeStart() {
+    if (SM) storyRestore(true);
+    if (AR) arcadeRestore();
+    const list = arcadeLadder(rosterEntry('you').key);
+    if (!list.length) return;
+    const keep = { opp: CFG.roster.opp, rounds: CFG.match.rounds, opponent: CFG.match.opponent, phase: {} };
+    const held = { 'roster.opp': keep.opp, 'match.rounds': keep.rounds, 'match.opponent': keep.opponent };
+    for (const st of list) if (PHASES[st.key]) { keep.phase[st.key] = CFG.chars[st.key].phase; held['chars.' + st.key + '.phase'] = keep.phase[st.key]; }
+    Object.assign(CFG_HELD, held); // a snapshot meanwhile is the settings as they go back (config.js)
+    AR = { list, i: 0, keep };
+    arcadeStage();
+  }
+  // the match AR.i: its opponent at their phase, first to arcade.rounds, after the versus intro
+  function arcadeStage() {
+    if (!AR) return;
+    const st = AR.list[AR.i];
+    CFG.roster.opp = ROSTER_BY[st.key];
+    if (st.phase >= 0) CFG.chars[st.key].phase = st.phase;
+    CFG.match.rounds = Math.max(1, Math.round(CFG.arcade.rounds) || 2);
+    CFG.match.opponent = 1;
+    rosterSync(); ui.names(oppName(), rosterAccent('opp')); ui.tuner.refresh();
+    resetAll();
+    versusIntro(st);
+  }
+  // a match over and tapped on: won, the next one (or the arcade cleared); lost, try it again or stop
+  function arcadeNext(won) {
+    if (won && AR.i + 1 < AR.list.length) { AR.i++; arcadeStage(); return; }
+    const info = { clear: won, opp: rosterEntry('opp'), stage: AR.i + 1, of: AR.list.length };
+    if (won) arcadeRestore();
+    ui.hideResult();
+    menu.arcadeOver(info);
+  }
+  function arcadeRestore() {
+    if (!AR) return;
+    const k = AR.keep;
+    CFG.roster.opp = k.opp; CFG.match.rounds = k.rounds; CFG.match.opponent = k.opponent;
+    for (const key in k.phase) CFG.chars[key].phase = k.phase[key];
+    for (const p in CFG_HELD) delete CFG_HELD[p];
+    AR = null;
+    rosterSync(); ui.names(oppName(), rosterAccent('opp')); ui.tuner.refresh(); ui.tuner.save();
+    resetAll();
   }
 
   // ---- a story match (overworld.js asks for it, and hears how it went) ----
@@ -16137,6 +16719,10 @@ function createMenu(doc, opts) {
     const you = kiruOn() ? kiru.body : null;
     FIN.W = winner === 'kage' ? kage.body : you;
     FIN.L = v ? (winner === 'kage' ? you : kage.body) : null;
+    // whoever isn't Kiru or Kage plays their own victory scene (victory.js), in their own colour
+    const vy = victoryOf('you'), vo = v ? victoryOf('opp') : null, ey = rosterEntry('you'), eo = rosterEntry('opp');
+    FIN.own = !!(winner === 'kage' ? vo : vy) && !!FIN.W;
+    finaleColours(vy ? ey.accent : null, vo ? eo.accent : null, !!(vy && vy.hold), !!(vo && vo.hold));
     finale.start(FIN);
     finale.fitFor(cam);
     ui.showResult(s); // the layer over the show: it takes the taps, and a screen reader hears who won
@@ -16148,14 +16734,22 @@ function createMenu(doc, opts) {
     else if (c === 'slash1') audio.special('shadow'); // the moves' own sounds: the cuts are blades and the uppercut thunder, whoever throws them
     else if (c === 'slash2') { audio.special('shadow'); audio.vibrate([20, 30, 30]); }
     else if (c === 'strike') { audio.special('thunder'); audio.vibrate([25, 30, 40]); }
+    else if (c === 'flourish') { // their own move starts: the sound of their own special
+      const e = rosterEntry(kg ? 'opp' : 'you'), k = Math.round(CFG.chars[e.key].special) || 0;
+      if (k > 0) audio.superCast(k); else audio.special(e.sig === 'shadow' ? 'shadow' : 'thunder');
+      audio.vibrate([18, 24, 30]);
+    }
     else if (c === 'defeat') audio.finale('defeat', FINALE.big(finale.kind) ? 1 : 0);
     else if (c === 'charge') audio.finale('powerUp', kg, (FINALE.BURST - FINALE.CHARGE) / sp);
     else if (c === 'burst') { audio.finale('victory', kg); audio.vibrate([30, 40, 70]); }
     else if (c === 'charge2') audio.finale('powerUp', kg, (FINALE.BURST2 - FINALE.CHARGE2) / sp);
     else if (c === 'burst2') { audio.finale('fanfare', kg); audio.vibrate([40, 30, 90, 30, 140]); }
     else if (c === 'firework') audio.finale('firework', kg);
-    else if (c === 'ready') ui.resultReady(SM && rules.snap.matchOver ? 'Continue' : finale.next); // a story match: back to the school
+    else if (c === 'ready') ui.resultReady(SM && rules.snap.matchOver ? 'Continue' : AR && rules.snap.matchOver ? arcadeWord() : finale.next); // a story match: back to the school
   }
+
+  // an arcade match's end: on to the next one, the last one won, or lost
+  const arcadeWord = () => (versus.snap.winner !== 'you' ? 'Continue' : AR.i + 1 < AR.list.length ? 'Next match' : 'Finish');
 
   // The court's size is on the Feel panel (pole, rope, ball): a change re-ties the rope and replays the round. The tie point
   // stays just under the pole top and the court ring just outside the rope's reach.
@@ -16435,7 +17029,7 @@ function createMenu(doc, opts) {
   if (!PROD || navigator.webdriver) window.__tb = {
     CFG, world, cam, tw, fx, game, versus, energy, supers, fire, legends, pace, kage, kiru, finale, input, scene, audio, ui, menu, perf, swing, special: armSpecial, fireball: armFire,
     get rules() { return rules; },
-    roster: { reveal: rosterReveal, sync: rosterSync, entry: rosterEntry, form: rosterForm, setYou: rosterSetYou }, // roster.js, for tests
+    roster: { reveal: rosterReveal, sync: rosterSync, entry: rosterEntry, form: rosterForm, setYou: rosterSetYou, by: ROSTER_BY, all: ROSTER, ladder: arcadeLadder, arcadePlays }, // roster.js, arcade.js, for tests
     get paceT() { return paceT; }, // the pace clock, ms
     get kageSide() { return kageSide; }, // Kage's half this match (−1 left, +1 right): the halves the hit rule reads
     manual(b) { manual = b !== false; },
@@ -16463,6 +17057,8 @@ function createMenu(doc, opts) {
     story, // story mode (overworld.js), its script and its school, for tests (null in the prod version)
     storyData: PROD ? null : { STEPS: STORY_STEPS, MATCH: STORY_MATCH, SCHOOL, spot: schoolSpot, route: schoolRoute, hit: schoolHit, phase: storyPhase },
     get storyMatch() { return SM; },
+    get arcade() { return AR; }, arcadeStart, arcadeNext, // the arcade (tests)
+    victory: { VICTORY, of: victoryOf, glow: finaleGlow, pal: finalePal, own: FINALE_OWN }, // the victory scenes and their colours (tests)
     // advance the school by ms in 1/60 s frames (drawing the last), as the frame loop does while you walk it
     storyAdvance(ms) { const n = Math.max(1, Math.round(ms / 16.667)); for (let i = 0; i < n; i++) story.frame(1 / 60, i < n - 1); },
     musicWanted, // the track the music should be on now (see above)
