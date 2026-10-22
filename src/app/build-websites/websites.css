@@ -1427,11 +1427,17 @@
   }
 }
 
-/* ── The guides wall ────────────────────────────────────────────────────── */
+/* ── The samples wall ───────────────────────────────────────────────────── */
 /* On the Build pages' band (build-band.css), which sets its spacing. */
-.bw-guides {
+.bw-samples {
+  --bs-ratio: 8 / 5;
   content-visibility: auto;
-  contain-intrinsic-size: auto 560px;
+  contain-intrinsic-size: auto 1400px;
+}
+@media (min-width: 64rem) {
+  .bw-samples {
+    contain-intrinsic-size: auto 760px;
+  }
 }
 .bw-h2 {
   margin-top: 0.5rem;
@@ -1439,17 +1445,16 @@
   line-height: 1.1;
   color: var(--sd-text-primary);
 }
-.bw-guides-lede {
+.bw-samples-lede {
   margin-top: 0.6rem;
   max-width: 36rem;
   font-size: 1.02rem;
   line-height: 1.6;
   color: var(--sd-text-secondary);
 }
-/* A shoji screen: the grid's gaps are its kumiko, the cells its panes. */
+/* A shoji screen: the grid's gaps are its kumiko, the cells its panes. The
+   grid itself is the samples list's (build-samples.css). */
 .bw-shoji {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 7px;
   margin-top: 1.4rem;
   padding: 9px;
@@ -1486,9 +1491,6 @@
 }
 .bw-pane {
   position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 8.5rem;
   border-radius: 3px;
   background-color: #fbf6ea;
   background-image:
@@ -1513,85 +1515,4 @@
     ),
     var(--sd-noise);
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
-}
-@media (min-width: 48rem) {
-  .bw-pane {
-    min-height: 13rem;
-  }
-}
-.bw-pane-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0.5rem;
-}
-.bw-enso {
-  width: min(62%, 7rem);
-  height: auto;
-  color: var(--sd-pen);
-  opacity: 0.88;
-}
-.bw-pane-note {
-  font-family: var(--font-read);
-  font-size: 0.8rem;
-  font-style: italic;
-  line-height: 1.3;
-  text-align: center;
-  color: #5e5140;
-}
-:root[data-theme='dark'] .bw-pane-note {
-  color: #a6abc8;
-}
-@media (min-width: 48rem) {
-  .bw-pane-note {
-    font-size: 0.95rem;
-  }
-}
-.bw-shoji-list {
-  list-style: none;
-}
-@media (max-width: 47.99rem) {
-  .bw-shoji-list {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .bw-shoji-list .bw-pane {
-    min-height: 0;
-  }
-  .bw-pane-blank {
-    display: none;
-  }
-}
-.bw-guide {
-  display: grid;
-  align-content: start;
-  gap: 0.45rem;
-  width: 100%;
-  height: 100%;
-  padding: 1.15rem 1.2rem 1.25rem;
-  border-radius: 3px;
-  color: var(--sd-text-primary);
-}
-.bw-guide-date {
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--sd-pen-ink);
-}
-.bw-guide-title {
-  font-size: 1.2rem;
-  line-height: 1.2;
-}
-.bw-guide-sum {
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: var(--sd-text-secondary);
-}
-.bw-guide-go {
-  margin-top: 0.3rem;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--sd-accent);
 }

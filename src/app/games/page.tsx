@@ -111,7 +111,7 @@ export default function Arcade() {
         </header>
 
         {/* Free play: Kiru's Rooftop Run */}
-        <section className="rr" aria-labelledby="rr-title" data-market="">
+        <section id="rooftop-run" className="rr" aria-labelledby="rr-title" data-market="">
           <Kiru pose="game" className="rr-kiru" />
           <div className="rr-cab">
             <div className="rr-marquee">

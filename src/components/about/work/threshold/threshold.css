@@ -345,6 +345,12 @@
   font-weight: 800;
   color: #b42a17;
 }
+/* The line under the total (Mistakes): the total's rule is enough. */
+.au-rc-note {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
+}
 .au-rc-foot {
   margin-top: 0.55rem;
   padding-right: 3rem;

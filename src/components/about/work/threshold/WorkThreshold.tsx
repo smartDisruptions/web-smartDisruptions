@@ -1,16 +1,7 @@
-import Link from 'next/link';
 import { Slash } from '@/components/brand/Kanji';
 import { Glyph, GlyphSeal } from '@/components/about/work/glyphs';
 import Noren from '@/components/about/Noren';
-import { getFieldNotes } from '@/lib/fieldNotes';
-import { marketStormReports } from '@/data/marketStorm';
-import {
-  WORK_IDS,
-  catalogue,
-  featured,
-  games,
-  wall,
-} from '@/components/about/work/data';
+import { WORK_IDS, counts } from '@/components/about/work/data';
 import ThresholdFX from './ThresholdFX';
 import './threshold.css';
 
@@ -37,36 +28,20 @@ import './threshold.css';
  * Last, the cue: a real link to the first room (#projects), with a brushed
  * arrow that inks itself down when you reach it.
  *
- * The receipt's counts are read from the site's own data at build time, so
- * they can't drift from the sections they open: the four projects,
- * everything else and the games are this page's own sections (their sum is
- * the wall), and Notes counts what /content lists (posts plus the pinned
- * guide). Styles: ./threshold.css (au-, new parts au-th-).
+ * The receipt counts websites, apps and games, and nothing else (Josh's
+ * call, 2026-10-21), with their total. The counts are read from the site's
+ * own data at build time (`counts` in ../data.ts), so they can't drift from
+ * the sections they open: Websites opens the four, where the first two
+ * websites hang (the other three lead More builds), Apps opens More builds
+ * and Games the games. Styles: ./threshold.css (au-, new parts au-th-).
  */
 export default function WorkThreshold() {
   const lines = [
-    {
-      href: `#${WORK_IDS.projects}`,
-      label: 'Projects, start to finish',
-      n: featured.length,
-    },
-    {
-      href: `#${WORK_IDS.more}`,
-      label: 'More builds',
-      n: catalogue.length,
-    },
-    { href: `#${WORK_IDS.games}`, label: 'Games', n: games.length },
-    {
-      href: '/content',
-      label: 'Notes from the bench',
-      n: getFieldNotes().length,
-    },
-    {
-      href: '/market-storm',
-      label: 'Market Storm reports',
-      n: marketStormReports.length,
-    },
+    { href: `#${WORK_IDS.projects}`, label: 'Websites', n: counts.websites },
+    { href: `#${WORK_IDS.more}`, label: 'Apps', n: counts.apps },
+    { href: `#${WORK_IDS.games}`, label: 'Games', n: counts.games },
   ];
+  const total = lines.reduce((sum, l) => sum + l.n, 0);
 
   return (
     <header className="au-hero">
@@ -115,34 +90,33 @@ export default function WorkThreshold() {
             {lines.map((l) => (
               <li key={l.href}>
                 {/* Named by what it shows ("Games 12"), so the spoken name
-                    matches the printed one (WCAG 2.5.3). A line that opens a
-                    section of this page is a plain anchor: through next/link
-                    a same-page jump became a router navigation wrapped in a
-                    full-page view transition, so the page froze for the
-                    capture and cross-faded instead of simply scrolling. */}
-                {l.href.startsWith('#') ? (
-                  <a href={l.href} className="au-rc-line">
-                    <span>{l.label}</span>
-                    <span className="au-rc-dots" aria-hidden />
-                    <b>{l.n}</b>
-                  </a>
-                ) : (
-                  <Link href={l.href} className="au-rc-line">
-                    <span>{l.label}</span>
-                    <span className="au-rc-dots" aria-hidden />
-                    <b>{l.n}</b>
-                  </Link>
-                )}
+                    matches the printed one (WCAG 2.5.3). Each line opens a
+                    section of this page, so it is a plain anchor: through
+                    next/link a same-page jump became a router navigation
+                    wrapped in a full-page view transition, so the page froze
+                    for the capture and cross-faded instead of simply
+                    scrolling. */}
+                <a href={l.href} className="au-rc-line">
+                  <span>{l.label}</span>
+                  <span className="au-rc-dots" aria-hidden />
+                  <b>{l.n}</b>
+                </a>
               </li>
             ))}
           </ul>
           <p className="au-rc-total">
+            <span>Total</span>
+            <span className="au-rc-dots" aria-hidden />
+            <b>{total}</b>
+          </p>
+          {/* Not a count, so it sits under the total, not beside it. */}
+          <p className="au-rc-total au-rc-note">
             <span>Mistakes</span>
             <span className="au-rc-dots" aria-hidden />
             <b>Included. Always.</b>
           </p>
           <p className="au-rc-foot">
-            Receipts over claims. {wall.length} things, all on one wall.
+            Receipts over claims. All of it, on one wall.
           </p>
           <GlyphSeal char="作" className="au-rc-seal" />
         </div>

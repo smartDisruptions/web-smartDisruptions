@@ -1,0 +1,138 @@
+/*
+  The samples on the Build pages (SampleCard.tsx). Each room draws its own
+  frame round the cards (websites.css, build-games.css, build-apps.css); this
+  is the card inside it and the grid they sit in. Three across from 64rem; a
+  single column below that, where a tablet lays each card on its side.
+
+  --bs-ratio: the picture's shape, set by the room (its screenshots' shape).
+*/
+.bs-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  list-style: none;
+}
+@media (min-width: 64rem) {
+  .bs-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.bs-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.75rem 0.75rem 1.2rem;
+}
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .bs-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 1.4rem;
+    padding: 0.85rem 1.4rem 0.85rem 0.85rem;
+  }
+}
+
+/* The picture, set in the card like a print in a mount. */
+.bs-pic {
+  overflow: clip;
+  border-radius: 3px;
+  aspect-ratio: var(--bs-ratio, 40 / 21);
+  background-color: #14161f;
+  box-shadow:
+    0 0 0 1px var(--sd-border-strong),
+    0 10px 22px -14px var(--sd-card-shadow);
+}
+.bs-pic img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+/* Three tall screenshots side by side make one wide picture. */
+.bs-pic-panels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+}
+.bs-pic-panels img {
+  object-position: top center;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .bs-pic img {
+    transition: scale 0.6s var(--ease-out-expo);
+  }
+  .bs-card:hover .bs-pic img {
+    scale: 1.035;
+  }
+}
+
+.bs-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-inline: 0.45rem;
+}
+.bs-kind {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-pen-ink);
+}
+.bs-name {
+  font-size: 1.3rem;
+  line-height: 1.15;
+  color: var(--sd-text-primary);
+}
+.bs-sum {
+  font-size: 0.97rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+/* Pushed to the foot of the card, so the links line up across a row. */
+.bs-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.3rem;
+  margin-top: auto;
+  padding-top: 0.45rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+.bs-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  color: var(--sd-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+.bs-links a:hover {
+  text-decoration-color: currentColor;
+}
+/* The link to the thing reaches over the whole card, so the picture opens
+   it too; "How I built it" sits above it. */
+.bs-go::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+.bs-go:focus-visible {
+  outline: none;
+}
+.bs-go:focus-visible::after {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: 3px;
+}
+.bs-how {
+  position: relative;
+  z-index: 2;
+}

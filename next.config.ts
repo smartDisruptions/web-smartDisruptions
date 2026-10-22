@@ -104,6 +104,14 @@ const nextConfig: NextConfig = {
           source: '/games/tether-ball',
           destination: '/games/tether-ball/index.html',
         },
+        // Gilt & Lather Barber Co.: a website for a barbershop that does not
+        // exist, one of the Samples on /build-websites. Built in the vault
+        // (Tools/gilt-and-lather) with --base=/demo/gilt-and-lather/, so its
+        // images, icons and grain tile load from absolute paths beside it.
+        {
+          source: '/demo/gilt-and-lather',
+          destination: '/demo/gilt-and-lather/index.html',
+        },
         // The Broom & Blade Arcade's five machines: the same, one file each.
         ...['hoop-quest', 'kid-volt-knockout', 'whack-a-dust-bunny', 'ring-toss', 'milk-bottle-knockdown'].map((name) => ({
           source: `/games/${name}`,
