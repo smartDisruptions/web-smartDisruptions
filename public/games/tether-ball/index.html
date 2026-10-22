@@ -6089,7 +6089,13 @@ function createVersus() {
 }
 
 // ════════ pace.js ════════
-// pace.js — the hit delay: two quick hits, then a beat before the next (Josh's eleventh ask, 2026-10-16).
+// pace.js — how often a player may hit: once per turn (Josh, 2026-10-22), or the hit delay before it (2026-10-16).
+//
+// Once per turn (CFG.pace.turn, the default): each time the ball comes to your side you may hit it once, and there is no delay.
+// Your hit spends your turn; it comes back when the ball reaches the other half (the half across from where you hit it, so the
+// solo time trial is once per half lap), when the other player touches it, or when the ball has died (slower than 1.2 m/s for
+// half a second, which main.js's side rule already lets anyone hit). The hook's free hits neither ask nor mark it. Off, the
+// delay below is the rule again:
 //
 // Swipe after swipe while the ball is in reach was the cheapest way to pile on speed, and it is no game. So a player may land
 // `burst` hits in rapid succession, each within `quickMs` of the one before; after that run the next hit needs `waitMs` since
@@ -6100,52 +6106,76 @@ function createVersus() {
 // stopwatch counts it, so a hit-stop freeze counts and a hidden tab does not); the Node balance runs pass their sim time.
 
 CFG.pace = {
-  on: 1, // 1 = the delay is on
+  turn: 1, // 1 = once per turn: one hit each time the ball comes to your side, no delay (the delay's rows below then do nothing)
+  on: 1, // 1 = the delay is on (when once per turn is off)
   burst: 1, // quick hits allowed in a row before it (Josh's 1, 150 and 725, 2026-10-18: a run of one, so each of your hits makes
   // the next of yours wait 725 ms unless the other player touches the ball between, and quickMs no longer matters; 2/450/400 before)
   quickMs: 150, // a hit within this long of your last one is a quick one
   waitMs: 725, // the delay: after a run of quick hits, the next one needs this long since your last
-  kage: 1, // 1 = Kage waits too
-  cue: 1, // 1 = a ring round the ball shows your delay running out
+  kage: 1, // 1 = Kage plays by it too
+  cue: 1, // 1 = a ring round the ball shows your delay running out, or, once per turn, that your hit this turn is spent
 };
 CFG_SCHEMA.push(
-  { path: 'pace.on', label: 'Delay after quick hits', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit delay', rank: -2.9, unit: '' },
-  { path: 'pace.burst', label: 'Quick hits before it', min: 1, max: 5, step: 1, group: 'Hit delay', rank: -2.9, unit: '' },
-  { path: 'pace.waitMs', label: 'Delay', min: 50, max: 1500, step: 25, group: 'Hit delay', rank: -2.9, unit: 'ms' },
-  { path: 'pace.quickMs', label: 'Quick means within', min: 150, max: 1200, step: 25, group: 'Hit delay', rank: -2.9, unit: 'ms' },
-  { path: 'pace.kage', label: 'Kage waits too', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit delay', rank: -2.9, unit: '' },
-  { path: 'pace.cue', label: 'Show the delay', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit delay', rank: -2.9, unit: '' }
+  { path: 'pace.turn', label: 'Once per turn', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit rule', rank: -2.9, unit: '' },
+  { path: 'pace.on', label: 'Delay after quick hits', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit rule', rank: -2.9, unit: '' },
+  { path: 'pace.burst', label: 'Quick hits before it', min: 1, max: 5, step: 1, group: 'Hit rule', rank: -2.9, unit: '' },
+  { path: 'pace.waitMs', label: 'Delay', min: 50, max: 1500, step: 25, group: 'Hit rule', rank: -2.9, unit: 'ms' },
+  { path: 'pace.quickMs', label: 'Quick means within', min: 150, max: 1200, step: 25, group: 'Hit rule', rank: -2.9, unit: 'ms' },
+  { path: 'pace.kage', label: 'Kage plays by it too', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit rule', rank: -2.9, unit: '' },
+  { path: 'pace.cue', label: 'Show the ring', type: 'toggle', min: 0, max: 1, step: 1, group: 'Hit rule', rank: -2.9, unit: '' }
 );
 
 function createPace() {
-  // per player: hits in the current run, and when the last one landed (ms on the caller's clock)
-  const S = { you: { n: 0, at: -1e9 }, kage: { n: 0, at: -1e9 } };
+  const NEUTRAL = 0.06, DEAD = 1.2, DEAD_MS = 500; // m either side of the centre line; a ball slower than this, this long, has died
+  const TURN = 1e9; // what wait() says while a turn's hit is spent: until the ball comes back, not a time
+  // per player: hits in the current run, and when the last one landed (ms on the caller's clock); and, once per turn, whether
+  // this turn's hit is spent and the half it was hit from (−1 yours, +1 Kage's, as x · Kage's side reads)
+  const S = { you: { n: 0, at: -1e9, used: false, from: -1 }, kage: { n: 0, at: -1e9, used: false, from: 1 }, deadAt: -1 };
   const run = () => Math.max(1, Math.round(CFG.pace.burst) || 1);
-  const applies = (k) => CFG.pace.on > 0 && (k !== 'kage' || CFG.pace.kage > 0);
+  const turn = () => CFG.pace.turn > 0;
+  const applies = (k) => (turn() || CFG.pace.on > 0) && (k !== 'kage' || CFG.pace.kage > 0);
 
-  // ms before k may hit again (0: now). A bad number from the panel fails open: nobody waits.
+  // ms before k may hit again (0: now; once per turn, a spent turn is TURN). A bad number from the panel fails open: nobody waits.
   function wait(k, t) {
     const s = S[k];
-    if (!s || !applies(k) || s.n < run()) return 0;
+    if (!s || !applies(k)) return 0;
+    if (turn()) return s.used ? TURN : 0;
+    if (s.n < run()) return 0;
     const left = CFG.pace.waitMs - (t - s.at);
     return left > 0 ? left : 0;
   }
-  // how much of k's delay is left, 1 → 0 (the ring round the ball)
+  // how much of k's delay is left, 1 → 0 (the ring round the ball); once per turn, 1 while this turn's hit is spent
   function left(k, t) {
+    if (turn()) return wait(k, t) > 0 ? 1 : 0;
     const W = CFG.pace.waitMs, l = W > 0 ? wait(k, t) / W : 0;
     return l > 1 ? 1 : l;
   }
-  // k's hit landed at t: it carries on their run (or starts a new one, after a slow gap or a delay served) and ends the other's
-  function onHit(k, t) {
+  // k's hit landed at t, the ball at x (its x · Kage's side): it carries on their run (or starts a new one, after a slow gap or a
+  // delay served) and ends the other's; and it spends k's turn and gives the other theirs
+  function onHit(k, t, x) {
     const s = S[k];
     if (!s) return;
     s.n = s.n >= run() || !(t - s.at <= CFG.pace.quickMs) ? 1 : s.n + 1;
     s.at = t;
-    S[k === 'you' ? 'kage' : 'you'].n = 0;
+    s.used = true; s.from = x < -NEUTRAL ? -1 : x > NEUTRAL ? 1 : k === 'kage' ? 1 : -1; // (on the line: from the hitter's own side)
+    const o = S[k === 'you' ? 'kage' : 'you'];
+    o.n = 0; o.used = false;
   }
-  function reset() { S.you.n = 0; S.you.at = -1e9; S.kage.n = 0; S.kage.at = -1e9; }
+  // every step, once the ball has moved: x is the ball's x · Kage's side, speed its speed (m/s), t the clock (ms). A turn comes
+  // back when the ball reaches the half across from where it was hit, or once the ball has died
+  function watch(x, speed, t) {
+    if (S.you.used && x * S.you.from < -NEUTRAL) S.you.used = false;
+    if (S.kage.used && x * S.kage.from < -NEUTRAL) S.kage.used = false;
+    if (!(speed < DEAD)) { S.deadAt = -1; return; }
+    if (S.deadAt < 0) S.deadAt = t;
+    else if (t - S.deadAt >= DEAD_MS) { S.you.used = false; S.kage.used = false; }
+  }
+  function reset() {
+    S.you.n = 0; S.you.at = -1e9; S.you.used = false; S.you.from = -1;
+    S.kage.n = 0; S.kage.at = -1e9; S.kage.used = false; S.kage.from = 1; S.deadAt = -1;
+  }
 
-  return { wait, left, onHit, reset, snap: S };
+  return { wait, left, onHit, watch, reset, snap: S, get turn() { return turn(); } };
 }
 
 // ════════ energy.js ════════
@@ -12131,17 +12161,19 @@ function createKage(doc) {
   // its next lap, standing still while it went by, and against a player who hits every ball straight back that lap never comes
   // (Josh, 2026-10-18: "the computer freezes and doesnt return the ball"). Now he goes for this pass: in time if he can, else a late
   // hand when its nearest miss is within his fist's slack, else he runs at it anyway. The next lap is read once this one is gone.
-  function read(w, serving, free) {
+  // spent: once per turn (pace.js), his hit this turn is spent, so nothing on his half counts until the ball has been on yours
+  function read(w, serving, free, spent) {
     predict(w);
     if (FAKE.phi || FAKE.y) fake(w);
     geom();
     const r = w.ball.r, wait = free > 0 ? free : 0, slack = G.reachC + 0.12 - (G.so - G.shOff); // slack: how far short of his spot his fist still finds it
     st.has = false;
     const D = dbg; D.n++; D.mine = 0;
-    let lateX = NaN, lateZ = NaN, seen = false, best = Infinity;
+    let lateX = NaN, lateZ = NaN, seen = false, best = Infinity, away = !(spent && !serving);
     for (let i = 0; i < np; i++) {
       const t = (i + 1) * DTP, x = PX[i], y = PY[i], z = PZ[i];
-      if (x * st.side < -NEUTRAL) { if (seen) break; continue; } // your half (and once a ball has come through his, the end of this pass)
+      if (x * st.side < -NEUTRAL) { away = true; if (seen) break; continue; } // your half (and once a ball has come through his, the end of this pass)
+      if (!away) continue; // still the pass he has hit
       if (y + r < 0.12) continue;
       D.mine++;
       const jump = y > G.standY ? y - G.standY + 0.04 : 0;
@@ -12227,7 +12259,8 @@ function createKage(doc) {
 
   // info: { state: the rules' state ('ready' | 'playing' | 'wound'), server: 'you' | 'kage', armed: his special is armed,
   // and the fire's: down (s he is still down), slow (× slower through this turn, 1 = not), hot (the ball is your fireball),
-  // fireId (which fire it is), dodge (he may let one go by) }. Returns a hand to try, or null.
+  // fireId (which fire it is), dodge (he may let one go by), spent (once per turn, his hit this turn is spent) }. Returns a hand
+  // to try, or null.
   function update(dt, realDt, w, info) {
     st.slowK = info && info.slow > 1 ? info.slow : 1; st.downLeft = info && info.down > 0 ? info.down : 0;
     FAKE.phi = info && info.fakePhi ? info.fakePhi : 0; FAKE.y = info && info.fakeY ? info.fakeY : 0;
@@ -12291,7 +12324,7 @@ function createKage(doc) {
         if (blindBall) st.has = false;
         const may = serving ? st.serveT > SERVE_WAIT : st.blind <= 0 && !st.dodge && !blindBall;
         if (st.dodge && !serving) { st.has = false; st.sx = st.homeX; st.sz = st.homeZ; } // out of its way, back where he waits
-        else if (may && st.reread <= 0) { read(info && info.fakeWorld ? info.fakeWorld : w, serving, st.cool); st.reread = SK.reread; } // a decoy on its own path: he reads that one (and no contact before he has settled)
+        else if (may && st.reread <= 0) { read(info && info.fakeWorld ? info.fakeWorld : w, serving, st.cool, !!(info && info.spent)); st.reread = SK.reread; } // a decoy on its own path: he reads that one (and no contact before he has settled)
         if (st.has && st.t > st.tc + 0.03) st.has = false;
         steer(st.has || st.sx || st.sz ? st.sx : st.homeX, st.has || st.sx || st.sz ? st.sz : st.homeZ, dt);
         if (st.has && st.cool <= 0 && st.t >= st.tc - st.lead) {
@@ -15428,10 +15461,13 @@ function createMenu(doc, opts) {
 // from it (their update info's ft), and its cues are played here (finaleCue). The round card is an invisible layer now (ui.js):
 // a tap skips the show, and once it is over a tap starts the next round.
 //
-// The hit delay (pace.js, the Feel panel's Hit delay group) holds in both: two quick hits, then a beat before the next. tryHit
-// asks it on the pace clock (paceT: real ms as the stopwatch counts them), which the 140 ms debounce reads too. While your delay
-// runs, a ring round the ball empties and Kiru drops out of his ready stance; a swipe through the ball in it flashes the ring
-// (and the first time in a match, a word on why). Kage waits too, by the setting.
+// The hit rule (pace.js, the Feel panel's Hit rule group) holds in both. Once per turn, the default (Josh, 2026-10-22): each time
+// the ball comes to your side you may hit it once; the step watches the ball (pace.watch) to give the turn back when it reaches
+// the other half. Off, the hit delay: two quick hits, then a beat before the next. tryHit asks it on the pace clock (paceT: real
+// ms as the stopwatch counts them), which the 140 ms debounce reads too. While your turn is spent (on a ball you could otherwise
+// hit) or your delay runs, a ring round the ball shows it and Kiru drops out of his ready stance; a swipe through the ball then
+// flashes the ring (and the first time in a match, a word on why). Kage plays by it too, by the setting, and his brain knows a
+// spent turn: he plans for the ball's next pass.
 //
 // Story mode (overworld.js, story.js, school.js) draws the school on this same canvas while you walk it: the court waits, and its
 // HUD is hidden. A match the story starts (SM) is played here: who plays each side, the opponent's phase (their meeting in the
@@ -15552,7 +15588,7 @@ function createMenu(doc, opts) {
   const ballScr = { x: 0, y: 0, s: 0, d: 0 };
   const tick = { speed01: 0, pan: 0, timeScale: 1, fire: 0 };
   const SCHOOL_TICK = { speed01: 0, pan: 0, timeScale: 1, fire: 0 }; // the audio's frame in the school: no ball, full speed
-  const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false, fireArmed: false, ft: -1 };
+  const info = { state: 'ready', server: 'you', armed: false, down: 0, slow: 1, hot: false, fireId: 0, dodge: false, fireArmed: false, ft: -1, spent: false };
   const kinfo = { ready: false, armed: false, fire: false, down: 0, slowed: false, ft: -1 }, kiruHit = { half: false, kage: null, special: false };
   let toldHot = false, toldVolley = false, toldHole = false; // shown this match: the "let it pass" hint for Kage's fireball, the first fire volley's, his black hole's
   const FIRE_EV = { type: 'fire', at: world.ball.p, word: '' }; // the burst as the ball catches fire (fx.event)
@@ -15754,7 +15790,7 @@ function createMenu(doc, opts) {
       return null;
     }
     if (you) lastHitAt = paceT;
-    if (!free) pace.onHit(k, paceT);
+    if (!free) pace.onHit(k, paceT, world.ball.p.x * kageSide); // (where it was hit: the turn comes back on the half across)
     res.owner = you ? 'you' : 'cpu';
     res.charged = heavy;
     rules.onHit(res, who);
@@ -16045,7 +16081,7 @@ function createMenu(doc, opts) {
     paceFlash = paceT;
     if (toldPace) return;
     toldPace = true;
-    ui.hint('Wait a beat'); hintUntil = now + 1200;
+    ui.hint(pace.turn ? 'One hit per turn' : 'Wait a beat'); hintUntil = now + 1200;
   }
 
   function pumpInput(now) {
@@ -16203,6 +16239,7 @@ function createMenu(doc, opts) {
       const kk = supers.kindOf('kage'); info.armCol = kk ? SUPERS[kk].glow : ''; info.armCol2 = kk ? SUPERS[kk].mid : '';
       if (legends.holding('kage', energy.full('kage'))) info.armed = true; // holding his black hole: he glows with it
       info.power = supers.powerK('kage'); // powering up for a blast, or powered up: he glows in the fire's colours
+      info.spent = pace.turn && pace.wait('kage', paceT) > 0; // once per turn, his hit this turn is spent: he plans for the next pass
       const hand = kage.update(simDt, realDt, world, info);
       if (kage.st.struck && kage.st.ts !== kageStruck) { kageStruck = kage.st.ts; if (!hand && supers.kageWhiffed()) audio.superFx('pop'); } // his swing went through your decoy
       if (kage.st.phase === 'swing' && kage.st.ts !== kageSwing) { // he weighs his special as a swing starts, so it shows on him before the fist lands
@@ -16244,7 +16281,10 @@ function createMenu(doc, opts) {
     }
     kiruWas = kiruOn();
     if (vs()) { syncBodies(); supers.force(world, simDt, bodies, kageSide); legends.force(world, simDt, bodies); } // a super's forces go into the ball before the physics (which never sees them, nor does Kage's look-ahead)
-    if (simDt > 0 && !(vs() && legends.holdsBall)) advance(world, simDt); // (a black hole holds the ball still while it has it)
+    if (simDt > 0 && !(vs() && legends.holdsBall)) { // (a black hole holds the ball still while it has it)
+      advance(world, simDt);
+      pace.watch(world.ball.p.x * kageSide, world.ball.speed, paceT); // once per turn: has the ball reached the other half?
+    }
     onEvents(now);
     if (vs()) { // fire volleys: a miss decides one; a fireball let go by goes out
       const fe = fire.update(simDt, realDt, world, versus.state === 'playing' && world.state === 'live', kageSide);
@@ -16300,8 +16340,10 @@ function createMenu(doc, opts) {
       view.noTrail = vs() && supers.noTrail();
       view.attacks = vs() ? ATTACKS : null; // the four and the big three: on the floor under the players (drawFloor), and over them (drawOver)
       view.quake = vs() ? supers.quakeK() : 0; // a stomp: the ground shakes under them
-      const cue = CFG.pace.cue > 0 && world.state === 'live'; // your hit delay: a ring round the ball, emptying; a swipe into it flashes it
-      view.paceK = cue ? pace.left('you', paceT) : 0;
+      // your hit delay: a ring round the ball, emptying; once per turn, a full one while your turn is spent on a ball you could
+      // otherwise hit (on your half or the line). A swipe into it flashes it
+      const cue = CFG.pace.cue > 0 && world.state === 'live';
+      view.paceK = cue && (!pace.turn || mayHit()) ? pace.left('you', paceT) : 0;
       view.paceF = cue ? Math.max(0, 1 - (paceT - paceFlash) / 260) : 0;
       view.finale = finale.on ? finale : null; // the show: behind the players, on the floor, over them
       view.smooth = finale.on && cam.zoom !== 1; // its push-in holds for seconds: the court resampled smooth, not in the hit's quick nearest-neighbour
@@ -16395,6 +16437,7 @@ function createMenu(doc, opts) {
     get rules() { return rules; },
     roster: { reveal: rosterReveal, sync: rosterSync, entry: rosterEntry, form: rosterForm, setYou: rosterSetYou }, // roster.js, for tests
     get paceT() { return paceT; }, // the pace clock, ms
+    get kageSide() { return kageSide; }, // Kage's half this match (−1 left, +1 right): the halves the hit rule reads
     manual(b) { manual = b !== false; },
     // advance REAL time by ms in 1/60 s frames (with drawing on the last one)
     advance(ms) {
@@ -16404,8 +16447,8 @@ function createMenu(doc, opts) {
     },
     // a synthetic swipe through the ball along (dx,dz) at `speed` m/s, via the real hit path (the half rule is the finger's, not this hook's);
     // curl: as if its swing had curved enough, −1 counter-clockwise (the special; true means the same) or +1 clockwise (the power-up).
-    // Tests may chain these freely: they skip the debounce and the hit delay, and leave no mark on the delay. gate: true holds this
-    // one to both, as a finger is, on the pace clock (__tb.advance moves it).
+    // Tests may chain these freely: they skip the debounce and the hit rule, and leave no mark on it. gate: true holds this one to
+    // both, as a finger is, on the pace clock (__tb.advance moves it).
     hit(dx, dz, speed, curl, gate) {
       const l = Math.hypot(dx, dz) || 1, ux = dx / l, uz = dz / l, b = world.ball.p;
       const h = handBuf;
