@@ -10160,8 +10160,9 @@ function createFinale(doc) {
 // sheet's units (x 0..200, the hood centred on (100, 90), the soles on y = 231.5). A "look" says what goes on it: Kage-X's
 // dark gi and magenta neon (kage.js), Kiru's blue gi and vermilion headband (kiru.js).
 //
-// The parts that never bend (the head in each of the look's expressions, the torso, the katana on the back) are baked once per
-// size into small canvases, glow included (shadowBlur at bake time only, never per frame). What moves is drawn live with plain
+// The parts that never bend (the head in each of the look's expressions, the torso, the katana on the back) are baked into small
+// canvases with room to grow (ensureArt), glow included (shadowBlur at bake time only, never per frame), and a rebake reuses them
+// (it once made new ones every time, and froze iPhones: ensureArt). What moves is drawn live with plain
 // strokes: the headband tails, both arms, both legs and the shoes. So a frame of a character is three drawImage calls and ~20
 // strokes. A look that needs them also gets whole-body silhouettes of named poses in its ghost colour (afterimages: one
 // drawImage each) and a scratch canvas for a one-colour pass over any pose (the white flash of an arrival, a glow, clones).
@@ -10199,14 +10200,20 @@ function createNinja(doc, look) {
   const NOBOX = {}, HEAD_BOX = [8, 6, 196, 168], TORSO_BOX = [54, 134, 146, 214], BACK_BOX = [16, 102, 172, 236]; // the rig's own boxes (Kiru's art)
   const hasCanvas = !!(doc && doc.createElement && typeof Path2D !== 'undefined');
 
-  function part(x0, y0, x1, y1, k) {
-    const c = doc.createElement('canvas');
-    c.width = Math.max(1, Math.ceil((x1 - x0) * k)); c.height = Math.max(1, Math.ceil((y1 - y0) * k));
-    const g = c.getContext('2d');
+  // a canvas for one baked part, k device px per sheet unit. `old`, the part it replaces, lends its canvas, so a rebake reuses the
+  // canvases it has instead of leaving them to the collector: Safari counts every canvas against a fixed budget until it is
+  // collected, and past the budget getContext gives null. null when the browser gives no context
+  function part(x0, y0, x1, y1, k, old) {
+    const c = old ? old.c : doc.createElement('canvas');
+    c.width = Math.max(1, Math.ceil((x1 - x0) * k)); c.height = Math.max(1, Math.ceil((y1 - y0) * k)); // (a resize clears it)
+    const g = old ? old.g : c.getContext('2d');
+    if (!g) return null;
     g.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
     g.lineCap = 'round'; g.lineJoin = 'round';
     return { c, g, k, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
   }
+  // a part no longer used: its canvas emptied, which hands its memory back at once (Safari frees a canvas only when collected)
+  function free(p) { if (p) { p.c.width = 0; p.c.height = 0; } }
   // the sheet's helpers, on a canvas: sp = a fill with the sticker outline under it, ln = a round stroke, fl = a fill,
   // se = an ellipse with the outline (rot in degrees)
   const H = {
@@ -10318,22 +10325,59 @@ function createNinja(doc, look) {
     g.fillStyle = col; g.fillRect(0, 0, P.c.width, P.c.height);
     g.globalCompositeOperation = 'source-over';
   }
-  // bake at k device px per sheet unit: when the shown size grows past what is baked, shrinks well under it, or the look changed
+  // Bake at k device px per sheet unit (callers ask 15 % over what they draw): when the shown size grows past what is baked,
+  // shrinks well under it, or the look changed. It bakes BAKE_UP over what is asked, so a hit's camera punch or the finish's
+  // push-in draws from what is there. It used to rebake as soon as the size grew 2 %, making 7 to 9 new canvases each time: the
+  // push-in rebaked both players every few frames, Big Ben's stomp twice more, and on an iPhone the canvases piled up past
+  // Safari's budget until getContext gave null and every frame threw (Josh, 2026-10-22: "Big Ben's stomp froze the game").
+  // A rebake now reuses the canvases it has. If the browser refuses one, nothing is drawn from it, and it tries again a
+  // second or so later (RETRY calls), not every frame.
+  const BAKE_UP = 1.25, RETRY = 60;
+  let refused = 0;
   function ensureArt(k) {
     if (!hasCanvas) return false;
     k = U.clamp(k, 0.3, 6);
     const key = look.key ? look.key() : 0;
-    if (art.torso && k <= art.k * 1.02 && k >= art.k * 0.5 && art.key === key) return true;
-    art.k = k; art.key = key;
+    if (art.torso && k <= art.k && k >= art.k * 0.45 && art.key === key) return true;
+    if (refused > 0) { refused--; return false; }
+    const kb = Math.min(6, k * BAKE_UP);
     const B = look.box || NOBOX, hb = B.head || HEAD_BOX, tb = B.torso || TORSO_BOX, bb = B.back === undefined ? BACK_BOX : B.back;
-    art.heads = {}; // only this look's faces (one it lacks falls back to 'open')
-    for (let i = 0; i < look.heads.length; i++) { const p = part(hb[0], hb[1], hb[2], hb[3], k); look.head(H, p.g, k, look.heads[i]); art.heads[look.heads[i]] = p; }
-    let p = part(tb[0], tb[1], tb[2], tb[3], k); look.torso(H, p.g, k); art.torso = p;
-    if (bb) { p = part(bb[0], bb[1], bb[2], bb[3], k); look.back(H, p.g, k); art.back = p; } else art.back = null;
-    art.sil = {};
-    if (look.sil) for (const name in look.sil) { p = part(-6, 0, 290, 244, k * SIL_K); solid(p, Object.assign({}, REST, look.sil[name]), C.ghost); art.sil[name] = p; }
-    art.tint = look.tint ? part(-34, -24, 294, 250, k * TINT_K) : null; // wide enough for a fist at full stretch
+    const heads = {}; // only this look's faces (one it lacks falls back to 'open')
+    let p = null, ok = true;
+    for (let i = 0; i < look.heads.length && ok; i++) {
+      const f = look.heads[i];
+      p = part(hb[0], hb[1], hb[2], hb[3], kb, art.heads[f]);
+      if (p) { look.head(H, p.g, kb, f); heads[f] = p; } else ok = false;
+    }
+    for (const f in art.heads) if (!heads[f]) free(art.heads[f]);
+    art.heads = heads;
+    p = ok ? part(tb[0], tb[1], tb[2], tb[3], kb, art.torso) : null;
+    if (p) { look.torso(H, p.g, kb); art.torso = p; } else ok = false;
+    if (ok && bb) { p = part(bb[0], bb[1], bb[2], bb[3], kb, art.back); if (p) { look.back(H, p.g, kb); art.back = p; } else ok = false; }
+    else if (!bb) { free(art.back); art.back = null; }
+    const sil = {};
+    if (ok && look.sil) for (const name in look.sil) {
+      p = part(-6, 0, 290, 244, kb * SIL_K, art.sil[name]);
+      if (!p) { ok = false; break; }
+      solid(p, Object.assign({}, REST, look.sil[name]), C.ghost); sil[name] = p;
+    }
+    for (const name in art.sil) if (!sil[name]) free(art.sil[name]);
+    art.sil = sil;
+    // the scratch canvas is drawn over whole every time it is used (a flash, a glow, a clone): sized for what is asked, not the
+    // room to grow, which costs every one of those draws half as much again (Kage's cost per frame went from 0.06–0.12 ms to
+    // 0.21–0.45 ms with it)
+    if (ok && look.tint) { p = part(-34, -24, 294, 250, k * TINT_K, art.tint); if (p) art.tint = p; else ok = false; } // wide enough for a fist at full stretch
+    else if (!look.tint) { free(art.tint); art.tint = null; }
+    if (!ok) { art.torso = null; art.k = 0; refused = RETRY; return false; } // (art.torso null: the whole bake again, next time)
+    art.k = kb; art.key = key;
     return true;
+  }
+  // done with this rig: its canvases emptied now, not whenever the collector gets to them
+  function dispose() {
+    for (const f in art.heads) free(art.heads[f]);
+    for (const n in art.sil) free(art.sil[n]);
+    free(art.torso); free(art.back); free(art.tint);
+    art.heads = {}; art.sil = {}; art.torso = null; art.back = null; art.tint = null; art.k = 0;
   }
 
   function drawRig(ctx, kx, ky, P) {
@@ -10541,7 +10585,7 @@ function createNinja(doc, look) {
     if (d > m) { p.x = sh.x + (dx / d) * m; p.y = sh.y + (dy / d) * m; }
   }
 
-  return { art, pose, REST, hasCanvas, ensureArt, drawRig, drawSil, drawTint, drawTints, drawAura, drawBurn, drawSmoke, drawDizzy, knockDown, kneel, stance, burstY, drawGloom, drawRain, toSheet, toScreen, limitArm, H };
+  return { art, pose, REST, hasCanvas, ensureArt, dispose, drawRig, drawSil, drawTint, drawTints, drawAura, drawBurn, drawSmoke, drawDizzy, knockDown, kneel, stance, burstY, drawGloom, drawRain, toSheet, toScreen, limitArm, H };
 }
 
 // ════════ castkit.js ════════
@@ -15515,8 +15559,9 @@ function createMenu(doc, opts) {
     if (!R.ensureArt(s * 1.15)) return '';
     R.drawRig(c.getContext('2d'), 1, 1, P);
     let url = '';
-    try { url = c.toDataURL('image/png'); } catch (err) { return ''; }
-    return `<img src="${url}" alt="" draggable="false">`;
+    try { url = c.toDataURL('image/png'); } catch (err) { url = ''; }
+    R.dispose(); c.width = 0; c.height = 0; // the picture is kept as an image: its canvases' memory back now
+    return url ? `<img src="${url}" alt="" draggable="false">` : '';
   }
   function place(parent, e, crop) {
     const w = el('span', 'pt');
