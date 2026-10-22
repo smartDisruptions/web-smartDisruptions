@@ -14453,10 +14453,16 @@ function victoryPose(V, P, u, rt, blend) {
 // the way to the highest ranked character that you play. For characters that you play multiple times, rank them according to the
 // strongest version of them."
 //
-// The ladder is everyone you face in King of the Pole (roster.js STORY), each once, in the meeting they are strongest in: their
-// highest level among their phases (of two at the same level, the later one, as the story tells it), so Akira is his match 19,
-// Milo his epilogue with the Black Hole. They run weakest first, by that level, and by the story's order where two levels tie.
-// The levels are the settings' own (each phase's Difficulty), so a level changed in the dev settings moves them on the ladder.
+// Then (Josh, 2026-10-22): "The order should follow the order that you face them in the story. I purposely have levels that are
+// higher for some characters because their attributes allow them to be more easily defeated even though they are a higher level.
+// So this is why we need to follow the level progression of the story, where the last characters you face are Jackson and then
+// Ray." A level is not how hard someone is to beat, so it doesn't order anything.
+//
+// The ladder is everyone you face in King of the Pole (roster.js STORY), each once, in the story's order, up to its final: Rei,
+// match 21 (ARCADE_FINAL). Milo's one more game, the epilogue (match 22), comes after The End, so it isn't on it. Someone met more
+// than once is there as you last meet them, their strongest, at that meeting's place and phase: Akira is his fourth, match 19.
+// So it runs Milo (match 1, his first and only meeting before the end), Tyler, Mei, Caleb, Marcus, Emma, Felix, Ben, Adaeze,
+// Harper, Akira, Jackson, Rei. A level changed in the dev settings changes how they play, never where they are.
 // Whoever you play as is left off it. Jackson and Rei can't be picked to play as: they are opponents only (ARCADE_NOT).
 //
 // main.js plays it (AR): each stage is a match against the next one on the ladder, at that phase, first to arcade.rounds, after
@@ -14477,16 +14483,17 @@ const ARCADE_NOT = { jackson: 1, rei: 1 }; // the arcade's last opponents: nobod
 // who may be picked to play the arcade as: anyone who plays (roster.js rosterPlays), but Jackson and Rei
 const arcadePlays = (e) => !!e && rosterPlays(e) && !ARCADE_NOT[e.key];
 
-// The ladder, weakest first, without youKey: [{ key, phase (0-based, −1 for one met once), level, match (its number in the story) }]
+const ARCADE_FINAL = STORY.length - 1; // the story's final, Rei's (its match number): the epilogue after it isn't on the ladder
+
+// The ladder, in the story's order, without youKey: [{ key, phase (0-based, −1 for one met once), level (that phase's Difficulty,
+// shown, not ordered by), match (its number in the story) }]
 function arcadeLadder(youKey) {
-  const best = {};
-  STORY.forEach((m, i) => {
-    const ph = PHASES[m.key] ? PHASES[m.key].indexOf(i + 1) : -1, c = CFG.chars[m.key];
-    const lv = +(ph >= 0 ? c['p' + (ph + 1)].difficulty : c.difficulty) || m.level;
-    const b = best[m.key];
-    if (!b || lv >= b.level) best[m.key] = { key: m.key, phase: ph, level: lv, match: i + 1 };
-  });
-  return Object.keys(best).map((k) => best[k]).filter((s) => s.key !== youKey).sort((a, b) => a.level - b.level || a.match - b.match);
+  const last = {}; // key → their last meeting up to the final
+  STORY.forEach((m, i) => { if (i + 1 <= ARCADE_FINAL) last[m.key] = i + 1; });
+  return Object.keys(last).filter((k) => k !== youKey).map((k) => {
+    const n = last[k], ph = PHASES[k] ? PHASES[k].indexOf(n) : -1, c = CFG.chars[k];
+    return { key: k, phase: ph, level: +(ph >= 0 ? c['p' + (ph + 1)].difficulty : c.difficulty) || STORY[n - 1].level, match: n };
+  }).sort((a, b) => a.match - b.match);
 }
 
 // ════════ placemusic.js ════════
@@ -15458,7 +15465,7 @@ function createUI(root, opts) {
 //           Play, Arcade, Create your character, Dev settings (the Feel panel, over the menu), the mode (versus or the time trial)
 //           and Graphics. (Josh, 2026-10-22: the Characters button and its screen are gone, and the Arcade is where you pick.)
 //   arcade  the arcade's character select (arcade.js): everyone who plays but Jackson and Rei, and the ladder you'd climb as the
-//           one picked, weakest first. Start plays it (main.js AR).
+//           one picked, in the story's order. Start plays it (main.js AR).
 //   make    the character creator: you are the new kid, and nobody draws you but you. Skin, hair and its colour, eyes, mouth, the
 //           gi, the belt, the trainers, extras and a name, drawn live by the cast sheet's own kit (roster.js youDraw). Saved on this
 //           device (localStorage), and picked as your side when you save.
@@ -15600,7 +15607,7 @@ function createMenu(doc, opts) {
   function arcade() {
     const s = el('div', 'm-scr m-pick m-arc');
     s.appendChild(bar('Arcade', () => show('home')));
-    s.appendChild(el('p', 'm-lead', 'Pick who you play as. Then beat everyone from the story, one match each, weakest first, up to the strongest.'));
+    s.appendChild(el('p', 'm-lead', 'Pick who you play as. Then beat everyone from the story, one match each, in the order you meet them, up to Jackson and Rei.'));
     const grid = el('div', 'm-grid');
     grid.setAttribute('role', 'list'); grid.setAttribute('aria-label', 'Play the arcade as');
     for (let i = 0; i < ROSTER.length; i++) {
@@ -15625,7 +15632,7 @@ function createMenu(doc, opts) {
       const yi = Math.round(CFG.roster.you);
       grid.querySelectorAll('.m-card').forEach((c) => { const on = +c.dataset.i === yi; c.classList.toggle('is-you', on); c.setAttribute('aria-pressed', on ? 'true' : 'false'); });
       const L = arcadeLadder(rosterEntry('you').key);
-      lh.textContent = L.length + ' matches, weakest first';
+      lh.textContent = L.length + ' matches, in the story\'s order';
       row.textContent = '';
       L.forEach((st, n) => {
         const e = ROSTER[ROSTER_BY[st.key]], li = el('li', 'm-step');
@@ -15813,7 +15820,7 @@ function createMenu(doc, opts) {
     const head = el('header', 'm-title');
     if (o.clear) {
       head.append(el('div', 'm-kick', 'Arcade clear'), el('h1', '', 'King of the Pole'));
-      s.append(head, fig, el('p', 'm-lead', nameOf(you) + ' beat all ' + o.of + ', from the weakest to the strongest.'));
+      s.append(head, fig, el('p', 'm-lead', nameOf(you) + ' beat all ' + o.of + ', the whole story, up to Rei.'));
     } else {
       head.append(el('div', 'm-kick', 'Match ' + o.stage + ' of ' + o.of), el('h1', '', e.name + ' wins'));
       s.append(head, fig, el('p', 'm-lead', 'Take them on again, or stop here.'));
@@ -16226,7 +16233,7 @@ function createMenu(doc, opts) {
     else if (k === 'out') audio.flash(1.8, 0.45); // and split apart
   }
 
-  // ---- the arcade (arcade.js): everyone you face in the story, each once at their strongest, weakest first ----
+  // ---- the arcade (arcade.js): everyone you face in the story, each once as you last meet them, in the story's order ----
   // AR: { list (arcadeLadder: who, their phase, level), i (the match being played, 0-based), keep (what it borrows, as it was) }.
   // Who you picked to play as stays picked; the opponent, their phase, the match's length and the mode are borrowed (CFG_HELD) and
   // go back when it ends, cleared, stopped or left for the menu
