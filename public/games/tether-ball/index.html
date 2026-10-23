@@ -10291,11 +10291,12 @@ function createNinja(doc, look) {
     headTilt: 0, headDy: 0, face: 'open', t: 0, wind: 0, lift: 0,
     fx: 50, fy: 184, fBend: 10, // front fist
     bx: 151, by: 193, bBend: -9, // back fist
+    bFront: 0, // 1: the back arm reaches across in front of the body (a cross punch), drawn over the torso and head
     lax: 85, lay: 223.5, lrot: 0, lknee: 3, rax: 115, ray: 223.5, rrot: 0, rknee: 3, // ankles (front leg = l)
     smear: 0, // 0..1 a strike's speed: a ghost of the arm trails it
     sx0: 0, sy0: 0, // where the fist was a moment ago (smear)
   };
-  const REST = { x: 0, y: 0, s: 1, mir: 1, tilt: 0, sqx: 1, sqy: 1, headTilt: 0, headDy: 0, face: 'open', t: 0, wind: 0, lift: 0, fx: 50, fy: 184, fBend: 10, bx: 151, by: 193, bBend: -9, lax: 85, lay: 223.5, lrot: 0, lknee: 3, rax: 115, ray: 223.5, rrot: 0, rknee: 3, smear: 0, sx0: 0, sy0: 0 };
+  const REST = { x: 0, y: 0, s: 1, mir: 1, tilt: 0, sqx: 1, sqy: 1, headTilt: 0, headDy: 0, face: 'open', t: 0, wind: 0, lift: 0, fx: 50, fy: 184, fBend: 10, bx: 151, by: 193, bBend: -9, bFront: 0, lax: 85, lay: 223.5, lrot: 0, lknee: 3, rax: 115, ray: 223.5, rrot: 0, rknee: 3, smear: 0, sx0: 0, sy0: 0 };
 
   const blit = (ctx, P) => ctx.drawImage(P.c, P.x, P.y, P.w, P.h);
   function headFrame(ctx, P) { ctx.translate(N.NECK_X, N.NECK_Y + P.headDy); ctx.rotate(P.headTilt); ctx.translate(-N.NECK_X, -N.NECK_Y); }
@@ -10305,12 +10306,15 @@ function createNinja(doc, look) {
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.save(); headFrame(ctx, P); look.tails(H, ctx, P); ctx.restore(); // the tails ride the head, behind everything
     if (art.back) blit(ctx, art.back);
-    const aw = C.armW || 15, hk = 9.5 * (aw / 15); // a thicker arm, a bigger hand (Big Ben's)
-    fist(ctx, P.bx, P.by, hk, limb(ctx, N.SH_B.x, N.SH_B.y, P.bx, P.by, P.bBend, C.armB, aw), C.fistB, C.fistBS);
+    const aw = C.armW || 15, hk = 9.5 * (aw / 15), across = P.bFront > 0.5; // a thicker arm, a bigger hand (Big Ben's)
+    // the back arm is behind the body, unless it reaches across in front of it (Akira's cross: Josh, 2026-10-23, "His hand should
+    // cross in front of him, not behind him"), when it is drawn after the head, under the front arm
+    if (!across) fist(ctx, P.bx, P.by, hk, limb(ctx, N.SH_B.x, N.SH_B.y, P.bx, P.by, P.bBend, C.armB, aw), C.fistB, C.fistBS);
     leg(ctx, N.HIP_B.x, N.HIP_B.y, P.rax, P.ray, P.rknee, C.legB); leg(ctx, N.HIP_F.x, N.HIP_F.y, P.lax, P.lay, P.lknee, C.legF);
     shoe(ctx, P.rax, P.ray, P.rrot); shoe(ctx, P.lax, P.lay, P.lrot);
     blit(ctx, art.torso);
     ctx.save(); headFrame(ctx, P); blit(ctx, art.heads[P.face] || art.heads.open); ctx.restore();
+    if (across) fist(ctx, P.bx, P.by, hk, limb(ctx, N.SH_B.x, N.SH_B.y, P.bx, P.by, P.bBend, C.armB, aw), C.fistB, C.fistBS);
     if (P.smear > 0.05) { // a strike: a ghost of the arm, in the look's colour, behind the fist
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5 * P.smear * (look.smearA ? look.smearA() : 1);
       ctx.beginPath(); ctx.moveTo(P.sx0, P.sy0); ctx.lineTo(P.fx, P.fy);
@@ -12638,9 +12642,9 @@ function createKage(doc) {
     const F = FINALE, t = st.ft, big = F.big(st.finKind);
     if (st.phase === 'lost') { finaleLose(R, P, t, st.finKind, st.rt, 'open', face('sad', 'blink')); return; }
     P.lift = 0.6; P.wind = 0.4;
-    if (t < F.MOVE) { // it is won: arms up where he stands
+    if (t < F.MOVE) { // it is won: both arms up where he stands, out past his head (the back fist went up behind it: Josh, 2026-10-23)
       const k = U.clamp01(t / 0.12);
-      P.fx = U.lerp(50, 64, k); P.fy = U.lerp(184, 112, k); P.bx = U.lerp(151, 138, k); P.by = U.lerp(193, 112, k); P.lift = 1;
+      P.fx = U.lerp(50, 10, k); P.fy = U.lerp(184, 90, k); P.fBend = -4; P.bx = U.lerp(151, 190, k); P.by = U.lerp(193, 90, k); P.bBend = 4; P.lift = 1;
       return;
     }
     const V = victoryOf('opp');
@@ -12743,7 +12747,7 @@ function createKage(doc) {
     const svx = (Cc.x - A.x) * 20; // screen px/s
     P.tilt = U.clamp(svx * 0.0006, -0.22, 0.22);
     P.sqx = 1; P.sqy = 1; P.headTilt = Math.sin(t * 1.3) * 0.03; P.headDy = Math.sin(t * 2.2) * 1.2; P.lift = 0;
-    P.wind = U.clamp01(sp / 4 + (st.y > 0.05 ? 0.6 : 0)); P.face = t > st.blinkAt - 0.12 && t < st.blinkAt ? 'blink' : 'open'; P.smear = 0;
+    P.wind = U.clamp01(sp / 4 + (st.y > 0.05 ? 0.6 : 0)); P.face = t > st.blinkAt - 0.12 && t < st.blinkAt ? 'blink' : 'open'; P.smear = 0; P.bFront = 0;
     const land = t - st.tLand; // a landing squashes, then springs back
     if (land >= 0 && land < 0.25) { const k = Math.exp(-land * 14) * Math.cos(land * 30) * 0.12; P.sqy = 1 - k; P.sqx = 1 + k * 0.7; }
     else { const br = Math.sin(t * 2.4) * 0.012; P.sqy = 1 + br; P.sqx = 1 - br * 0.5; }
@@ -12762,7 +12766,7 @@ function createKage(doc) {
     if (st.phase === 'ready' && !guard && sp <= 0.6 && st.y < 0.04 && !(lie > 0) && typeof rosterIdle === 'function') rosterIdle('opp', P, t); // how whoever plays him stands (roster.js)
     if (inShow()) { if (st.phase === 'won') P.face = face('happy', P.face); finPose(P); return; }
     if (st.phase === 'won') P.face = face('happy', P.face); else if (st.phase === 'lost') P.face = face('sad', P.face); else if (st.phase === 'swing') P.face = face('fierce', P.face);
-    if (st.phase === 'won') { const k = Math.min(1, st.moodT * 5); P.fx = U.lerp(50, 64, k); P.fy = U.lerp(184, 112, k); P.bx = U.lerp(151, 138, k); P.by = U.lerp(193, 112, k); P.lift = 1; P.headTilt = -0.06 + Math.sin(st.moodT * 9) * 0.05; }
+    if (st.phase === 'won') { const k = Math.min(1, st.moodT * 5); P.fx = U.lerp(50, 10, k); P.fy = U.lerp(184, 90, k); P.fBend = -4; P.bx = U.lerp(151, 190, k); P.by = U.lerp(193, 90, k); P.bBend = 4; P.lift = 1; P.headTilt = -0.06 + Math.sin(st.moodT * 9) * 0.05; }
     else if (st.phase === 'lost') { const k = Math.min(1, st.moodT * 3); P.fx = 56; P.fy = U.lerp(184, 198, k); P.bx = 146; P.by = U.lerp(193, 200, k); P.headDy = 7 * k; P.sqy *= 1 - 0.03 * k; P.headTilt = 0.08 * k; }
     else if (st.phase === 'swing' || (st.phase === 'down' && st.t - st.downT < 0.08)) swingArm(cam, w, P);
     if (lie > 0) R.knockDown(P, lie, face('sad', 'blink'));
@@ -13403,7 +13407,7 @@ function createKiru(doc) {
     P.mir = st.face > 0 ? -1 : 1;
     // at rest: breathing, a bob of the head, a blink now and then
     const br = Math.sin(t * 2.4) * 0.012;
-    P.tilt = 0; P.sqy = 1 + br; P.sqx = 1 - br * 0.5; P.lift = 0; P.wind = 0; P.smear = 0;
+    P.tilt = 0; P.sqy = 1 + br; P.sqx = 1 - br * 0.5; P.lift = 0; P.wind = 0; P.smear = 0; P.bFront = 0;
     P.headTilt = Math.sin(t * 1.3) * 0.03; P.headDy = Math.sin(t * 2.2) * 1.2;
     P.face = t > st.blinkAt - 0.12 && t < st.blinkAt ? 'blink' : 'open';
     P.fx = 50 + Math.sin(t * 2.4) * 1.5; P.fy = 184; P.fBend = 10; P.bx = 151; P.by = 193; P.bBend = -9;
@@ -14325,6 +14329,10 @@ function rosterPortrait(e, crop) {
 // No arm is held out straight in front and raised: Harper's flick of the hand did that, and it looked like a Nazi salute (Josh,
 // 2026-10-22). A raised fist is bowed at the elbow (FIST_UP), a point goes down at the one they beat, and an arm only passes
 // through level in a swing or a punch, never stays there.
+// No hand goes behind the body either (Josh, 2026-10-23: Akira's cross went behind his back). The back arm is drawn behind the
+// torso and head, so when it reaches across the body (Akira's cross, Harper's folded arms, Felix's pocket) the pose sets bFront
+// and the rig draws it in front, under the front arm. The one hand left out of sight is Rei's, behind her back on purpose: the
+// story's legend that she never uses her dominant hand.
 const VICTORY = (() => {
   const s = Math.sin, c = Math.cos, ab = Math.abs, TAU = Math.PI * 2, L = (a, b, k) => a + (b - a) * k;
   const cl = (x) => (x < 0 ? 0 : x > 1 ? 1 : x), ease = (x) => { x = cl(x); return x * x * (3 - 2 * x); };
@@ -14381,13 +14389,14 @@ const VICTORY = (() => {
       },
       up: () => 0,
     },
-    // Akira, the rival: on his toes, a jab, a jab and a cross at the one he beat, then the front fist up
+    // Akira, the rival: on his toes, a jab, a jab and a cross at the one he beat, then the front fist up. The cross is his back
+    // hand, and it crosses in front of him (bFront), not behind him (Josh, 2026-10-23)
     akira: {
       pose(P, u, rt) {
         const q = u % 1.8, b = ab(s(u * 7)), j = Math.max(pulse(q, 0.05, 0.25), pulse(q, 0.3, 0.5)), x = pulse(q, 0.55, 0.85), up = ease((q - 0.95) / 0.15);
         P.face = up > 0.5 ? 'happy' : 'fierce'; P.lift = 0.5;
         arms(P, L(58, -4, j), L(160, 156, j), 6, L(141, 6, x), L(165, 150, x), -6);
-        P.tilt += -P.mir * 0.08 * x;
+        P.tilt += -P.mir * 0.08 * x; P.bFront = x > 0.02 ? 1 : 0;
         if (up > 0) blendF(P, [58, 160, 6], FIST_UP, up);
         P.lay -= 4 * b; P.ray -= 4 * b;
       },
@@ -14398,7 +14407,7 @@ const VICTORY = (() => {
       pose(P, u, rt) {
         const q = u % 2.6, sh = pulse(q, 0.1, 0.9), eh = ease((q - 1.1) / 0.3) * (1 - ease((q - 2.3) / 0.3));
         P.face = eh > 0.5 ? 'happy' : 'open'; P.lift = 0.2;
-        arms(P, L(86, -4, eh), L(184, 168, eh), L(8, -6, eh), 114, 184, -8);
+        arms(P, L(86, -4, eh), L(184, 168, eh), L(8, -6, eh), 114, 184, -8); P.bFront = 1; // both hands at the pocket, in front of him
         P.headDy -= 5 * sh; P.sqy *= 1 + 0.03 * sh; P.headTilt += 0.08 * sh + 0.1 * eh;
         P.tilt += P.mir * 0.09 * eh;
       },
@@ -14425,7 +14434,7 @@ const VICTORY = (() => {
         const q = u % 3, up = ease((q - 1.75) / 0.18) * (1 - ease((q - 2.6) / 0.2));
         const br = q >= 1.95 && q < 2.55 ? Math.max(0, s((TAU * (q - 1.95)) / 0.3)) : 0; // two flicks off the shoulder
         P.face = 'fierce'; P.wind = 0.6 + 0.3 * s(rt * 3); P.lift = 0.6;
-        crossed(P);
+        crossed(P); P.bFront = 1; // both forearms across her, the far one under the near one
         if (up > 0) blendF(P, [116, 164, -10], [L(126, 168, br), L(150, 172, br), L(12, 16, br)], up); // her hand at her far shoulder
         P.headTilt -= 0.12 + 0.04 * up; P.tilt += P.mir * 0.05; P.lax = 92; P.rax = 124; P.rrot = 0.12; P.sqy *= 1 + 0.008 * s(rt * 2);
       },
@@ -14442,7 +14451,7 @@ const VICTORY = (() => {
       },
       up: () => 0,
     },
-    // Adaeze, the cool customer: one hand on her hip, the shadow still on her; one slow cut through the air with the other hand,
+    // Adaeze, the cool customer: hands on her hips, the shadow still on her; one slow cut through the air with the front hand,
     // from her far shoulder down to her front hip, as her Shadow Cut goes, and back to the hip, unbothered. (It was two fingers to
     // her brow and out, a salute, which left the arm straight out and raised: Josh, 2026-10-22, on Harper's.)
     adaeze: {
@@ -14451,7 +14460,7 @@ const VICTORY = (() => {
         const q = u % 2.8, up = ease((q - 0.8) / 0.3), cut = ease((q - 1.25) / 0.3), back = ease((q - 2.1) / 0.4);
         P.face = q > 1.5 && q < 2.4 ? 'happy' : 'fierce'; P.lift = 0.5; P.wind = 0.5;
         blendF(P, HIP_F, [118, 152, 14], up); if (cut > 0) blendF(P, [118, 152, 14], [26, 200, 8], cut); if (back > 0) blendF(P, [26, 200, 8], HIP_F, back);
-        P.bx = 124; P.by = 190; P.bBend = -6; // the other behind her
+        P.bx = HIP_B[0]; P.by = HIP_B[1]; P.bBend = HIP_B[2]; // the other on her hip (it was behind her back: Josh, 2026-10-23)
         P.headTilt -= 0.06; P.tilt += P.mir * 0.03; P.headDy += 2 * ab(s(u * 1.6));
       },
       up: () => 0,
@@ -14513,7 +14522,7 @@ function victoryOf(side) {
   return e && !e.native ? VICTORY[e.key] || null : null;
 }
 // lay it over the pose: P as the show had it, eased into theirs over blend s from u 0 (0: at once)
-const VICTORY_KEYS = ['fx', 'fy', 'fBend', 'bx', 'by', 'bBend', 'lax', 'lay', 'lrot', 'lknee', 'rax', 'ray', 'rrot', 'rknee', 'tilt', 'headTilt', 'headDy', 'sqx', 'sqy', 'x', 'y', 'lift', 'wind'];
+const VICTORY_KEYS = ['fx', 'fy', 'fBend', 'bx', 'by', 'bBend', 'bFront', 'lax', 'lay', 'lrot', 'lknee', 'rax', 'ray', 'rrot', 'rknee', 'tilt', 'headTilt', 'headDy', 'sqx', 'sqy', 'x', 'y', 'lift', 'wind'];
 const VICTORY_WAS = {};
 function victoryPose(V, P, u, rt, blend) {
   const k = blend > 0 ? U.easeInOut(U.clamp01(u / blend)) : 1;
