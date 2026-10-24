@@ -91,6 +91,13 @@ const nextConfig: NextConfig = {
           source: '/games/path-not-taken',
           destination: '/games/path-not-taken/index.html',
         },
+        // Cosmo's Moondrift: the same, one file in public/games, built in the
+        // vault (Tools/cosmo-moondrift) with --site, which adds its share cards
+        // and the way back to the Arcade on its title screen.
+        {
+          source: '/games/moondrift',
+          destination: '/games/moondrift/index.html',
+        },
         // Portfolio Ledger: the public demo of my net-worth tracker, one file in
         // public/demo on made-up data (built from my private ledger's source
         // with --public, which leaves its real settings out). Its Home Screen
