@@ -13,6 +13,17 @@ export interface App {
   hasFullBreakdown: boolean;
   buildPlanAvailable: boolean;
   liveUrl?: string;
+  /**
+   * Games only: how to play, in a player's words, shown on the game's page in
+   * place of the build notes. `on` is what it plays on; each way to play it
+   * (touch or a mouse, the keyboard, a controller) lists the things you do and
+   * how you do each one. In `how`, a key or controller button goes in
+   * backticks (`Space`) and the page draws it as a keycap.
+   */
+  howToPlay?: {
+    on: string;
+    ways: { device: string; controls: { action: string; how: string }[] }[];
+  };
 }
 
 export const apps: App[] = [
@@ -121,7 +132,7 @@ export const apps: App[] = [
     description:
       'Real cloth you can grab, cut with a katana, burn, pin and stain with ink, in six scenes lit like a film set. Fire, rain and wind all act on it.',
     longDescription:
-      'A piece of real cloth in a lit 3D scene, and you can do almost anything to it. Pick a scene: a shop curtain at dusk with the lamps behind it, carp streamers that swim when the wind fills them, banners in a gale, a silk sheet over a glowing moon, a cloth in a night courtyard that wants a match, or a tarp in the rainy season. Then grab it with up to five fingers, swipe through it with a katana and time slows for a beat, set it alight, pin it, or drop ink on it and watch the ink spread along the threads. The light shines through the fabric and lands on the ground in its colours. Fire chars the cloth ahead of the flame and eats holes in it. Rain soaks in, so wet cloth darkens, sags, fills with water and drips, and it won’t burn: the fire hisses into steam. Switch between cotton, silk, denim, velvet, chainmail that glows red-hot instead of burning, and a film that shifts colour as it moves. Turn on Tilt and gravity follows your phone. Every sound, from the rip to the rain, is made as it happens.',
+      'A sheet of cloth you can do almost anything to. Grab it, slice it with a katana, set it alight, pin it down or let ink bleed through it, across six scenes, from a shop curtain at dusk to banners in a gale. Make it rain and it soaks, sags and drips. Then turn it into silk, denim, velvet or chainmail and see what changes.',
     thumbnailUrl: '/images/apps/cloth-simulator-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/cloth-simulator-1.webp',
@@ -141,6 +152,59 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: 'https://app-cloth-simulator.vercel.app',
+    howToPlay: {
+      on: 'Plays on a phone or a computer. On a phone, use up to five fingers at once.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Pick a tool',
+              how: 'Tap Grab, Slice, Burn, Pin or Dye.',
+            },
+            {
+              action: 'Grab',
+              how: 'Pull it. Every finger grabs its own patch.',
+            },
+            {
+              action: 'Slice',
+              how: 'Swipe through it. A long, fast cut slows time.',
+            },
+            {
+              action: 'Burn',
+              how: 'Tap to light it. Hold to keep the flame on it.',
+            },
+            {
+              action: 'Pin',
+              how: 'Tap to pin. Drag a point and let go to pin it there.',
+            },
+            {
+              action: 'Dye',
+              how: 'Touch to drop ink. Drag to lay a line of it.',
+            },
+            { action: 'Weather', how: 'Tap the wind or rain button.' },
+            {
+              action: 'Tilt',
+              how: 'On a phone, turn on Tilt and gravity follows your phone.',
+            },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            {
+              action: 'Tools',
+              how: '`1` to `5` (Grab, Slice, Burn, Pin, Dye)',
+            },
+            { action: 'Scene', how: '`[` and `]`' },
+            { action: 'Material', how: '`M`' },
+            { action: 'Wind', how: '`W`' },
+            { action: 'Slow motion', how: '`Space`' },
+            { action: 'Reset', how: '`R`' },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'ai-diary',
@@ -243,7 +307,7 @@ export const apps: App[] = [
     description:
       'Kiru throws spirit flames into festival lanterns on a moonlit rooftop. Every lantern you light bursts into fireworks on the beat of the music.',
     longDescription:
-      'It is the night of a festival and the lanterns have gone dark. Kiru stands on a rooftop with 30 spirit flames to light them with. You drag up to throw: the longer the drag, the farther the flame flies, and it only catches if it drops into the top of a lantern. Every lantern you light bursts into fireworks on the beat, and lighting every lantern on a rope sends the whole rope up into the sky. Light several in a row and the band joins in, from a koto and a soft drum up to the full festival band. When the flames run out there is a finale of fireworks, and the night’s score is tallied on a paper slip. The game plays all of its own music while you play: koto, shamisen, taiko drums and a bamboo flute, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse, the keyboard or a game controller. It remembers your best score, and it is one file.',
+      'It’s festival night, and every lantern on the rooftops has gone dark. Kiru has thirty spirit flames to light them again. Drop a flame into a lantern and it bursts into fireworks right on the beat, and the band plays fuller with every lantern you light in a row. Light a whole rope and watch it float up into the night sky.',
     thumbnailUrl: '/images/apps/lantern-night-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/lantern-night-1.webp',
@@ -263,6 +327,41 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/lantern-night',
+    howToPlay: {
+      on: 'Plays on a phone held either way up, or on a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Throw a flame',
+              how: 'Drag up and let go. The direction aims it, and the longer the drag, the farther it flies.',
+            },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Aim', how: '`←` `→` or `A` `D`' },
+            {
+              action: 'Power',
+              how: '`↑` `↓` or `W` `S` (hold `Shift` for finer steps)',
+            },
+            { action: 'Throw', how: '`Space` or `Enter`' },
+            { action: 'Pause', how: '`P` or `Esc`' },
+          ],
+        },
+        {
+          device: 'Controller',
+          controls: [
+            { action: 'Aim', how: 'Left stick' },
+            { action: 'Throw', how: 'Hold `A` to charge, let go to throw' },
+            { action: 'Cancel a throw', how: '`B`' },
+            { action: 'Pause', how: '`Start`' },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'night-parade',
@@ -270,7 +369,7 @@ export const apps: App[] = [
     description:
       'Yokai rise out of nine spirit wells in a moonlit temple garden. Tap a well and Kiru leaps there and cuts whatever comes up in two.',
     longDescription:
-      'It is the night of the Hyakki Yagy\u014d, the parade of a hundred demons, and the yokai are coming up through nine spirit wells in a moonlit temple garden. Tap a well and Kiru leaps there and cuts whatever is rising out of it in two. Most of them are small oni worth a point and the golden kitsune are worth three, but two are friends you must not cut: the Moon Rabbit, and a tanuki hiding behind an oni mask. A round lasts 75 seconds and speeds up as it goes. Along the way come three of four events (a golden night, a new moon where only their eyes show, a moon-viewing night full of rabbits, and a parade round the wells), powers that slow time, double your points or send shadow clones down the row, and a meter that fills into BLUE FIRE. In the last twelve seconds the Parade Lord rises from the centre well, and he blocks every third strike with his club: wait for him to bring it down, and the first strike in the opening is a counter. The game plays all of its own music and sound while you play, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse or the keyboard. It remembers your best score and the blades you unlock, and it is one file.',
+      'Tonight is the parade of a hundred demons, and the yokai are climbing out of nine spirit wells in a moonlit temple garden. Kiru leaps from well to well and cuts them down as they rise. Watch who you swing at, though: a few friends are hiding in the crowd. The night gets faster and stranger as it goes, until the Parade Lord himself rises from the center well.',
     thumbnailUrl: '/images/apps/night-parade-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/night-parade-1.webp',
@@ -290,6 +389,38 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/night-parade',
+    howToPlay: {
+      on: 'Plays on a phone held either way up, or on a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Strike',
+              how: 'Tap a well, or whatever is rising out of it.',
+            },
+            {
+              action: 'Blue Fire',
+              how: 'Tap the BLUE FIRE button once the meter is full.',
+            },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            {
+              action: 'Strike',
+              how: 'The number pad, laid out like the garden (`7` `8` `9` is the back row), or `Q` `W` `E`, `A` `S` `D`, `Z` `X` `C`',
+            },
+            {
+              action: 'Blue Fire',
+              how: '`Space` or `F`, once the meter is full',
+            },
+            { action: 'Pause', how: '`Esc` or `P`' },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'tokaido-run',
@@ -297,7 +428,7 @@ export const apps: App[] = [
     description:
       'Kiru runs the old road from Edo to Ky\u014dto, from morning to night. Swipe to change lanes, jump and roll, and tap to cut whatever gets in his way.',
     longDescription:
-      'The T\u014dkaid\u014d was the great road of Edo Japan, from Nihonbashi to Ky\u014dto through 53 post stations, and Kiru runs all of it. Swipe left or right to change lanes, up to jump and down to roll, and tap to cut. Paper sh\u014dji walls, barrels and bamboo stakes split in two along the line of the blade, and so do lantern ghosts and diving tengu. A rival ninja leaves a log behind when cut, an oni bursts into beans and runs off crying, and fox fires fill the Ki meter for a Bolt Dash. Every stumble lights one of an Edo constable\u2019s three paper lanterns and puts him on your heels until it goes out; light the third and he has you. The road runs from morning to night through five places: a post town, a hillside of a thousand vermilion torii, a bamboo grove, a mountain temple in autumn and a night festival, with rain and snow at the stations Hiroshige painted that way. Along it come a lucky cat that pulls in coins, a paper crane to ride over the rooftops and a daruma for double score. When the run ends, the game writes it up as a farewell haiku. It is drawn in 3D in the browser and makes all of its own music as you play, taiko and shamisen, with no recordings to download. It plays on a phone held either way up and on a computer, with touch, a mouse, the keyboard or a game controller, and it is one file.',
+      'Run the old road from Edo to Kyōto in a single day, through fifty-three post stations from morning to night. Kiru cuts his way through paper walls, bamboo, lantern ghosts and diving tengu, and stays one step ahead of the Edo constable who gives chase every time he stumbles. Ride a paper crane over the rooftops, catch the lucky cat, and when your run is over, the road sends you off with a haiku.',
     thumbnailUrl: '/images/apps/tokaido-run-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/tokaido-run-1.webp',
@@ -317,6 +448,46 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/tokaido-run',
+    howToPlay: {
+      on: 'Plays on a phone held either way up, or on a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            { action: 'Change lanes', how: 'Swipe left or right.' },
+            { action: 'Jump', how: 'Swipe up.' },
+            { action: 'Roll', how: 'Swipe down.' },
+            { action: 'Cut', how: 'Tap.' },
+            {
+              action: 'Bolt Dash',
+              how: 'Double-tap once your Ki meter is full.',
+            },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Change lanes', how: '`←` `→` or `A` `D`' },
+            { action: 'Jump', how: '`↑` or `W`' },
+            { action: 'Roll', how: '`↓` or `S`' },
+            { action: 'Cut', how: '`Space`, `J` or `K`' },
+            { action: 'Bolt Dash', how: '`Shift` or `E`' },
+            { action: 'Pause', how: '`Esc` or `P`' },
+          ],
+        },
+        {
+          device: 'Controller',
+          controls: [
+            { action: 'Change lanes', how: 'D-pad or left stick' },
+            { action: 'Jump', how: '`A`' },
+            { action: 'Roll', how: '`B`' },
+            { action: 'Cut', how: '`X`, `RB` or `RT`' },
+            { action: 'Bolt Dash', how: '`Y`' },
+            { action: 'Pause', how: '`Start`' },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'neo-dojo-survivors',
@@ -324,7 +495,7 @@ export const apps: App[] = [
     description:
       'Tengu-9, the mech samurai of the Neo Dojo, holds a neon rooftop for fifteen minutes against six rogues and their hordes. You only move him: his weapons fire on their own.',
     longDescription:
-      'A horde game in the style of Vampire Survivors, starring Tengu-9 from the Neo Dojo Cast, the heroes and rogues I drew on Kiru\u2019s rig. You only steer him, his weapons fire on their own, and for fifteen minutes the dojo roof fills with hundreds of rogues. Each act belongs to one rogue, and its minions are its jokes: buzzwords that pivot when you hit them, pitch decks shouting 10\u00d7, porcelain deepfakes of Tengu-9 that bow to him, flocks of em-dashes and six-fingered hands. At the end of each act the rogue arrives as its boss. Bagu splits every time it is patched, Bazu runs a keynote with sweeping spotlights, Kusarigumo fences you in and charges an exit fee, and Emperor Kemuri hides behind a COMING SOON shield whose release date slips with every pillar you cut. Each level up offers a new weapon or an upgrade, and from six minutes on, a weapon at its top level with its partner upgrade turns into something bigger when you open a chest. The game makes all of its own music as you play, taiko drums and synthesizers that build with each act, with no recordings to download. It plays on a phone with one thumb and on a computer with the keyboard, a mouse or a game controller, and it is one file.',
+      'Hold the Neo Dojo’s neon rooftop for fifteen minutes. Tengu-9’s weapons fire on their own, so all you do is keep moving while hundreds of rogues pour in: buzzwords, pitch decks, deepfakes and flocks of em-dashes. Level up, stack your weapons, and stand your ground when each act’s boss arrives.',
     thumbnailUrl: '/images/apps/neo-dojo-survivors-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/neo-dojo-survivors-1.webp',
@@ -344,6 +515,43 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/neo-dojo-survivors',
+    howToPlay: {
+      on: 'Plays on a phone with one thumb, or on a computer. You only steer: the weapons fire on their own.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Move',
+              how: 'Press anywhere and drag. A joystick appears under your thumb.',
+            },
+            { action: 'Level up', how: 'Tap the card you want.' },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Move', how: '`W` `A` `S` `D` or the arrow keys' },
+            {
+              action: 'Level up',
+              how: '`1` to `4` to pick, `R` to reroll, `X` to skip',
+            },
+            { action: 'Pause', how: '`P` or `Esc`' },
+          ],
+        },
+        {
+          device: 'Controller',
+          controls: [
+            { action: 'Move', how: 'Left stick or D-pad' },
+            {
+              action: 'Level up',
+              how: 'D-pad and `A` to pick, `X` to reroll, `Y` to skip',
+            },
+            { action: 'Pause', how: '`Start`' },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'path-not-taken',
@@ -351,7 +559,7 @@ export const apps: App[] = [
     description:
       'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on six film-score battles, and one miss is death.',
     longDescription:
-      'A first-person rhythm duel, and a pre-alpha: what is here are the first gameplay tests, with a greybox attacker standing in for the real one. Every glowing line that falls down the three lanes is a hit in the music. Dodge left, down or right as it touches its pad, hold a blue line for bullet time while one slow blow crawls in, dodge a burst of quick blows after an orange one, and strike when the red button comes up. One miss is death, and a death skips the intro, so you are straight back in. The six songs are short battle cues I made with ElevenLabs Music: three film-score fights, and three darker ones with Japanese instruments, each with a quiet stretch you play in bullet time. Every one has about ten seconds of intro, a minute or more of fighting and ten seconds to close. The story comes later.',
+      'A duel to the beat, seen through your own eyes, and an early test of something bigger. Every blow your opponent throws lands on the music: dodge it, slow time when the song goes quiet, and strike back when you see your opening. One miss and the duel is over, but you’re back in the fight in seconds. The story comes later.',
     thumbnailUrl: '/images/apps/path-not-taken-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/path-not-taken-1.webp',
@@ -372,6 +580,42 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/path-not-taken',
+    howToPlay: {
+      on: 'Plays on a phone or a computer, and it’s best with the sound up.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Dodge',
+              how: 'Tap the left, middle or right lane as a line reaches its pad.',
+            },
+            {
+              action: 'Slow time',
+              how: 'Hold a blue line, and let go as its tail reaches the pad.',
+            },
+            {
+              action: 'Quick blows',
+              how: 'Hold an orange line, then tap the blows in the other lanes, or slide your finger across them.',
+            },
+            { action: 'Strike', how: 'Tap when the red button comes up.' },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Dodge', how: '`A` `S` `D`, or `←` `↓` `→`' },
+            { action: 'Strike', how: '`W`, `↑` or `Space`' },
+            {
+              action: 'Blue and orange lines',
+              how: 'Hold the lane’s key down',
+            },
+            { action: 'Pause', how: '`Esc`' },
+            { action: 'Try again', how: '`R`' },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'moondrift',
@@ -379,7 +623,7 @@ export const apps: App[] = [
     description:
       'Cosmo, the first kid on the Moon base, boards the dunes of a moon under a ringed giant planet. One button to jump and backflip, a flick for tricks, and glowing orbs to swing from over the gaps.',
     longDescription:
-      'An endless moonboarding game. Cosmo, the first kid on the Moon base, rides the dunes of a moon under a ringed giant planet, and it all runs on one button: press to jump, hold in the air to backflip, let go to land flat on the board. A flick in the air does a board trick (a kickflip, a heelflip, a 360 shove-it or the Moon Grab), and a flick on the diagonal does an acrobatic one: a barrel roll, a butterfly twist, a corkscrew, or a slow spacewalk on nothing. He grinds the cables strung between antenna masts, rides crystal walls, bounces on moon jellies and gets thrown up by geysers, and where a chasm is too wide to jump, a light line from his wrist catches a glowing orb and swings him across. Tricks chain into a multiplier that banks after a calm stretch, and a bad landing ends the run. The ride passes through five places, Stardust Dunes, the Crystal Canyons, the Ring Temples, the Aurora Ice Fields and Kaguya Station, over a full day with aurora, meteor showers and a rare eclipse. You can watch it side on, from behind, or from inside his bubble helmet, where the view turns with every backflip. A Mission Log of three missions a level earns embroidered patches, and Cosmo talks Mission Control through the whole run. It makes all of its own music as you play, in a different key for each place, with no recordings to download. It plays on a phone and on a computer, with touch, a mouse, the keyboard or a game controller, and it is one file.',
+      'Cosmo is the first kid on the Moon base, and the dunes are his playground. Board across a moon under a ringed giant planet: backflip off the crests, grind the cables between antenna masts, and swing over canyons on a line of light. Chain your tricks for a bigger score, but land them clean, because one bad landing ends the run.',
     thumbnailUrl: '/images/apps/moondrift-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/moondrift-1.webp',
@@ -399,6 +643,61 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/moondrift',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            { action: 'Jump', how: 'Tap.' },
+            {
+              action: 'Backflip',
+              how: 'Hold in the air, and let go to land flat.',
+            },
+            {
+              action: 'Tricks',
+              how: 'Flick in the air. Straight flicks are board tricks; diagonal ones are acrobatic.',
+            },
+            {
+              action: 'Swing',
+              how: 'Hold when a light orb glows near you, and let go to fly.',
+            },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            {
+              action: 'Jump and backflip',
+              how: '`Space` (hold it in the air to flip)',
+            },
+            { action: 'Board tricks', how: 'Arrow keys or `W` `A` `S` `D`' },
+            { action: 'Acrobatic tricks', how: '`Q`, `E`, `Z` or `X`' },
+            { action: 'Swing', how: 'Hold `Space` when an orb glows' },
+            { action: 'Pause', how: '`P` or `Esc`' },
+          ],
+        },
+        {
+          device: 'Controller',
+          controls: [
+            {
+              action: 'Jump and backflip',
+              how: '`A` (hold it in the air to flip)',
+            },
+            {
+              action: 'Board tricks',
+              how: 'Flick the left stick, or the D-pad',
+            },
+            { action: 'Acrobatic tricks', how: 'Flick the right stick' },
+            {
+              action: 'Swing',
+              how: 'Hold `A` when an orb glows, or press `X`',
+            },
+            { action: 'Pause', how: '`Start`' },
+          ],
+        },
+      ],
+    },
   },
   /*
    * The Escape Rooms: the Arcade's theater on the night market. Each room is a
@@ -411,7 +710,7 @@ export const apps: App[] = [
     description:
       'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, the new lighting tech gets the blame, and you have one night locked in the dressing room to find it and prove who took it.',
     longDescription:
-      'My first escape room, and a whodunit. Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds and it doesn\u2019t come back. Mei, all grown up from my Tetherball story, runs the theater\u2019s lights, so she gets the blame, and she is locked in the dressing room until the police can cross the flooded bridge at dawn. You search the room: coats with something in every pocket, a dove that only comes out for sunflower seeds, Madame\u2019s moon cabinet with three drawers that each open a different way, and a rival magician\u2019s phone with a video of the dark. Three suspects told three stories on stage. One of them is lying, and at dawn you prove it in front of everyone. A wrong guess never ends the game: Mei says why that person couldn\u2019t have done it, and you pick again. Every clue is an ordinary thing you can find in the room. The voices, the music and the sound were made with ElevenLabs. It plays on a phone or a computer, and it is one file.',
+      'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds, and it doesn’t come back. Mei, the theater’s new lighting tech, gets the blame and is locked in the dressing room until the police arrive at dawn. You have one night to find the pearl and prove who really took it.',
     thumbnailUrl: '/images/apps/the-moon-pearl-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/the-moon-pearl-1.webp',
@@ -431,6 +730,39 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/the-moon-pearl',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Look around',
+              how: 'Tap anything that catches your eye.',
+            },
+            { action: 'Talk', how: 'Tap to move the conversation along.' },
+            {
+              action: 'Use what you find',
+              how: 'Tap the place it goes. Mei uses whatever she’s carrying.',
+            },
+            {
+              action: 'Case notes',
+              how: 'Tap Case to see what you know so far.',
+            },
+            { action: 'Get a hint', how: 'Stuck? Tap Think.' },
+          ],
+        },
+        {
+          device: 'Keyboard shortcuts',
+          controls: [
+            { action: 'Hint', how: '`H`' },
+            { action: 'Case notes', how: '`C` or `J`' },
+            { action: 'Back', how: '`Esc`' },
+            { action: 'Mute', how: '`M`' },
+          ],
+        },
+      ],
+    },
   },
   /*
    * The Broom & Blade Arcade: the five machines of Broom & Blade's games room,
@@ -444,7 +776,7 @@ export const apps: App[] = [
     description:
       'Flick basketballs at a hoop in a candlelit cellar. Thirty balls, a basket that starts moving after ten, and three points for a shot that clears the backboard.',
     longDescription:
-      'Hoop Quest started the fair in Broom & Blade, the chore game I built for my family: it felt like a carnival game, so the guild hall grew a booth for each game. You drag a ball up off the rack and flick it at the hoop: thirty balls, two points a basket, and three for a Sky Shot thrown from down low that flies over the backboard. The basket holds still for the first ten balls, then starts to slide from side to side. Three baskets in a row set the ball on fire, eight turn the fire blue, and the callouts climb from NICE! to LEGENDARY!. Pip the guild mouse rides the top of the backboard: he watches the ball, cheers every make, backflips for a swish, waves a pennant on a streak and hides his eyes when you miss. A secret Space Shot, flicked so hard it leaves the top of the screen and still drops in, is worth five and turns Pip into a giant hype man. Every sound is made by the game as you play, with no recordings, and the whole game is one file. Here every round is free.',
+      'Thirty balls, one hoop and a candlelit cellar. Sink three in a row and the ball catches fire; keep the streak going and the fire turns blue. After ten balls the hoop starts to move, and Pip the mouse cheers you on from the top of the backboard. Rumor has it there’s a shot worth five, if you can find it.',
     thumbnailUrl: '/images/apps/hoop-quest-thumbnail.webp',
     screenshotUrls: ['/images/apps/hoop-quest-1.webp', '/images/apps/hoop-quest-2.webp', '/images/apps/hoop-quest-3.webp'],
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
@@ -460,6 +792,25 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/hoop-quest',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            { action: 'Pick up a ball', how: 'Press on a ball in the rack.' },
+            {
+              action: 'Shoot',
+              how: 'Flick it up at the hoop and let go. The way you flick is the way it flies.',
+            },
+            {
+              action: 'Pause or mute',
+              how: 'Tap the buttons in the bottom corners.',
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'kid-volt-knockout',
@@ -467,7 +818,7 @@ export const apps: App[] = [
     description:
       'A boxing game I built for phones. Kid Volt vs Disco Danny on a rooftop: he punches on the beat, a sparkle shows where he’s open, and three knockdowns is a TKO.',
     longDescription:
-      'A boxing game I built for phones, from a study of the 16-bit boxing classics. Kid Volt fights Disco Danny on a rooftop dance floor. Danny throws every punch on the beat of a disco loop, and during a real wind-up a sparkle marks where he’s open. Punch that spot to counter and charge your super: one charge is a Volt Hook, three is a Supernova. Dodge, duck or hold block, hit him as he sways back to center when he’s dizzy, and put him down three times for a TKO before the fight clock runs out. Every pixel is drawn into a 120 by 140 frame, and every sound is synthesised in the browser.',
+      'Kid Volt takes on Disco Danny on a rooftop dance floor. Danny throws every punch on the beat, so listen to the music, watch for the sparkle that shows where he’s open, and hit back. Charge up a Volt Hook, save up for a Supernova, and put him down three times before the clock runs out.',
     thumbnailUrl: '/images/apps/kid-volt-knockout-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/kid-volt-knockout-1.webp',
@@ -487,6 +838,40 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/kid-volt-knockout',
+    howToPlay: {
+      on: 'Made for phones, and it plays on a computer too.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Punch',
+              how: 'Tap JAB to hit high or BODY to hit low, on the left or the right.',
+            },
+            { action: 'Get out of the way', how: 'Tap DODGE or DUCK.' },
+            { action: 'Block', how: 'Hold BLOCK.' },
+            { action: 'Super', how: 'Tap SUPER once it’s charged.' },
+            {
+              action: 'Get back up',
+              how: 'Mash any button when you’re knocked down.',
+            },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Jab', how: '`J` and `K` (left and right)' },
+            { action: 'Body blow', how: '`N` and `M` (left and right)' },
+            { action: 'Dodge', how: '`A` or `←`, `D` or `→`' },
+            { action: 'Duck', how: '`S` or `↓`' },
+            { action: 'Block', how: 'Hold `W` or `↑`' },
+            { action: 'Super', how: '`Space`' },
+            { action: 'Get back up', how: 'Mash the punch keys' },
+            { action: 'Pause', how: '`Esc` or `P`' },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'whack-a-dust-bunny',
@@ -494,7 +879,7 @@ export const apps: App[] = [
     description:
       'A booth from the chore game I built for my family. Bonk dust bunnies for 75 seconds, grab the golden ones, survive the Horde, and whatever you do, don’t bonk Pip.',
     longDescription:
-      'At home this is a booth in Broom & Blade, the chore game I built for my family: a finished chore earns a ticket, and a ticket buys a round. Here every round is free. Dust bunnies pop out of nine holes in a candlelit cellar and you have 75 seconds to bonk them. Golden ones are worth three, helmets take two bonks, and two bonks in a flash is a DOUBLE BONK. Sneezy bunnies, hoppers, mama bunnies, socks and three surprise events a round keep it changing, your bonks fill the sign for FEVER, and the last twelve seconds bring the Horde. Pip pops up too. Don’t bonk Pip.',
+      'The cellar is full of dust bunnies, and you have 75 seconds. Bonk them as they pop up, grab the golden ones for extra points, and fill the sign for FEVER before the Horde arrives in the final seconds. Pip pops up too. Don’t bonk Pip.',
     thumbnailUrl: '/images/apps/whack-a-dust-bunny-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/whack-a-dust-bunny-1.webp',
@@ -514,6 +899,29 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/whack-a-dust-bunny',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            { action: 'Bonk', how: 'Tap a dust bunny while it’s up.' },
+            {
+              action: 'Grab a power-up',
+              how: 'Tap it when it pops out of a hole.',
+            },
+            {
+              action: 'FEVER',
+              how: 'Tap the sign at the bottom once it’s full.',
+            },
+            {
+              action: 'Pause or mute',
+              how: 'Tap the buttons in the bottom corners.',
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'ring-toss',
@@ -521,7 +929,7 @@ export const apps: App[] = [
     description:
       'Flick rings onto twenty bottles under a striped awning. Thirty rings, a golden bottle worth ten, bonuses for rows, columns and corners, and a BLACKOUT for all twenty.',
     longDescription:
-      'A carnival ring toss, the second booth at the Broom & Blade fair, and Pip runs it. You grab a ring off the peg and flick it at a table of twenty bottles: a soft flick lands up front, a hard one reaches the back row, and the slant of the flick carries it sideways. The rows are worth two to five, one bottle is golden and worth ten, and each bottle takes one ring. A full row pays five times its value, a column pays 15 and the four corners 20. Three rows in, the string lights go rainbow and a heartbeat starts under the last bottles. Ring all twenty and the round ends in a BLACKOUT: the lights cut out, a spotlight snaps on, the word stamps in letter by letter, and the fair goes wild while Pip screams. Every sound is made by the game as you play, and the whole game is one file. Here every round is free.',
+      'Twenty bottles, thirty rings, and Pip running the booth. Ring the bottles one by one, fill a row, a column or all four corners for a bonus, and go for the golden bottle worth ten. Ring all twenty for a BLACKOUT, and the whole fair goes wild.',
     thumbnailUrl: '/images/apps/ring-toss-thumbnail.webp',
     screenshotUrls: ['/images/apps/ring-toss-1.webp', '/images/apps/ring-toss-2.webp', '/images/apps/ring-toss-3.webp'],
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API'],
@@ -537,6 +945,28 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/ring-toss',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Pick up a ring',
+              how: 'Press on the peg at the bottom.',
+            },
+            {
+              action: 'Toss',
+              how: 'Flick up and let go. Flick harder to reach the back rows; the slant of your flick steers it.',
+            },
+            {
+              action: 'Pause or mute',
+              how: 'Tap the buttons in the bottom corners.',
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'milk-bottle-knockdown',
@@ -544,7 +974,7 @@ export const apps: App[] = [
     description:
       'Twenty balls, three pyramids of milk bottles. Clear a pyramid with one ball for a CLEAN KNOCK, find the secret golden bottle, and clear the whole shelf.',
     longDescription:
-      'The carnival milk-bottle throw from the Broom & Blade fair. You drag a ball up and flick it at three pyramids of six bottles: a soft flick hits low, a hard one hits high, and too soft falls short. A bottle only counts once it leaves the shelf. One ball through a whole pyramid is a CLEAN KNOCK, one bottle is secretly golden, and clearing all three pyramids lights the lamps for a FULL SHELF. The bottles fly in 3D: they bowl each other over, land on the shelf or drop to the booth floor, and a hard landing smashes them into glass and milk. Now and then one flies straight at you and cracks the screen, and a clean knock rolls an instant replay at a third of the speed. Pip watches from the counter and ducks when bottles come his way. Every sound is made by the game as you play, and the whole game is one file. Here every round is free.',
+      'Three pyramids of milk bottles, twenty balls, and Pip watching from the counter. Knock a whole pyramid down with one ball for a CLEAN KNOCK, hunt for the one bottle that’s secretly gold, and clear the whole shelf. Keep your eyes open: now and then a bottle flies straight back at you.',
     thumbnailUrl: '/images/apps/milk-bottle-knockdown-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/milk-bottle-knockdown-1.webp',
@@ -564,6 +994,29 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: '/games/milk-bottle-knockdown',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Pick up a ball',
+              how: 'Press anywhere below the counter.',
+            },
+            {
+              action: 'Throw',
+              how: 'Flick up and let go. Flick harder to hit higher; the slant of your flick steers it.',
+            },
+            { action: 'Skip a replay', how: 'Tap the screen.' },
+            {
+              action: 'Pause or mute',
+              how: 'Tap the buttons in the bottom corners.',
+            },
+          ],
+        },
+      ],
+    },
   },
 ];
 
