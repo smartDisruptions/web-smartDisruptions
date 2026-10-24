@@ -749,6 +749,10 @@ export const apps: App[] = [
               how: 'The guns fire on their own. Tap MISSILE, or U-TURN to swing round on a raider behind you.',
             },
             { action: 'Cockpit view', how: 'The eye at the top.' },
+            {
+              action: 'Look back',
+              how: 'Hold LOOK BACK, up and to the left of BOOST (above it when the phone is upright).',
+            },
           ],
         },
         {
@@ -761,6 +765,7 @@ export const apps: App[] = [
             { action: 'Star map', how: '`G`' },
             { action: 'Missile, and U-turn', how: '`E`, and `Q`' },
             { action: 'Cockpit view', how: '`V`' },
+            { action: 'Look back', how: 'Hold `B`' },
             { action: 'Autopilot', how: '`C`' },
             { action: 'Pause', how: '`Esc` or `P`' },
           ],
@@ -778,6 +783,7 @@ export const apps: App[] = [
               action: 'Cockpit view',
               how: 'Click the right stick, or D-pad up',
             },
+            { action: 'Look back', how: 'Hold `LT`' },
             { action: 'Autopilot', how: 'D-pad down' },
             { action: 'Pause', how: '`Start`' },
           ],
