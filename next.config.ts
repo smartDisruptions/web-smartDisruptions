@@ -91,6 +91,13 @@ const nextConfig: NextConfig = {
           source: '/games/path-not-taken',
           destination: '/games/path-not-taken/index.html',
         },
+        // Cosmo's Moondrift: the same, one file in public/games, built in the
+        // vault (Tools/cosmo-moondrift) with --site, which adds its share cards
+        // and the way back to the Arcade on its title screen.
+        {
+          source: '/games/moondrift',
+          destination: '/games/moondrift/index.html',
+        },
         // Portfolio Ledger: the public demo of my net-worth tracker, one file in
         // public/demo on made-up data (built from my private ledger's source
         // with --public, which leaves its real settings out). Its Home Screen
@@ -111,6 +118,13 @@ const nextConfig: NextConfig = {
         {
           source: '/demo/gilt-and-lather',
           destination: '/demo/gilt-and-lather/index.html',
+        },
+        // The Moon Pearl, the first escape room: the same, one file in
+        // public/games, built in the vault (Tools/moon-pearl) with --site, so
+        // its 89 sounds load from /games/the-moon-pearl/audio/ beside it.
+        {
+          source: '/games/the-moon-pearl',
+          destination: '/games/the-moon-pearl/index.html',
         },
         // The Broom & Blade Arcade's five machines: the same, one file each.
         ...['hoop-quest', 'kid-volt-knockout', 'whack-a-dust-bunny', 'ring-toss', 'milk-bottle-knockdown'].map((name) => ({

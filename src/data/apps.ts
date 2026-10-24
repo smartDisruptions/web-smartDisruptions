@@ -412,6 +412,65 @@ export const apps: App[] = [
     buildPlanAvailable: false,
     liveUrl: '/games/path-not-taken',
   },
+  {
+    slug: 'moondrift',
+    name: "Cosmo's Moondrift",
+    description:
+      'Cosmo, the first kid on the Moon base, boards the dunes of a moon under a ringed giant planet. One button to jump and backflip, a flick for tricks, and glowing orbs to swing from over the gaps.',
+    longDescription:
+      'An endless moonboarding game. Cosmo, the first kid on the Moon base, rides the dunes of a moon under a ringed giant planet, and it all runs on one button: press to jump, hold in the air to backflip, let go to land flat on the board. A flick in the air does a board trick (a kickflip, a heelflip, a 360 shove-it or the Moon Grab), and a flick on the diagonal does an acrobatic one: a barrel roll, a butterfly twist, a corkscrew, or a slow spacewalk on nothing. He grinds the cables strung between antenna masts, rides crystal walls, bounces on moon jellies and gets thrown up by geysers, and where a chasm is too wide to jump, a light line from his wrist catches a glowing orb and swings him across. Tricks chain into a multiplier that banks after a calm stretch, and a bad landing ends the run. The ride passes through five places, Stardust Dunes, the Crystal Canyons, the Ring Temples, the Aurora Ice Fields and Kaguya Station, over a full day with aurora, meteor showers and a rare eclipse. You can watch it side on, from behind, or from inside his bubble helmet, where the view turns with every backflip. A Mission Log of three missions a level earns embroidered patches, and Cosmo talks Mission Control through the whole run. It makes all of its own music as you play, in a different key for each place, with no recordings to download. It plays on a phone and on a computer, with touch, a mouse, the keyboard or a game controller, and it is one file.',
+    thumbnailUrl: '/images/apps/moondrift-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/moondrift-1.webp',
+      '/images/apps/moondrift-2.webp',
+      '/images/apps/moondrift-3.webp',
+    ],
+    techStack: ['HTML5', 'Three.js', 'WebGL', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'A 3D game in one file of about 1.1 MB: the moon, the sky, Cosmo, every texture and every sound are made in the browser as it loads.',
+      'The track proves itself. Every chasm is sized from the game’s own physics when a run starts, and a solver that drives the real player code found no section it could not clear in 30,534 tries, while riding straight off the lip clears none of them.',
+      'Six AI agents built it side by side on one written contract, each owning one part of the game: the track, the world, the sky, Cosmo, the gameplay and the screens.',
+      'After the first play, the sound was rebuilt so a phone can keep up: about 44 synthesised voices at once instead of 90, with the same loudness.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/moondrift',
+  },
+  /*
+   * The Escape Rooms: the Arcade's theater on the night market. Each room is a
+   * game in Josh's vault (Tools/moon-pearl/ for The Moon Pearl); public/games/<slug>
+   * holds the site's copy, built with --site so its sounds load from beside it.
+   */
+  {
+    slug: 'the-moon-pearl',
+    name: 'The Moon Pearl',
+    description:
+      'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, the new lighting tech gets the blame, and you have one night locked in the dressing room to find it and prove who took it.',
+    longDescription:
+      'My first escape room, and a whodunit. Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds and it doesn\u2019t come back. Mei, all grown up from my Tetherball story, runs the theater\u2019s lights, so she gets the blame, and she is locked in the dressing room until the police can cross the flooded bridge at dawn. You search the room: coats with something in every pocket, a dove that only comes out for sunflower seeds, Madame\u2019s moon cabinet with three drawers that each open a different way, and a rival magician\u2019s phone with a video of the dark. Three suspects told three stories on stage. One of them is lying, and at dawn you prove it in front of everyone. A wrong guess never ends the game: Mei says why that person couldn\u2019t have done it, and you pick again. Every clue is an ordinary thing you can find in the room. The voices, the music and the sound were made with ElevenLabs. It plays on a phone or a computer, and it is one file.',
+    thumbnailUrl: '/images/apps/the-moon-pearl-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/the-moon-pearl-1.webp',
+      '/images/apps/the-moon-pearl-2.webp',
+      '/images/apps/the-moon-pearl-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API', 'ElevenLabs'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Every answer has at least two clues that point to it, and a reason in the story for being there. I wrote the whole story first, with a table that pairs each lock with its clues, before any art existed.',
+      'Five voiced characters (37 lines), a theme song and 19 sound effects, all made with ElevenLabs, one take each.',
+      'Four AI agents built it side by side on one written contract: the dressing room, the cast and the stage, the cabinet and the props, and the screens with the phone and the intercom.',
+      'Measured with the processor slowed four times, every scene\u2019s code takes under 4 ms a frame, so it runs smoothly on an old phone.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/the-moon-pearl',
+  },
   /*
    * The Broom & Blade Arcade: the five machines of Broom & Blade's games room,
    * free to play here. The games themselves live in Josh's vault
@@ -564,7 +623,7 @@ export function getAppBySlug(slug: string): App | undefined {
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken', 'moondrift'];
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door
@@ -579,6 +638,13 @@ export const BROOM_BLADE_ARCADE_SLUGS = [
   'milk-bottle-knockdown',
 ];
 
+/**
+ * The Escape Rooms, the Arcade's theater on the night market (Josh's call,
+ * 2026-10-23): between the front room's cabinets and the stair down to the
+ * Broom & Blade Arcade, one room per game, in the order they opened.
+ */
+export const ESCAPE_ROOM_SLUGS = ['the-moon-pearl'];
+
 /** The Arcade's archive, /games/archive: the older cabinets, in their old order. */
 export const ARCADE_ARCHIVE_SLUGS = ['cloth-simulator', 'broom-blade'];
 
@@ -592,11 +658,11 @@ export const ARCADE_ARCHIVE_SLUGS = ['cloth-simulator', 'broom-blade'];
 export const ARCADE_DEMO_SLUGS = ['tether-ball'];
 
 /**
- * Every game on the site, the front room, the Broom & Blade Arcade and the
- * archive: what the catalogue, the search index and the home page's counts
- * treat as a game.
+ * Every game on the site, the front room, the Escape Rooms, the Broom & Blade
+ * Arcade and the archive: what the catalogue, the search index and the home
+ * page's counts treat as a game.
  */
-export const GAME_SLUGS = [...ARCADE_SLUGS, ...BROOM_BLADE_ARCADE_SLUGS, ...ARCADE_ARCHIVE_SLUGS];
+export const GAME_SLUGS = [...ARCADE_SLUGS, ...ESCAPE_ROOM_SLUGS, ...BROOM_BLADE_ARCADE_SLUGS, ...ARCADE_ARCHIVE_SLUGS];
 
 /** Projects with a full write-up on /websites, so they skip the catalogue. */
 // Slugs that live on /websites as a full write-up and are therefore filtered out
