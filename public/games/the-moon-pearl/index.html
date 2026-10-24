@@ -4162,9 +4162,10 @@ const Cast = (() => {
     s += M_BUN(50, 34, 1) + M_BUN(150, 34, -1);
     s += se(24, 106, 13, 20, '#262a3d', 5) + se(176, 106, 11, 17, '#1d2030', 5) + ci(24, 98, 2.6, M_MAG);
     s += fl(FULL, M_SKIN) + fl(FACE_SH, M_SKIN_S, 'opacity=".75"');
-    // two loose strands by her cheeks, and the bangs, cut at the brows (any lower and the half-lid's skin would show on them)
-    s += sp('M44 80 Q34 112 44 142 Q50 136 50 118 Q52 100 58 84 Z', G('m-hair'), 3) + sp('M156 80 Q166 112 156 142 Q150 136 150 118 Q148 100 142 84 Z', G('m-hair'), 3);
-    s += sp('M40 80 C44 58 156 58 160 80 Q130 73 100 75 Q70 73 40 80 Z', G('m-hair'), 4) + ln('M60 67 Q100 57 140 67', '#6a6880', 2.2, 'opacity=".5"');
+    // curtain bangs (Josh's pick, 2026-10-24): parted in the middle and swept down to the temples. Over the eyes they
+    // stop at the brows: any lower and the half-lid's skin would show on them.
+    s += sp('M37 92 C38 58 162 58 163 92 Q157 83 146 78 Q126 74 108 74 Q102 70 100 64 Q98 70 92 74 Q74 74 54 78 Q43 83 37 92 Z', G('m-hair'), 4)
+      + ln('M58 70 Q76 61 94 64', '#6a6880', 2.2, 'opacity=".5"') + ln('M106 64 Q124 61 142 70', '#6a6880', 2.2, 'opacity=".5"');
     // the mic on its boom, by the corner of her mouth
     s += ln('M27 122 Q34 142 64 139', L, 7) + ln('M27 122 Q34 142 64 139', '#262a3d', 3.4) + se(67, 138.5, 5.5, 4.5, '#262a3d', 3);
     // the moonlit rim down her hair's left edge, under the bun (the shared rim would cross it)
@@ -4616,13 +4617,16 @@ const Cast = (() => {
         lB.ax = 113 + s * 13; lB.ay = 222 - swB * 7; lB.sr = -0.24 * s * smooth(swB * 3);
         const k = name === 'bustle' ? 15 : 11;
         aF.hx = 60 + s * k; aF.hy = 190 - Math.abs(s) * (name === 'bustle' ? 8 : 2); aB.hx = 140 - s * k; aB.hy = 190 - Math.abs(s) * (name === 'bustle' ? 8 : 2);
+        // the brisk swing's elbows hang below the arm on the way forward and out to the side on the way back; the
+        // bend follows the swing so the elbow passes through straight instead of jumping sides
+        if (name === 'bustle') { aF.bend = s; aB.bend = -s; }
         if (name === 'walkhold') { aF.hx = 84; aF.hy = 172 + s; aF.len = 22; aF.bend = 1; aB.hx = 112; aB.hy = 172 + s; aB.len = 22; aB.bend = -1; aB.front = true; }
         break;
       }
       case 'reach': {
         const w = Math.sin(t * 5) * 1.5;
         J.by = -4; J.lean = -0.07; J.hy = -1; J.hr = -0.05;
-        aF.hx = 30 + w; aF.hy = 122 - w * 0.5; aF.len = 30; aB.hx = 138; aB.hy = 188;
+        aF.hx = 30 + w; aF.hy = 122 - w * 0.5; aF.len = 30; aF.bend = -1; aB.hx = 138; aB.hy = 188;
         lF.sr = -0.25; lB.sr = -0.2; lF.ay = 222; lB.ay = 221;
         break;
       }
@@ -4635,12 +4639,12 @@ const Cast = (() => {
       case 'think': {
         J.hr = -0.06 + Math.sin(t * 0.8) * 0.01; J.hy = 0.5;
         aF.hx = 88 + Math.sin(t * 1.6) * 0.8; aF.hy = 142 + Math.sin(t * 3.1) * 0.6; aF.bend = 1; aF.len = 24;
-        aB.hx = 92; aB.hy = 184; aB.front = true; aB.bend = 1;
+        aB.hx = 92; aB.hy = 184; aB.front = true; aB.bend = -1;
         break;
       }
       case 'phone': {
         J.hr = -0.07; J.hy += 0.6;
-        aF.hx = 33; aF.hy = 120 + Math.sin(t * 1.3) * 0.6; aF.len = 30; aF.bend = 1;
+        aF.hx = 33; aF.hy = 120 + Math.sin(t * 1.3) * 0.6; aF.len = 30; aF.bend = -1;
         break;
       }
       case 'cheer': {
@@ -4653,7 +4657,7 @@ const Cast = (() => {
       }
       case 'talk': {   // one hand making the point, gently
         const w = Math.sin(t * 2.3), w2 = Math.sin(t * 1.1 + 1);
-        aF.hx = 46 + w * 4; aF.hy = 170 - Math.abs(w) * 5 + w2 * 2; aF.len = 23; J.hr += w2 * 0.012;
+        aF.hx = 46 + w * 4; aF.hy = 170 - Math.abs(w) * 5 + w2 * 2; aF.len = 23; aF.bend = -1; J.hr += w2 * 0.012;
         break;
       }
       case 'shock': {   // hands up by the face, leaning back
@@ -4677,7 +4681,7 @@ const Cast = (() => {
       }
       case 'present': {   // Madame: one hand out low toward the pearl, the other raised
         const w = Math.sin(t * 1.4);
-        J.lean = -0.03; aF.hx = 18; aF.hy = 172 + w * 2; aF.len = 32; aF.bend = 1;
+        J.lean = -0.03; aF.hx = 18; aF.hy = 172 + w * 2; aF.len = 32; aF.bend = -1;
         aB.hx = 166; aB.hy = 104 + w * 3; aB.len = 32; aB.bend = 1; aB.front = true;
         break;
       }
@@ -4696,15 +4700,15 @@ const Cast = (() => {
         break;
       }
       case 'offer': {   // holding something out in front
-        J.lean = -0.04; aF.hx = 30; aF.hy = 166; aF.len = 30; aF.bend = 1;
+        J.lean = -0.04; aF.hx = 30; aF.hy = 166; aF.len = 30; aF.bend = -1;
         break;
       }
       case 'film': {   // a phone held up at eye height
-        aF.hx = 38 + Math.sin(t * 1.7) * 0.8; aF.hy = 120 + Math.sin(t * 2.3) * 0.8; aF.len = 30; aF.bend = 1;
+        aF.hx = 38 + Math.sin(t * 1.7) * 0.8; aF.hy = 120 + Math.sin(t * 2.3) * 0.8; aF.len = 30; aF.bend = -1;
         break;
       }
       case 'touch': {   // Mrs. Hart: her fingers find her bracelet
-        aF.hx = 88; aF.hy = 186; aF.len = 22; aF.bend = 1; aB.hx = 96; aB.hy = 182; aB.len = 24; aB.bend = 1; aB.front = true; J.touch = true;
+        aF.hx = 88; aF.hy = 186; aF.len = 22; aF.bend = 1; aB.hx = 96; aB.hy = 182; aB.len = 24; aB.bend = -1; aB.front = true; J.touch = true;
         J.hr += 0.05; J.hy += 1.5;
         break;
       }
@@ -4720,7 +4724,7 @@ const Cast = (() => {
       }
       case 'board': {   // Mei at her lighting board: both hands forward on the faders
         const f = Math.sin(t * 1.3) * 2;
-        J.lean = -0.05; aF.hx = 30 + f; aF.hy = 188; aF.len = 28; aF.bend = 1; aB.hx = 118; aB.hy = 188;
+        J.lean = -0.05; aF.hx = 30 + f; aF.hy = 188; aF.len = 28; aF.bend = -1; aB.hx = 118; aB.hy = 188;
         break;
       }
       case 'phones': {   // hands up to her headphones
@@ -4747,12 +4751,20 @@ const Cast = (() => {
   const SHOE_P = typeof Path2D !== 'undefined' ? new Path2D(SHOE) : null;
   // the last arm drawn: shoulder, elbow, hand (rig space)
   const ARM = { sx: 0, sy: 0, ex: 0, ey: 0, hx: 0, hy: 0 };
-  function drawArm(c, A, col, hand, w, finger) {
+  // an arm's shoulder and hand in the upper body's space (the hand pulled in if it's out of reach) into AJ, and
+  // its elbow into JX, JY. `bend` picks the side the elbow goes: a person's hangs below the line from shoulder
+  // to hand, never above both ends (tools/arms.mjs checks every pose).
+  const AJ = { sx: 0, sy: 0, hx: 0, hy: 0 };
+  function armJoints(A) {
     up(A.sx, A.sy); const sx = UX, sy = UY;
     up(A.hx, A.hy); let hx = UX, hy = UY;
     const len = A.len, dd = Math.hypot(hx - sx, hy - sy);
     if (dd > len * 2 - 0.5) { const k = (len * 2 - 0.5) / dd; hx = sx + (hx - sx) * k; hy = sy + (hy - sy) * k; }
+    AJ.sx = sx; AJ.sy = sy; AJ.hx = hx; AJ.hy = hy;
     ik(sx, sy, hx, hy, len, len, A.bend);
+  }
+  function drawArm(c, A, col, hand, w, finger) {
+    armJoints(A); const sx = AJ.sx, sy = AJ.sy, hx = AJ.hx, hy = AJ.hy;
     const cx = 2 * JX - (sx + hx) / 2, cy = 2 * JY - (sy + hy) / 2;
     c.beginPath(); c.moveTo(sx, sy); c.quadraticCurveTo(cx, cy, hx, hy);
     c.strokeStyle = L; c.lineWidth = w + 7; c.stroke();
@@ -4879,6 +4891,12 @@ const Cast = (() => {
     if (name === 'hold' || name === 'walkhold') { HANDS.x = HANDS.mx; HANDS.y = HANDS.my; } else { HANDS.x = HANDS.hx; HANDS.y = HANDS.hy; }
   }
   function drawMei(c, x, y, h, name, t, o) { drawFigure(c, RIGS.mei, x, y, h, name || 'idle', t, o); }
+  // dev and tests: where a rig's arms are in a pose at time t, without drawing: [{arm, sx, sy, ex, ey, hx, hy}]
+  function poseArms(who, name, t) {
+    const rig = RIGS[who] || RIGS[ALIAS[who]]; if (!rig) return null;
+    pose(name, t, rig);
+    return [['front', J.aF], ['back', J.aB]].map(([arm, A]) => { armJoints(A); return { arm, sx: AJ.sx, sy: AJ.sy, ex: JX, ey: JY, hx: AJ.hx, hy: AJ.hy }; });
+  }
   function drawPerson(c, who, x, y, h, name, t, o) {
     const rig = RIGS[who] || RIGS[ALIAS[who]];
     if (rig) drawFigure(c, rig, x, y, h, name || 'stand', t, o);
@@ -4965,7 +4983,7 @@ const Cast = (() => {
 
   return {
     get ready() { return ready; },
-    drawMei, drawPerson, drawPip, drawPortrait, exprs,
+    drawMei, drawPerson, drawPip, drawPortrait, exprs, poseArms,
     // where the last figure's hands ended up (caller units): {x,y} the holding point, {hx,hy} the front hand
     hands: HANDS,
     // ask for a portrait's layers at a size before it's drawn (devPx = the square's size in device px)
