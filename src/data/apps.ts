@@ -738,7 +738,7 @@ export const apps: App[] = [
             { action: 'Boost', how: 'Hold BOOST.' },
             {
               action: 'Orbit and back',
-              how: 'The round button above BOOST: TO ORBIT in a canyon, DIVE in orbit.',
+              how: 'The round button up and to the left of BOOST (above LOOK BACK when the phone is upright): TO ORBIT in a canyon, DIVE in orbit.',
             },
             {
               action: 'Warp',
@@ -749,10 +749,7 @@ export const apps: App[] = [
               how: 'The guns fire on their own. Tap MISSILE, or U-TURN to swing round on a raider behind you.',
             },
             { action: 'Cockpit view', how: 'The eye at the top.' },
-            {
-              action: 'Look back',
-              how: 'Hold LOOK BACK, up and to the left of BOOST (above it when the phone is upright).',
-            },
+            { action: 'Look back', how: 'Hold LOOK BACK, right above BOOST.' },
           ],
         },
         {
