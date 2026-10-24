@@ -699,6 +699,92 @@ export const apps: App[] = [
       ],
     },
   },
+  {
+    slug: 'cosmo-outbound',
+    name: 'Cosmo Outbound',
+    description:
+      'Cosmo flies his ship low through sandstone canyons past Mach 1, then straight up through the clouds into orbit. Warp to a new world, dive back down, and shake the raiders who follow you all the way.',
+    longDescription:
+      "Cosmo's ship is fast and the canyons are tight. Hold boost and break the sound barrier between the walls, then pull up through the clouds and keep climbing until the sky goes black, with no loading screen on the way. From orbit, warp to the next star and dive onto a world nobody has charted: desert, ice, lava, forests, rivers, or an ocean to skim. Some skies have raiders waiting, some canyons have guns on the rims, and one system belongs to Kaida and her dragonfly ship. Cosmo's logbook keeps every world you find, so you can always fly back.",
+    thumbnailUrl: '/images/apps/cosmo-outbound-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/cosmo-outbound-1.webp',
+      '/images/apps/cosmo-outbound-2.webp',
+      '/images/apps/cosmo-outbound-3.webp',
+    ],
+    techStack: ['HTML5', 'Three.js', 'WebGL', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'A real round planet in one file of about 1.2 MB: the climb from the canyon floor to orbit is one flight, with no loading screen and no cut.',
+      'Seven kinds of world, each rebuilt the same from its seed, so a trip back lands on the same planet.',
+      'Built by an orchestrator and AI agents working side by side on the ship, space and the warp, the visor and the sound, then grown with dogfights, defended canyons and water.',
+      'The star map is a hand-drawn logbook made for a low-end phone: each page is drawn once, and the 3D world stops drawing while it is open.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/cosmo-outbound',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch',
+          controls: [
+            {
+              action: 'Steer',
+              how: 'Drag on the left half of the screen. Up climbs, down dives.',
+            },
+            { action: 'Boost', how: 'Hold BOOST.' },
+            {
+              action: 'Orbit and back',
+              how: 'The round button above BOOST: TO ORBIT in a canyon, DIVE in orbit.',
+            },
+            {
+              action: 'Warp',
+              how: 'Open STAR MAP at the top when it glows gold, pick a star, and press its WARP.',
+            },
+            {
+              action: 'Fight',
+              how: 'The guns fire on their own. Tap MISSILE, or U-TURN to swing round on a raider behind you.',
+            },
+            { action: 'Cockpit view', how: 'The eye at the top.' },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Steer', how: '`W` `A` `S` `D` or the arrow keys' },
+            { action: 'Boost', how: 'Hold `Shift` or `Space`' },
+            { action: 'To orbit, and dive', how: '`L`, and `K`' },
+            { action: 'Warp', how: '`F` (again to call it off)' },
+            { action: 'Star map', how: '`G`' },
+            { action: 'Missile, and U-turn', how: '`E`, and `Q`' },
+            { action: 'Cockpit view', how: '`V`' },
+            { action: 'Autopilot', how: '`C`' },
+            { action: 'Pause', how: '`Esc` or `P`' },
+          ],
+        },
+        {
+          device: 'Controller',
+          controls: [
+            { action: 'Steer', how: 'The left stick' },
+            { action: 'Boost', how: 'Hold `RT` or `A`' },
+            { action: 'To orbit, and dive', how: '`X`, and `B`' },
+            { action: 'Warp', how: '`Y`' },
+            { action: 'Star map', how: '`Back`' },
+            { action: 'Missile, and U-turn', how: '`RB`, and `LB`' },
+            {
+              action: 'Cockpit view',
+              how: 'Click the right stick, or D-pad up',
+            },
+            { action: 'Autopilot', how: 'D-pad down' },
+            { action: 'Pause', how: '`Start`' },
+          ],
+        },
+      ],
+    },
+  },
   /*
    * The Escape Rooms: the Arcade's theater on the night market. Each room is a
    * game in Josh's vault (Tools/moon-pearl/ for The Moon Pearl); public/games/<slug>
@@ -1037,7 +1123,7 @@ export function getAppBySlug(slug: string): App | undefined {
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken', 'moondrift'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken', 'moondrift', 'cosmo-outbound'];
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door

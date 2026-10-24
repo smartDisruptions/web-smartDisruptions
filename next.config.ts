@@ -98,6 +98,13 @@ const nextConfig: NextConfig = {
           source: '/games/moondrift',
           destination: '/games/moondrift/index.html',
         },
+        // Cosmo Outbound: the same, one file in public/games, built in the
+        // vault (Tools/cosmo-outbound) with --site, which adds its share cards
+        // and makes the title's "Smart Disruptions Arcade" the way back here.
+        {
+          source: '/games/cosmo-outbound',
+          destination: '/games/cosmo-outbound/index.html',
+        },
         // Portfolio Ledger: the public demo of my net-worth tracker, one file in
         // public/demo on made-up data (built from my private ledger's source
         // with --public, which leaves its real settings out). Its Home Screen
