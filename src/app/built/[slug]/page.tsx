@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { apps, getAppBySlug, type App } from '@/data/apps';
+import { apps, getAppBySlug, GAME_SLUGS, type App } from '@/data/apps';
 import {
   projects,
   getProjectBySlug,
@@ -346,9 +346,17 @@ function ProjectPage({ project }: { project: Project }) {
   );
 }
 
-/** The smaller things and the arcade games. Was /apps/[slug]. */
+/**
+ * The smaller things and the arcade games. Was /apps/[slug].
+ *
+ * A game's page talks to someone who wants to play it, not build it (Josh,
+ * 2026-10-24): a short teaser instead of a tour of the mechanics, a Play
+ * button, How to play, and none of the build notes (what it does, what it is
+ * built with, the write-ups).
+ */
 function AppPage({ app }: { app: App }) {
   const frame = frameFor(app.thumbnailUrl, 'web-app');
+  const game = GAME_SLUGS.includes(app.slug);
   return (
     <div className="bt pb-16">
       <DetailHero
@@ -372,7 +380,7 @@ function AppPage({ app }: { app: App }) {
         {app.liveUrl && (
           <div className="mt-6">
             <Button href={app.liveUrl} size="lg">
-              Try it
+              {game ? 'Play' : 'Try it'}
               <IconExternal size={17} />
             </Button>
           </div>
@@ -404,59 +412,111 @@ function AppPage({ app }: { app: App }) {
           </section>
         )}
 
-        <div className="bt-details mt-14 sm:mt-20">
-          <RevealOnScroll className="sd-sheet p-6 sm:p-8">
-            <h2 className="font-display text-2xl text-[var(--sd-pen-ink)]">
-              What it does
-            </h2>
-            <ul className="bt-bullets font-read mt-5 max-w-[62ch] text-[1.05rem] leading-[1.7] text-text-secondary">
-              {app.outcomes.map((outcome) => (
-                <li key={outcome}>{outcome}</li>
-              ))}
-            </ul>
-          </RevealOnScroll>
-          <RevealOnScroll className="sd-sheet p-6 sm:p-8">
-            <h2 className="sd-kicker">Built with</h2>
-            <ul className="mt-4 flex flex-wrap gap-2" role="list">
-              {app.techStack.map((tech) => (
-                <li key={tech}>
-                  <Badge variant="accent">{tech}</Badge>
-                </li>
-              ))}
-            </ul>
-          </RevealOnScroll>
-        </div>
-
-        <RevealOnScroll>
-          <div className="relative mx-auto mt-28 max-w-lg">
-            <Kiru
-              pose="read"
-              className="pointer-events-none absolute -top-[5.6rem] right-5 h-28 w-auto"
-            />
-            <div className="sd-note px-7 pt-9 pb-8 text-center">
-              <p className="font-display text-4xl leading-tight">
-                Want the how and why?
-              </p>
-              <p className="mt-3 text-[15px] leading-relaxed text-[var(--sd-sticky-ink)]/80">
-                I write up builds like this one. What I did, what went wrong,
-                and what is worth copying.
-              </p>
-              <Link
-                href="/content"
-                className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full border-2 border-[var(--sd-sticky-ink)] px-7 py-2 font-bold text-[var(--sd-sticky-ink)] transition-[translate,scale,background-color] duration-300 hover:-translate-y-0.5 hover:bg-[var(--sd-sticky-ink)]/5 active:scale-[0.97]"
-              >
-                Read the writing
-                <IconArrowRight size={18} />
-              </Link>
+        {game ? (
+          app.howToPlay && <HowToPlay how={app.howToPlay} />
+        ) : (
+          <>
+            <div className="bt-details mt-14 sm:mt-20">
+              <RevealOnScroll className="sd-sheet p-6 sm:p-8">
+                <h2 className="font-display text-2xl text-[var(--sd-pen-ink)]">
+                  What it does
+                </h2>
+                <ul className="bt-bullets font-read mt-5 max-w-[62ch] text-[1.05rem] leading-[1.7] text-text-secondary">
+                  {app.outcomes.map((outcome) => (
+                    <li key={outcome}>{outcome}</li>
+                  ))}
+                </ul>
+              </RevealOnScroll>
+              <RevealOnScroll className="sd-sheet p-6 sm:p-8">
+                <h2 className="sd-kicker">Built with</h2>
+                <ul className="mt-4 flex flex-wrap gap-2" role="list">
+                  {app.techStack.map((tech) => (
+                    <li key={tech}>
+                      <Badge variant="accent">{tech}</Badge>
+                    </li>
+                  ))}
+                </ul>
+              </RevealOnScroll>
             </div>
-          </div>
-        </RevealOnScroll>
+
+            <RevealOnScroll>
+              <div className="relative mx-auto mt-28 max-w-lg">
+                <Kiru
+                  pose="read"
+                  className="pointer-events-none absolute -top-[5.6rem] right-5 h-28 w-auto"
+                />
+                <div className="sd-note px-7 pt-9 pb-8 text-center">
+                  <p className="font-display text-4xl leading-tight">
+                    Want the how and why?
+                  </p>
+                  <p className="mt-3 text-[15px] leading-relaxed text-[var(--sd-sticky-ink)]/80">
+                    I write up builds like this one. What I did, what went
+                    wrong, and what is worth copying.
+                  </p>
+                  <Link
+                    href="/content"
+                    className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full border-2 border-[var(--sd-sticky-ink)] px-7 py-2 font-bold text-[var(--sd-sticky-ink)] transition-[translate,scale,background-color] duration-300 hover:-translate-y-0.5 hover:bg-[var(--sd-sticky-ink)]/5 active:scale-[0.97]"
+                  >
+                    Read the writing
+                    <IconArrowRight size={18} />
+                  </Link>
+                </div>
+              </div>
+            </RevealOnScroll>
+          </>
+        )}
 
         <div className="mt-16 text-center">
           <BottomBack />
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * A game's controls: what it plays on, then one column for each way to play
+ * it (touch or a mouse, the keyboard, a controller), with each thing you do
+ * and how.
+ */
+function HowToPlay({ how }: { how: NonNullable<App['howToPlay']> }) {
+  return (
+    <RevealOnScroll className="sd-sheet mt-14 p-6 sm:mt-20 sm:p-8">
+      <h2 className="font-display text-2xl text-[var(--sd-pen-ink)]">
+        How to play
+      </h2>
+      <p className="font-read mt-2 max-w-[62ch] text-[1.05rem] leading-[1.6] text-text-secondary">
+        {how.on}
+      </p>
+      <div className="bt-ways mt-7">
+        {how.ways.map((way) => (
+          <section key={way.device} className="bt-way">
+            <h3 className="sd-kicker">{way.device}</h3>
+            <dl className="bt-controls font-read mt-3 text-[1.05rem] leading-[1.6]">
+              {way.controls.map((c) => (
+                <div key={c.action} className="bt-control">
+                  <dt>{c.action}</dt>
+                  <dd>{keycaps(c.how)}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </div>
+    </RevealOnScroll>
+  );
+}
+
+/** Each `key` in a control's text, drawn as a keycap. */
+function keycaps(how: string) {
+  return how.split('`').map((part, i) =>
+    i % 2 ? (
+      <kbd key={i} className="bt-key">
+        {part}
+      </kbd>
+    ) : (
+      part
+    )
   );
 }
 
