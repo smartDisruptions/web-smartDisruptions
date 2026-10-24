@@ -1,0 +1,1675 @@
+/* ── The Escape Rooms: the Lantern Theater on the night market. Prefix er-. ──
+
+   Always night, like the market around it (.arc already pins the site's
+   night tokens). The theater's own palette: velvet, gilt, moonlight, and
+   warm paper-white for type. Contrast on the darkest ground here (#0b0a18),
+   all >= 4.5:1: ink 15.6 · ink-2 10.4 · ink-3 6.6 · gilt-hi 12.9.
+
+   Motion is the compositor's (DESIGN.md): opacity and transform only.
+   - The marquee chase and the rain are loops, gated on [data-live] (EscapeFX
+     sets it while the front is on screen), paused on [data-hold] while the
+     page scrolls, and stopped by reduced motion.
+   - The stage is a scroll timeline: the track is tall, the stage sticks in
+     the middle of the window, and `view-timeline: --er-night` on the track
+     drives the curtain, the blackout, the pearl's glow and the captions.
+     Without scroll timelines, or under reduced motion, the stage simply sits
+     open on the show: every layer's resting style below IS that state, and
+     the closed curtain only exists inside the @supports block.            */
+
+.er {
+  --er-night: #0b0a18;
+  --er-plum: #170c19;
+  --er-wine: #200a14;
+  --er-velvet: #8e1b2c;
+  --er-velvet-hi: #c23a4b;
+  --er-velvet-lo: #4f0d18;
+  --er-gilt: #d9a441;
+  --er-gilt-hi: #f6d77e;
+  --er-gilt-lo: #8a6420;
+  --er-moon: #dfe8ff;
+  --er-ink: #f4ecdd;
+  --er-ink-2: #d8ccb6;
+  --er-ink-3: #ab9f8b;
+
+  position: relative;
+  isolation: isolate;
+  padding-block: 4.5rem 3.5rem;
+  color: var(--er-ink);
+  background:
+    radial-gradient(
+      70% 34% at 50% 9%,
+      rgba(255, 181, 71, 0.15),
+      transparent 70%
+    ),
+    radial-gradient(
+      90% 46% at 50% 52%,
+      rgba(142, 27, 44, 0.24),
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(23, 12, 25, 0) 0%,
+      rgba(23, 12, 25, 0.75) 9%,
+      var(--er-plum) 20%,
+      var(--er-plum) 82%,
+      rgba(23, 12, 25, 0.75) 93%,
+      rgba(23, 12, 25, 0) 100%
+    );
+}
+.er-front,
+.er-rooms {
+  position: relative;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 40rem) {
+  .er-front,
+  .er-rooms {
+    padding-inline: 2rem;
+  }
+}
+
+/* ── 1. The front: a marquee in the rain ─────────────────────────────── */
+
+.er-front {
+  overflow: clip;
+  padding-top: 1.5rem;
+}
+.er-rain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent,
+    #000 12%,
+    #000 70%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent,
+    #000 12%,
+    #000 70%,
+    transparent
+  );
+}
+.er-rain i {
+  position: absolute;
+  inset: -220px 0 0;
+  background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22220%22%3E%3Cpath d=%22M53.2 33.2l-5 28%22 stroke=%22rgba(196,212,255,0.17)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M85.5 80.5l-5 19%22 stroke=%22rgba(196,212,255,0.25)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M9.7 95.4l-5 19%22 stroke=%22rgba(196,212,255,0.18)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M68.5 181.9l-5 20%22 stroke=%22rgba(196,212,255,0.20)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M99.4 208.5l-5 27%22 stroke=%22rgba(196,212,255,0.23)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M99.4 -11.5l-5 27%22 stroke=%22rgba(196,212,255,0.23)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M152.4 10.2l-5 32%22 stroke=%22rgba(196,212,255,0.21)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M25.9 25.9l-5 23%22 stroke=%22rgba(196,212,255,0.31)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M31.5 128.0l-5 28%22 stroke=%22rgba(196,212,255,0.23)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M87.3 13.8l-5 19%22 stroke=%22rgba(196,212,255,0.20)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M107.4 94.1l-5 23%22 stroke=%22rgba(196,212,255,0.27)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M72.9 65.9l-5 31%22 stroke=%22rgba(196,212,255,0.29)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M41.1 126.4l-5 26%22 stroke=%22rgba(196,212,255,0.32)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M114.9 63.3l-5 34%22 stroke=%22rgba(196,212,255,0.18)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M67.6 166.6l-5 20%22 stroke=%22rgba(196,212,255,0.25)%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3C/svg%3E')
+    0 0 / 160px 220px repeat;
+  will-change: transform;
+}
+.er-rain i + i {
+  inset: -330px 0 0;
+  background-size: 240px 330px;
+  background-position: 70px 0;
+  opacity: 0.6;
+}
+.er-front[data-live] .er-rain i {
+  animation: er-rain 12.4s linear infinite;
+}
+.er-front[data-live] .er-rain i + i {
+  animation-duration: 12.6s;
+}
+.er-front[data-hold] .er-rain i,
+.er-front[data-hold] .er-lights-on {
+  animation-play-state: paused;
+}
+/* One pass of the rain is many falls (see er-chase below for why). */
+@keyframes er-rain {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  4.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  5% {
+    transform: translate3d(0, 0, 0);
+  }
+  9.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  10% {
+    transform: translate3d(0, 0, 0);
+  }
+  14.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  15% {
+    transform: translate3d(0, 0, 0);
+  }
+  19.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  20% {
+    transform: translate3d(0, 0, 0);
+  }
+  24.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  25% {
+    transform: translate3d(0, 0, 0);
+  }
+  29.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  30% {
+    transform: translate3d(0, 0, 0);
+  }
+  34.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  35% {
+    transform: translate3d(0, 0, 0);
+  }
+  39.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  40% {
+    transform: translate3d(0, 0, 0);
+  }
+  44.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  45% {
+    transform: translate3d(0, 0, 0);
+  }
+  49.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  50% {
+    transform: translate3d(0, 0, 0);
+  }
+  54.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  55% {
+    transform: translate3d(0, 0, 0);
+  }
+  59.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  60% {
+    transform: translate3d(0, 0, 0);
+  }
+  64.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  65% {
+    transform: translate3d(0, 0, 0);
+  }
+  69.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  70% {
+    transform: translate3d(0, 0, 0);
+  }
+  74.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  75% {
+    transform: translate3d(0, 0, 0);
+  }
+  79.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  80% {
+    transform: translate3d(0, 0, 0);
+  }
+  84.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  85% {
+    transform: translate3d(0, 0, 0);
+  }
+  89.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  90% {
+    transform: translate3d(0, 0, 0);
+  }
+  94.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  95% {
+    transform: translate3d(0, 0, 0);
+  }
+  99.999% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+  100% {
+    transform: translate3d(-5px, 220px, 0);
+  }
+}
+.er-front[data-live] .er-rain i + i {
+  animation-name: er-rain-far;
+}
+@keyframes er-rain-far {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  8.332% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  8.333% {
+    transform: translate3d(0, 0, 0);
+  }
+  16.666% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  16.667% {
+    transform: translate3d(0, 0, 0);
+  }
+  24.999% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  25% {
+    transform: translate3d(0, 0, 0);
+  }
+  33.332% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  33.333% {
+    transform: translate3d(0, 0, 0);
+  }
+  41.666% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  41.667% {
+    transform: translate3d(0, 0, 0);
+  }
+  49.999% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  50% {
+    transform: translate3d(0, 0, 0);
+  }
+  58.332% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  58.333% {
+    transform: translate3d(0, 0, 0);
+  }
+  66.666% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  66.667% {
+    transform: translate3d(0, 0, 0);
+  }
+  74.999% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  75% {
+    transform: translate3d(0, 0, 0);
+  }
+  83.332% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  83.333% {
+    transform: translate3d(0, 0, 0);
+  }
+  91.666% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  91.667% {
+    transform: translate3d(0, 0, 0);
+  }
+  99.999% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+  100% {
+    transform: translate3d(-5px, 330px, 0);
+  }
+}
+
+.er-marquee {
+  position: relative;
+  z-index: 1;
+  margin-inline: auto;
+  width: min(100%, 26rem);
+  aspect-ratio: 360 / 268;
+  border-radius: 12px;
+  background: radial-gradient(
+    110% 80% at 50% 38%,
+    #44142a 0%,
+    var(--er-wine) 58%,
+    #12060c 100%
+  );
+  box-shadow:
+    0 0 0 2px var(--er-gilt-lo),
+    0 0 0 5px #2a1608,
+    0 0 0 7px var(--er-gilt),
+    0 0 0 9px #2a1608,
+    0 34px 60px -24px rgba(0, 0, 0, 0.85),
+    0 0 90px rgba(255, 181, 71, 0.2);
+}
+@media (min-width: 48rem) {
+  .er-marquee {
+    width: min(100%, 57.5rem);
+    aspect-ratio: 920 / 300;
+  }
+}
+/* The bulbs: four strips of repeating radial gradients (rows top and bottom,
+   columns between them), --nx bulbs across and --ny down. The unlit layer has
+   every bulb; each lit layer has every third, offset by one. */
+.er-lights {
+  --bs: 18px;
+  --nx: 18;
+  --ny: 12;
+  --off: radial-gradient(
+    circle 5px,
+    #8a6a3a 0 2.4px,
+    #5a3a18 3px 3.9px,
+    #2a1608 4.3px,
+    transparent 5px
+  );
+  position: absolute;
+  inset: 6px;
+  pointer-events: none;
+}
+@media (min-width: 48rem) {
+  .er-lights {
+    --nx: 48;
+    --ny: 12;
+  }
+}
+.er-lights > span,
+.er-lights i {
+  position: absolute;
+  inset: 0;
+}
+.er-lights i + i {
+  inset: var(--bs) 0;
+}
+.er-lights-off i:first-child {
+  background:
+    var(--off) 0 0 / calc(100% / var(--nx)) var(--bs) repeat-x,
+    var(--off) 0 100% / calc(100% / var(--nx)) var(--bs) repeat-x;
+}
+.er-lights-off i + i {
+  background:
+    var(--off) 0 0 / var(--bs) calc(100% / var(--ny)) repeat-y,
+    var(--off) 100% 0 / var(--bs) calc(100% / var(--ny)) repeat-y;
+}
+.er-lights-on {
+  --at: 16.667%;
+  --lit: radial-gradient(
+    circle 9px at var(--at) 50%,
+    #fffaf0 0 2.3px,
+    #ffe1a0 3.4px,
+    #ffc35e 4.2px,
+    rgba(255, 181, 71, 0.42) 5.2px,
+    rgba(255, 160, 60, 0.12) 7.4px,
+    transparent 9px
+  );
+  --lit-v: radial-gradient(
+    circle 9px at 50% var(--at),
+    #fffaf0 0 2.3px,
+    #ffe1a0 3.4px,
+    #ffc35e 4.2px,
+    rgba(255, 181, 71, 0.42) 5.2px,
+    rgba(255, 160, 60, 0.12) 7.4px,
+    transparent 9px
+  );
+}
+.er-lights-on[data-p='1'] {
+  --at: 50%;
+}
+.er-lights-on[data-p='2'] {
+  --at: 83.333%;
+}
+.er-lights-on i:first-child {
+  background:
+    var(--lit) 0 0 / calc(300% / var(--nx)) var(--bs) repeat-x,
+    var(--lit) 0 100% / calc(300% / var(--nx)) var(--bs) repeat-x;
+}
+.er-lights-on i + i {
+  background:
+    var(--lit-v) 0 0 / var(--bs) calc(300% / var(--ny)) repeat-y,
+    var(--lit-v) 100% 0 / var(--bs) calc(300% / var(--ny)) repeat-y;
+}
+/* At rest every bulb is lit. While the front is on screen they chase. */
+.er-front[data-live] .er-lights-on {
+  animation: er-chase 19.2s linear infinite;
+}
+.er-front[data-live] .er-lights-on[data-p='1'] {
+  animation-delay: -0.64s;
+}
+.er-front[data-live] .er-lights-on[data-p='2'] {
+  animation-delay: -0.32s;
+}
+/* Why one pass of the chase is twenty steps: each time a CSS loop starts a
+   new pass, Chrome runs a main-thread frame for it, and on a page this size
+   that frame costs a phone at 4x slowdown ~25 ms (measured: the same rain
+   cost 43 ms a second looping every 0.62 s, and 4 ms as one long pass). A
+   0.96 s loop paid that every second; twenty steps to a pass pay it every
+   19 s. Same for the rain. The compositor runs everything in between. */
+@keyframes er-chase {
+  0%,
+  1.65% {
+    opacity: 1;
+  }
+  1.7%,
+  4.999% {
+    opacity: 0.08;
+  }
+  5%,
+  6.65% {
+    opacity: 1;
+  }
+  6.7%,
+  9.999% {
+    opacity: 0.08;
+  }
+  10%,
+  11.65% {
+    opacity: 1;
+  }
+  11.7%,
+  14.999% {
+    opacity: 0.08;
+  }
+  15%,
+  16.65% {
+    opacity: 1;
+  }
+  16.7%,
+  19.999% {
+    opacity: 0.08;
+  }
+  20%,
+  21.65% {
+    opacity: 1;
+  }
+  21.7%,
+  24.999% {
+    opacity: 0.08;
+  }
+  25%,
+  26.65% {
+    opacity: 1;
+  }
+  26.7%,
+  29.999% {
+    opacity: 0.08;
+  }
+  30%,
+  31.65% {
+    opacity: 1;
+  }
+  31.7%,
+  34.999% {
+    opacity: 0.08;
+  }
+  35%,
+  36.65% {
+    opacity: 1;
+  }
+  36.7%,
+  39.999% {
+    opacity: 0.08;
+  }
+  40%,
+  41.65% {
+    opacity: 1;
+  }
+  41.7%,
+  44.999% {
+    opacity: 0.08;
+  }
+  45%,
+  46.65% {
+    opacity: 1;
+  }
+  46.7%,
+  49.999% {
+    opacity: 0.08;
+  }
+  50%,
+  51.65% {
+    opacity: 1;
+  }
+  51.7%,
+  54.999% {
+    opacity: 0.08;
+  }
+  55%,
+  56.65% {
+    opacity: 1;
+  }
+  56.7%,
+  59.999% {
+    opacity: 0.08;
+  }
+  60%,
+  61.65% {
+    opacity: 1;
+  }
+  61.7%,
+  64.999% {
+    opacity: 0.08;
+  }
+  65%,
+  66.65% {
+    opacity: 1;
+  }
+  66.7%,
+  69.999% {
+    opacity: 0.08;
+  }
+  70%,
+  71.65% {
+    opacity: 1;
+  }
+  71.7%,
+  74.999% {
+    opacity: 0.08;
+  }
+  75%,
+  76.65% {
+    opacity: 1;
+  }
+  76.7%,
+  79.999% {
+    opacity: 0.08;
+  }
+  80%,
+  81.65% {
+    opacity: 1;
+  }
+  81.7%,
+  84.999% {
+    opacity: 0.08;
+  }
+  85%,
+  86.65% {
+    opacity: 1;
+  }
+  86.7%,
+  89.999% {
+    opacity: 0.08;
+  }
+  90%,
+  91.65% {
+    opacity: 1;
+  }
+  91.7%,
+  94.999% {
+    opacity: 0.08;
+  }
+  95%,
+  96.65% {
+    opacity: 1;
+  }
+  96.7%,
+  99.999% {
+    opacity: 0.08;
+  }
+  100% {
+    opacity: 0.08;
+  }
+}
+
+.er-marquee-in {
+  position: absolute;
+  inset: 13% 9% 12%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+@media (min-width: 48rem) {
+  .er-marquee-in {
+    inset: 12% 6% 12%;
+    gap: 0.6rem;
+  }
+}
+.er-house {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--er-gilt-hi);
+}
+.er-house span {
+  color: var(--er-gilt);
+}
+.er-title {
+  font-size: clamp(2.2rem, 11vw, 4.2rem);
+  line-height: 0.98;
+  letter-spacing: 0.01em;
+  color: #fff6e4;
+  text-wrap: balance;
+  text-shadow:
+    0 0 2px rgba(255, 236, 200, 0.95),
+    0 0 18px rgba(255, 190, 90, 0.55),
+    0 0 42px rgba(255, 150, 60, 0.3);
+}
+@media (min-width: 48rem) {
+  .er-title {
+    font-size: clamp(3rem, 6vw, 4.6rem);
+  }
+}
+/* "Now playing": a backlit letterboard, black letters on white, the oldest
+   marquee there is. */
+.er-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.15rem 0.6rem;
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.9rem 0.45rem;
+  border-radius: 4px;
+  color: #1a0f0a;
+  background: linear-gradient(180deg, #fffaf0, #f4e4c4);
+  box-shadow:
+    inset 0 0 0 2px #2a1608,
+    inset 0 -6px 12px -8px rgba(120, 70, 20, 0.45),
+    0 0 26px rgba(255, 236, 190, 0.32);
+}
+.er-now-kick {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #7a1424;
+}
+.er-now-name {
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+@media (min-width: 48rem) {
+  .er-now-name {
+    font-size: 1.35rem;
+  }
+}
+
+.er-front-foot {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 46rem;
+  margin: 2.1rem auto 0;
+}
+.er-seal {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+.er-intro {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--er-ink-2);
+}
+.er-kiru {
+  width: 4.6rem;
+  height: auto;
+  margin-bottom: -0.4rem;
+  pointer-events: none;
+}
+@media (max-width: 30rem) {
+  .er-front-foot {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .er-kiru {
+    position: absolute;
+    right: -0.2rem;
+    top: -5.4rem;
+    width: 3.9rem;
+  }
+}
+
+/* ── 2. The stage ─────────────────────────────────────────────────────── */
+
+.er-rooms {
+  margin-top: 3rem;
+  /* The stage sizes itself from this box (cqw), never the window, so a
+     desktop scrollbar can't push it wider than its column. */
+  container-type: inline-size;
+}
+.er-room + .er-room {
+  margin-top: 5rem;
+}
+.er-track {
+  --er-stage-w: min(100cqw, 86svh * 8 / 9, 34rem);
+  --er-stage-h: calc(var(--er-stage-w) * 9 / 8);
+  position: relative;
+}
+@media (min-width: 48rem) {
+  .er-track {
+    --er-stage-w: min(100cqw, 86svh * 16 / 9, 68rem);
+    --er-stage-h: calc(var(--er-stage-w) * 9 / 16);
+  }
+}
+.er-stage {
+  position: relative;
+  width: var(--er-stage-w);
+  height: var(--er-stage-h);
+  margin-inline: auto;
+  isolation: isolate;
+  overflow: clip;
+  border-radius: 6px 6px 3px 3px;
+  background: #05060d;
+  box-shadow:
+    0 0 0 2px var(--er-gilt-lo),
+    0 0 0 4px #2a1608,
+    0 0 0 6px var(--er-gilt),
+    0 30px 70px -20px rgba(0, 0, 0, 0.9),
+    0 0 120px rgba(142, 27, 44, 0.35);
+  --px: var(--px-p);
+  --py: var(--py-p);
+  --dx: var(--dx-p);
+  --dy: var(--dy-p);
+}
+@media (min-width: 48rem) {
+  .er-stage {
+    --px: var(--px-w);
+    --py: var(--py-w);
+    --dx: var(--dx-w);
+    --dy: var(--dy-w);
+  }
+}
+.er-scene,
+.er-scene picture,
+.er-shot,
+.er-dark,
+.er-flash,
+.er-glow {
+  position: absolute;
+  inset: 0;
+}
+.er-shot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.er-gone,
+.er-dark,
+.er-flash,
+.er-glow {
+  opacity: 0;
+}
+.er-dark {
+  background: radial-gradient(120% 90% at 50% 40%, #070a16, #020309);
+}
+.er-flash {
+  background: #fff7e6;
+}
+.er-glow-dot {
+  position: absolute;
+  left: var(--px);
+  top: var(--py);
+  width: 36%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fff 0 3.5%,
+    #eef3ff 6%,
+    rgba(159, 196, 255, 0.78) 11%,
+    rgba(159, 196, 255, 0.3) 26%,
+    rgba(110, 140, 255, 0.11) 44%,
+    transparent 68%
+  );
+}
+@media (min-width: 48rem) {
+  .er-glow-dot {
+    width: 22%;
+  }
+}
+
+/* The proscenium: a velvet valance with the moon medallion, gilt lip below. */
+.er-valance {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 6;
+  height: 11%;
+  min-height: 2.6rem;
+  background:
+    radial-gradient(
+        52% 100% at 50% 0,
+        var(--er-velvet-hi) 0 38%,
+        var(--er-velvet) 60%,
+        var(--er-velvet-lo) 76%,
+        transparent 79%
+      )
+      0 0 / 20% 100% repeat-x,
+    linear-gradient(180deg, var(--er-velvet-lo), transparent 40%);
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.45));
+}
+.er-valance::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 7px;
+  background: linear-gradient(
+    180deg,
+    #fff2c4,
+    var(--er-gilt) 45%,
+    var(--er-gilt-lo)
+  );
+}
+.er-medallion {
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  width: clamp(2.8rem, 9%, 4.4rem);
+  translate: -50% 0;
+}
+.er-foots {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 6;
+  height: 6px;
+  background: linear-gradient(
+    180deg,
+    var(--er-gilt-lo),
+    var(--er-gilt) 50%,
+    #3a2410
+  );
+}
+
+/* The captions: the night of the theft, a line at a time. At rest, the first. */
+.er-caps {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 6;
+  display: grid;
+  padding: 3.4rem 9% 1.15rem;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(4, 4, 12, 0.72) 42%,
+    rgba(4, 4, 12, 0.9)
+  );
+}
+.er-cap {
+  grid-area: 1 / 1;
+  align-self: end;
+  max-width: 38rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--er-ink);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.er-cap[data-n='1'],
+.er-cap[data-n='2'] {
+  opacity: 0;
+}
+@media (min-width: 48rem) {
+  .er-caps {
+    padding: 5rem 9% 1.6rem;
+  }
+  .er-cap {
+    font-size: 1.12rem;
+  }
+}
+
+/* The house curtain and its plaque: only drawn closed where the scroll can
+   open it (below). At rest, gone. */
+.er-curtain,
+.er-plaque {
+  display: none;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .er-track {
+      height: calc(var(--er-stage-h) + 175svh);
+      view-timeline: --er-night block;
+    }
+    /* Every layer the night animates is promoted for good, and its transform
+       is never `none`: a layer that switched in or out of a transform as an
+       animation started or ended would make the browser lay out the whole
+       page again (a heavy one: the guild hall is below), and that costs a
+       slow phone a frame or six. */
+    .er-curtain,
+    .er-plaque,
+    .er-glow,
+    .er-cap {
+      will-change: transform, opacity;
+    }
+    .er-gone,
+    .er-dark,
+    .er-flash {
+      will-change: opacity;
+    }
+    .er-stage {
+      position: sticky;
+      top: calc((100svh - var(--er-stage-h)) / 2);
+    }
+    .er-curtain {
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: 5;
+      width: 51%;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.5),
+          transparent 26%,
+          transparent 72%,
+          rgba(255, 150, 80, 0.12)
+        ),
+        repeating-linear-gradient(
+          90deg,
+          #4f0d18 0,
+          #8e1b2c 13px,
+          #c23a4b 21px,
+          #a52436 27px,
+          #6d1020 36px,
+          #4f0d18 44px
+        );
+      box-shadow: inset 0 -16px 0 -6px var(--er-gilt);
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --er-night;
+      animation-range: contain 0% contain 100%;
+    }
+    .er-curtain[data-side='l'] {
+      left: 0;
+      transform-origin: 0 50%;
+      animation-name: er-curtain-l;
+    }
+    .er-curtain[data-side='r'] {
+      right: 0;
+      transform-origin: 100% 50%;
+      animation-name: er-curtain-r;
+    }
+    .er-plaque {
+      display: grid;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 7;
+      width: min(80%, 22rem);
+      translate: -50% -50%;
+      justify-items: center;
+      gap: 0.25rem;
+      padding: 1rem 1.2rem 1.05rem;
+      text-align: center;
+      border-radius: 10px;
+      background: radial-gradient(120% 120% at 50% 0, #2a1022, #12060c);
+      box-shadow:
+        0 0 0 2px var(--er-gilt-lo),
+        0 0 0 4px #2a1608,
+        0 0 0 6px var(--er-gilt),
+        0 20px 40px -10px rgba(0, 0, 0, 0.8);
+      animation: er-plaque linear both;
+      animation-timeline: --er-night;
+      animation-range: contain 0% contain 100%;
+    }
+    .er-gone {
+      animation: er-gone linear both;
+      animation-timeline: --er-night;
+      animation-range: contain 0% contain 100%;
+    }
+    .er-dark {
+      animation: er-dark linear both;
+      animation-timeline: --er-night;
+      animation-range: contain 0% contain 100%;
+    }
+    .er-flash {
+      animation: er-flash linear both;
+      animation-timeline: --er-night;
+      animation-range: contain 0% contain 100%;
+    }
+    .er-glow {
+      --lift: -6%;
+      animation: er-glow linear both;
+      animation-timeline: --er-night;
+      animation-range: contain 0% contain 100%;
+    }
+    .er-cap {
+      animation: er-cap0 linear both;
+      animation-timeline: --er-night;
+      animation-range: contain 0% contain 100%;
+    }
+    .er-cap[data-n='1'] {
+      animation-name: er-cap1;
+    }
+    .er-cap[data-n='2'] {
+      animation-name: er-cap2;
+    }
+  }
+}
+@keyframes er-curtain-l {
+  0%,
+  4% {
+    transform: translateX(0) scaleX(1);
+  }
+  22%,
+  100% {
+    transform: translateX(-6%) scaleX(0.13);
+  }
+}
+@keyframes er-curtain-r {
+  0%,
+  4% {
+    transform: translateX(0) scaleX(1);
+  }
+  22%,
+  100% {
+    transform: translateX(6%) scaleX(0.13);
+  }
+}
+@keyframes er-plaque {
+  0%,
+  4% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  13%,
+  100% {
+    opacity: 0;
+    transform: translateY(-14%) scale(0.92);
+  }
+}
+@keyframes er-dark {
+  0%,
+  44% {
+    opacity: 0;
+  }
+  47%,
+  72% {
+    opacity: 0.96;
+  }
+  73.5%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes er-glow {
+  0%,
+  45.5% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  48.5% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  54% {
+    opacity: 1;
+    transform: translate(0, var(--lift));
+  }
+  65% {
+    opacity: 1;
+    transform: translate(var(--dx), calc(var(--lift) + var(--dy)));
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), calc(var(--lift) + var(--dy))) scale(0.6);
+  }
+}
+@keyframes er-gone {
+  0%,
+  72% {
+    opacity: 0;
+  }
+  73.5%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes er-flash {
+  0%,
+  72% {
+    opacity: 0;
+  }
+  73% {
+    opacity: 0.75;
+  }
+  80%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes er-cap0 {
+  0%,
+  15% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  20%,
+  40% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  44%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+@keyframes er-cap1 {
+  0%,
+  47% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  51%,
+  68% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  71%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+@keyframes er-cap2 {
+  0%,
+  75% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  79%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.er-plaque-kick {
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--er-gilt);
+}
+.er-plaque-name {
+  font-size: clamp(1.5rem, 7vw, 2.3rem);
+  line-height: 1.05;
+  background: linear-gradient(
+    180deg,
+    #fff6d6,
+    var(--er-gilt-hi) 40%,
+    var(--er-gilt) 70%,
+    #b5852f
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.er-plaque-hint {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  color: var(--er-ink-3);
+}
+
+/* ── The playbill ─────────────────────────────────────────────────────── */
+
+.er-bill {
+  display: grid;
+  gap: 1.8rem;
+  max-width: 68rem;
+  margin: 2.6rem auto 0;
+}
+@media (min-width: 56rem) {
+  .er-bill {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+}
+.er-kick {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--er-gilt-hi);
+}
+.er-name {
+  margin-top: 0.4rem;
+  font-size: clamp(2.3rem, 9vw, 3.6rem);
+  line-height: 1;
+  background: linear-gradient(
+    180deg,
+    #fff6d6,
+    var(--er-gilt-hi) 38%,
+    var(--er-gilt) 72%,
+    #b5852f
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-wrap: balance;
+}
+.er-tag {
+  margin-top: 0.9rem;
+  font-size: 1.18rem;
+  line-height: 1.55;
+  font-style: italic;
+  color: var(--er-ink);
+  text-wrap: pretty;
+}
+.er-blurb {
+  margin-top: 0.8rem;
+  max-width: 36rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--er-ink-2);
+}
+.er-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.er-fact {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.65rem 0.3rem 0.6rem;
+  text-align: center;
+  border-radius: 10px;
+  background: rgba(255, 236, 200, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(217, 164, 65, 0.28);
+}
+.er-fact dt {
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--er-ink-3);
+}
+.er-fact dd {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--er-gilt-hi);
+}
+.er-deck {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.4rem;
+  margin-top: 1.4rem;
+}
+/* The ticket: velvet, gilt type, notched ends. It presses in. */
+.er-ticket {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  min-width: 12.5rem;
+  padding: 0.55rem 2rem 0.6rem;
+  color: #fff4dc;
+  text-decoration: none;
+  border-radius: 6px;
+  background:
+    linear-gradient(
+        90deg,
+        transparent 1.2rem,
+        rgba(255, 236, 200, 0.4) 1.2rem,
+        rgba(255, 236, 200, 0.4) calc(1.2rem + 1px),
+        transparent calc(1.2rem + 1px)
+      )
+      0 0 / 100% 100%,
+    linear-gradient(180deg, #b22a3d, #7a1424);
+  -webkit-mask:
+    radial-gradient(circle 10px at 0 50%, #0000 97%, #000) left / 51% 100%
+      no-repeat,
+    radial-gradient(circle 10px at 100% 50%, #0000 97%, #000) right / 51% 100%
+      no-repeat;
+  mask:
+    radial-gradient(circle 10px at 0 50%, #0000 97%, #000) left / 51% 100%
+      no-repeat,
+    radial-gradient(circle 10px at 100% 50%, #0000 97%, #000) right / 51% 100%
+      no-repeat;
+  transition: transform 0.15s ease;
+}
+.er-ticket:active {
+  transform: scale(0.97);
+}
+.er-ticket:focus-visible {
+  outline: none;
+  -webkit-mask: none;
+  mask: none;
+  box-shadow: 0 0 0 2.5px var(--sd-pen);
+}
+.er-ticket-kick,
+.er-ticket-free {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--er-gilt-hi);
+}
+.er-ticket-free {
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: none;
+  color: rgba(255, 236, 200, 0.82);
+}
+.er-ticket-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.er-ticket-go svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.er-more,
+.er-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--er-gilt-hi);
+  text-decoration: none;
+}
+.er-more svg,
+.er-link svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  transition: transform 0.15s ease;
+}
+@media (hover: hover) {
+  .er-more:hover svg,
+  .er-link:hover svg {
+    transform: translateX(3px);
+  }
+}
+
+/* ── 3. The lineup ────────────────────────────────────────────────────── */
+
+.er-lineup {
+  max-width: 52rem;
+  margin: 4.5rem auto 0;
+}
+.er-lineup-head {
+  text-align: center;
+}
+.er-h4 {
+  margin-top: 0.35rem;
+  font-size: clamp(1.9rem, 7vw, 2.6rem);
+  line-height: 1.05;
+  color: var(--er-ink);
+}
+.er-lead {
+  max-width: 30rem;
+  margin: 0.6rem auto 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--er-ink-2);
+}
+.er-wall {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  height: 16.5rem;
+  margin-top: 1.6rem;
+  padding: 0 0.4rem 0 2.1rem;
+  overflow: clip;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, transparent 84%, rgba(0, 0, 0, 0.5) 84%),
+    repeating-linear-gradient(
+        0deg,
+        transparent 0 calc(20% - 1px),
+        rgba(236, 230, 250, 0.16) calc(20% - 1px) 20%
+      )
+      0 0 / 100% 100%,
+    radial-gradient(90% 70% at 50% 30%, #252036, #141120 70%);
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 230, 250, 0.1),
+    0 24px 50px -24px rgba(0, 0, 0, 0.8);
+}
+@media (min-width: 40rem) {
+  .er-wall {
+    height: 22rem;
+    padding-left: 3rem;
+  }
+}
+.er-scale {
+  position: absolute;
+  inset: 0 auto 16% 0;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  width: 2.1rem;
+  padding-top: calc(20% * 0.84);
+}
+.er-scale i {
+  font-style: normal;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: rgba(236, 230, 250, 0.55);
+  text-align: center;
+  translate: 0 -0.45rem;
+}
+@media (min-width: 40rem) {
+  .er-scale {
+    width: 3rem;
+  }
+  .er-scale i {
+    font-size: 0.66rem;
+  }
+}
+.er-who {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0 0 0.55rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.er-who:focus-visible {
+  outline: 2.5px solid var(--sd-pen);
+  outline-offset: -4px;
+  border-radius: 12px;
+}
+.er-spot {
+  position: absolute;
+  inset: 0 6%;
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 240, 210, 0.42),
+    rgba(255, 240, 210, 0.05) 88%
+  );
+  opacity: 0.3;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.er-who-img {
+  position: relative;
+  height: 72%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  transform-origin: 50% 100%;
+  transition: opacity 0.25s ease;
+}
+.er-plate {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 0.05rem;
+  min-height: 2.9rem;
+  width: 94%;
+  margin-top: -0.4rem;
+  padding: 0.3rem 0.55rem 0.32rem;
+  max-width: 100%;
+  border-radius: 6px;
+  text-align: center;
+  background: #0d0b16;
+  box-shadow: inset 0 0 0 1px rgba(236, 230, 250, 0.22);
+}
+.er-plate b {
+  font-size: 0.78rem;
+  line-height: 1.15;
+  color: var(--er-ink);
+}
+.er-plate small {
+  font-size: 0.6rem;
+  line-height: 1.2;
+  color: var(--er-ink-3);
+}
+@media (min-width: 40rem) {
+  .er-plate {
+    width: auto;
+    min-width: 72%;
+    min-height: 3.2rem;
+  }
+  .er-plate b {
+    font-size: 0.92rem;
+  }
+  .er-plate small {
+    font-size: 0.68rem;
+  }
+}
+.er-wave {
+  position: absolute;
+  top: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.er-wave i {
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ink, var(--er-gilt-hi));
+  transform: scaleY(0.35);
+}
+.er-who[aria-pressed='true'] .er-spot {
+  opacity: 1;
+}
+.er-lineup[data-said] .er-who[aria-pressed='false'] .er-who-img {
+  opacity: 0.5;
+}
+.er-who[data-talking] .er-wave {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .er-who[data-talking] .er-who-img {
+    animation: er-talk 0.34s ease-in-out infinite alternate;
+  }
+  .er-who[data-talking] .er-wave i {
+    animation: er-wave 0.5s ease-in-out infinite alternate;
+  }
+  .er-who[data-talking] .er-wave i:nth-child(2) {
+    animation-delay: -0.2s;
+  }
+  .er-who[data-talking] .er-wave i:nth-child(3) {
+    animation-delay: -0.35s;
+  }
+  .er-who[data-talking] .er-wave i:nth-child(4) {
+    animation-delay: -0.1s;
+  }
+}
+@keyframes er-talk {
+  to {
+    transform: translateY(-2.5%) rotate(-1.2deg);
+  }
+}
+@keyframes er-wave {
+  to {
+    transform: scaleY(1);
+  }
+}
+@media (hover: hover) {
+  .er-who:hover .er-spot {
+    opacity: 0.75;
+  }
+}
+
+/* What they said. Without JavaScript every alibi is listed; with it, the one
+   you picked shows, and all of them share one cell so nothing below jumps. */
+.er-said {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.2rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 14px;
+  background: rgba(255, 236, 200, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(217, 164, 65, 0.22);
+}
+.er-prompt {
+  display: none;
+  font-size: 0.92rem;
+  color: var(--er-ink-3);
+  text-align: center;
+}
+.er-quote {
+  display: grid;
+  gap: 0.2rem;
+}
+.er-quote b {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.er-quote span {
+  font-size: 1.08rem;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--er-ink);
+}
+.er-lineup[data-js] .er-said > * {
+  grid-area: 1 / 1;
+  align-self: center;
+}
+.er-lineup[data-js] .er-prompt {
+  display: block;
+  visibility: hidden;
+}
+.er-lineup[data-js] .er-quote {
+  visibility: hidden;
+}
+.er-lineup[data-js]:not([data-said]) .er-prompt {
+  visibility: visible;
+}
+.er-lineup[data-said='ivy'] .er-quote[data-for='ivy'],
+.er-lineup[data-said='silas'] .er-quote[data-for='silas'],
+.er-lineup[data-said='hart'] .er-quote[data-for='hart'] {
+  visibility: visible;
+}
+.er-verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem 0.9rem;
+  margin-top: 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--er-ink);
+}

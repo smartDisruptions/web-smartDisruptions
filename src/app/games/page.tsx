@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, BROOM_BLADE_ARCADE_SLUGS, type App } from '@/data/apps';
+import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, BROOM_BLADE_ARCADE_SLUGS, ESCAPE_ROOM_SLUGS, type App } from '@/data/apps';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import RooftopRun from '@/components/arcade/RooftopRun';
@@ -9,13 +9,14 @@ import RooftopPoster from './Poster';
 import Cabinets, { ArrowIcon } from './Cabinets';
 import MarketFX from './MarketFX';
 import GuildHall from './guild/GuildHall';
+import EscapeRooms from './escape/EscapeRooms';
 import { LANTERNS, TICKER_INK, WIRE_PATH, ticker } from './market';
 import './arcade.css';
 
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, and downstairs, Pip's Broom & Blade Arcade.",
+    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**
@@ -23,7 +24,10 @@ export const metadata: Metadata = {
  *
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
  * call on the ordering): Kiru's games, then Neo Dojo Survivors, then Path Not
- * Taken, a rhythm duel in pre-alpha. Below them the page goes downstairs into
+ * Taken, a rhythm duel in pre-alpha. Then the Lantern Theater, the Escape
+ * Rooms (./escape, ESCAPE_ROOM_SLUGS): a marquee, a stage that plays the night
+ * of the theft as you scroll, and a lineup you can hear. Below it the page
+ * goes downstairs into
  * the Broom & Blade Arcade (./guild, BROOM_BLADE_ARCADE_SLUGS): Pip's room,
  * where the page's theme turns from neon to firelight (docs/broom-blade-arcade.md).
  * Every other game is in the archive, /games/archive, behind the hall's cellar
@@ -42,6 +46,7 @@ const byslug = (slugs: string[]) =>
   slugs.map((slug) => apps.find((app) => app.slug === slug)).filter((app): app is App => app !== undefined);
 const games = byslug(ARCADE_SLUGS);
 const guild = byslug(BROOM_BLADE_ARCADE_SLUGS);
+const rooms = byslug(ESCAPE_ROOM_SLUGS);
 const archived = byslug(ARCADE_ARCHIVE_SLUGS);
 // "Cloth Simulator and Broom & Blade", written out, so the
 // door says what is behind it.
@@ -50,7 +55,7 @@ const ARCHIVE_NAMES = new Intl.ListFormat('en-GB', { type: 'conjunction' }).form
 const TICKER = ticker(games.map((g) => g.name));
 
 export default function Arcade() {
-  const onPage = [...games, ...guild];
+  const onPage = [...games, ...rooms, ...guild];
   const live = onPage.filter((g) => g.status === 'live').length;
   return (
     <div className="arc">
@@ -186,6 +191,9 @@ export default function Arcade() {
       <div className="arc-wrap">
         <Cabinets games={games} from="arcade" title="The cabinets" titleId="arc-cabinets" />
       </div>
+
+      {/* The Lantern Theater, on the market: the Escape Rooms. */}
+      <EscapeRooms rooms={rooms} />
 
       {/* Downstairs: the Broom & Blade Arcade, Pip's room, and below it the
           door to the back room (every older cabinet, still playable). */}
