@@ -244,6 +244,64 @@
   background: var(--sd-pen);
 }
 
+/* A game's "How to play": a column for each way to play it (touch, keys, a
+   controller), side by side when there is room. In a wide column each thing
+   you do sits beside how you do it; in a narrow one, above it. */
+.bt-ways {
+  display: grid;
+  gap: 32px 44px;
+}
+@media (min-width: 48rem) {
+  .bt-ways {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+}
+.bt-way {
+  container-type: inline-size;
+}
+.bt-controls {
+  display: grid;
+  max-width: 68ch;
+}
+.bt-control {
+  display: grid;
+  gap: 2px;
+  padding-block: 12px;
+  border-top: 1px solid var(--sd-rule);
+}
+.bt-control:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.bt-control dt {
+  font-weight: 700;
+  color: var(--sd-text-primary);
+}
+.bt-control dd {
+  color: var(--sd-text-secondary);
+}
+/* A key or a controller button, as a keycap. In the UI face, because the
+   reading face draws arrows at half height. */
+.bt-key {
+  display: inline-block;
+  min-width: 1.75em;
+  margin-block: 2px;
+  padding: 0 0.4em;
+  border: 1px solid var(--sd-border);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--sd-surface);
+  color: var(--sd-text-primary);
+  font: 600 0.85em/1.6 var(--font-sans);
+  text-align: center;
+}
+@container (min-width: 30rem) {
+  .bt-control {
+    grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
+    gap: 20px;
+  }
+}
+
 /* Receipts as hanko: a vermilion stamp with the number pressed into it. */
 .bt-receipts {
   display: grid;
