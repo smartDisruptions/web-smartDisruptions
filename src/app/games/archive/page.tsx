@@ -48,7 +48,7 @@ export default function ArcadeArchive() {
             </span>
           </h1>
           <p className="arc-lead font-read">
-            The Arcade&apos;s older cabinets. Kiru, the Neo Dojo, a duel still in pre-alpha, Cosmo on the moon and Pip&apos;s Broom &amp; Blade Arcade have the
+            The Arcade&apos;s older cabinets. Kiru, the Neo Dojo, a duel still in pre-alpha, Cosmo on the moon and in orbit, and Pip&apos;s Broom &amp; Blade Arcade have the
             front room now, but every one of these still plays.
           </p>
           <Link href="/games" className="arc-back">

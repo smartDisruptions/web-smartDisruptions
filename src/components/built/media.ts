@@ -57,6 +57,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/moondrift-2.webp': [1600, 900],
   '/images/apps/moondrift-3.webp': [780, 1688],
   '/images/apps/moondrift-thumbnail.webp': [1200, 630],
+  '/images/apps/cosmo-outbound-1.webp': [1600, 900],
+  '/images/apps/cosmo-outbound-2.webp': [1600, 900],
+  '/images/apps/cosmo-outbound-3.webp': [780, 1688],
+  '/images/apps/cosmo-outbound-thumbnail.webp': [1200, 630],
   '/images/apps/night-parade-1.webp': [1600, 900],
   '/images/apps/night-parade-2.webp': [1600, 900],
   '/images/apps/night-parade-3.webp': [780, 1688],
@@ -163,6 +167,7 @@ const MARKS: Record<string, string> = {
   'neo-dojo-survivors': '守', // defend: Tengu-9 holds the dojo for fifteen minutes
   'path-not-taken': '岐', // a fork in the road, as in 岐路: the path not taken
   moondrift: '漂', // to drift, as in 漂う: Cosmo drifting across the moon
+  'cosmo-outbound': '航', // to voyage, as in 航宙, a voyage through space: Cosmo outbound, star to star
   // The Broom & Blade Arcade
   'hoop-quest': '籠', // a basket
   'kid-volt-knockout': '拳', // a fist
