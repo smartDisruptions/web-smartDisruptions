@@ -105,6 +105,14 @@ const nextConfig: NextConfig = {
           source: '/games/cosmo-outbound',
           destination: '/games/cosmo-outbound/index.html',
         },
+        // Rubble Rouser: the same, one file in public/games (its physics engine
+        // inlined as WebAssembly), built in the vault (Tools/rubble-rouser) with
+        // --site, which adds its share cards, links its title back here and
+        // leaves out the developer settings.
+        {
+          source: '/games/rubble-rouser',
+          destination: '/games/rubble-rouser/index.html',
+        },
         // Portfolio Ledger: the public demo of my net-worth tracker, one file in
         // public/demo on made-up data (built from my private ledger's source
         // with --public, which leaves its real settings out). Its Home Screen

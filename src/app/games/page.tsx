@@ -16,7 +16,7 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
+    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**
@@ -25,8 +25,9 @@ export const metadata: Metadata = {
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
  * call on the ordering): Kiru's games, then Neo Dojo Survivors, then Path Not
  * Taken, a rhythm duel in pre-alpha, then Cosmo's Moondrift, a 3D moonboarding
- * game, and Cosmo Outbound, a 3D flight from a canyon to orbit and on to other
- * worlds. Then the Lantern Theater, the Escape
+ * game, Cosmo Outbound, a 3D flight from a canyon to orbit and on to other
+ * worlds, and Rubble Rouser, a 3D demolition game whose forty buildings stand
+ * and fall by their structure. Then the Lantern Theater, the Escape
  * Rooms (./escape, ESCAPE_ROOM_SLUGS): a marquee, a stage that plays the night
  * of the theft as you scroll, and a lineup you can hear. Below it the page
  * goes downstairs into

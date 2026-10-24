@@ -785,6 +785,73 @@ export const apps: App[] = [
       ],
     },
   },
+  {
+    slug: 'rubble-rouser',
+    name: 'Rubble Rouser',
+    description:
+      'A rocket launcher, five kinds of warhead and forty buildings of timber, brick, concrete, steel and glass. Find what holds each one up, then bring it all down.',
+    longDescription:
+      'Every building here stands up the way a real one does. Its weight runs down through the columns and walls, so take out what carries it and everything above comes down. Rockets do most of the work. Inferno rockets set timber burning, cluster rockets burst into six bomblets, bunker busters drill inside before they blow, and demolition charges stick where they land and all go off together. Forty jobs run from a garden shed to a Ferris wheel, a cathedral and a 60-metre skyscraper, each with a set number of shots. Bring enough down and the job earns three stars.',
+    thumbnailUrl: '/images/apps/rubble-rouser-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/rubble-rouser-1.webp',
+      '/images/apps/rubble-rouser-2.webp',
+      '/images/apps/rubble-rouser-3.webp',
+    ],
+    techStack: ['HTML5', 'Three.js', 'WebGL', 'Rapier Physics', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'A 3D demolition game in one file of about 3.4 MB: three.js, the Rapier physics engine as WebAssembly, and every texture, sound and building made in the browser as it loads.',
+      'A structural solver decides what stands: weight has to reach the ground through what is left, and balance over what still holds it, so a building falls the way it is built.',
+      'Built in rounds by an orchestrator and AI agents working side by side: the engine first, then five level builders at a time, three buildings each.',
+      'The forty jobs are in order of measured difficulty, not judged by eye: each building takes its own loadout fired at random, and its plan thrown up to 1.2 m off, eight times each.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/rubble-rouser',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch',
+          controls: [
+            {
+              action: 'Aim',
+              how: 'Drag anywhere on the scene. Pinch to zoom in.',
+            },
+            { action: 'Fire', how: 'Tap FIRE.' },
+            {
+              action: 'Pick a warhead',
+              how: 'Tap one in the row at the bottom left.',
+            },
+            { action: 'Another view', how: 'The arrows beside VIEW.' },
+            {
+              action: 'See what holds it up',
+              how: 'X-RAY, at the top right, shows the stress.',
+            },
+            { action: 'Skip the rocket cam', how: 'Tap the screen.' },
+          ],
+        },
+        {
+          device: 'Mouse and keyboard',
+          controls: [
+            { action: 'Aim', how: 'Drag with the mouse. The wheel zooms.' },
+            { action: 'Fire', how: '`Space`, or right-click' },
+            {
+              action: 'Pick a warhead',
+              how: '`1` to `5`, as numbered under each one',
+            },
+            { action: 'Another view', how: '`Q` and `E`, or the arrow keys' },
+            { action: 'X-ray', how: '`X`' },
+            { action: 'Skip the rocket cam', how: 'Click the screen' },
+            { action: 'Pause', how: '`Esc`' },
+          ],
+        },
+      ],
+    },
+  },
   /*
    * The Escape Rooms: the Arcade's theater on the night market. Each room is a
    * game in Josh's vault (Tools/moon-pearl/ for The Moon Pearl); public/games/<slug>
@@ -1123,7 +1190,7 @@ export function getAppBySlug(slug: string): App | undefined {
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken', 'moondrift', 'cosmo-outbound'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken', 'moondrift', 'cosmo-outbound', 'rubble-rouser'];
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door
