@@ -52,11 +52,11 @@ export const ROOMS: Record<string, Room> = {
   'the-moon-pearl': {
     slug: 'the-moon-pearl',
     number: '01',
-    kicker: 'A Patch mystery',
+    kicker: 'A Mei mystery',
     tagline:
       'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, it didn’t come back.',
     blurb:
-      'The lights went out for seven seconds at her farewell show, and the new lighting tech got the blame. That’s Patch. She’s locked in the dressing room until the police arrive at dawn, with one night to find the pearl and prove who took it.',
+      'The lights went out for seven seconds at her farewell show, and the new lighting tech got the blame. That’s Mei. She’s locked in the dressing room until the police arrive at dawn, with one night to find the pearl and prove who took it.',
     facts: [
       { n: '1', label: 'locked room' },
       { n: '3', label: 'suspects' },

@@ -8,16 +8,16 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Smart Disruptions">
 <meta property="og:url" content="https://smartdisruptions.com/games/the-moon-pearl">
-<meta property="og:title" content="The Moon Pearl: a Patch mystery">
+<meta property="og:title" content="The Moon Pearl: a Mei mystery">
 <meta property="og:description" content="Every night, Madame Luna makes the Moon Pearl vanish. Tonight, it didn't come back.">
 <meta property="og:image" content="https://smartdisruptions.com/images/apps/the-moon-pearl-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Moon Pearl: a Patch mystery">
+<meta name="twitter:title" content="The Moon Pearl: a Mei mystery">
 <meta name="twitter:description" content="Every night, Madame Luna makes the Moon Pearl vanish. Tonight, it didn't come back.">
 <meta name="twitter:image" content="https://smartdisruptions.com/images/apps/the-moon-pearl-og.jpg">
-<meta name="description" content="A Patch mystery. Every night, Madame Luna makes the Moon Pearl vanish. Tonight, it didn't come back. Locked in the dressing room until dawn, find the pearl and prove who took it.">
+<meta name="description" content="A Mei mystery. Every night, Madame Luna makes the Moon Pearl vanish. Tonight, it didn't come back. Locked in the dressing room until dawn, find the pearl and prove who took it.">
 <meta name="theme-color" content="#0c0f22">
 <meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Dela+Gothic+One&family=JetBrains+Mono:wght@500;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap">
 <style>
-/* ───────── THE MOON PEARL · the interface is Patch's holo-glasses, in a theater ───────── */
+/* ───────── THE MOON PEARL · the interface is Mei's headset HUD, in a theater ───────── */
 :root {
   color-scheme: dark;
   --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px);
@@ -67,7 +67,7 @@ button:focus-visible, [tabindex]:focus-visible, input:focus-visible { outline: 1
 .scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; scrollbar-width: thin; scrollbar-color: rgba(var(--m), .25) transparent; }
 .scroll::-webkit-scrollbar { width: 6px; } .scroll::-webkit-scrollbar-thumb { background: rgba(var(--m), .22); border-radius: 3px; }
 
-/* ───────── boot: Patch's glasses powering up ───────── */
+/* ───────── boot: Mei's headset powering up ───────── */
 #boot { position: fixed; inset: 0; z-index: 100; background: radial-gradient(ellipse 90% 60% at 50% 45%, #110c24 0%, #060812 70%); display: grid; place-items: center; transition: opacity .45s ease, visibility 0s linear .45s; }
 #boot.done { opacity: 0; visibility: hidden; }
 #boot .bk { position: absolute; width: 26px; height: 26px; border: 0 solid rgba(var(--m), .7); animation: bkIn .6s var(--ease) both; }
@@ -808,8 +808,8 @@ button:focus-visible, [tabindex]:focus-visible, input:focus-visible { outline: 1
 <div id="boot" aria-hidden="true">
   <i class="bk"></i><i class="bk"></i><i class="bk"></i><i class="bk"></i>
   <div class="log">
-    <div class="l h" style="--d:0"><b>PATCH OS</b><span>v6 · holo-lens</span></div>
-    <div class="l" style="--d:1">optics<span class="ld"></span><em>ok</em></div>
+    <div class="l h" style="--d:0"><b>MEI</b><span>crew headset · v6</span></div>
+    <div class="l" style="--d:1">intercom<span class="ld"></span><em>ok</em></div>
     <div class="l" style="--d:2">headset<span class="ld"></span><em>ok</em></div>
     <div class="l" style="--d:3">case board<span class="ld"></span><em>ready</em></div>
     <div class="l" style="--d:4">audio<span class="ld"></span><em>lo-fi</em></div>
@@ -818,33 +818,32 @@ button:focus-visible, [tabindex]:focus-visible, input:focus-visible { outline: 1
   </div>
 </div>
 <script>
-// THE MOON PEARL audio manifest (see AUDIO.md). Snd reads window.PN_AUDIO: files[name] -> url relative to audio/,
-// meta[name] -> facts: dur (s, decoded) · kind music|voice|sfx · loop/len/loopStart/loopEnd for seamless loops (len =
-// exact length; Snd trims mp3 priming to it) · fx = the default voice chain (intercom | phone) · bpm/bar/bars for music.
+// THE MOON PEARL audio manifest (see AUDIO.md). Snd reads 
 window.PN_AUDIO = {
   files: {
     amb_neon: 'amb_neon.mp3', amb_rain: 'amb_rain.mp3', amb_room: 'amb_room.mp3', applause: 'applause.mp3',
     bells: 'bells.mp3', bells_walk: 'bells_walk.mp3', birds: 'birds.mp3', cable_plug: 'cable_plug.mp3',
-    cascade: 'cascade.mp3', crowd_dark: 'crowd_dark.mp3', crowd_gasp: 'crowd_gasp.mp3',
-    dome_lift: 'dome_lift.mp3', door_open: 'door_open.mp3', dove_coo: 'dove_coo.mp3', dove_flap: 'dove_flap.mp3',
-    drawer_close: 'drawer_close.mp3', drawer_open: 'drawer_open.mp3', drumroll: 'drumroll.mp3',     enhance_off: 'enhance_off.mp3', enhance_on: 'enhance_on.mp3', glow: 'glow.mp3', hall: 'hall.mp3',
-    intercom_buzz: 'intercom_buzz.mp3', item_get: 'item_get.mp3', knock: 'knock.mp3',
-    lock_clunk: 'lock_clunk.mp3', m_credits: 'm_credits.mp3', m_dawn: 'm_dawn.mp3', m_lofi: 'm_lofi.mp3',
-    m_tense: 'm_tense.mp3', m_theme: 'm_theme.mp3', paper: 'paper.mp3', paper_close: 'paper_close.mp3',
-    pearls: 'pearls.mp3', phone_unlock: 'phone_unlock.mp3', plug_turn: 'plug_turn.mp3', radio_click: 'radio_click.mp3',
-    radio_static: 'radio_static.mp3', seeds: 'seeds.mp3',     switch_off: 'switch_off.mp3', switch_on: 'switch_on.mp3', thunder: 'thunder.mp3', ui_back: 'ui_back.mp3',
-    ui_hint: 'ui_hint.mp3', ui_journal: 'ui_journal.mp3', ui_open: 'ui_open.mp3', ui_tap: 'ui_tap.mp3',
-    ui_toast: 'ui_toast.mp3', ui_type: 'ui_type.mp3', v_hart_alibi: 'v_hart_alibi.mp3', v_hart_blame: 'v_hart_blame.mp3',
-    v_hart_booth: 'v_hart_booth.mp3', v_hart_c1: 'v_hart_c1.mp3', v_hart_coming: 'v_hart_coming.mp3', v_hart_confess: 'v_hart_confess.mp3',
-    v_hart_frame: 'v_hart_frame.mp3', v_hart_lock: 'v_hart_lock.mp3', v_hart_obj1: 'v_hart_obj1.mp3', v_hart_obj2: 'v_hart_obj2.mp3',
-    v_hart_obj3: 'v_hart_obj3.mp3', v_hart_sorry: 'v_hart_sorry.mp3', v_ivy_alibi: 'v_ivy_alibi.mp3', v_ivy_stay: 'v_ivy_stay.mp3',
-    v_luna_c1a: 'v_luna_c1a.mp3', v_luna_c1b: 'v_luna_c1b.mp3', v_luna_c1c: 'v_luna_c1c.mp3', v_luna_c2a: 'v_luna_c2a.mp3',
-    v_luna_c2b: 'v_luna_c2b.mp3', v_luna_forgive: 'v_luna_forgive.mp3', v_luna_gone: 'v_luna_gone.mp3', v_luna_noone: 'v_luna_noone.mp3',
-    v_luna_pearl: 'v_luna_pearl.mp3', v_luna_police: 'v_luna_police.mp3', v_luna_switch: 'v_luna_switch.mp3', v_luna_trick: 'v_luna_trick.mp3',
-    v_patch_accuse: 'v_patch_accuse.mp3', v_patch_board: 'v_patch_board.mp3', v_patch_count: 'v_patch_count.mp3', v_patch_got: 'v_patch_got.mp3',
-    v_patch_hand: 'v_patch_hand.mp3', v_patch_here: 'v_patch_here.mp3', v_patch_hoodie: 'v_patch_hoodie.mp3', v_patch_reveal: 'v_patch_reveal.mp3',
-    v_patch_start: 'v_patch_start.mp3', v_patch_switch: 'v_patch_switch.mp3', v_silas_alibi: 'v_silas_alibi.mp3', video_audio: 'video_audio.mp3',
-    wheel_tick: 'wheel_tick.mp3', wrong: 'wrong.mp3',
+    cascade: 'cascade.mp3', crowd_dark: 'crowd_dark.mp3', crowd_gasp: 'crowd_gasp.mp3', dome_lift: 'dome_lift.mp3',
+    door_open: 'door_open.mp3', dove_coo: 'dove_coo.mp3', dove_flap: 'dove_flap.mp3', drawer_close: 'drawer_close.mp3',
+    drawer_open: 'drawer_open.mp3', drumroll: 'drumroll.mp3', enhance_off: 'enhance_off.mp3', enhance_on: 'enhance_on.mp3',
+    glow: 'glow.mp3', hall: 'hall.mp3', intercom_buzz: 'intercom_buzz.mp3', item_get: 'item_get.mp3',
+    knock: 'knock.mp3', lock_clunk: 'lock_clunk.mp3', m_credits: 'm_credits.mp3', m_dawn: 'm_dawn.mp3',
+    m_lofi: 'm_lofi.mp3', m_tense: 'm_tense.mp3', m_theme: 'm_theme.mp3', paper: 'paper.mp3',
+    paper_close: 'paper_close.mp3', pearls: 'pearls.mp3', phone_unlock: 'phone_unlock.mp3', plug_turn: 'plug_turn.mp3',
+    radio_click: 'radio_click.mp3', radio_static: 'radio_static.mp3', seeds: 'seeds.mp3', switch_off: 'switch_off.mp3',
+    switch_on: 'switch_on.mp3', thunder: 'thunder.mp3', ui_back: 'ui_back.mp3', ui_hint: 'ui_hint.mp3',
+    ui_journal: 'ui_journal.mp3', ui_open: 'ui_open.mp3', ui_tap: 'ui_tap.mp3', ui_toast: 'ui_toast.mp3',
+    ui_type: 'ui_type.mp3', v_hart_alibi: 'v_hart_alibi.mp3', v_hart_blame: 'v_hart_blame.mp3', v_hart_booth: 'v_hart_booth.mp3',
+    v_hart_c1: 'v_hart_c1.mp3', v_hart_coming: 'v_hart_coming.mp3', v_hart_confess: 'v_hart_confess.mp3', v_hart_frame: 'v_hart_frame.mp3',
+    v_hart_lock: 'v_hart_lock.mp3', v_hart_obj1: 'v_hart_obj1.mp3', v_hart_obj2: 'v_hart_obj2.mp3', v_hart_obj3: 'v_hart_obj3.mp3',
+    v_hart_sorry: 'v_hart_sorry.mp3', v_ivy_alibi: 'v_ivy_alibi.mp3', v_ivy_stay: 'v_ivy_stay.mp3', v_luna_c1a: 'v_luna_c1a.mp3',
+    v_luna_c1b: 'v_luna_c1b.mp3', v_luna_c1c: 'v_luna_c1c.mp3', v_luna_c2a: 'v_luna_c2a.mp3', v_luna_c2b: 'v_luna_c2b.mp3',
+    v_luna_forgive: 'v_luna_forgive.mp3', v_luna_gone: 'v_luna_gone.mp3', v_luna_noone: 'v_luna_noone.mp3', v_luna_pearl: 'v_luna_pearl.mp3',
+    v_luna_police: 'v_luna_police.mp3', v_luna_switch: 'v_luna_switch.mp3', v_luna_trick: 'v_luna_trick.mp3', v_mei_accuse: 'v_mei_accuse.mp3',
+    v_mei_board: 'v_mei_board.mp3', v_mei_count: 'v_mei_count.mp3', v_mei_got: 'v_mei_got.mp3', v_mei_hand: 'v_mei_hand.mp3',
+    v_mei_here: 'v_mei_here.mp3', v_mei_hoodie: 'v_mei_hoodie.mp3', v_mei_reveal: 'v_mei_reveal.mp3', v_mei_start: 'v_mei_start.mp3',
+    v_mei_switch: 'v_mei_switch.mp3', v_silas_alibi: 'v_silas_alibi.mp3', video_audio: 'video_audio.mp3', wheel_tick: 'wheel_tick.mp3',
+    wrong: 'wrong.mp3',
   },
   meta: {
     amb_neon: {"dur": 7.92, "kind": "sfx", "loop": true, "len": 7.92, "loopStart": 0, "loopEnd": 7.92},
@@ -907,10 +906,10 @@ window.PN_AUDIO = {
     v_hart_obj1: {"dur": 3.125, "kind": "voice"},
     v_hart_obj2: {"dur": 2.16, "kind": "voice"},
     v_hart_obj3: {"dur": 2.445, "kind": "voice"},
-    v_hart_sorry: {"dur": 5.7, "kind": "voice"},
+    v_hart_sorry: {"dur": 5.905, "kind": "voice"},
     v_ivy_alibi: {"dur": 4.535, "kind": "voice"},
     v_ivy_stay: {"dur": 4.54, "kind": "voice"},
-    v_luna_c1a: {"dur": 5.51, "kind": "voice", "fx": "intercom"},
+    v_luna_c1a: {"dur": 5.465, "kind": "voice", "fx": "intercom"},
     v_luna_c1b: {"dur": 12.575, "kind": "voice", "fx": "intercom"},
     v_luna_c1c: {"dur": 10.525, "kind": "voice", "fx": "intercom"},
     v_luna_c2a: {"dur": 3.745, "kind": "voice", "fx": "intercom"},
@@ -918,20 +917,20 @@ window.PN_AUDIO = {
     v_luna_forgive: {"dur": 6.815, "kind": "voice"},
     v_luna_gone: {"dur": 3.315, "kind": "voice"},
     v_luna_noone: {"dur": 5.925, "kind": "voice"},
-    v_luna_pearl: {"dur": 4.33, "kind": "voice"},
+    v_luna_pearl: {"dur": 3.225, "kind": "voice"},
     v_luna_police: {"dur": 8.06, "kind": "voice"},
     v_luna_switch: {"dur": 6.19, "kind": "voice", "fx": "intercom"},
     v_luna_trick: {"dur": 8.44, "kind": "voice"},
-    v_patch_accuse: {"dur": 2.14, "kind": "voice"},
-    v_patch_board: {"dur": 4.225, "kind": "voice"},
-    v_patch_count: {"dur": 2.02, "kind": "voice"},
-    v_patch_got: {"dur": 1.12, "kind": "voice"},
-    v_patch_hand: {"dur": 7.76, "kind": "voice"},
-    v_patch_here: {"dur": 9.825, "kind": "voice"},
-    v_patch_hoodie: {"dur": 4.915, "kind": "voice"},
-    v_patch_reveal: {"dur": 6.695, "kind": "voice"},
-    v_patch_start: {"dur": 9.7, "kind": "voice"},
-    v_patch_switch: {"dur": 4.845, "kind": "voice"},
+    v_mei_accuse: {"dur": 1.945, "kind": "voice"},
+    v_mei_board: {"dur": 3.95, "kind": "voice"},
+    v_mei_count: {"dur": 2.125, "kind": "voice"},
+    v_mei_got: {"dur": 1.01, "kind": "voice"},
+    v_mei_hand: {"dur": 7.92, "kind": "voice"},
+    v_mei_here: {"dur": 9.6, "kind": "voice"},
+    v_mei_hoodie: {"dur": 4.12, "kind": "voice"},
+    v_mei_reveal: {"dur": 6.88, "kind": "voice"},
+    v_mei_start: {"dur": 9.225, "kind": "voice"},
+    v_mei_switch: {"dur": 4.75, "kind": "voice"},
     v_silas_alibi: {"dur": 4.72, "kind": "voice"},
     video_audio: {"dur": 12.0, "kind": "sfx"},
     wheel_tick: {"dur": 0.38, "kind": "sfx"},
@@ -992,7 +991,7 @@ const BUS = (() => {
 const CLOCK = { real: 0, rdt: 0 };
 
 // ───────── canvas & layout ─────────
-// One full-bleed canvas. The DOM UI (the HUD = Patch's glasses, dialogue, inventory) sits on top.
+// One full-bleed canvas. The DOM UI (the HUD on Mei's crew headset, dialogue, inventory) sits on top.
 // HUD.top / HUD.bot are the CSS px the interface reserves at the top and bottom; core publishes them
 // as CSS variables (--hud-top, --hud-bot) and every view keeps its interactive content between them.
 const cv = $('c');
@@ -1237,7 +1236,7 @@ const STORY = (() => {
 
   const title = {
     name: `THE MOON PEARL`,
-    sub: `A Patch mystery`,
+    sub: `A Mei mystery`,
     tagline: `Every night, Madame Luna makes the Moon Pearl vanish. Tonight, it didn't come back.`,
     place: `The Lantern Theater`,
   };
@@ -1280,7 +1279,7 @@ const STORY = (() => {
   };
   const jar = { count: 200, label: `PEARL RAIN · 200` };
 
-  // ── things Patch can carry ──
+  // ── things Mei can carry ──
   const items = {
     seeds:     { name: `Sunflower seeds`,    desc: `A paper twist of seeds from Ivy's pocket. Pip's favorite.` },
     brass_key: { name: `Tiny brass key`,     desc: `Off Pip's leg ribbon. Its bow is a little star.` },
@@ -1293,7 +1292,7 @@ const STORY = (() => {
 
   // ── who talks ──
   const speakers = {
-    patch:  { name: `Patch`,          color: '#3dffc2' },
+    mei:    { name: `Mei`,            color: '#2ef2ff' },
     luna:   { name: `Madame Luna`,    color: '#b9c8ff' },
     ivy:    { name: `Ivy`,            color: '#5fe0a0' },
     silas:  { name: `Silas Vane`,     color: '#c79bff' },
@@ -1365,7 +1364,7 @@ const STORY = (() => {
     i_luna_gone:   L('luna', `My pearl... My pearl is gone!`, 'v_luna_gone', `[gasps] My pearl... [shocked] My pearl is gone!`, 'shock'),
     i_hart_blame:  L('hart', `What on earth...? The lights! It's the girl on the lights!`, 'v_hart_blame',
                      `What on earth...? [alarmed] The lights! It's the girl on the lights!`, 'shock'),
-    i_patch_board: L('patch', `My board never sent a blackout! Somebody cut the power.`, 'v_patch_board',
+    i_mei_board: L('mei', `My board never sent a blackout! Somebody cut the power.`, 'v_mei_board',
                      `[frustrated] My board never sent a blackout! Somebody cut the power.`, 'surprise'),
     i_luna_noone:  L('luna', `Nobody leaves this theater. The bridge is flooded, so the police can't get here until dawn.`, 'v_luna_noone',
                      `Nobody leaves this theater. The bridge is flooded, so the police can't get here until dawn.`, 'stern'),
@@ -1379,153 +1378,153 @@ const STORY = (() => {
                      `Until the police come, the girl waits in the dressing room. I'll keep the key.`, 'stern'),
 
     // ── locked in (main, right after the intro) ──
-    start:   L('patch', `Locked in till dawn. When the police get here, I'm the one they'll take away. So: find the pearl, and prove who took it.`, 'v_patch_start',
+    start:   L('mei', `Locked in till dawn. When the police get here, I'm the one they'll take away. So: find the pearl, and prove who took it.`, 'v_mei_start',
                `[sighs] Locked in till dawn. When the police get here, I'm the one they'll take away. [determined] So. Find the pearl, and prove who took it.`, 'determined'),
-    start2:  L('patch', `My board never sent that blackout. Someone threw the master switch. It's in the wing, right outside this door.`, null, null, 'think'),
-    start3:  L('patch', `And in the dark, the pearl's glow drifted this way. Toward this room.`, null, null, 'think'),
+    start2:  L('mei', `My board never sent that blackout. Someone threw the master switch. It's in the wing, right outside this door.`, null, null, 'think'),
+    start3:  L('mei', `And in the dark, the pearl's glow drifted this way. Toward this room.`, null, null, 'think'),
 
     // ── the room ──
-    door_locked: L('patch', `Locked. Mrs. Hart kept the key.`),
-    window:      L('patch', `Rain on the window. The bridge won't open till dawn.`),
-    window_late: L('patch', `The sky's going gray. Not much night left.`),
-    poster:      L('patch', `MADAME LUNA, FAREWELL NIGHT. Forty years, one pearl.`),
-    clock:       L('patch', `{time}. The police come at six.`),
-    offer_after: L('patch', `Silas offered Madame any price for the pearl. She crumpled it. He's wanted it for years.`, null, null, 'think'),
-    intercom:    L('patch', `The intercom. STAGE is Madame. OFFICE is Mrs. Hart. Everybody can hear everybody on this thing.`),
-    need_item:   L('patch', `That doesn't go there.`),
+    door_locked: L('mei', `Locked. Mrs. Hart kept the key.`),
+    window:      L('mei', `Rain on the window. The bridge won't open till dawn.`),
+    window_late: L('mei', `The sky's going gray. Not much night left.`),
+    poster:      L('mei', `MADAME LUNA, FAREWELL NIGHT. Forty years, one pearl.`),
+    clock:       L('mei', `{time}. The police come at six.`),
+    offer_after: L('mei', `Silas offered Madame any price for the pearl. She crumpled it. He's wanted it for years.`, null, null, 'think'),
+    intercom:    L('mei', `The intercom. STAGE is Madame. OFFICE is Mrs. Hart. Everybody can hear everybody on this thing.`),
+    need_item:   L('mei', `That doesn't go there.`),
 
     // ── the coat rack ──
-    coats:       L('patch', `Everyone hangs their coats in here.`),
-    coat_luna:   L('patch', `Madame's moon cape. Forty years of sequins. Nothing in the pockets but glitter.`),
-    coat_ivy:    L('patch', `Ivy's sequin jacket. Something rattles in the pocket.`),
-    took_seeds:  L('patch', `Sunflower seeds. Pip's favorite.`),
-    ivy_letter_after: L('patch', `Ivy's been offered her own show. Does Madame know?`, null, null, 'think'),
-    coat_hart:   L('patch', `Mrs. Hart's raincoat. Still a little damp from the walk in.`),
-    gloves:      L('patch', `Leopard-print gloves in the pocket. Very Mrs. Hart.`),
-    hat:         L('patch', `Silas's top hat. Madame threw him out before the show so fast he left it behind.`),
-    stub:        L('patch', `A ticket in the hat band: Row A, Seat 7. Complimentary. Madame gave her own rival a front-row seat.`, null, null, 'smirk'),
-    monogram:    L('patch', `Initials sewn into the lining in curly gold thread: S.V. He puts his name on everything.`, null, null, 'smirk'),
+    coats:       L('mei', `Everyone hangs their coats in here.`),
+    coat_luna:   L('mei', `Madame's moon cape. Forty years of sequins. Nothing in the pockets but glitter.`),
+    coat_ivy:    L('mei', `Ivy's sequin jacket. Something rattles in the pocket.`),
+    took_seeds:  L('mei', `Sunflower seeds. Pip's favorite.`),
+    ivy_letter_after: L('mei', `Ivy's been offered her own show. Does Madame know?`, null, null, 'think'),
+    coat_hart:   L('mei', `Mrs. Hart's raincoat. Still a little damp from the walk in.`),
+    gloves:      L('mei', `Leopard-print gloves in the pocket. Very Mrs. Hart.`),
+    hat:         L('mei', `Silas's top hat. Madame threw him out before the show so fast he left it behind.`),
+    stub:        L('mei', `A ticket in the hat band: Row A, Seat 7. Complimentary. Madame gave her own rival a front-row seat.`, null, null, 'smirk'),
+    monogram:    L('mei', `Initials sewn into the lining in curly gold thread: S.V. He puts his name on everything.`, null, null, 'smirk'),
 
     // ── Pip ──
-    cage:        L('patch', `Pip. Madame's key is on his leg, and he knows it.`),
-    cage_no:     L('patch', `He won't come out for me. Not without a bribe.`),
-    pip_fed:     L('patch', `Seeds first, then the key. Fair's fair.`, null, null, 'smirk'),
-    took_key:    L('patch', `A tiny brass key with a star on the end.`),
-    cage_after:  L('patch', `Pip's busy with his seeds. He earned them.`),
+    cage:        L('mei', `Pip. Madame's key is on his leg, and he knows it.`),
+    cage_no:     L('mei', `He won't come out for me. Not without a bribe.`),
+    pip_fed:     L('mei', `Seeds first, then the key. Fair's fair.`, null, null, 'smirk'),
+    took_key:    L('mei', `A tiny brass key with a star on the end.`),
+    cage_after:  L('mei', `Pip's busy with his seeds. He earned them.`),
 
     // ── the vanity ──
-    vanity:      L('patch', `Madame's mirror. Every bulb still works. I checked.`),
-    photo:       L('patch', `A photo tucked in the mirror: the Lantern's thirtieth birthday. Luna with the pearl, and Henrietta Hart with her bracelet of little bells.`),
-    glasses:     L('patch', `Mrs. Hart's reading glasses. She can't read a thing without them. She makes me read her the cue sheets.`),
-    glasses2:    L('patch', `She left them here when she brought Madame's tea at seven. They've been here all night.`, null, null, 'think'),
-    notice_after: L('patch', `The bank takes the Lantern on Friday. Unless she pays. She can't.`, null, null, 'sad'),
-    teacup:      L('patch', `Madame's tea, gone cold. Rose lipstick on the rim: Mrs. Hart's shade. She brought the tea.`),
+    vanity:      L('mei', `Madame's mirror. Every bulb still works. I checked.`),
+    photo:       L('mei', `A photo tucked in the mirror: the Lantern's thirtieth birthday. Luna with the pearl, and Henrietta Hart with her bracelet of little bells.`),
+    glasses:     L('mei', `Mrs. Hart's reading glasses. She can't read a thing without them. She makes me read her the cue sheets.`),
+    glasses2:    L('mei', `She left them here when she brought Madame's tea at seven. They've been here all night.`, null, null, 'think'),
+    notice_after: L('mei', `The bank takes the Lantern on Friday. Unless she pays. She can't.`, null, null, 'sad'),
+    teacup:      L('mei', `Madame's tea, gone cold. Rose lipstick on the rim: Mrs. Hart's shade. She brought the tea.`),
 
     // ── the jar ──
-    jar:         L('patch', `Two hundred glass pearls for Madame's Pearl Rain finale.`),
-    bell:        L('patch', `A tiny silver bell, caught on the rim. Somebody's bracelet lost a charm.`, null, null, 'think'),
-    jar_where:   L('patch', `Where do you hide a pearl? In a jar of pearls.`, null, null, 'smirk'),
-    jar_same:    L('patch', `One of these could be real. In this light, they all look the same.`),
-    jar_dark:    L('patch', `The real one glows in total darkness. There's no switch in here. This room runs off the master switch, out in the wing.`, null, null, 'think'),
-    jar_cover:   L('patch', `Not dark enough. It has to be total darkness.`),
-    blackout_miss: L('patch', `Missed it. Madame, one more time?`),
+    jar:         L('mei', `Two hundred glass pearls for Madame's Pearl Rain finale.`),
+    bell:        L('mei', `A tiny silver bell, caught on the rim. Somebody's bracelet lost a charm.`, null, null, 'think'),
+    jar_where:   L('mei', `Where do you hide a pearl? In a jar of pearls.`, null, null, 'smirk'),
+    jar_same:    L('mei', `One of these could be real. In this light, they all look the same.`),
+    jar_dark:    L('mei', `The real one glows in total darkness. There's no switch in here. This room runs off the master switch, out in the wing.`, null, null, 'think'),
+    jar_cover:   L('mei', `Not dark enough. It has to be total darkness.`),
+    blackout_miss: L('mei', `Missed it. Madame, one more time?`),
     luna_again:  L('luna', `Again? All right. Seven seconds.`),
-    bell_late:   L('patch', `And what's this? A tiny silver bell, caught on the rim.`, null, null, 'surprise'),
+    bell_late:   L('mei', `And what's this? A tiny silver bell, caught on the rim.`, null, null, 'surprise'),
 
     // ── the cabinet ──
-    cabinet:        L('patch', `Madame's cabinet. Black lacquer, gold moons. Three drawers, three locks.`),
-    crescent_locked: L('patch', `The crescent drawer. A tiny keyhole shaped like a star.`),
-    half_locked:    L('patch', `The half-moon drawer. A brass lock with two wheels: a row letter and a seat number.`),
-    full_locked:    L('patch', `The full-moon drawer. No keyhole. Just a round velvet hollow.`),
-    full_hint:      L('patch', `It's the shape of the moon. Something round lives here.`, null, null, 'think'),
-    crescent_open:  L('patch', `The pearl's velvet case. Empty. And a card.`),
-    certificate_after: L('patch', `So that's why we all saw it move in the dark. It glows.`, null, null, 'surprise'),
-    half_wrong:     L('patch', `Not that.`),
-    half_open:      L('patch', `Silas's phone. Purple case, of course.`, null, null, 'smirk'),
-    full_open:      L('patch', `Madame's spare key. And an envelope: For Ivy. Not mine to open.`),
+    cabinet:        L('mei', `Madame's cabinet. Black lacquer, gold moons. Three drawers, three locks.`),
+    crescent_locked: L('mei', `The crescent drawer. A tiny keyhole shaped like a star.`),
+    half_locked:    L('mei', `The half-moon drawer. A brass lock with two wheels: a row letter and a seat number.`),
+    full_locked:    L('mei', `The full-moon drawer. No keyhole. Just a round velvet hollow.`),
+    full_hint:      L('mei', `It's the shape of the moon. Something round lives here.`, null, null, 'think'),
+    crescent_open:  L('mei', `The pearl's velvet case. Empty. And a card.`),
+    certificate_after: L('mei', `So that's why we all saw it move in the dark. It glows.`, null, null, 'surprise'),
+    half_wrong:     L('mei', `Not that.`),
+    half_open:      L('mei', `Silas's phone. Purple case, of course.`, null, null, 'smirk'),
+    full_open:      L('mei', `Madame's spare key. And an envelope: For Ivy. Not mine to open.`),
 
     // ── Silas's phone ──
-    phone_locked: L('patch', `Silas's phone. Locked with a pattern.`),
-    phone_tilt:   L('patch', `Tilt it to the light. Screens keep secrets. Smudges don't.`),
-    phone_smudge: L('patch', `A greasy trail. Somebody draws the same shape every day.`, null, null, 'think'),
-    phone_wrong:  L('patch', `Nope.`),
-    phone_wrong2: L('patch', `Wrong way round. Everybody writes an S from the top.`),
-    phone_open:   L('patch', `I'm in. One video. 9:41 p.m.`, null, null, 'smirk'),
-    video_dark:   L('patch', `Seven seconds of dark. The glow's the only thing moving.`),
-    video_scrub:  L('patch', `Slower. Frame by frame.`),
-    video_hand:   L('patch', `There. The pearl lit up the hand that took it. A leopard-print glove... and a bracelet of tiny bells.`, 'v_patch_hand',
+    phone_locked: L('mei', `Silas's phone. Locked with a pattern.`),
+    phone_tilt:   L('mei', `Tilt it to the light. Screens keep secrets. Smudges don't.`),
+    phone_smudge: L('mei', `A greasy trail. Somebody draws the same shape every day.`, null, null, 'think'),
+    phone_wrong:  L('mei', `Nope.`),
+    phone_wrong2: L('mei', `Wrong way round. Everybody writes an S from the top.`),
+    phone_open:   L('mei', `I'm in. One video. 9:41 p.m.`, null, null, 'smirk'),
+    video_dark:   L('mei', `Seven seconds of dark. The glow's the only thing moving.`),
+    video_scrub:  L('mei', `Slower. Frame by frame.`),
+    video_hand:   L('mei', `There. The pearl lit up the hand that took it. A leopard-print glove... and a bracelet of tiny bells.`, 'v_mei_hand',
                     `[quietly] There. The pearl lit up the hand that took it. A leopard-print glove... and a bracelet of tiny bells.`, 'surprise'),
-    video_lights: L('patch', `Lights up. Ivy's on the far side, both hands full of dove. And that's Silas's white glove in the corner of the shot. He was filming from his seat the whole time.`, null, null, 'think'),
-    who_leopard:  L('patch', `Leopard gloves and bells. Who wears leopard gloves?`, null, null, 'think'),
-    deduce_here:  L('patch', `Leopard gloves. They're in Mrs. Hart's coat, right here in this room. She came in here after the lights came back. So did the pearl.`, 'v_patch_here',
+    video_lights: L('mei', `Lights up. Ivy's on the far side, both hands full of dove. And that's Silas's white glove in the corner of the shot. He was filming from his seat the whole time.`, null, null, 'think'),
+    who_leopard:  L('mei', `Leopard gloves and bells. Who wears leopard gloves?`, null, null, 'think'),
+    deduce_here:  L('mei', `Leopard gloves. They're in Mrs. Hart's coat, right here in this room. She came in here after the lights came back. So did the pearl.`, 'v_mei_here',
                     `[slowly] Leopard gloves. They're in Mrs. Hart's coat, right here in this room. [realizing] She came in here after the lights came back. So did the pearl.`, 'determined'),
-    deduce_bells: L('patch', `Little silver bells. Like the bracelet on Mrs. Hart's wrist.`, null, null, 'think'),
+    deduce_bells: L('mei', `Little silver bells. Like the bracelet on Mrs. Hart's wrist.`, null, null, 'think'),
 
     // ── the intercom (Intercom plays STORY.calls and STORY.dial) ──
-    c1_a:  L('luna', `Patch? It's Luna. I don't believe for one second that you'd steal from me.`, 'v_luna_c1a',
-             `Patch? It's Luna. [warmly] I don't believe for one second that you'd steal from me.`, 'warm'),
-    c1_p1: L('patch', `Then get me out of here.`),
+    c1_a:  L('luna', `Mei? It's Luna. I don't believe for one second that you'd steal from me.`, 'v_luna_c1a',
+             `Mei? It's Luna. [warmly] I don't believe for one second that you'd steal from me.`, 'warm'),
+    c1_p1: L('mei', `Then get me out of here.`),
     c1_b:  L('luna', `Henrietta Hart has the key, and the others want you locked up. But everything I took tonight is in my cabinet: Silas's phone, because he was filming my show, and my spare key to that door.`, 'v_luna_c1b',
              `Henrietta Hart has the key, and the others want you locked up. But everything I took tonight is in my cabinet. Silas's phone, because he was filming my show... and my spare key to that door.`, 'warm'),
-    c1_p2: L('patch', `Your cabinet's in here with me.`),
+    c1_p2: L('mei', `Your cabinet's in here with me.`),
     c1_c:  L('luna', `Then open it. My first key is where it always is: on Pip's leg. He only comes out for sunflower seeds. Ivy always carries some.`, 'v_luna_c1c',
              `Then open it. My first key is where it always is: on Pip's leg. [smiling] He only comes out for sunflower seeds. Ivy always carries some.`, 'smile'),
     c2_a:  L('luna', `You opened my crescent drawer! Clever girl.`, 'v_luna_c2a', `[delighted] You opened my crescent drawer! Clever girl.`, 'smile'),
     c2_b:  L('luna', `The middle drawer has Silas's phone. I locked it with the seat of the man who filmed me. I won't say it out loud. Everyone can hear this line.`, 'v_luna_c2b',
              `The middle drawer has Silas's phone. I locked it with the seat of the man who filmed me. [lowers voice] I won't say it out loud. Everyone can hear this line.`, 'stern'),
-    c2_p1: L('patch', `Everyone?`),
+    c2_p1: L('mei', `Everyone?`),
     c2_c:  L('luna', `Every box in the building is on this line, dear.`),
-    luna_idle1: L('luna', `Keep going, Patch. I'm right here by the switch.`, null, null, 'warm'),
+    luna_idle1: L('luna', `Keep going, Mei. I'm right here by the switch.`, null, null, 'warm'),
     luna_idle2: L('luna', `Dawn's coming, dear. Use that clever head.`, null, null, 'warm'),
     luna_idle3: L('luna', `Silas still won't say a word about what's on that phone.`, null, null, 'stern'),
     hart_c1: L('hart', `Comfortable in there, dear? Don't you worry. The police will sort it all out in the morning.`, 'v_hart_c1',
                `Comfortable in there, dear? Don't you worry. [sweetly] The police will sort it all out in the morning.`, 'sweet'),
     hart_idle1: L('hart', `Still awake, dear? Get some rest.`, null, null, 'sweet'),
     hart_idle2: L('hart', `Not long now. The police will be here soon.`, null, null, 'sweet'),
-    p_switch:    L('patch', `Madame, throw the master switch. Seven seconds. Trust me.`, 'v_patch_switch',
+    p_switch:    L('mei', `Madame, throw the master switch. Seven seconds. Trust me.`, 'v_mei_switch',
                    `Madame, throw the master switch. Seven seconds. [firmly] Trust me.`, 'determined'),
     luna_switch: L('luna', `The master switch? All right. Seven seconds. Ready... now.`, 'v_luna_switch',
                    `The master switch? [pause] All right. Seven seconds. Ready... [whispers] now.`, 'stern'),
-    p_got:       L('patch', `Got you.`, 'v_patch_got', `[whispers] Got you.`, 'smirk'),
+    p_got:       L('mei', `Got you.`, 'v_mei_got', `[whispers] Got you.`, 'smirk'),
     hart_coming: L('hart', `Who's playing with my switch? I'm coming down to check on you, dear.`, 'v_hart_coming',
                    `[suspicious] Who's playing with my switch? [forced sweetness] I'm coming down to check on you, dear.`, 'stern'),
-    p_coming:    L('patch', `She's coming for it. Madame's spare key is in the full-moon drawer.`, null, null, 'determined'),
-    door_open:   L('patch', `Not tonight, Mrs. Hart.`, null, null, 'determined'),
+    p_coming:    L('mei', `She's coming for it. Madame's spare key is in the full-moon drawer.`, null, null, 'determined'),
+    door_open:   L('mei', `Not tonight, Mrs. Hart.`, null, null, 'determined'),
 
     // ── the finale on stage (Stage.play('confront') runs STORY.finale) ──
-    f_walkout:   L('narr', `Patch steps out of the dressing room with the Moon Pearl glowing in her hand.`),
-    f_luna_pearl: L('luna', `My pearl! Oh, Patch...`, 'v_luna_pearl', `[gasps, overjoyed] My pearl! Oh, Patch...`, 'shock'),
-    f_reveal:    L('patch', `It was in the dressing room, hidden in the jar of glass pearls. Somebody put it there after the lights came back.`, 'v_patch_reveal',
+    f_walkout:   L('narr', `Mei steps out of the dressing room with the Moon Pearl glowing in her hand.`),
+    f_luna_pearl: L('luna', `My pearl! Oh, Mei...`, 'v_luna_pearl', `[gasps, overjoyed] My pearl! Oh, Mei...`, 'shock'),
+    f_reveal:    L('mei', `It was in the dressing room, hidden in the jar of glass pearls. Somebody put it there after the lights came back.`, 'v_mei_reveal',
                    `It was in the dressing room, hidden in the jar of glass pearls. Somebody put it there after the lights came back.`, 'determined'),
     f_frame:     L('hart', `In the dressing room? Where she's been all night? Well, there you are, then!`, 'v_hart_frame',
                    `In the dressing room? Where she's been all night? [triumphant] Well, there you are, then!`, 'stern'),
-    f_nice_try:  L('patch', `Nice try.`, null, null, 'smirk'),
-    wrong_ivy:   L('patch', `Not Ivy. She was on the far side the whole seven seconds, with both hands full of dove. It's on Silas's video.`, null, null, 'think'),
+    f_nice_try:  L('mei', `Nice try.`, null, null, 'smirk'),
+    wrong_ivy:   L('mei', `Not Ivy. She was on the far side the whole seven seconds, with both hands full of dove. It's on Silas's video.`, null, null, 'think'),
     ivy_wrong:   L('ivy', `Me? I'd never!`, null, null, 'shock'),
-    wrong_silas: L('patch', `Not Silas. He never left his seat. He was too busy filming, and his own phone proves it.`, null, null, 'think'),
+    wrong_silas: L('mei', `Not Silas. He never left his seat. He was too busy filming, and his own phone proves it.`, null, null, 'think'),
     silas_wrong: L('silas', `Hmph. Thank you... I think.`, null, null, 'offended'),
-    f_accuse:    L('patch', `It was you, Mrs. Hart.`, 'v_patch_accuse', `[calm, certain] It was you, Mrs. Hart.`, 'determined'),
-    f_hart_gasp: L('hart', `Me? Oh, Patch, dear...`, null, null, 'shock'),
+    f_accuse:    L('mei', `It was you, Mrs. Hart.`, 'v_mei_accuse', `[calm, certain] It was you, Mrs. Hart.`, 'determined'),
+    f_hart_gasp: L('hart', `Me? Oh, Mei, dear...`, null, null, 'shock'),
     f_obj1:      L('hart', `Me? I was upstairs counting the ticket money!`, 'v_hart_obj1', `[indignant] Me? I was upstairs counting the ticket money!`, 'shock'),
-    proof1_glasses: L('patch', `Without your glasses? They've been on the vanity since seven. You can't read a ticket without them.`, null, null, 'determined'),
-    proof1_video:   L('patch', `Then whose hand is this, on the stage, in the dark?`, null, null, 'determined'),
+    proof1_glasses: L('mei', `Without your glasses? They've been on the vanity since seven. You can't read a ticket without them.`, null, null, 'determined'),
+    proof1_video:   L('mei', `Then whose hand is this, on the stage, in the dark?`, null, null, 'determined'),
     f_obj2:      L('hart', `That could be anybody's glove!`, 'v_hart_obj2', `[flustered] That could be anybody's glove!`, 'worried'),
-    proof2_gloves:  L('patch', `Leopard-print gloves, in your raincoat pocket, in the dressing room. And a bracelet of bells, like the one on your wrist.`, null, null, 'determined'),
-    proof2_photo:   L('patch', `With a bracelet of tiny bells. Same as in the photo on Madame's mirror.`, null, null, 'determined'),
+    proof2_gloves:  L('mei', `Leopard-print gloves, in your raincoat pocket, in the dressing room. And a bracelet of bells, like the one on your wrist.`, null, null, 'determined'),
+    proof2_photo:   L('mei', `With a bracelet of tiny bells. Same as in the photo on Madame's mirror.`, null, null, 'determined'),
     f_obj3:      L('hart', `And I suppose I hid it, too?`, 'v_hart_obj3', `[scoffs, rattled] And I suppose I hid it, too?`, 'worried'),
-    proof3_bell:    L('patch', `Your bracelet left a bell on the jar where the pearl was hidden.`, null, null, 'determined'),
-    f_count:     L('patch', `Count your bells, Mrs. Hart.`, 'v_patch_count', `[quiet, firm] Count your bells, Mrs. Hart.`, 'determined'),
-    proof_miss1: L('patch', `No... that doesn't prove it.`, null, null, 'think'),
+    proof3_bell:    L('mei', `Your bracelet left a bell on the jar where the pearl was hidden.`, null, null, 'determined'),
+    f_count:     L('mei', `Count your bells, Mrs. Hart.`, 'v_mei_count', `[quiet, firm] Count your bells, Mrs. Hart.`, 'determined'),
+    proof_miss1: L('mei', `No... that doesn't prove it.`, null, null, 'think'),
     proof_miss2: L('hart', `Is that all you've got, dear?`, null, null, 'sweet'),
     f_bells_gap: L('narr', `Mrs. Hart looks down at her bracelet. One bell is missing.`),
     f_confess:   L('hart', `Forty bells. One for every year the Lantern's been open. The bank takes it on Friday. I only wanted to keep the lights on.`, 'v_hart_confess',
                    `[voice breaking] Forty bells. One for every year the Lantern's been open. The bank takes it on Friday. [softly] I only wanted to keep the lights on.`, 'sad'),
-    f_sorry:     L('hart', `And I knew everyone would blame the new girl in the hoodie. I'm so sorry, Patch.`, 'v_hart_sorry',
-                   `And I knew everyone would blame the new girl in the hoodie. [ashamed] I'm so sorry, Patch.`, 'guilty'),
-    f_hoodie:    L('patch', `Next time, judge the work. Not the hoodie.`, 'v_patch_hoodie', `Next time, judge the work. [pause] Not the hoodie.`, 'smirk'),
+    f_sorry:     L('hart', `And I knew everyone would blame the new girl in the hoodie. I'm so sorry, Mei.`, 'v_hart_sorry',
+                   `And I knew everyone would blame the new girl in the hoodie. [ashamed] I'm so sorry, Mei.`, 'guilty'),
+    f_hoodie:    L('mei', `Next time, judge the work. Not the hoodie.`, 'v_mei_hoodie', `Next time, judge the work. [pause] Not the hoodie.`, 'smirk'),
     f_forgive:   L('luna', `Oh, Henrietta. You only had to ask. I'd have done a hundred more shows to save this old place.`, 'v_luna_forgive',
                    `[gently] Oh, Henrietta. You only had to ask. I'd have done a hundred more shows to save this old place.`, 'sad'),
-    f_envelope:  L('patch', `Madame, this was in your full-moon drawer.`),
+    f_envelope:  L('mei', `Madame, this was in your full-moon drawer.`),
     f_gift:      L('luna', `I meant to give it to you tonight, Ivy. The secret of the Vanishing Moon. It's yours now.`, null, null, 'smile'),
     f_ivy:       L('ivy', `I was going to tell you I'm leaving. Maybe I'll stay a little longer.`, 'v_ivy_stay',
                    `[tearful, smiling] I was going to tell you I'm leaving. Maybe I'll stay a little longer.`, 'smile'),
@@ -1533,24 +1532,24 @@ const STORY = (() => {
     f_police_q:  L('police', `Police! We had a call about a stolen pearl?`),
     f_police:    L('luna', `Officers, I'm afraid you've come for nothing. The Moon Pearl was never stolen. It was my greatest vanishing act.`, 'v_luna_police',
                    `[grandly] Officers, I'm afraid you've come for nothing. The Moon Pearl was never stolen. [smiling] It was my greatest vanishing act.`, 'stage'),
-    f_end:       L('patch', `Lights, please.`, null, null, 'smirk'),
+    f_end:       L('mei', `Lights, please.`, null, null, 'smirk'),
   };
 
   // ── the intro (Stage owns the pictures; these are the beats, in order) ──
   // shot ids are Stage's: outside, booth, show, blackout, lights, blame, wing, lineup, lock
   const intro = [
     { shot: 'outside', card: [`9:35 PM`, `The Lantern Theater`], hold: 3.0 },
-    { shot: 'booth', line: 'i_hart_booth' },              // she leans into Patch's booth: bracelet jingles, glasses chain empty
+    { shot: 'booth', line: 'i_hart_booth' },              // she leans into Mei's booth: bracelet jingles, glasses chain empty
     { shot: 'show', line: 'i_luna_trick' },
     { shot: 'blackout', hold: 7.0 },                     // the glow lifts, drifts toward the dressing-room side, goes out
     { shot: 'lights', line: 'i_luna_gone' },
     { shot: 'blame', line: 'i_hart_blame' },              // she bustles in from the dressing-room side and points at the booth
-    { shot: 'wing', line: 'i_patch_board' },
+    { shot: 'wing', line: 'i_mei_board' },
     { shot: 'wing', line: 'i_luna_noone' },
     { shot: 'lineup', who: 'ivy', line: 'i_ivy_alibi' },
     { shot: 'lineup', who: 'silas', line: 'i_silas_alibi' },
     { shot: 'lineup', who: 'hart', line: 'i_hart_alibi' },
-    { shot: 'lock', line: 'i_hart_lock' },                // the dressing-room door shuts on Patch; a key turns
+    { shot: 'lock', line: 'i_hart_lock' },                // the dressing-room door shuts on Mei; a key turns
   ];
 
   // ── incoming calls: the intercom buzzes when `when(S)` first holds; the player answers ──
@@ -1560,7 +1559,7 @@ const STORY = (() => {
     { id: 'luna2', who: 'luna', ch: 'stage', flag: 'call2', when: (S) => S.f.read_certificate && !S.f.call2,
       lines: ['c2_a', 'c2_b', 'c2_p1', 'c2_c'] },
   ];
-  // ── when Patch presses a button herself ──
+  // ── when Mei presses a button herself ──
   // canSwitch: she knows the pearl is in this room (j_here), has read the certificate, and has looked at the jar.
   const canSwitch = (S) => !!(S.f.here && S.f.read_certificate && S.f.seen_jar && !S.f.took_pearl);
   const dial = {
@@ -1617,7 +1616,7 @@ const STORY = (() => {
     j_here:         { title: `The pearl is in this room`, text: `Mrs. Hart's gloves came back to the dressing room after the theft. So did the pearl.`, about: 'hart' },
     j_pearl:        { title: `The Moon Pearl`, text: `Hidden in the Pearl Rain jar, among 200 glass ones. It glowed.` },
   };
-  // the evidence Patch can present on stage (in this order on the picker)
+  // the evidence Mei can present on stage (in this order on the picker)
   const evidence = ['j_video_hand', 'j_gloves', 'j_glasses', 'j_photo', 'j_bell', 'j_notice', 'j_video_alibis', 'j_stub', 'j_offer', 'j_ivy_letter', 'j_certificate', 'j_log', 'j_glow'];
 
   // ── goals and hints (THINK). The first active entry is the current goal; hints escalate. ──
@@ -1696,12 +1695,12 @@ const STORY = (() => {
 
   const credits = [
     `THE MOON PEARL`,
-    `Patch, from the Neo Dojo cast`,
+    `Mei, all grown up, from Tetherball: King of the Pole`,
     `Madame Luna · Ivy · Silas Vane · Mrs. Henrietta Hart · and Pip, as himself`,
     `Built by a team of AI agents with Claude Code, for Josh Escusa · Smart Disruptions`,
     `Music, voices and sound made with ElevenLabs`,
   ];
-  const coda = `The Lantern stayed open. Madame Luna did a hundred more shows to save it. Ivy made the moon vanish on the hundred and first. And Patch ran the lights.`;
+  const coda = `The Lantern stayed open. Madame Luna did a hundred more shows to save it. Ivy made the moon vanish on the hundred and first. And Mei ran the lights.`;
 
   return {
     title, answers, video, cabinet, jar, items, speakers, suspects, letters, lines, intro, calls, dial, canSwitch,
@@ -2035,7 +2034,7 @@ const Snd = (() => {
 
   // the director: what the bed should be for the state we're in (DESIGN.md §9)
   //   title → m_theme · intro: the show plays m_theme until the lights go out, then silence · play → m_lofi
-  //   (Patch's headphones) until she asks for the blackout, then m_tense · finale → m_tense, then m_dawn from
+  //   (Mei's headset) until she asks for the blackout, then m_tense · finale → m_tense, then m_dawn from
   //   the confession · credits → m_credits
   function wanted(phase) {
     const ph = phase || (S && S.phase);
@@ -2244,7 +2243,7 @@ const Snd = (() => {
       BUS.on('blackout:request', () => { MU.tense = true; direct(2, 'play'); });
       BUS.on('blackout:start', () => { MU.dark = true; stopLoop('amb_neon', 0.2); stopLoop('amb_room', 0.6); duckMusic(true); });
       BUS.on('blackout:end', () => { MU.dark = false; duckMusic(false); direct(1.5); });
-      // Mrs. Hart coming down the stairs: her bells get closer until Patch opens the door
+      // Mrs. Hart coming down the stairs: her bells get closer until Mei opens the door
       BUS.on('bells:start', () => { const h = loop('bells_walk', { vol: 0.12 }); MU.bellsT = 0; MU.bellsH = h; });
       BUS.on('door:open', () => { MU.bellsH = null; stopLoop('bells_walk', 0.4); sfx('door_open'); });
       BUS.on('flag', (p) => {
@@ -2274,11 +2273,11 @@ const Snd = (() => {
 })();
 
 // ⟪room⟫
-// ───────────────────────────── 30. Room: Madame Luna's dressing room, the screen Patch returns to ─────────────────────────────
+// ───────────────────────────── 30. Room: Madame Luna's dressing room, the screen Mei returns to ─────────────────────────────
 // The `room` view (raw CSS px). One cosy, cluttered dressing room at night, seen straight on: the back wall
 // (the vanity ringed with bulbs, the prop shelf with the Pearl Rain jar, the intercom, the locked door, Madame's
 // moon cabinet, a high little window in the rain, the farewell poster, the clock) and the floor in front of it
-// (the coat rail, Pip's cage on its stand, the wicker bin), with Patch walking between them.
+// (the coat rail, Pip's cage on its stand, the wicker bin), with Mei walking between them.
 //
 // Two compositions share every painter: `tall` (a phone held upright: the floor gets depth, the rail, the cage
 // and the bin stand forward) and `wide` (a phone on its side, a tablet, a desktop: one long wall). A camera fits
@@ -2286,9 +2285,9 @@ const Snd = (() => {
 //
 // How it stays fast: the walls, the floor and everything fixed to them are painted ONCE per bake() with Canvas 2D
 // paths at the current scale (albedo → × a low-res light map → emissive), then cut into ≤256 px tiles. The floor
-// props are lit sprites, drawn in depth order with Patch. A frame draws only what moves: the rain outside, the
+// props are lit sprites, drawn in depth order with Mei. A frame draws only what moves: the rain outside, the
 // drips on the glass, the bulbs breathing (one flickers now and then), dust in the light, glints on sequins and
-// pearls, the clock's hands, Pip, the intercom's call light, the drawers, the door, Patch. The blackout is one
+// pearls, the clock's hands, Pip, the intercom's call light, the drawers, the door, Mei. The blackout is one
 // multiply pass of a baked darkness map that leaves only the window's rain light. Particles live in typed arrays
 // and respect QUALITY[QL].
 const Room = (() => {
@@ -2319,7 +2318,7 @@ const Room = (() => {
   // safe: [x0, y0, x1, y1] fits between the HUD bars · FL: where the back wall meets the floor · VPY: the floor's
   // vanishing height (k(y) = (y − VPY) / (FL − VPY) is how much bigger a thing standing at y is than at the wall)
   // place: id → [x, y] of the box's top-left (back wall, k = 1) or [x, footY] with `floor` (k from footY)
-  // st: Patch's stations [footX, footY, face] (face 1 = looking right)
+  // st: Mei's stations [footX, footY, face] (face 1 = looking right)
   const LAYOUTS = {
     tall: {
       safe: [0, 4, 444, 792], FL: 360, VPY: -760,
@@ -2670,7 +2669,7 @@ const Room = (() => {
       rect(g, bx + 1.6, 45, 13.8, 0.8, 'rgba(255,255,255,0.8)');
       if (names[i]) fitText(g, names[i], bx + 8.5, 49.4, 4.2, FONT.serif, '#8e1b2c', 13.4, 800, 0.2);
     }
-    // the jack for Patch's headset
+    // the jack for Mei's headset
     circ(g, IC_JACK.x, IC_JACK.y, 2.6, '#c8ccd8'); circ(g, IC_JACK.x, IC_JACK.y, 1.3, '#151008');
   }
 
@@ -3209,7 +3208,7 @@ const Room = (() => {
   const blit = (c, sp, dx, dy) => { if (sp) c.drawImage(sp.c, sp.x + (dx || 0), sp.y + (dy || 0), sp.w, sp.h); };
   function bakeSprites() {
     const out = {}, P = PL;
-    // the floor props (depth-sorted with Patch)
+    // the floor props (depth-sorted with Mei)
     out.coats = sprite(P.coats.x, P.coats.y, P.coats.k, 0, 0, PR.coats.w, PR.coats.h, 6, pCoats, eCoats);
     out.glove = sprite(P.coats.x, P.coats.y, P.coats.k, POCKET.x - 16, POCKET.y - 18, 22, 22, 1, pGlove);
     out.cage = sprite(P.cage.x, P.cage.y, P.cage.k, 0, 0, PR.cage.w, PR.cage.h, 4, pCageBase);
@@ -3234,12 +3233,12 @@ const Room = (() => {
   }
 
 
-  // ask Cast for Patch at every size she can be in this room (the floor's depth scales her), and for Pip
+  // ask Cast for Mei at every size she can be in this room (the floor's depth scales her), and for Pip
   function prewarmCast() {
     if (typeof Cast === 'undefined' || !Cast) return;
     try {
       const ys = Object.keys(L.st).map((k) => L.st[k][1]), k0 = kAt(Math.min.apply(null, ys)), k1 = kAt(Math.max.apply(null, ys));
-      if (Cast.prewarmFig) for (const k of [k0, (k0 + k1) / 2, k1]) Cast.prewarmFig('patch', PH * k * cam.s * DPR, false);
+      if (Cast.prewarmFig) for (const k of [k0, (k0 + k1) / 2, k1]) Cast.prewarmFig('mei', PH * k * cam.s * DPR, false);
       if (Cast.prewarmPip) Cast.prewarmPip(27 * PL.cage.k * cam.s * DPR, false);
     } catch (e) { reportErr('Room.prewarm', e); }
   }
@@ -3317,7 +3316,7 @@ const Room = (() => {
     GW.flash = glowOf('150,152,196', 64, 0.3); GW.haze = glowOf('200,190,220', 64, 0.35);   // lightning's wash, the pre-dawn grey (not the pearl's blue-white)
   }
   // Twinkles: a small four-point star with a tiny core and no bloom disc. Warm gold on brass, glass and silver,
-  // emerald on Ivy's sequins, Patch's mint for the hints. Never cool white or blue: that glow is the pearl's alone.
+  // emerald on Ivy's sequins, the HUD's mint for the hints. Never cool white or blue: that glow is the pearl's alone.
   const TW = {};
   function twinkleSprite(core, ray) {
     const c = makeCanvas(32, 32), g = c.getContext('2d');
@@ -3383,12 +3382,12 @@ const Room = (() => {
   let glint = { id: null, t: 0, next: 4 };
   let hoverId = null, focusIdx = -1, transOn = false, audioOK = false;
   const seen = {};
-  // Patch
+  // Mei
   const PT = { x: 240, y: 560, tx: 0, ty: 0, moving: false, flip: true, pose: 'idle', walkT: 0, show: true, hold: null, holdT: 0, station: 'home', face: 1, out: 0, outT: 0 };
   const PO = { flip: false, look: 0, prop: undefined };
-  const PH = 160;   // Patch's height in cm at the back wall
+  const PH = 160;   // Mei's height in cm at the back wall
 
-  // ═════════════════════════════ Patch: stations and walking ═════════════════════════════
+  // ═════════════════════════════ Mei: stations and walking ═════════════════════════════
   const VIEW_ST = { coats: 'coats', vanity: 'vanity', cabinet: 'cabinet', cage: 'cage', jar: 'jar', intercom: 'intercom' };
   const AT_POSE = { cabinet: 'reach', cage: 'reach', jar: 'reach', bin: 'crouch', window: 'think', poster: 'think', clock: 'think', coats: 'reach', vanity: 'think' };
   function snapTo(id) {
@@ -3405,8 +3404,8 @@ const Room = (() => {
     if (p && !RM) { PT.hold = p; PT.holdT = p === 'think' ? 2.6 : 1.3; }
   }
   const pearlInHand = () => !!(S.f.took_pearl && S.inv && S.inv.indexOf('pearl') >= 0);
-  const castOK = () => typeof Cast !== 'undefined' && Cast && typeof Cast.drawPatch === 'function';
-  function updatePatch(dt) {
+  const castOK = () => typeof Cast !== 'undefined' && Cast && typeof Cast.drawMei === 'function';
+  function updateMei(dt) {
     if (PT.moving) {
       const k = kAt(PT.y), dx = PT.tx - PT.x, dy = PT.ty - PT.y, d = Math.hypot(dx, dy), sp = (PT.out ? 80 : 100) * k, step = sp * dt;
       if (Math.abs(dx) > 0.5) PT.flip = dx > 0;
@@ -3428,7 +3427,7 @@ const Room = (() => {
     }
   }
 
-  // the phone turned: the same moment, the other composition (Patch at her station in it, dust in its light)
+  // the phone turned: the same moment, the other composition (Mei at her station in it, dust in its light)
   function relayout() {
     if (PT.out) { if (PT.out < 4) { PT.out = 4; PT.show = false; PT.moving = false; } }
     else { const hold = PT.hold, holdT = PT.holdT; snapTo(PT.station || 'home'); PT.hold = hold; PT.holdT = holdT; }
@@ -3491,10 +3490,10 @@ const Room = (() => {
     BUS.on('rebuild', () => seedParticles());
   }
 
-  // ═════════════════════════════ every frame (always runs: Patch keeps walking while a close-up is open) ═════════════════════════════
+  // ═════════════════════════════ every frame (always runs: Mei keeps walking while a close-up is open) ═════════════════════════════
   function update(dt) {
     const T = CLOCK.real;
-    updatePatch(dt);
+    updateMei(dt);
     // drawers ease toward S
     for (const d in DRW) { const want = S.drawers && S.drawers[d] === 'open' ? 1 : 0; DRW[d] = want > DRW[d] ? Math.min(1, DRW[d] + dt * 2.2) : Math.max(0, DRW[d] - dt * 3); }
     // the door
@@ -3676,7 +3675,7 @@ const Room = (() => {
     c.strokeStyle = DARK.k > 0.5 ? 'rgba(4,5,14,0.55)' : 'rgba(20,16,40,0.3)'; c.lineWidth = 2.2; c.stroke();
     c.restore();
   }
-  // the coiled cord from the intercom's jack: to Patch's headset when she's at the box, else hanging
+  // the coiled cord from the intercom's jack: to Mei's headset when she's at the box, else hanging
   function drawCord(c) {
     const ic = PL.intercom, jx = ic.x + IC_JACK.x * ic.k, jy = ic.y + IC_JACK.y * ic.k, T = CLOCK.real;
     let ex, ey, sag;
@@ -3807,7 +3806,7 @@ const Room = (() => {
     if (PIPO.key) { line(c, [2, -2.4, 2.6, 1.4], '#c8202e', 1.4); circ(c, 3.2, 3.2, 1.3, '#d9a441'); rect(c, 2.8, 4, 0.8, 3, '#d9a441'); }
     c.restore();
   }
-  function drawPatch(c) {
+  function drawMei(c) {
     if (!PT.show || !castOK()) return;
     let k = kAt(PT.y), h = PH * k, y = PT.y;
     let clipped = false;
@@ -3817,20 +3816,20 @@ const Room = (() => {
       h *= 1 - 0.3 * u; y = PT.y - 16 * u; setA(c, 1 - smooth((u - 0.45) / 0.55));
     } else { setA(c, 0.5); c.drawImage(GW.shadow, PT.x - 32 * k, PT.y - 6 * k, 64 * k, 12 * k); setA(c, 1); }
     PO.flip = PT.flip; PO.look = 0; PO.prop = PT.pose === 'hold' || PT.pose === 'walkhold' ? 'pearl' : undefined;
-    try { Cast.drawPatch(c, PT.x, y, h, PT.pose, PT.pose === 'walk' || PT.pose === 'walkhold' ? PT.walkT : CLOCK.real, PO); } catch (e) { reportErr('Room.patch', e); }
+    try { Cast.drawMei(c, PT.x, y, h, PT.pose, PT.pose === 'walk' || PT.pose === 'walkhold' ? PT.walkT : CLOCK.real, PO); } catch (e) { reportErr('Room.mei', e); }
     if (clipped) c.restore();
     setA(c, 1);
   }
-  // the floor props and Patch, back to front
+  // the floor props and Mei, back to front
   const SORT_ID = [], SORT_Y = [];
   function drawSorted(c) {
     let n = 0;
     for (const id of L.floor) { SORT_ID[n] = id; SORT_Y[n] = PL[id].foot; n++; }
-    if (PT.show) { SORT_ID[n] = '@patch'; SORT_Y[n] = PT.out === 3 ? -1 : PT.y; n++; }
+    if (PT.show) { SORT_ID[n] = '@mei'; SORT_Y[n] = PT.out === 3 ? -1 : PT.y; n++; }
     for (let i = 1; i < n; i++) { const id = SORT_ID[i], y = SORT_Y[i]; let j = i - 1; while (j >= 0 && SORT_Y[j] > y) { SORT_ID[j + 1] = SORT_ID[j]; SORT_Y[j + 1] = SORT_Y[j]; j--; } SORT_ID[j + 1] = id; SORT_Y[j + 1] = y; }
     for (let i = 0; i < n; i++) {
       const id = SORT_ID[i];
-      if (id === '@patch') { const tp = RPROF ? performance.now() : 0; drawPatch(c); if (RPROF) rp('patch', tp); continue; }
+      if (id === '@mei') { const tp = RPROF ? performance.now() : 0; drawMei(c); if (RPROF) rp('mei', tp); continue; }
       blit(c, BK.spr[id]);
       if (id === 'cage') { const p = PL.cage; drawPip(c, p.x + (CAGE.cx + PIP.hop) * p.k, p.y + CAGE.perch * p.k, 27 * p.k); blit(c, BK.spr.cageFront); }
       else if (id === 'coats') { if (J.has('j_gloves')) blit(c, BK.spr.glove); drawSequins(c); }
@@ -4017,16 +4016,16 @@ const Room = (() => {
     get layoutId() { return LID; },
     get bakeMs() { return BK.ms; },
     get cam() { return { s: cam.s, ox: cam.ox, oy: cam.oy }; },
-    get patch() { return { x: PT.x, y: PT.y, station: PT.station, moving: PT.moving, pose: PT.pose, show: PT.show }; },
+    get mei() { return { x: PT.x, y: PT.y, station: PT.station, moving: PT.moving, pose: PT.pose, show: PT.show }; },
     hotspots() { const o = {}; for (const id of HIT) o[id] = screenRect(id); return o; },
-    walkTo(id) { goTo(id); return PT.station; },   // dev / tests: send Patch to a station
+    walkTo(id) { goTo(id); return PT.station; },   // dev / tests: send Mei to a station
     lightning() { if (!RM) { LTN.t = 0; LTN.thunder = 1; } },   // dev / tests: a flash in the window now
     hint(id, t) { glint.id = id; glint.t = t || 0; glint.next = 30; return id; },   // dev / tests: show a hint sparkle now
   };
 })();
 
 // ⟪cast⟫
-// ───────────────────────────── 35. Cast: Patch, Madame Luna, Ivy, Silas Vane, Mrs. Hart, the police, Pip ─────────────────────────────
+// ───────────────────────────── 35. Cast: Mei, Madame Luna, Ivy, Silas Vane, Mrs. Hart, the police, Pip ─────────────────────────────
 // Everyone is drawn on the Neo Dojo cast sheet's own rig (Tools/neo-dojo-cast/index.html: Kiru's path data, the
 // moonlit outline, the shared helpers sp ln limb leg shoe se el ci rim cheeks brows TORSO FULL FACE_SH …),
 // authored as SVG strings and rasterised with svgCanvas into small layers, one per part, per resolution bucket.
@@ -4034,12 +4033,12 @@ const Room = (() => {
 // calls and a portrait ~7. Nothing per frame uses gradients, filters or blur.
 //
 // Rig space: the cast sheet's 200-unit character box. Feet on y = 231, centred on x = 100. Figures face
-// screen-left by default ({flip:true} faces right). Every figure shares one scale: `h` is the height Patch would
-// have at that scale (245 rig units, afro to soles), so Silas stands tall, Mrs. Hart small and round, and
+// screen-left by default ({flip:true} faces right). Every figure shares one scale: `h` is a figure's height at
+// that scale (FIG_H = 245 rig units, top of the hair to the soles), so Silas stands tall, Mrs. Hart small and round, and
 // Madame's silver knot rides on top.
 const Cast = (() => {
   // ── the rig's shared vocabulary (Kiru's own numbers, copied from the cast sheet) ──
-  const L = '#3d4c95', INK = '#13152a', RIM = '#a9bcff', MINT = '#3dffc2';
+  const L = '#3d4c95', INK = '#13152a', RIM = '#a9bcff';
   const FACE_SH = 'M44 80 C70 68 130 68 156 80 C160 82 162 85 163 88 C130 77 70 77 37 88 C38 85 40 82 44 80 Z';
   const FULL = 'M44 80 C70 68 130 68 156 80 C168 86 168 112 152 130 C134 148 66 148 48 130 C32 112 32 86 44 80 Z';
   const TORSO = 'M64 158 Q66 146 82 143 L118 143 Q134 146 136 158 L133 199 Q100 205 67 199 Z';
@@ -4057,7 +4056,6 @@ const Cast = (() => {
   const G = (id) => `url(#${id})`;
   const rot = (deg, x, y) => `transform="rotate(${deg} ${x} ${y})"`;
   const GLOWF = '<filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
-  const GLOW = 'filter="url(#glow)"';
   function limb(sx, sy, hx, hy, bend, col, w = 15) {
     const dx = hx - sx, dy = hy - sy, d = Math.hypot(dx, dy) || 1;
     const mx = (sx + hx) / 2 - dy / d * bend, my = (sy + hy) / 2 + dx / d * bend;
@@ -4072,7 +4070,7 @@ const Cast = (() => {
   }
   const clip = (id, d) => `<clipPath id="${id}"><path d="${d}"/></clipPath>`;
   const TG = (id, stops) => grad(id, stops, 64, 143, 136, 200);
-  // a scalloped crown (Patch's afro, Mrs. Hart's curls)
+  // a scalloped crown (Mrs. Hart's curls)
   function scallop(cx, cy, rx, ry, n, k, a0 = Math.PI * 0.8, a1 = Math.PI * 2.2, close = 30) {
     const at = (a, kk) => `${n1(cx + Math.cos(a) * rx * kk)} ${n1(cy + Math.sin(a) * ry * kk)}`;
     let d = `M${at(a0, 1)}`;
@@ -4145,32 +4143,44 @@ const Cast = (() => {
     tear: () => sp('M136 104 Q131 114 133 119 Q136 123 140 119 Q142 113 136 104 Z', '#cfeaff', 2.2) + el(135.5, 116, 1.2, 1.8, '#fff'),
   };
 
-  // ───────── Patch (ND-05) ─────────
-  const P_SKIN = '#8a5634', P_SKIN_S = '#6b3d22', P_HAIR = '#24160f';
-  const AFRO = scallop(100, 80, 86, 80, 22, 1.12);
-  const PF = { skin: P_SKIN, shade: P_SKIN_S, lip: '#2a120a', lipLo: '#a3504a', lx: 1, ly: 2 };
-  const CURLS = [[48, 44], [80, 26], [118, 24], [150, 42], [36, 74], [166, 70], [60, 60], [140, 58], [100, 40]];
-  const P_DEFS = grad('p-hair', ['#4a3024', '#24160f', '#120a06']) + clip('p-clip', AFRO) + TG('p-body', ['#565e7c', '#3b4058', '#262a3d']);
-  function patchHeadSVG() {
-    let s = sp(AFRO, G('p-hair')) + `<g clip-path="url(#p-clip)">${el(132, 128, 82, 62, '#050302', 'opacity=".45"')}${el(64, 38, 36, 14, '#fff', `opacity=".09" ${rot(-24, 64, 38)}`)}${CURLS.map(([x, y]) => ln(`M${x - 5} ${y + 2} Q${x} ${y - 4} ${x + 5} ${y + 2}`, '#5a3a2a', 2, 'opacity=".55"')).join('')}</g>`;
-    s += ln('M24 100 Q20 2 100 -2 Q180 2 176 100', L, 11) + ln('M24 100 Q20 2 100 -2 Q180 2 176 100', '#262a3d', 6);
-    s += se(24, 106, 13, 20, '#262a3d', 5) + se(176, 106, 13, 20, '#1d2030', 5) + el(24, 106, 5, 10, MINT, GLOW);
-    s += ci(30, 134, 5.5, 'none', `stroke="${L}" stroke-width="4.5"`) + ci(30, 134, 5.5, 'none', 'stroke="#f5c542" stroke-width="2.2"') + ci(170, 134, 5.5, 'none', `stroke="${L}" stroke-width="4.5"`) + ci(170, 134, 5.5, 'none', 'stroke="#d9a72e" stroke-width="2.2"');
-    s += fl(FULL, P_SKIN) + fl(FACE_SH, P_SKIN_S, 'opacity=".8"');
-    s += fl('M44 80 C66 66 134 66 156 80 C146 74 128 72 100 74 C72 72 54 74 44 80 Z', P_HAIR);
-    s += rim(0.6) + cheeks(0.35, '#c0584a', 116);
+  // ───────── Mei: Kiru's student from Tetherball: King of the Pole, grown up ─────────
+  // Her look comes from the King of the Pole cast sheet (Tools/king-of-the-pole-cast/src/cast.js), which draws on the
+  // same rig: the twin buns with magenta ties, the blunt bangs and the calm, watching stare she had at recess. Grown up
+  // she runs the Lantern's lights, in a cyan hoodie with magenta trim (her Warp colours) and a stage crew headset; the
+  // intercom's cord plugs into its left ear cup.
+  const M_SKIN = '#f6d0a8', M_SKIN_S = '#e2b083', M_MAG = '#ff2bd6', M_SLEEVE = '#1fb8cc', M_SLEEVE_B = '#138ea2';
+  const MF = { skin: M_SKIN, shade: M_SKIN_S, lip: '#7a3436', lipLo: '#e3867e', lx: 1, ly: 2 };
+  const M_DEFS = grad('m-hair', ['#4a4958', '#23222d', '#121118']) + TG('m-body', ['#5fe6f0', '#1fb8cc', '#0e7f93']);
+  // a bun high on the head, its tie on the inner side (k = 1 left, -1 right)
+  const M_BUN = (cx, cy, k) => se(cx, cy, 24, 22, G('m-hair'), 5) + ln(`M${cx - 13} ${cy - 9}Q${cx} ${cy - 17} ${cx + 13} ${cy - 9}`, '#6a6880', 2.4, 'opacity=".5"')
+    + sr(cx + k * 9 - 7, cy + 15, 14, 7, 3, M_MAG, 2.4, rot(-35 * k, cx + k * 9, cy + 18.5));
+  function meiHeadSVG() {
+    // the hair, pulled up off her neck
+    let s = sp('M34 120 Q18 44 100 32 Q182 44 166 120 Q160 100 150 92 Q100 78 50 92 Q40 100 34 120 Z', G('m-hair'));
+    // the headset's band over the crown, the buns over it, then the ear cups and their tally light
+    s += ln('M26 108 Q24 24 100 22 Q176 24 174 108', L, 10) + ln('M26 108 Q24 24 100 22 Q176 24 174 108', '#262a3d', 5);
+    s += M_BUN(50, 34, 1) + M_BUN(150, 34, -1);
+    s += se(24, 106, 13, 20, '#262a3d', 5) + se(176, 106, 11, 17, '#1d2030', 5) + ci(24, 98, 2.6, M_MAG);
+    s += fl(FULL, M_SKIN) + fl(FACE_SH, M_SKIN_S, 'opacity=".75"');
+    // curtain bangs (Josh's pick, 2026-10-24): parted in the middle and swept down to the temples. Over the eyes they
+    // stop at the brows: any lower and the half-lid's skin would show on them.
+    s += sp('M37 92 C38 58 162 58 163 92 Q157 83 146 78 Q126 74 108 74 Q102 70 100 64 Q98 70 92 74 Q74 74 54 78 Q43 83 37 92 Z', G('m-hair'), 4)
+      + ln('M58 70 Q76 61 94 64', '#6a6880', 2.2, 'opacity=".5"') + ln('M106 64 Q124 61 142 70', '#6a6880', 2.2, 'opacity=".5"');
+    // the mic on its boom, by the corner of her mouth
+    s += ln('M27 122 Q34 142 64 139', L, 7) + ln('M27 122 Q34 142 64 139', '#262a3d', 3.4) + se(67, 138.5, 5.5, 4.5, '#262a3d', 3);
+    // the moonlit rim down her hair's left edge, under the bun (the shared rim would cross it)
+    s += ln('M31 102 Q24 76 34 58', RIM, 3.2, 'opacity=".55"') + cheeks(0.3, '#f08a78', 114);
     return s;
   }
-  const P_GLASSES = (hi) => `<g ${GLOW}>${sr(56, 80, 40, 30, 9, MINT, 0, `fill-opacity="${hi ? 0.5 : 0.22}"`)}${sr(104, 80, 40, 30, 9, MINT, 0, `fill-opacity="${hi ? 0.5 : 0.22}"`)}</g>` + ln('M96 92 Q100 88 104 92', MINT, 3) + ln('M62 86 L72 86 M110 86 L116 86', '#fff', 2, `opacity="${hi ? 1 : 0.75}"`);
-  const patchTorsoSVG = (mirror) => {
-    const logo = ln('M96.2 162.5 L92.4 166.8 L96.2 171.1 M103.8 162.5 L107.6 166.8 L103.8 171.1 M101.6 161.4 L98.4 172.2', MINT, 2.3);
-    return sp(TORSO, G('p-body')) + fl(TORSO_SH, '#161927', 'opacity=".5"') + sp('M76 178 Q100 172 124 178 L126 196 Q100 201 74 196 Z', '#2f3449', 3)
-      + (mirror ? `<g transform="translate(200 0) scale(-1 1)">${logo}</g>` : logo)
-      + ln('M91 150 L87.5 170 M109 150 L112.5 170', '#c9d2e8', 2.2) + ci(87.5, 172, 2.6, MINT) + ci(112.5, 172, 2.6, MINT)
-      + sp('M58 152 Q62 138 100 136 Q138 138 142 152 Q132 160 100 160 Q68 160 58 152 Z', '#4a5170', 4) + ln('M70 150 Q100 142 130 150', '#2f3449', 3);
+  const meiTorsoSVG = (mirror) => {
+    // a little Warp glitch on the chest: cyan split from magenta, the way her ball blinks out
+    const glitch = fl('M92 160h11v4.4h-11z', '#f2feff', 'opacity=".9"') + fl('M98 165.4h9v4h-9z', M_MAG) + fl('M91 170.4h7v3.4h-7z', '#7ff6ff');
+    return sp(TORSO, G('m-body')) + fl(TORSO_SH, '#0a4f5e', 'opacity=".45"') + sp('M76 178 Q100 172 124 178 L126 196 Q100 201 74 196 Z', '#168fa3', 3)
+      + (mirror ? `<g transform="translate(200 0) scale(-1 1)">${glitch}</g>` : glitch)
+      + ln('M91 150 L87.5 170 M109 150 L112.5 170', '#f2feff', 2.2) + ci(87.5, 172, 2.6, M_MAG) + ci(112.5, 172, 2.6, M_MAG)
+      + sp('M58 152 Q62 138 100 136 Q138 138 142 152 Q132 160 100 160 Q68 160 58 152 Z', '#1aa6ba', 4) + ln('M70 150 Q100 142 130 150', M_MAG, 3);
   };
-  const patchBustSVG = () => limb(127, 156, 140, 192, -6, '#262a3d', 16) + se(140, 194, 8.5, 8.5, P_SKIN, 4) + patchTorsoSVG(false) + limb(73, 156, 52, 190, 8, '#3b4058', 16) + se(52, 192, 8.5, 8.5, P_SKIN, 4);
-  const HOLO_SVG = () => sr(178, 112, 52, 36, 6, MINT, 2, `fill-opacity=".14" stroke-opacity="0" ${GLOW}`) + `<rect x="178" y="112" width="52" height="36" rx="6" fill="none" stroke="${MINT}" stroke-width="1.6" ${GLOW}/>` + ln('M186 122 H208 M186 130 H220 M186 138 H202', MINT, 2.5, 'opacity=".8"');
+  const meiBustSVG = () => limb(127, 156, 140, 192, -6, M_SLEEVE_B, 16) + se(140, 194, 8.5, 8.5, M_SKIN, 4) + meiTorsoSVG(false) + limb(73, 156, 52, 190, 8, M_SLEEVE, 16) + se(52, 192, 8.5, 8.5, M_SKIN, 4);
 
   // ───────── Madame Luna: 68, silver hair in a high knot with a crescent pin, a deep-blue cape with silver moons ─────────
   const LU_SKIN = '#a8714b', LU_SKIN_S = '#83502f', LU_SILVER_S = '#9ea7c4';
@@ -4435,12 +4445,11 @@ const Cast = (() => {
     for (const s of xs) F.extras[s] = layer(40, 60, 124, 66, EXTRAS[s], '');
     return F;
   }
-  const PATCH = faceSet({
-    id: 'patch', crop: [-8, -18, 216], defs: P_DEFS, P: PF, def: 'neutral', seed: 0.3,
-    headBox: [-8, -18, 216, 174], head: patchHeadSVG, bustBox: [24, 128, 152, 92], bust: patchBustSVG,
-    over: () => P_GLASSES(false), overHi: () => P_GLASSES(true), browCol: '#1d0f0a', browW: 4.5,
+  const MEI = faceSet({
+    id: 'mei', crop: [-8, -2, 216], defs: M_DEFS, P: MF, def: 'neutral', seed: 0.3,
+    headBox: [-8, 6, 216, 150], head: meiHeadSVG, bustBox: [24, 128, 152, 92], bust: meiBustSVG, browCol: '#1e1d27', browW: 4.5,
     exprs: {
-      neutral: { eyes: 'open', brows: 'calm', mouth: 'smile' },
+      neutral: { eyes: 'half', brows: 'calm', mouth: 'flat' },   // the calm, watching stare
       smirk: { eyes: 'half', brows: 'quirk', mouth: 'smirk' },
       think: { eyes: 'up', brows: 'quirk', mouth: 'think', rot: -0.035 },
       surprise: { eyes: 'wide', brows: 'up', mouth: 'o', dy: -1.5 },
@@ -4497,11 +4506,11 @@ const Cast = (() => {
     headBox: [-4, 10, 208, 150], head: policeHeadSVG, bustBox: [8, 140, 184, 96], bust: policeBustSVG, browCol: '#0e1020', browW: 4,
     exprs: { neutral: { mouth: 'flat' } },
   });
-  const WHO = { patch: PATCH, luna: LUNA, ivy: IVY, silas: SILAS, hart: HART, police: POLICE };
+  const WHO = { mei: MEI, luna: LUNA, ivy: IVY, silas: SILAS, hart: HART, police: POLICE };
 
   // full figures
-  const FIG_H = 245;   // rig units from the top of Patch's afro to her soles
-  const PT = { torso: layer(48, 126, 104, 86, () => patchTorsoSVG(false), P_DEFS), torsoF: layer(48, 126, 104, 86, () => patchTorsoSVG(true), P_DEFS), holo: layer(162, 96, 84, 68, HOLO_SVG, '') };
+  const FIG_H = 245;   // the shared scale: rig units from the top of the hair to the soles
+  const MT = { torso: layer(48, 126, 104, 86, () => meiTorsoSVG(false), M_DEFS), torsoF: layer(48, 126, 104, 86, () => meiTorsoSVG(true), M_DEFS) };
   const LUT = { body: layer(4, 46, 192, 200, lunaBodySVG, LU_DEFS + clip('lu-fclip', LU_BODY_D)) };
   const IVT = { torso: layer(46, 126, 108, 86, ivyTorsoSVG, IV_DEFS) };
   const SIT = { torso: layer(50, 126, 100, 86, silasTorsoSVG, SI_DEFS), cape: layer(14, 50, 172, 206, silasCapeSVG, SI_DEFS) };
@@ -4608,13 +4617,16 @@ const Cast = (() => {
         lB.ax = 113 + s * 13; lB.ay = 222 - swB * 7; lB.sr = -0.24 * s * smooth(swB * 3);
         const k = name === 'bustle' ? 15 : 11;
         aF.hx = 60 + s * k; aF.hy = 190 - Math.abs(s) * (name === 'bustle' ? 8 : 2); aB.hx = 140 - s * k; aB.hy = 190 - Math.abs(s) * (name === 'bustle' ? 8 : 2);
+        // the brisk swing's elbows hang below the arm on the way forward and out to the side on the way back; the
+        // bend follows the swing so the elbow passes through straight instead of jumping sides
+        if (name === 'bustle') { aF.bend = s; aB.bend = -s; }
         if (name === 'walkhold') { aF.hx = 84; aF.hy = 172 + s; aF.len = 22; aF.bend = 1; aB.hx = 112; aB.hy = 172 + s; aB.len = 22; aB.bend = -1; aB.front = true; }
         break;
       }
       case 'reach': {
         const w = Math.sin(t * 5) * 1.5;
         J.by = -4; J.lean = -0.07; J.hy = -1; J.hr = -0.05;
-        aF.hx = 30 + w; aF.hy = 122 - w * 0.5; aF.len = 30; aB.hx = 138; aB.hy = 188;
+        aF.hx = 30 + w; aF.hy = 122 - w * 0.5; aF.len = 30; aF.bend = -1; aB.hx = 138; aB.hy = 188;
         lF.sr = -0.25; lB.sr = -0.2; lF.ay = 222; lB.ay = 221;
         break;
       }
@@ -4627,12 +4639,12 @@ const Cast = (() => {
       case 'think': {
         J.hr = -0.06 + Math.sin(t * 0.8) * 0.01; J.hy = 0.5;
         aF.hx = 88 + Math.sin(t * 1.6) * 0.8; aF.hy = 142 + Math.sin(t * 3.1) * 0.6; aF.bend = 1; aF.len = 24;
-        aB.hx = 92; aB.hy = 184; aB.front = true; aB.bend = 1;
+        aB.hx = 92; aB.hy = 184; aB.front = true; aB.bend = -1;
         break;
       }
       case 'phone': {
         J.hr = -0.07; J.hy += 0.6;
-        aF.hx = 33; aF.hy = 120 + Math.sin(t * 1.3) * 0.6; aF.len = 30; aF.bend = 1;
+        aF.hx = 33; aF.hy = 120 + Math.sin(t * 1.3) * 0.6; aF.len = 30; aF.bend = -1;
         break;
       }
       case 'cheer': {
@@ -4645,7 +4657,7 @@ const Cast = (() => {
       }
       case 'talk': {   // one hand making the point, gently
         const w = Math.sin(t * 2.3), w2 = Math.sin(t * 1.1 + 1);
-        aF.hx = 46 + w * 4; aF.hy = 170 - Math.abs(w) * 5 + w2 * 2; aF.len = 23; J.hr += w2 * 0.012;
+        aF.hx = 46 + w * 4; aF.hy = 170 - Math.abs(w) * 5 + w2 * 2; aF.len = 23; aF.bend = -1; J.hr += w2 * 0.012;
         break;
       }
       case 'shock': {   // hands up by the face, leaning back
@@ -4669,7 +4681,7 @@ const Cast = (() => {
       }
       case 'present': {   // Madame: one hand out low toward the pearl, the other raised
         const w = Math.sin(t * 1.4);
-        J.lean = -0.03; aF.hx = 18; aF.hy = 172 + w * 2; aF.len = 32; aF.bend = 1;
+        J.lean = -0.03; aF.hx = 18; aF.hy = 172 + w * 2; aF.len = 32; aF.bend = -1;
         aB.hx = 166; aB.hy = 104 + w * 3; aB.len = 32; aB.bend = 1; aB.front = true;
         break;
       }
@@ -4688,15 +4700,15 @@ const Cast = (() => {
         break;
       }
       case 'offer': {   // holding something out in front
-        J.lean = -0.04; aF.hx = 30; aF.hy = 166; aF.len = 30; aF.bend = 1;
+        J.lean = -0.04; aF.hx = 30; aF.hy = 166; aF.len = 30; aF.bend = -1;
         break;
       }
       case 'film': {   // a phone held up at eye height
-        aF.hx = 38 + Math.sin(t * 1.7) * 0.8; aF.hy = 120 + Math.sin(t * 2.3) * 0.8; aF.len = 30; aF.bend = 1;
+        aF.hx = 38 + Math.sin(t * 1.7) * 0.8; aF.hy = 120 + Math.sin(t * 2.3) * 0.8; aF.len = 30; aF.bend = -1;
         break;
       }
       case 'touch': {   // Mrs. Hart: her fingers find her bracelet
-        aF.hx = 88; aF.hy = 186; aF.len = 22; aF.bend = 1; aB.hx = 96; aB.hy = 182; aB.len = 24; aB.bend = 1; aB.front = true; J.touch = true;
+        aF.hx = 88; aF.hy = 186; aF.len = 22; aF.bend = 1; aB.hx = 96; aB.hy = 182; aB.len = 24; aB.bend = -1; aB.front = true; J.touch = true;
         J.hr += 0.05; J.hy += 1.5;
         break;
       }
@@ -4710,9 +4722,9 @@ const Cast = (() => {
         aF.hx = 90 - k * 9; aF.hy = 166; aF.len = 22; aB.hx = 110 + k * 9; aB.hy = 166; aB.len = 22; aB.front = true; aF.bend = 1; aB.bend = -1;
         break;
       }
-      case 'board': {   // Patch at her lighting board: both hands forward on the faders
+      case 'board': {   // Mei at her lighting board: both hands forward on the faders
         const f = Math.sin(t * 1.3) * 2;
-        J.lean = -0.05; aF.hx = 30 + f; aF.hy = 188; aF.len = 28; aF.bend = 1; aB.hx = 118; aB.hy = 188;
+        J.lean = -0.05; aF.hx = 30 + f; aF.hy = 188; aF.len = 28; aF.bend = -1; aB.hx = 118; aB.hy = 188;
         break;
       }
       case 'phones': {   // hands up to her headphones
@@ -4739,12 +4751,20 @@ const Cast = (() => {
   const SHOE_P = typeof Path2D !== 'undefined' ? new Path2D(SHOE) : null;
   // the last arm drawn: shoulder, elbow, hand (rig space)
   const ARM = { sx: 0, sy: 0, ex: 0, ey: 0, hx: 0, hy: 0 };
-  function drawArm(c, A, col, hand, w, finger) {
+  // an arm's shoulder and hand in the upper body's space (the hand pulled in if it's out of reach) into AJ, and
+  // its elbow into JX, JY. `bend` picks the side the elbow goes: a person's hangs below the line from shoulder
+  // to hand, never above both ends (tools/arms.mjs checks every pose).
+  const AJ = { sx: 0, sy: 0, hx: 0, hy: 0 };
+  function armJoints(A) {
     up(A.sx, A.sy); const sx = UX, sy = UY;
     up(A.hx, A.hy); let hx = UX, hy = UY;
     const len = A.len, dd = Math.hypot(hx - sx, hy - sy);
     if (dd > len * 2 - 0.5) { const k = (len * 2 - 0.5) / dd; hx = sx + (hx - sx) * k; hy = sy + (hy - sy) * k; }
+    AJ.sx = sx; AJ.sy = sy; AJ.hx = hx; AJ.hy = hy;
     ik(sx, sy, hx, hy, len, len, A.bend);
+  }
+  function drawArm(c, A, col, hand, w, finger) {
+    armJoints(A); const sx = AJ.sx, sy = AJ.sy, hx = AJ.hx, hy = AJ.hy;
     const cx = 2 * JX - (sx + hx) / 2, cy = 2 * JY - (sy + hy) / 2;
     c.beginPath(); c.moveTo(sx, sy); c.quadraticCurveTo(cx, cy, hx, hy);
     c.strokeStyle = L; c.lineWidth = w + 7; c.stroke();
@@ -4809,7 +4829,7 @@ const Cast = (() => {
   // where the last figure's hands ended up, in the caller's units: the front hand, and between both hands
   const HANDS = { x: 0, y: 0, mx: 0, my: 0, hx: 0, hy: 0 };
   const RIGS = {
-    patch: { F: PATCH, torso: PT.torso, torsoF: PT.torsoF, armB: '#262a3d', armF: '#3b4058', handB: P_SKIN, handF: P_SKIN, legB: '#2c4478', legF: '#3b5a9a', shoe: '#eef1f8', sole: MINT, legs: true, legW: 18, armW: 16, lift: 0, sh: 0, nod: true, seed: 0, holo: PT.holo },
+    mei: { F: MEI, torso: MT.torso, torsoF: MT.torsoF, armB: M_SLEEVE_B, armF: M_SLEEVE, handB: M_SKIN, handF: M_SKIN, legB: '#1e293d', legF: '#26334a', shoe: M_MAG, sole: '#f2feff', legs: true, legW: 18, armW: 16, lift: 0, sh: 0, nod: true, seed: 0 },
     luna: { F: LUNA, torso: LUT.body, armB: '#18215a', armF: '#2b3890', handB: LU_SKIN, handF: LU_SKIN, legs: false, armW: 16, lift: 0, sh: 2, seed: 1.1 },
     ivy: { F: IVY, torso: IVT.torso, armB: '#15704a', armF: '#1f8a5b', handB: IV_SKIN, handF: IV_SKIN, legB: '#1a1822', legF: '#292636', shoe: '#4a2a1a', legs: true, legW: 15, armW: 15, lift: 0, sh: 2, seed: 2.2 },
     silas: { F: SILAS, torso: SIT.torso, back: SIT.cape, armB: '#101016', armF: '#1e1e2a', handB: '#f2f2f8', handF: '#ffffff', legB: '#0d0d12', legF: '#1a1a24', shoe: '#08080c', sole: '#3a3a4a', legs: true, legW: 13, armW: 13, lift: 24, sh: 5, seed: 3.3 },
@@ -4826,7 +4846,7 @@ const Cast = (() => {
     c.save();
     c.translate(x, y); c.scale(flip ? -s : s, s); c.translate(-100, -233);
     pose(name, t, rig);
-    const ex = (o && o.expr) || (rig === RIGS.patch ? POSE_EXPR[name] : POSE_EXPR_P[name]) || F.def;
+    const ex = (o && o.expr) || (rig === RIGS.mei ? POSE_EXPR[name] : POSE_EXPR_P[name]) || F.def;
     const E = F.exprs[ex] || F.exprs[F.def];
     const look = (o && o.look) || 0, dx = clamp(look, -1, 1) * 7 * (flip ? -1 : 1);
     const prop = o && o.prop !== undefined ? o.prop : (PERSON_PROP[F.id] && PERSON_PROP[F.id][name]) || null;
@@ -4857,18 +4877,12 @@ const Cast = (() => {
     c.save();
     up(100, 146); c.translate(UX + J.hx, UY + J.hy + (1 - J.breath) * 54); c.rotate(J.hr + J.lean * 0.5); c.translate(-100, -146);
     drawFace(c, F, E, bi, t, o, dx, false);
-    if (o && o.lens > 0.01 && rig === RIGS.patch) {
-      const gs = glowOf(PAL.mintRGB, 64, 0.5), a = c.globalAlpha;
-      c.globalCompositeOperation = 'lighter'; c.globalAlpha = a * Math.min(1, o.lens) * 0.55;
-      c.drawImage(gs, 40 + dx, 66, 120, 58); c.globalCompositeOperation = 'source-over'; c.globalAlpha = a;
-    }
     c.restore();
     drawArm(c, J.aF, rig.armF, rig.handF, rig.armW, J.finger);
     const fhx = ARM.hx, fhy = ARM.hy, fex = ARM.ex, fey = ARM.ey;
     if (J.touch) drawArm(c, J.aB, rig.armB, rig.handB, rig.armW, false);
     if (rig.bracelet && !(o && o.bracelet === false)) { ARM.hx = fhx; ARM.hy = fhy; ARM.ex = fex; ARM.ey = fey; drawBracelet(c, t, !!(o && o.gap), name === 'bustle' || name === 'walk' || name === 'point' || name === 'pointUp' || name === 'shock' || name === 'touch'); }
     if (prop && prop !== 'pip' && name !== 'hold' && name !== 'walkhold') drawProp(c, prop, fhx + (name === 'film' ? -2 : -6), fhy - (name === 'film' ? 10 : 2), t);
-    if (o && o.holo > 0.01 && rig.holo) { const a = c.globalAlpha; c.globalAlpha = a * Math.min(1, o.holo); blit(c, rig.holo, bi, J.bx, J.by + Math.sin(t * 1.7) * 3); c.globalAlpha = a; }
     c.restore();
     // report the hands in the caller's units
     const sx = flip ? -s : s;
@@ -4876,7 +4890,13 @@ const Cast = (() => {
     HANDS.mx = x + (mx - 100) * sx; HANDS.my = y + (my - 3 - 233) * s;
     if (name === 'hold' || name === 'walkhold') { HANDS.x = HANDS.mx; HANDS.y = HANDS.my; } else { HANDS.x = HANDS.hx; HANDS.y = HANDS.hy; }
   }
-  function drawPatch(c, x, y, h, name, t, o) { drawFigure(c, RIGS.patch, x, y, h, name || 'idle', t, o); }
+  function drawMei(c, x, y, h, name, t, o) { drawFigure(c, RIGS.mei, x, y, h, name || 'idle', t, o); }
+  // dev and tests: where a rig's arms are in a pose at time t, without drawing: [{arm, sx, sy, ex, ey, hx, hy}]
+  function poseArms(who, name, t) {
+    const rig = RIGS[who] || RIGS[ALIAS[who]]; if (!rig) return null;
+    pose(name, t, rig);
+    return [['front', J.aF], ['back', J.aB]].map(([arm, A]) => { armJoints(A); return { arm, sx: AJ.sx, sy: AJ.sy, ex: JX, ey: JY, hx: AJ.hx, hy: AJ.hy }; });
+  }
   function drawPerson(c, who, x, y, h, name, t, o) {
     const rig = RIGS[who] || RIGS[ALIAS[who]];
     if (rig) drawFigure(c, rig, x, y, h, name || 'stand', t, o);
@@ -4929,12 +4949,12 @@ const Cast = (() => {
     return out;
   }
   function prebake() {
-    // what the first minutes need: Patch's figure at the room's likely size, every speaker's default portrait
+    // what the first minutes need: Mei's figure at the room's likely size, every speaker's default portrait
     const figPx = Math.max(160, (WIDE ? VHc * 0.42 : VHc * 0.3)) * DPR, figB = bucket(figPx / FIG_H);
     const porB = bucket(120 * DPR / 216);
-    const F = PATCH, jobs = [];
+    const F = MEI, jobs = [];
     const add = (Ly, bi, urgent) => jobs.push(request(Ly, bi, urgent));
-    add(F.head, figB); add(F.eyes.open, figB); add(F.over, figB); add(F.overHi, figB); add(F.brows.calm, figB); add(F.mouths.smile, figB); add(PT.torso, figB); add(PT.torsoF, figB);
+    add(F.head, figB); add(F.eyes.half, figB); add(F.brows.calm, figB); add(F.mouths.flat, figB); add(MT.torso, figB); add(MT.torsoF, figB);
     for (const who in WHO) {
       const W = WHO[who], E = W.exprs[W.def];
       add(W.head, porB); add(W.bust, porB); if (W.over) add(W.over, porB); if (W.top) add(W.top, porB);
@@ -4963,7 +4983,7 @@ const Cast = (() => {
 
   return {
     get ready() { return ready; },
-    drawPatch, drawPerson, drawPip, drawPortrait, exprs,
+    drawMei, drawPerson, drawPip, drawPortrait, exprs, poseArms,
     // where the last figure's hands ended up (caller units): {x,y} the holding point, {hx,hy} the front hand
     hands: HANDS,
     // ask for a portrait's layers at a size before it's drawn (devPx = the square's size in device px)
@@ -4991,7 +5011,7 @@ const Cast = (() => {
 
 // ⟪stage⟫
 // ───────────────────────────── 36. Stage: the Lantern's stage, the intro, Silas's video, the confrontation at dawn ─────────────────────────────
-// The `stage` view. Four sets (the rainy street, Patch's lighting booth, the house seen from the seats, the wing by
+// The `stage` view. Four sets (the rainy street, Mei's lighting booth, the house seen from the seats, the wing by
 // the master switch) plus a few close-ups are painted once per layout into a handful of canvases; a camera fits each
 // shot into the space the dialogue leaves free; the cast (35-cast.js) stands on top. Stage.play('intro') and
 // Stage.play('confront') direct STORY.intro and STORY.finale beat by beat (the accusation logic is the stub's, kept
@@ -5002,7 +5022,7 @@ const Cast = (() => {
 // side screen RIGHT (the curtain ropes). Silas's clip maps the house into its 1600×900 frame from Seat A7.
 const Stage = (() => {
   const V = STORY.video;
-  const FIG = 300;                                  // a standard figure's height (Patch), world units
+  const FIG = 300;                                  // a standard figure's height (Mei), world units
   const sfx = (n, o) => { try { return typeof Snd !== 'undefined' && Snd && Snd.sfx ? Snd.sfx(n, o) : null; } catch (e) { return null; } };
   const vlevel = () => { try { return typeof Snd !== 'undefined' && Snd && Snd.voiceLevel ? Snd.voiceLevel() || 0 : 0; } catch (e) { return 0; } };
   const hasCast = () => typeof Cast !== 'undefined' && Cast && typeof Cast.drawPerson === 'function';
@@ -5570,7 +5590,7 @@ const Stage = (() => {
     c.globalCompositeOperation = 'source-over';
   }
 
-  // ═════════════════════════════ the booth: Patch's lighting board at the back of the house ═════════════════════════════
+  // ═════════════════════════════ the booth: Mei's lighting board at the back of the house ═════════════════════════════
   const BB = { x0: -800, y0: -900, x1: 2000, y1: 1900 };
   const WIN = { x0: 40, x1: 790, y0: -60, y1: 520 };
   const VIEWB = { x: 415, y: 290, k: 0.34 };          // the distant stage seen through the window: house x 600 → 415
@@ -5808,7 +5828,7 @@ const Stage = (() => {
     return { rect: { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }, R };
   }
   // Each set bakes only when a shot is about to need it and is dropped once the story has moved on, so the
-  // stage never holds more than two sets at once (and next to nothing while Patch is in the dressing room).
+  // stage never holds more than two sets at once (and next to nothing while Mei is in the dressing room).
   const PEDR = { x: PED.x - 60, y: PED.y - 230, w: 120, h: 240 };
   const SETS = {
     street: { layers: ['street'], focs: () => rectsOf('outside'), bake() {
@@ -5966,12 +5986,12 @@ const Stage = (() => {
       const h = a.h, s = h / FIG;
       if (a.who !== 'pip') { c.globalAlpha = 0.55; c.drawImage(SPR.shadow, a.x - 85 * s, a.y - 11 * s, 170 * s, 30 * s); c.globalAlpha = 1; }
       if (ST.speaker === a.who) { a.o.talk = talkOf(a.who); if (ST.expr && !a.o.expr) a.o.expr = ST.expr; }
-      if (a.who === 'patch') Cast.drawPatch(c, a.x, a.y, h, a.pose, t, a.o);
+      if (a.who === 'mei') Cast.drawMei(c, a.x, a.y, h, a.pose, t, a.o);
       else Cast.drawPerson(c, a.who, a.x, a.y, h, a.pose, t, a.o);
-      if (a.who === 'patch' && a.o.prop === 'pearl') { PEARLH.x = Cast.hands.x; PEARLH.y = Cast.hands.y; PEARLH.on = true; }
+      if (a.who === 'mei' && a.o.prop === 'pearl') { PEARLH.x = Cast.hands.x; PEARLH.y = Cast.hands.y; PEARLH.on = true; }
     }
   }
-  const PEARLH = { x: 0, y: 0, on: false };   // where Patch's pearl is (for its glow)
+  const PEARLH = { x: 0, y: 0, on: false };   // where Mei's pearl is (for its glow)
   const PEDST = { dome: 1, pearl: 1, lift: 0 };   // the pedestal's state this frame
   function drawPedestal(c, t) {
     const P = LY.ped, D = LY.dome; if (!P) return;
@@ -6045,7 +6065,7 @@ const Stage = (() => {
 
   // ── the intro's actors ──
   function castBooth(t) {
-    act('patch', 470, 846, 'board', false, 'neutral').o.look = 1;
+    act('mei', 470, 846, 'board', false, 'neutral').o.look = 1;
     const h = act('hart', 970, 858, t < 1.2 ? 'walk' : 'talk', false, null); h.o.look = -0.4;
     if (t < 1.2) h.x = 1120 - 150 * smooth(t / 1.2);
   }
@@ -6071,7 +6091,7 @@ const Stage = (() => {
     act('luna', 652, 738, t < 0.8 ? 'shock' : 'stand', false, 'shock').o.look = -1;
     act('ivy', 1062, 712, 'hold', false, 'shock').o.look = -1;
   }
-  // the wing: Patch comes in from the stage side and points at the switch; everybody else is already there
+  // the wing: Mei comes in from the stage side and points at the switch; everybody else is already there
   function castWing(t, beat) {
     NA = 0;
     const walk = beat === 0 && t < 1.7, k = beat === 0 ? smooth(t / 1.7) : 1;
@@ -6079,7 +6099,7 @@ const Stage = (() => {
     act('luna', 1170, 790, beat === 1 ? 'point' : 'stand', false, beat === 1 ? 'stern' : null);
     act('ivy', 1340, 780, 'hold', false, 'nervous');
     act('silas', 1500, 796, 'stand', false, 'smug');
-    const p = act('patch', lerp(1700, 930, k), lerp(820, 812, k), walk ? 'walk' : beat === 0 ? 'point' : 'think', false, walk ? null : 'surprise');
+    const p = act('mei', lerp(1700, 930, k), lerp(820, 812, k), walk ? 'walk' : beat === 0 ? 'point' : 'think', false, walk ? null : 'surprise');
     if (beat === 1) p.o.expr = 'determined';
   }
   const LINE_X = { ivy: 520, silas: 860, hart: 1200 };
@@ -6099,7 +6119,7 @@ const Stage = (() => {
   const CF = {};
   const CF0 = {
     hart: { x: 330, y: 716, pose: 'stand', flip: true, expr: null, prop: undefined, look: 0 },
-    patch: { x: 690, y: 750, pose: 'hold', flip: false, expr: null, prop: 'pearl', look: 0 },
+    mei: { x: 690, y: 750, pose: 'hold', flip: false, expr: null, prop: 'pearl', look: 0 },
     luna: { x: 850, y: 712, pose: 'stand', flip: false, expr: null, prop: undefined, look: 0 },
     silas: { x: 975, y: 686, pose: 'stand', flip: false, expr: null, prop: undefined, look: 0 },
     ivy: { x: 1150, y: 714, pose: 'hold', flip: false, expr: null, prop: undefined, look: 0 },
@@ -6107,7 +6127,7 @@ const Stage = (() => {
   };
   function resetCF() { for (const k in CF0) { CF[k] = Object.assign({ tx: CF0[k].x, ty: CF0[k].y, sp: 260, off: false }, CF0[k]); } CF.ped = { pearl: 0 }; }
   resetCF();
-  const TOPK = { patch: 1.0, luna: 1.12, ivy: 0.98, silas: 1.12, hart: 0.9, police: 1.06 };
+  const TOPK = { mei: 0.96, luna: 1.12, ivy: 0.98, silas: 1.12, hart: 0.9, police: 1.06 };
   // a focus rect around some actors (close: just heads and shoulders)
   function frame(names, close, out) {
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
@@ -6123,49 +6143,49 @@ const Stage = (() => {
   }
   const depthK = (y) => clamp(0.9 + (y - 640) * 0.0011, 0.84, 1.06);
   const DIR = {
-    f_walkout: { cam: 'wide', walk: { patch: [136, 640] } },
-    f_luna_pearl: { cam: ['patch', 'luna'], pose: { luna: 'shock' } },
-    f_reveal: { cam: ['patch'], close: 1, pose: { patch: 'hold' } },
-    f_frame: { cam: ['hart', 'patch'], pose: { hart: 'point' } },
-    f_nice_try: { cam: ['patch'], close: 1, pose: { hart: 'stand' } },
+    f_walkout: { cam: 'wide', walk: { mei: [136, 640] } },
+    f_luna_pearl: { cam: ['mei', 'luna'], pose: { luna: 'shock' } },
+    f_reveal: { cam: ['mei'], close: 1, pose: { mei: 'hold' } },
+    f_frame: { cam: ['hart', 'mei'], pose: { hart: 'point' } },
+    f_nice_try: { cam: ['mei'], close: 1, pose: { hart: 'stand' } },
     choose: { cam: 'wide', choose: 1, pose: { luna: 'stand' } },
     wrong_ivy: { cam: ['ivy'], close: 1 },
     ivy_wrong: { cam: ['ivy'], close: 1, pose: { ivy: 'hold' } },
     wrong_silas: { cam: ['silas'], close: 1 },
     silas_wrong: { cam: ['silas'], close: 1, pose: { silas: 'talk' } },
-    f_accuse: { cam: ['patch', 'hart'], pose: { patch: 'point', silas: 'stand' } },
-    f_hart_gasp: { cam: ['hart'], close: 1, pose: { hart: 'shock', patch: 'hold' } },
+    f_accuse: { cam: ['mei', 'hart'], pose: { mei: 'point', silas: 'stand' } },
+    f_hart_gasp: { cam: ['hart'], close: 1, pose: { hart: 'shock', mei: 'hold' } },
     f_obj1: { cam: ['hart'], close: 1, pose: { hart: 'shock' } },
-    present: { cam: ['patch', 'hart'], pose: { patch: 'hold' } },
-    proof1_glasses: { cam: ['hart'], close: 1, pose: { hart: 'chain', patch: 'talk' } },   // her hand goes to the empty chain
-    proof1_video: { cam: ['patch'], close: 1, pose: { patch: 'offer' }, prop: { patch: 'phone' } },
+    present: { cam: ['mei', 'hart'], pose: { mei: 'hold' } },
+    proof1_glasses: { cam: ['hart'], close: 1, pose: { hart: 'chain', mei: 'talk' } },   // her hand goes to the empty chain
+    proof1_video: { cam: ['mei'], close: 1, pose: { mei: 'offer' }, prop: { mei: 'phone' } },
     f_obj2: { cam: ['hart'], close: 1, pose: { hart: 'touch' } },
-    proof2_gloves: { cam: ['patch', 'hart'], pose: { patch: 'point' } },
-    proof2_photo: { cam: ['patch', 'hart'], pose: { patch: 'talk' } },
+    proof2_gloves: { cam: ['mei', 'hart'], pose: { mei: 'point' } },
+    proof2_photo: { cam: ['mei', 'hart'], pose: { mei: 'talk' } },
     f_obj3: { cam: ['hart'], close: 1, pose: { hart: 'touch' } },
-    proof3_bell: { cam: ['patch'], close: 1, pose: { patch: 'offer' }, prop: { patch: 'bell' } },
-    f_count: { cam: ['hart', 'patch'], pose: { patch: 'offer', hart: 'touch' }, prop: { patch: 'bell' } },
-    proof_miss1: { cam: ['patch'], close: 1, pose: { patch: 'think' } },
+    proof3_bell: { cam: ['mei'], close: 1, pose: { mei: 'offer' }, prop: { mei: 'bell' } },
+    f_count: { cam: ['hart', 'mei'], pose: { mei: 'offer', hart: 'touch' }, prop: { mei: 'bell' } },
+    proof_miss1: { cam: ['mei'], close: 1, pose: { mei: 'think' } },
     proof_miss2: { cam: ['hart'], close: 1, pose: { hart: 'stand' } },
-    hint: { cam: ['patch'], close: 1, pose: { patch: 'think' } },
+    hint: { cam: ['mei'], close: 1, pose: { mei: 'think' } },
     f_bells_gap: { shot: 'insert' },
-    f_confess: { cam: ['hart'], close: 1, pose: { hart: 'sad', patch: 'hold' }, prop: { patch: 'pearl' } },
-    f_sorry: { cam: ['hart', 'patch'], pose: { hart: 'sad' } },
-    f_hoodie: { cam: ['patch'], close: 1, pose: { patch: 'hold' } },
+    f_confess: { cam: ['hart'], close: 1, pose: { hart: 'sad', mei: 'hold' }, prop: { mei: 'pearl' } },
+    f_sorry: { cam: ['hart', 'mei'], pose: { hart: 'sad' } },
+    f_hoodie: { cam: ['mei'], close: 1, pose: { mei: 'hold' } },
     f_forgive: { cam: ['luna', 'hart'], walk: { luna: [520, 716] }, pose: { luna: 'talk' }, flip: { luna: false } },
-    f_envelope: { cam: ['patch', 'luna'], pose: { patch: 'offer', luna: 'stand' }, prop: { patch: 'envelope' }, flip: { luna: true } },
-    f_gift: { cam: ['luna', 'ivy', 'patch'], walk: { ivy: [960, 712] }, pose: { luna: 'offer', patch: 'hold' }, prop: { luna: 'envelope', patch: 'pearl' }, flip: { luna: true } },
+    f_envelope: { cam: ['mei', 'luna'], pose: { mei: 'offer', luna: 'stand' }, prop: { mei: 'envelope' }, flip: { luna: true } },
+    f_gift: { cam: ['luna', 'ivy', 'mei'], walk: { ivy: [960, 712] }, pose: { luna: 'offer', mei: 'hold' }, prop: { luna: 'envelope', mei: 'pearl' }, flip: { luna: true } },
     f_ivy: { cam: ['ivy', 'luna'], close: 1, pose: { ivy: 'hold', luna: 'stand' }, prop: { luna: undefined } },
-    f_knock: { cam: 'wide', look: -1, flip: { luna: false, silas: false, ivy: false, patch: false, hart: false } },
+    f_knock: { cam: 'wide', look: -1, flip: { luna: false, silas: false, ivy: false, mei: false, hart: false } },
     f_police_q: { cam: 'left', police: 1 },
-    f_police: { cam: ['luna', 'police', 'patch'], walk: { luna: [560, 732] }, pose: { luna: 'stage', patch: 'stand' }, prop: { luna: 'pearl', patch: null }, flip: { luna: false } },
-    f_end: { cam: ['patch'], close: 1, pose: { patch: 'stand' } },
+    f_police: { cam: ['luna', 'police', 'mei'], walk: { luna: [560, 732] }, pose: { luna: 'stage', mei: 'stand' }, prop: { luna: 'pearl', mei: null }, flip: { luna: false } },
+    f_end: { cam: ['mei'], close: 1, pose: { mei: 'stand' } },
   };
   function applyDir(key) {
     const d = DIR[key]; if (!d) return;
     if (d.shot) { setShot(d.shot); return; }
     if (ST.shot !== 'confront') setShot('confront');
-    if (d.walk) for (const n in d.walk) { const w = d.walk[n]; if (n === 'patch' && key === 'f_walkout') { CF.patch.x = w[0]; CF.patch.y = w[1]; CF.patch.tx = CF0.patch.x; CF.patch.ty = CF0.patch.y; CF.patch.sp = RM ? 1e4 : 300; } else { CF[n].tx = w[0]; CF[n].ty = w[1]; CF[n].sp = RM ? 1e4 : 280; } }
+    if (d.walk) for (const n in d.walk) { const w = d.walk[n]; if (n === 'mei' && key === 'f_walkout') { CF.mei.x = w[0]; CF.mei.y = w[1]; CF.mei.tx = CF0.mei.x; CF.mei.ty = CF0.mei.y; CF.mei.sp = RM ? 1e4 : 300; } else { CF[n].tx = w[0]; CF[n].ty = w[1]; CF[n].sp = RM ? 1e4 : 280; } }
     if (d.pose) for (const n in d.pose) CF[n].pose = d.pose[n];
     if (d.prop) for (const n in d.prop) CF[n].prop = d.prop[n] === null ? undefined : d.prop[n];
     if (d.flip) for (const n in d.flip) CF[n].flip = d.flip[n];
@@ -6180,10 +6200,10 @@ const Stage = (() => {
   function castConfront(t, dt) {
     NA = 0;
     const p = act('ped', PED.x, PED.y, 'stand'); p.who = 'ped';
-    for (const n of ['hart', 'patch', 'luna', 'silas', 'ivy', 'police']) {
+    for (const n of ['hart', 'mei', 'luna', 'silas', 'ivy', 'police']) {
       const c = CF[n]; if (c.off) continue;
       const moving = Math.abs(c.tx - c.x) + Math.abs(c.ty - c.y) > 2;
-      const pose = moving ? (n === 'patch' && c.prop === 'pearl' ? 'walkhold' : 'walk') : c.pose;
+      const pose = moving ? (n === 'mei' && c.prop === 'pearl' ? 'walkhold' : 'walk') : c.pose;
       const a = act(n, c.x, c.y, pose, moving ? c.tx > c.x : c.flip, c.expr);
       a.h = FIG * depthK(c.y); a.o.look = c.look; a.o.prop = c.prop; a.o.gap = n === 'hart';
     }
@@ -6389,7 +6409,7 @@ const Stage = (() => {
     }
     c.restore();
     NA = 0;
-    if (dawn) { const p = act('patch', 470, 846, st < 1.4 ? 'phones' : 'board', false, st < 1.4 ? 'smirk' : 'neutral'); p.o.look = 0; }
+    if (dawn) { const p = act('mei', 470, 846, st < 1.4 ? 'phones' : 'board', false, st < 1.4 ? 'smirk' : 'neutral'); p.o.look = 0; }
     else castBooth(st);
     drawActors(c, t);
     // the board lights her face; the hall lights Mrs. Hart's back
@@ -6452,7 +6472,7 @@ const Stage = (() => {
         const w = WDOOR.w * open, x0 = WDOOR.x + WDOOR.w - w;
         c.save(); c.beginPath(); c.rect(x0, WDOOR.y, w, WDOOR.h); c.clip();
         blitL(c, 'sliver');
-        if (hasCast()) Cast.drawPatch(c, WDOOR.x + 104, WDOOR.y + WDOOR.h + 4, FIG * 0.86, 'idle', t, { expr: 'sad', look: 1 });
+        if (hasCast()) Cast.drawMei(c, WDOOR.x + 104, WDOOR.y + WDOOR.h + 4, FIG * 0.86, 'idle', t, { expr: 'sad', look: 1 });
         c.restore();
         c.fillStyle = '#16120e'; c.fillRect(x0 - 6, WDOOR.y, 12, WDOOR.h);
       }
@@ -6764,7 +6784,7 @@ const Stage = (() => {
     setShot('outside'); planFor('outside');
     VIEW.stack.length = 0; VIEW.open('stage', null, { dur: 0.01 });
     area();
-    prewarm(['patch', 'luna', 'ivy', 'silas', 'hart'], [figPx(shotRect(SHOTS.show, 6, [0, 0, 0, 0])), figPx(shotRect(SHOTS.wing, 12, [0, 0, 0, 0])), figPx(lineupFocus('ivy'))]);
+    prewarm(['mei', 'luna', 'ivy', 'silas', 'hart'], [figPx(shotRect(SHOTS.show, 6, [0, 0, 0, 0])), figPx(shotRect(SHOTS.wing, 12, [0, 0, 0, 0])), figPx(lineupFocus('ivy'))]);
     for (let i = 0; i < STORY.intro.length; i++) {
       const b = STORY.intro[i];
       if (!alive(tok, 'intro')) return;
@@ -6791,7 +6811,7 @@ const Stage = (() => {
       else if (b.hold) await wait(b.hold);
       if (b.shot === 'lock') await lockEnd(tok);
     }
-    if (alive(tok, 'intro')) hold();   // Patch is locked in: nothing of the theatre stays baked but the pedestal
+    if (alive(tok, 'intro')) hold();   // Mei is locked in: nothing of the theatre stays baked but the pedestal
   }
   // Madame presents the pearl; a drumroll lands on "the Vanishing Moon!" (timed to her voice when there is one)
   async function showBeat(tok, b) {
@@ -6834,7 +6854,7 @@ const Stage = (() => {
     resetCF(); ST.rain = 1; ST.dawnTo = DAWN.k = 0; BAND_EXTRA = 0;
     hold('dawn', 'insert'); ST.set = 'dawn'; need('dawn'); bakeSoon(['insert']);
     VIEW.stack.length = 0; VIEW.open('stage', null, { dur: 0.01 });
-    prewarm(['patch', 'luna', 'ivy', 'silas', 'hart', 'police'], [figPx(CWIDE), figPx(frame(['hart'], true, [0, 0, 0, 0]))]);
+    prewarm(['mei', 'luna', 'ivy', 'silas', 'hart', 'police'], [figPx(CWIDE), figPx(frame(['hart'], true, [0, 0, 0, 0]))]);
     setShot('confront'); camTo(CWIDE, true);
     const F = STORY.finale;
     const sayD = async (k) => { applyDir(typeof k === 'string' ? k : 'hint'); await say(k); };
@@ -6860,7 +6880,7 @@ const Stage = (() => {
         if (ev && P.accept[ev]) { await sayD(P.accept[ev]); for (const k of P.after || []) await sayD(k); break; }
         S.accuse.misses++;
         await sayD(F.miss[tries % F.miss.length]);
-        if (tries >= 1) await sayD({ who: 'patch', text: P.hint });
+        if (tries >= 1) await sayD({ who: 'mei', text: P.hint });
       }
       FLAG.set('proof' + (n + 1));
     }
@@ -6876,7 +6896,7 @@ const Stage = (() => {
     }
     FLAG.set('confessed');
     ST.dawnTo = 1; DAWN.k = 1;
-    // the ending: Patch back at her board, the pearl back on its pedestal in the sunrise
+    // the ending: Mei back at her board, the pearl back on its pedestal in the sunrise
     if (!alive(tok, 'finale')) return;
     setShot('end_booth'); BUS.emit('stage:shot', { id: 'end_booth' });
     await wait(RM ? 1.6 : 2.8);
@@ -6948,8 +6968,8 @@ const Stage = (() => {
 })();
 
 // ⟪ui⟫
-// ───────────────────────────── 40. UI: Patch's holo-glasses, in a theater ─────────────────────────────
-// The interface is the HUD on Patch's glasses: lens brackets, the night's clock, CASE (the case board) and
+// ───────────────────────────── 40. UI: Mei's headset HUD, in a theater ─────────────────────────────
+// The interface is the HUD on Mei's crew headset: corner brackets, the night's clock, CASE (the case board) and
 // THINK (hints), the inventory tray with drawn item icons, dialogue with a live portrait (an intercom
 // treatment for lines over the backstage talkback, a stage-direction style for `narr`), documents styled by
 // kind (the pearl's ivory certificate, letters, the crumpled note, the bank's notice, the ticket stub), the
@@ -6963,7 +6983,7 @@ const UI = (() => {
     back: 'Back', menu: 'Menu', caseB: 'Case', think: 'Think', until: '→ 6:00 AM',
     got: 'Got', noteK: 'Case note', notesN: (n) => `${n} new case notes`,
     newGame: 'New game', cont: 'Continue', settings: 'Settings', startOver: 'Start over?', startOverSub: 'tap again · erases your saved night',
-    footer: 'A <b>Smart Disruptions</b> game · Patch from the Neo Dojo cast',
+    footer: 'A <b>Smart Disruptions</b> game · Mei from Tetherball: King of the Pole',
     resume: 'Resume', caseBoard: 'Case board', titleScreen: 'Title screen', autosave: 'your night saves itself',
     music: 'Music', sfx: 'Sound effects', voice: 'Voices', mute: 'Mute everything', muteSub: 'M on a keyboard',
     speed: 'Text speed', speeds: ['Slow', 'Normal', 'Fast', 'Instant'],
@@ -7152,7 +7172,7 @@ const UI = (() => {
   }
 
   // ── portraits: default expression per speaker; STORY's line.expr wins; Cast's list is the authority ──
-  const EXPR0 = { patch: 'neutral', luna: 'warm', ivy: 'smile', silas: 'smug', hart: 'sweet', police: 'neutral' };
+  const EXPR0 = { mei: 'neutral', luna: 'warm', ivy: 'smile', silas: 'smug', hart: 'sweet', police: 'neutral' };
   function exprList(who) {
     try { const e = Cast.exprs; const l = typeof e === 'function' ? e(who) : e && e[who]; return Array.isArray(l) && l.length ? l : null; } catch (e) { return null; }
   }
@@ -7270,7 +7290,7 @@ const UI = (() => {
   }
   function pingCase() { if (RM || OPEN.board) return; caseBtn.classList.remove('ping'); requestAnimationFrame(() => caseBtn.classList.add('ping')); }
 
-  // ── an incoming call shows as a red pill under the clock wherever Patch is (tap: go to the intercom) ──
+  // ── an incoming call shows as a red pill under the clock wherever Mei is (tap: go to the intercom) ──
   let callState = null;
   function renderCall() {
     const p = pendingCall();
@@ -7337,14 +7357,14 @@ const UI = (() => {
       return;
     }
     if (S.sel !== s.id) { INV.select(s.id); return; }
-    if (it.desc) SAY({ who: 'patch', text: it.desc }, { expr: 'smirk' });
+    if (it.desc) SAY({ who: 'mei', text: it.desc }, { expr: 'smirk' });
   }
 
   // ───────── dialogue ─────────
   const SPEEDS = [34, 62, 120, 0];          // characters per second; 0 = instant
   let speedI = clamp(store.get('textSpeed', 1) | 0, 0, 3);
   const T = { on: false, text: '', len: 0, n: 0, t0: 0, tl: null, waiters: [] };
-  const P = { on: false, who: 'patch', expr: 'neutral', acc: 0, voiced: false, voiceOn: false, css: 0, d: 1, opts: { talk: 0 } };
+  const P = { on: false, who: 'mei', expr: 'neutral', acc: 0, voiced: false, voiceOn: false, css: 0, d: 1, opts: { talk: 0 } };
   let cur = null, curPick = null, hideT = 0, sayVisible = false, sayWho = null, lineTok = 0;
 
   function buildDialogue() {
@@ -7470,7 +7490,7 @@ const UI = (() => {
     else { T.tl = timeline(text, cps); T.on = true; txShown.data = ''; txRest.data = text; }
     // portrait (a stage direction has none)
     P.on = !narr;
-    if (!narr) { sizePortrait(); P.who = l.who || 'patch'; P.expr = exprOf(P.who, (o && o.expr) || l.expr); P.acc = 1; }
+    if (!narr) { sizePortrait(); P.who = l.who || 'mei'; P.expr = exprOf(P.who, (o && o.expr) || l.expr); P.acc = 1; }
     // voice (an intercom line plays through the intercom chain)
     const hv = snd('has', l.voice);
     P.voiced = !!(l.voice && hv !== false);
@@ -7677,13 +7697,13 @@ const UI = (() => {
     const goals = activeGoals();
     const g = goals.find((x) => x.views.indexOf(top) >= 0) || goals[0];
     sfx('ui_hint', { vol: 0.7 });
-    if (!g) return SAY({ who: 'patch', text: STORY.hintIdle }, { expr: 'think' });
+    if (!g) return SAY({ who: 'mei', text: STORY.hintIdle }, { expr: 'think' });
     let list = [];
     try { list = g.get(S) || []; } catch (e) { reportErr('UI.hint', e); }
-    if (!list.length) return SAY({ who: 'patch', text: STORY.hintIdle }, { expr: 'think' });
+    if (!list.length) return SAY({ who: 'mei', text: STORY.hintIdle }, { expr: 'think' });
     const n = S.hintN[g.id] || 0;
     S.hintN[g.id] = n + 1; S.hints = (S.hints || 0) + 1; SAVE.soon();
-    return SAY({ who: 'patch', text: list[Math.min(n, list.length - 1)] }, { expr: 'think' });
+    return SAY({ who: 'mei', text: list[Math.min(n, list.length - 1)] }, { expr: 'think' });
   }
 
   // ───────── the case board: what now, the three suspects, every note found ─────────
@@ -7911,7 +7931,7 @@ const UI = (() => {
         if (inGame) BUS.emit('ui:new'); else if (contBtn) contBtn.hidden = true;
       });
     }
-    card.appendChild(mk('p', 'fine', 'PATCH OS v6 · THE LANTERN'));
+    card.appendChild(mk('p', 'fine', 'MEI · LIGHTS · THE LANTERN'));
     setEl = modal('set', card, () => closeSettings());
     sfx('ui_open', { vol: 0.5 });
   }
@@ -8097,7 +8117,7 @@ const UI = (() => {
   }
 
   // ───────── boot screen ─────────
-  // the boot screen holds long enough to read as Patch's glasses powering up (not in dev/test runs)
+  // the boot screen holds long enough to read as Mei's headset powering up (not in dev/test runs)
   let bootTimer = 0;
   function hideBoot(instant) {
     if (!bootEl) return;
@@ -8105,7 +8125,7 @@ const UI = (() => {
     const go = () => {
       if (bootEl !== b) return;
       bootEl = null; clearTimeout(bootTimer); b.classList.add('done'); setTimeout(() => b.remove(), 500);
-      if (titleOn && titleEl.hidden) titleEl.hidden = false;   // the title makes its entrance as the glasses finish booting
+      if (titleOn && titleEl.hidden) titleEl.hidden = false;   // the title makes its entrance as the headset finishes booting
     };
     const left = instant || DEV ? 0 : Math.max(0, 900 - (now() - bootT0));
     clearTimeout(bootTimer);
@@ -9245,7 +9265,7 @@ const Cabinet = (() => {
       sfx('drawer_open');
       tween(A.pull, 'full', 1, 0.7, (t) => easeOutBack(t, 1));
       await sleep(0.7); if (gone()) return;
-      // Patch lifts the pearl back out of its bed (it stays in her pocket)
+      // Mei lifts the pearl back out of its bed (it stays in her pocket)
       tween(A, 'pearlLift', 1, 0.45, easeInOut);
       await sleep(0.45); if (gone()) return;
       A.pearl = 0;
@@ -10317,14 +10337,14 @@ const Props = (() => {
     g.fillStyle = rg(g, 0, 0, r, [0, '#ffffff', 0.45, '#f4f8ff', 0.85, PAL.pearl, 1, PAL.pearlHalo], -r * 0.2, -r * 0.25); g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
     g.fillStyle = 'rgba(255,255,255,0.95)'; g.beginPath(); g.ellipse(-r * 0.35, -r * 0.4, r * 0.22, r * 0.13, -0.6, 0, TAU); g.fill();
   }
-  // Patch's hand, palm up and cupped (origin = where the pearl rests in it); lit = the pearl's light on her skin
+  // Mei's hand, palm up and cupped (origin = where the pearl rests in it); lit = the pearl's light on her skin
   const FINGERS = [[-40, 8, -46, -34, 21], [-14, 2, -15, -44, 23], [12, 2, 15, -44, 23], [37, 8, 45, -32, 20]];
   function capsule(g, x0, y0, x1, y1, w) { g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.lineCap = 'round'; g.lineWidth = w; g.stroke(); }
   function handShapes(g, fill, edge, sleeve) {
     // the hoodie sleeve and its ribbed cuff
     if (sleeve) {
       g.fillStyle = sleeve; poly(g, [-80, 118, 80, 118, 104, 330, -104, 330]); g.fill();
-      g.fillStyle = lg(g, 0, 92, 0, 132, [0, '#2b2f45', 1, '#1b1e2e']); rrect(g, -82, 92, 164, 42, 14); g.fill();
+      g.fillStyle = lg(g, 0, 92, 0, 132, [0, '#164a56', 1, '#0d323b']); rrect(g, -82, 92, 164, 42, 14); g.fill();
       for (let i = 0; i < 13; i++) seg(g, -72 + i * 12, 96, -72 + i * 12, 130, 'rgba(0,0,0,0.4)', 2.2);
     }
     // wrist and palm, the fingers curling up behind the pearl, the thumb in front at the left
@@ -10336,7 +10356,7 @@ const Props = (() => {
   }
   function paintHand(g, lit) {
     if (!lit) {
-      handShapes(g, '#2a170f', '#120a06', '#1b1d2a');
+      handShapes(g, '#3d302c', '#17110f', '#0f3640');
       // the creases of a cupped palm
       g.strokeStyle = 'rgba(0,0,0,0.45)'; g.lineWidth = 2.4; g.lineCap = 'round';
       g.beginPath(); g.moveTo(-34, 30); g.quadraticCurveTo(0, 46, 40, 24); g.moveTo(-26, 52); g.quadraticCurveTo(4, 60, 30, 46); g.stroke();
@@ -10347,7 +10367,7 @@ const Props = (() => {
     t.setTransform(g.getTransform());
     handShapes(t, '#000', '#000', null);
     t.globalCompositeOperation = 'source-in';
-    t.fillStyle = rg(t, 0, -4, 150, [0, 'rgba(196,140,108,1)', 0.25, 'rgba(150,100,80,0.72)', 0.55, 'rgba(90,76,104,0.3)', 1, 'rgba(40,44,96,0)']); t.fillRect(-140, -80, 280, 400);
+    t.fillStyle = rg(t, 0, -4, 150, [0, 'rgba(246,208,176,1)', 0.25, 'rgba(206,164,142,0.72)', 0.55, 'rgba(110,96,120,0.3)', 1, 'rgba(40,44,96,0)']); t.fillRect(-140, -80, 280, 400);
     t.globalCompositeOperation = 'source-over';
     // a cool rim down the inside of the thumb, where it curls toward the light
     t.strokeStyle = 'rgba(200,220,255,0.4)'; t.lineWidth = 2.5; t.lineCap = 'round';
@@ -11124,11 +11144,11 @@ const Props = (() => {
 })();
 
 // ⟪phone⟫
-// ───────────────────────────── 60. Phone: Silas's phone, in Patch's hands ─────────────────────────────
+// ───────────────────────────── 60. Phone: Silas's phone, in Mei's hands ─────────────────────────────
 // View `phone`. The lock screen: tilt the phone toward the vanity bulbs (drag it sideways) until their glare
 // sweeps the glass and shows the greasy trail of an S, then draw the pattern through the dots (1:1, the dots
 // light up, haptics). Unlocked: the gallery's one clip, then the player: the phone turns landscape and
-// Patch's glasses add big controls (play/pause, a scrubber with the dark stretch marked, frame steps,
+// The HUD adds big controls (play/pause, a scrubber with the dark stretch marked, frame steps,
 // timecode). Paused on the right frame, a tap where the glow lights the thief's hand runs the glasses'
 // ENHANCE: a mint reticle zooms in (Stage.drawVideo with a view rect) on the leopard glove and the bells.
 // Art is baked per layout (the room's soft bokeh, the phone body, the wallpaper, the smudge, the hands);
@@ -11311,17 +11331,17 @@ const Phone = (() => {
     rg = g.createRadialGradient(cx, cy, Math.min(w, h) * 0.3, cx, cy, Math.max(w, h) * 0.8); rg.addColorStop(0, 'rgba(0,0,0,0)'); rg.addColorStop(1, 'rgba(0,0,0,.6)');
     g.fillStyle = rg; g.fillRect(0, 0, w, h);
   }
-  // Patch's right hand holding the phone's edge at x = 0 (the phone is to the left): her hoodie sleeve from
+  // Mei's right hand holding the phone's edge at x = 0 (the phone is to the left): her hoodie sleeve from
   // below, the heel of her hand wrapped round the case's edge, the thumb resting on the bezel. Design units.
   function paintHand(g) {
     g.lineJoin = 'round'; g.lineCap = 'round';
-    const skin = '#8a5634', skinS = '#6b3d22', skinH = '#a8704a', line = '#3d4c95';
+    const skin = '#f6d0a8', skinS = '#e2b083', skinH = '#fff1de', line = '#3d4c95';
     // the sleeve, coming up from below and outside
     g.save(); g.translate(78, 196); g.rotate(-0.5);
-    g.fillStyle = lin(g, -66, 0, 66, 0, ['#565e7c', '#3b4058', '#262a3d']); rrect(g, -64, 0, 128, 300, 44); g.fill();
+    g.fillStyle = lin(g, -66, 0, 66, 0, ['#5fe6f0', '#1fb8cc', '#0e7f93']); rrect(g, -64, 0, 128, 300, 44); g.fill();
     g.strokeStyle = line; g.lineWidth = 6; g.stroke();
-    g.fillStyle = '#2f3449'; rrect(g, -68, -10, 136, 44, 20); g.fill(); g.stroke();
-    g.fillStyle = '#3dffc2'; g.fillRect(-56, 12, 112, 5);
+    g.fillStyle = '#168fa3'; rrect(g, -68, -10, 136, 44, 20); g.fill(); g.stroke();
+    g.fillStyle = '#ff2bd6'; g.fillRect(-56, 12, 112, 5);
     g.restore();
     // the hand: heel and palm edge, wrapping the case
     g.fillStyle = skin; g.strokeStyle = line; g.lineWidth = 6;
@@ -11330,13 +11350,13 @@ const Phone = (() => {
     g.bezierCurveTo(22, 196, -4, 176, -10, 140); g.bezierCurveTo(-14, 90, -16, -20, -6, -64); g.closePath(); g.fill(); g.stroke();
     g.fillStyle = skinS; g.globalAlpha = 0.45; g.beginPath(); g.ellipse(46, 70, 20, 62, -0.08, 0, TAU); g.fill(); g.globalAlpha = 1;
     // knuckle creases where the fingers curl behind
-    g.strokeStyle = 'rgba(60,30,14,.45)'; g.lineWidth = 3;
+    g.strokeStyle = 'rgba(150,90,60,.4)'; g.lineWidth = 3;
     g.beginPath(); g.moveTo(66, -14); g.quadraticCurveTo(74, -4, 70, 8); g.moveTo(72, 34); g.quadraticCurveTo(80, 44, 74, 56); g.stroke();
     // the thumb, over the bezel
     g.save(); g.translate(8, -40); g.rotate(-0.62);
     g.fillStyle = skin; g.strokeStyle = line; g.lineWidth = 6;
     g.beginPath(); g.moveTo(-17, 30); g.lineTo(-17, -46); g.arc(0, -46, 17, Math.PI, 0); g.lineTo(17, 30); g.closePath(); g.fill(); g.stroke();
-    g.fillStyle = '#d4a48c'; rrect(g, -10, -58, 20, 22, 9); g.fill();
+    g.fillStyle = '#f7d9cd'; rrect(g, -10, -58, 20, 22, 9); g.fill();
     g.fillStyle = skinH; g.globalAlpha = 0.55; rrect(g, -12, -40, 6, 50, 3); g.fill(); g.globalAlpha = 1;
     g.restore();
   }
@@ -11367,7 +11387,7 @@ const Phone = (() => {
     SP.mint = glowOf(PAL.mintRGB, Math.max(16, Math.min(128, Math.round(60 * LY.kMax * STAGE.ppu))), 0.5);
     clockMin = -1; tcKey = -1;
   }
-  // the lock screen's static layers in one sprite: the frame, and under it the wallpaper (and, once Patch has
+  // the lock screen's static layers in one sprite: the frame, and under it the wallpaper (and, once Mei has
   // seen it, the faint smudge). The tilt only squashes it, so it's one blit a frame.
   function bakeFace() {
     const P = LY.lock, L = land(P), s = P.k * STAGE.ppu;
@@ -11520,7 +11540,7 @@ const Phone = (() => {
   };
 
   // ───────── drawing ─────────
-  // where Patch's hands grip the phone, in its own (portrait) design units: the sides when it's upright,
+  // where Mei's hands grip the phone, in its own (portrait) design units: the sides when it's upright,
   // the two ends when it's landscape
   function handsFor(L, a) {
     if (!SP.hand || a <= 0.01) return null;
@@ -11584,7 +11604,7 @@ const Phone = (() => {
     rrect(c, lx - 17, ly, 34, 26, 6); c.stroke();
     c.beginPath(); c.arc(lx, ly, 11, Math.PI, 0); c.stroke();
     if (okT > 0) { c.fillStyle = 'rgba(61,255,194,.3)'; c.fillRect(lx - 17, ly, 34, 26); }
-    // the smudge, where the glare lights it (and faintly everywhere once Patch has seen it)
+    // the smudge, where the glare lights it (and faintly everywhere once Mei has seen it)
     const g = glareAmt(), gu = glareU(), bw = w * 0.46, gx = gu * w;
     if (g > 0.01) {
       smudgeBand(c, w, h, gx - bw * 0.6, gx + bw * 0.6, Math.min(1, 0.2 + g * 0.9));
@@ -11831,7 +11851,7 @@ const Phone = (() => {
       let ha = 1, hL = land(PP);
       if (mode === 'rotate') { const e = clamp(modeT / ROT_T, 0, 1); ha = Math.abs(Math.cos(e * Math.PI)); hL = land(e < 0.5 ? LY.lock : LY.play); }
       let hl = handsFor(hL, ha);
-      // beside the controls column, Patch holds the phone in her left hand and works the controls with her right
+      // beside the controls column, Mei holds the phone in her left hand and works the controls with her right
       if (hl && (mode === 'player' || (mode === 'rotate' && modeT / ROT_T >= 0.5)) && LY.C) {
         if (LY.C.side) hl = hl.filter((h) => h[3] < 0);
         // a landscape phone as wide as the screen leaves no room for hands beside it
@@ -11992,9 +12012,9 @@ const Phone = (() => {
 // ⟪intercom⟫
 // ───────────────────────────── 70. Intercom: the backstage talkback by the dressing-room door ─────────────────────────────
 // The cream bakelite wall box (view `intercom`): a chrome speaker grille, STAGE and OFFICE push buttons with
-// their channel lamps, the red call light, and the jack where Patch's headset plugs in. Incoming calls come
+// their channel lamps, the red call light, and the jack where Mei's headset plugs in. Incoming calls come
 // from STORY.calls (the box buzzes, the light blinks, `pending()` tells the Room); answering plays the lines
-// through SAY with the intercom voice for everyone but Patch, while a small "on the line" card shows who is
+// through SAY with the intercom voice for everyone but Mei, while a small "on the line" card shows who is
 // talking. STAGE and OFFICE run STORY.dial: idle chatter, Mrs. Hart, and the blackout request.
 // Art: the wall and the box are baked once per layout (Canvas 2D in the box's own 600×860 design units, at
 // the device resolution it is shown at); a frame blits them and adds the lamps, the caps, the plug and the card.
@@ -12022,7 +12042,7 @@ const Intercom = (() => {
   const uiCine = () => { try { return typeof UI !== 'undefined' && UI && typeof UI.cinema === 'function' && UI.cinema(); } catch (e) { return false; } };
   const plugged = () => plugLocal || !!(S.f.seen_intercom || S.f.call1 || S.f.call2 || S.f.hart_called || S.f.asked_switch);
   const whoOfCh = (ch) => { for (const c of STORY.calls) if (c.ch === ch) return c.who; return ch === 'office' ? 'hart' : 'luna'; };
-  const firstVoice = (keys) => { for (const k of keys || []) { const l = STORY.lines[k]; if (l && l.who !== 'patch' && l.who !== 'narr') return l.who; } return null; };
+  const firstVoice = (keys) => { for (const k of keys || []) { const l = STORY.lines[k]; if (l && l.who !== 'mei' && l.who !== 'narr') return l.who; } return null; };
 
   // ───────── layout: the box (and the card above it, or beside it on a wide screen) ─────────
   function layout() {
@@ -12190,7 +12210,7 @@ const Intercom = (() => {
     g.fillStyle = 'rgba(80,0,10,.25)'; rrect(g, 10, d + b.h - 22, b.w - 20, 12, 6); g.fill();
   }
   function paintPlug(g) {
-    // Patch's headset plug (design units, the tip at 0,0, the body hanging down)
+    // Mei's headset plug (design units, the tip at 0,0, the body hanging down)
     g.fillStyle = lin(g, -7, 0, 7, 0, ['#8d93a2', '#f4f6fa', '#6f7584']); rrect(g, -7, -4, 14, 34, 5); g.fill();
     g.fillStyle = '#202330'; rrect(g, -9, 26, 18, 4, 2); g.fill();
     g.fillStyle = lin(g, -20, 0, 20, 0, ['#2a2d3d', '#4a4f66', '#1b1d28']); rrect(g, -19, 30, 38, 92, 12); g.fill();
@@ -12260,7 +12280,7 @@ const Intercom = (() => {
       const l = STORY.lines[k]; if (!l) continue;
       if (line && l.who === line.who) line.expr = l.expr || null;
       if (line) line.talking = l.who === line.who;
-      await SAY(k, l.who !== 'patch' && l.who !== 'narr' ? { fx: 'intercom' } : {});
+      await SAY(k, l.who !== 'mei' && l.who !== 'narr' ? { fx: 'intercom' } : {});
       if (line) line.talking = false;
     }
   }
@@ -12396,7 +12416,7 @@ const Intercom = (() => {
           c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
         }
       }
-      // Patch's headset plug, and its cable down to her
+      // Mei's headset plug, and its cable down to her
       const pk = plugAnim ? easeOutBack(plugK) : (plugged() ? 1 : 0);
       const py = JACK.y - 6 + (1 - pk) * 170;
       cord(c, bx + JACK.x * k, by + (py + 146) * k, STAGE.vy1 + 20, k);
@@ -12438,7 +12458,7 @@ const Intercom = (() => {
       return false;
     },
   });
-  // the coiled cord down from the plug to Patch (a bezier with a coil wobble, as the Room draws it)
+  // the coiled cord down from the plug to Mei (a bezier with a coil wobble, as the Room draws it)
   function cord(c, x0, y0, ey, k) {
     const x3 = x0 - 60 * k, x1 = x0, y1 = y0 + 160 * k, x2 = x0 - 120 * k, y2 = ey - 260 * k, n = 64;
     c.beginPath();
@@ -12820,7 +12840,7 @@ function syncTime() {
 }
 BUS.on('flag', syncTime); BUS.on('journal', syncTime); BUS.on('unlock', syncTime);
 
-// ───────── deductions: evidence that adds up makes Patch say so (STORY.deductions) ─────────
+// ───────── deductions: evidence that adds up makes Mei say so (STORY.deductions) ─────────
 let deducing = false;
 BUS.on('journal', () => { if (!deducing) setTimeout(deduce, 60); });
 async function deduce() {
@@ -12838,7 +12858,7 @@ async function deduce() {
   }
 }
 
-// ───────── after the blackout: the pearl's in Patch's hand, and Mrs. Hart is coming ─────────
+// ───────── after the blackout: the pearl's in Mei's hand, and Mrs. Hart is coming ─────────
 BUS.on('blackout:end', (p) => { if (p && p.got) afterPearl(); });
 async function afterPearl() {
   if (S.f.bells_coming) return;
@@ -12903,7 +12923,7 @@ async function newGame() {
   BUS.emit('intro:done');
   await locked();
 }
-// Patch, locked in. Her first lines, the case notes she starts with, then play.
+// Mei, locked in. Her first lines, the case notes she starts with, then play.
 async function locked() {
   if (!(QS.get('skipintro') || DEV && QS.get('skip'))) {
     await wait(0.6);
