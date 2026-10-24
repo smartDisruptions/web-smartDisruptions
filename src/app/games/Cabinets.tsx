@@ -43,8 +43,11 @@ export default function Cabinets({
   const platforms = Array.from(new Set(games.flatMap((g) => g.techStack.filter((t) => PLATFORMS.includes(t)))));
   // One filter rule per platform, generated from the data so a new platform
   // needs no CSS edit. Slugs are [a-z0-9-] only, so the selectors are safe.
+  // The ids and the radio group are scoped by titleId, so two rooms on one
+  // page (the archive and its Demo section) don't share a filter.
+  const id = (p: string) => `${titleId}-p-${slug(p)}`;
   const filterCss = platforms
-    .map((p) => `.arc-games:has(#arc-p-${slug(p)}:checked) .arc-grid>li:not([data-p~="${slug(p)}"]){display:none}`)
+    .map((p) => `.arc-games:has(#${id(p)}:checked) .arc-grid>li:not([data-p~="${slug(p)}"]){display:none}`)
     .join('');
 
   return (
@@ -54,15 +57,15 @@ export default function Cabinets({
         <h2 id={titleId} className="arc-h2 font-display">
           {title}
         </h2>
-        {platforms.length > 1 && (
+        {platforms.length > 1 && games.length > 1 && (
           <fieldset className="arc-filter">
             <legend className="sr-only">Show games built with</legend>
-            <input type="radio" name="arc-platform" id="arc-p-all" defaultChecked />
-            <label htmlFor="arc-p-all">All Worlds</label>
+            <input type="radio" name={`${titleId}-platform`} id={`${titleId}-p-all`} defaultChecked />
+            <label htmlFor={`${titleId}-p-all`}>All Worlds</label>
             {platforms.map((p) => (
               <span key={p} className="contents">
-                <input type="radio" name="arc-platform" id={`arc-p-${slug(p)}`} />
-                <label htmlFor={`arc-p-${slug(p)}`}>{p}</label>
+                <input type="radio" name={`${titleId}-platform`} id={id(p)} />
+                <label htmlFor={id(p)}>{p}</label>
               </span>
             ))}
           </fieldset>

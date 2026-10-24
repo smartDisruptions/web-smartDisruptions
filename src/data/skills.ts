@@ -1,4 +1,4 @@
-import { apps, GAME_SLUGS } from './apps';
+import { apps, ARCADE_DEMO_SLUGS, GAME_SLUGS } from './apps';
 import { builtHref } from './projects';
 import { marketStormReports } from './marketStorm';
 
@@ -533,7 +533,8 @@ export function skillTotals() {
   const evidence = allSkills.flatMap(evidenceFor);
   return {
     skills: allSkills.length,
-    apps: apps.length,
+    // Demos (the archive's Demo section) aren't counted as things built.
+    apps: apps.filter((a) => !ARCADE_DEMO_SLUGS.includes(a.slug)).length,
     games: ARCADE.size,
     receipts: new Set(evidence.map((e) => e.href)).size,
   };

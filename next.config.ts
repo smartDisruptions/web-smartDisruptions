@@ -106,6 +106,11 @@ const nextConfig: NextConfig = {
           source: '/demo/portfolio-ledger',
           destination: '/demo/portfolio-ledger/index.html',
         },
+        // The archive's Demo section: Tether Ball, one file.
+        {
+          source: '/games/tether-ball',
+          destination: '/games/tether-ball/index.html',
+        },
         // Gilt & Lather Barber Co.: a website for a barbershop that does not
         // exist, one of the Samples on /build-websites. Built in the vault
         // (Tools/gilt-and-lather) with --base=/demo/gilt-and-lather/, so its
