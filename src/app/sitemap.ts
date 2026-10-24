@@ -60,6 +60,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
+      url: `${BASE}/games/moondrift`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
       url: `${BASE}/demo/portfolio-ledger`,
       changeFrequency: 'monthly',
       priority: 0.4,
