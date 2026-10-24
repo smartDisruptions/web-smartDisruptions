@@ -513,7 +513,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 
 /* ───────────── story mode (overworld.js): the school on the canvas, and over it the bar, the Talk button, the lines, the cards ─────────────
    While you walk (body.st-on) the court's HUD and its round layer are gone. The touch layer under everything takes the drags and taps;
-   the lines box over it takes a tap to move on. Over the court (.over: Jackson's mid-series scene) only the lines show. */
+   the lines box over it takes a tap to move on. Over the court (.over: Yuji's mid-series scene) only the lines show. */
 body.st-on #hud, body.st-on #result { display: none; }
 #story { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .st-touch { position: absolute; inset: 0; pointer-events: auto; touch-action: none; cursor: pointer; }
@@ -840,7 +840,7 @@ const CFG_SCHEMA = [];
 const CFG_ALIAS = {};
 // Settings borrowed for a while, by path, with the value they go back to: a story match plays You against its opponent, first to
 // its length (main.js). A snapshot (Copy, and the save) carries the value to go back to, so settings copied or saved mid-match are
-// still the player's own (Josh's of 2026-10-18 were copied in Jackson's series, and had him as the opponent, first to four)
+// still the player's own (Josh's of 2026-10-18 were copied in Yuji's series, and had him as the opponent, first to four)
 const CFG_HELD = {};
 
 // ---- helpers the panel and main.js use (pure) ----
@@ -11453,7 +11453,7 @@ function mystery(id) {
 
 // cast.js: every character in Josh's story "Tetherball: King of the Pole" (2026-10-16), the vault note
 // Projects/Tether Ball — King of the Pole. Kiru teaches at the school now; the kids are his students, ninjas in training with
-// bare faces, each in their special's colour. One look each (Jackson has two: the reveal). Nothing here adds plot: where a
+// bare faces, each in their special's colour. One look each (Yuji has two: the reveal). Nothing here adds plot: where a
 // detail is an idea rather than the script's, the note says "an idea, not canon".
 const GROUPS = [
   { key: 'friends', acc: SPECIAL.slip.mid, name: 'You and your friends', kana: '転校生となかま', eyebrow: 'First recess',
@@ -11461,7 +11461,7 @@ const GROUPS = [
   { key: 'challengers', acc: SPECIAL.swerve.mid, name: 'The challengers', kana: 'ちょうせんしゃ', eyebrow: 'Beginner Pole to Challenge Pole',
     intro: "Every kid the new kid plays on the way to the tournament, in the order you meet them, and Noah, who Big Ben is training. Each one wears their special's colour, the same colour the game draws it in." },
   { key: 'crew', acc: SPECIAL.dragon.mid, name: 'The former King and his crew', kana: '元キングと仲間', eyebrow: 'The Challenge Pole',
-    intro: "Jackson was champion before Rei beat him, and he has trained a whole year for a rematch. Tyler and Caleb go where he goes, and wear his crimson and gold on their sleeves." },
+    intro: "Yuji was champion before Rei beat him, and he has trained a whole year for a rematch. Tyler and Quan go where he goes, and wear his crimson and gold on their sleeves." },
   { key: 'champion', acc: SPECIAL.ray.outer, name: 'The Silent Champion', kana: 'しずかなチャンピオン', eyebrow: "The King's Pole",
     intro: "Three years undefeated, and she stopped playing. Her last year at the school, and one good tournament before she goes." },
   { key: 'grownups', acc: RED, name: 'The grown-ups', kana: '先生たち', eyebrow: 'The staff room',
@@ -11593,7 +11593,7 @@ CAST.push({
   key: 'akira', group: 'challengers', name: 'Akira', short: 'Akira', kana: 'アキラ', h: 0.86, special: 'zap',
   role: 'The rival · special: Zap', matches: 'Match 4 · 8 · 12 · 19',
   quote: "Talent's nice. Training wins.",
-  story: "He invites you to a match on day one and never stops chasing you: four matches, each one closer. First he's surprised, then interested, then sure he'll get you next time. He tells you not to underestimate Jackson, and wants to challenge whoever comes out the strongest.",
+  story: "He invites you to a match on day one and never stops chasing you: four matches, each one closer. First he's surprised, then interested, then sure he'll get you next time. He tells you not to underestimate Yuji, and wants to challenge whoever comes out the strongest.",
   looks: [{
     title: 'Training wins', sw: [SPECIAL.zap.outer, SPECIAL.zap.mid, INK, HAIRS.black[1]],
     note: "Spiky black hair under a yellow cloth headband, an electric-blue gi with yellow trim, taped knuckles and a fixed, narrow stare. The bolt leaps off his front hand. He is the one kid whose kit looks used.",
@@ -11608,7 +11608,7 @@ CAST.push({
 });
 
 CAST.push({
-  key: 'felix', group: 'challengers', name: 'Felix', short: 'Felix', kana: 'フェリックス', h: 0.82, special: 'phantom',
+  key: 'felix', group: 'challengers', name: 'Shin', short: 'Shin', kana: 'シン', h: 0.82, special: 'phantom',
   role: 'Special: Phantom', matches: 'Match 5 · Match 15',
   quote: 'You rely on that weird move, huh?',
   story: "Sure your special carries you, and not shy about saying so, even after losing the whole match. In the rematch you ask if he's still using Phantom, and he has to admit that's fair.",
@@ -11734,9 +11734,9 @@ CAST.push({
 });
 
 // ───────────── The former King and his crew ─────────────
-const CREW = ['#a3122a', '#e8b850'];   // Jackson's crimson and gold, worn on Tyler's and Caleb's sleeves
+const CREW = ['#a3122a', '#e8b850'];   // Yuji's crimson and gold, worn on Tyler's and Quan's sleeves
 CAST.push({
-  key: 'jackson', group: 'crew', name: 'Jackson', short: 'Jackson', kana: 'ジャクソン', h: 0.90, special: 'dragon',
+  key: 'jackson', group: 'crew', name: 'Yuji', short: 'Yuji', kana: 'ユウジ', h: 0.90, special: 'dragon',
   role: 'The Fallen King · special: Double Dragon', matches: 'Match 20 (best of seven)',
   quote: "I don't want you to call me champion. I want to beat you.",
   story: "Champion before Rei beat him, and he has wanted a rematch ever since. He trained all year, finished the Dragon Trials that nobody ever finished, and told nobody. Halfway through the final series he takes off his upper kimono, and the Sign of the Dragon is across his back.",
@@ -11777,9 +11777,9 @@ CAST.push({
 
 CAST.push({
   key: 'tyler', group: 'crew', name: 'Tyler', short: 'Tyler', kana: 'タイラー', h: 0.86, special: 'blast',
-  role: "Jackson's crew · special: Blast", matches: 'Match 9',
+  role: "Yuji's crew · special: Blast", matches: 'Match 9',
   quote: 'Cheap special. Doesn\'t count.',
-  story: "The loud one in Jackson's crew: nobody's touching Jackson this year, the Invisible Spin sounds made up, and the Dragon Trials are fake. He's really bad at losing, and he's on Jackson's side to the end.",
+  story: "The loud one in Yuji's crew: nobody's touching Yuji this year, the Invisible Spin sounds made up, and the Dragon Trials are fake. He's really bad at losing, and he's on Yuji's side to the end.",
   looks: [{
     title: 'All hype', sw: [SPECIAL.blast.mid, SPECIAL.blast.outer, HAIRS.ginger[1], CREW[0]],
     note: "Spiky ginger hair, freckles and a mouth that's always open. A sleeveless flame-orange training vest over a black shirt, and the crew's crimson-and-gold band on his arm. The Blast's fire licks up behind him.",
@@ -11797,10 +11797,10 @@ CAST.push({
 });
 
 CAST.push({
-  key: 'caleb', group: 'crew', name: 'Caleb', short: 'Caleb', kana: 'ケイレブ', h: 0.84, special: 'spike',
-  role: "Jackson's crew · special: Spike", matches: 'Match 11',
+  key: 'caleb', group: 'crew', name: 'Quan', short: 'Quan', kana: 'クアン', h: 0.84, special: 'spike',
+  role: "Yuji's crew · special: Spike", matches: 'Match 11',
   quote: "No, Tyler. He beat me.",
-  story: "The quiet one in Jackson's crew. He thinks Tyler talks too much, says you earned your win, and when Jackson loses he tells Tyler whose side he's on: the truth's.",
+  story: "The quiet one in Yuji's crew. He thinks Tyler talks too much, says you earned your win, and when Yuji loses he tells Tyler whose side he's on: the truth's.",
   looks: [{
     title: 'The truth\'s', sw: [SPECIAL.spike.outer, SPECIAL.spike.mid, CREW[1], HAIRS.black[1]],
     note: "A deep red track jacket zipped to the chin, a neat short crop and a level, steady face. He wears the crew's crimson-and-gold armband like Tyler, but quietly. The Spike's red streak dives past him.",
@@ -13694,9 +13694,9 @@ const ROSTER = [
   { key: 'akira', name: 'Akira', short: 'Akira', role: 'The rival', cast: 'akira', special: RS.zap, sig: 'raijin', accent: '#ffe94d', idle: 'boxer',
     ai: { difficulty: 11, accuracy: 0.9, composure: 0.8, power: 1.5, reaction: 1.5, recovery: 0.8, speed: 2.2, jump: 1.8 }, moods: { fierce: 'shout', happy: 'smile', sad: 'flat' },
     lines: { hit: ['Training wins.', 'Again.'], smash: ["Talent's nice. Training wins."], whiff: ['Tch. Again.', 'Not yet.'], won: ['Training.', 'Closer.'],
-      lost: ['Interesting.', 'Next time.'], matchWon: ['Training wins.', 'Told you.'], matchLost: ["I'll get you next time.", "Don't underestimate Jackson."],
+      lost: ['Interesting.', 'Next time.'], matchWon: ['Training wins.', 'Told you.'], matchLost: ["I'll get you next time.", "Don't underestimate Yuji."],
       serve: ["Let's go.", 'Ready?'], special: ['Zap.', 'Lightning.'] } },
-  { key: 'felix', name: 'Felix', short: 'Felix', role: 'Calls it a weird move', cast: 'felix', special: RS.phantom, sig: 'raijin', accent: '#b9a6ff', idle: 'slouch',
+  { key: 'felix', name: 'Shin', short: 'Shin', role: 'Calls it a weird move', cast: 'felix', special: RS.phantom, sig: 'raijin', accent: '#b9a6ff', idle: 'slouch',
     ai: { difficulty: 6, accuracy: 0.8, composure: 1.2, power: 1.1, reaction: 2.5, recovery: 1, speed: 2, jump: 1.7 }, moods: { fierce: 'flat', happy: 'smirk', sad: 'frown' },
     lines: { hit: ['Weird move, huh?', 'Ghosted.'], smash: ['Where did it go?'], whiff: ["Didn't want that one."], won: ['You rely on that weird move.', 'Boo.'],
       lost: ['...Fair.', "Okay, that's fair."], matchWon: ['Where did it go?', 'Now you see it.'], matchLost: ["Yeah. That's fair.", 'Still a weird move.'],
@@ -13722,17 +13722,17 @@ const ROSTER = [
     lines: { hit: ['Too late.', 'Careless.'], smash: ['Too late.'], whiff: ['...'], won: ['Fame makes people careless.', 'Careless.'],
       lost: ['Enjoy it while you can.', 'Hm.'], matchWon: ['Fame makes people careless.', 'Too late.'], matchLost: ['Enjoy the win while you can.', 'Hm. Not careless.'],
       serve: ['Show me.', 'Ready.'], special: ['Shadow Cut.', 'Too late.'] } },
-  { key: 'jackson', name: 'Jackson', short: 'Jackson', role: 'The Former King', cast: 'jackson', special: RS.dragon, sig: 'raijin', accent: '#ff8a1c', idle: 'regal', reveal: 1,
+  { key: 'jackson', name: 'Yuji', short: 'Yuji', role: 'The Former King', cast: 'jackson', special: RS.dragon, sig: 'raijin', accent: '#ff8a1c', idle: 'regal', reveal: 1,
     ai: { difficulty: 7, accuracy: 0.85, composure: 0.8, power: 1.7, reaction: 1.5, recovery: 0.8, speed: 2.1, jump: 1.7 }, moods: { fierce: 'snarl', happy: 'smirk', sad: 'flat' },
     lines: { hit: ["Don't call me champion.", 'Again.'], smash: ['A whole year of training.', 'Feel that?'], whiff: ['Tch.', 'Again.'], won: ['I want to beat you.', "That's one."],
       lost: ['Good. Make it hard.', 'Again.'], matchWon: ['The Former King is back.', 'Remember that.'], matchLost: ['...Good match.', 'Next year.'],
       serve: ["Let's settle it.", 'Best of seven.'], special: ['The Sign of the Dragon.', 'Double Dragon.'] } },
-  { key: 'tyler', name: 'Tyler', short: 'Tyler', role: "Jackson's crew, loud", cast: 'tyler', special: RS.blast, sig: 'raijin', accent: '#ff9a1f', idle: 'bounce',
+  { key: 'tyler', name: 'Tyler', short: 'Tyler', role: "Yuji's crew, loud", cast: 'tyler', special: RS.blast, sig: 'raijin', accent: '#ff9a1f', idle: 'bounce',
     ai: { difficulty: 6, accuracy: 0.7, composure: 1.6, power: 1.7, reaction: 2.5, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'shout', happy: 'shout', sad: 'shout' },
-    lines: { hit: ["Nobody's touching Jackson!", 'Ha!'], smash: ['BOOM!', 'Too hot for you!'], whiff: ["That doesn't count!", 'Cheap!'], won: ["Cheap special! Mine's better!", 'Ha!'],
+    lines: { hit: ["Nobody's touching Yuji!", 'Ha!'], smash: ['BOOM!', 'Too hot for you!'], whiff: ["That doesn't count!", 'Cheap!'], won: ["Cheap special! Mine's better!", 'Ha!'],
       lost: ["Cheap special. Doesn't count.", "That's not fair!"], matchWon: ['Told you!', 'Nobody touches us!'], matchLost: ["Cheap special. Doesn't count.", 'Rematch! Rematch!'],
       serve: ['Ready to lose?', 'Here comes the heat!'], special: ['POWER UP!', 'Blast!'] } },
-  { key: 'caleb', name: 'Caleb', short: 'Caleb', role: "Jackson's crew, quiet", cast: 'caleb', special: RS.spike, sig: 'raijin', accent: '#ff4b6e', idle: 'still',
+  { key: 'caleb', name: 'Quan', short: 'Quan', role: "Yuji's crew, quiet", cast: 'caleb', special: RS.spike, sig: 'raijin', accent: '#ff4b6e', idle: 'still',
     ai: { difficulty: 6, accuracy: 0.8, composure: 0.6, power: 1.4, reaction: 2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
     lines: { hit: ['Clean.', 'Okay.'], smash: ['Spike.'], whiff: ['My fault.'], won: ['Fair point.', 'Earned it.'], lost: ['You earned that.', 'Fair.'],
       matchWon: ['Good match.', 'Earned it.'], matchLost: ['No, Tyler. That was fair.', 'You earned it.'], serve: ['Ready?', "Let's play."], special: ['Spike.', 'Heads up.'] } },
@@ -13772,9 +13772,9 @@ for (const e of ROSTER) {
 // The 22 matches of "King of the Pole" in the order the script plays them (the vault note): who you face, the special they throw
 // in that match (Milo has none until the epilogue, where his Black Hole is the reveal), the level they play it at, and (ai) any
 // of the brain's settings that meeting plays differently. The levels are Josh's (2026-10-18), after playing it: chapter 1 at
-// 4–5, chapter 2 at 5–7, chapter 3 at 6–7, the tournament at 7–9, Jackson and Rei at 7 and 8, and Milo's one more game at 10
+// 4–5, chapter 2 at 5–7, chapter 3 at 6–7, the tournament at 7–9, Yuji and Rei at 7 and 8, and Milo's one more game at 10
 // (they rose from 4 to Rei's 18 before). Each character met once already plays at their match's level. He tuned the arcade's
-// opponents again on 2026-10-24 (tests/josh-2026-10-24.json): chapter 3 down to 5–6 (Tyler 6, Mei 5, Caleb 6, and Mei slower to
+// opponents again on 2026-10-24 (tests/josh-2026-10-24.json): chapter 3 down to 5–6 (Tyler 6, Mei 5, Quan 6, and Mei slower to
 // read and reach the ball), Emma's second meeting 7, and Ben's and Harper's first meetings aiming worse (0.7, 0.75).
 const STORY = [
   { key: 'milo', special: RS.sig, level: 5 }, { key: 'emma', special: RS.swerve, level: 4 }, { key: 'marcus', special: RS.decoys, level: 5 }, // chapter 1
@@ -14150,7 +14150,7 @@ function castLook(draw, accent, faces) {
     tails() {},
   };
 }
-// the look a character wears in a form (Jackson's 1 is his reveal), built the first time it is needed
+// the look a character wears in a form (Yuji's 1 is his reveal), built the first time it is needed
 function rosterLookOf(e, form) {
   if (e.native === 'kiru') return KIRU_LOOK;
   if (e.native === 'kage') return KAGE_LOOK;
@@ -14200,7 +14200,7 @@ function rosterLook(side) {
   return S.look;
 }
 // Put on each side whoever plays it (and the form they are in). Returns true when who plays a side has changed since last time
-// (main.js starts a new match on it); a new form (Jackson's reveal) changes the look and nothing else.
+// (main.js starts a new match on it); a new form (Yuji's reveal) changes the look and nothing else.
 let lastPick = '';
 function rosterSync() {
   const yo = rosterEntry('you'), op = rosterEntry('opp');
@@ -14215,7 +14215,7 @@ function rosterSync() {
   }
   return changed;
 }
-// Jackson's reveal: the first Double Dragon he throws in a match, the kimono comes off for the rest of it (the script's Match 20)
+// Yuji's reveal: the first Double Dragon he throws in a match, the kimono comes off for the rest of it (the script's Match 20)
 const rosterForm = { you: 0, opp: 0 };
 function rosterReveal(owner) {
   const side = owner === 'kage' || owner === 'cpu' ? 'opp' : 'you', e = rosterEntry(side);
@@ -14246,7 +14246,7 @@ function rosterIdleOf(e, P, t) {
       P.lax = 76; P.rax = 124; P.lknee = 8; P.rknee = 8; P.tilt += 0.035 * s(t * 3.1);
       break;
     }
-    case 'slouch': // Felix: hands stuffed in his hoodie pocket, head down, leaning
+    case 'slouch': // Shin: hands stuffed in his hoodie pocket, head down, leaning
       P.fx = 86; P.fy = 184; P.fBend = 8; P.bx = 114; P.by = 184; P.bBend = -8; P.headDy += 4; P.headTilt += 0.07; P.tilt += 0.05; P.lax = 90; P.rax = 116;
       break;
     case 'big': { // Big Ben: slow, heavy breaths, planted wide
@@ -14265,13 +14265,13 @@ function rosterIdleOf(e, P, t) {
     case 'cross': // Harper, Adaeze: arms crossed, weight on one leg, not here to chat
       P.fx = 116; P.fy = 166; P.fBend = 14; P.bx = 134; P.by = 170; P.bBend = -4; P.lax = 82; P.rax = 121; P.rrot = 0.12; P.tilt += 0.025; P.headTilt -= 0.05;
       break;
-    case 'regal': // Jackson: fists closed at his sides, chest out, chin up
+    case 'regal': // Yuji: fists closed at his sides, chest out, chin up
       P.fx = 54; P.fy = 191; P.fBend = 5; P.bx = 147; P.by = 198; P.bBend = -5; P.sqy *= 1.015; P.headTilt -= 0.06; P.headDy -= 1.5; P.lax = 80; P.rax = 120;
       break;
     case 'calm': // Rei: one hand behind her back, for the legend that she never uses her dominant hand
       P.bx = 124; P.by = 188; P.bBend = -6; P.fx = 52; P.fy = 188; P.sqy = 1 + s(t * 1.1) * 0.008; P.headTilt += 0.035; P.headDy *= 0.5;
       break;
-    case 'still': // Emma, Caleb: measured, barely moving
+    case 'still': // Emma, Quan: measured, barely moving
       P.fx = 56; P.fy = 187; P.headTilt *= 0.3; P.headDy *= 0.3; P.sqy = 1 + (P.sqy - 1) * 0.4; P.sqx = 1 + (P.sqx - 1) * 0.4;
       break;
     case 'tilt': // Mei: watching you, her head on one side
@@ -14332,7 +14332,7 @@ function rosterPortrait(e, crop) {
 // 2026-10-22). A raised fist is bowed at the elbow (FIST_UP), a point goes down at the one they beat, and an arm only passes
 // through level in a swing or a punch, never stays there.
 // No hand goes behind the body either (Josh, 2026-10-23: Akira's cross went behind his back). The back arm is drawn behind the
-// torso and head, so when it reaches across the body (Akira's cross, Harper's folded arms, Felix's pocket) the pose sets bFront
+// torso and head, so when it reaches across the body (Akira's cross, Harper's folded arms, Shin's pocket) the pose sets bFront
 // and the rig draws it in front, under the front arm. The one hand left out of sight is Rei's, behind her back on purpose: the
 // story's legend that she never uses her dominant hand.
 const VICTORY = (() => {
@@ -14404,7 +14404,7 @@ const VICTORY = (() => {
       },
       up: (u) => 0.03 * ab(s(u * 7)),
     },
-    // Felix, who calls it a weird move: hands still in his hoodie pocket, a big shrug, then leaning back with one palm up: "eh"
+    // Shin, who calls it a weird move: hands still in his hoodie pocket, a big shrug, then leaning back with one palm up: "eh"
     felix: {
       pose(P, u, rt) {
         const q = u % 2.6, sh = pulse(q, 0.1, 0.9), eh = ease((q - 1.1) / 0.3) * (1 - ease((q - 2.3) / 0.3));
@@ -14467,7 +14467,7 @@ const VICTORY = (() => {
       },
       up: () => 0,
     },
-    // Jackson, the former king: fists closed at his sides, chest out, chin up, the dragon's fire still on him; a slow fist to his chest
+    // Yuji, the former king: fists closed at his sides, chest out, chin up, the dragon's fire still on him; a slow fist to his chest
     jackson: {
       hold: true,
       pose(P, u, rt) {
@@ -14478,7 +14478,7 @@ const VICTORY = (() => {
       },
       up: () => 0,
     },
-    // Tyler, Jackson's crew and loud: jumping up and down, both fists pumping in turn over his head, shouting it
+    // Tyler, Yuji's crew and loud: jumping up and down, both fists pumping in turn over his head, shouting it
     tyler: {
       pose(P, u, rt) {
         const a = s(u * TAU * 2.2), fu = Math.max(0, a), bu = Math.max(0, -a);
@@ -14489,7 +14489,7 @@ const VICTORY = (() => {
       },
       up: (u) => 0.2 * ab(s(u * Math.PI * 2.2)),
     },
-    // Caleb, Jackson's crew and quiet: down in a fighter's guard, the front fist up by his chin with the elbow down, the back one
+    // Quan, Yuji's crew and quiet: down in a fighter's guard, the front fist up by his chin with the elbow down, the back one
     // cocked at his hip, the power building in him and staying; a single nod
     caleb: {
       hold: true,
@@ -14548,9 +14548,9 @@ function victoryPose(V, P, u, rt, blend) {
 // The ladder is everyone you face in King of the Pole (roster.js STORY), each once, in the story's order, up to its final: Rei,
 // match 21 (ARCADE_FINAL). Milo's one more game, the epilogue (match 22), comes after The End, so it isn't on it. Someone met more
 // than once is there as you last meet them, their strongest, at that meeting's place and phase: Akira is his fourth, match 19.
-// So it runs Milo (match 1, his first and only meeting before the end), Tyler, Mei, Caleb, Marcus, Emma, Felix, Ben, Adaeze,
-// Harper, Akira, Jackson, Rei. A level changed in the dev settings changes how they play, never where they are.
-// Whoever you play as is left off it. Jackson and Rei can't be picked to play as: they are opponents only (ARCADE_NOT).
+// So it runs Milo (match 1, his first and only meeting before the end), Tyler, Mei, Quan, Marcus, Emma, Shin, Ben, Adaeze,
+// Harper, Akira, Yuji, Rei. A level changed in the dev settings changes how they play, never where they are.
+// Whoever you play as is left off it. Yuji and Rei can't be picked to play as: they are opponents only (ARCADE_NOT).
 //
 // main.js plays it (AR): each stage is a match against the next one on the ladder, at that phase, first to arcade.rounds, after
 // the versus intro (menu.js versus). Win and the next stage's intro plays; beat the last and the arcade is cleared; lose and you
@@ -14567,7 +14567,7 @@ CFG_SCHEMA.push(
 );
 
 const ARCADE_NOT = { jackson: 1, rei: 1 }; // the arcade's last opponents: nobody plays as them in it
-// who may be picked to play the arcade as: anyone who plays (roster.js rosterPlays), but Jackson and Rei
+// who may be picked to play the arcade as: anyone who plays (roster.js rosterPlays), but Yuji and Rei
 const arcadePlays = (e) => !!e && rosterPlays(e) && !ARCADE_NOT[e.key];
 
 const ARCADE_FINAL = STORY.length - 1; // the story's final, Rei's (its match number): the epilogue after it isn't on the ladder
@@ -15551,7 +15551,7 @@ function createUI(root, opts) {
 //   home    the Story (story mode, overworld.js: start it, or continue where you left it, or start again), who plays whom in Play,
 //           Play, Arcade, Create your character, Dev settings (the Feel panel, over the menu), the mode (versus or the time trial)
 //           and Graphics. (Josh, 2026-10-22: the Characters button and its screen are gone, and the Arcade is where you pick.)
-//   arcade  the arcade's character select (arcade.js): everyone who plays but Jackson and Rei, and the ladder you'd climb as the
+//   arcade  the arcade's character select (arcade.js): everyone who plays but Yuji and Rei, and the ladder you'd climb as the
 //           one picked, in the story's order. Start plays it (main.js AR).
 //   make    the character creator: you are the new kid, and nobody draws you but you. Skin, hair and its colour, eyes, mouth, the
 //           gi, the belt, the trainers, extras and a name, drawn live by the cast sheet's own kit (roster.js youDraw). Saved on this
@@ -15695,12 +15695,12 @@ function createMenu(doc, opts) {
   function arcade() {
     const s = el('div', 'm-scr m-pick m-arc');
     s.appendChild(bar('Arcade', () => show('home')));
-    s.appendChild(el('p', 'm-lead', 'Pick who you play as. Then beat everyone from the story, one match each, in the order you meet them, up to Jackson and Rei.'));
+    s.appendChild(el('p', 'm-lead', 'Pick who you play as. Then beat everyone from the story, one match each, in the order you meet them, up to Yuji and Rei.'));
     const grid = el('div', 'm-grid');
     grid.setAttribute('role', 'list'); grid.setAttribute('aria-label', 'Play the arcade as');
     for (let i = 0; i < ROSTER.length; i++) {
       const e = ROSTER[i];
-      if (!arcadePlays(e)) continue; // in the story only, Jackson and Rei (the arcade's last), and Kiru and Kage in the prod version
+      if (!arcadePlays(e)) continue; // in the story only, Yuji and Rei (the arcade's last), and Kiru and Kage in the prod version
       const c = card(i, e);
       c.addEventListener('click', () => { CFG.roster.you = i; changed(); paint(); });
       if (e.key === 'you') { const ed = btn('m-edit', 'Edit', (ev) => { ev.stopPropagation(); makeFrom = 'arcade'; show('make'); }); ed.setAttribute('aria-label', 'Edit your character'); c.appendChild(ed); }
@@ -16083,7 +16083,7 @@ function createMenu(doc, opts) {
 // Story mode (overworld.js, story.js, school.js) draws the school on this same canvas while you walk it: the court waits, and its
 // HUD is hidden. A match the story starts (SM) is played here: who plays each side, the opponent's phase (their meeting in the
 // story), the rounds and their lines are set for it and put back after, the round's end says Continue once the match is over, and
-// the result goes back to the story. Jackson's series (match 20) holds his specials back until the first game you win in it: then
+// the result goes back to the story. Yuji's series (match 20) holds his specials back until the first game you win in it: then
 // the Sign of the Dragon plays over the court, his kimono comes off, and Double Dragon is his for the rest of it.
 //
 // The music follows where you are (story.js CFG.placeMusic, the Feel panel's Music by place): the start menu's, each place's in the
@@ -16286,7 +16286,7 @@ function createMenu(doc, opts) {
   }
   // a new match (or a new solo round)
   function resetAll() {
-    rosterNewMatch(); // a new match: Jackson's kimono back on
+    rosterNewMatch(); // a new match: Yuji's kimono back on
     if (SM) storySeries();
     pickRules();
     pickSide();
@@ -16371,7 +16371,7 @@ function createMenu(doc, opts) {
 
   // ---- a story match (overworld.js asks for it, and hears how it went) ----
   // SM: { n (its number in the story), friendly (free play, after the end), M (story.js STORY_MATCH[n]), keep (the settings it
-  // changes, as they were), mid (Jackson's series: 1 until the Sign of the Dragon, then 2), slip (his "Figures Out Slip": 0, 1 due
+  // changes, as they were), mid (Yuji's series: 1 until the Sign of the Dragon, then 2), slip (his "Figures Out Slip": 0, 1 due
   // once he has returned a ball your Slip slipped off his hand, 2 played), cheer (the friends' lines now), saying (lines over the court) }
   let SM = null;
   const storyName = (key) => (key === 'you' ? youName() : ROSTER[ROSTER_BY[key]].name);
@@ -16390,18 +16390,18 @@ function createMenu(doc, opts) {
     rosterSync(); ui.names(oppName(), rosterAccent('opp')); ui.tuner.refresh();
     resetAll();
   }
-  // the series' own state, at its start and on a restart: Jackson's specials held back until the Sign of the Dragon, and the lines
+  // the series' own state, at its start and on a restart: Yuji's specials held back until the Sign of the Dragon, and the lines
   // the script gives the match
   function storySeries() {
     const M = SM.M;
     SM.mid = M.mid && !SM.friendly ? 1 : 0; SM.slip = SM.friendly ? 2 : 0; SM.slipped = false; SM.saying = false;
     CFG.energy.kage = SM.mid ? 0 : SM.keep.ek;
     ROSTER_QUIPS = M.quips || null; SM.cheer = M.cheer || null;
-    if (SM.friendly && M.mid) { rosterReveal('kage'); ROSTER_QUIPS = M.midQuips || ROSTER_QUIPS; SM.cheer = M.midCheer || SM.cheer; } // a friendly after the end: Jackson as he finished it
+    if (SM.friendly && M.mid) { rosterReveal('kage'); ROSTER_QUIPS = M.midQuips || ROSTER_QUIPS; SM.cheer = M.midCheer || SM.cheer; } // a friendly after the end: Yuji as he finished it
   }
-  // between two games of a story match, a scene that is due plays over the court before the next one. Jackson's series has two:
+  // between two games of a story match, a scene that is due plays over the court before the next one. Yuji's series has two:
   // the Sign of the Dragon after the first game you win (his kimono comes off as it starts, and Double Dragon is his from the next
-  // game on), and, once he has returned your Slip, "Jackson Figures Out Slip". False: nothing is due
+  // game on), and, once he has returned your Slip, "Yuji Figures Out Slip". False: nothing is due
   function storyBreak() {
     const M = SM.M, lines = [];
     const dragon = SM.mid === 1 && versus.snap.winner === 'you';
@@ -16460,7 +16460,7 @@ function createMenu(doc, opts) {
     const slip = vs() ? supers.intercept(k, hand, world) : ''; // a slip super: this touch slips off (or a warp, a beat after a slip: nothing can touch it)
     if (slip === 'slip') { onSlip(now); if (!you && CFG.supers.slip.again > 0) kage.onSlip(); } // he gets a reflex second swing, as your follow-through does
     const res = slip ? null : applyHit(world, hand);
-    if (SM && !you && SM.slip === 0 && SM.M.slip) { if (slip === 'slip') SM.slipped = true; else if (res && SM.slipped) SM.slip = 1; } // Jackson returned your Slip: his scene is due
+    if (SM && !you && SM.slip === 0 && SM.M.slip) { if (slip === 'slip') SM.slipped = true; else if (res && SM.slipped) SM.slip = 1; } // Yuji returned your Slip: his scene is due
     if (!res) {
       if (autoS) energy.arm('you', false);
       if (autoF) { fire.arm('you', false); energy.arm('you', false, true); }
@@ -16484,7 +16484,7 @@ function createMenu(doc, opts) {
       res.superKind = 0; res.swallowed = true;
     } else res.superKind = res.special && vs() ? supers.launch(k, world, bodies) : 0; // which super it was (0: the signature, Raijin or Shadow cut)
     if (res.superKind >= 11 && res.superKind <= 13) legends.cast(k, res.superKind, world, bodies); // the big three: legends.js (a black hole here is its warp)
-    if (res.superKind === 11) rosterReveal(k); // Jackson's first Double Dragon of a match: the kimono comes off (roster.js)
+    if (res.superKind === 11) rosterReveal(k); // Yuji's first Double Dragon of a match: the kimono comes off (roster.js)
     if (res.superKind) {
       energy.dropCharge(); // the others carry no charge: what they do is the ball's
       const v = world.ball.v, s = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z); // a super may have turned the ball as it left the hand (a spike, at them): the burst points where it went
