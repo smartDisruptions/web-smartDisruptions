@@ -13713,7 +13713,7 @@ const ROSTER = [
       lost: ['You learn quickly.', 'Not bad.'], matchWon: ["Don't take that as friendship.", 'Just play.'], matchLost: ['You learn quickly.', 'Not friendship. Respect.'],
       serve: ['Just play.', "Let's go."], special: ['Whirlwind.', 'Hold onto something.'] } },
   { key: 'mei', name: 'Mei', short: 'Mei', role: 'Reads people', cast: 'mei', special: RS.warp, sig: 'raijin', accent: '#2ef2ff', idle: 'tilt',
-    ai: { difficulty: 7, accuracy: 0.9, composure: 0.5, power: 1.1, reaction: 1.2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
+    ai: { difficulty: 5, accuracy: 0.8, composure: 0.5, power: 1.1, reaction: 1.35, recovery: 1.05, speed: 1.95, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
     lines: { hit: ["You're hard to read.", 'Hm.'], smash: ['Wait for it.'], whiff: ['...Interesting.'], won: ['Read you.', 'Wait for it.'],
       lost: ["You're hard to read.", 'Hm.'], matchWon: ['Wait for it.', 'I read you.'], matchLost: ["You're going to drive everybody crazy.", "Can't read you."],
       serve: ['Wait for it.', 'Ready?'], special: ['Wait for it.', 'Blink.'] } },
@@ -13728,12 +13728,12 @@ const ROSTER = [
       lost: ['Good. Make it hard.', 'Again.'], matchWon: ['The Former King is back.', 'Remember that.'], matchLost: ['...Good match.', 'Next year.'],
       serve: ["Let's settle it.", 'Best of seven.'], special: ['The Sign of the Dragon.', 'Double Dragon.'] } },
   { key: 'tyler', name: 'Tyler', short: 'Tyler', role: "Jackson's crew, loud", cast: 'tyler', special: RS.blast, sig: 'raijin', accent: '#ff9a1f', idle: 'bounce',
-    ai: { difficulty: 7, accuracy: 0.6, composure: 1.6, power: 1.7, reaction: 2.5, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'shout', happy: 'shout', sad: 'shout' },
+    ai: { difficulty: 6, accuracy: 0.7, composure: 1.6, power: 1.7, reaction: 2.5, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'shout', happy: 'shout', sad: 'shout' },
     lines: { hit: ["Nobody's touching Jackson!", 'Ha!'], smash: ['BOOM!', 'Too hot for you!'], whiff: ["That doesn't count!", 'Cheap!'], won: ["Cheap special! Mine's better!", 'Ha!'],
       lost: ["Cheap special. Doesn't count.", "That's not fair!"], matchWon: ['Told you!', 'Nobody touches us!'], matchLost: ["Cheap special. Doesn't count.", 'Rematch! Rematch!'],
       serve: ['Ready to lose?', 'Here comes the heat!'], special: ['POWER UP!', 'Blast!'] } },
   { key: 'caleb', name: 'Caleb', short: 'Caleb', role: "Jackson's crew, quiet", cast: 'caleb', special: RS.spike, sig: 'raijin', accent: '#ff4b6e', idle: 'still',
-    ai: { difficulty: 7, accuracy: 0.9, composure: 0.6, power: 1.4, reaction: 2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
+    ai: { difficulty: 6, accuracy: 0.8, composure: 0.6, power: 1.4, reaction: 2, recovery: 1, speed: 2, jump: 1.6 }, moods: { fierce: 'flat', happy: 'soft', sad: 'flat' },
     lines: { hit: ['Clean.', 'Okay.'], smash: ['Spike.'], whiff: ['My fault.'], won: ['Fair point.', 'Earned it.'], lost: ['You earned that.', 'Fair.'],
       matchWon: ['Good match.', 'Earned it.'], matchLost: ['No, Tyler. That was fair.', 'You earned it.'], serve: ['Ready?', "Let's play."], special: ['Spike.', 'Heads up.'] } },
   { key: 'rei', name: 'Rei', short: 'Rei', role: 'The Silent Champion', cast: 'rei', special: RS.ray, sig: 'raijin', accent: '#ffe066', idle: 'calm',
@@ -13773,14 +13773,16 @@ for (const e of ROSTER) {
 // in that match (Milo has none until the epilogue, where his Black Hole is the reveal), the level they play it at, and (ai) any
 // of the brain's settings that meeting plays differently. The levels are Josh's (2026-10-18), after playing it: chapter 1 at
 // 4–5, chapter 2 at 5–7, chapter 3 at 6–7, the tournament at 7–9, Jackson and Rei at 7 and 8, and Milo's one more game at 10
-// (they rose from 4 to Rei's 18 before). Each character met once already plays at their match's level.
+// (they rose from 4 to Rei's 18 before). Each character met once already plays at their match's level. He tuned the arcade's
+// opponents again on 2026-10-24 (tests/josh-2026-10-24.json): chapter 3 down to 5–6 (Tyler 6, Mei 5, Caleb 6, and Mei slower to
+// read and reach the ball), Emma's second meeting 7, and Ben's and Harper's first meetings aiming worse (0.7, 0.75).
 const STORY = [
   { key: 'milo', special: RS.sig, level: 5 }, { key: 'emma', special: RS.swerve, level: 4 }, { key: 'marcus', special: RS.decoys, level: 5 }, // chapter 1
-  { key: 'akira', special: RS.zap, level: 5 }, { key: 'felix', special: RS.phantom, level: 6 }, { key: 'ben', special: RS.stomp, level: 7 }, // chapter 2
-  { key: 'harper', special: RS.wind, level: 6 }, { key: 'akira', special: RS.zap, level: 6 },
-  { key: 'tyler', special: RS.blast, level: 7 }, { key: 'mei', special: RS.warp, level: 7 }, { key: 'caleb', special: RS.spike, level: 7 }, // chapter 3
+  { key: 'akira', special: RS.zap, level: 5 }, { key: 'felix', special: RS.phantom, level: 6 }, { key: 'ben', special: RS.stomp, level: 7, ai: { accuracy: 0.7 } }, // chapter 2
+  { key: 'harper', special: RS.wind, level: 6, ai: { accuracy: 0.75 } }, { key: 'akira', special: RS.zap, level: 6 },
+  { key: 'tyler', special: RS.blast, level: 6 }, { key: 'mei', special: RS.warp, level: 5 }, { key: 'caleb', special: RS.spike, level: 6 }, // chapter 3
   { key: 'akira', special: RS.zap, level: 6 },
-  { key: 'marcus', special: RS.decoys, level: 8 }, { key: 'emma', special: RS.swerve, level: 8 }, { key: 'felix', special: RS.phantom, level: 9 }, // chapter 4
+  { key: 'marcus', special: RS.decoys, level: 8 }, { key: 'emma', special: RS.swerve, level: 7 }, { key: 'felix', special: RS.phantom, level: 9 }, // chapter 4
   { key: 'ben', special: RS.stomp, level: 8 }, { key: 'adaeze', special: RS.sig, level: 7 }, { key: 'harper', special: RS.wind, level: 8, ai: { accuracy: 0.8 } },
   { key: 'akira', special: RS.zap, level: 7 },
   { key: 'jackson', special: RS.dragon, level: 7 }, { key: 'rei', special: RS.ray, level: 8 }, // chapter 5
