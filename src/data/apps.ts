@@ -623,7 +623,7 @@ export const apps: App[] = [
     description:
       'Cosmo, the first kid on the Moon base, boards the dunes of a moon under a ringed giant planet. One button to jump and backflip, a flick for tricks, and glowing orbs to swing from over the gaps.',
     longDescription:
-      'Cosmo is the first kid on the Moon base, and the dunes are his playground. Board across a moon under a ringed giant planet: backflip off the crests, grind the cables between antenna masts, and swing over canyons on a line of light. Chain your tricks for a bigger score, but land them clean, because one bad landing ends the run.',
+      'Cosmo is the first kid on the Moon base, and the dunes are his playground. Board across a moon under a ringed giant planet: backflip off the crests, grind the cables between antenna masts, and swing over canyons on a line of light. Chain your tricks for a bigger score, but land them clean, because one bad landing ends the run. Every point goes into your bank, and the store sells skins for Cosmo, from cat ears to a board that costs 100 million. A combo multiplies by every trick in it, so long combos are how you afford the best ones.',
     thumbnailUrl: '/images/apps/moondrift-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/moondrift-1.webp',
@@ -638,6 +638,7 @@ export const apps: App[] = [
       'The track proves itself. Every chasm is sized from the game’s own physics when a run starts, and a solver that drives the real player code found no section it could not clear in 30,534 tries, while riding straight off the lip clears none of them.',
       'Six AI agents built it side by side on one written contract, each owning one part of the game: the track, the world, the sky, Cosmo, the gameplay and the screens.',
       'After the first play, the sound was rebuilt so a phone can keep up: about 44 synthesised voices at once instead of 90, with the same loudness.',
+      'A store of 48 skins, from 100,000 to 100,000,000 points: hats, jackets, shoes, boards and things to hold. Every one is built from code into Cosmo\u2019s own model, so none of them adds to the work of drawing a frame.',
     ],
     buildDate: '2026-10',
     hasFullBreakdown: false,
