@@ -200,7 +200,10 @@ kbd {
 #ui.live .gauge { animation: g-in .9s .3s both cubic-bezier(.2, 1, .3, 1); }
 #ui.live .status { animation: in-top .7s .5s both cubic-bezier(.2, 1, .3, 1); }
 @keyframes g-in { from { opacity: 0; scale: .7; } to { opacity: 1; scale: 1; } }
-@keyframes in-top { from { translate: -50% -14px; opacity: 0; } to { translate: -50% 0; opacity: 1; } }
+/* (the drop in moves transform, never translate: translate is the status line's place, -50% centred and
+   none upright, and an animation held at its end outranks it; holding -50% pinned the upright line half
+   off the screen, STAR MAP and all, on a real phone: Josh, 2026-10-24) */
+@keyframes in-top { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
 #ui.nohud :is(.hud, .status, .comm, .controls, .card, .chud) { display: none !important; }
 @keyframes ui-in { from { opacity: 0; } to { opacity: 1; } }
 
@@ -418,6 +421,7 @@ kbd {
 #ui.portrait .bossbar { top: calc(var(--sat) + var(--st) + .4em); width: min(46vw, 15em); }
 #ui.portrait .bb-ship { display: none; }
 @media (max-height: 430px) { .cbanner { top: 29%; } .bossbar { top: calc(var(--t) + 3.1em); } }
+@media (orientation: landscape) and (max-width: 720px) { .bossbar { top: calc(var(--t) + 6.7em); } } /* (under the status line's two tiers) */
 
 /* the status line: phase and clock above a hairline, the world (and a course) under it; the star map
    and pause buttons sit at its ends */
@@ -446,6 +450,14 @@ kbd {
    width of the screen: in one row, STAR MAP, a long phase and the clock ran off both sides at 390 px */
 #ui.portrait .status { left: calc(var(--sal) + var(--gap)); right: calc(var(--sar) + var(--gap)); translate: none; flex-wrap: wrap; justify-content: space-between; row-gap: .5em; }
 #ui.portrait .st-core { order: 1; flex-basis: 100%; }
+/* a narrow landscape screen (720 px or less: an iPhone SE, a 640 px Android in its browser): in one row the
+   status line ran into the corner gauges, STAR MAP over the speed and pause over the altitude. Two tiers
+   between the gauges, as upright: the buttons, then the phase and the world (the radio and the boss's bar
+   step down under it: .comm, .bossbar) */
+@media (orientation: landscape) and (max-width: 720px) {
+  .status { flex-wrap: wrap; justify-content: center; row-gap: .4em; max-width: calc(100vw - 2 * var(--gs) - 16px - var(--sal) - var(--sar)); }
+  .st-core { order: 1; flex-basis: 100%; }
+}
 .st-badge { display: none; position: absolute; top: -4px; right: -4px; width: 17px; height: 17px; border-radius: 50%; background: var(--sun); color: var(--ink); place-items: center; box-shadow: 0 0 8px rgba(255, 210, 61, .85); }
 .st-btn .st-badge svg { width: 11px; height: 11px; }
 #ui.touch .st-map.ready { border-color: var(--sun); color: var(--sun); background: rgba(48, 38, 8, .45); animation: map-ready 1.6s ease-in-out infinite alternate; }
@@ -547,9 +559,20 @@ kbd {
 @keyframes caret { 50% { opacity: 0; } }
 /* touch: the gauges own the top corners, so the radio sits between them */
 #ui.touch .comm { max-width: calc(100vw - 2 * var(--gs) - var(--sal) - var(--sar)); }
-#ui.portrait .comm { top: calc(var(--sat) + var(--st) + var(--gs) * .72); max-width: calc(100vw - 2 * var(--gap) - var(--sal) - var(--sar)); }
+/* (upright the radio sits between the gauges' arcs: a long line ran under the arc's end labels, ORBIT on the
+   right, so it stops short of them) */
+#ui.portrait .comm { top: calc(var(--sat) + var(--st) + var(--gs) * .72); max-width: calc(100vw - 2 * var(--gap) - var(--sal) - var(--sar) - .7 * var(--gs)); }
 #ui.bossup:not(.portrait) .comm { top: calc(var(--t) + 6.1em); }
 @media (max-height: 430px) { #ui.bossup:not(.portrait) .comm { top: calc(var(--t) + 5.5em); } }
+/* (a narrow landscape screen: the radio steps down under the status line's two tiers, so it starts after the
+   speed gauge and stops short of the smart button, the right thumb's column, which it reached centred) */
+@media (orientation: landscape) and (max-width: 720px) {
+  .comm { top: calc(var(--t) + 7em); left: calc(var(--sal) + var(--gs) + 8px); transform: translateY(-8px); }
+  .comm.on { transform: none; }
+  #ui.touch .comm { max-width: calc(100vw - var(--sal) - var(--gs) - 8px - var(--sar) - var(--bs) - 133px); }
+  #ui.bossup:not(.portrait) .comm { top: calc(var(--t) + 9.4em); }
+  .warpring { top: 68%; } /* (the warp's spool ring comes down clear of it) */
+}
 /* Kaida on an open channel: her own portrait, a crimson ring and name, a warmer shade under her words */
 .comm[data-who="kaida"]::before { background: radial-gradient(closest-side, rgba(36, 4, 16, .58), rgba(30, 4, 14, .26) 55%, rgba(5, 6, 15, 0)); }
 .comm[data-who="kaida"] .comm-name { color: #ff6b87; text-shadow: 0 0 .5em rgba(255, 59, 92, .6), 0 1px 2px rgba(5, 6, 15, .9); }
@@ -583,6 +606,10 @@ kbd {
 /* keyboard: a quiet key line at the bottom centre; it fades once the flight is under way */
 #ui.kbd .controls { inset: auto; left: 50%; bottom: var(--b); transform: translateX(-50%); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6em .8em; width: max-content; max-width: calc(100vw - 2 * var(--gs, 140px) - 2 * var(--gap)); }
 #ui.kbd .stick, #ui.kbd .stick-hint, #ui.kbd .boost-btn { display: none; }
+#ui.kbd .keylegend { flex-wrap: wrap; justify-content: center; row-gap: .45em; }
+/* (a narrow window at a keyboard: the key bar rises over the bottom gauges and takes the width; in one
+   line between them it ran over both readouts) */
+@media (max-width: 600px) { #ui.kbd .controls { bottom: calc(var(--sab) + var(--gs) + var(--gap)); max-width: calc(100vw - 2 * var(--gap) - var(--sal) - var(--sar)); } }
 .keylegend {
   display: flex; align-items: center; gap: .9em; font: 400 .58em/1 var(--f-display); letter-spacing: .16em; color: var(--frost);
   text-shadow: 0 0 1px rgba(5, 6, 15, .95), 0 1px 3px rgba(5, 6, 15, .8); white-space: nowrap; transition: opacity .8s;
@@ -725,6 +752,14 @@ kbd {
 /* (a short landscape screen: LOOK BACK comes down a little, clear of the top corner's gauge, and the smart
    button with it, level) */
 @media (orientation: landscape) and (max-height: 340px) { #ui.touch .act:not(.act-missile) { bottom: calc(var(--sab) + 16px + var(--bs) + 26px); } .back-btn { bottom: calc(var(--sab) + 16px + var(--bs) + 30px); } }
+/* (shorter still, under 316 px: a phone sideways in its browser, the toolbar and the status bar taking a
+   fifth of the height. The gauges and BOOST come down a size, so LOOK BACK, right above BOOST, keeps clear
+   of the corner's gauge; it touched it at 280 px) */
+@media (orientation: landscape) and (max-height: 315px) {
+  #ui { --gs: 100px; --bs: 76px; }
+  #ui.touch .act:not(.act-missile) { bottom: calc(var(--sab) + 16px + var(--bs) + 22px); }
+  .back-btn { bottom: calc(var(--sab) + 16px + var(--bs) + 26px); }
+}
 
 /* ───────────── star map: Cosmo's logbook (ui/starmap.js lays it out, ui/logbook.js draws the pages) ─────────────
    Units inside .lb-stage are the page's own (844 × 390 landscape, 390 × 844 portrait), scaled to the screen
