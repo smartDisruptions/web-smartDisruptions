@@ -710,13 +710,16 @@ kbd {
 .boost-btn.held .bst-lbl { color: var(--ink); text-shadow: none; }
 /* LOOK BACK (touch; Josh, 2026-10-24: "a button to switch the camera to look behind us … if we hold it the
    camera changes and if we release it, it turns back"): always there, right above BOOST, 44 px up, both
-   ways round (the smart button's place till he swapped them the same day). Quiet until it's held, then
-   lit in Cosmo's blue */
+   ways round (the smart button's place till he swapped them the same day). At rest a dark core inside a
+   full ring of Cosmo's blue; held, lit. (Upright, down on the ground the chase comes in close and the
+   button sits on the ship's right engine: its glow washed the first one, see-through and quiet, off the
+   screen, its icon 2:1 against what was behind it. Josh, 2026-10-25: "when I got to land, my look back
+   button disappeared". The core keeps it over 5:1 there: tests/lookback.mjs) */
 .back-btn {
   pointer-events: auto; position: absolute; right: calc(var(--sar) + 16px + var(--bs) / 2 - 28px); bottom: calc(var(--sab) + 16px + var(--bs) + 44px);
-  width: 56px; height: 56px; padding: 0; border-radius: 50%; border: 1.5px solid rgba(111, 182, 255, .6); color: #fff; touch-action: none;
-  display: grid; place-items: center; background: radial-gradient(120% 140% at 50% 0%, rgba(111, 182, 255, .14), rgba(13, 15, 34, .5));
-  box-shadow: 0 0 14px rgba(111, 182, 255, .22), inset 0 0 10px rgba(111, 182, 255, .18); transition: transform .1s, background .1s, box-shadow .1s, opacity .2s;
+  width: 56px; height: 56px; padding: 0; border-radius: 50%; border: 1.5px solid var(--sig); color: #fff; touch-action: none;
+  display: grid; place-items: center; background: radial-gradient(circle at 50% 30%, rgba(28, 33, 70, .8), rgba(13, 15, 34, .8) 75%);
+  box-shadow: 0 0 0 1px rgba(5, 6, 15, .5), 0 0 16px rgba(111, 182, 255, .35), inset 0 0 10px rgba(111, 182, 255, .3); transition: transform .1s, background .1s, box-shadow .1s, opacity .2s;
 }
 .bk-ico svg { width: 25px; height: 25px; display: block; color: var(--sig); filter: drop-shadow(0 1px 2px rgba(5, 6, 15, .8)); }
 .bk-lbl {
