@@ -99,8 +99,8 @@ export function GET() {
       t: 'About Josh',
       u: '/about-me',
       k: 'Page',
-      d: 'Who builds this, and how AI helps',
-      x: 'about me josh story path skills',
+      d: 'Who builds this, and how Claude helps',
+      x: 'about me josh claude card',
     },
     {
       t: 'Privacy',

@@ -9,9 +9,9 @@ import './next.css';
  * The card at the foot of each About page that opens the other one, drawn as
  * a small copy of the other page's header, so you can see where it goes:
  *
- *  - on /about (the work), "The person behind it": the shikishi board from
- *    About Me's hero, Josh's photo with 道 brushed beside it, and Kiru bowing
- *    you out;
+ *  - on /about (the work), "The person behind it": Josh's photo on a
+ *    shikishi board, with About Me's 私 brushed beside it and its 作 stamp as
+ *    the seal, and Kiru bowing you out;
  *  - on /about-me (the person), "See the work": the noren from /about, Kiru
  *    peeking through it. Hover it and the cloth parts.
  *
@@ -39,8 +39,8 @@ export default function AboutNext({ to }: { to: 'person' | 'work' }) {
                 className="au-next-photo"
               />
               <span className="au-next-brush">
-                <Kanji char="道" className="au-next-brush-k" />
-                <Seal char="学" className="au-next-brush-seal" />
+                <Kanji char="私" className="au-next-brush-k" />
+                <Seal char="作" className="au-next-brush-seal" />
               </span>
             </span>
           </span>
@@ -52,11 +52,10 @@ export default function AboutNext({ to }: { to: 'person' | 'work' }) {
           </span>
           <span className="au-next-body">
             <span className="au-next-p font-read">
-              Self-taught since 2008, and three years of daily work with LLMs.
-              Here&rsquo;s how I got here.
+              Self-taught since 2008, and I build with Claude every day.
             </span>
             <span className="au-next-go">
-              Read my story <IconArrowRight size={18} />
+              Meet me <IconArrowRight size={18} />
             </span>
           </span>
           <Kiru pose="bow" className="au-next-kiru" />

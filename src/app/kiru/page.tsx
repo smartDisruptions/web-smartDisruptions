@@ -106,15 +106,15 @@ const SPOTS: Spot[] = [
   },
   {
     pose: 'meditate',
-    where: 'About me',
-    caption: 'Waits at the top of the path.',
-    href: '/about-me#story',
+    where: 'Offline',
+    caption: 'Waits it out when your connection drops.',
+    href: '/offline',
   },
   {
     pose: 'run',
-    where: 'About me',
-    caption: 'Runs the path as you scroll it.',
-    href: '/about-me#story',
+    where: 'Every post',
+    caption: 'Runs along the top of the screen as you read.',
+    href: '/content',
   },
   {
     pose: 'shh',

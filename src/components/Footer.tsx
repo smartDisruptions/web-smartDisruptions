@@ -90,7 +90,7 @@ export default function Footer() {
         <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-xs text-[#8f95b8] sm:px-6">
             <span>
-              &copy; {new Date().getFullYear()} Smart Disruptions · Josh Escusa
+              &copy; {new Date().getFullYear()} Smart Disruptions · Josh
             </span>
             <span className="flex items-center gap-2">
               <span aria-hidden>Kiru keeps watch.</span>
