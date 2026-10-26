@@ -284,7 +284,10 @@ export default function ArmoryWall({
         </p>
         <p className="bt-wall-at" aria-hidden="true">
           <span data-wall-at>{String(front + 1).padStart(2, '0')}</span>
-          <span className="bt-wall-at-of"> / {String(n).padStart(2, '0')}</span>
+          <span className="bt-wall-at-of" data-wall-of>
+            {' '}
+            / {String(n).padStart(2, '0')}
+          </span>
         </p>
         <button
           type="button"

@@ -3,7 +3,6 @@ import AboutSwitch from '@/components/about/AboutSwitch';
 import AboutNext from '@/components/about/AboutNext';
 import WorkThreshold from '@/components/about/work/threshold/WorkThreshold';
 import WorkWall from '@/components/about/work/wall/WorkWall';
-import DojoMap from '@/components/home/DojoMap';
 import { GlyphSprite } from '@/components/about/work/glyphs';
 import ScrollPad from '@/components/about/work/ScrollPad';
 import { shareMeta } from '@/lib/shareCard';
@@ -37,9 +36,7 @@ export const metadata: Metadata = {
  *  2. everything on one wall (#wall), the ring, reading the same lists as
  *     the receipt (components/about/work/data.ts), so a count can't
  *     disagree with the plaques;
- *  3. the four rooms from the home page (components/home/DojoMap), the
- *     doors on to the Build rooms and the Arcade;
- *  4. the card to About Me.
+ *  3. the card to About Me.
  *
  * Every kanji and seal in those sections is drawn from one copy of its
  * glyph, the sprite rendered first here (components/about/work/glyphs.tsx).
@@ -54,7 +51,6 @@ export default function AboutPage() {
       <AboutSwitch current="work" />
       <WorkThreshold />
       <WorkWall />
-      <DojoMap />
       <AboutNext to="person" />
     </div>
   );

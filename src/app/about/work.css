@@ -1,10 +1,9 @@
 /*
   /about — the work (場). Prefix au-.
 
-  The page is a short stack of sections, each with its own stylesheet: the
-  threshold (the noren, the h1 and the receipt) and the wall under
-  components/about/work/, then the four rooms from the home page
-  (components/home/dojo-map.css). The fusuma above them is
+  The page is a short stack of sections, each in its own component and
+  stylesheet under components/about/work/: the threshold (the noren, the h1
+  and the receipt) and the wall. The fusuma above them is
   components/about/switch.css; the card at the foot is
   components/about/next.css. This file holds only what the page itself owns.
 */

@@ -7,7 +7,7 @@ import './work-wall.css';
  * Everything on one wall (#wall): the work, all of it, straight after the
  * threshold. The four projects, More builds and the games each had a section
  * above it until 2026-10-26, when Josh took them off and left the wall to
- * hold the lot; the four rooms (components/home/DojoMap) follow it.
+ * hold the lot.
  *
  * Every project, app and game on the site, one plaque each, hung on one ring in a hall lit by a single red
  * paper lantern. The ring turns through the lantern's light: the plaque at
@@ -20,7 +20,7 @@ import './work-wall.css';
  * the room: the header, the chips (All, Games, Apps, Websites, Josh's four,
  * 2026-10-26; each plaque's kinds come from data.ts by the receipt's own
  * rule, so "Games 16" there is the Games chip's sixteen here), and the line
- * that closes the work before the four rooms.
+ * that closes the work before the card to About Me.
  *
  * Reduced motion: the plaques lie flat in a grid, the chips filter it, and
  * the lede says what the grid does instead of what the ring does.

@@ -14,12 +14,14 @@ import type { WallDrive } from './armory-drive';
  *    within 400px of the screen, so a reader who never scrolls that far
  *    never downloads it. Under reduced motion it never loads at all: the
  *    ring lies flat as a grid of links and needs nothing.
- *  - The chips (All · Projects · More builds · Games) are shown only
- *    once they work (data-chips). On the ring a chip turns to the first
- *    plaque of its kind and leaves the rest in shadow, so the arrows step
- *    between the plaques it picked; on the flat grid it shows only those.
- *    Either way the plaques it leaves out carry data-out, and the line
- *    below says what happened.
+ *  - The chips (All · Games · Apps · Websites) are shown only once they
+ *    work (data-chips). A chip keeps the plaques of its kind and the rest go
+ *    (data-out, display: none), on the ring and on the flat grid alike (Josh,
+ *    2026-10-26: gone, not dimmed). On the ring that means a new ring: the
+ *    plaques kept are renumbered 0…k-1 (--i) round a ring of k (--n, so its
+ *    radius fits them, wall.css), the counter's total becomes k, and the
+ *    drive starts again over just those, two plaques short of the first,
+ *    and turns to it. The line below says what happened.
  */
 export default function ArmoryWallIsland() {
   const ref = useRef<HTMLParagraphElement>(null);
@@ -33,6 +35,8 @@ export default function ArmoryWallIsland() {
       root.querySelectorAll<HTMLButtonElement>('[data-wall-chip]')
     );
     const panels = Array.from(root.querySelectorAll<HTMLElement>('.bt-panel'));
+    const total = root.querySelector<HTMLElement>('[data-wall-of]');
+    let drive: ((root: HTMLElement) => WallDrive) | null = null;
     let wall: WallDrive | null = null;
     let io: IntersectionObserver | null = null;
     let alive = true;
@@ -42,15 +46,30 @@ export default function ArmoryWallIsland() {
       const label = chip.dataset.label ?? '';
       const all = id === 'all';
       for (const c of chips) c.setAttribute('aria-pressed', String(c === chip));
-      let count = 0;
-      for (const p of panels) {
-        const keep = all || (p.dataset.groups ?? '').split(' ').includes(id);
-        p.toggleAttribute('data-out', !keep);
-        if (keep) count++;
-      }
+      const kept = panels.filter(
+        (p) => all || (p.dataset.groups ?? '').split(' ').includes(id)
+      );
+      for (const p of panels) p.toggleAttribute('data-out', !kept.includes(p));
+      const count = kept.length;
       const what = all ? `All ${count}` : `The ${count} ${label.toLowerCase()}`;
-      if (wall) wall.find(id, `${what}: `);
-      else status.textContent = `Showing ${what.toLowerCase()}.`;
+      if (!wall || !drive || !count) {
+        status.textContent = `Showing ${what.toLowerCase()}.`;
+        return;
+      }
+      // A new ring of just these plaques.
+      wall.stop();
+      kept.forEach((p, i) => p.style.setProperty('--i', String(i)));
+      root.style.setProperty('--n', String(count));
+      root.style.setProperty('--park', '0');
+      root.removeAttribute('data-park');
+      for (const p of panels) {
+        p.removeAttribute('data-front');
+        p.removeAttribute('data-away');
+      }
+      if (total) total.textContent = ` / ${String(count).padStart(2, '0')}`;
+      root.dataset.spin = String((360 / count) * Math.min(2, count - 1));
+      wall = drive(root);
+      wall.first(`${what}: `);
     };
     const onChip = (e: MouseEvent) =>
       choose(e.currentTarget as HTMLButtonElement);
@@ -68,8 +87,9 @@ export default function ArmoryWallIsland() {
           if (!entries.some((e) => e.isIntersecting)) return;
           io?.disconnect();
           io = null;
-          import('./armory-drive').then(({ drive }) => {
+          import('./armory-drive').then((m) => {
             if (!alive || wall || reduce.matches) return;
+            drive = m.drive;
             wall = drive(root);
             root.setAttribute('data-chips', '');
           });

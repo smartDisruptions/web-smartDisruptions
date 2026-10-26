@@ -7,7 +7,6 @@ import { BUILD_ROOMS, type BuildRoom } from '@/components/build/rooms';
 import { MOON, TILE_URI, pixelPaths } from '@/components/build/sections/pixels';
 import { GAME_SLUGS } from '@/data/apps';
 import { IconArrowRight } from '@/components/icons';
-import './dojo-map.css';
 
 type Room = {
   href: string;
@@ -88,8 +87,7 @@ const BUILD_DOORS: Record<
  * The four rooms of the dojo as app tiles: the three Build rooms and the
  * Arcade, each with its kanji, Kiru doing that room's job, one line, and a
  * chip that tells the truth. A 2×2 grid on a phone, a bento row on a
- * desktop. Each tile carries its own ground, all CSS (./dojo-map.css). On
- * the home page, and at the foot of /about since October 2026.
+ * desktop. Each tile carries its own ground, all CSS (home.css).
  */
 export default function DojoMap() {
   const rooms: Room[] = [

@@ -38,8 +38,9 @@
  *  - Buttons, the caption and the status line: the visible way to turn it,
  *    the front plaque's name in big type as it turns, and a polite live line
  *    that says where it stopped (never while it is only passing through).
- *  - Chips (ArmoryWallIsland): `find(group)` turns to the first plaque of a
- *    kind; while a kind is chosen, the arrows step between its plaques.
+ *  - Chips (ArmoryWallIsland): a chip rebuilds the ring from the plaques of
+ *    its kind and runs this again over just those (the others carry
+ *    data-out and are gone), then `first()` turns to the first of them.
  *  - Trackpads: a sideways two-finger swipe turns it; vertical wheel is left
  *    alone, so the page scroll is never taken over.
  *  - A tap that did not move is a click: the plaque's link opens. A tap on a
@@ -52,8 +53,8 @@
  */
 
 export type WallDrive = {
-  /** Turn to the first plaque of a group ('all': the first plaque) and say so. */
-  find: (group: string, lead: string) => void;
+  /** Turn to the first plaque and say so, after `lead`. */
+  first: (lead: string) => void;
   /** Take every listener off and leave the ring where it stands. */
   stop: () => void;
 };
@@ -86,11 +87,15 @@ type Tween = {
 export function drive(root: HTMLElement): WallDrive {
   const stage = root.querySelector<HTMLElement>('.bt-wall-stage');
   const ring = root.querySelector<HTMLElement>('.bt-ring');
+  // The plaques a chip has left on the ring (ArmoryWallIsland numbers them
+  // 0…n-1 and sets --n to match, so this geometry and wall.css's agree).
   const panels = ring
-    ? Array.from(ring.querySelectorAll<HTMLElement>('.bt-panel'))
+    ? Array.from(
+        ring.querySelectorAll<HTMLElement>('.bt-panel:not([data-out])')
+      )
     : [];
   const n = panels.length;
-  if (!stage || !ring || !n) return { find() {}, stop() {} };
+  if (!stage || !ring || !n) return { first() {}, stop() {} };
 
   const links = panels.map((p) =>
     p.querySelector<HTMLAnchorElement>('.bt-panel-face')
@@ -376,37 +381,11 @@ export function drive(root: HTMLElement): WallDrive {
     if (say) announce(j);
   };
 
-  // While a chip has picked a kind, the others carry data-out (the island
-  // sets it) and the arrows step between the plaques that are left.
-  const inSet = (i: number) => !panels[i].hasAttribute('data-out');
-  const stepFrom = (i: number, d: 1 | -1) => {
-    for (let k = 1; k <= n; k++) {
-      const j = mod(i + d * k);
-      if (inSet(j)) return j;
-    }
-    return mod(i + d);
-  };
-  const firstIn = () =>
-    Math.max(
-      0,
-      panels.findIndex((_, i) => inSet(i))
-    );
-  const lastIn = () => {
-    for (let i = n - 1; i >= 0; i--) if (inSet(i)) return i;
-    return n - 1;
-  };
   const at = () => (dest >= 0 ? dest : front);
 
-  const find = (group: string, lead: string) => {
-    const first =
-      group === 'all'
-        ? 0
-        : panels.findIndex((p) =>
-            (p.dataset.groups ?? '').split(' ').includes(group)
-          );
-    if (first < 0) return;
-    goTo(first);
-    announce(first, lead);
+  const first = (lead: string) => {
+    goTo(0);
+    announce(0, lead);
   };
 
   // ── Pointer ───────────────────────────────────────────────────────────────
@@ -578,10 +557,10 @@ export function drive(root: HTMLElement): WallDrive {
     const i = indexOfLink(e.target);
     if (i < 0) return;
     let to = -1;
-    if (e.key === 'ArrowRight') to = stepFrom(i, 1);
-    else if (e.key === 'ArrowLeft') to = stepFrom(i, -1);
-    else if (e.key === 'Home') to = firstIn();
-    else if (e.key === 'End') to = lastIn();
+    if (e.key === 'ArrowRight') to = mod(i + 1);
+    else if (e.key === 'ArrowLeft') to = mod(i - 1);
+    else if (e.key === 'Home') to = 0;
+    else if (e.key === 'End') to = n - 1;
     if (to < 0) return;
     e.preventDefault();
     links[to]?.focus({ preventScroll: true });
@@ -598,8 +577,8 @@ export function drive(root: HTMLElement): WallDrive {
     }
   };
 
-  const onPrev = () => goTo(stepFrom(at(), -1), true);
-  const onNext = () => goTo(stepFrom(at(), 1), true);
+  const onPrev = () => goTo(at() - 1, true);
+  const onNext = () => goTo(at() + 1, true);
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   const io = new IntersectionObserver(
@@ -693,7 +672,7 @@ export function drive(root: HTMLElement): WallDrive {
   }
 
   return {
-    find,
+    first,
     stop() {
       if (raf) cancelAnimationFrame(raf);
       if (paintRaf) cancelAnimationFrame(paintRaf);
