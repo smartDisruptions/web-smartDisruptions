@@ -16,11 +16,13 @@ export type WallItem = {
   src: string;
   /** The brush kanji on the back of the plaque. */
   mark: string;
-  /** Which chip finds it (a WallGroup id). */
-  group?: string;
+  /** Which chips find it (WallGroup ids). A thing can be two kinds at once
+      (Broom & Blade is a website and a game); one with none shows under
+      All only. */
+  groups?: string[];
 };
 
-/** A chip over the ring: 'all', or the group its plaques carry. */
+/** A chip over the ring: 'all', or a group its plaques carry. */
 export type WallGroup = { id: string; label: string; count: number };
 
 /**
@@ -153,7 +155,7 @@ export default function ArmoryWall({
               <li
                 key={item.key}
                 className="bt-panel"
-                data-group={item.group}
+                data-groups={item.groups?.join(' ') || undefined}
                 data-front={i === front ? '' : undefined}
                 data-away={away(i) ? '' : undefined}
                 style={{ '--i': i } as CSSProperties}

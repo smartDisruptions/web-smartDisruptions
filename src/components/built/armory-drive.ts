@@ -399,7 +399,11 @@ export function drive(root: HTMLElement): WallDrive {
 
   const find = (group: string, lead: string) => {
     const first =
-      group === 'all' ? 0 : panels.findIndex((p) => p.dataset.group === group);
+      group === 'all'
+        ? 0
+        : panels.findIndex((p) =>
+            (p.dataset.groups ?? '').split(' ').includes(group)
+          );
     if (first < 0) return;
     goTo(first);
     announce(first, lead);

@@ -1,15 +1,6 @@
-import ArmoryWall, {
-  type WallGroup,
-  type WallItem,
-} from '@/components/built/ArmoryWall';
+import ArmoryWall, { type WallGroup } from '@/components/built/ArmoryWall';
 import { GlyphSeal } from '@/components/about/work/glyphs';
-import {
-  WORK_IDS,
-  catalogue,
-  featured,
-  games,
-  wall,
-} from '@/components/about/work/data';
+import { WORK_IDS, wall, type WorkKind } from '@/components/about/work/data';
 import './work-wall.css';
 
 /**
@@ -26,9 +17,10 @@ import './work-wall.css';
  *
  * The ring itself, its light and its behaviour are components/built/
  * ArmoryWall (+ ArmoryWallIsland, armory-drive.ts, wall.css). This file is
- * the room: the header, the chips' groups (read from the same lists the
- * receipt counts, so "Games 12" there is the Games chip's twelve here), and
- * the line that closes the work before the four rooms.
+ * the room: the header, the chips (All, Games, Apps, Websites, Josh's four,
+ * 2026-10-26; each plaque's kinds come from data.ts by the receipt's own
+ * rule, so "Games 16" there is the Games chip's sixteen here), and the line
+ * that closes the work before the four rooms.
  *
  * Reduced motion: the plaques lie flat in a grid, the chips filter it, and
  * the lede says what the grid does instead of what the ring does.
@@ -37,21 +29,18 @@ import './work-wall.css';
  * shade is painted in, so the dark at its sides is the room's own colour.
  */
 export default function WorkWall() {
-  // Which chip finds each plaque: the four, More builds or the games.
-  const groupOf = new Map<string, string>([
-    ...featured.map((f) => [f.slug, 'projects'] as const),
-    ...catalogue.map((c) => [c.key, 'more'] as const),
-    ...games.map((g) => [g.slug, 'games'] as const),
-  ]);
-  const items: WallItem[] = wall.map((item) => ({
-    ...item,
-    group: groupOf.get(item.key),
-  }));
+  // The chips, counted from the plaques themselves, so a chip's number is
+  // always how many plaques it finds.
+  const chip = (id: WorkKind, label: string): WallGroup => ({
+    id,
+    label,
+    count: wall.filter((item) => item.groups?.includes(id)).length,
+  });
   const groups: WallGroup[] = [
     { id: 'all', label: 'All', count: wall.length },
-    { id: 'projects', label: 'Projects', count: featured.length },
-    { id: 'more', label: 'More builds', count: catalogue.length },
-    { id: 'games', label: 'Games', count: games.length },
+    chip('games', 'Games'),
+    chip('apps', 'Apps'),
+    chip('websites', 'Websites'),
   ];
 
   return (
@@ -77,7 +66,7 @@ export default function WorkWall() {
       </div>
 
       <div className="wk-wl-ring">
-        <ArmoryWall items={items} groups={groups} label="Everything I built" />
+        <ArmoryWall items={wall} groups={groups} label="Everything I built" />
       </div>
 
       {/* The page closes with the seal it opened with (the receipt's 作,

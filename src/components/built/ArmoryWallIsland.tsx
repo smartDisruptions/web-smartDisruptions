@@ -44,7 +44,7 @@ export default function ArmoryWallIsland() {
       for (const c of chips) c.setAttribute('aria-pressed', String(c === chip));
       let count = 0;
       for (const p of panels) {
-        const keep = all || p.dataset.group === id;
+        const keep = all || (p.dataset.groups ?? '').split(' ').includes(id);
         p.toggleAttribute('data-out', !keep);
         if (keep) count++;
       }
