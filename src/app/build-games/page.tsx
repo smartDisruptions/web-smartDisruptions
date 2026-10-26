@@ -95,8 +95,7 @@ export default function BuildGamesPage() {
           Three games, free to play.
         </h2>
         <p className="bg-shelf-note font-read">
-          Each one runs in your browser, with nothing to install. Path Not
-          Taken is still an early test.
+          Each one runs in your browser, with nothing to install.
         </p>
 
         <div className="bg-slots">
