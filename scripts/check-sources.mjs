@@ -26,7 +26,7 @@ import { templateReports } from '../src/data/marketStorm.ts';
 
 const FILTER = process.argv[2];
 const UA =
-  'SmartDisruptions-linkcheck/1.0 (+https://smartdisruptions.com; joshescusa@gmail.com)';
+  'SmartDisruptions-linkcheck/1.0 (+https://smartdisruptions.com; smartdisruptions@gmail.com)';
 const BOT_FILTERED = new Set([401, 403, 405, 429]);
 
 /**

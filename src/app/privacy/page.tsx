@@ -108,9 +108,7 @@ export default function PrivacyPage() {
               it, share it, or use it for anything else.
             </p>
             <p>
-              Want out? Reply &ldquo;unsubscribe&rdquo; to any email I send, or
-              message me on{' '}
-              <a href="https://www.linkedin.com/in/joshescusa">LinkedIn</a>, and
+              Want out? Reply &ldquo;unsubscribe&rdquo; to any email I send, and
               I&rsquo;ll delete your address. You can also ask me what I have
               stored about you — the honest answer will be &ldquo;your email
               address.&rdquo;

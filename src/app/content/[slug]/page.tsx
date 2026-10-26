@@ -57,7 +57,7 @@ export async function generateMetadata({
       // article:published_time + article:author (fixes the "no author / no
       // publish date" warning in social validators) + article:tag.
       publishedTime: new Date(entry.publishDate).toISOString(),
-      authors: ['Josh Escusa'],
+      authors: ['Josh'],
       tags: entry.tags,
       // Prefer the title-baked social card; fall back to the on-page hero.
       ...((entry.ogImage ?? entry.heroImage)
@@ -189,7 +189,7 @@ export default async function ContentDetail({
     datePublished: new Date(entry.publishDate).toISOString(),
     author: {
       '@type': 'Person',
-      name: 'Josh Escusa',
+      name: 'Josh',
       url: 'https://smartdisruptions.com',
     },
     ...((entry.ogImage ?? entry.heroImage)
@@ -239,7 +239,7 @@ export default async function ContentDetail({
             <span className="wr-post-cat">{entry.category}</span>
             <time dateTime={entry.publishDate}>{formatDate(entry.publishDate)}</time>
             <span>{minutes} min read</span>
-            <span>by Josh Escusa</span>
+            <span>by Josh</span>
           </p>
           <h1 className="font-display wr-post-title">{entry.title}</h1>
           {entry.excerpt && <p className="font-read wr-post-dek">{entry.excerpt}</p>}

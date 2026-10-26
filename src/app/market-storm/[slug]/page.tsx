@@ -58,7 +58,7 @@ export async function generateMetadata({
       type: 'article',
       url: `/market-storm/${report.slug}`,
       publishedTime: new Date(report.publishDate).toISOString(),
-      authors: ['Josh Escusa'],
+      authors: ['Josh'],
       tags: report.tags,
       images,
     },
@@ -91,7 +91,7 @@ export default async function MarketStormDetail({
     datePublished: new Date(report.publishDate).toISOString(),
     author: {
       '@type': 'Person',
-      name: 'Josh Escusa',
+      name: 'Josh',
       url: 'https://smartdisruptions.com',
     },
     about: report.company,
@@ -167,7 +167,7 @@ export default async function MarketStormDetail({
                   same date twice and assumes one of them is a mistake. They
                   coincide on Amazon and diverge on Palantir. */}
               <span className="text-sm text-text-secondary">
-                Published {formatDate(report.publishDate)} · by Josh Escusa
+                Published {formatDate(report.publishDate)} · by Josh
               </span>
             </div>
             <h1
