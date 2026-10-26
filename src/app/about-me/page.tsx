@@ -87,7 +87,7 @@ export default function AboutPage() {
             <div>
               <p className="ab-role">Builder &middot; self-taught since 2008</p>
               <h1 id="ab-name" className="ab-name font-display">
-                Josh Escusa
+                Josh
               </h1>
             </div>
           </div>
