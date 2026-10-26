@@ -13,10 +13,12 @@ import {
 import './work-wall.css';
 
 /**
- * Everything on one wall (#wall): the last room of the work, and of /about.
+ * Everything on one wall (#wall): the work, all of it, straight after the
+ * threshold. The four projects, More builds and the games each had a section
+ * above it until 2026-10-26, when Josh took them off and left the wall to
+ * hold the lot; the four rooms (components/home/DojoMap) follow it.
  *
- * Every project, app and game on the site — the four, everything else and
- * the games, one plaque each — hung on one ring in a hall lit by a single red
+ * Every project, app and game on the site, one plaque each, hung on one ring in a hall lit by a single red
  * paper lantern. The ring turns through the lantern's light: the plaque at
  * the front is lit and glossed, the ones turning away go into the dark, the
  * far side shows the backs of the plaques with their seals. Day is the same
@@ -25,8 +27,8 @@ import './work-wall.css';
  * The ring itself, its light and its behaviour are components/built/
  * ArmoryWall (+ ArmoryWallIsland, armory-drive.ts, wall.css). This file is
  * the room: the header, the chips' groups (read from the same lists the
- * sections above show, so "Games 12" is the games section's twelve), and
- * the line that closes the page before the card to About Me.
+ * receipt counts, so "Games 12" there is the Games chip's twelve here), and
+ * the line that closes the work before the four rooms.
  *
  * Reduced motion: the plaques lie flat in a grid, the chips filter it, and
  * the lede says what the grid does instead of what the ring does.
@@ -35,7 +37,7 @@ import './work-wall.css';
  * shade is painted in, so the dark at its sides is the room's own colour.
  */
 export default function WorkWall() {
-  // Which chip finds each plaque: the section it is shown in above.
+  // Which chip finds each plaque: the four, More builds or the games.
   const groupOf = new Map<string, string>([
     ...featured.map((f) => [f.slug, 'projects'] as const),
     ...catalogue.map((c) => [c.key, 'more'] as const),

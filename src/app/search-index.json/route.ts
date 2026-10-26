@@ -71,9 +71,9 @@ export function GET() {
     },
     {
       // What I Built was folded into About (the work) in October 2026; the
-      // name still finds it, and opens the projects.
+      // name still finds it, and opens the wall that holds all of it.
       t: 'What I Built',
-      u: '/about#projects',
+      u: '/about#wall',
       k: 'Page',
       d: 'Websites, apps and games, live, on About',
       x: 'built projects websites apps work portfolio',

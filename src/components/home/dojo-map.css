@@ -1,0 +1,446 @@
+/*
+  The four rooms (DojoMap.tsx): the three Build rooms and the Arcade as app
+  tiles. Prefixes hm-room (the tiles) and hb-door (each Build door's ground).
+  Moved out of home.css in October 2026, when /about took the rooms too, so a
+  page that shows them gets their styles and nothing else of the home page's.
+*/
+
+.hm-rooms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+@media (min-width: 64rem) {
+  .hm-rooms {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.1rem;
+  }
+}
+.hm-room {
+  display: flex;
+  flex-direction: column;
+  min-height: 15.5rem;
+  height: 100%;
+  padding: 1rem;
+  color: var(--sd-text-primary);
+}
+@media (min-width: 40rem) {
+  .hm-room {
+    min-height: 19rem;
+    padding: 1.4rem;
+  }
+}
+.hm-room-kanji {
+  position: absolute;
+  right: -10%;
+  top: -6%;
+  width: 70%;
+  height: auto;
+  aspect-ratio: 1;
+  color: var(--sd-pen);
+  opacity: 0.1;
+  z-index: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.5s ease,
+    scale 0.6s var(--ease-out-expo);
+}
+.hm-room:hover .hm-room-kanji {
+  opacity: 0.18;
+  scale: 1.06;
+}
+.hm-room-count {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  border-radius: 999px;
+  background: var(--sd-fill);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--sd-text-secondary);
+}
+/* A phone's half-width tile holds "16 notes" on one line, not the rest. */
+@media (max-width: 30rem) {
+  .hm-room-count-more {
+    display: none;
+  }
+}
+.hm-room-kiru {
+  position: relative;
+  z-index: 1;
+  height: 6.8rem;
+  width: auto;
+  margin: 0.6rem auto 0.4rem;
+  transition: translate 0.5s var(--ease-out-expo);
+}
+@media (min-width: 40rem) {
+  .hm-room-kiru {
+    height: 8.6rem;
+  }
+}
+.hm-room:hover .hm-room-kiru {
+  translate: 0 -6px;
+}
+.hm-room-text {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  display: grid;
+  gap: 0.3rem;
+}
+.hm-room-title {
+  font-size: 1.15rem;
+}
+@media (min-width: 40rem) {
+  .hm-room-title {
+    font-size: 1.45rem;
+  }
+}
+.hm-room-line {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--sd-text-secondary);
+  /* Two even lines when it wraps, never a one-word last line ("screen.").
+     Balance, not pretty: pretty counts the arrow spacer below as a word. */
+  text-wrap: balance;
+}
+/* The corner arrow sits level with the last line. A spacer at the end of the
+   text keeps that line clear of it without re-wrapping any line above. */
+.hm-room-line::after {
+  content: '';
+  display: inline-block;
+  width: 1.5rem;
+}
+@media (max-width: 30rem) {
+  .hm-room-line {
+    display: none;
+  }
+}
+.hm-room-arrow {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1;
+  color: var(--sd-pen-ink);
+  transition: translate 0.4s var(--ease-out-expo);
+}
+.hm-room:hover .hm-room-arrow {
+  translate: 4px 0;
+}
+@media (max-width: 30rem) {
+  .hm-room-arrow {
+    display: none;
+  }
+}
+/* Each room's ground. The three Build rooms' doors are prefixed hb- (they
+   arrived with the Build sections, October 2026); the Arcade's is the
+   original. */
+
+/* 網 Build Websites — a shoji: washi in a wooden lattice, the browser's three
+   dots in its top rail, a lamp's glow on the paper. At night, the same screen
+   with the lamp lit behind it. Follows the theme's text tokens. */
+.hb-door-web {
+  --hb-wood: #6e4b30;
+  --hb-lattice: rgba(110, 75, 48, 0.2);
+  --hb-lamp: rgba(255, 250, 236, 0.92);
+  background-color: #fbf6ea;
+  background-image:
+    radial-gradient(80% 58% at 50% 46%, var(--hb-lamp), transparent 76%),
+    linear-gradient(90deg, transparent calc(100% - 1.5px), var(--hb-lattice) 0),
+    linear-gradient(180deg, transparent calc(100% - 1.5px), var(--hb-lattice) 0);
+  background-size:
+    100% 100%,
+    25% 100%,
+    100% 2.25rem;
+  background-position:
+    0 0,
+    0 0,
+    0 0.8rem;
+}
+:root[data-theme='dark'] .hb-door-web {
+  --hb-wood: #4a3020;
+  --hb-lattice: rgba(10, 5, 2, 0.6);
+  --hb-lamp: rgba(255, 168, 76, 0.32);
+  background-color: #2b1a0e;
+  border-color: rgba(255, 190, 120, 0.18);
+}
+.hb-door-web .hm-room-kanji {
+  color: var(--hb-wood);
+  opacity: 0.12;
+}
+:root[data-theme='dark'] .hb-door-web .hm-room-kanji {
+  color: #ffb066;
+  opacity: 0.1;
+}
+/* At night the chip sits on lamp-lit wood, where the theme's cool grey
+   measured 4.3:1. Warm washi instead (7:1), like the light behind it. */
+:root[data-theme='dark'] .hb-door-web .hm-room-count {
+  color: #ecd9bf;
+}
+.hb-door-bar {
+  position: absolute;
+  z-index: 1;
+  inset: 0 0 auto;
+  height: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding-left: 0.7rem;
+  background: var(--hb-wood);
+}
+.hb-door-bar i {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: rgba(255, 238, 214, 0.42);
+}
+.hb-door-bar i:first-child {
+  background: #e2412a;
+}
+@media (min-width: 40rem) {
+  .hb-door-bar {
+    height: 1rem;
+    gap: 0.34rem;
+    padding-left: 1rem;
+  }
+  .hb-door-bar i {
+    width: 0.42rem;
+    height: 0.42rem;
+  }
+  .hb-door-web {
+    background-position:
+      0 0,
+      0 0,
+      0 1rem;
+  }
+}
+
+/* 器 Build Apps — black urushi with a fine gold maki-e line (at Kiru's feet,
+   clear of the words) and a phone made of light. An object: the same in both
+   themes, so it re-declares the tokens its text reads (the theme-island
+   pattern; the Arcade does the same by hand). */
+.hb-door-app {
+  color-scheme: dark;
+  --sd-text-primary: #f4ead5;
+  --sd-text-secondary: #d8c8a4;
+  --sd-fill: rgba(231, 190, 94, 0.14);
+  --sd-border-strong: rgba(231, 190, 94, 0.5);
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23e7be5e' stroke-linecap='round'%3E%3Cpath d='M-5 63 C 18 55, 38 71, 60 62 S 92 52, 105 58' stroke-width='1.2' opacity='.6' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M-5 67 C 20 60, 40 75, 62 67 S 94 57, 105 63' stroke-width='.8' opacity='.35' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E")
+      0 0 / 100% 100% no-repeat,
+    radial-gradient(75% 55% at 12% 0%, rgba(150, 44, 26, 0.4), transparent 62%),
+    linear-gradient(160deg, #1d1214, #0b0809 70%);
+  border-color: rgba(231, 190, 94, 0.3);
+}
+.hb-door-app .hm-room-title {
+  text-shadow: 0 0 18px rgba(231, 190, 94, 0.3);
+}
+.hb-door-app .hm-room-kanji {
+  color: #e7be5e;
+  opacity: 0.12;
+}
+.hb-door-app:hover .hm-room-kanji {
+  opacity: 0.2;
+}
+.hb-door-app .hm-room-count {
+  background: rgba(231, 190, 94, 0.14);
+  color: #f2cf7a;
+}
+.hb-door-app .hm-room-arrow {
+  color: #f2cf7a;
+}
+.hb-door-phone {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 2.8rem;
+  width: 4.3rem;
+  height: 7.3rem;
+  translate: -50% 0;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(231, 190, 94, 0.5);
+  background: radial-gradient(
+    90% 70% at 50% 38%,
+    rgba(255, 236, 200, 0.2),
+    rgba(255, 236, 200, 0.04) 72%
+  );
+  box-shadow:
+    0 0 1.8rem rgba(255, 226, 170, 0.16),
+    inset 0 0 1rem rgba(255, 236, 200, 0.1);
+}
+@media (min-width: 40rem) {
+  .hb-door-phone {
+    top: 3.5rem;
+    width: 5.4rem;
+    height: 9.2rem;
+    border-radius: 1.15rem;
+  }
+}
+
+/* 戯 Build Games — pixel stars and copper roof tiles under a night sky, the
+   moon in pixels too (the same art as the games room's stage). An object, the
+   same in both themes. The stars twinkle on Kiru's data-live, like the
+   Learn room's fireflies did: off screen, or while the page scrolls, they
+   hold still. */
+.hb-door-game {
+  color-scheme: dark;
+  --sd-text-primary: #eef0ff;
+  --sd-text-secondary: #b9c0e8;
+  --sd-fill: rgba(155, 176, 255, 0.13);
+  --sd-border-strong: rgba(155, 176, 255, 0.5);
+  --kiru-line: #3d4c95;
+  --kiru-rim: 1;
+  background:
+    radial-gradient(
+      45% 30% at 84% 14%,
+      rgba(255, 243, 214, 0.16),
+      transparent 70%
+    ),
+    linear-gradient(
+      #060920 0 20%,
+      #090d27 20% 38%,
+      #0d1231 38% 56%,
+      #121941 56% 74%,
+      #0e1230 74%
+    );
+  border-color: rgba(155, 176, 255, 0.28);
+}
+.hb-door-game .hm-room-kanji {
+  color: #9bb0ff;
+  opacity: 0.1;
+}
+.hb-door-game .hm-room-count {
+  /* Solid (the fill over the night sky, flattened), so a star behind the
+     chip doesn't show through between the words. */
+  background: #191f3d;
+  color: #c9d3ff;
+}
+.hb-door-game .hm-room-arrow {
+  color: #9bb0ff;
+}
+.hb-door-stars {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+}
+.hb-door-stars > i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 2px;
+  color: #fff3d6;
+  background: currentColor;
+}
+.hb-door-stars > i:nth-child(1) {
+  box-shadow:
+    1.3rem 3.1rem,
+    5.6rem 2.5rem,
+    8.4rem 4.6rem,
+    3.1rem 5.4rem,
+    12rem 3.4rem,
+    14.6rem 5.8rem;
+}
+.hb-door-stars > i:nth-child(2) {
+  color: #9bb0ff;
+  box-shadow:
+    2.4rem 4.2rem,
+    7.2rem 3.6rem,
+    10.6rem 6.2rem,
+    13.4rem 2.8rem;
+}
+.hb-door-stars > i:nth-child(3) {
+  color: #ffffff;
+  box-shadow:
+    4.4rem 3.2rem,
+    9.6rem 2.6rem,
+    6.6rem 6.6rem,
+    15.4rem 4.4rem;
+}
+.hb-door-moon {
+  position: absolute;
+  z-index: 0;
+  top: 2.35rem;
+  right: 0.9rem;
+  width: 34px;
+  height: 34px;
+}
+.hb-door-tiles {
+  position: relative;
+  z-index: 1;
+  display: block;
+  height: 16px;
+  margin: -0.5rem -1rem 0;
+  background: var(--tile) 0 0 / 16px 16px repeat-x;
+  image-rendering: pixelated;
+}
+@media (min-width: 40rem) {
+  .hb-door-moon {
+    top: 3rem;
+    right: 1.3rem;
+    width: 51px;
+    height: 51px;
+  }
+  .hb-door-tiles {
+    height: 24px;
+    margin-inline: -1.4rem;
+    background-size: 24px 24px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hm-room-kiru[data-live] ~ .hb-door-stars > i:nth-child(2) {
+    animation: hb-twinkle 2.6s steps(2, jump-none) infinite;
+  }
+  .hm-room-kiru[data-live] ~ .hb-door-stars > i:nth-child(3) {
+    animation: hb-twinkle 3.4s steps(2, jump-none) -1.3s infinite;
+  }
+  /* Held while the page scrolls, like Kiru (SiteFX's data-hold). */
+  .hm-room-kiru[data-hold] ~ .hb-door-stars > i {
+    animation-play-state: paused !important;
+  }
+}
+@keyframes hb-twinkle {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.hm-room-arcade {
+  background:
+    radial-gradient(
+      120% 80% at 50% 120%,
+      rgba(255, 64, 160, 0.28),
+      transparent 60%
+    ),
+    linear-gradient(170deg, #160b2b, #07040f);
+  color: #fff;
+  border-color: rgba(255, 90, 200, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(255, 90, 200, 0.18) inset,
+    0 18px 40px -24px rgba(255, 64, 160, 0.6);
+}
+.hm-room-arcade .hm-room-title {
+  color: #fff;
+  text-shadow:
+    0 0 10px rgba(255, 90, 200, 0.85),
+    0 0 26px rgba(255, 90, 200, 0.5);
+}
+.hm-room-arcade .hm-room-line,
+.hm-room-arcade .hm-room-count {
+  color: #e2c9f5;
+}
+.hm-room-arcade .hm-room-count {
+  background: rgba(255, 255, 255, 0.08);
+}
+.hm-room-arcade .hm-room-arrow {
+  color: #ff8ad8;
+}
+.hm-room-arcade .hm-room-kanji {
+  color: #ff5bd0;
+  opacity: 0.22;
+}

@@ -7,8 +7,8 @@ export function backTarget(from: string | null) {
   if (from === 'archive') return { href: '/games/archive', label: 'Back to the archive' };
   if (from === 'guild') return { href: '/games#broom-blade-arcade', label: 'Back to the Broom & Blade Arcade' };
   if (from === 'escape') return { href: '/games#escape-rooms', label: 'Back to the escape rooms' };
-  // What I Built lives on About (the work) since October 2026.
-  return { href: '/about#projects', label: 'Everything I built' };
+  // What I Built lives on About (the work) since October 2026, on its wall.
+  return { href: '/about#wall', label: 'Everything I built' };
 }
 
 export function BackArrow() {

@@ -6,32 +6,22 @@ import {
   type ProjectPart,
 } from '@/data/projects';
 import { BUILT_COVERED, builtCatalogueApps } from '@/data/built';
-import {
-  FEATURED_SLUGS,
-  SHOWCASE,
-  type Showcase,
-  type ShowcaseLink,
-} from '@/data/showcase';
+import { FEATURED_SLUGS, SHOWCASE, type Showcase } from '@/data/showcase';
 import type { WallItem } from '@/components/built/ArmoryWall';
 import { markFor } from '@/components/built/media';
 
 /**
  * The work on /about, as lists: what What I Built showed before it was
- * folded into About (October 2026). Every section of the page reads these,
- * so the counts in the receipt, the jump links and the sections can't drift
- * from each other. The underlying filters live in src/data/built.ts, which
+ * folded into About (October 2026). The receipt counts them and the wall
+ * hangs them (and its chips sort them into the four, More builds and the
+ * games), so the counts and the plaques can't drift from each other. The underlying filters live in src/data/built.ts, which
  * the home page's receipts band counts from too.
  */
 
-/** The anchors each section of the work sits under, in page order. */
+/** The anchor the wall sits under, which the receipt's lines open. */
 export const WORK_IDS = {
-  projects: 'projects',
-  more: 'more',
-  games: 'games',
   wall: 'wall',
 } as const;
-
-export type { Showcase, ShowcaseLink };
 
 /** A project with a write-up, in the shape the four are drawn in. */
 function fromProject(p: Project): Showcase {
@@ -226,22 +216,3 @@ export const wall: WallItem[] = [
     mark: markFor(g.slug),
   })),
 ];
-
-const WORDS = [
-  'no',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-];
-
-/** Small counts read as words in a sentence ("the four below"). */
-export const inWords = (n: number) => WORDS[n] ?? String(n);
-
-/** "01", "02" … for the big index numerals. */
-export const pad = (n: number) => String(n).padStart(2, '0');
