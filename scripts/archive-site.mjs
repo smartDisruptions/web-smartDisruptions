@@ -105,6 +105,20 @@ const ARCHIVES = {
         ],
       ],
     },
+    // Taken off the live site after this design (Josh, 2026-10-26): his last
+    // name, and the LinkedIn links whose address carries it, which become the
+    // plain word. Applied to the built output, inline RSC payload included,
+    // so a link inside an escaped string is caught as well as the HTML. The
+    // word sits between two text nodes once the link goes, so the HTML gets
+    // the <!-- --> separators React writes between text, or it won't hydrate.
+    scrub: [
+      ['Josh Escusa', 'Josh'],
+      [/<a href="https:\/\/www\.linkedin\.com\/in\/joshescusa"[^>]*>LinkedIn<\/a>/g, '<!-- -->LinkedIn<!-- -->'],
+      [
+        /\[(\\?)"\$\1",\1"a\1",null,\{\1"href\1":\1"https:\/\/www\.linkedin\.com\/in\/joshescusa\1",\1"className\1":\1"[^"\\]*\1",\1"children\1":\1"LinkedIn\1"\}\]/g,
+        '$1"LinkedIn$1"',
+      ],
+    ],
   },
 };
 
@@ -326,7 +340,8 @@ for (const p of textFiles) {
   const s = readFileSync(p, 'utf8');
   // "/images/…", \"/images/…\" (inside the inline RSC payload), url(/images/…)
   // and the second+ entries of a srcset (", /images/…").
-  const t = s.replace(/(["(]|\\"|, )\/images\//g, `$1${BASE}/images/`);
+  let t = s.replace(/(["(]|\\"|, )\/images\//g, `$1${BASE}/images/`);
+  for (const [from, to] of cfg.scrub ?? []) t = t.replaceAll(from, to);
   if (t !== s) writeFileSync(p, t);
 }
 const used = new Set();

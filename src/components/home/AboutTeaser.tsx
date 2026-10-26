@@ -11,7 +11,7 @@ export default function AboutTeaser() {
         <div className="relative mx-auto w-44 sm:w-52">
           <img
             src="/images/josh.webp"
-            alt="Josh Escusa"
+            alt="Josh"
             width={320}
             height={320}
             loading="lazy"

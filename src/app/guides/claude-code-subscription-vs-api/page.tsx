@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     description: EXCERPT,
     url: PATH,
     publishedTime: PUBLISHED,
-    authors: ['Josh Escusa'],
+    authors: ['Josh'],
     tags: ['claude code', 'pricing', 'game dev'],
   },
   twitter: { card: 'summary_large_image', title: TITLE, description: EXCERPT },
@@ -66,7 +66,7 @@ const jsonLd = {
   headline: TITLE,
   description: EXCERPT,
   datePublished: PUBLISHED,
-  author: { '@type': 'Person', name: 'Josh Escusa' },
+  author: { '@type': 'Person', name: 'Josh' },
   mainEntityOfPage: `https://smartdisruptions.com${PATH}`,
 };
 
@@ -127,7 +127,7 @@ export default function GuidePage() {
               plain words, with my real numbers.
             </p>
             <p className="gd-byline">
-              <span>Josh Escusa</span>
+              <span>Josh</span>
               <span aria-hidden>·</span>
               <time dateTime={PUBLISHED}>{formatDate(PUBLISHED)}</time>
               <span aria-hidden>·</span>
