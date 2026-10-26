@@ -26,7 +26,9 @@
  *
  *  - Drag / swipe: horizontal only. The stage is `touch-action: pan-y`, so a
  *    vertical swipe still scrolls the page; the browser cancels our pointer
- *    when that happens. A drag of one plaque's width turns one plaque.
+ *    when that happens. iOS Safari doesn't always honour pan-y over the 3D
+ *    ring, so a touch that starts sideways also has its default cancelled
+ *    (the touch listeners below). A drag of one plaque's width turns one plaque.
  *    Pressing on a moving ring catches it.
  *  - Throw: release with speed and it coasts, then settles on a plaque. As a
  *    plaque comes to rest at the front, a gloss crosses it (data-lit).
@@ -499,6 +501,15 @@ export function drive(root: HTMLElement): WallDrive {
     }
     run();
   };
+  // Only the stage losing the pointer ends a drag. On a touchscreen the
+  // pointer starts out captured by the plaque under the finger (implicit
+  // capture), so taking it for the stage fires lostpointercapture on that
+  // plaque, and it bubbles up here: read as a cancel, every swipe ended a
+  // few pixels in and the ring settled back (fixed 2026-10-26). A mouse has
+  // no implicit capture, which is why dragging always worked on a desktop.
+  const onLost = (e: PointerEvent) => {
+    if (e.target === stage) onCancel(e);
+  };
   const onClickCapture = (e: MouseEvent) => {
     if (suppressClick) {
       e.preventDefault();
@@ -507,6 +518,39 @@ export function drive(root: HTMLElement): WallDrive {
     }
   };
   const onDragStart = (e: DragEvent) => e.preventDefault();
+
+  // ── Touch: claim a sideways swipe ─────────────────────────────────────────
+  // touch-action: pan-y should leave a sideways swipe to the pointer code
+  // above, but Safari on iOS does not reliably honour it over the ring's 3D
+  // layers: it starts a pan of its own and cancels the pointer before the
+  // ring can turn (Josh, 2026-10-26: "I can't touch scroll it"). So each
+  // touch on the stage is also decided here, on its first few pixels:
+  // sideways, and its default (a pan) is cancelled for the rest of the touch,
+  // so the pointer stays ours; up or down, it is left alone and the page
+  // scrolls. Two fingers are always left alone (a pinch). Non-passive only
+  // on the stage, so the rest of the page scrolls without waiting on it.
+  let touchX = 0;
+  let touchY = 0;
+  let axis: 'x' | 'y' | null = null;
+  const onTouchStart = (e: TouchEvent) => {
+    if (e.touches.length !== 1) {
+      axis = 'y';
+      return;
+    }
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+    axis = null;
+  };
+  const onTouchMove = (e: TouchEvent) => {
+    if (axis === null) {
+      const t = e.touches[0];
+      const dx = Math.abs(t.clientX - touchX);
+      const dy = Math.abs(t.clientY - touchY);
+      if (dx < 4 && dy < 4) return;
+      axis = dx > dy ? 'x' : 'y';
+    }
+    if (axis === 'x' && e.cancelable) e.preventDefault();
+  };
 
   // ── Trackpad: sideways swipes only ────────────────────────────────────────
   let wheelIdle = 0;
@@ -618,9 +662,11 @@ export function drive(root: HTMLElement): WallDrive {
   stage.addEventListener('pointermove', onMove);
   stage.addEventListener('pointerup', onUp);
   stage.addEventListener('pointercancel', onCancel);
-  stage.addEventListener('lostpointercapture', onCancel);
+  stage.addEventListener('lostpointercapture', onLost);
   stage.addEventListener('wheel', onWheel, { passive: false });
   stage.addEventListener('dragstart', onDragStart);
+  stage.addEventListener('touchstart', onTouchStart, { passive: true });
+  stage.addEventListener('touchmove', onTouchMove, { passive: false });
   ring.addEventListener('click', onClickCapture, true);
   ring.addEventListener('keydown', onKey);
   ring.addEventListener('focusin', onFocusIn);
@@ -657,9 +703,11 @@ export function drive(root: HTMLElement): WallDrive {
       stage.removeEventListener('pointermove', onMove);
       stage.removeEventListener('pointerup', onUp);
       stage.removeEventListener('pointercancel', onCancel);
-      stage.removeEventListener('lostpointercapture', onCancel);
+      stage.removeEventListener('lostpointercapture', onLost);
       stage.removeEventListener('wheel', onWheel);
       stage.removeEventListener('dragstart', onDragStart);
+      stage.removeEventListener('touchstart', onTouchStart);
+      stage.removeEventListener('touchmove', onTouchMove);
       ring.removeEventListener('click', onClickCapture, true);
       ring.removeEventListener('keydown', onKey);
       ring.removeEventListener('focusin', onFocusIn);

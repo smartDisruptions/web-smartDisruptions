@@ -5,9 +5,9 @@ import { useEffect } from 'react';
 /**
  * Keyboard focus in the games' rails always shows the whole screen.
  *
- * A row of screens that holds keyboard focus stops moving and becomes a
- * swipe rail (games.css), so the browser can scroll the focused screen into
- * view. But Chrome only scrolls a focused element that is entirely out of
+ * A row of screens that holds keyboard focus stops following the page
+ * (./ReelDrive leaves it alone), so the browser can scroll the focused
+ * screen into view. But Chrome only scrolls a focused element that is entirely out of
  * view; one that is partly visible it leaves where it is. On a phone, where a
  * rail shows a screen and most of the next, every other Tab would land on a
  * screen cut off by the edge. So on keyboard focus inside a rail, this

@@ -9,6 +9,7 @@ import { shotTransition, sizeOf } from '@/components/built/media';
 import { WORK_IDS, games, pad } from '@/components/about/work/data';
 import NeonSign from './NeonSign';
 import RailFocus from './RailFocus';
+import ReelDrive from './ReelDrive';
 import './games.css';
 
 /**
@@ -26,14 +27,16 @@ import './games.css';
  *
  * The twelve games are small CRT screens in two rows that slide past in
  * opposite directions as the page scrolls — the reel from the old home
- * page, reborn as a row of arcade screens. It is a scroll-driven CSS
- * animation on each row's own view timeline: no JavaScript, one transformed
- * element per row, run by the compositor. Each row crosses its whole length
- * while it is fully on screen, so every game passes through view. Without
- * scroll timelines, or under reduced motion, the rows are swipe rails with
- * scroll-snap, and a row that holds keyboard focus turns into a rail too,
- * so a focused screen can always be scrolled fully into view (games.css,
- * and ./RailFocus for the last few pixels Chrome leaves to chance).
+ * page, reborn as a row of arcade screens. Each row is a swipe rail, and
+ * ./ReelDrive turns the page's scroll into the rail's own sideways scroll:
+ * each row crosses its whole length while it is fully on screen, so every
+ * game passes through view, and a finger can still swipe it either way
+ * (Josh, 2026-10-26; it was a CSS scroll timeline until then, which moved
+ * the row but left nothing to swipe). Without JavaScript, or under reduced
+ * motion, the rows are still rails with scroll-snap. A row that holds
+ * keyboard focus is left to the browser, so a focused screen can always be
+ * scrolled fully into view (./RailFocus for the last few pixels Chrome
+ * leaves to chance).
  *
  * Each screen opens the game's own page at /built/<slug> and carries the
  * view-transition name that page's hero shares, so the picture travels with
@@ -41,8 +44,8 @@ import './games.css';
  * of the room goes there. Order is the Arcade's own (data.ts), and every
  * word about a game comes from src/data/apps.ts.
  *
- * A server component. Its only client code is RailFocus, one focus listener
- * that renders nothing. The only loop is the sign's rare flicker, which runs
+ * A server component. Its client code is ReelDrive and RailFocus, listeners
+ * that render nothing. The only loop is the sign's rare flicker, which runs
  * while Kiru is on screen and holds still while the page scrolls (his
  * `data-live` and `data-hold`, set by SiteFX). Styles: ./games.css (wk-gm-).
  */
@@ -114,6 +117,7 @@ export default function WorkGames() {
   return (
     <section id={WORK_IDS.games} aria-labelledby="wk-gm-h" className="wk-gm">
       <RailFocus id={WORK_IDS.games} />
+      <ReelDrive id={WORK_IDS.games} />
       <div className="wk-gm-ranma" aria-hidden="true" />
 
       <div className="wk-gm-room">

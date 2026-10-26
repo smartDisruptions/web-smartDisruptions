@@ -22,9 +22,11 @@
   arcade colours (--wk-gm-red/yellow/blue) are decorative fills and glows
   only, never text (DESIGN.md, "The ink flip").
 
-  Motion: the two rows slide on scroll timelines (compositor, no JavaScript);
-  the sign flickers rarely while Kiru is on screen. Nothing else moves. Reduced
-  motion and browsers without scroll timelines get swipe rails instead.
+  Motion: the two rows are swipe rails that the page's scroll slides sideways
+  (ReelDrive.tsx, which sets [data-drive] on the section while it runs), so a
+  finger can push them either way too; the sign flickers rarely while Kiru is
+  on screen. Nothing else moves. Reduced motion and no JavaScript leave the
+  rails still, with scroll-snap.
 */
 
 /* ── The section: the doorway in, the room, the sill out ───────────────── */
@@ -389,13 +391,12 @@
 }
 
 /* ── The reel: two rows of screens ────────────────────────────────────────
-   Each row is ONE element that moves: a flex row of six screens, wider than
-   the screen, translated along its own view timeline. The reel is a size
-   container so a row can be moved by exactly its overflow (100cqw - 100%),
-   and it clips sideways only, so focus rings and glows above and below a
-   row are never cut off. The rows line up with the page's content column
-   at each end (--wk-gm-pad), so the first screen starts under the heading
-   and the last ends at the column's right edge. */
+   Each row is a swipe rail of six screens, wider than the screen. The reel
+   is a size container (the rails' end padding reads 100cqw) and it clips
+   sideways only, so focus rings and glows above and below a row are never
+   cut off. The rows line up with the page's content column at each end
+   (--wk-gm-pad), so the first screen starts under the heading and the last
+   ends at the column's right edge. */
 .wk-gm-reel {
   --wk-gm-w: 12rem;
   --wk-gm-gap: 0.875rem;
@@ -421,8 +422,8 @@
   }
 }
 
-/* The base row is a swipe rail: what reduced motion, browsers without
-   scroll timelines, and a row holding keyboard focus all get. Scroll-snap
+/* The row is a swipe rail, still under reduced motion or without
+   JavaScript, and slid by the page's scroll otherwise (below). Scroll-snap
    stops each swipe on a screen; the block padding keeps a focus ring inside
    the rail's scroll box. The right edge fades over the width of the rail's
    end padding, so a screen running off it says "more this way" even where
@@ -464,57 +465,14 @@
   scroll-snap-align: start;
 }
 
-/* The reel in motion. Each row crosses its whole length while it is wholly
-   on screen (the `contain` range: from its foot clearing the bottom to its
-   top reaching the top), measured inside the bars that cover the page — the
-   tab bar on a phone, the header on a desktop — so every screen, plate and
-   all, is fully in view at some point. A row holding keyboard focus drops
-   out of this rule and becomes the rail above, so the focused screen can be
-   scrolled into view (./RailFocus): a moving row could leave it off the
-   edge. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .wk-gm-row:not(:has(:focus-visible)) {
-      width: max-content;
-      overflow: visible;
-      scroll-snap-type: none;
-      -webkit-mask-image: none;
-      mask-image: none;
-      animation: wk-gm-slide linear both;
-      /* Plain view() first: a browser that can't read the insets keeps it
-         rather than dropping the timeline and freezing the row at its end. */
-      animation-timeline: view();
-      animation-timeline: view(block 0px 64px);
-      animation-range: contain 0% contain 100%;
-    }
-    .wk-gm-rev:not(:has(:focus-visible)) {
-      animation-name: wk-gm-slide-rev;
-    }
-  }
-}
-@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .wk-gm-row:not(:has(:focus-visible)) {
-      animation-timeline: view();
-      animation-timeline: view(block 65px 0px);
-    }
-  }
-}
-@keyframes wk-gm-slide {
-  from {
-    translate: 0 0;
-  }
-  to {
-    translate: calc(100cqw - 100%) 0;
-  }
-}
-@keyframes wk-gm-slide-rev {
-  from {
-    translate: calc(100cqw - 100%) 0;
-  }
-  to {
-    translate: 0 0;
-  }
+/* The reel in motion (ReelDrive.tsx). The page's scroll sets each rail's
+   scroll position, so snapping would fight it, and the end fade would ride
+   along in the middle of a moving row: both go while it drives. The rail
+   still scrolls under a finger. */
+.wk-gm[data-drive] .wk-gm-row {
+  scroll-snap-type: none;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 /* ── A screen: a small CRT in a neon-rimmed bezel ─────────────────────────
