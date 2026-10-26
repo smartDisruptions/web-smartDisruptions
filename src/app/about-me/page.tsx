@@ -32,8 +32,7 @@ export const metadata: Metadata = {
  * with Claude); the timeline and the other three are in git history.
  *
  * Every claim on the card is one the site already made before the redesign:
- * self-taught since 2008, an engineer at a university, games with my son,
- * and the note about AI in the writing.
+ * self-taught since 2008, an engineer at a university, games with my son.
  *
  * Styles: ./about.css (ab-).
  */
@@ -142,27 +141,11 @@ export default function AboutPage() {
           ))}
         </ul>
 
-        <p className="ab-note">
-          It helps with the writing too. The experiences are mine, and I read
-          and approve every word before it&rsquo;s posted.
-        </p>
-
         <Kiru pose="sit" className="ab-kiru" />
       </div>
 
       <div className="ab-sec">
         <div className="ab-end">
-          <p className="ab-end-note font-read">
-            If you&rsquo;re building with AI too and want to compare notes,
-            I&rsquo;m easy to find on{' '}
-            <a
-              href="https://www.linkedin.com/in/joshescusa"
-              className="ab-link"
-            >
-              LinkedIn
-            </a>
-            .
-          </p>
           <Link href="/kiru" className="ab-meet sd-card">
             <Kiru pose="wave" />
             <span>

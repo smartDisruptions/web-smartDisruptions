@@ -100,7 +100,7 @@ export function GET() {
       u: '/about-me',
       k: 'Page',
       d: 'Who builds this, and how Claude helps',
-      x: 'about me josh claude card contact linkedin',
+      x: 'about me josh claude card',
     },
     {
       t: 'Privacy',
