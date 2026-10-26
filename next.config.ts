@@ -182,6 +182,14 @@ const nextConfig: NextConfig = {
       { source: '/apps', destination: '/about', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/about', permanent: true },
+      // The Writing page was paged (/content/page/2, …) until 2026-10-26. Its
+      // front holds the current notes now, and every note that was on a
+      // numbered page is in the archive.
+      {
+        source: '/content/page/:page',
+        destination: '/content/archive',
+        permanent: true,
+      },
       // The Market Storm index was paged (/market-storm/page/2, …) until
       // 2026-10-09. It is one page now — the front, then the archive — and
       // everything that was on a numbered page is in the archive.

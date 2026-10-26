@@ -4,20 +4,20 @@
   "out": "claude-code-subscription-vs-api",
   "tone": "info",
   "before": {
-    "label": "If paid per use",
-    "text": "$536 for my 4-day build"
+    "label": "Per use vs my plan",
+    "text": "$536 vs about $7"
   },
   "after": {
-    "label": "What I actually paid",
-    "text": "My usual $200 a month, no extra",
-    "detail": "about 15% of one week's limit · about $7 of the $200"
+    "label": "Same model · same 4 days",
+    "text": "Roughly 75× cheaper on the plan",
+    "detail": "$536 at API prices · about 15% of one week's limit, about $7 of the $200"
   },
   "headline": [
-    { "t": "If paid per use: " },
-    { "t": "$536", "tone": "warn" },
-    { "t": ". On my plan: " },
-    { "t": "nothing extra", "tone": "info" },
-    { "t": "." }
+    { "t": "Claude Code: " },
+    { "t": "monthly plan", "tone": "info" },
+    { "t": " or " },
+    { "t": "pay per use", "tone": "warn" },
+    { "t": "?" }
   ],
-  "alt": "Split card: priced per use, my 4-day build came to $536, which I never paid, against what I actually paid, my usual $200 a month with nothing extra."
+  "alt": "Split card: for the same 4 days on the same model, $536 if paid per use against about $7 of my monthly plan, so the plan came out roughly 75 times cheaper."
 }

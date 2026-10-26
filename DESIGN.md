@@ -232,6 +232,12 @@ animation of layout properties, nothing that animates while off screen.
   the archive. That page and every report light the Writing tab, and so do
   the guides, which Writing lists among its field notes (`sectionOf()` in
   `nav/nav.ts`).
+- **Writing's earlier notes live in its archive** (since 2026-10-26): the
+  front keeps the field guide and Market Storm, and the posts written for the
+  older design moved to `/content/archive` (`ARCHIVED_POST_SLUGS` in
+  `src/lib/fieldNotes.ts`). Each keeps its URL and says on its page that it's
+  archived. The front no longer pages; `/content/page/*` redirects to the
+  archive.
 - `viewport-fit=cover` with safe-area padding on the header and the tab bar.
 - Every tappable thing is ≥44px and **presses in** (`active:scale`).
 - The browser chrome takes the theme colour (`theme-color`), and the site

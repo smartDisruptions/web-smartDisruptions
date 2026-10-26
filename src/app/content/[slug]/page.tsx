@@ -12,6 +12,7 @@ import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
 import MorphLink from '@/components/writing/MorphLink';
 import { formatDate } from '@/lib/format';
+import { getFieldNotes, isArchivedPost } from '@/lib/fieldNotes';
 import { imageSize, readingMinutes } from '../post-extras';
 import '../writing.css';
 
@@ -71,6 +72,61 @@ export async function generateMetadata({
   };
 }
 
+/** "August 2026": when it was written, at the precision staleness needs. */
+function writtenIn(iso: string): string {
+  return formatDate(iso).replace(/ \d+, /, ' ');
+}
+
+/**
+ * What an archived post says about itself, under its tags (Josh's call,
+ * 2026-10-26). Archiving takes a post off the Writing page's front and
+ * nothing else, so the page is the one place a reader arriving from a search
+ * result can learn that it's old: archived, when it was written, not kept up
+ * to date. Then it hands them what's on the front now, by title, read from
+ * `getFieldNotes()`, so the links follow the front without anyone editing
+ * this. Quiet on purpose, like Market Storm's notice: an archived note isn't
+ * wrong, it's dated.
+ */
+function ArchivedNote({ written }: { written: string }) {
+  const current = getFieldNotes();
+  // One string: split across JSX lines, the space before "and" was dropped.
+  const line = `I wrote this in ${writtenIn(written)} and I don’t keep it up to date.`;
+  return (
+    <div className="wr-archived" role="note" aria-labelledby="wr-archived-k">
+      <p id="wr-archived-k" className="sd-kicker">
+        Archived
+      </p>
+      <p className="wr-archived-line">
+        {line}
+        {current.length > 0 && ' What I’m writing now:'}
+      </p>
+      {current.length > 0 && (
+        <ul role="list" className="wr-archived-list">
+          {current.map((note) => (
+            <li key={note.slug}>
+              <Link
+                href={note.href}
+                transitionTypes={['nav-forward']}
+                className="wr-archived-link"
+              >
+                {/* One inline run, so a title that wraps keeps its arrow on
+                    its last word. */}
+                <span>
+                  <span className="wr-archived-title">{note.title}</span>
+                  <span className="wr-archived-tail" aria-hidden="true">
+                    {' '}
+                    <span className="wr-archived-arrow">→</span>
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 /** One of the two "keep reading" prints under the article. */
 type Neighbour = { post: Post; label: string; dir: 'older' | 'newer' | 'more' };
 
@@ -114,6 +170,11 @@ export default async function ContentDetail({
 
   const all = getPublishedPosts();
   const nextUp = neighbours(all, entry.slug);
+  // An archived post goes back to the archive, where its card is.
+  const archived = isArchivedPost(entry.slug);
+  const back = archived
+    ? { href: '/content/archive', short: 'The archive', long: 'Back to the archive' }
+    : { href: '/content', short: 'All writing', long: 'Back to all writing' };
   const minutes = readingMinutes(entry.body);
   const hero = imageSize(entry.heroImage) ?? { width: 1200, height: 630 };
 
@@ -167,11 +228,11 @@ export default async function ContentDetail({
       <article className="wr-article">
         <header className="wr-post-head">
           <Kanji char="書" draw className="sd-watermark wr-post-mark" />
-          <Link href="/content" transitionTypes={['nav-back']} className="wr-back">
+          <Link href={back.href} transitionTypes={['nav-back']} className="wr-back">
             <span aria-hidden className="wr-back-chev">
               ‹
             </span>
-            All writing
+            {back.short}
           </Link>
 
           <p className="wr-post-meta">
@@ -189,6 +250,7 @@ export default async function ContentDetail({
               ))}
             </ul>
           )}
+          {archived && <ArchivedNote written={entry.publishDate} />}
         </header>
 
         {/* The hero carries the same view-transition name as its card on the
@@ -297,10 +359,10 @@ export default async function ContentDetail({
         </nav>
       )}
 
-      {/* Back to Writing */}
+      {/* Back to Writing, or to the archive */}
       <div className="wr-out">
-        <Link href="/content" transitionTypes={['nav-back']} className="wr-out-btn">
-          <span aria-hidden>←</span> Back to all writing
+        <Link href={back.href} transitionTypes={['nav-back']} className="wr-out-btn">
+          <span aria-hidden>←</span> {back.long}
         </Link>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { getPublishedPosts } from '@/lib/posts';
+import { isArchivedPost } from '@/lib/fieldNotes';
 import { archivedReports, frontReports } from '@/data/marketStorm';
 import { projects } from '@/data/projects';
 import { apps, GAME_SLUGS } from '@/data/apps';
@@ -18,7 +19,7 @@ export type SearchItem = {
   k: 'Page' | 'Note' | 'Market Storm' | 'Built' | 'Arcade';
   d?: string; // one line of description
   x?: string; // extra words to match on, never shown
-  a?: 1; // an archived Market Storm report: still found, ranked after the current ones, marked
+  a?: 1; // an archived note or Market Storm report: still found, ranked after the current ones, marked
 };
 
 export function GET() {
@@ -32,6 +33,13 @@ export function GET() {
       k: 'Page',
       d: 'Field notes from the bench, and Market Storm',
       x: 'notes articles posts market storm',
+    },
+    {
+      t: 'Writing archive',
+      u: '/content/archive',
+      k: 'Page',
+      d: 'My earlier field notes',
+      x: 'archive older notes articles posts',
     },
     {
       t: 'Learn to build, together',
@@ -116,6 +124,8 @@ export function GET() {
     },
   ];
 
+  // Archived notes stay findable (their pages are all still up), marked
+  // like archived reports.
   for (const p of getPublishedPosts()) {
     items.push({
       t: p.title,
@@ -123,6 +133,7 @@ export function GET() {
       k: 'Note',
       d: p.excerpt,
       x: [p.category, ...p.tags].join(' '),
+      ...(isArchivedPost(p.slug) ? { a: 1 as const } : {}),
     });
   }
   // Every report, the front first in its order, then the archive. Archived

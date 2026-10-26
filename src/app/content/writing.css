@@ -1,9 +1,9 @@
 /*
-  Writing — /content, /content/page/[n] and /content/[slug]. Prefix wr-.
+  Writing — /content, /content/archive and /content/[slug]. Prefix wr-.
 
-  The index is a notebook of field notes, three to a page: on page 1 the
-  pinned field guide leads, its seven levels on a strip, over the two newest
-  posts; later pages stamp their number beside the title. A post is a
+  The index is a notebook of field notes: on the front the pinned field
+  guide leads, its seven levels on a strip, over a door to the archive; the
+  archive sets the earlier notes three across. A post is a
   headline on the ground, a hero, and the article on a sheet. Kiru reads in
   the header, runs along the top while you read, bows at the end, sits on the
   subscribe card and waves from the learn band. Everything here is CSS: the
@@ -272,10 +272,9 @@
   }
 }
 
-/* ── Index: pages 2+, the compact header ─────────────────────────────────── */
+/* ── Index: the archive, the compact header ──────────────────────────────── */
 
-/* The same header, smaller: the title rests as plain type and the page
-   number is stamped beside it like a hanko. */
+/* The same header, smaller: the title rests as plain type. */
 .wr-head-compact {
   padding-bottom: 1.25rem;
 }
@@ -305,8 +304,8 @@
   gap: 0.15em 0.3em;
   font-size: clamp(2rem, 1.2rem + 3.6vw, 4.25rem);
 }
-/* On a phone the reading ninja steps back a little, so the title and its
-   stamp keep one line beside him. */
+/* On a phone the reading ninja steps back a little, so the title keeps one
+   line beside him. */
 @media (max-width: 39.99rem) {
   .wr-head-compact .wr-head-kiru {
     width: 5.5rem;
@@ -314,37 +313,6 @@
 }
 .wr-head-compact .wr-head-count {
   margin-top: 0.9rem;
-}
-
-/* The page, stamped. The primary button's vermilion, white type (4.7:1),
-   the same object in both lights — like the current page in the pager. */
-.wr-stamp {
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  width: 1.05em;
-  height: 1.05em;
-  border-radius: 22%;
-  background: #d63a22;
-  color: #fff;
-  font-size: 0.78em;
-  line-height: 1;
-  rotate: -6deg;
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
-    0 10px 22px -10px rgba(214, 58, 34, 0.75);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .wr-stamp {
-    animation: wr-stamp-in 0.55s cubic-bezier(0.2, 1.35, 0.4, 1) 0.3s backwards;
-  }
-}
-@keyframes wr-stamp-in {
-  from {
-    opacity: 0;
-    scale: 1.9;
-    rotate: -22deg;
-  }
 }
 
 /* ── Index: the notes ────────────────────────────────────────────────────── */
@@ -810,9 +778,9 @@
     gap: 1.5rem;
   }
 }
-/* Three a page. On a tablet the first lies across the row (see the card's
-   container query) and the other two sit under it; on a wide screen, three
-   across. */
+/* The archive's grid. On a tablet the first lies across the row (see the
+   card's container query) and the rest sit two by two under it; on a wide
+   screen, three across. */
 @media (min-width: 40rem) and (max-width: 63.99rem) {
   .wr-grid-three > li:first-child {
     grid-column: 1 / -1;
@@ -979,8 +947,6 @@
 .wr-back:focus-visible,
 .wr-out-btn:focus-visible,
 .wr-pill:focus-visible,
-.wr-pager-arrow:focus-visible,
-.wr-pager-num:focus-visible,
 .wr-learn-btn:focus-visible {
   border-radius: 999px;
 }
@@ -989,11 +955,12 @@
   border-radius: var(--radius-xl);
 }
 .wr-feature:focus-visible,
-.wr-guide:focus-visible {
+.wr-guide:focus-visible,
+.wr-door:focus-visible {
   border-radius: var(--radius-2xl);
 }
 
-/* ── Index: the end of the notes (last page) ─────────────────────────────── */
+/* ── Index: the end of the archive ───────────────────────────────────────── */
 
 /* Fills whatever the last row leaves open: the rest of the row, or a row of
    its own. */
@@ -1103,170 +1070,56 @@
   background: #c2311b;
 }
 
-/* ── Index: page numbers ─────────────────────────────────────────────────── */
+/* ── Index: the door to the archive (the front) ──────────────────────────── */
 
-/* A phone gets the numbers in a row and Newer / Older as two thumb-sized
-   buttons under them; from a tablet up it is one pill. */
-.wr-pager {
+/* Under the current notes, the way to the earlier ones. The end tile's
+   dashed edge, so the two read as the same room's door and its far wall:
+   words on the left, the link's call on the right, stacked on a phone. */
+.wr-door {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.85rem;
-  margin-top: 1.5rem;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem 1.35rem 0.9rem;
+  border-radius: var(--radius-2xl);
+  border: 1.5px dashed var(--sd-border-strong);
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    scale 0.15s ease;
 }
-.wr-pager-bar {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-areas:
-    'nums nums'
-    'prev next';
-  gap: 0.65rem;
-  width: 100%;
-  max-width: 24rem;
+.wr-door:hover {
+  border-color: var(--sd-text-secondary);
+  background: color-mix(in srgb, var(--sd-surface) 60%, transparent);
 }
-.wr-pager-nums {
-  grid-area: nums;
-  justify-self: center;
+.wr-door:active {
+  scale: 0.99;
+}
+.wr-door-body {
   display: flex;
-  align-items: center;
-  gap: 0.2rem;
-  margin: 0;
-  padding: 0.3rem;
-  list-style: none;
-  border-radius: 999px;
-  border: 1px solid var(--sd-border);
-  background: color-mix(in srgb, var(--sd-surface) 70%, transparent);
+  flex-direction: column;
+  gap: 0.55rem;
 }
-.wr-pager-prev {
-  grid-area: prev;
-}
-.wr-pager-next {
-  grid-area: next;
-}
-.wr-pager-arrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  min-height: 44px;
-  padding: 0 1.15rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--sd-accent) 40%, transparent);
-  background: var(--sd-surface);
-  color: var(--sd-accent);
-  font-size: 0.9rem;
-  font-weight: 700;
-  white-space: nowrap;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    scale 0.15s ease;
-}
-a.wr-pager-arrow:hover {
-  border-color: var(--sd-accent);
-  background: color-mix(in srgb, var(--sd-accent) 8%, var(--sd-surface));
-}
-a.wr-pager-arrow:active {
-  scale: 0.97;
-}
-/* Nowhere to go: a label, not a button (aria-hidden, so it may recede). */
-.wr-pager-arrow.is-dead {
-  border-color: transparent;
-  background: none;
-  color: color-mix(in srgb, var(--sd-text-secondary) 55%, transparent);
-}
-.wr-pager-num,
-.wr-pager-now {
-  display: inline-grid;
-  place-items: center;
-  min-width: 44px;
-  height: 44px;
-  padding: 0 0.55rem;
-  font-family: var(--font-display);
+.wr-door-line {
+  max-width: 52ch;
   font-size: 0.95rem;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.wr-pager-num {
-  border-radius: 999px;
-  color: var(--sd-text-secondary);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    scale 0.15s ease;
-}
-.wr-pager-num:hover {
-  background: var(--sd-fill);
-  color: var(--sd-text-primary);
-}
-.wr-pager-num:active {
-  scale: 0.94;
-}
-/* The current page, stamped: a hanko in the primary button's vermilion. */
-.wr-pager-now {
-  border-radius: 22%;
-  background: #d63a22;
-  color: #fff;
-  rotate: -5deg;
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
-    0 8px 18px -8px rgba(214, 58, 34, 0.7);
-}
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .wr-pager-now {
-      animation: wr-press linear both;
-      animation-timeline: view();
-      animation-range: entry 25% entry 100%;
-    }
-  }
-}
-@keyframes wr-press {
-  from {
-    opacity: 0;
-    scale: 1.7;
-    rotate: -20deg;
-  }
-  to {
-    opacity: 1;
-    scale: 1;
-    rotate: -5deg;
-  }
-}
-.wr-pager-gap {
-  padding-inline: 0.2rem;
-  color: var(--sd-text-secondary);
-}
-.wr-pager-count {
-  font-size: 0.78rem;
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
   color: var(--sd-text-secondary);
 }
 @media (min-width: 40rem) {
-  .wr-pager {
-    margin-top: 2.25rem;
-  }
-  .wr-pager-bar {
-    display: flex;
+  .wr-door {
+    flex-direction: row;
     align-items: center;
-    gap: 0.35rem;
-    width: auto;
-    max-width: none;
-    padding: 0.35rem;
-    border-radius: 999px;
-    border: 1px solid var(--sd-border);
-    background: color-mix(in srgb, var(--sd-surface) 70%, transparent);
-    box-shadow: 0 18px 40px -30px var(--sd-card-shadow);
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.4rem 1.75rem;
   }
-  .wr-pager-nums {
-    padding: 0 0.25rem;
-    border: 0;
-    background: none;
+  .wr-door .wr-cta {
+    flex: none;
   }
 }
 
-/* ── Index: Market Storm (page 1) ────────────────────────────────────────── */
+/* ── Index: Market Storm (the front) ─────────────────────────────────────── */
 
 /* The storm section (src/components/writing/storm) is full-bleed and carries
    no outer margin of its own; its torn edges are painted in the page colour,
@@ -1280,9 +1133,9 @@ a.wr-pager-arrow:active {
   }
 }
 
-/* ── Index: learn together (page 1) ──────────────────────────────────────── */
+/* ── Index: learn together (the front) ───────────────────────────────────── */
 
-/* The way out of page 1, in /learn's own words and calm. Kiru stands on the
+/* The way out of the front, in /learn's own words and calm. Kiru stands on the
    band's top edge and waves you in; 学 ("learn") is brushed in behind as
    the band scrolls up. */
 .wr-learn {
@@ -1566,6 +1419,73 @@ a.wr-pager-arrow:active {
 }
 .wr-post-tags {
   margin-top: 1.1rem;
+}
+
+/* An archived post's note (ArchivedNote in [slug]/page.tsx). Market Storm's
+   recipe (src/components/market-storm/archived.css): the page's secondary
+   ink under a hairline, the kicker's diamond as the only mark, and the
+   current notes in the indigo of anything you press. No warning colour and
+   no box: an archived note isn't wrong, it's dated. */
+.wr-archived {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  max-width: 40rem;
+  border-top: 1px solid var(--sd-border-strong);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+.wr-archived-line {
+  margin-top: 0.5rem;
+}
+.wr-archived-list {
+  margin-top: 0.25rem;
+}
+/* Each current note is its own row, a thumb tall where there are thumbs. */
+.wr-archived-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: 0.3rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--sd-accent);
+  transition: color 0.2s ease;
+}
+.wr-archived-link:hover {
+  color: var(--sd-accent-hover);
+}
+@media (pointer: fine) {
+  .wr-archived-link {
+    min-height: 0;
+    padding-block: 0.2rem;
+  }
+}
+/* The underline is on the title, not the link, so it never runs under the
+   arrow. */
+.wr-archived-title {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--sd-accent) 45%, transparent);
+  transition: text-decoration-color 0.2s ease;
+}
+.wr-archived-link:hover .wr-archived-title {
+  text-decoration-color: currentColor;
+}
+.wr-archived-tail {
+  white-space: nowrap;
+}
+.wr-archived-arrow {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wr-archived-arrow {
+    transition: translate 0.35s var(--ease-out-expo);
+  }
+  .wr-archived-link:hover .wr-archived-arrow {
+    translate: 4px 0;
+  }
 }
 
 /* ── Post: hero ──────────────────────────────────────────────────────────── */
@@ -2084,14 +2004,6 @@ a.wr-pager-arrow:active {
   }
 }
 
-/* Paging between notes pages (`wr-page`, set on the pager's links): no card
-   on one page has a partner on the other, so the cards drop their names and
-   travel with the page instead of fading in place. !important because the
-   name is set inline. */
-:root:active-view-transition-type(wr-page) .wr-frame {
-  view-transition-name: none !important;
-}
-
 @media (prefers-reduced-motion: no-preference) {
   /* The card image becomes the post's hero (and back). */
   ::view-transition-group(*.wr-hero) {
@@ -2109,29 +2021,6 @@ a.wr-pager-arrow:active {
   ::view-transition-new(*.wr-hero):only-child {
     animation: wr-vt-in 0.45s var(--ease-out-expo) both;
   }
-
-  /* Paging turns the page. The pager sits at the foot of the page and the
-     new one opens at its top, so the browser's default would sweep the old
-     page down the screen while the new one arrived. Instead the old page is
-     lifted away at once, nothing sweeps, and the new page swings in from the
-     side it comes from, hinged at its top corner: going older it lies down
-     from the right, going newer from the left. Transforms and opacity on one
-     snapshot, so the compositor runs all of it. */
-  :root:active-view-transition-type(wr-page)::view-transition-group(.sd-page) {
-    animation: none;
-  }
-  :root:active-view-transition-type(wr-page)::view-transition-old(.sd-page) {
-    animation: none;
-    opacity: 0;
-  }
-  :root:active-view-transition-type(wr-page)::view-transition-new(.sd-fwd) {
-    transform-origin: 100% 0;
-    animation: wr-turn-in-r 0.6s var(--ease-out-expo) both;
-  }
-  :root:active-view-transition-type(wr-page)::view-transition-new(.sd-back) {
-    transform-origin: 0 0;
-    animation: wr-turn-in-l 0.6s var(--ease-out-expo) both;
-  }
 }
 @keyframes wr-vt-out {
   to {
@@ -2143,17 +2032,5 @@ a.wr-pager-arrow:active {
   from {
     opacity: 0;
     scale: 0.97;
-  }
-}
-@keyframes wr-turn-in-r {
-  from {
-    opacity: 0;
-    transform: perspective(1800px) translateX(4%) rotateY(-9deg);
-  }
-}
-@keyframes wr-turn-in-l {
-  from {
-    opacity: 0;
-    transform: perspective(1800px) translateX(-4%) rotateY(9deg);
   }
 }

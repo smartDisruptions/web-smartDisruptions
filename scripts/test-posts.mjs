@@ -10,6 +10,7 @@ import {
   stringifyFrontmatter,
 } from '../src/lib/frontmatter.ts';
 import { parsePost, isLive } from '../src/lib/posts.ts';
+import { ARCHIVED_POST_SLUGS } from '../src/lib/fieldNotes.ts';
 import { publishDay } from './publish-day.mjs';
 
 let pass = 0,
@@ -288,6 +289,22 @@ ok(
     return `${p.slug}.md` === f;
   })
 );
+
+// /content/archive is a page of its own, and a static segment wins over
+// /content/[slug], so a post slugged `archive` could never be opened.
+ok('no post takes the slug "archive"', !files.includes('archive.md'));
+
+// The archive list in src/lib/fieldNotes.ts names posts by slug. A typo there
+// would leave a post on the front with nothing failing, so every name has to
+// be a post that exists.
+{
+  const missing = ARCHIVED_POST_SLUGS.filter((s) => !files.includes(`${s}.md`));
+  ok(
+    'every archived slug names a post',
+    missing.length === 0,
+    missing.join(', ')
+  );
+}
 
 // The gate has to hold against the real loader, not just the pure function:
 // drop a draft into the store and confirm every public surface ignores it.
