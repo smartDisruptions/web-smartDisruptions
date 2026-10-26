@@ -107,7 +107,7 @@ function guideNote(): Omit<FieldNote, 'no'> {
     image: {
       src: GUIDE_HERO,
       srcLight: `/images/content/${GUIDE_SLUG}-hero-light.webp`,
-      alt: 'Split card: priced per use, my 4-day build came to $536, which I never paid, against what I actually paid, my usual $200 a month with nothing extra.',
+      alt: 'Split card: for the same 4 days on the same model, $536 if paid per use against about $7 of my monthly plan, so the plan came out roughly 75 times cheaper.',
       ...size,
     },
     // Pinned first on the front. To unpin, set this to false: the guide then
