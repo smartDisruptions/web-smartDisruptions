@@ -6,32 +6,22 @@ import {
   type ProjectPart,
 } from '@/data/projects';
 import { BUILT_COVERED, builtCatalogueApps } from '@/data/built';
-import {
-  FEATURED_SLUGS,
-  SHOWCASE,
-  type Showcase,
-  type ShowcaseLink,
-} from '@/data/showcase';
+import { FEATURED_SLUGS, SHOWCASE, type Showcase } from '@/data/showcase';
 import type { WallItem } from '@/components/built/ArmoryWall';
 import { markFor } from '@/components/built/media';
 
 /**
  * The work on /about, as lists: what What I Built showed before it was
- * folded into About (October 2026). Every section of the page reads these,
- * so the counts in the receipt, the jump links and the sections can't drift
- * from each other. The underlying filters live in src/data/built.ts, which
+ * folded into About (October 2026). The receipt counts them and the wall
+ * hangs them, its chips sorting them by the same rule (`kindsOf`), so the
+ * counts and the plaques can't drift from each other. The underlying filters live in src/data/built.ts, which
  * the home page's receipts band counts from too.
  */
 
-/** The anchors each section of the work sits under, in page order. */
+/** The anchor the wall sits under, which the receipt's lines open. */
 export const WORK_IDS = {
-  projects: 'projects',
-  more: 'more',
-  games: 'games',
   wall: 'wall',
 } as const;
-
-export type { Showcase, ShowcaseLink };
 
 /** A project with a write-up, in the shape the four are drawn in. */
 function fromProject(p: Project): Showcase {
@@ -194,6 +184,27 @@ export const counts = {
   games: partsOf('Game') + games.length,
 };
 
+/** The wall's chips, besides All (Josh, 2026-10-26). */
+export type WorkKind = 'games' | 'apps' | 'websites';
+const KIND_OF: Record<ProjectPart['kind'], WorkKind> = {
+  Website: 'websites',
+  App: 'apps',
+  Game: 'games',
+};
+
+/**
+ * Which of the wall's chips find a thing, by the receipt's rule (`counts`):
+ * a project is each kind it has a part of, so Broom & Blade is under
+ * Websites and Games both; an app that isn't a project is an app; a game is
+ * a game. The Arcade and Kiru are parts of this site, not things of their
+ * own, so they are under All only, as the receipt doesn't count them.
+ */
+const kindsOf = (slug: string, otherwise: WorkKind[] = []): WorkKind[] => {
+  const project = getProjectBySlug(slug);
+  if (!project) return otherwise;
+  return [...new Set(project.parts.map((part) => KIND_OF[part.kind]))];
+};
+
 /**
  * Everything on one wall: the four, everything else, then the games. Each
  * plaque opens the thing's own page (one without a page would open the
@@ -207,6 +218,7 @@ export const wall: WallItem[] = [
     href: f.href,
     src: f.image,
     mark: markFor(f.slug),
+    groups: kindsOf(f.slug),
   })),
   ...catalogue.map((c) => ({
     key: c.key,
@@ -216,6 +228,7 @@ export const wall: WallItem[] = [
     external: !c.detailHref,
     src: c.thumbnail,
     mark: markFor(c.key),
+    groups: kindsOf(c.key, ['apps']),
   })),
   ...games.map((g) => ({
     key: g.slug,
@@ -224,24 +237,6 @@ export const wall: WallItem[] = [
     href: `/built/${g.slug}`,
     src: g.thumbnailUrl,
     mark: markFor(g.slug),
+    groups: ['games'],
   })),
 ];
-
-const WORDS = [
-  'no',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-];
-
-/** Small counts read as words in a sentence ("the four below"). */
-export const inWords = (n: number) => WORDS[n] ?? String(n);
-
-/** "01", "02" … for the big index numerals. */
-export const pad = (n: number) => String(n).padStart(2, '0');

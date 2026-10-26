@@ -25,21 +25,21 @@ import './threshold.css';
  * reduced motion, without JavaScript or without sticky support, it is simply
  * a stamped receipt on its till.
  *
- * Last, the cue: a real link to the first room (#projects), with a brushed
- * arrow that inks itself down when you reach it.
+ * Last, the cue: a real link down to the wall (#wall), with a brushed arrow
+ * that inks itself down when you reach it.
  *
  * The receipt counts websites, apps and games, and nothing else (Josh's
  * call, 2026-10-21), with their total. The counts are read from the site's
  * own data at build time (`counts` in ../data.ts), so they can't drift from
- * the sections they open: Websites opens the four, where the first two
- * websites hang (the other three lead More builds), Apps opens More builds
- * and Games the games. Styles: ./threshold.css (au-, new parts au-th-).
+ * the wall, where every one of them hangs; each line opens it (the four
+ * projects, More builds and the games sections came off the page on
+ * 2026-10-26). Styles: ./threshold.css (au-, new parts au-th-).
  */
 export default function WorkThreshold() {
   const lines = [
-    { href: `#${WORK_IDS.projects}`, label: 'Websites', n: counts.websites },
-    { href: `#${WORK_IDS.more}`, label: 'Apps', n: counts.apps },
-    { href: `#${WORK_IDS.games}`, label: 'Games', n: counts.games },
+    { label: 'Websites', n: counts.websites },
+    { label: 'Apps', n: counts.apps },
+    { label: 'Games', n: counts.games },
   ];
   const total = lines.reduce((sum, l) => sum + l.n, 0);
 
@@ -88,15 +88,15 @@ export default function WorkThreshold() {
           <p className="au-rc-sub">The work so far</p>
           <ul className="au-rc-lines" role="list">
             {lines.map((l) => (
-              <li key={l.href}>
+              <li key={l.label}>
                 {/* Named by what it shows ("Games 12"), so the spoken name
-                    matches the printed one (WCAG 2.5.3). Each line opens a
-                    section of this page, so it is a plain anchor: through
+                    matches the printed one (WCAG 2.5.3). Each line opens the
+                    wall further down, so it is a plain anchor: through
                     next/link a same-page jump became a router navigation
                     wrapped in a full-page view transition, so the page froze
                     for the capture and cross-faded instead of simply
                     scrolling. */}
-                <a href={l.href} className="au-rc-line">
+                <a href={`#${WORK_IDS.wall}`} className="au-rc-line">
                   <span>{l.label}</span>
                   <span className="au-rc-dots" aria-hidden />
                   <b>{l.n}</b>
@@ -135,7 +135,7 @@ export default function WorkThreshold() {
       <p className="au-th-cue">
         {/* A plain anchor, like the receipt's section lines: a jump down
             this page, not a navigation. */}
-        <a href={`#${WORK_IDS.projects}`} className="au-th-cue-link">
+        <a href={`#${WORK_IDS.wall}`} className="au-th-cue-link">
           <span className="au-th-cue-text">See the work</span>
           <svg
             className="au-th-cue-ink"

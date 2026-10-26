@@ -430,19 +430,10 @@
   }
 }
 
-/* A chip that leaves a plaque out puts it in the hall's shade. */
-.bt-panel-face::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  pointer-events: none;
-  background: var(--bt-hall);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-.bt-panel[data-out] .bt-panel-face::after {
-  opacity: 0.7;
+/* A plaque a chip leaves out is gone, on the ring and on the flat grid
+   alike: the ring is rebuilt round the ones left (ArmoryWallIsland). */
+.bt-panel[data-out] {
+  display: none;
 }
 
 /* The back of a plaque, seen while it faces away: lacquer, its seal and
@@ -730,9 +721,6 @@
     position: relative;
     inset: auto;
     transform: none;
-  }
-  .bt-panel[data-out] {
-    display: none;
   }
   .bt-panel-face {
     position: relative;

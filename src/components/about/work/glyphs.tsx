@@ -24,17 +24,14 @@ import { wall } from './data';
  * section starts using it.
  *
  * The paths keep their stroke width in screen pixels (non-scaling-stroke),
- * which the neon sign strokes them with; a filled glyph, everywhere else,
- * looks exactly the same either way.
+ * for a glyph drawn as a stroke (the games' neon sign did, until it left
+ * the page); a filled glyph looks exactly the same either way.
  */
 
 /** Characters the sections draw by name, besides each thing's mark. */
 const NAMED = [
   '作', // the receipt's seal (threshold) and the seal the wall closes on
-  '場', // the threshold's hint, and the neon sign
-  '光', // the ema rack's lantern
-  '遊', // the neon sign: 遊戯場, "a place to play"
-  '戯',
+  '場', // the threshold's hint
   '創', // the wall's lantern
 ];
 

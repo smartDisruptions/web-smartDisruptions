@@ -2,9 +2,6 @@ import type { Metadata } from 'next';
 import AboutSwitch from '@/components/about/AboutSwitch';
 import AboutNext from '@/components/about/AboutNext';
 import WorkThreshold from '@/components/about/work/threshold/WorkThreshold';
-import WorkProjects from '@/components/about/work/projects/WorkProjects';
-import WorkMore from '@/components/about/work/more/WorkMore';
-import WorkGames from '@/components/about/work/games/WorkGames';
 import WorkWall from '@/components/about/work/wall/WorkWall';
 import { GlyphSprite } from '@/components/about/work/glyphs';
 import ScrollPad from '@/components/about/work/ScrollPad';
@@ -31,15 +28,15 @@ export const metadata: Metadata = {
  * person; the fusuma at the top of both slides between them
  * (components/about/AboutSwitch).
  *
- * The page is a stack of sections, each its own component, stylesheet and
- * class prefix under components/about/work/, all reading the same lists
- * (./data.ts), so a count can't disagree with the section it opens:
+ * The page is a short stack (Josh, 2026-10-26: the four projects, More
+ * builds and the games came off, leaving the wall to hold all of it):
  *
- *  1. the threshold — the noren, the h1 (the LCP) and the receipt;
- *  2. the four projects I would show you first (#projects);
- *  3. everything else (#more);
- *  4. the games (#games);
- *  5. everything on one wall (#wall), the ring.
+ *  1. the threshold — the noren, the h1 (the LCP) and the receipt, whose
+ *     lines open the wall;
+ *  2. everything on one wall (#wall), the ring, reading the same lists as
+ *     the receipt (components/about/work/data.ts), so a count can't
+ *     disagree with the plaques;
+ *  3. the card to About Me.
  *
  * Every kanji and seal in those sections is drawn from one copy of its
  * glyph, the sprite rendered first here (components/about/work/glyphs.tsx).
@@ -53,9 +50,6 @@ export default function AboutPage() {
       <GlyphSprite />
       <AboutSwitch current="work" />
       <WorkThreshold />
-      <WorkProjects />
-      <WorkMore />
-      <WorkGames />
       <WorkWall />
       <AboutNext to="person" />
     </div>
