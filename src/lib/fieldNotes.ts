@@ -3,7 +3,7 @@ import { imageSize, readingMinutes } from '@/app/content/post-extras';
 import { EXCERPT, PUBLISHED, TITLE } from '@/components/guide/copy';
 
 /**
- * Field notes: everything the Writing page lists, in the order it lists it.
+ * Field notes: everything the Writing page lists, and its archive.
  *
  * Two kinds of thing live here. Posts are markdown in src/content/posts and
  * open at /content/<slug>. The field guide is its own route, because it is
@@ -16,11 +16,37 @@ import { EXCERPT, PUBLISHED, TITLE } from '@/components/guide/copy';
  */
 
 /**
- * Three a page: on a wide screen that is one row of the three-up grid, and on
- * page 1 it is the lead and the two newest posts, which leaves room under them
- * for Market Storm and the way into /learn without a wall of cards first.
+ * The posts taken off the Writing page's front (Josh's call, 2026-10-26).
+ * They were written for the site's older design; the front now leads with the
+ * field guide, then Market Storm. Archiving moves a card to /content/archive
+ * and nothing else: each post keeps its URL, its words, search and the
+ * sitemap. A post not named here goes on the front, so a new one lands there.
+ * The last one is still a draft: if it is ever published, it is published
+ * into the archive.
  */
-export const NOTES_PER_PAGE = 3;
+export const ARCHIVED_POST_SLUGS: readonly string[] = [
+  'model-it-dont-prompt-it',
+  'six-checks-ai-research',
+  'took-it-apart-and-built-it-again',
+  'five-of-six-failures-said-success',
+  'a-pipeline-with-no-server',
+  'my-dashboard-said-published',
+  'my-private-task-list-was-public',
+  'you-dont-get-replaced-for-being-slow',
+  'what-ai-handed-back',
+  'six-prompts-one-day',
+  'stop-re-explaining-yourself-to-ai',
+  'i-tried-to-break-my-friends-ai-site',
+  'food-truck-site-with-ai',
+  'headlines-that-hide-their-subject',
+];
+
+const ARCHIVED = new Set(ARCHIVED_POST_SLUGS);
+
+/** Whether a post lives in the archive rather than on the front. */
+export function isArchivedPost(slug: string): boolean {
+  return ARCHIVED.has(slug);
+}
 
 export type NoteImage = {
   /** The dark-theme hero. */
@@ -84,7 +110,7 @@ function guideNote(): Omit<FieldNote, 'no'> {
       alt: 'Split card: priced per use, my 4-day build came to $536, which I never paid, against what I actually paid, my usual $200 a month with nothing extra.',
       ...size,
     },
-    // Pinned first on page 1. To unpin, set this to false: the guide then
+    // Pinned first on the front. To unpin, set this to false: the guide then
     // takes its place among the posts by date, and nothing else changes.
     pinned: true,
   };
@@ -118,10 +144,13 @@ function postNotes(): Omit<FieldNote, 'no'>[] {
   });
 }
 
-let cache: FieldNote[] | null = null;
+let cache: { front: FieldNote[]; archive: FieldNote[] } | null = null;
 
-/** Every note, pinned first, then newest first. */
-export function getFieldNotes(): FieldNote[] {
+/**
+ * Numbered across both lists, oldest first, so a note keeps its entry number
+ * when it moves to the archive.
+ */
+function allNotes(): { front: FieldNote[]; archive: FieldNote[] } {
   if (cache) return cache;
   // Newest first by date. The sort is stable, so posts that share a day keep
   // the post store's order.
@@ -132,36 +161,31 @@ export function getFieldNotes(): FieldNote[] {
     ...n,
     no: byDate.length - i,
   }));
-  cache = [
-    ...numbered.filter((n) => n.pinned),
-    ...numbered.filter((n) => !n.pinned),
-  ];
+  const front = numbered.filter((n) => !ARCHIVED.has(n.slug));
+  cache = {
+    front: [
+      ...front.filter((n) => n.pinned),
+      ...front.filter((n) => !n.pinned),
+    ],
+    archive: numbered.filter((n) => ARCHIVED.has(n.slug)),
+  };
   return cache;
 }
 
-/** The most recently dated note, wherever it sits — it wears the 新 seal. */
+/** The Writing page's front: pinned first, then newest first. */
+export function getFieldNotes(): FieldNote[] {
+  return allNotes().front;
+}
+
+/** The archive, newest first. */
+export function getArchivedNotes(): FieldNote[] {
+  return allNotes().archive;
+}
+
+/** The most recently dated note on the front — it wears the 新 seal. */
 export function newestNote(): FieldNote | undefined {
   return getFieldNotes().reduce<FieldNote | undefined>(
     (best, n) => (!best || n.date > best.date ? n : best),
     undefined
   );
-}
-
-export const totalNotePages = Math.max(
-  1,
-  Math.ceil(getFieldNotes().length / NOTES_PER_PAGE)
-);
-
-export function notesOnPage(page: number): FieldNote[] {
-  const start = (page - 1) * NOTES_PER_PAGE;
-  return getFieldNotes().slice(start, start + NOTES_PER_PAGE);
-}
-
-/**
- * Page 1 lives at `/content`, never `/content/page/1`: two URLs with the same
- * cards would compete with each other, and the bare section URL is the one
- * that gets linked and shared. The numbered route starts at 2.
- */
-export function notePageHref(page: number): string {
-  return page <= 1 ? '/content' : `/content/page/${page}`;
 }

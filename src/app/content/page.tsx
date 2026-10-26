@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Page 1 of the Writing page. Pages 2+ are at `/content/page/[page]`; the
- * whole view lives in FieldNotesView so the two routes can never drift apart.
+ * The Writing page's front. The archive is at `/content/archive`; the whole
+ * view lives in FieldNotesView so the two routes can never drift apart.
  */
 export default function ContentIndex() {
-  return <FieldNotesView page={1} />;
+  return <FieldNotesView view="front" />;
 }

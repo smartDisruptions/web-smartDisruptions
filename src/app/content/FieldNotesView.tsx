@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal, Slash } from '@/components/brand/Kanji';
@@ -6,12 +6,9 @@ import HeroImage from '@/components/HeroImage';
 import { LEVELS } from '@/components/guide/copy';
 import { formatDate } from '@/lib/format';
 import {
+  getArchivedNotes,
   getFieldNotes,
   newestNote,
-  notePageHref,
-  notesOnPage,
-  totalNotePages,
-  NOTES_PER_PAGE,
   type FieldNote,
 } from '@/lib/fieldNotes';
 import WritingStorm from '@/components/writing/storm/WritingStorm';
@@ -19,14 +16,16 @@ import LevelSweep from './LevelSweep';
 import './writing.css';
 
 /*
-  The Writing page, one page of it. `/content` renders page 1 and
-  `/content/page/[page]` renders the rest, both through this view, so the two
-  can never drift apart.
+  The Writing page and its archive. `/content` renders the front and
+  `/content/archive` the archive, both through this view, so the two can
+  never drift apart.
 
-  Page 1: the header, the pinned field guide as the lead, the two newest
-  posts, the page numbers, Market Storm (mounted below by its own section),
-  and the way into /learn. Pages 2+: a compact header with the page stamped
-  beside the title, three notes, the page numbers.
+  The front: the header, the pinned field guide as the lead, any other
+  current notes, the door to the archive, Market Storm (mounted below by its
+  own section), and the way into /learn. The archive: a compact header, every
+  archived note in the three-up grid, newest first, and a closing tile.
+  (Both were paged, three notes a page, until the archive opened on
+  2026-10-26; next.config.ts sends the old page addresses to the archive.)
 
   Everything here is rendered on the server. The only script is one small
   island: LevelSweep lights the guide's level strip once when it comes into
@@ -270,7 +269,7 @@ function NoteCard({
 }
 
 /**
- * The last page's closing tile, filling whatever the last row leaves open, so
+ * The archive's closing tile, filling whatever the last row leaves open, so
  * the oldest note never sits beside empty columns. Its facts come from the
  * list: which note is the first one, and when it went up.
  */
@@ -284,16 +283,16 @@ function EndTile({ first, span }: { first: FieldNote; span: 1 | 2 }) {
             The first note
           </p>
           <p className="wr-fin-tile-copy">
-            Field notes start here, on {formatDate(first.date)}. Everything
-            newer is on the pages before this one.
+            Field notes start here, on {formatDate(first.date)}. What I&apos;m
+            writing now is on the Writing page.
           </p>
           <div className="wr-fin-tile-go">
             <Link
-              href={notePageHref(1)}
-              transitionTypes={['nav-back', 'wr-page']}
+              href="/content"
+              transitionTypes={['nav-back']}
               className="wr-pill"
             >
-              <span aria-hidden>←</span> Back to the newest
+              <span aria-hidden>←</span> Back to Writing
             </Link>
             <Link
               href="/learn"
@@ -309,136 +308,9 @@ function EndTile({ first, span }: { first: FieldNote; span: 1 | 2 }) {
   );
 }
 
-/* ── Page numbers ──────────────────────────────────────────────────────── */
-
-/**
- * Which page numbers to show. Up to seven, every number fits on a phone; past
- * that it is first, current ±1 and last, with gaps — one line however long the
- * archive grows. (The Market Storm index used the same window until it
- * stopped paging, October 2026.)
- */
-function pageWindow(page: number, total: number): (number | 'gap')[] {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  const out: (number | 'gap')[] = [1];
-  const start = Math.max(2, page - 1);
-  const end = Math.min(total - 1, page + 1);
-  if (start > 2) out.push('gap');
-  for (let n = start; n <= end; n++) out.push(n);
-  if (end < total - 1) out.push('gap');
-  out.push(total);
-  return out;
-}
-
-/**
- * Newer / Older. With nowhere to go it is a `<span>`, not a dead link — a
- * link to nowhere still sits in the tab order and announces as a link — and
- * it keeps its slot so the numbers don't slide between pages.
- *
- * Paging slides the page the way it travels (`nav-forward` for older,
- * `nav-back` for newer) and turns it like a page (`wr-page`, see the view
- * transitions in writing.css).
- */
-function PageArrow({
-  href,
-  rel,
-  children,
-}: {
-  href?: string;
-  rel: 'prev' | 'next';
-  children: ReactNode;
-}) {
-  const className = `wr-pager-arrow wr-pager-${rel}`;
-  if (!href) {
-    return (
-      <span aria-hidden className={`${className} is-dead`}>
-        {children}
-      </span>
-    );
-  }
-  return (
-    <Link
-      href={href}
-      rel={rel}
-      transitionTypes={[rel === 'next' ? 'nav-forward' : 'nav-back', 'wr-page']}
-      className={className}
-    >
-      {children}
-    </Link>
-  );
-}
-
-/**
- * "Newer" and "Older" rather than "Previous" and "Next": on a newest-first
- * list "next" points back in time. `rel` still carries document order. The
- * current page is stamped like a hanko — the primary button's vermilion with
- * white type (4.7:1), the same object in both lights.
- */
-function Pager({
-  page,
-  total,
-  count,
-}: {
-  page: number;
-  total: number;
-  count: number;
-}) {
-  if (total <= 1) return null;
-  return (
-    <nav className="wr-pager" aria-label="Field notes, by page">
-      <div className="wr-pager-bar">
-        <PageArrow
-          href={page > 1 ? notePageHref(page - 1) : undefined}
-          rel="prev"
-        >
-          <span aria-hidden>←</span> Newer
-        </PageArrow>
-        <ol className="wr-pager-nums">
-          {pageWindow(page, total).map((item, i) =>
-            item === 'gap' ? (
-              <li key={`gap-${i}`} aria-hidden className="wr-pager-gap">
-                …
-              </li>
-            ) : (
-              <li key={item}>
-                {item === page ? (
-                  <span aria-current="page" className="wr-pager-now">
-                    <span className="sr-only">Page </span>
-                    {item}
-                  </span>
-                ) : (
-                  <Link
-                    href={notePageHref(item)}
-                    aria-label={`Page ${item} of ${total}`}
-                    transitionTypes={[
-                      item > page ? 'nav-forward' : 'nav-back',
-                      'wr-page',
-                    ]}
-                    className="wr-pager-num"
-                  >
-                    {item}
-                  </Link>
-                )}
-              </li>
-            )
-          )}
-        </ol>
-        <PageArrow
-          href={page < total ? notePageHref(page + 1) : undefined}
-          rel="next"
-        >
-          Older <span aria-hidden>→</span>
-        </PageArrow>
-      </div>
-      <p className="wr-pager-count">
-        Page {page} of {total} · {count} notes
-      </p>
-    </nav>
-  );
-}
-
 /* ── Headers ───────────────────────────────────────────────────────────── */
 
-/** Page 1: the full header — 書 inking in, the cut title, Kiru reading. */
+/** The front: the full header — 書 inking in, the cut title, Kiru reading. */
 function IndexHead({ count, newest }: { count: number; newest?: FieldNote }) {
   return (
     <header className="wr-head">
@@ -474,7 +346,7 @@ function IndexHead({ count, newest }: { count: number; newest?: FieldNote }) {
   );
 }
 
-/** "August 3 to August 22, 2026" — the days a page of notes spans. */
+/** "July 8 to August 28, 2026" — the days a list of notes spans. */
 function daySpan(notes: FieldNote[]): string | null {
   if (notes.length === 0) return null;
   const days = notes.map((n) => n.date).sort();
@@ -489,41 +361,29 @@ function daySpan(notes: FieldNote[]): string | null {
 }
 
 /**
- * Pages 2+: a compact header. The page number is stamped beside the title
- * like a hanko, and the line under it says which days this page covers.
+ * The archive: a compact header. It says what the archive is and that it is
+ * not kept up to date, then which days it covers.
  */
-function PageHead({
-  page,
-  total,
-  notes,
-}: {
-  page: number;
-  total: number;
-  notes: FieldNote[];
-}) {
+function ArchiveHead({ notes }: { notes: FieldNote[] }) {
   const span = daySpan(notes);
   return (
     <header className="wr-head wr-head-compact">
       <Kanji char="書" draw className="sd-watermark wr-head-mark" />
       <div className="wr-head-titles">
         <p className="sd-kicker">Writing</p>
-        <h1 className="font-display wr-head-title">
-          Field notes
-          <span className="sr-only">
-            , page {page} of {total}
-          </span>
-          <span aria-hidden className="wr-stamp">
-            {page}
-          </span>
-        </h1>
+        <h1 className="font-display wr-head-title">The archive</h1>
       </div>
       <div className="wr-head-kiru" aria-hidden>
         <Kiru pose="read" className="wr-head-ninja" />
       </div>
       <div className="wr-head-sub">
+        <p className="font-read wr-head-lead">
+          My earlier field notes, written for the site&apos;s older design. I
+          don&apos;t keep them up to date.
+        </p>
         <p className="wr-head-count">
           <span>
-            Page {page} of {total}
+            {notes.length} {notes.length === 1 ? 'note' : 'notes'}
           </span>
           {span && <span>{span}</span>}
         </p>
@@ -532,10 +392,42 @@ function PageHead({
   );
 }
 
+/* ── The way into the archive ──────────────────────────────────────────── */
+
+/**
+ * The front's door to the archive, under the current notes: how many, which
+ * days, and one link. Quiet on purpose, like the end tile it leads to: a
+ * dashed edge and no art, so the guide above stays the thing to read.
+ */
+function ArchiveDoor({ notes }: { notes: FieldNote[] }) {
+  const span = daySpan(notes);
+  return (
+    <Link
+      href="/content/archive"
+      transitionTypes={['nav-forward']}
+      className="wr-door group"
+    >
+      <span className="wr-door-body">
+        <span className="sd-kicker">The archive</span>
+        <span className="wr-door-line">
+          {notes.length} earlier field {notes.length === 1 ? 'note' : 'notes'}
+          {span ? `, ${span}` : ''}. Each one is still at its own link.
+        </span>
+      </span>
+      <span className="wr-cta">
+        Open the archive{' '}
+        <span aria-hidden className="wr-cta-arrow">
+          →
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 /* ── Learn together ────────────────────────────────────────────────────── */
 
 /**
- * The way out of page 1: /learn, the email splash. Same words and the same
+ * The way out of the front: /learn, the email splash. Same words and the same
  * calm as that page — its headline, its "no hype" line, its button — with
  * Kiru climbing onto the band's top edge to wave people in.
  */
@@ -575,22 +467,23 @@ function LearnBand() {
 
 /* ── The page ──────────────────────────────────────────────────────────── */
 
-export default function FieldNotesView({ page }: { page: number }) {
-  const all = getFieldNotes();
-  const notes = notesOnPage(page);
-  const newest = newestNote();
-  const isNewest = (n: FieldNote) => n.slug === newest?.slug;
-  const total = totalNotePages;
-  const last = page === total;
-  const empty = NOTES_PER_PAGE - notes.length;
+export default function FieldNotesView({
+  view,
+}: {
+  view: 'front' | 'archive';
+}) {
+  const archive = getArchivedNotes();
 
-  if (page === 1) {
+  if (view === 'front') {
+    const notes = getFieldNotes();
+    const newest = newestNote();
+    const isNewest = (n: FieldNote) => n.slug === newest?.slug;
     const [lead, ...rest] = notes;
     return (
       <div className="wr-index">
-        <IndexHead count={all.length} newest={newest} />
+        <IndexHead count={notes.length} newest={newest} />
 
-        <section className="wr-notes" aria-label="Field notes, page 1">
+        <section className="wr-notes" aria-label="Field notes">
           {lead &&
             (lead.kind === 'guide' ? (
               <GuideLead note={lead} isNewest={isNewest(lead)} />
@@ -606,12 +499,12 @@ export default function FieldNotesView({ page }: { page: number }) {
               ))}
             </ul>
           )}
-          <Pager page={1} total={total} count={all.length} />
+          {archive.length > 0 && <ArchiveDoor notes={archive} />}
         </section>
 
-        {/* Market Storm, the Writing page's second room. Page 1 only: pages
-            2+ are for paging back through notes. It runs full-bleed on its
-            own; this wrapper only owns the gap above it. */}
+        {/* Market Storm, the Writing page's second room. The front only: the
+            archive is for reading back through notes. It runs full-bleed on
+            its own; this wrapper only owns the gap above it. */}
         <div className="wr-storm-slot">
           <WritingStorm />
         </div>
@@ -621,29 +514,27 @@ export default function FieldNotesView({ page }: { page: number }) {
     );
   }
 
+  // Three across on a wide screen: whatever the last row leaves open, the
+  // end tile fills.
+  const empty = (3 - (archive.length % 3)) % 3;
   return (
     <div className="wr-index">
-      <PageHead page={page} total={total} notes={notes} />
+      <ArchiveHead notes={archive} />
 
-      <section className="wr-notes" aria-label={`Field notes, page ${page}`}>
+      <section className="wr-notes" aria-label="Archived field notes">
         <ul className="wr-grid wr-grid-three" role="list">
-          {notes.map((note, i) => (
+          {archive.map((note, i) => (
             <li key={note.slug} className="sd-reveal">
-              <NoteCard
-                note={note}
-                isNewest={isNewest(note)}
-                priority={i === 0}
-              />
+              <NoteCard note={note} isNewest={false} priority={i === 0} />
             </li>
           ))}
-          {last && empty > 0 && all.length > 0 && (
+          {empty > 0 && (
             <EndTile
-              first={all.reduce((a, b) => (b.no < a.no ? b : a))}
+              first={archive.reduce((a, b) => (b.no < a.no ? b : a))}
               span={empty === 2 ? 2 : 1}
             />
           )}
         </ul>
-        <Pager page={page} total={total} count={all.length} />
       </section>
     </div>
   );
