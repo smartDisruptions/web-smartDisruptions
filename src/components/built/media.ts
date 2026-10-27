@@ -9,6 +9,10 @@
  * Add a row when a new screenshot arrives.
  */
 export const SIZES: Record<string, readonly [number, number]> = {
+  '/images/apps/tether-ball-1.webp': [780, 1688],
+  '/images/apps/tether-ball-2.webp': [780, 1688],
+  '/images/apps/tether-ball-3.webp': [1600, 900],
+  '/images/apps/tether-ball-thumbnail.webp': [1200, 630],
   '/images/apps/milk-bottle-knockdown-1.webp': [780, 1688],
   '/images/apps/milk-bottle-knockdown-2.webp': [780, 1688],
   '/images/apps/milk-bottle-knockdown-3.webp': [1600, 900],
@@ -167,6 +171,7 @@ const MARKS: Record<string, string> = {
   'pomodoro-timer': '技', // technique: the Pomodoro technique
   'spacex-mars': '探', // explore
   'cloth-simulator': '風', // wind
+  'tether-ball': '力', // power: the hit
   'ai-diary': '心', // heart, mind
   'portfolio-ledger': '帳', // a ledger, as in 帳簿: an account book
   'lantern-night': '光', // light: "Light the night"
