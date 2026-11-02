@@ -129,6 +129,14 @@ const nextConfig: NextConfig = {
           source: '/demo/gilt-and-lather',
           destination: '/demo/gilt-and-lather/index.html',
         },
+        // Siphon & Seal: a toilet sawn in half and run by a hydraulic model,
+        // one file in public/demo, built in the vault (Tools/flush) with
+        // --site, which adds its share cards and gives its About card a link
+        // back to /built/siphon-and-seal.
+        {
+          source: '/demo/siphon-and-seal',
+          destination: '/demo/siphon-and-seal/index.html',
+        },
         // The Moon Pearl, the first escape room: the same, one file in
         // public/games, built in the vault (Tools/moon-pearl) with --site, so
         // its 89 sounds load from /games/the-moon-pearl/audio/ beside it.
