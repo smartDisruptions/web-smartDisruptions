@@ -275,6 +275,40 @@ export const apps: App[] = [
     liveUrl: '/demo/portfolio-ledger',
   },
   {
+    slug: 'siphon-and-seal',
+    name: 'Siphon & Seal',
+    description:
+      'A real toilet, sawn in half and run by a hydraulic model. Flush it, pour a bucket into it, drill a hole in it, and solve six mysteries about how it works.',
+    longDescription:
+      'Everybody uses one and almost nobody has seen inside one, so I sawed a toilet in half, set it on a museum base and left the water in. Press Flush and watch what really happens. The tank dumps into the bowl, the S-shaped pipe behind the bowl fills up, and the water falling down its far side pulls the bowl empty. That is a siphon, and the gurgle at the end is air getting in and breaking it. The names of the parts are one tap away, and your first flush is told one line at a time, in slow motion. Then there are six mysteries, each a real experiment: can a bucket flush a toilet, what does one small hole do, why does it refill itself at night, why won’t it stop running, and why does it smell after a long trip. Turn on the blacklight for the Neon S, one flush with the water glowing.',
+    thumbnailUrl: '/images/apps/siphon-and-seal-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/siphon-and-seal-1.webp',
+      '/images/apps/siphon-and-seal-2.webp',
+      '/images/apps/siphon-and-seal-3.webp',
+    ],
+    techStack: [
+      'three.js',
+      'WebGL',
+      'Web Audio API',
+      'Vanilla JavaScript',
+      'esbuild',
+      'Playwright',
+    ],
+    category: 'Simulation',
+    status: 'live',
+    outcomes: [
+      'None of the water is animated. A hydraulic model runs 240 steps for every simulated second, so the siphon starts, gurgles and breaks on its own, and anything you change (a smaller valve, a worn flapper, a hole in the pipe) changes what happens. Every drop is accounted for: what comes in always equals what goes out.',
+      'Pour the same two gallons slowly and they only spill over the hump. Pour them fast and the bowl flushes with no tank at all. Each pour is logged with its speed, so you can find the line yourself: 2.4 liters a second spills, 2.5 flushes.',
+      'It explains itself. The parts can be named on the toilet, a ring sits on whatever you can work, the first flush is narrated, and the panel you drag never covers the toilet. That came from playing it on my own phone and finding the opposite.',
+      'Every sound is made in the browser from the water itself: clouds of tiny bubbles, each ringing at the pitch a real bubble of its size makes. 110 automated checks drive it on a phone, a desktop and a phone on its side, real finger drags included.',
+    ],
+    buildDate: '2026-11',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/demo/siphon-and-seal',
+  },
+  {
     slug: 'broom-blade',
     name: 'Broom & Blade',
     description:
