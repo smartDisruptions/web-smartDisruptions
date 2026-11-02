@@ -67,7 +67,7 @@ export const apps: App[] = [
     description:
       'A pomodoro timer in Patch’s room above a neon city. Wind the tomato to start, watch it ripen while you work, and lock each distraction in a jar.',
     longDescription:
-      'You work in the room of Patch, the hacker from the Neo Dojo Cast, high above a neon city. The sky outside follows your real clock from dawn to night, some days it rains, and lo-fi plays on her radio. The timer is a wind-up kitchen tomato: drag its band round to set the minutes and let go to start it. While you work it ripens from green to red and Patch types away at her screens. When it rings she cheers, and the ripe tomato is picked and grows on her windowsill plant, so the plant shows what you got done today. When something pulls you away, tap Distracted? and name the rogue that tried it: a shiny new thing, fake urgency, something that broke, someone else’s request, the scroll, or someday. Patch zaps it into a quarantine jar, you can leave yourself a note for later, and you carry on. On a break you can look out the window, breathe with her, stretch with her, or squash bugs for 45 seconds. You earn embroidered patches for her hoodie along the way, and your week is written up as a changelog. The room answers when you tap it: the window changes the weather, the radio changes the station, and Patch talks back. It works offline, installs like an app, and everything you log stays on your own device.',
+      'A focus timer set in Patch’s room above a neon city. Wind up the tomato, work until it rings, then take a break.',
     thumbnailUrl: '/images/apps/pomodoro-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/pomodoro-1.webp',
@@ -84,10 +84,11 @@ export const apps: App[] = [
     category: 'Productivity',
     status: 'live',
     outcomes: [
-      'The tomato ripens from green to red as the minutes run down, and every one you finish is picked and grows on Patch’s windowsill plant.',
-      'The six rogues of the Neo Dojo Cast stand for six kinds of distraction. Naming the one that got you puts it in a jar for later, and the changelog shows which one gets you most.',
-      'It is built for an old, slow phone: no framework, no libraries, and the room is drawn once and reused. In a test with the processor slowed six times, a return visit had the timer on screen in under half a second.',
-      'Six AI agents built it side by side from one written contract, each owning one part: the timer and its records, the sound, Patch, her room, the tomato and its breaks, and the menus.',
+      'Drag the tomato’s band to set the minutes. It ripens from green to red while you work.',
+      'Every tomato you finish grows on Patch’s windowsill plant, so you can see what you got done today.',
+      'Something pulled you away? Tap Distracted?, name it, and Patch locks it in a jar so you can carry on.',
+      'Breaks come with something to do: look out the window, breathe, stretch or squash bugs.',
+      'The sky follows your real clock. It works offline, and everything you log stays on your phone.',
     ],
     buildDate: '2026-10',
     hasFullBreakdown: false,
@@ -100,7 +101,7 @@ export const apps: App[] = [
     description:
       'Shows the path a spacecraft takes from Earth to Mars. You can change the settings and watch the trip play out.',
     longDescription:
-      'Earth and Mars are only close enough for a trip every couple of years, and the route between them is a long curve rather than a straight line. This shows both. The planets move at their real speeds and distances, worked out from real orbital calculations rather than drawn by hand, so a launch only becomes possible when the two planets line up properly. You can speed the clock up or slow it down, zoom in and out, turn the orbit lines on and off, and click a planet to see where it is and how fast it is going. A log lists every launch, journey and arrival as they happen.',
+      'Watch a spacecraft fly from Earth to Mars. The planets move at their real speeds, so you can only launch when they line up.',
     thumbnailUrl: '/images/apps/spacex-mars-thumbnail.png',
     screenshotUrls: [
       '/images/apps/spacex-mars-1.png',
@@ -116,10 +117,11 @@ export const apps: App[] = [
     category: 'Simulation',
     status: 'live',
     outcomes: [
-      'The planets move at their true speeds and distances, so a launch only becomes possible when they line up, the same as in real life.',
-      'You can speed the clock up, slow it down, zoom in and out, and click a planet to see where it is and how fast it is going.',
-      'A log lists every launch, every journey and every arrival as they happen.',
-      'The planet surfaces are drawn by the page rather than photographed, and it works with a mouse or a finger.',
+      'The trip is a long curve, not a straight line, and a launch window comes round about every two years.',
+      'Speed the clock up or slow it down, and zoom in or out.',
+      'Click a planet to see where it is and how fast it’s going.',
+      'A log lists every launch, journey and arrival as it happens.',
+      'Works with a mouse or a finger.',
     ],
     buildDate: '2025-03',
     hasFullBreakdown: false,
@@ -212,7 +214,7 @@ export const apps: App[] = [
     description:
       'A private journal. It tracks your mood over time and has a companion you can talk to about what you wrote.',
     longDescription:
-      'Write about your day the way you would in any notebook. The app reads it back and shows you things you would not spot yourself: how your mood moves over the weeks, which subjects keep coming up, and how your writing changes. There is also a companion you can talk to about an entry, and it can pull out the things you said you would do and turn them into a list. Everything you write is kept on your own device rather than on a server.',
+      'A private journal that helps you notice patterns in your own writing. Write about your day, and it shows you how your mood changes over time.',
     thumbnailUrl: '/images/apps/ai-diary-thumbnail.png',
     screenshotUrls: [
       '/images/apps/ai-diary-1.png',
@@ -230,10 +232,11 @@ export const apps: App[] = [
     category: 'Productivity',
     status: 'live',
     outcomes: [
-      'A companion you can talk to about an entry. It can also pull out the things you said you would do and turn them into a list.',
-      'A mood line across your entries shows how you have been over weeks, not just today.',
-      'It builds a picture of your personality from your writing, using the five traits psychologists commonly measure.',
-      'Everything you write is kept on your own device rather than on a server.',
+      'A mood line shows how you’ve been over weeks, not just today.',
+      'It spots the subjects that keep coming up in what you write.',
+      'Talk to a companion about any entry. It can turn the things you said you’d do into a list.',
+      'It sketches your personality from your writing, using the five traits psychologists measure.',
+      'Everything you write stays on your own device, not on a server.',
     ],
     buildDate: '2025-03',
     hasFullBreakdown: false,
@@ -246,7 +249,7 @@ export const apps: App[] = [
     description:
       'The net-worth tracker I use for my own money. The copy here runs on a made-up portfolio, so you can try every screen.',
     longDescription:
-      'I built this to keep track of my own money: every account, every holding, the cash and everything else I own, added up into one net worth. The copy on this site runs on a made-up portfolio, so none of the numbers are mine, and nothing you change is saved. The home screen shows today’s total, how much it moved and a map of every holding, sized by what it’s worth. Trends lets you drag back through a year and a half of history and watch the figure change under your finger. Plan projects the next thirty years and gives the odds of reaching a target. Patch, the hacker from the Neo Dojo Cast, says what changed in plain words. My own copy fills itself from a private GitHub repo, and every evening a scheduled script prices everything and saves the day’s total.',
+      'The app I use to keep track of my own money in one place. The copy here runs on made-up numbers, so you can try every screen.',
     thumbnailUrl: '/images/apps/portfolio-ledger-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/portfolio-ledger-1.webp',
@@ -264,9 +267,10 @@ export const apps: App[] = [
     category: 'Finance',
     status: 'live',
     outcomes: [
-      'Drag across the history chart to go back to any day in the last year and a half. The total, the change and the mix all follow your finger.',
-      'Plan runs 400 versions of the next thirty years and shows the odds of reaching a target by each year. Lab replays crashes like 2008 and 2020 against the portfolio.',
-      'The whole app is one file with no server behind it. In a test that slowed the processor six times over, like an old phone, the first screen still showed in about a second.',
+      'The home screen shows the total, how much it moved today and a map of everything owned.',
+      'Drag across the history chart to see any day in the last year and a half.',
+      'Plan shows the odds of reaching a savings goal over the next thirty years.',
+      'Patch, the hacker from the Neo Dojo Cast, explains what changed in plain words.',
       'One tap hides every dollar amount, so a screenshot never gives the numbers away.',
     ],
     buildDate: '2026-10',
@@ -280,7 +284,7 @@ export const apps: App[] = [
     description:
       'A real toilet, sawn in half and run by a hydraulic model. Flush it, pour a bucket into it, drill a hole in it, and solve six mysteries about how it works.',
     longDescription:
-      'Everybody uses one and almost nobody has seen inside one, so I sawed a toilet in half, set it on a museum base and left the water in. Press Flush and watch what really happens. The tank dumps into the bowl, the S-shaped pipe behind the bowl fills up, and the water falling down its far side pulls the bowl empty. That is a siphon, and the gurgle at the end is air getting in and breaking it. The names of the parts are one tap away, and your first flush is told one line at a time, in slow motion. Then there are six mysteries, each a real experiment: can a bucket flush a toilet, what does one small hole do, why does it refill itself at night, why won’t it stop running, and why does it smell after a long trip. Turn on the blacklight for the Neon S, one flush with the water glowing.',
+      'I sawed a real toilet in half so you can see inside. Press Flush and watch how the water actually leaves the bowl, then solve six mysteries about how it works.',
     thumbnailUrl: '/images/apps/siphon-and-seal-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/siphon-and-seal-1.webp',
@@ -298,10 +302,11 @@ export const apps: App[] = [
     category: 'Simulation',
     status: 'live',
     outcomes: [
-      'None of the water is animated. A hydraulic model runs 240 steps for every simulated second, so the siphon starts, gurgles and breaks on its own, and anything you change (a smaller valve, a worn flapper, a hole in the pipe) changes what happens. Every drop is accounted for: what comes in always equals what goes out.',
-      'Pour the same two gallons slowly and they only spill over the hump. Pour them fast and the bowl flushes with no tank at all. Each pour is logged with its speed, so you can find the line yourself: 2.4 liters a second spills, 2.5 flushes.',
-      'It explains itself. The parts can be named on the toilet, a ring sits on whatever you can work, the first flush is narrated, and the panel you drag never covers the toilet. That came from playing it on my own phone and finding the opposite.',
-      'Every sound is made in the browser from the water itself: clouds of tiny bubbles, each ringing at the pitch a real bubble of its size makes. 110 automated checks drive it on a phone, a desktop and a phone on its side, real finger drags included.',
+      'The bowl isn’t pushed empty. It’s pulled, by a siphon, and the gurgle at the end is air breaking it.',
+      'Tap ? to see every part named. Your first flush is explained step by step, in slow motion.',
+      'Six mysteries to solve, like whether a bucket can flush a toilet and why it smells after a long trip.',
+      'Turn on the blacklight for the Neon S: one flush with the water glowing.',
+      'Nothing is animated. A model of the water decides what happens, so every change you make has a real effect.',
     ],
     buildDate: '2026-11',
     hasFullBreakdown: false,
