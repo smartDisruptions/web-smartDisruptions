@@ -81,11 +81,12 @@ export type CatalogueEntry = {
 
 /**
  * The projects with a write-up that are not among the four (Samurai Kitchen
- * and The Notebook design since 2026-10-10, VOLTIC since 2026-10-12). Their
+ * and The Notebook design since 2026-10-10, VOLTIC since 2026-10-12, Gilt &
+ * Lather since 2026-11-05). Their
  * category and three tech names come from the apps data where they have an
  * entry; The Notebook design is this site's own past design, kept as a
- * static export of its commit (scripts/archive-site.mjs), and VOLTIC has no
- * apps entry, so both are given here.
+ * static export of its commit (scripts/archive-site.mjs), and VOLTIC and
+ * Gilt & Lather have no apps entry, so all three are given here.
  */
 const OWN_FACTS: Record<string, { category: string; tech: string[] }> = {
   notebook: {
@@ -95,6 +96,10 @@ const OWN_FACTS: Record<string, { category: string; tech: string[] }> = {
   voltic: {
     category: 'Website',
     tech: ['Vite', 'three.js'],
+  },
+  'gilt-and-lather': {
+    category: 'Website',
+    tech: ['HTML', 'esbuild', 'sharp'],
   },
 };
 
@@ -124,6 +129,7 @@ const MORE_ORDER = [
   'samurai-kitchen',
   'notebook',
   'voltic',
+  'gilt-and-lather',
   'siphon-and-seal',
   'portfolio-ledger',
   'pomodoro-timer',

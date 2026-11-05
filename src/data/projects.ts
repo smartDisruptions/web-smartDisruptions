@@ -265,6 +265,60 @@ export const projects: Project[] = [
     ],
   },
   {
+    // A barbershop that does not exist, kept as my template for a small
+    // shop's booking page. Built in the vault's Tools/gilt-and-lather and
+    // served from public/demo/gilt-and-lather (see next.config.ts). Facts
+    // from that folder's README and its lab runs on 2026-10-21: Lighthouse,
+    // the old-phone test (360×640, 6× CPU, Slow 4G) and axe.
+    slug: 'gilt-and-lather',
+    name: 'Gilt & Lather Barber Co.',
+    eyebrow: 'A demo website · online now',
+    summary:
+      'A website for a barbershop that does not exist, built to get people booked.',
+    image: '/images/websites/gilt-and-lather.webp',
+    imageAlt:
+      'The Gilt & Lather Barber Co. website. Classic cuts, hot towels, done right, in gold letters beside a barber lifting a steaming hot towel.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    parts: [
+      {
+        kind: 'Website',
+        heading: 'The website',
+        href: '/demo/gilt-and-lather',
+        linkLabel: 'See the website',
+        image: '/images/websites/gilt-and-lather.webp',
+        imageAlt:
+          'The Gilt & Lather Barber Co. website. Classic cuts, hot towels, done right, in gold letters beside a barber lifting a steaming hot towel.',
+        imageWidth: 1200,
+        imageHeight: 750,
+        what: 'A one-page website for a one-chair barbershop, with one job: getting a visitor into the chair.',
+        body: 'I made the shop up, and the page says so. The barber, the address, the hours, the prices and the reviews are all invented, so you can press everything on it and nothing reaches anyone.',
+        bullets: [
+          'Every section answers one question a first-time visitor has, then ends in the same gold Book your cut button. On a phone, a booking bar stays where your thumb is.',
+          'Every link that would leave the page, like booking, directions or reviews, opens a sign instead. It says the link does not go anywhere real yet, and which link it was.',
+          'The phone number is a 555 number that cannot ring anyone.',
+          'The photos were made with AI, and none of them shows a face.',
+          'Six AI agents built it from one written set of rules. One of them only checked whether each section helped someone book, and another tested it on a slow old phone.',
+          'The fonts, styles and code are all inside the one page, and it asks no other website for anything while it loads.',
+        ],
+        receipts: [
+          {
+            value: '100',
+            label: 'Speed score on a phone, out of 100, in a lab test',
+          },
+          {
+            value: '1 s',
+            label: 'Until Book can be pressed on an old phone with slow data',
+          },
+          {
+            value: '0',
+            label: 'Problems found by the automatic accessibility check',
+          },
+        ],
+      },
+    ],
+  },
+  {
     // The look this site had before Kiru, kept online as a working copy built
     // from its own code (scripts/archive-site.mjs → public/archive/notebook).
     // Facts from the Notebook pull request (#105) and its DESIGN.md.

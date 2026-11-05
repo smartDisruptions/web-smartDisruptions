@@ -167,6 +167,7 @@ const MARKS: Record<string, string> = {
   'samurai-kitchen': '侍', // samurai
   voltic: '雷', // thunder: "liquid lightning"
   moonbowl: '月', // moon: the egg yolk is the moon in the bowl
+  'gilt-and-lather': '剃', // to shave, as in 剃刀, a razor: the barber's chair
   notebook: '書', // writing: the notebook this site used to be
   'pomodoro-timer': '技', // technique: the Pomodoro technique
   'spacex-mars': '探', // explore
