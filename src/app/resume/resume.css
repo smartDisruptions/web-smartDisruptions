@@ -1,0 +1,723 @@
+/*
+  /resume — the résumé (技).
+
+  Ink on washi like the rest of the site: one column, sections under the
+  vermilion brush stroke, Kiru building in the header. The only moving part
+  is the "hiring for…" lens, and that is radio buttons plus `:has()` rules
+  generated in page.tsx from LENSES. A print stylesheet at the bottom turns
+  it into a plain one-column PDF with every receipt's address written out.
+
+  Prefix: rs-
+*/
+
+.rs-page {
+  overflow-x: clip; /* the watermark bleeds, never the page */
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+/* ── The top ───────────────────────────────────────────────────────────── */
+
+.rs-head {
+  position: relative;
+  isolation: isolate;
+  padding-top: 3.75rem;
+}
+.rs-mark {
+  z-index: -1;
+  top: -1rem;
+  right: -5rem;
+  width: clamp(14rem, 60vw, 26rem);
+  height: auto;
+  aspect-ratio: 1;
+}
+.rs-name {
+  font-size: clamp(2.6rem, 9vw, 4rem);
+  line-height: 1.05;
+  color: var(--sd-text-primary);
+}
+.rs-role {
+  margin-top: 0.5rem;
+  max-width: 30rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  color: var(--sd-text-primary);
+}
+.rs-lead {
+  margin-top: 1rem;
+  max-width: 38rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--sd-text-secondary);
+}
+.rs-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1.4rem;
+  font-size: 0.875rem;
+  color: var(--sd-text-secondary);
+}
+.rs-stats strong {
+  margin-right: 0.25em;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--sd-text-primary);
+}
+.rs-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+.rs-cta {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  background: #d63a22; /* the primary button: same in both themes (DESIGN.md) */
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.rs-ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--sd-border-strong);
+  border-radius: 999px;
+  background: var(--sd-surface);
+  color: var(--sd-accent);
+  font: inherit;
+  font-weight: 650;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.rs-ghost:hover {
+  color: var(--sd-accent-hover);
+  border-color: var(--sd-accent);
+}
+.rs-ghost:focus-visible,
+.rs-cta:focus-visible {
+  outline: 2px solid var(--sd-accent);
+  outline-offset: 3px;
+}
+/* Kiru builds beside the name: small on a phone, where "Josh" leaves the
+   room, bigger beside the whole header on a wide screen. */
+.rs-kiru {
+  position: absolute;
+  right: 0;
+  top: 1.6rem;
+  width: 4.5rem;
+  height: auto;
+}
+@media (min-width: 44rem) {
+  .rs-head {
+    padding-top: 4.5rem;
+    padding-right: 11rem;
+  }
+  .rs-kiru {
+    top: 5.5rem;
+    width: 9.5rem;
+  }
+}
+
+/* Anything read as a line of prose stops at a reading measure, however
+   wide the column gets. */
+.rs-pitch,
+.rs-loop-line,
+.rs-skill-plain,
+.rs-skill-body > p,
+.rs-exp-line,
+.rs-ev-detail,
+.rs-slot,
+.rs-case-what,
+.rs-case-call {
+  /* ch is the width of a zero; the UI face's average letter is narrower,
+     so 60ch lands near 75 characters a line. */
+  max-width: 60ch;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────── */
+
+.rs-sec {
+  margin-top: 3.5rem;
+  scroll-margin-top: calc(var(--sd-header-h, 65px) + 1rem);
+}
+.rs-h2 {
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  line-height: 1.15;
+  color: var(--sd-text-primary);
+}
+.rs-prose {
+  margin-top: 1.25rem;
+  max-width: 38rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--sd-text-primary);
+}
+.rs-prose p + p {
+  margin-top: 0.9rem;
+}
+
+/* The loop: five numbered steps, a column on a phone, a row of cards wider. */
+.rs-loop {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  list-style: none;
+  padding: 0;
+}
+.rs-loop li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  column-gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  border-radius: 12px;
+}
+.rs-loop-n {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  /* White on the brighter --sd-pen is 4.2:1; the primary-button red is the
+     site's one white-text vermilion (4.7:1, DESIGN.md). */
+  background: #d63a22;
+  color: #fff;
+  font-weight: 750;
+  font-size: 0.9rem;
+}
+.rs-loop-step {
+  font-weight: 700;
+  color: var(--sd-text-primary);
+}
+.rs-loop-line {
+  margin-top: 0.15rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--sd-text-secondary);
+}
+
+/* ── Case studies ──────────────────────────────────────────────────────── */
+
+.rs-cases {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 44rem) {
+  .rs-cases {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.rs-case {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.25rem 1.1rem;
+  background-color: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px -30px var(--sd-card-shadow);
+}
+.rs-case-k {
+  font-weight: 750;
+  font-size: 0.8125rem;
+  color: var(--sd-pen-ink);
+}
+.rs-case-t {
+  margin-top: 0.4rem;
+  font-weight: 750;
+  font-size: 1.15rem;
+  line-height: 1.3;
+  color: var(--sd-text-primary);
+}
+.rs-case-what {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+.rs-case-call {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--sd-rule);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--sd-text-primary);
+}
+.rs-case-call-k {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: 750;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.rs-case .rs-evs {
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+/* ── Evidence links (cases and skills) ─────────────────────────────────── */
+
+.rs-evs {
+  display: grid;
+  gap: 0.4rem;
+}
+.rs-ev {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 10px;
+  background: var(--sd-bg);
+  color: var(--sd-text-primary);
+  text-decoration: none;
+}
+.rs-ev:hover {
+  border-color: var(--sd-accent);
+}
+.rs-ev:focus-visible {
+  outline: 2px solid var(--sd-accent);
+  outline-offset: 2px;
+}
+.rs-kind {
+  flex: none;
+  padding: 0.05rem 0.45rem;
+  border-radius: 4px;
+  background: var(--sd-fill);
+  font-weight: 750;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.rs-ev-label {
+  font-weight: 650;
+  font-size: 0.9375rem;
+  color: var(--sd-accent);
+}
+.rs-ev-detail {
+  flex-basis: 100%;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--sd-text-secondary);
+}
+
+/* ── The lens ──────────────────────────────────────────────────────────── */
+
+.rs-lens {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.rs-lens-legend {
+  margin-bottom: 0.6rem;
+  font-weight: 750;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.rs-lens-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.rs-lens input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.rs-lens label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid var(--sd-border-strong);
+  border-radius: 999px;
+  background: var(--sd-surface);
+  font-weight: 650;
+  font-size: 0.875rem;
+  color: var(--sd-text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+.rs-lens label:hover {
+  border-color: var(--sd-accent);
+}
+/* The active pill is a vermilion mark, like the site's tab pill, in the
+   primary-button red because it carries white text. */
+.rs-lens input:checked + label {
+  background: #d63a22;
+  border-color: #d63a22;
+  color: #fff;
+}
+.rs-lens input:focus-visible + label {
+  outline: 2px solid var(--sd-accent);
+  outline-offset: 2px;
+}
+.rs-lens-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 0.9rem;
+}
+.rs-pitch {
+  flex: 1 1 20rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+/* A lens's pitch shows only while it is picked (rules in page.tsx). */
+.rs-pitch-l {
+  display: none;
+}
+.rs-count {
+  font-weight: 700;
+  color: var(--sd-text-primary);
+}
+
+/* ── Skills ────────────────────────────────────────────────────────────── */
+
+.rs-group {
+  margin-top: 1.75rem;
+}
+.rs-group-h {
+  font-weight: 750;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.rs-skills {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.rs-skill {
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  border-radius: 12px;
+}
+.rs-skill[open] {
+  border-color: var(--sd-border-strong);
+}
+.rs-skill summary {
+  position: relative;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem 2.75rem 0.85rem 1rem;
+  list-style: none;
+  cursor: pointer;
+}
+.rs-skill summary::-webkit-details-marker {
+  display: none;
+}
+/* A plus that turns to a minus: two bars, the upright one folds away. */
+.rs-skill summary::before,
+.rs-skill summary::after {
+  content: '';
+  position: absolute;
+  right: 1.05rem;
+  top: 1.3rem;
+  width: 0.8rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--sd-accent);
+}
+.rs-skill summary::after {
+  rotate: 90deg;
+}
+.rs-skill[open] summary::after {
+  rotate: 0deg;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rs-skill summary::after {
+    transition: rotate 0.25s ease;
+  }
+}
+.rs-skill summary:focus-visible {
+  outline: 2px solid var(--sd-accent);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+.rs-skill-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--sd-text-primary);
+}
+.rs-skill-plain {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--sd-text-secondary);
+}
+.rs-skill-n {
+  margin-top: 0.15rem;
+  font-weight: 650;
+  font-size: 0.78rem;
+  color: var(--sd-pen-ink);
+}
+.rs-skill-body {
+  padding: 0 1rem 1rem;
+}
+.rs-skill-body > p {
+  font-size: 0.9875rem;
+  line-height: 1.7;
+  color: var(--sd-text-primary);
+}
+.rs-skill-body .rs-evs {
+  margin-top: 0.85rem;
+}
+
+/* ── Experience ────────────────────────────────────────────────────────── */
+
+.rs-exp {
+  margin-top: 1.25rem;
+  list-style: none;
+  padding: 0;
+  border-left: 2px solid var(--sd-rule);
+}
+.rs-exp li {
+  position: relative;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0 0 1.25rem 1.25rem;
+}
+.rs-exp li::before {
+  content: '';
+  position: absolute;
+  left: -0.42rem;
+  top: 0.35rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 1px;
+  background: var(--sd-pen);
+  rotate: 45deg;
+}
+.rs-exp-when {
+  font-weight: 750;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+.rs-exp-role {
+  font-weight: 700;
+  color: var(--sd-text-primary);
+}
+.rs-exp-where {
+  font-weight: 400;
+  color: var(--sd-text-secondary);
+}
+.rs-exp-line {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+
+/* ── Contact ───────────────────────────────────────────────────────────── */
+
+.rs-contact > p,
+.rs-contact > a {
+  margin-top: 1.1rem;
+}
+.rs-slot {
+  padding: 0.9rem 1rem;
+  border: 1.5px dashed var(--sd-border-strong);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--sd-text-secondary);
+}
+
+/* ── Paper ─────────────────────────────────────────────────────────────── */
+
+/* A résumé on paper is skimmed, so it keeps each skill's name, its one-line
+   version and its receipts (with their addresses), and leaves the long story
+   to the page the receipt opens. Whatever lens is picked is what prints, so
+   ?for=fullstack saves a full-stack résumé. */
+@page {
+  margin: 0.55in 0.6in;
+}
+@media print {
+  body:has(.rs-page) > :not(main) {
+    display: none !important;
+  }
+  /* The body keeps room for the phone tab bar; on paper that room is a
+     blank last page. */
+  body:has(.rs-page) {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .rs-page {
+    max-width: none;
+    padding: 0;
+    font-size: 10pt;
+  }
+  .rs-contact:has(.rs-slot),
+  .rs-mark,
+  .rs-kiru,
+  .rs-actions,
+  .rs-lens,
+  .rs-lens-note .rs-ghost,
+  .rs-slot,
+  .rs-skill-body > p,
+  .rs-skill-n,
+  .rs-loop-n,
+  .rs-skill summary::before,
+  .rs-skill summary::after {
+    display: none !important;
+  }
+  .rs-page,
+  .rs-page * {
+    color: #000 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+  .rs-head {
+    padding: 0;
+  }
+  .rs-name {
+    font-size: 26pt;
+  }
+  .rs-role {
+    font-size: 11pt;
+  }
+  .rs-lead,
+  .rs-prose {
+    font-size: 10pt;
+    line-height: 1.5;
+    max-width: none;
+  }
+  .rs-stats {
+    margin-top: 0.5rem;
+  }
+  .rs-stats strong {
+    font-size: 13pt;
+  }
+  .rs-sec {
+    margin-top: 1.1rem;
+  }
+  .rs-h2 {
+    font-size: 15pt;
+    break-after: avoid;
+  }
+  .rs-h2::after {
+    display: none;
+  }
+  .rs-loop {
+    gap: 0.15rem;
+    margin-top: 0.5rem;
+  }
+  .rs-loop li {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .rs-loop-step::after {
+    content: ' — ';
+  }
+  .rs-loop-line {
+    font-size: 10pt;
+  }
+  .rs-cases {
+    gap: 0.6rem;
+    margin-top: 0.6rem;
+  }
+  .rs-case {
+    padding: 0.6rem 0.7rem;
+    border: 1px solid #bbb;
+    break-inside: avoid;
+  }
+  .rs-case-what,
+  .rs-case-call {
+    font-size: 9.5pt;
+    line-height: 1.4;
+  }
+  .rs-group {
+    margin-top: 0.8rem;
+  }
+  .rs-group-h {
+    break-after: avoid;
+  }
+  .rs-skills {
+    gap: 0.35rem;
+    margin-top: 0.3rem;
+  }
+  .rs-skill {
+    border: 0;
+    break-inside: avoid;
+  }
+  .rs-skill summary {
+    padding: 0;
+  }
+  .rs-skill-plain {
+    font-size: 9.5pt;
+  }
+  .rs-skill-body {
+    padding: 0.15rem 0 0 0.9rem;
+  }
+  .rs-evs,
+  .rs-case .rs-evs,
+  .rs-skill-body .rs-evs {
+    gap: 0.05rem;
+    margin-top: 0.15rem;
+    padding-top: 0.3rem;
+  }
+  .rs-ev {
+    display: block;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    font-size: 9pt;
+    line-height: 1.35;
+  }
+  .rs-kind,
+  .rs-ev-detail {
+    display: none;
+  }
+  .rs-ev-label {
+    font-size: 9pt;
+    font-weight: 650;
+  }
+  /* Paper can't be clicked, so every receipt writes its address. */
+  a.rs-ev[href^='http']::after,
+  a.rs-ev[href^='/']::after {
+    content: ' · ' attr(href);
+    font-size: 8.5pt;
+    color: #444 !important;
+    word-break: break-all;
+  }
+  a.rs-ev[href^='/']::after {
+    content: ' · smartdisruptions.com' attr(href);
+  }
+  .rs-exp li {
+    padding-bottom: 0.5rem;
+    break-inside: avoid;
+  }
+  .rs-exp-line {
+    font-size: 9.5pt;
+  }
+}

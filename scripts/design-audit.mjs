@@ -26,6 +26,7 @@ const ROUTES = [
   '/games',
   '/about',
   '/privacy',
+  '/resume',
   '/content/what-ai-handed-back',
   '/market-storm/amzn-q2-2026',
 ];
