@@ -103,9 +103,9 @@ export const projects: Project[] = [
         heading: 'The website',
         href: 'https://web-broom-blade.vercel.app',
         linkLabel: 'See the website',
-        image: '/images/websites/broom-blade-paper-guild.webp',
+        image: '/images/websites/broom-blade-shop.webp',
         imageAlt:
-          'The Broom & Blade website in its Paper Guild look: the name in big cream letters on a wooden wall, and a hero card pinned beside it, a smiling hero in a straw sunhat with a cat, a dog on a shield and a big yellow sponge.',
+          'The Shop chapter of the Broom & Blade website in its Warband look: a grid of Tools to fight with, from the Trusty Broom to the Feather Duster, a row of sealed cards marked with question marks, and the Trusty Broom shown large beside them with a button to take it into the Colosseum.',
         imageWidth: 1200,
         imageHeight: 750,
         what: 'The page that tells the game’s story, written for the kid who will play it.',

@@ -110,6 +110,7 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/websites/gilt-and-lather.webp': [1200, 750],
   '/images/websites/gilt-and-lather-phone.webp': [780, 1688],
   '/images/websites/broom-blade-paper-guild.webp': [1200, 750],
+  '/images/websites/broom-blade-shop.webp': [1200, 750],
   '/images/websites/kiru.webp': [1200, 750],
   '/images/websites/kiru-cast.webp': [1200, 750],
   '/images/websites/moonbowl.webp': [1200, 750],
