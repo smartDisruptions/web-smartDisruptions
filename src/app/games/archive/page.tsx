@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { apps, ARCADE_ARCHIVE_SLUGS, type App } from '@/data/apps';
+import { apps, ARCADE_ARCHIVE_SLUGS, ARCADE_DEMO_SLUGS, type App } from '@/data/apps';
 import Kanji from '@/components/brand/Kanji';
 import Cabinets from '../Cabinets';
 import '../arcade.css';
@@ -8,7 +8,7 @@ import '../arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade archive',
   description:
-    "The Arcade's older cabinets, both still free to play: a cloth simulator and chores turned into a game.",
+    "The Arcade's older cabinets, both still free to play: a cloth simulator and chores turned into a game. Plus a Demo section of rough builds to try.",
   alternates: { canonical: '/games/archive' },
 };
 
@@ -23,11 +23,17 @@ export const metadata: Metadata = {
  * has its own page, and its links still work. AUREUM Snake was the third
  * cabinet until it came off the site (Josh's call, 2026-10-12); its old
  * addresses redirect (next.config.ts).
+ *
+ * Below the cabinets, the Demo section (Josh's call, 2026-10-14): rough or
+ * greybox builds that play but aren't finished things, starting with Tether
+ * Ball. They are ARCADE_DEMO_SLUGS, kept apart from GAME_SLUGS on purpose, so
+ * /about's list of what I've built never shows them.
  */
 
-const games = ARCADE_ARCHIVE_SLUGS.map((slug) => apps.find((app) => app.slug === slug)).filter(
-  (app): app is App => app !== undefined,
-);
+const bySlug = (slugs: string[]) =>
+  slugs.map((slug) => apps.find((app) => app.slug === slug)).filter((app): app is App => app !== undefined);
+const games = bySlug(ARCADE_ARCHIVE_SLUGS);
+const demos = bySlug(ARCADE_DEMO_SLUGS);
 
 const BackArrow = () => (
   <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -58,6 +64,8 @@ export default function ArcadeArchive() {
         </header>
 
         <Cabinets games={games} from="archive" title="The older cabinets" titleId="arc-archive-cabinets" />
+
+        {demos.length > 0 && <Cabinets games={demos} from="archive" title="Demo" titleId="arc-demo-cabinets" />}
 
         <div className="arc-end">
           <p className="arc-end-line">

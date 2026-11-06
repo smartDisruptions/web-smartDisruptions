@@ -1,4 +1,4 @@
-import { apps, GAME_SLUGS } from './apps';
+import { apps, ARCADE_DEMO_SLUGS, GAME_SLUGS } from './apps';
 import { projects, PROJECT_APP_SLUGS } from './projects';
 import { SHOWCASE } from './showcase';
 
@@ -17,10 +17,14 @@ export const BUILT_COVERED = new Set<string>([
   ...Object.keys(PROJECT_APP_SLUGS),
 ]);
 
-/** The apps listed as "everything else": not a game, not one of the four. */
+/**
+ * The apps listed as "everything else": not a game, not one of the four, and
+ * not a demo (the archive's Demo section never counts as something built).
+ */
 export const builtCatalogueApps = apps.filter(
   (app) =>
     !(GAME_SLUGS as readonly string[]).includes(app.slug) &&
+    !ARCADE_DEMO_SLUGS.includes(app.slug) &&
     !BUILT_COVERED.has(app.slug)
 );
 
