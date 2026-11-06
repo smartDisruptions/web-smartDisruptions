@@ -52,7 +52,20 @@ export type Project = {
   imageWidth: number;
   imageHeight: number;
   parts: ProjectPart[];
+  /**
+   * Kinds the project also counts as on /about, beyond the kinds of its
+   * parts. Broom & Blade's game is the chore app the family uses every day,
+   * so it hangs under Apps as well as Games (Josh, 2026-11-06).
+   */
+  alsoKinds?: ProjectPart['kind'][];
 };
+
+/** Every kind a project counts as: its parts' kinds, then `alsoKinds`. */
+export function kindsOfProject(p: Project): ProjectPart['kind'][] {
+  return [
+    ...new Set([...p.parts.map((part) => part.kind), ...(p.alsoKinds ?? [])]),
+  ];
+}
 
 export const projects: Project[] = [
   {
@@ -66,6 +79,7 @@ export const projects: Project[] = [
       'The Broom & Blade website in its Paper Guild look: the name in big cream letters on a wooden wall, and a hero card pinned beside it, a smiling hero in a straw sunhat with a cat, a dog on a shield and a big yellow sponge.',
     imageWidth: 1200,
     imageHeight: 750,
+    alsoKinds: ['App'],
     parts: [
       {
         kind: 'Game',
