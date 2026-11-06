@@ -133,6 +133,7 @@ const MORE_ORDER = [
   'ironwheel',
   'siphon-and-seal',
   'portfolio-ledger',
+  'paper-crane-insights',
   'pomodoro-timer',
   'spacex-mars',
   'ai-diary',

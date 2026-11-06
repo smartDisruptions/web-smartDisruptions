@@ -313,6 +313,35 @@ export const apps: App[] = [
     liveUrl: '/demo/ironwheel',
   },
   {
+    slug: 'paper-crane-insights',
+    name: 'Paper Crane Insights',
+    description:
+      'A sales report for a food-truck owner, built on Square orders. This copy runs on a made-up truck, so you can click through every screen.',
+    longDescription:
+      'I built this report for a food-truck owner from his Square orders. It opens on one page: how the last four weeks went, four numbers that only turn green or red when the change is real, and the three things to do this week. Everything else sits behind More. This copy runs on a made-up truck called Paper Crane, so none of the numbers are real.',
+    thumbnailUrl: '/images/apps/paper-crane-insights-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/paper-crane-insights-1.webp',
+      '/images/apps/paper-crane-insights-2.webp',
+      '/images/apps/paper-crane-insights-3.webp',
+    ],
+    techStack: ['Next.js', 'TypeScript', 'SVG', 'React', 'esbuild'],
+    category: 'Business',
+    status: 'live',
+    outcomes: [
+      'Home says how the last four weeks went in one sentence: what came in, from how many orders, and how that compares with the four weeks before.',
+      'A number only turns green or red when the change is bigger than the normal week-to-week ups and downs. Smaller moves stay grey.',
+      'The three things to do this week open right on the page, with the steps, who does them and how long they take.',
+      'Days are ranked by what an hour open brings in, so a short day is not counted as a bad one.',
+      'The full report (about thirty charts), a day-by-day tracker and the owner’s own settings sit behind More.',
+      'The demo is one file of made-up orders. Nothing you change is saved anywhere, and a reload puts it back.',
+    ],
+    buildDate: '2026-09',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/demo/paper-crane-insights',
+  },
+  {
     slug: 'siphon-and-seal',
     name: 'Siphon & Seal',
     description:
