@@ -383,11 +383,11 @@ export const apps: App[] = [
       'Household chores turned into a game. Chores become quests that pay points and gold, and everyone in the family has their own character.',
     longDescription:
       'Built for my household: a candlelit guild hall where the chores hang as parchment quest slips on a board. Completing one pays XP and gold — XP climbs the hero through titles from Dust Squire to Legend of the Loom, gold buys avatar gear in the Armory, and every piece of gear carries a hidden flavor line and origin tale you can only read once you own it. Each family member runs their own hero on the same board; a Tourney Board compares the party on a radar crest and ranked duel bars, and a Skill Grove grows a glowing rune for every chore you master. Sealing a quest takes a held press, not a tap, so a scroll can never claim one by accident. Clear every daily quest and a hooded merchant offers three mystery boxes — a fortune, a gift, or a curse — and every fifth clean-sweep day he bows with a choice: a purse of gold, or a box holding one of thirty relics that cannot be bought, from a booger to Mjölnir. It ships as one HTML file with zero dependencies, installs to the home screen as a PWA, and synthesizes every sound with the Web Audio API.',
-    thumbnailUrl: '/images/apps/broom-blade-thumbnail.webp',
+    thumbnailUrl: '/images/apps/broom-blade-cabinet.webp',
     screenshotUrls: [
-      '/images/apps/broom-blade-1.webp',
-      '/images/apps/broom-blade-2.webp',
-      '/images/apps/broom-blade-3.webp',
+      '/images/apps/broom-blade-board.webp',
+      '/images/apps/broom-blade-hero.webp',
+      '/images/apps/broom-blade-colosseum.webp',
     ],
     techStack: ['HTML5', 'Vanilla JavaScript', 'CSS3', 'SVG', 'Web Audio API'],
     category: 'Productivity',
