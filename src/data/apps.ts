@@ -694,17 +694,17 @@ export const apps: App[] = [
     },
   },
   {
-    slug: 'path-not-taken',
-    name: 'Path Not Taken (Pre Alpha)',
+    slug: 'rhythm-and-blade',
+    name: 'Rhythm and Blade',
     description:
-      'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on six film-score battles, and one miss is death.',
+      'A rhythm duel I am still building. These are the first gameplay tests: you face a greybox attacker on six film-score battles, with three hearts to lose.',
     longDescription:
-      'A duel to the beat, seen through your own eyes, and an early test of something bigger. Every blow your opponent throws lands on the music: dodge it, slow time when the song goes quiet, and strike back when you see your opening. One miss and the duel is over, but you’re back in the fight in seconds. The story comes later.',
-    thumbnailUrl: '/images/apps/path-not-taken-thumbnail.webp',
+      'A duel to the beat, seen through your own eyes, and an early test of something bigger. Every blow your opponent throws lands on the music: dodge it, slow time when the song goes quiet, and strike back when you see your opening. Every miss costs one of your three hearts. Lose the last one and the duel is over, but you’re back in the fight in seconds.',
+    thumbnailUrl: '/images/apps/rhythm-and-blade-thumbnail.webp',
     screenshotUrls: [
-      '/images/apps/path-not-taken-1.webp',
-      '/images/apps/path-not-taken-2.webp',
-      '/images/apps/path-not-taken-3.webp',
+      '/images/apps/rhythm-and-blade-1.webp',
+      '/images/apps/rhythm-and-blade-2.webp',
+      '/images/apps/rhythm-and-blade-3.webp',
     ],
     techStack: ['HTML5', 'Canvas', 'Vanilla JavaScript', 'Web Audio API', 'ElevenLabs Music'],
     category: 'Game',
@@ -713,13 +713,13 @@ export const apps: App[] = [
       'Every tile sits on a hit in the recording. I measured each song\u2019s tempo to a thousandth of a beat and its hits slot by slot, and the chart refuses a tile where the music has nothing to hit.',
       'Six songs from 140 to 184 BPM, each shaped as about ten seconds of intro, a minute or more of play and ten seconds of exit. A death restarts the song two seconds before the first tile.',
       'The page is about half a megabyte. Each song is downloaded the first time you pick its level, so playing one battle costs one song, about 2 MB.',
-      'One miss is death, judged within 200 ms on the forgiving setting, with a tap-along calibration for Bluetooth headphones and slow screens.',
+      'Three hearts, and a miss costs one, judged within 200 ms on the forgiving setting, with a tap-along calibration for Bluetooth headphones and slow screens.',
       'Pre-alpha, and it says so: the attacker is a greybox stand-in, and the game is still being built.',
     ],
     buildDate: '2026-10',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
-    liveUrl: '/games/path-not-taken',
+    liveUrl: '/games/rhythm-and-blade',
     howToPlay: {
       on: 'Plays on a phone or a computer, and it’s best with the sound up.',
       ways: [
@@ -1326,15 +1326,17 @@ export function getAppBySlug(slug: string): App | undefined {
  *
  * Since 2026-10-05 the Arcade's front room is Kiru's games and Neo Dojo
  * Survivors, right below them (Josh's call); every other game moved to the
- * archive at /games/archive, linked from the bottom of /games. Path Not Taken,
- * a rhythm duel in pre-alpha, is the last cabinet before the archive's door
- * (Josh's call, the same day).
+ * archive at /games/archive, linked from the bottom of /games. Rhythm and
+ * Blade, a rhythm duel in pre-alpha, is the last cabinet before the archive's
+ * door (Josh's call, the same day). It was called Path Not Taken until
+ * 2026-11-06, when that name went to a different game: the one Kiru's story
+ * will be told in (his story's cast is on /kiru).
  *
  * These live here rather than in the games page because /built reads them too:
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'path-not-taken', 'moondrift', 'cosmo-outbound', 'rubble-rouser'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser'];
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door

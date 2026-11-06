@@ -60,7 +60,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
-      url: `${BASE}/games/path-not-taken`,
+      url: `${BASE}/games/rhythm-and-blade`,
       changeFrequency: 'monthly',
       priority: 0.4,
     },
