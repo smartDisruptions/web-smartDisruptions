@@ -1,257 +1,437 @@
 import { apps, GAME_SLUGS } from './apps';
-import { builtHref } from './projects';
-import { allSkills, type Evidence } from './skills';
-import { marketStormReports } from './marketStorm';
+import { builtHref, projects } from './projects';
 
 /**
- * The résumé (/resume) — for someone deciding whether to hire me.
+ * The résumé (/resume): a portfolio first, a résumé underneath.
  *
- * It makes the same promise as the skills list it is built on
- * (`./skills.ts`): nothing here is claimed without something a stranger can
- * open. The skills themselves are not retyped — the page reads
- * `skillGroups` — so a skill rewritten there is rewritten here. What this
- * file adds is only what a hiring page needs on top:
+ * Rebuilt 2026-11-06 on Josh's word. The first version led with 22 skill
+ * names and long stories behind each one; he read it and said it didn't
+ * look or feel like a résumé, and that an employer doesn't care about that
+ * kind of jumble. What a hiring manager is actually asking, in order:
  *
- *   - LENSES: "hiring for…" filters. Each one is a list of skill ids, so a
- *     link like /resume?for=ai opens the page already narrowed to the job.
- *   - CASE_STUDIES: the four builds worth a hiring manager's five minutes,
- *     each with the call I made that the AI could not.
- *   - EXPERIENCE: only what the site already says in public.
+ *   1. What can you build?            → CAPABILITIES, in plain job words
+ *   2. Show me.                       → FEATURED, four deep dives you can open
+ *   3. How much range?                → the gallery (everything else, live)
+ *   4. Can I trust AI-built work?     → HOW_I_BUILD (spec, agents, tests, me)
+ *   5. The usual résumé facts.        → EXPERIENCE and SKILLS
  *
- * `scripts/test-resume.mjs` holds it to that: every lens id resolves to a
- * real skill, every link is a published page or a real app, and nothing
- * points into the private knowledge base.
+ * Every line says what I did with a verb ("Connected", "Designed") and
+ * every claim links to something running. Facts come from this repo's own
+ * records (apps.ts, projects.ts, the build write-ups), never widened.
+ *
+ * `scripts/test-resume.mjs` checks the links resolve, the images exist, and
+ * nothing points into the private knowledge base.
  */
 
-export interface Lens {
-  /** Used in the URL (?for=<id>), so keep it short and stable. */
-  id: string;
-  name: string;
-  /** One line on what this kind of hire gets. */
-  pitch: string;
-  skills: string[];
+export interface ProofLink {
+  label: string;
+  href: string;
 }
 
-export const LENSES: Lens[] = [
-  {
-    id: 'ai',
-    name: 'AI & agent workflows',
-    pitch:
-      'Someone who already runs teams of agents in production work: written contracts, adversarial checks, and a human gate before anything ships.',
-    skills: [
-      'context-engineering',
-      'multi-agent',
-      'adversarial-verification',
-      'directing-a-build',
-      'graduated-autonomy',
-      'generated-media',
-      'idempotent-jobs',
-      'design-audit',
-    ],
-  },
-  {
-    id: 'product',
-    name: 'Product engineering',
-    pitch:
-      'Someone who works out what the person actually needs, ships it end to end, and cuts what does not earn its place.',
-    skills: [
-      'product-judgment',
-      'directing-a-build',
-      'client-work',
-      'full-stack',
-      'security',
-      'design-systems',
-      'accessibility',
-      'writing',
-    ],
-  },
-  {
-    id: 'frontend',
-    name: 'Front-end & interactive',
-    pitch:
-      'Someone who holds a phone to a frame budget, themes from tokens, and builds the games and 3D a brand page wants.',
-    skills: [
-      'design-systems',
-      'accessibility',
-      'design-audit',
-      'simulation',
-      'game-dev',
-      'generated-media',
-      'full-stack',
-    ],
-  },
-  {
-    id: 'fullstack',
-    name: 'Full-stack & integrations',
-    pitch:
-      'Someone who wires real payment and business systems in, and checks them on the live site, not just in the code.',
-    skills: [
-      'full-stack',
-      'payments',
-      'oauth-connect',
-      'hours-and-scheduling',
-      'security',
-      'production-debugging',
-      'idempotent-jobs',
-      'regression-tripwires',
-    ],
-  },
-];
+/* ── 1. What I can build ───────────────────────────────────────────────── */
 
-/** Every lens a skill belongs to, for its data-lens attribute. */
-export function lensesFor(skillId: string): string[] {
-  return LENSES.filter((l) => l.skills.includes(skillId)).map((l) => l.id);
-}
-
-/** How the work actually gets done. Each step names where it happened. */
-export const LOOP = [
-  {
-    step: 'Write the spec',
-    line: 'One written contract every agent works to. “Fast on an old phone” becomes a frame budget, not a hope.',
-  },
-  {
-    step: 'Direct the team',
-    line: 'Four to ten agents at once, each with a job: builders, a critic, QA, a code reviewer.',
-  },
-  {
-    step: 'Check the real thing',
-    line: 'The live URL, not the dashboard. A real card at a real food truck, not a test card.',
-  },
-  {
-    step: 'Cut what doesn’t earn it',
-    line: 'Ten image templates in, four kept. Working features removed because they weren’t honest.',
-  },
-  {
-    step: 'Write it down',
-    line: 'Every lesson goes where the next build will find it: a test, a rule, an article.',
-  },
-];
-
-export interface CaseStudy {
+export interface Capability {
   id: string;
-  kicker: string;
   title: string;
-  what: string;
-  /** The call I made that the AI couldn't. The point of the card. */
-  call: string;
-  links: Evidence[];
+  /** What an employer gets, in one plain sentence, first person. */
+  line: string;
+  proof: ProofLink[];
 }
 
-const article = (slug: string, label: string): Evidence => ({
-  kind: 'article',
-  label,
-  href: `/content/${slug}`,
-});
-
-const REPO =
-  'https://github.com/smartDisruptions/web-smartDisruptions/blob/main';
-
-export const CASE_STUDIES: CaseStudy[] = [
+export const CAPABILITIES: Capability[] = [
   {
-    id: 'samurai-kitchen',
-    kicker: 'Client work · live since August 2026',
-    title: 'Online ordering for a real food truck',
-    what: 'Menu, prices, hours and sold-outs read live from the owner’s Square account. Real payments, checkout that locks when the truck closes, and an OAuth connect so no access key ever changed hands.',
-    call: 'I deleted a loyalty panel that promised points nothing awarded, and a review funnel that sent happy customers to Google and unhappy ones to a private form. Both worked. Neither was honest.',
-    links: [
+    id: 'commerce',
+    title: 'Online ordering and payments',
+    line: 'I connected a real food truck’s Square account through OAuth, so its site takes card payments with the menu, prices and stock read live from the till.',
+    proof: [
+      { label: 'Samurai Kitchen', href: 'https://samuraikitchencatering.com' },
       {
-        kind: 'app',
-        label: 'The build',
+        label: 'Moonbowl Ramen (ordering demo)',
+        href: 'https://web-moonbowl.vercel.app',
+      },
+    ],
+  },
+  {
+    id: 'data',
+    title: 'Databases and back ends',
+    line: 'I designed the Postgres database behind the food truck’s orders and encrypted payment tokens, and the Supabase back end that keeps one family’s game in sync on every phone.',
+    proof: [
+      {
+        label: 'How Samurai Kitchen is built',
         href: builtHref('samurai-kitchen'),
       },
-      {
-        kind: 'site',
-        label: 'samuraikitchencatering.com',
-        href: 'https://samuraikitchencatering.com',
-      },
-      article(
-        'food-truck-site-with-ai',
-        'How it went, including what I didn’t ship'
-      ),
+      { label: 'How Broom & Blade is built', href: builtHref('broom-blade') },
     ],
   },
   {
-    id: 'market-storm',
-    kicker: 'AI research pipeline',
-    title: 'Fourteen agents on one question',
-    what: `A Stanford research method turned into a tool I run: perspectives that interview each other against live search, then fact-checkers. ${marketStormReports.length} published reports, each printing how many of its own claims survived.`,
-    call: 'The checkers are told to disprove, not confirm. On the Microsoft report that changed the headline instead of adding a caveat.',
-    links: [
-      { kind: 'site', label: 'Market Storm', href: '/market-storm' },
+    id: 'dashboards',
+    title: 'Dashboards that turn data into decisions',
+    line: 'I turned 953 of the food truck’s orders into a report that ranks 21 things to try next, sized for a one-man truck. The public copy runs on invented numbers.',
+    proof: [
       {
-        kind: 'site',
-        label: 'The report the check rewrote',
-        href: '/market-storm/msft-q4-fy2026',
+        label: 'Insights demo',
+        href: 'https://paper-crane-insights.vercel.app',
       },
+      { label: 'Portfolio Ledger demo', href: '/demo/portfolio-ledger' },
     ],
   },
   {
-    id: 'arcade',
-    kicker: 'Games · built by agent teams',
-    title: `${GAME_SLUGS.length} games, free in the browser`,
-    what: 'Up to ten agents working side by side on one written contract per game. Physics solvers, simulated balance, original music and sound, and a phone frame budget.',
-    call: 'When a game felt too hard, I had it measured before anything changed. Balance came from simulated rounds, not my own gut.',
-    links: [
-      { kind: 'site', label: 'The Arcade', href: '/games' },
-      {
-        kind: 'game',
-        label: 'Rubble Rouser',
-        href: builtHref('rubble-rouser'),
-      },
+    id: 'games',
+    title: 'Games people can play',
+    line: `I designed and built ${GAME_SLUGS.length} browser games, from 3D flight over a real round planet to physics demolition. All of them are free to play right now.`,
+    proof: [
+      { label: 'The Arcade', href: '/games' },
+      { label: 'Rubble Rouser', href: '/games/rubble-rouser' },
+      { label: 'Cosmo Outbound', href: '/games/cosmo-outbound' },
     ],
   },
   {
-    id: 'this-site',
-    kicker: 'The site you’re on',
-    title: 'A site that refuses to ship its own mistakes',
-    what: 'A token design system in two themes, tests that block an article with missing images or a future date, and a scheduler that publishes on its own and merges its own pull request.',
-    call: 'Automating the last step to production would be easy. I kept it a decision I make, because judgment is the part I keep.',
-    links: [
-      { kind: 'code', label: 'The design system', href: `${REPO}/DESIGN.md` },
+    id: 'brand',
+    title: 'Websites for brands',
+    line: 'I build launch pages and small-business sites that load fast on an old phone and are built to convert, from a 3D drink can to a barbershop’s booking page.',
+    proof: [
+      { label: 'VOLTIC', href: 'https://web-voltic.vercel.app' },
+      { label: 'Gilt & Lather', href: '/demo/gilt-and-lather' },
+      { label: 'This site', href: '/' },
+    ],
+  },
+  {
+    id: 'ai',
+    title: 'AI systems and automation',
+    line: 'I built a research pipeline of fourteen AI agents: some investigate a question from different angles, the rest try to disprove every finding. Plus a publishing pipeline that ships on its own.',
+    proof: [
+      { label: 'Market Storm', href: '/market-storm' },
       {
-        kind: 'code',
-        label: 'The rules every agent reads',
-        href: `${REPO}/AGENTS.md`,
+        label: 'A pipeline with no server',
+        href: '/content/a-pipeline-with-no-server',
       },
-      article(
-        'five-of-six-failures-said-success',
-        'Five of my six failures reported success'
-      ),
     ],
   },
 ];
 
-/** Only what the site already says in public. Dates are years. */
-export const EXPERIENCE = [
+/* ── 2. Featured work ──────────────────────────────────────────────────── */
+
+export interface Featured {
+  id: string;
+  /** Client work, my own product, a practice build: said plainly. */
+  context: string;
+  title: string;
+  image: string;
+  imageAlt: string;
+  imageWidth: number;
+  imageHeight: number;
+  problem: string;
+  /** What I did, each starting with a verb. */
+  built: string[];
+  result: string;
+  stack: string[];
+  links: ProofLink[];
+}
+
+export const FEATURED: Featured[] = [
+  {
+    id: 'samurai-kitchen',
+    context: 'Client work · live since August 2026',
+    title: 'Online ordering and payments for a real food truck',
+    image: '/images/websites/samurai-kitchen.webp',
+    imageAlt:
+      'The Samurai Kitchen website, showing catering and online ordering.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    problem:
+      'The truck’s old site couldn’t take an order. Every catering request arrived as an email, and nobody could pay online.',
+    built: [
+      'Connected the owner’s Square account through OAuth, so the site takes real card payments and no access key ever changed hands.',
+      'Read the menu, prices, hours and sold-out items live from his till, refreshed every minute, so the site never goes out of date.',
+      'Designed a Postgres database for the encrypted Square tokens and every order, with a read-only role so the reporting app can read it but never change it.',
+      'Locked checkout outside opening hours, then audited the live site and hardened the payment routes with rate limits and security headers.',
+    ],
+    result:
+      'Taking real orders on the truck’s own domain since August 2026. If the truck is closed when you visit, checkout says so: that’s the hours lock working.',
+    stack: [
+      'Next.js',
+      'TypeScript',
+      'Square API',
+      'OAuth 2.0',
+      'Postgres',
+      'Vercel',
+    ],
+    links: [
+      { label: 'Open the site', href: 'https://samuraikitchencatering.com' },
+      { label: 'How it’s built', href: builtHref('samurai-kitchen') },
+      { label: 'The story', href: '/content/food-truck-site-with-ai' },
+    ],
+  },
+  {
+    id: 'broom-blade',
+    context: 'My own product · used by my family',
+    title: 'A chore app that turns housework into a game',
+    image: '/images/apps/broom-blade-1.webp',
+    imageAlt:
+      'The Broom & Blade chore board, showing the day’s chores as quests with rewards beside them.',
+    imageWidth: 1200,
+    imageHeight: 753,
+    problem:
+      'Getting kids to do chores. I turned the family’s chore list into a role-playing game they want to play.',
+    built: [
+      'Designed the Supabase back end: one family board shared across every phone, joined with a code instead of accounts.',
+      'Built the game systems: points and ranks, a gear shop, 67 earnable items with their own stories, and a parent’s approval before any chore pays out.',
+      'Made it install on a phone like any app, with every sound generated by the app itself, so there’s nothing to download.',
+      'Built its website too, with no image files at all: the whole scene is drawn by the page, in 81 KB.',
+    ],
+    result:
+      'My family uses it, and any other family can open their own board with a code.',
+    stack: ['JavaScript', 'Supabase', 'Postgres', 'PWA', 'SVG', 'Web Audio'],
+    links: [
+      { label: 'Try the app', href: 'https://broom-blade.vercel.app' },
+      { label: 'See the website', href: 'https://web-broom-blade.vercel.app' },
+      { label: 'How it’s built', href: builtHref('broom-blade') },
+    ],
+  },
+  {
+    id: 'rubble-rouser',
+    context: 'Game · free to play',
+    title: 'A 3D physics demolition game',
+    image: '/images/apps/rubble-rouser-thumbnail.webp',
+    imageAlt:
+      'Rubble Rouser: a rocket launcher aimed at a building of timber, brick and steel.',
+    imageWidth: 1200,
+    imageHeight: 630,
+    problem:
+      'Forty buildings that have to stand and fall the way real ones would, in a browser, on a phone.',
+    built: [
+      'Built a structural solver: weight has to reach the ground through what’s left, so a building falls the way it’s built.',
+      'Ran the build with AI agents working side by side: the engine first, then five level builders at a time.',
+      'Put the forty levels in order by measuring how easily each one falls, firing at random eight times each, instead of judging by eye.',
+      'Generated every texture, sound and building in the browser as it loads, in one file of about 3.4 MB.',
+    ],
+    result: `One of ${GAME_SLUGS.length} games in the Arcade, all playable right now.`,
+    stack: ['three.js', 'WebGL', 'Rapier physics', 'WebAssembly', 'Web Audio'],
+    links: [
+      { label: 'Play it', href: '/games/rubble-rouser' },
+      { label: 'How it’s built', href: builtHref('rubble-rouser') },
+      { label: 'The whole Arcade', href: '/games' },
+    ],
+  },
+  {
+    id: 'voltic',
+    context: 'Brand website · practice build',
+    title: 'A product launch page with a real 3D can',
+    image: '/images/websites/voltic.webp',
+    imageAlt:
+      'The VOLTIC website. A black energy drink can lit in blue and green, covered in water droplets.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    problem:
+      'A launch page for an energy drink I made up, built to find out how good I could make one.',
+    built: [
+      'Built the can as a live 3D model that turns as you scroll and spins when you grab it.',
+      'Typed the label and nutrition panel as real text, because AI images get small print wrong.',
+      'Generated every other image with AI under a hard budget written into the code.',
+      'Added an automatic accessibility check at six points down the page that blocks the release if anything fails.',
+    ],
+    result:
+      'Zero accessibility problems on the automatic check, and the page that draws it is 33 KB.',
+    stack: [
+      'three.js',
+      'WebGL',
+      'AI image generation',
+      'Accessibility testing',
+    ],
+    links: [
+      { label: 'Open the site', href: 'https://web-voltic.vercel.app' },
+      { label: 'How it’s built', href: builtHref('voltic') },
+    ],
+  },
+];
+
+/* ── 3. Everything else, live ──────────────────────────────────────────── */
+
+export type WorkKind = 'Website' | 'App' | 'Game';
+
+export interface WorkCard {
+  id: string;
+  kind: WorkKind;
+  name: string;
+  line: string;
+  image: string;
+  imageAlt: string;
+  href: string;
+  more?: string;
+}
+
+const FEATURED_IDS = new Set(FEATURED.map((f) => f.id));
+const GAMES = new Set<string>(GAME_SLUGS);
+
+/** Websites with a write-up, minus the featured ones and this site's old look. */
+const siteCards: WorkCard[] = projects
+  .filter((p) => !FEATURED_IDS.has(p.slug) && p.slug !== 'notebook')
+  .map((p) => {
+    const part = p.parts.find((x) => x.kind === 'Website') ?? p.parts[0];
+    return {
+      id: p.slug,
+      kind: 'Website' as const,
+      name: p.name,
+      line: p.summary,
+      image: p.image,
+      imageAlt: p.imageAlt,
+      href: part.href,
+      more: `/built/${p.slug}`,
+    };
+  });
+
+/**
+ * Apps and games from the gallery, minus the featured ones and anything
+ * not actually live. The cloth simulator sits in the Arcade, but to an
+ * employer it's an app, so it's listed by what it is.
+ */
+const appCards: WorkCard[] = apps
+  .filter((a) => !FEATURED_IDS.has(a.slug) && a.status === 'live' && a.liveUrl)
+  .filter((a) => a.slug !== 'samurai-kitchen')
+  .map((a) => ({
+    id: a.slug,
+    kind:
+      GAMES.has(a.slug) && a.category !== 'Simulation'
+        ? ('Game' as const)
+        : ('App' as const),
+    name: a.name,
+    line: a.description,
+    image: a.thumbnailUrl,
+    imageAlt: `${a.name}.`,
+    href: a.liveUrl as string,
+    more: builtHref(a.slug),
+  }));
+
+export const GALLERY: WorkCard[] = [...siteCards, ...appCards];
+
+/* ── 4. How I build with AI ────────────────────────────────────────────── */
+
+export const HOW_I_BUILD: { title: string; line: string; proof?: ProofLink }[] =
+  [
+    {
+      title: 'I write the spec first',
+      line: 'One written contract every agent builds to. “Fast on an old phone” becomes a frame budget, not a hope.',
+      proof: {
+        label: 'The rules every agent on this site reads',
+        href: 'https://github.com/smartDisruptions/web-smartDisruptions/blob/main/AGENTS.md',
+      },
+    },
+    {
+      title: 'I run a team of AI agents',
+      line: 'Four to ten at once, each with one job: builders, a critic, a tester and a code reviewer.',
+    },
+    {
+      title: 'I test it and secure it',
+      line: 'Automated tests on every change, accessibility checks that block a bad release, and security audits on the live site, not just the code.',
+      proof: {
+        label: 'I found my own task list on the open internet',
+        href: '/content/my-private-task-list-was-public',
+      },
+    },
+    {
+      title: 'I own what ships',
+      line: 'Claude writes most of the code. I read every change, and nothing goes live until I say so.',
+    },
+  ];
+
+/* ── 5. The résumé facts ───────────────────────────────────────────────── */
+
+/**
+ * Only what the site already says in public: first name only, and the
+ * university unnamed (Josh's call, 2026-10-26). His full résumé, with
+ * employers, titles and dates, is in his vault; adding any of it here is
+ * his decision, because this repository is public.
+ */
+export const EXPERIENCE: {
+  when: string;
+  role: string;
+  where: string;
+  points: string[];
+}[] = [
   {
     when: '2026 – now',
-    role: 'Independent builder',
+    role: 'Independent software builder',
     where: 'SmartDisruptions',
-    line: `Websites, apps, games and research, built with Claude and written up in public. ${apps.length} things online so far.`,
+    points: [
+      'Shipped online ordering and card payments for a food truck, live on its own domain since August 2026.',
+      `Built and published ${apps.length} apps and games and ${projects.length - 1} websites, all live and free to try.`,
+    ],
   },
   {
     when: '2024 – now',
     role: 'Software engineer',
-    where: 'A university',
-    line: 'Financial aid systems, the arithmetic that isn’t allowed to be wrong, kept behind a regression test on every change.',
+    where: 'Financial aid systems, a university',
+    points: [
+      'Work on the university’s financial aid systems, where the arithmetic isn’t allowed to be wrong, and guard it with a regression test on every change.',
+    ],
   },
   {
     when: 'Before 2024',
     role: 'Design and content',
     where: 'The same university',
-    line: 'My first job there, and why the design half of this came first.',
+    points: [
+      'My first role there, and where the design half of my work started.',
+    ],
   },
   {
-    when: '2008',
-    role: 'Started teaching myself to build',
+    when: 'Since 2008',
+    role: 'Self-taught developer',
     where: '',
-    line: 'Self-taught, one build at a time.',
+    points: ['Building websites and software on my own since 2008.'],
+  },
+];
+
+export const SKILLS: { group: string; items: string[] }[] = [
+  {
+    group: 'Front end',
+    items: [
+      'TypeScript',
+      'JavaScript',
+      'React',
+      'Next.js',
+      'HTML and CSS',
+      'Tailwind',
+      'three.js and WebGL',
+      'Canvas',
+    ],
+  },
+  {
+    group: 'Back end and data',
+    items: [
+      'Node.js',
+      'Postgres',
+      'Supabase',
+      'SQL',
+      'REST APIs',
+      'OAuth 2.0',
+      'Square API',
+    ],
+  },
+  {
+    group: 'Building with AI',
+    items: [
+      'Claude Code',
+      'Multi-agent workflows',
+      'Context engineering',
+      'AI image and audio generation',
+    ],
+  },
+  {
+    group: 'Shipping',
+    items: [
+      'Vercel',
+      'Git and GitHub',
+      'GitHub Actions',
+      'Playwright',
+      'Accessibility (WCAG)',
+      'Performance budgets',
+    ],
   },
 ];
 
 /**
  * How to reach me, and what I'm looking for. Josh fills these in; until he
- * does, the section shows a note on previews and is left off production.
+ * does, previews show a note and production leaves the section off.
  */
 export const CONTACT: { label: string; href: string } | null = null;
 export const LOOKING_FOR: string | null = null;
@@ -259,8 +439,8 @@ export const LOOKING_FOR: string | null = null;
 /** The headline numbers. Derived, so they can't drift. */
 export function resumeTotals() {
   return {
-    skills: allSkills.length,
-    things: apps.length,
+    live: apps.length,
     games: GAME_SLUGS.length,
+    websites: projects.length - 1, // less the Notebook, this site's old look
   };
 }

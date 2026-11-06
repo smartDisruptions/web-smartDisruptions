@@ -1,24 +1,23 @@
 /**
  * Tests for the résumé (/resume).
  *
- * The page is built on the skills list (test-skills.mjs covers that), and
- * adds three things of its own that can each go quietly wrong: a "hiring
- * for…" lens naming a skill that was renamed (it would filter to nothing),
- * a case-study link to a staged article or a report that doesn't exist
- * (fine on the preview, a 404 on the live site), and a link into the
- * private knowledge base. A hiring manager clicking a dead receipt is worse
- * than no receipt, so these run with the rest.
+ * The page's whole argument is "open any of it", so its failure mode is a
+ * link that looks fine and goes nowhere: a staged article (renders on the
+ * preview, 404s live), a /built page that was renamed, a game whose folder
+ * moved, a screenshot that isn't there. A hiring manager clicking a dead
+ * link is worse than no link, so these run with the rest of `npm test`.
  *
  *   node --import ./scripts/ts-resolve-register.mjs scripts/test-resume.mjs
  */
+import { existsSync } from 'node:fs';
 import {
-  CASE_STUDIES,
+  CAPABILITIES,
   EXPERIENCE,
-  LENSES,
-  LOOP,
-  lensesFor,
+  FEATURED,
+  GALLERY,
+  HOW_I_BUILD,
+  SKILLS,
 } from '../src/data/resume.ts';
-import { allSkills } from '../src/data/skills.ts';
 import { apps } from '../src/data/apps.ts';
 import { projects } from '../src/data/projects.ts';
 import { getAllPosts } from '../src/lib/posts.ts';
@@ -36,7 +35,6 @@ const ok = (label, cond, extra = '') => {
   }
 };
 
-const skillIds = new Set(allSkills.map((s) => s.id));
 const published = new Set(
   getAllPosts()
     .filter((p) => p.status === 'published')
@@ -48,101 +46,113 @@ const builtSlugs = new Set([
   ...projects.map((p) => p.slug),
 ]);
 
-console.log('— the lens —');
+/** Does a site-relative link lead to a real page? */
+function resolves(href) {
+  const path = href.split('#')[0];
+  if (path === '/' || path === '/games' || path === '/market-storm')
+    return true;
+  let m;
+  if ((m = path.match(/^\/content\/([^/]+)$/))) return published.has(m[1]);
+  if ((m = path.match(/^\/market-storm\/([^/]+)$/))) return reports.has(m[1]);
+  if ((m = path.match(/^\/built\/([^/]+)$/))) return builtSlugs.has(m[1]);
+  if ((m = path.match(/^\/games\/([^/]+)$/)))
+    return existsSync(`public/games/${m[1]}/index.html`);
+  if ((m = path.match(/^\/demo\/([^/]+)$/)))
+    return existsSync(`public/demo/${m[1]}`);
+  return false;
+}
 
+const links = [
+  ...CAPABILITIES.flatMap((c) => c.proof.map((p) => ({ from: c.id, ...p }))),
+  ...FEATURED.flatMap((f) => f.links.map((l) => ({ from: f.id, ...l }))),
+  ...HOW_I_BUILD.filter((h) => h.proof).map((h) => ({
+    from: h.title,
+    ...h.proof,
+  })),
+  ...GALLERY.flatMap((w) => [
+    { from: w.id, label: w.name, href: w.href },
+    ...(w.more ? [{ from: w.id, label: 'more', href: w.more }] : []),
+  ]),
+];
+
+console.log('— every link goes somewhere —');
+
+const dead = links.filter((l) => l.href.startsWith('/') && !resolves(l.href));
 ok(
-  'every lens has a short URL-safe id, a name and a pitch',
-  LENSES.every((l) => /^[a-z]+$/.test(l.id) && l.name && l.pitch)
+  'every site link resolves (published article, real report, /built page, game or demo)',
+  dead.length === 0,
+  dead.map((l) => `${l.from}: ${l.href}`).join(', ')
 );
-ok(
-  'lens ids are unique',
-  new Set(LENSES.map((l) => l.id)).size === LENSES.length
-);
-ok(
-  'no lens is called "all" (that one means everything)',
-  !LENSES.some((l) => l.id === 'all')
-);
-
-const unknown = LENSES.flatMap((l) =>
-  l.skills.filter((id) => !skillIds.has(id)).map((id) => `${l.id}: ${id}`)
-);
-ok(
-  'every skill a lens names exists in skills.ts',
-  unknown.length === 0,
-  unknown.join(', ')
-);
-
-ok(
-  'every lens keeps at least four skills, so it never filters to a stub',
-  LENSES.every((l) => new Set(l.skills).size >= 4)
-);
-
-const orphans = allSkills
-  .filter((s) => lensesFor(s.id).length === 0)
-  .map((s) => s.id);
-ok(
-  'every skill shows under at least one lens',
-  orphans.length === 0,
-  orphans.join(', ')
-);
-
-console.log('— the receipts —');
-
-const links = CASE_STUDIES.flatMap((c) =>
-  c.links.map((l) => ({ c: c.id, ...l }))
-);
-
-ok(
-  'every case study has a call and at least one link',
-  CASE_STUDIES.every((c) => c.call && c.links.length > 0)
-);
-
-const badArticles = links
-  .filter((l) => l.href.startsWith('/content/'))
-  .filter((l) => !published.has(l.href.slice('/content/'.length)));
-ok(
-  'every article linked is published',
-  badArticles.length === 0,
-  badArticles.map((l) => `${l.c}: ${l.href}`).join(', ')
-);
-
-const badReports = links
-  .filter((l) => /^\/market-storm\/.+/.test(l.href))
-  .filter((l) => !reports.has(l.href.slice('/market-storm/'.length)));
-ok(
-  'every Market Storm report linked exists',
-  badReports.length === 0,
-  badReports.map((l) => l.href).join(', ')
-);
-
-const badBuilt = links
-  .filter((l) => l.href.startsWith('/built/'))
-  .filter((l) => !builtSlugs.has(l.href.slice('/built/'.length)));
-ok(
-  'every /built page linked exists',
-  badBuilt.length === 0,
-  badBuilt.map((l) => l.href).join(', ')
-);
-
 ok(
   'every link is a site path or an https URL',
-  links.every((l) => l.href.startsWith('/') || l.href.startsWith('https://'))
+  links.every((l) => l.href.startsWith('/') || l.href.startsWith('https://')),
+  links
+    .filter((l) => !l.href.startsWith('/') && !l.href.startsWith('https://'))
+    .map((l) => `${l.from}: ${l.href}`)
+    .join(', ')
 );
 ok(
   'nothing points into the private knowledge-base repository',
   !links.some((l) => l.href.includes('josh-ai-builder-brain'))
 );
 
-console.log('— the rest —');
+console.log('— every picture is there —');
 
+const images = [
+  ...FEATURED.map((f) => ({ from: f.id, src: f.image })),
+  ...GALLERY.map((w) => ({ from: w.id, src: w.image })),
+];
+const missing = images.filter((i) => !existsSync(`public${i.src}`));
 ok(
-  'the loop has steps with a line each',
-  LOOP.length >= 3 && LOOP.every((s) => s.step && s.line)
+  'every featured and gallery image exists',
+  missing.length === 0,
+  missing.map((i) => `${i.from}: ${i.src}`).join(', ')
 );
 ok(
-  'every experience entry has a when, a role and a line',
-  EXPERIENCE.every((x) => x.when && x.role && x.line)
+  'every featured image has alt text and its real size',
+  FEATURED.every((f) => f.imageAlt && f.imageWidth > 0 && f.imageHeight > 0)
 );
 
+console.log('— the shape —');
+
+ok(
+  'every capability has a title, a line and at least one piece of proof',
+  CAPABILITIES.every((c) => c.title && c.line && c.proof.length > 0)
+);
+ok(
+  'every featured piece has a problem, what I built, a result, a stack and a link',
+  FEATURED.every(
+    (f) =>
+      f.problem &&
+      f.built.length >= 2 &&
+      f.result &&
+      f.stack.length &&
+      f.links.length
+  )
+);
+ok(
+  'nothing featured is repeated in the gallery',
+  !GALLERY.some((w) => FEATURED.some((f) => f.id === w.id))
+);
+ok(
+  'the gallery holds every kind of work',
+  ['Website', 'App', 'Game'].every((k) => GALLERY.some((w) => w.kind === k))
+);
+ok(
+  'gallery ids are unique',
+  new Set(GALLERY.map((w) => w.id)).size === GALLERY.length
+);
+ok(
+  'every experience entry has a when, a role and a point',
+  EXPERIENCE.every((x) => x.when && x.role && x.points.length)
+);
+ok(
+  'every skill group has items',
+  SKILLS.every((g) => g.group && g.items.length)
+);
+
+console.log(
+  `\n${CAPABILITIES.length} capabilities · ${FEATURED.length} featured · ${GALLERY.length} in the gallery · ${links.length} links checked`
+);
 console.log(`${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);
