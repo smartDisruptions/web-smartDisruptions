@@ -24,10 +24,19 @@ const TITLE = 'Résumé — SmartDisruptions';
 const DESCRIPTION =
   'Describe it, and I’ll build it with AI and ship it. A university’s net price calculator, online payments, databases, games and brand websites, all live and open to try.';
 
+/**
+ * Unlisted for now (Josh, 2026-11-06: "I don't want it to be linked to
+ * yet"). Nothing on the site links here, it's out of the sitemap, and this
+ * tells search engines not to index it or follow its links. It stays out of
+ * robots.txt on purpose: that file is public, and listing the path there
+ * would point people at it. To list it, drop `robots` here, add it back to
+ * src/app/sitemap.ts, and link it from wherever it should live.
+ */
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: '/resume' },
+  robots: { index: false, follow: false },
   ...shareMeta({ title: TITLE, description: DESCRIPTION, path: '/resume' }),
 };
 
