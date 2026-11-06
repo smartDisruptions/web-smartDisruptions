@@ -100,6 +100,7 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/tokaido-run-thumbnail.webp': [1200, 630],
   '/images/websites/arcade.webp': [1200, 750],
   '/images/websites/gilt-and-lather.webp': [1200, 750],
+  '/images/websites/gilt-and-lather-phone.webp': [780, 1688],
   '/images/websites/broom-blade.webp': [1200, 750],
   '/images/websites/kiru.webp': [1200, 750],
   '/images/websites/kiru-cast.webp': [1200, 750],

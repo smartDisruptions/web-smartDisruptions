@@ -286,11 +286,13 @@ export const projects: Project[] = [
         heading: 'The website',
         href: '/demo/gilt-and-lather',
         linkLabel: 'See the website',
-        image: '/images/websites/gilt-and-lather.webp',
+        // The phone view, so the part shows what the hero's laptop shot
+        // can't: the booking bar held at the bottom of the screen.
+        image: '/images/websites/gilt-and-lather-phone.webp',
         imageAlt:
-          'The Gilt & Lather Barber Co. website. Classic cuts, hot towels, done right, in gold letters beside a barber lifting a steaming hot towel.',
-        imageWidth: 1200,
-        imageHeight: 750,
+          'The Gilt & Lather Barber Co. website on a phone. The section The classic cut, start to finish, above a photo of a leather barber chair, with a bar along the bottom of the screen that says Open now until 6 pm and Book your cut.',
+        imageWidth: 780,
+        imageHeight: 1688,
         what: 'A one-page website for a one-chair barbershop, with one job: getting a visitor into the chair.',
         body: 'I made the shop up, and the page says so. The barber, the address, the hours, the prices and the reviews are all invented, so you can press everything on it and nothing reaches anyone.',
         bullets: [
@@ -307,8 +309,8 @@ export const projects: Project[] = [
             label: 'Speed score on a phone, out of 100, in a lab test',
           },
           {
-            value: '1 s',
-            label: 'Until Book can be pressed on an old phone with slow data',
+            value: '1',
+            label: 'Second until Book can be pressed on an old phone with slow data',
           },
           {
             value: '0',
