@@ -385,6 +385,14 @@ function AppPage({ app }: { app: App }) {
             </Button>
           </div>
         )}
+        {app.setupNote && (
+          <p className="mt-4 max-w-xl rounded-2xl border border-border bg-surface px-4 py-3 text-[15px] leading-relaxed text-text-secondary">
+            <span className="font-bold text-text-primary">
+              Before you try it:
+            </span>{' '}
+            {app.setupNote}
+          </p>
+        )}
         <p className="font-read mt-6 text-lg leading-[1.75] text-text-secondary">
           {app.longDescription}
         </p>
