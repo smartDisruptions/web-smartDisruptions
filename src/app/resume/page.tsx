@@ -22,7 +22,7 @@ import './resume.css';
 
 const TITLE = 'Résumé — SmartDisruptions';
 const DESCRIPTION =
-  'Describe it, and I’ll build it with AI and ship it. Online payments, databases, dashboards, games and brand websites, all live and open to try.';
+  'Describe it, and I’ll build it with AI and ship it. A university’s net price calculator, online payments, databases, games and brand websites, all live and open to try.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -110,12 +110,16 @@ export default function ResumePage() {
           Describe it, and I’ll build it with AI and ship it.
         </p>
         <p className="rs-lead font-read">
-          Everything on this page is live, so open any of it: a food truck
-          taking real card payments, a family app on a shared database, a data
-          dashboard, {totals.games} playable games and the websites around them.
+          Everything on this page is live, so open any of it: the University of
+          Idaho’s Net Price Calculator, a food truck taking real card payments,
+          a family app on a shared database, {totals.games} playable games and
+          the websites around them.
         </p>
 
         <ul role="list" className="rs-stats">
+          <li>
+            <strong>1</strong> university calculator live
+          </li>
           <li>
             <strong>1</strong> business taking real payments
           </li>

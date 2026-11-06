@@ -28,6 +28,9 @@ export interface ProofLink {
   href: string;
 }
 
+/** The Net Price Calculator, live on the University of Idaho's own server. */
+const NPC = 'https://banner.uidaho.edu/net-price-calculator/index.html';
+
 /* ── 1. What I can build ───────────────────────────────────────────────── */
 
 export interface Capability {
@@ -65,9 +68,10 @@ export const CAPABILITIES: Capability[] = [
   },
   {
     id: 'dashboards',
-    title: 'Dashboards that turn data into decisions',
-    line: 'I turned 953 of the food truck’s orders into a report that ranks 21 things to try next, sized for a one-man truck. The public copy runs on invented numbers.',
+    title: 'Calculators and dashboards for real decisions',
+    line: 'I built the University of Idaho’s Net Price Calculator on the federal aid formula, and turned 953 of a food truck’s orders into a ranked plan of what to try next.',
     proof: [
+      { label: 'Net Price Calculator', href: NPC },
       {
         label: 'Insights demo',
         href: 'https://paper-crane-insights.vercel.app',
@@ -129,6 +133,35 @@ export interface Featured {
 }
 
 export const FEATURED: Featured[] = [
+  {
+    id: 'net-price-calculator',
+    context: 'Day job · University of Idaho · live for 2026–27',
+    title: 'The University of Idaho’s Net Price Calculator',
+    image: '/images/resume/net-price-calculator.webp',
+    imageAlt:
+      'The University of Idaho Net Price Calculator results screen: an estimated net price of $15,616 a year, from a $30,791 cost of attendance less $15,175 in gift aid.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    problem:
+      'Every U.S. college that takes federal student aid has to offer one. Families want an honest answer to “what will this actually cost us?”, and the answer depends on a federal aid formula that changes every year.',
+    built: [
+      'Built the whole estimator as one page that runs in the browser: academics, family situation and finances in three short steps, a net price in about three minutes.',
+      'Implemented the federal 2026–27 Student Aid Index formula from the official guide, for dependent students and both kinds of independent student, then the Pell Grant and need-based aid that follow from it.',
+      'Turned the university’s scholarship rules into code: Go Idaho merit tiers by GPA, National Merit, Western Undergraduate Exchange awards for 20 states and territories, and transfer awards.',
+      'Kept the aid math behind a 23-check regression test that had to pass after every change, so no edit to the screens could quietly change what a family is told.',
+      'Designed it for privacy: answers stay on the device, it never asks for a name or Social Security number, and a shared link carries only academic answers, never income.',
+    ],
+    result:
+      'Live on the university’s website for the 2026–27 award year. It loads as one file from the university’s own server, with no outside requests.',
+    stack: [
+      'JavaScript',
+      'HTML and CSS',
+      'Federal aid formula (SAI)',
+      'jsdom tests',
+      'Accessibility',
+    ],
+    links: [{ label: 'Try the calculator', href: NPC }],
+  },
   {
     id: 'samurai-kitchen',
     context: 'Client work · live since August 2026',
@@ -337,10 +370,14 @@ export const HOW_I_BUILD: { title: string; line: string; proof?: ProofLink }[] =
 /* ── 5. The résumé facts ───────────────────────────────────────────────── */
 
 /**
- * Only what the site already says in public: first name only, and the
- * university unnamed (Josh's call, 2026-10-26). His full résumé, with
- * employers, titles and dates, is in his vault; adding any of it here is
- * his decision, because this repository is public.
+ * First name only, as on the rest of the site (Josh's call, 2026-10-26).
+ * The University of Idaho is named here because Josh asked for its Net
+ * Price Calculator to be on this page (2026-11-06), which links to the
+ * university's own server; his title comes from his vault résumé. The rest
+ * of that résumé (earlier employers, start dates, education) stays off
+ * until he says otherwise, because this repository is public. So does the
+ * calculator's vendor and cost: the university owns that work (FSH 5300),
+ * and that claim waits on its OK.
  */
 export const EXPERIENCE: {
   when: string;
@@ -359,16 +396,17 @@ export const EXPERIENCE: {
   },
   {
     when: '2024 – now',
-    role: 'Software engineer',
-    where: 'Financial aid systems, a university',
+    role: 'Enterprise Developer, Student Financial Aid',
+    where: 'University of Idaho',
     points: [
-      'Work on the university’s financial aid systems, where the arithmetic isn’t allowed to be wrong, and guard it with a regression test on every change.',
+      'Built the university’s Net Price Calculator: the federal aid formula and its scholarship rules in a three-minute estimate for families, live for 2026–27.',
+      'Work on the financial aid systems behind awards and student communications, where the arithmetic isn’t allowed to be wrong, and guard it with a regression test on every change.',
     ],
   },
   {
     when: 'Before 2024',
     role: 'Design and content',
-    where: 'The same university',
+    where: 'University of Idaho',
     points: [
       'My first role there, and where the design half of my work started.',
     ],

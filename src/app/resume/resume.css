@@ -886,11 +886,11 @@
     font-weight: 600;
     text-decoration: none;
   }
-  /* More work: names and addresses, two columns. */
+  /* More work: names and addresses, three columns. */
   .rs-gallery {
     display: block;
-    columns: 2;
-    column-gap: 1.2rem;
+    columns: 3;
+    column-gap: 1rem;
     margin-top: 0.4rem;
   }
   .rs-work {
