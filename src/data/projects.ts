@@ -321,6 +321,57 @@ export const projects: Project[] = [
     ],
   },
   {
+    // Built at Josh's day job, so it belongs to the University of Idaho (its
+    // policy FSH 5300). Added 2026-11-06 on Josh's word. Facts were read from
+    // the live file on banner.uidaho.edu that day: its CONFIG, computeSAI,
+    // meritFor and SAFE_SHARE_KEYS, and a worked estimate run in a browser. The
+    // 23 checks come from his own record of the build. Left out on purpose:
+    // the vendor it replaced and what that cost, until the university says
+    // that can be public.
+    slug: 'net-price-calculator',
+    name: 'Net Price Calculator',
+    eyebrow: 'Made at work · online now',
+    summary:
+      'The University of Idaho’s calculator that tells a family what a year there will really cost them.',
+    image: '/images/websites/net-price-calculator.webp',
+    imageAlt:
+      'The University of Idaho Net Price Calculator results screen: an estimated net price of $15,616 a year, from a $30,791 cost of attendance less $15,175 in gift aid.',
+    imageWidth: 1200,
+    imageHeight: 750,
+    parts: [
+      {
+        kind: 'App',
+        heading: 'The calculator',
+        href: 'https://banner.uidaho.edu/net-price-calculator/index.html',
+        linkLabel: 'Try the calculator',
+        image: '/images/websites/net-price-calculator-phone.webp',
+        imageAlt:
+          'The calculator on a phone, after the first step: a 3.60 GPA earns the Go Idaho Excellence Award of $4,000 a year, with Idaho’s state scholarships below it.',
+        imageWidth: 780,
+        imageHeight: 1688,
+        what: 'A family answers a few questions and sees what a year at the University of Idaho would cost after scholarships and grants.',
+        body: 'Every college in the United States that takes federal student aid has to offer one of these. I built the university’s own, at my day job, so it belongs to the university. It takes about three minutes, and the scholarships a student qualifies for appear after the first step.',
+        bullets: [
+          'It asks three sets of questions: the student’s grades and where they live, their family situation, and the family’s money.',
+          'The need-based part follows the federal government’s own formula for 2026–27, the Student Aid Index. It covers students who rely on their parents and students who don’t, with or without people of their own to support.',
+          'It knows the university’s scholarships: the Go Idaho awards by grade point average, National Merit, the Western Undergraduate Exchange discount for students from 20 western states and territories, and awards for transfer students.',
+          'Every figure it uses, from tuition to each award, is kept in one list, so a new year means changing that list and nothing else.',
+          'A set of 23 checks on the aid math had to pass after every change, so no change to the screens could quietly change what a family is told.',
+          'Nothing a family types leaves their device. It never asks for a name or a Social Security number, and a link to share an estimate carries only the school answers, never income.',
+          'A comparison with what similar families usually pay is built in, but it stays switched off until the university supplies real figures, so it never shows a made-up number.',
+        ],
+        receipts: [
+          { value: '3 min', label: 'To an estimate, in three short steps' },
+          {
+            value: '23',
+            label: 'Checks on the aid math, run after every change',
+          },
+          { value: '0', label: 'Answers that ever leave the family’s device' },
+        ],
+      },
+    ],
+  },
+  {
     // The look this site had before Kiru, kept online as a working copy built
     // from its own code (scripts/archive-site.mjs → public/archive/notebook).
     // Facts from the Notebook pull request (#105) and its DESIGN.md.
