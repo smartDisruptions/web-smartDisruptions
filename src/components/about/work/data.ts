@@ -1,6 +1,7 @@
 import { apps, GAME_SLUGS, getAppBySlug, type App } from '@/data/apps';
 import {
   getProjectBySlug,
+  kindsOfProject,
   projects,
   type Project,
   type ProjectPart,
@@ -33,7 +34,7 @@ function fromProject(p: Project): Showcase {
     name: p.name,
     eyebrow: p.eyebrow,
     summary: p.summary,
-    kind: p.parts.map((part) => part.kind).join(' + '),
+    kind: kindsOfProject(p).join(' + '),
     href: `/built/${p.slug}`,
     image: p.image,
     imageAlt: p.imageAlt,
@@ -184,19 +185,26 @@ export const games: App[] = GAME_SLUGS.filter(
 const projectParts = projects.flatMap((p) => p.parts);
 const partsOf = (kind: ProjectPart['kind']) =>
   projectParts.filter((part) => part.kind === kind).length;
+/** Projects that also count as a kind none of their parts is (`alsoKinds`). */
+const alsoOf = (kind: ProjectPart['kind']) =>
+  projects.filter(
+    (p) =>
+      p.alsoKinds?.includes(kind) && !p.parts.some((part) => part.kind === kind)
+  ).length;
 
 /**
  * What the receipt counts (Josh's call, 2026-10-21): websites, apps and
  * games, nothing else. A project counts once for each of its parts, so
  * Broom & Blade is a website and a game, as the Arcade's archive and the home
- * page's "games in the arcade" already count it. The Arcade and Kiru are
- * parts of this site rather than things of their own, so neither is counted;
- * the Arcade's games are, one by one.
+ * page's "games in the arcade" already count it. A project also counts once
+ * for each of its `alsoKinds`, so Broom & Blade is an app too (Josh,
+ * 2026-11-06). The Arcade and Kiru are parts of this site rather than things
+ * of their own, so neither is counted; the Arcade's games are, one by one.
  */
 export const counts = {
-  websites: partsOf('Website'),
-  apps: partsOf('App') + builtCatalogueApps.length,
-  games: partsOf('Game') + games.length,
+  websites: partsOf('Website') + alsoOf('Website'),
+  apps: partsOf('App') + alsoOf('App') + builtCatalogueApps.length,
+  games: partsOf('Game') + alsoOf('Game') + games.length,
 };
 
 /** The wall's chips, besides All (Josh, 2026-10-26). */
@@ -209,15 +217,16 @@ const KIND_OF: Record<ProjectPart['kind'], WorkKind> = {
 
 /**
  * Which of the wall's chips find a thing, by the receipt's rule (`counts`):
- * a project is each kind it has a part of, so Broom & Blade is under
- * Websites and Games both; an app that isn't a project is an app; a game is
- * a game. The Arcade and Kiru are parts of this site, not things of their
- * own, so they are under All only, as the receipt doesn't count them.
+ * a project is each kind it has a part of, plus its `alsoKinds`, so Broom &
+ * Blade is under Websites, Games and Apps; an app that isn't a project is an
+ * app; a game is a game. The Arcade and Kiru are parts of this site, not
+ * things of their own, so they are under All only, as the receipt doesn't
+ * count them.
  */
 const kindsOf = (slug: string, otherwise: WorkKind[] = []): WorkKind[] => {
   const project = getProjectBySlug(slug);
   if (!project) return otherwise;
-  return [...new Set(project.parts.map((part) => KIND_OF[part.kind]))];
+  return kindsOfProject(project).map((kind) => KIND_OF[kind]);
 };
 
 /**
