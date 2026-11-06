@@ -100,6 +100,7 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/tokaido-run-thumbnail.webp': [1200, 630],
   '/images/websites/arcade.webp': [1200, 750],
   '/images/websites/gilt-and-lather.webp': [1200, 750],
+  '/images/websites/gilt-and-lather-phone.webp': [780, 1688],
   '/images/websites/broom-blade.webp': [1200, 750],
   '/images/websites/kiru.webp': [1200, 750],
   '/images/websites/kiru-cast.webp': [1200, 750],
@@ -167,6 +168,7 @@ const MARKS: Record<string, string> = {
   'samurai-kitchen': '侍', // samurai
   voltic: '雷', // thunder: "liquid lightning"
   moonbowl: '月', // moon: the egg yolk is the moon in the bowl
+  'gilt-and-lather': '剃', // to shave, as in 剃刀, a razor: the barber's chair
   notebook: '書', // writing: the notebook this site used to be
   'pomodoro-timer': '技', // technique: the Pomodoro technique
   'spacex-mars': '探', // explore
