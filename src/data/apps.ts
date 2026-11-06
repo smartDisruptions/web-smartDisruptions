@@ -14,6 +14,13 @@ export interface App {
   buildPlanAvailable: boolean;
   liveUrl?: string;
   /**
+   * Something a visitor has to do before the app works, said plainly. The
+   * app's page shows it right under the Try it button, so nobody opens the
+   * app, finds it doing nothing and leaves. (AI Diary needs an API key,
+   * 2026-11-06.)
+   */
+  setupNote?: string;
+  /**
    * Games only: how to play, in a player's words, shown on the game's page in
    * place of the build notes. `on` is what it plays on; each way to play it
    * (touch or a mouse, the keyboard, a controller) lists the things you do and
@@ -243,6 +250,8 @@ export const apps: App[] = [
     hasFullBreakdown: false,
     buildPlanAvailable: false,
     liveUrl: 'https://app-ai-diary.vercel.app',
+    setupNote:
+      'Right now this app needs an API key to work. Open its Settings tab and paste in an OpenRouter key, which you can make at openrouter.ai. Without one you can still write entries, but Ember, the moods and the patterns stay off.',
   },
   {
     slug: 'portfolio-ledger',
