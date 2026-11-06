@@ -397,7 +397,8 @@ export const skillGroups: SkillGroup[] = [
         name: 'Accessibility as a constraint that improves the design',
         plain:
           'Holding every colour to a contrast standard in both themes — and letting that push the design somewhere better.',
-        used: "The arcade's bright red, yellow and blue fail contrast on a paper background, so every text use points at a darker ink. In dark mode those inks flip to the bright neon, which pops on the dark cabinet. A light-mode constraint turned into a dark-mode feature — the rule made it better rather than duller.",
+        used: "The arcade's bright red, yellow and blue fail contrast on a paper background, so every text use points at a darker ink. In dark mode those inks flip to the bright neon, which pops on the dark cabinet. A light-mode constraint turned into a dark-mode feature — the rule made it better rather than duller. Ironwheel went through a WCAG 2.2 AA audit and I fixed what it found: every status on the wheel and the muscle map is written in words as well as colour, and anything you delete by holding a button can be confirmed from a keyboard or a screen reader instead.",
+        apps: ['ironwheel'],
         links: [
           {
             kind: 'code',

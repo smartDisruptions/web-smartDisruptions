@@ -279,6 +279,40 @@ export const apps: App[] = [
     liveUrl: '/demo/portfolio-ledger',
   },
   {
+    slug: 'ironwheel',
+    name: 'Ironwheel',
+    description:
+      'A weightlifting app that shows which muscles are ready to train today, builds a plan the traditional way, and tells you what to put on the bar.',
+    longDescription:
+      'I box most days, so I wanted a lifting app that keeps the rotation honest: no muscle trained before it’s back. Ironwheel turns your plan into a wheel that only points at a day once its muscles are ready. Four quick questions, and your first workout starts.',
+    thumbnailUrl: '/images/apps/ironwheel-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/ironwheel-1.webp',
+      '/images/apps/ironwheel-2.webp',
+      '/images/apps/ironwheel-3.webp',
+    ],
+    techStack: [
+      'Vanilla JavaScript',
+      'SVG',
+      'Web Audio API',
+      'esbuild',
+      'Playwright',
+    ],
+    category: 'Fitness',
+    status: 'live',
+    outcomes: [
+      'Your plan’s days sit on a barbell plate, coloured by how ready their muscles are. If the next one isn’t ready, it offers one that is.',
+      'A muscle map shows what’s fatigued, recovering and ready, from the sets you log. Boxing and running count too.',
+      'Each lift says what weight to load and why, from your last sets, with the plates for each side of the bar.',
+      'Plans follow traditional programming, and each one checks its own weekly sets for every muscle.',
+      'Day one is simple. More of the app opens up as you log workouts, and it all stays in your browser.',
+    ],
+    buildDate: '2026-11',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/demo/ironwheel',
+  },
+  {
     slug: 'siphon-and-seal',
     name: 'Siphon & Seal',
     description:
