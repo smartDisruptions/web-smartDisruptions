@@ -55,6 +55,7 @@ body{font:500 16px/1.4 var(--f-display);-webkit-tap-highlight-color:transparent;
 button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;touch-action:manipulation}
 button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--cold);outline-offset:3px}
 [hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 p{margin:0}
 b{font-weight:700}
 .mono{font-family:var(--f-mono);letter-spacing:.06em}
@@ -80,7 +81,7 @@ b{font-weight:700}
 .mark{font:700 clamp(42px,14vw,66px)/.9 var(--f-display);letter-spacing:.02em;margin:8px 0 10px;
   background:linear-gradient(100deg,var(--silk) 0 38%,var(--copper) 68%,var(--hot));-webkit-background-clip:text;background-clip:text;color:transparent}
 .tag{color:var(--dim);font-size:16px;max-width:30ch;text-wrap:balance}
-.icon-btn{flex:none;font:400 12px/1 var(--f-mono);letter-spacing:.1em;border:1px solid var(--line);border-radius:4px;padding:10px;color:var(--dim);background:rgba(20,24,41,.8);min-height:38px}
+.icon-btn{flex:none;font:400 12px/1 var(--f-mono);letter-spacing:.1em;border:1px solid var(--line);border-radius:4px;padding:10px;color:var(--dim);background:rgba(20,24,41,.8);min-height:44px;min-width:44px}
 .icon-btn.on{color:var(--cold);border-color:rgba(63,211,255,.55)}
 .sector-head{display:flex;align-items:baseline;gap:10px;border-top:1px solid var(--line);padding-top:12px;flex-wrap:wrap}
 .sector-head b{font-size:18px;letter-spacing:.08em}
@@ -113,28 +114,33 @@ b{font-weight:700}
 .chip.oc .led{background:var(--done);box-shadow:0 0 10px var(--done)}
 .chip.oc .glyph,.chip.oc .cstat{color:var(--done)}
 .chip.oc .cbar i{background:var(--done)}
-.chip.locked{opacity:.42}
-.chip.teaser{opacity:.32;border-style:dashed;cursor:default}
+.chip.locked,.chip.teaser{border-style:dashed;background:#10131f}
+.chip.teaser{cursor:default}
+.chip.locked .glyph,.chip.locked .glyph .x,.chip.teaser .glyph,.chip.teaser .glyph .x{color:#7d809c}
+.chip.locked .cname,.chip.teaser .cname{color:#a3a4b9}
+.chip.locked .cstat,.chip.teaser .cstat{color:#9a9bb2}
+.chip.locked .pins,.chip.teaser .pins,.chip.locked .cbar,.chip.teaser .cbar{opacity:.4}
+.chip.locked .pips i,.chip.teaser .pips i{opacity:.55}
 .chip.teaser:active{transform:none}
 .pips{display:flex;gap:6px;height:9px;align-items:center}
 .pips i{width:6px;height:6px;transform:rotate(45deg);border:1px solid #3a4060}
 .pips i.on{background:var(--tc);border-color:var(--tc);box-shadow:0 0 6px var(--tc)}
 @keyframes blink{50%{opacity:.35}}
 .sectors{display:grid;gap:0}
-.sectors h3{font:400 12px/1.2 var(--f-mono);letter-spacing:.18em;color:var(--dim);margin:0 0 6px;font-weight:400}
+.sectors h2{font:400 12px/1.2 var(--f-mono);letter-spacing:.18em;color:var(--dim);margin:0 0 6px;font-weight:400}
 .sec{display:grid;grid-template-columns:30px 1fr auto;column-gap:10px;row-gap:2px;align-items:baseline;padding:10px 0;border-top:1px dashed #23283d}
 .sec .n{font:400 11px/1 var(--f-mono);color:var(--dim)}
 .sec b{font-size:15px;letter-spacing:.06em;color:#b9b8c8;font-weight:600}
 .sec .lk{font:400 10px/1 var(--f-mono);letter-spacing:.14em;color:var(--copper);white-space:nowrap}
-.sec .atoms{grid-column:2/4;font:400 11px/1.4 var(--f-mono);color:#6b6f8c;letter-spacing:.04em}
+.sec .atoms{grid-column:2/4;font:400 11px/1.4 var(--f-mono);color:var(--dim);letter-spacing:.04em}
 .settings{border-top:1px solid var(--line);padding-top:12px}
-.settings summary{font:400 12px/1 var(--f-mono);letter-spacing:.18em;color:var(--dim);cursor:pointer;list-style:none;padding:6px 0}
+.settings summary{font:400 12px/1 var(--f-mono);letter-spacing:.18em;color:var(--dim);cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center}
 .settings summary::-webkit-details-marker{display:none}
 .settings[open] summary{color:var(--silk)}
 .set-body{display:grid;gap:12px;padding-top:10px}
-.set-row{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--silk)}
-.set-row input{width:20px;height:20px;accent-color:var(--hot)}
-.set-about a{color:var(--cold);font-size:15px}
+.set-row{display:flex;gap:12px;align-items:center;font-size:15px;color:var(--silk);min-height:44px;cursor:pointer}
+.set-row input{flex:none;width:24px;height:24px;accent-color:var(--hot)}
+.set-about a{display:inline-flex;align-items:center;min-height:44px;color:var(--cold);font-size:15px}
 
 /* ---------- sheet ---------- */
 .sheet{position:fixed;inset:0;z-index:20;background:rgba(5,6,12,.74);display:flex;align-items:flex-end;justify-content:center}
@@ -152,6 +158,8 @@ b{font-weight:700}
 .sh-modes b{font:400 11px var(--f-mono);letter-spacing:.14em;margin-right:6px}
 .sh-modes .w{color:var(--cold)}
 .sh-modes .p{color:var(--hot)}
+.sh-keys{font-size:13px;color:var(--dim)}
+@media (hover:none){.sh-keys{display:none}}
 .sh-btns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px}
 .sh-btns button{white-space:nowrap;padding-left:10px;padding-right:10px}
 .rungs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -171,7 +179,7 @@ b{font-weight:700}
 .btn-primary{display:block;width:100%;padding:17px 16px;border-radius:6px;background:var(--hot);color:#1a0b03;font:700 18px/1 var(--f-display);letter-spacing:.16em;box-shadow:0 0 26px rgba(255,107,44,.32)}
 .btn-primary:disabled{background:#2a2f48;color:var(--dim);box-shadow:none;cursor:default}
 .btn-ghost{display:block;width:100%;padding:15px 16px;border-radius:6px;border:1px solid #3a4060;font:600 16px/1 var(--f-display);letter-spacing:.14em;color:var(--silk)}
-.btn-ghost.small{width:auto;padding:11px 14px;font-size:13px}
+.btn-ghost.small{width:auto;padding:11px 14px;font-size:13px;min-height:44px}
 .btn-ghost.warn{border-color:var(--glitch);color:var(--glitch)}
 
 /* ---------- run ---------- */
@@ -183,9 +191,9 @@ b{font-weight:700}
 .hud-clock{display:flex;flex-direction:column;gap:6px;min-width:0}
 .gauge{position:relative;height:16px;background:#1f2438;border-radius:8px;overflow:hidden}
 .gauge i{display:block;height:100%;width:0;background:var(--heat);box-shadow:0 0 10px var(--heat)}
-.g-lbl,#speedNum{position:absolute;top:50%;transform:translateY(-50%);color:#fff;mix-blend-mode:difference} /* light on the dark track, dark on a hot fill */
-.g-lbl{left:7px;font:400 9px/1 var(--f-mono);letter-spacing:.12em}
-#speedNum{right:7px;font:700 12px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.g-lbl,#speedNum{position:absolute;top:50%;transform:translateY(-50%);color:var(--silk);background:rgba(11,13,23,.85);border-radius:6px;padding:1px 5px} /* readable on any fill */
+.g-lbl{left:2px;font:400 9px/1 var(--f-mono);letter-spacing:.12em}
+#speedNum{right:2px;font:700 12px/1 var(--f-display);font-variant-numeric:tabular-nums}
 #streak{font:400 12px/1 var(--f-mono);color:var(--heat);letter-spacing:.12em;white-space:nowrap}
 #streak b{font:700 15px/1 var(--f-display);letter-spacing:0;margin-left:4px}
 .hud-count{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
@@ -246,7 +254,7 @@ b{font-weight:700}
   border-radius:8px;background:linear-gradient(180deg,var(--chip-2),var(--chip));border:1px solid #2c3250;
   font:600 clamp(24px,7.4vw,34px)/1 var(--f-display);font-variant-numeric:tabular-nums;white-space:nowrap;transition:transform .06s}
 .ans:active{transform:scale(.96);border-color:var(--heat)}
-.ans .k{position:absolute;left:8px;top:7px;font:400 10px/1 var(--f-mono);color:#4a5070}
+.ans .k{position:absolute;left:8px;top:7px;font:400 10px/1 var(--f-mono);color:var(--dim)}
 .ans small{font:400 10px/1 var(--f-mono);letter-spacing:.22em;color:var(--dim)}
 .answers.sign .ans{min-height:clamp(96px,22vh,170px);font-size:clamp(54px,17vw,84px)}
 .ans.bad{border-color:#3a4060;background:transparent;opacity:.45}
@@ -267,7 +275,7 @@ b{font-weight:700}
 #run.attack .prob::before,#run.attack .prob::after{content:"";position:absolute;top:9px;bottom:9px;width:6px;background:repeating-linear-gradient(to bottom,var(--glitch) 0 3px,transparent 3px 8px)}
 #run.attack .prob::before{left:-9px}
 #run.attack .prob::after{right:-9px}
-#run.attack .prob.danger{animation:danger .28s steps(2) infinite}
+#run.attack .prob.danger{animation:danger .7s steps(2) infinite} /* under 3 flashes a second (WCAG 2.3.1) */
 #run.attack .prob.fail{animation:vfail .32s steps(3) 1;border-color:#fff}
 @keyframes vfail{0%{transform:translate(-7px,2px)}50%{transform:translate(6px,-2px)}100%{transform:none}}
 @keyframes danger{50%{box-shadow:0 0 34px rgba(255,61,154,.9),inset 0 0 18px rgba(255,61,154,.3);border-color:#fff}}
@@ -329,13 +337,26 @@ b{font-weight:700}
   .answers.sign .ans{min-height:clamp(80px,40vh,150px)}
   .prob{font-size:clamp(34px,7vw,60px)}
 }
+@media (orientation:landscape) and (max-height:360px){
+  .hud{padding-block:4px 0}
+  .trackrow{margin-top:0}
+  .miss{overflow:auto;justify-content:safe center;gap:6px;padding:10px}
+  .miss-ans{font-size:26px}
+  .miss-rule{font-size:14px}
+  .miss-ex{font-size:16px}
+  .ask{font-size:11px}
+  #run.attack .prob{font-size:clamp(22px,5vw,32px);padding:5px 14px}
+  #run.attack .sub{font-size:11px}
+  #run.attack .cpu{height:30px}
+  .rate{font-size:15px;letter-spacing:.08em}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <canvas id="bg" aria-hidden="true"></canvas>
 
-<section id="board" class="screen">
+<section id="board" class="screen" role="main" aria-label="Overclock board">
   <div class="board-inner">
     <header class="top">
       <div class="top-row"><p class="eyebrow">Algebra speed rig</p><button class="icon-btn on" id="snd" aria-pressed="true">SFX ON</button></div>
@@ -378,6 +399,7 @@ b{font-weight:700}
       <p><b class="w">WARM UP</b>One problem at a time, with help on every miss. Doesn't count for medals.</p>
       <p><b class="p">PLAY</b>Problems fall toward your core. Medals and records count here.</p>
     </div>
+    <p class="sh-keys">Keyboard: 1 to 4 answer (+ and − for signs). Enter carries on after a miss. Esc quits a run.</p>
     <div class="sh-btns">
       <button class="btn-ghost" id="sh-warm">WARM UP</button>
       <button class="btn-primary" id="sh-go">PLAY</button>
@@ -385,11 +407,11 @@ b{font-weight:700}
   </div>
 </div>
 
-<section id="run" class="screen" hidden>
+<section id="run" class="screen" role="main" aria-label="Run" tabindex="-1" hidden>
   <div class="hud">
     <button class="icon-btn" id="quit" aria-label="Quit run">QUIT</button>
     <div class="hud-time" id="hudTime"><span id="timer">60.0</span><small>SEC</small></div>
-    <div class="hud-clock"><div class="gauge" role="img" aria-label="Speed"><i id="gaugeFill"></i><span class="g-lbl">SPEED</span><b id="speedNum">0</b></div><span id="streak">STREAK <b>0</b></span></div>
+    <div class="hud-clock"><div class="gauge" aria-hidden="true"><i id="gaugeFill"></i><span class="g-lbl">SPEED</span><b id="speedNum">0</b></div><span id="streak">STREAK <b>0</b></span></div>
     <div class="hud-count"><span id="count">0</span><small id="pace">PB —</small></div>
   </div>
   <div class="trackrow">
@@ -403,12 +425,12 @@ b{font-weight:700}
   </div>
   <div class="stage" id="stage">
     <p class="toast" id="toast"></p>
-    <p class="rate" id="rate" aria-live="polite"></p>
+    <p class="rate" id="rate" aria-hidden="true"></p>
     <p class="ask" id="ask"></p>
     <div class="lane" aria-hidden="true"></div>
     <div class="carrier" id="carrier"><div class="probwrap"><div class="prob" id="prob"></div></div><p class="sub" id="sub"></p></div>
     <div class="cpu" id="cpu" aria-hidden="true"><b>CORE</b></div>
-    <div class="miss" id="miss" hidden>
+    <div class="miss" id="miss" role="group" tabindex="0" aria-label="Help after a miss" hidden>
       <p class="miss-tag" id="missTag">MISS</p>
       <p class="miss-ans" id="missAns"></p>
       <p class="miss-rule" id="missRule"></p>
@@ -420,7 +442,7 @@ b{font-weight:700}
   <div class="answers" id="answers"></div>
 </section>
 
-<section id="results" class="screen" hidden>
+<section id="results" class="screen" role="main" aria-label="Results" hidden>
   <div class="res-inner">
     <p class="eyebrow" id="r-chip"></p>
     <div class="banner" id="r-banner" hidden><b id="r-ban-t">CHIP OVERCLOCKED</b><span id="r-unlock"></span></div>
@@ -445,6 +467,7 @@ b{font-weight:700}
 </section>
 
 <canvas id="fx" aria-hidden="true"></canvas>
+<p class="sr-only" id="sr" aria-live="polite" aria-atomic="true"></p>
 
 <script>
 (function(){
@@ -676,7 +699,17 @@ const listAnd = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' a
 const KEY = 'overclock.v1';
 let save = { chips: {}, muted: false, unlockAll: false };
 function load() {
-  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s === 'object' && !Array.isArray(s)) save = Object.assign(save, s); } catch (e) {}
+  // A damaged save must never blank the board: keep only chip records that have the shape the game reads.
+  if (!save.chips || typeof save.chips !== 'object' || Array.isArray(save.chips)) save.chips = {};
+  for (const [id, c] of Object.entries(save.chips)) {
+    if (!c || typeof c !== 'object') { delete save.chips[id]; continue; }
+    if (!Array.isArray(c.runs)) c.runs = [];
+    c.runs = c.runs.filter(r => r && typeof r.c === 'number' && typeof r.m === 'number');
+    if (!Array.isArray(c.splits)) c.splits = [];
+    if (typeof c.best !== 'number') c.best = Math.max(0, ...c.runs.map(r => r.c));
+    if (c.first && typeof c.first.c !== 'number') c.first = null;
+  }
   // Aims were lowered and medals added on 2026-11-03. Any saved run that clears a target counts,
   // so earlier runs aren't wasted. Medals v2 (same day): four medals became Bronze, Silver, Gold with a
   // higher Gold, so saves from v1 are re-scored from their runs, not their stored medal.
@@ -737,13 +770,13 @@ function renderBoard() {
       `<span class="cstat${stat === 'START' ? ' start' : ''}">${stat}</span>` +
       `<span class="cbar"><i style="width:${Math.min(100, Math.round(best / barTo * 100))}%;background:${barCol}"></i></span></button>`;
   }
-  h += `<div class="chip teaser" data-id="${TEASER.id}" style="grid-column:${TEASER.col};grid-row:${TEASER.row}" aria-label="Two-step equations. Coming soon.">` +
+  h += `<div class="chip teaser" data-id="${TEASER.id}" style="grid-column:${TEASER.col};grid-row:${TEASER.row}">` +
     `<span class="pins l"></span><span class="pins r"></span><span class="led"></span>` +
     `<span class="glyph">${TEASER.glyph}</span><span class="cname">${TEASER.name}</span><span class="pips"><i></i><i></i><i></i></span><span class="cstat">COMING SOON</span></div>`;
   $('#chips').innerHTML = h;
   const n = CHIPS.filter(c => chipSave(c.id).oc).length;
   $('#sectorProg').textContent = `${n}/${CHIPS.length} OC`;
-  $('#sectors').innerHTML = '<h3>NEXT SECTORS</h3>' + SECTORS.map(s =>
+  $('#sectors').innerHTML = '<h2>NEXT SECTORS</h2>' + SECTORS.map(s =>
     `<div class="sec"><span class="n">${s[0]}</span><b>${s[1]}</b><span class="lk">COMING SOON</span><span class="atoms">${s[2]}</span></div>`).join('');
   const snd = $('#snd'); snd.textContent = save.muted ? 'SFX OFF' : 'SFX ON'; snd.classList.toggle('on', !save.muted); snd.setAttribute('aria-pressed', String(!save.muted));
   $('#opt-unlock').checked = !!save.unlockAll;
@@ -786,7 +819,19 @@ function drawTraces() {
   svg.innerHTML = out;
 }
 
-let sheetId = null;
+// Screen readers: one polite live region (#sr). New problems, misses and results are read out; the math is spoken
+// in words ("minus 9 plus 4", "x over 4") so a reader doesn't spell out symbols.
+function spoken(html) {
+  const d = document.createElement('div'); d.innerHTML = html;
+  d.querySelectorAll('.frac').forEach(f => { const [t, b] = f.children; f.textContent = ` ${t.textContent} over ${b.textContent} `; });
+  return d.textContent.replace(/\u2212/g, ' minus ').replace(/\u00d7/g, ' times ').replace(/\u00f7/g, ' divided by ')
+    .replace(/\+/g, ' plus ').replace(/=/g, ' equals ').replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+let sayT = 0;
+function say(t) { const el = $('#sr'); el.textContent = ''; clearTimeout(sayT); sayT = setTimeout(() => { el.textContent = t; }, 40); }
+const focusChip = id => { const el = document.querySelector(`.chip[data-id="${id}"]`); if (el) el.focus({ preventScroll: false }); };
+
+let sheetId = null, sheetOpener = null;
 function openSheet(id) {
   const c = byId(id); if (!c) return;
   const s = chipSave(id), un = isUnlocked(c);
@@ -811,9 +856,14 @@ function openSheet(id) {
     go.disabled = true; warm.disabled = true;
   } else { lock.hidden = true; go.disabled = false; warm.disabled = false; }
   $('#sheet').hidden = false;
-  setTimeout(() => { if (!go.disabled) go.focus({ preventScroll: true }); }, 30);
+  sheetOpener = document.querySelector(`.chip[data-id="${id}"]`);
+  setTimeout(() => (go.disabled ? $('#sh-close') : go).focus({ preventScroll: true }), 30);
 }
-function hideSheet() { $('#sheet').hidden = true; sheetId = null; }
+// restore: closing the card (Close, Esc, tapping outside) puts focus back on the chip that opened it
+function hideSheet(restore) {
+  $('#sheet').hidden = true; sheetId = null;
+  if (restore === true && sheetOpener && document.contains(sheetOpener)) sheetOpener.focus({ preventScroll: true });
+}
 
 function histSVG(runs, tgt) {
   const pts = runs.slice(-12), W = 320, H = 128, L = 26, R = 14, T = 16, Bm = 24;
@@ -898,7 +948,7 @@ function fallTime() {
   return fallSecs(60 / c.tiers[0], 60 / c.tiers[TOP - 1], run.streak) * 1000 * FALL_SCALE;
 }
 const carrierEl = $('#carrier');
-function measureLane() { run.laneTop = 28; run.laneEnd = Math.max(28, $('#stage').clientHeight - 46 - carrierEl.offsetHeight); }
+function measureLane() { run.laneTop = 28; run.laneEnd = Math.max(28, $('#stage').clientHeight - ($('#cpu').offsetHeight + 10) - carrierEl.offsetHeight); }
 function placeVirus() {
   const p = Math.min(1, run.fallT / run.fallDur);
   carrierEl.style.transform = `translate3d(0,${(run.laneTop + p * (run.laneEnd - run.laneTop)).toFixed(1)}px,0)`;
@@ -922,21 +972,23 @@ function startRun(id, mode) {
   lastChip = id; hideSheet(); audio();
   const s = chipSave(id);
   run = { chip, elapsed: 0, dur: RUN_MS, correct: 0, miss: 0, streak: 0, peak: 0, splits: [], slips: {}, prob: null, step: 0,
-    state: 'count', recent: [], pbSplits: (s.splits || []).slice(), pbIdx: 0, lastSec: -1, paceTxt: '',
+    state: 'count', recent: [], pbSplits: mode === 'warm' ? [] : (s.splits || []).slice(), pbIdx: 0, lastSec: -1, paceTxt: '',
     attack: mode !== 'warm', warm: mode === 'warm', fallT: 0, fallDur: 1, warned: false, laneTop: 0, laneEnd: 0,
     ema: 0, top: 0, rates: {}, probAt: 0,
     trackMax: chip.tiers ? Math.max(chip.tiers[TOP - 1], s.best || 0) * 1.08 : Math.max(s.best || 0, 10) * 1.15 };
-  show('run');
+  show('run'); $('#run').focus({ preventScroll: true });
+  say(`${chip.full}, ${run.attack ? 'play' : 'warm up'}. Get ready.`);
   $('#run').classList.toggle('attack', run.attack); carrierEl.style.transform = ''; $('#cpu').classList.remove('hit');
   renderTrack(); renderFuses();
   ghostEl.hidden = !run.pbSplits.length; ghostEl.style.left = '0%';
   $('#timer').textContent = (RUN_MS / 1000).toFixed(1); $('#hudTime').classList.remove('low');
-  $('#count').textContent = '0'; $('#pace').textContent = run.pbSplits.length ? 'PB ±0' : 'PB —'; $('#pace').className = '';
+  $('#count').textContent = '0'; $('#pace').textContent = run.warm ? 'WARM-UP' : run.pbSplits.length ? 'PB ±0' : 'PB —'; $('#pace').className = '';
   $('#prob').innerHTML = ''; $('#sub').innerHTML = ''; $('#answers').innerHTML = ''; $('#miss').hidden = true;
   $('#ask').textContent = chip.full.toUpperCase();
   setStreakHeat(0);
   const me = run;
   speedShown = 0; heatStep = -1; $('#rate').classList.remove('show');
+  $('#run').classList.remove('crash'); $('#toast').classList.remove('show'); clearTimeout(toastT);
   countdown(() => { if (run !== me) return; run.state = 'live'; musicStart(); nextProblem(); });
 }
 
@@ -945,7 +997,7 @@ function countdown(done) {
   el.hidden = false; let i = 0;
   const me = run;
   const step = () => {
-    if (run !== me) { el.hidden = true; return; }
+    if (run !== me) return; // quitRun already hid it; hiding it here would hide the next run's countdown
     if (i < seq.length) {
       el.textContent = seq[i]; el.classList.remove('beat'); void el.offsetWidth; el.classList.add('beat');
       sfxCount(i === 3); i++; setTimeout(step, i === 4 ? 380 : 560);
@@ -973,9 +1025,10 @@ function renderStep() {
   const room = pr.parentElement.clientWidth - (run.attack ? 24 : 0);
   for (let i = 0; i < 3 && room > 0 && pr.scrollWidth > room; i++) pr.style.fontSize = (parseFloat(getComputedStyle(pr).fontSize) * room / pr.scrollWidth * 0.96) + 'px';
   $('#sub').innerHTML = st.sub || '';
+  say(`${run.sayNext || ''}${st.ask}. ${spoken(st.q || p.q)}`); run.sayNext = '';
   const box = $('#answers');
   box.className = 'answers' + (st.kind === 'sign' ? ' sign' : '');
-  box.innerHTML = st.choices.map((c, i) => `<button class="ans" data-i="${i}" aria-label="${st.kind === 'sign' ? (i ? 'negative' : 'positive') : 'answer ' + c.replace(M, 'minus ')}"><span class="k">${i + 1}</span><span class="v">${c}</span>${st.kind === 'sign' ? `<small>${i ? 'NEGATIVE' : 'POSITIVE'}</small>` : ''}</button>`).join('');
+  box.innerHTML = st.choices.map((c, i) => `<button class="ans" data-i="${i}" aria-label="${st.kind === 'sign' ? (i ? 'negative' : 'positive') : spoken(c)}"><span class="k">${i + 1}</span><span class="v">${c}</span>${st.kind === 'sign' ? `<small>${i ? 'NEGATIVE' : 'POSITIVE'}</small>` : ''}</button>`).join('');
   if (run.attack) { measureLane(); placeVirus(); } // after the answers exist, so the lane stops at the core
 }
 
@@ -984,6 +1037,7 @@ function answer(i, btn) {
   const st = run.prob.steps[run.step];
   if (i === st.answer) {
     sparkAt(btn);
+    run.sayNext = 'Right. ';
     if (run.step < run.prob.steps.length - 1) { sfxStep(); run.step++; renderStep(); return; }
     if (run.attack) { explodeAt($('#prob')); sfxZap(); }
     run.correct++; run.streak++; run.peak = Math.max(run.peak, run.streak); run.splits.push(Math.round(run.elapsed));
@@ -997,7 +1051,7 @@ function answer(i, btn) {
     setStreakHeat(run.streak);
     if (run.correct > run.trackMax * 0.96) { run.trackMax = run.correct * 1.15; renderTrack(); }
     meEl.style.left = (run.correct / run.trackMax * 100).toFixed(2) + '%';
-    const k = run.chip.tiers ? run.chip.tiers.indexOf(run.correct) : -1;
+    const k = run.chip.tiers && !run.warm ? run.chip.tiers.indexOf(run.correct) : -1;
     if (k >= 0) toast(`${TIERS[k].name} LINE \u00b7 ${run.correct}`, TIERS[k].color);
     else if (run.pbSplits.length && run.correct === run.pbSplits.length + 1) toast('PAST YOUR PB', 'var(--hot)');
     else if (run.streak % 5 === 0) toast(`${run.streak} IN A ROW`);
@@ -1025,6 +1079,7 @@ function missed(st, btn, core) {
     if (core) explodeAt($('#cpu'), '63,211,255');
     else { const pr = $('#prob'); pr.classList.remove('fail'); void pr.offsetWidth; pr.classList.add('fail'); }
     if (!out) toast(`${core ? 'SHIELD HIT' : 'NOT QUITE'} \u00b7 ${left} LEFT`, 'var(--cold)');
+    run.sayNext = out ? '' : `${core ? 'Shield hit' : 'Not quite'}. The answer was ${st.kind === 'sign' ? (st.answer ? 'negative' : 'positive') : spoken(st.choices[st.answer])}. ${left} shield${left === 1 ? '' : 's'} left. `;
     run.state = 'beat';
     const me = run;
     setTimeout(() => {
@@ -1038,6 +1093,7 @@ function missed(st, btn, core) {
   $('#missRule').innerHTML = st.rule;
   $('#missEx').innerHTML = st.ex;
   $('#miss').hidden = false;
+  say(`${$('#missTag').textContent}. ${$('#missAns small').textContent}: ${st.kind === 'sign' ? (st.answer ? 'negative' : 'positive') : spoken(st.choices[st.answer])}. ${spoken(st.rule)} Press Enter to carry on.`);
   run.state = 'miss'; run.missAt = performance.now();
 }
 
@@ -1048,7 +1104,7 @@ function continueAfterMiss() {
   if (run.elapsed >= run.dur) endRun(); else nextProblem();
 }
 
-function quitRun() { musicStop(); run = null; $('#cd').hidden = true; setStreakHeat(-1); show('board'); }
+function quitRun() { musicStop(); run = null; $('#cd').hidden = true; setStreakHeat(-1); show('board'); focusChip(lastChip); }
 
 function updateTimer() {
   const left = Math.max(0, run.dur - run.elapsed);
@@ -1060,7 +1116,7 @@ function updateTimer() {
   }
   const pb = run.pbSplits;
   while (run.pbIdx < pb.length && pb[run.pbIdx] <= run.elapsed) run.pbIdx++;
-  let txt = 'PB —', cls = '';
+  let txt = run.warm ? 'WARM-UP' : 'PB —', cls = '';
   if (pb.length) {
     const d = run.correct - run.pbIdx; txt = d > 0 ? `PB +${d}` : d < 0 ? `PB ${M}${-d}` : 'PB ±0'; cls = d > 0 ? 'ahead' : d < 0 ? 'behind' : '';
     // the ghost replays the PB run: it glides between that run's answer times
@@ -1074,6 +1130,7 @@ function updateTimer() {
 function endRun() {
   const r = run; if (!r || r.state === 'done') return;
   r.state = 'done'; musicStop();
+  if (r.miss >= FUSES) r.crashed = true;
   const c = r.chip, s = chipSave(c.id);
   if (r.warm) { showResults(r, { warm: true, prevBest: s.best || 0, tierBefore: s.tier || 0, tierAfter: s.tier || 0, newly: [] }); return; }
   const prevBest = s.best || 0, tierBefore = s.tier || 0;
@@ -1099,7 +1156,13 @@ function proof(s) {
   const runs = s.runs, cur = runs[runs.length - 1], first = s.first || runs[0], n = s.n || runs.length;
   if (!cur || n < 2) return { h: 'RUN 1', t: 'Your first run on this one. Every run after it gets compared to it, so you can watch yourself get faster.' };
   const rate = x => x.c / (x.s || 60), spa = x => ((x.s || 60) / x.c).toFixed(1);
+  const fair = !first.k && !cur.k; // both ran the full minute
   if (!first.c) return cur.c ? { h: 'YOU GOT FASTER', t: `Run 1: <b>0</b>. Run ${n}: <b>${cur.c}</b>.` } : null;
+  if (!fair) {
+    if (cur.c > first.c) return { h: 'MORE THAN RUN 1', t: `Run 1: <b>${first.c}</b>. Run ${n}: <b>${cur.c}</b>.` };
+    if ((s.best || 0) > first.c) return { h: 'STILL AHEAD OF RUN 1', t: `Run 1: <b>${first.c}</b>. Your best: <b>${s.best}</b>. Slow runs happen. Your best is still yours.` };
+    return null;
+  }
   if (rate(cur) > rate(first)) return { h: 'YOU GOT FASTER',
     t: `Run 1: <b>${first.c}</b>. Run ${n}: <b>${cur.c}</b>. That’s <b>${Math.round((rate(cur) / rate(first) - 1) * 100)}% faster</b>, from ${spa(first)} seconds an answer to ${spa(cur)}.` };
   if ((s.best || 0) > first.c) return { h: 'STILL FASTER THAN RUN 1',
@@ -1123,6 +1186,7 @@ function renderLadder(c, r, tierAfter) {
 function showResults(r, o) {
   const c = r.chip, s = chipSave(c.id);
   show('results'); setStreakHeat(-1);
+  say(`Run over. ${r.correct} correct${r.miss ? `, ${r.miss} missed` : ''}.${!o.warm && o.tierAfter > o.tierBefore ? ` ${TIERS[o.tierAfter - 1].label} medal.` : ''}`);
   const warm = !!o.warm;
   $('#r-chip').textContent = `${c.name} \u00b7 ${c.kind} \u00b7 ${warm ? 'WARM-UP' : 'PLAY'}`;
   $('#r-cpm').textContent = r.correct;
@@ -1151,7 +1215,7 @@ function showResults(r, o) {
   if (banT) { ban.style.setProperty('--tc', banC); $('#r-ban-t').textContent = banT; $('#r-unlock').textContent = banS; sfxOC(); }
 
   let note;
-  if (warm) note = 'Warm-up done. Warm-ups don\u2019t count for medals or records, so mistakes are free here. Ready? Hit <b>PLAY</b>.';
+  if (warm) note = `${r.crashed ? '' : 'Warm-up done. '}Warm-ups don\u2019t count for medals or records. Ready? Hit <b>PLAY</b>.`;
   else {
     const t = o.tierAfter, next = t < TOP ? c.tiers[t] : null, nextName = t < TOP ? TIERS[t].label : '';
     if (t > o.tierBefore) note = (o.tierBefore === 0 ? `${TIERS[t - 1].label} on ${c.name}, so it\u2019s overclocked. It stays lit and powers the chips wired below it.` : `${TIERS[t - 1].label} on ${c.name}.`)
@@ -1468,14 +1532,14 @@ function start() {
   requestAnimationFrame(t => { lastT = t; requestAnimationFrame(frame); });
 
   $('#chips').addEventListener('click', e => { const c = e.target.closest('.chip'); if (c && !c.classList.contains('teaser')) openSheet(c.dataset.id); });
-  $('#sh-close').addEventListener('click', hideSheet);
-  $('#sheet').addEventListener('click', e => { if (e.target === $('#sheet')) hideSheet(); });
+  $('#sh-close').addEventListener('click', () => hideSheet(true));
+  $('#sheet').addEventListener('click', e => { if (e.target === $('#sheet')) hideSheet(true); });
   $('#sh-go').addEventListener('click', () => { if (sheetId) startRun(sheetId, 'play'); });
   $('#sh-warm').addEventListener('click', () => { if (sheetId) startRun(sheetId, 'warm'); });
   $('#quit').addEventListener('click', quitRun);
   $('#r-again').addEventListener('click', () => { if (lastChip) startRun(lastChip, 'play'); });
   $('#r-warm').addEventListener('click', () => { if (lastChip) startRun(lastChip, 'warm'); });
-  $('#r-board').addEventListener('click', () => { run = null; show('board'); });
+  $('#r-board').addEventListener('click', () => { run = null; show('board'); focusChip(lastChip); });
   $('#snd').addEventListener('click', () => { save.muted = !save.muted; persist(); renderBoard(); if (!save.muted) sfxStep(); });
   $('#opt-unlock').addEventListener('change', e => { save.unlockAll = e.target.checked; persist(); renderBoard(); });
   let wipeArm = 0;
@@ -1496,7 +1560,14 @@ function start() {
   });
   $('#run').addEventListener('pointerdown', () => { if (run && run.state === 'miss') continueAfterMiss(); });
   addEventListener('keydown', e => {
-    if (!$('#sheet').hidden && e.key === 'Escape') { hideSheet(); return; }
+    if (!$('#sheet').hidden && e.key === 'Escape') { hideSheet(true); return; }
+    if (!$('#sheet').hidden && e.key === 'Tab') {
+      const f = [...$('#sheet').querySelectorAll('button, a[href], summary, input')].filter(el => !el.disabled && el.offsetParent !== null);
+      const i = f.indexOf(document.activeElement);
+      if (f.length && e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (f.length && !e.shiftKey && (i === f.length - 1 || i < 0)) { e.preventDefault(); f[0].focus(); }
+      return;
+    }
     if (!run || $('#run').hidden) return;
     if (e.key === 'Escape') { quitRun(); return; }
     if (run.state === 'miss') { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); continueAfterMiss(); } return; }
@@ -1509,7 +1580,13 @@ function start() {
   });
   let rz = 0;
   addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(resize, 120); });
-  document.addEventListener('visibilitychange', () => { lastT = performance.now(); });
+  addEventListener('storage', e => { if (e.key === KEY) { load(); if (screen === 'board') renderBoard(); } });
+  // 2. a hidden tab freezes the game (no animation frames), so the sound pauses with it
+  document.addEventListener('visibilitychange', () => {
+    lastT = performance.now();
+    if (!AC) return;
+    try { if (document.hidden) AC.suspend(); else if (!save.muted) AC.resume(); } catch (e) {}
+  });
 }
 
 // Test hooks (harmless in play): generators and a way to drive a run.
