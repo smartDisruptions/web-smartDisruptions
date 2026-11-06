@@ -130,6 +130,7 @@ const MORE_ORDER = [
   'notebook',
   'voltic',
   'gilt-and-lather',
+  'ironwheel',
   'siphon-and-seal',
   'portfolio-ledger',
   'pomodoro-timer',

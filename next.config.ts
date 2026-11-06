@@ -129,6 +129,13 @@ const nextConfig: NextConfig = {
           source: '/demo/gilt-and-lather',
           destination: '/demo/gilt-and-lather/index.html',
         },
+        // Ironwheel: a weightlifting app, one file in public/demo, built in the
+        // vault (Tools/ironwheel) with --site, which adds its share cards and
+        // gives Preferences → About a link back to /built/ironwheel.
+        {
+          source: '/demo/ironwheel',
+          destination: '/demo/ironwheel/index.html',
+        },
         // Siphon & Seal: a toilet sawn in half and run by a hydraulic model,
         // one file in public/demo, built in the vault (Tools/flush) with
         // --site, which adds its share cards and gives its About card a link
