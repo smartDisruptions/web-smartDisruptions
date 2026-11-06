@@ -85,7 +85,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
-      url: `${BASE}/demo/overclock`,
+      url: `${BASE}/demo/variable-speed`,
       changeFrequency: 'monthly',
       priority: 0.4,
     },

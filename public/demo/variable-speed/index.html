@@ -7,16 +7,16 @@
 <meta name="theme-color" content="#0b0d17">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Overclock</title>
-<link rel="canonical" href="https://smartdisruptions.com/demo/overclock">
-<meta name="oc-home" content="/built/overclock">
+<title>Variable Speed</title>
+<link rel="canonical" href="https://smartdisruptions.com/demo/variable-speed">
+<meta name="oc-home" content="/built/variable-speed">
 <meta name="description" content="An algebra speed game: get fast at the small moves, like the sign of −7 + 4 or what undoes 3x, and they chain into equations. Problems fall toward your core; answer before they land.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Smart Disruptions">
-<meta property="og:title" content="Overclock">
+<meta property="og:title" content="Variable Speed">
 <meta property="og:description" content="An algebra speed game: get fast at the small moves, like the sign of −7 + 4 or what undoes 3x, and they chain into equations. Problems fall toward your core; answer before they land.">
-<meta property="og:url" content="https://smartdisruptions.com/demo/overclock">
-<meta property="og:image" content="https://smartdisruptions.com/images/apps/overclock-og.jpg">
+<meta property="og:url" content="https://smartdisruptions.com/demo/variable-speed">
+<meta property="og:image" content="https://smartdisruptions.com/images/apps/variable-speed-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A problem riding a glowing virus down toward the core, with the speed meter hot and two answer buttons">
@@ -78,8 +78,9 @@ b{font-weight:700}
 .board-inner{width:100%;max-width:520px;margin:0 auto;padding-block:20px 40px;display:flex;flex-direction:column;gap:22px}
 .top{display:flex;flex-direction:column}
 .top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.mark{font:700 clamp(42px,14vw,66px)/.9 var(--f-display);letter-spacing:.02em;margin:8px 0 10px;
-  background:linear-gradient(100deg,var(--silk) 0 38%,var(--copper) 68%,var(--hot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.mark{font:700 clamp(42px,14vw,66px)/.92 var(--f-display);letter-spacing:.02em;margin:8px 0 10px;color:var(--silk)}
+.mark span{display:block}
+.mark .hot{background:linear-gradient(100deg,var(--copper),var(--hot) 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .tag{color:var(--dim);font-size:16px;max-width:30ch;text-wrap:balance}
 .icon-btn{flex:none;font:400 12px/1 var(--f-mono);letter-spacing:.1em;border:1px solid var(--line);border-radius:4px;padding:10px;color:var(--dim);background:rgba(20,24,41,.8);min-height:44px;min-width:44px}
 .icon-btn.on{color:var(--cold);border-color:rgba(63,211,255,.55)}
@@ -356,11 +357,11 @@ b{font-weight:700}
 <body>
 <canvas id="bg" aria-hidden="true"></canvas>
 
-<section id="board" class="screen" role="main" aria-label="Overclock board">
+<section id="board" class="screen" role="main" aria-label="Variable Speed board">
   <div class="board-inner">
     <header class="top">
       <div class="top-row"><p class="eyebrow">Algebra speed rig</p><button class="icon-btn on" id="snd" aria-pressed="true">SFX ON</button></div>
-      <h1 class="mark">OVERCLOCK</h1>
+      <h1 class="mark"><span>VARIABLE</span><span class="hot">SPEED</span></h1>
       <p class="tag">Get fast at the small moves. The big ones get easy.</p>
     </header>
 
@@ -376,7 +377,7 @@ b{font-weight:700}
       <div class="set-body">
         <label class="set-row" for="opt-unlock"><input type="checkbox" id="opt-unlock"> Unlock every chip (for parents and testing)</label>
         <div><button class="btn-ghost small" id="opt-reset">Wipe progress</button></div>
-        <p class="set-about" id="opt-about" hidden><a id="about-link" href="#">About Overclock on Smart Disruptions</a></p>
+        <p class="set-about" id="opt-about" hidden><a id="about-link" href="#">About Variable Speed on Smart Disruptions</a></p>
       </div>
     </details>
   </div>
@@ -696,7 +697,7 @@ const byId = id => CHIPS.find(c => c.id === id);
 const listAnd = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 
 /* ---------- save ---------- */
-const KEY = 'overclock.v1';
+const KEY = 'overclock.v1'; // the game's first name; kept so existing saves still load
 let save = { chips: {}, muted: false, unlockAll: false };
 function load() {
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s === 'object' && !Array.isArray(s)) save = Object.assign(save, s); } catch (e) {}
