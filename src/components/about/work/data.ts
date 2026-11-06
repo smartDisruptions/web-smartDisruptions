@@ -136,6 +136,7 @@ const MORE_ORDER = [
   'notebook',
   'voltic',
   'gilt-and-lather',
+  'overclock',
   'ironwheel',
   'net-price-calculator',
   'siphon-and-seal',

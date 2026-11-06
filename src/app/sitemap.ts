@@ -85,6 +85,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
+      url: `${BASE}/demo/overclock`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
       url: `${BASE}/demo/ironwheel`,
       changeFrequency: 'monthly',
       priority: 0.4,
