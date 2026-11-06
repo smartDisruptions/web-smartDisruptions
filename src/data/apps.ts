@@ -212,14 +212,14 @@ export const apps: App[] = [
     slug: 'ai-diary',
     name: 'AI Diary',
     description:
-      'A private journal. It tracks your mood over time and has a companion you can talk to about what you wrote.',
+      'A private journal. Every entry becomes a firefly on a night stream, and a companion you can talk to helps you notice how your days feel.',
     longDescription:
-      'A private journal that helps you notice patterns in your own writing. Write about your day, and it shows you how your mood changes over time.',
-    thumbnailUrl: '/images/apps/ai-diary-thumbnail.png',
+      'A private journal that helps you notice patterns in your own writing. Each entry becomes a firefly on the week’s stream, and the water shows how the week felt, calm or restless, without grading any day as good or bad.',
+    thumbnailUrl: '/images/apps/ai-diary-thumbnail.webp',
     screenshotUrls: [
-      '/images/apps/ai-diary-1.png',
-      '/images/apps/ai-diary-2.png',
-      '/images/apps/ai-diary-3.png',
+      '/images/apps/ai-diary-1.webp',
+      '/images/apps/ai-diary-2.webp',
+      '/images/apps/ai-diary-3.webp',
     ],
     techStack: [
       'Next.js',
@@ -232,11 +232,12 @@ export const apps: App[] = [
     category: 'Productivity',
     status: 'live',
     outcomes: [
-      'A mood line shows how you’ve been over weeks, not just today.',
-      'It spots the subjects that keep coming up in what you write.',
-      'Talk to a companion about any entry. It can turn the things you said you’d do into a list.',
+      'Your week shows as fireflies over water: still water for calm days, ripples for restless ones. No day is ranked above another.',
+      'It names how you felt in a word, and spots the subjects that keep coming up in what you write.',
+      'Talk to Ember, the companion, about any entry, or rename it to whatever you like. It turns the things you said you’d do into a to-do list.',
+      'After a run of heavy days it checks in gently and points to real help.',
       'It sketches your personality from your writing, using the five traits psychologists measure.',
-      'Everything you write stays on your own device, not on a server.',
+      'Your entries are saved on your own device, not on a server. Only the AI model you choose reads them.',
     ],
     buildDate: '2025-03',
     hasFullBreakdown: false,

@@ -4,8 +4,8 @@ import { appSample, pic, type Sample } from '@/components/build/samples';
  * The samples on /build-apps: three of my apps, live, standing on the shelf.
  * Each comes from src/data/apps.ts; this list says what kind of thing it is
  * and which pictures to show. AI Diary's screenshots are phone-tall, so it
- * shows three of them side by side: the journal, the companion and the
- * insights its line talks about.
+ * shows three of them side by side: the stream, the companion and the
+ * patterns its line talks about.
  */
 export const SAMPLES: Sample[] = [
   appSample('pomodoro-timer', {
@@ -22,11 +22,17 @@ export const SAMPLES: Sample[] = [
     kind: 'Journal',
     goLabel: 'Try the app',
     pictures: [
-      pic('/images/apps/ai-diary-1.png', 'AI Diary’s journal page, asking how your day was.'),
-      pic('/images/apps/ai-diary-2.png', 'AI Diary’s companion, ready to talk about an entry.'),
       pic(
-        '/images/apps/ai-diary-3.png',
-        'AI Diary’s insights: personality, mood over time and writing style.'
+        '/images/apps/ai-diary-1.webp',
+        'AI Diary’s stream: a week of entries as fireflies over night water, gold for calm days and blue for restless ones, under the words “Calm water tonight.”'
+      ),
+      pic(
+        '/images/apps/ai-diary-2.webp',
+        'AI Diary’s companion, Ember, suggesting a 2pm coffee cutoff after noticing late coffee in two entries.'
+      ),
+      pic(
+        '/images/apps/ai-diary-3.webp',
+        'AI Diary’s patterns: the week on the water, what Ember noticed, and five jars filled to show personality traits.'
       ),
     ],
   }),
