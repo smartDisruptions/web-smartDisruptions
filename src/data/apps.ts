@@ -289,6 +289,34 @@ export const apps: App[] = [
     liveUrl: '/demo/portfolio-ledger',
   },
   {
+    slug: 'variable-speed',
+    name: 'Variable Speed',
+    description:
+      'An algebra speed game. Get fast at small moves, like the sign of −7 + 4, and they chain into equations. Problems fall toward your core, so answer before they land.',
+    longDescription:
+      'I wanted algebra practice you’d actually play again. Variable Speed breaks algebra into small moves, each one a chip on a circuit board. Get fast at the small ones and the equations they add up to get easy.',
+    thumbnailUrl: '/images/apps/variable-speed-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/variable-speed-1.webp',
+      '/images/apps/variable-speed-2.webp',
+      '/images/apps/variable-speed-3.webp',
+    ],
+    techStack: ['Vanilla JavaScript', 'Canvas 2D', 'Web Audio API', 'Playwright'],
+    category: 'Education',
+    status: 'live',
+    outcomes: [
+      'Each chip is one move, like calling the sign of −7 + 4 or knowing what undoes 3x. Bronze on a chip powers up the chips wired below it.',
+      'In Play, every problem falls toward your core. Answer before it lands. You get five shields, and each miss uses one.',
+      'Every right answer gets a rating, from GOOD up to LIGHTSPEED, and the music builds as your streak grows.',
+      'Warm up first if you like: one problem at a time, with the rule and a worked example after every miss.',
+      'Bronze, Silver and Gold on every chip, a ghost of your best run to race, and it all stays in your browser.',
+    ],
+    buildDate: '2026-11',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/demo/variable-speed',
+  },
+  {
     slug: 'ironwheel',
     name: 'Ironwheel',
     description:

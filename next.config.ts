@@ -129,6 +129,13 @@ const nextConfig: NextConfig = {
           source: '/demo/gilt-and-lather',
           destination: '/demo/gilt-and-lather/index.html',
         },
+        // Variable Speed: an algebra speed game, one file in public/demo, built in the
+        // vault (Tools/variable-speed) with --site, which adds its share cards and
+        // gives Settings a link back to /built/variable-speed.
+        {
+          source: '/demo/variable-speed',
+          destination: '/demo/variable-speed/index.html',
+        },
         // Ironwheel: a weightlifting app, one file in public/demo, built in the
         // vault (Tools/ironwheel) with --site, which adds its share cards and
         // gives Preferences → About a link back to /built/ironwheel.
