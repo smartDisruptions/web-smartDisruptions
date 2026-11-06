@@ -16,9 +16,11 @@
  *
  * FACTS: the website parts come from the verified /websites write-ups. The
  * game parts come from this repo's own records in src/data/apps.ts, written
- * when each shipped. Translated into plain words here, never widened. The
- * "no picture files" claim was re-checked against the live site on
- * 2026-09-20: 83,629 bytes, zero <img> tags, zero url() backgrounds.
+ * when each shipped. Translated into plain words here, never widened.
+ * Broom & Blade's two parts were rewritten on 2026-11-06 for the new game
+ * and the new website: the facts come from the game's code and from what the
+ * website itself tells players, and they stop where the website does, so
+ * nothing it keeps sealed is given away here.
  */
 
 export type ProjectPart = {
@@ -58,10 +60,10 @@ export const projects: Project[] = [
     name: 'Broom & Blade',
     eyebrow: 'My own project · online now',
     summary:
-      'Household chores turned into a game for kids, and the website that explains it.',
-    image: '/images/websites/broom-blade.webp',
+      'Household chores turned into a game for kids, and the website that tells its story.',
+    image: '/images/websites/broom-blade-paper-guild.webp',
     imageAlt:
-      'The Broom & Blade website. A candlelit hall under a night sky, with the name of the app in large gold letters.',
+      'The Broom & Blade website in its Paper Guild look: the name in big cream letters on a wooden wall, and a hero card pinned beside it, a smiling hero in a straw sunhat with a cat, a dog on a shield and a big yellow sponge.',
     imageWidth: 1200,
     imageHeight: 750,
     parts: [
@@ -70,28 +72,29 @@ export const projects: Project[] = [
         heading: 'The game',
         href: 'https://broom-blade.vercel.app',
         linkLabel: 'Try the app',
-        image: '/images/apps/broom-blade-1.webp',
+        image: '/images/apps/broom-blade-board.webp',
         imageAlt:
-          'The Broom & Blade chore board, showing the day’s chores as quests with rewards beside them.',
-        imageWidth: 1200,
-        imageHeight: 753,
+          'The Broom & Blade chore board on a phone, in the Paper Guild look. Each chore hangs as a paper slip with the points and gold it pays and a round button to seal it.',
+        imageWidth: 780,
+        imageHeight: 1688,
         what: 'The app the family actually uses.',
         body: 'A parent puts the chores on a board. Every chore a child finishes pays out points and gold. One code signs the whole family in, so everyone shares the same board and each person has their own character.',
         bullets: [
-          'Points move a child up through ranks as they go. Gold buys gear for their character in the shop.',
-          'Every piece of gear and every prize has a short story attached, and you can only read it once you have earned the item. There are 67 of them.',
-          'Marking a chore done takes a press and hold rather than a tap, so it cannot happen by accident. Clearing the whole board needs a password, so a child cannot wipe it.',
-          'Finish every chore for the day and a merchant offers three boxes to choose from. One holds a reward, one a gift, and one a curse.',
-          'Every fifth day with a clean board you get a choice: a bag of gold, or a box holding one of thirty items that can never be bought.',
-          'It is free, needs no account, and installs on a phone like any other app. Every sound is made by the app itself, so there is nothing extra to download.',
-          'Its carnival games play on their own too, free, in the Broom & Blade Arcade at the bottom of my Arcade page, where Pip the guild mouse runs the room.',
+          'Points move a child up through sixteen titles. Gold buys gear in the Shop: 180 pieces, from Tools to fight with to helmets, outfits, companions and charms, and every one has a short story. Some can never be bought, only won.',
+          'Every level a child gains opens one fight in the Colosseum, against a monster made of dust. There are fifty of them across five rooms, and each of the 26 Tools attacks with its own animation and sound.',
+          'Sweep Co. is a small game on the side: sweep up dust for silver and hire help. The helpers only work on hours earned by doing chores, so it never takes their place.',
+          'Marking a chore done takes a press and hold rather than a tap, so it cannot happen by accident. A parent has the final say on whether a chore is really done.',
+          'Finish every daily chore and a hooded merchant comes with three boxes. Two hold gold and one holds a fortune. Every fifth day like that, he offers 100 gold or a mystery box with a prize inside.',
+          'Each child picks one of two looks for the whole game, Warband or Paper Guild, in light or dark. Every hero, piece of gear and monster is drawn for both.',
+          'It is free, needs no account, and installs on a phone like any other app. The music and the sound of each Tool were made with ElevenLabs, and the app makes every other sound itself.',
+          'The carnival games from its first version play on their own, free, in the Broom & Blade Arcade at the bottom of my Arcade page, where Pip the guild mouse runs the room.',
         ],
         receipts: [
           {
-            value: '67',
-            label: 'Pieces of gear and prizes, each with its own story',
+            value: '180',
+            label: 'Pieces of gear, each with its own story',
           },
-          { value: '30', label: 'Items you can only win, never buy' },
+          { value: '50', label: 'Dust monsters to beat, across five rooms' },
           { value: 'Free', label: 'No account and no payment, on any phone' },
         ],
       },
@@ -100,30 +103,30 @@ export const projects: Project[] = [
         heading: 'The website',
         href: 'https://web-broom-blade.vercel.app',
         linkLabel: 'See the website',
-        image: '/images/websites/broom-blade.webp',
+        image: '/images/websites/broom-blade-paper-guild.webp',
         imageAlt:
-          'The Broom & Blade website. A candlelit hall under a night sky, with the name of the app in large gold letters.',
+          'The Broom & Blade website in its Paper Guild look: the name in big cream letters on a wooden wall, and a hero card pinned beside it, a smiling hero in a straw sunhat with a cat, a dog on a shield and a big yellow sponge.',
         imageWidth: 1200,
         imageHeight: 750,
-        what: 'The page that explains the game, written for the kid who will play it.',
-        body: 'The website is built to feel like the game rather than describe it. You can seal a quest on the page the same way you would in the app, turn gear cards over, and look along a shelf of prizes.',
+        what: 'The page that tells the game’s story, written for the kid who will play it.',
+        body: 'The website tells the story rather than explaining the rules. An old wizard tells it in seven short chapters, and each chapter lets you try a piece of the game right on the page.',
         bullets: [
-          'The website contains no picture files at all. The sky, the hills, the candles and the smoke are built by the page while it loads, in six layers that move separately as you scroll or move the mouse.',
-          'Sealing a quest on the page takes a press and hold while a ring fills up, exactly as it does in the game.',
-          'It does not give the game away. Six of the nine ranks stay hidden, gear you have not earned shows its back, most prizes stay dark, and one box never opens at all.',
-          'There are things to find: a moon that grants a wish, candles you can blow out, dust to sweep up, a sleeping dragon, a rat in the footer, and a purse that counts the gold you pick up on the way down.',
-          'Every sound is made by the page as you go, so nothing has to be downloaded. It works with a keyboard, and it calms its movement for anyone whose phone is set to reduce motion.',
+          'You can seal a chore with a press and hold, grow a hero from level 1 to 12 with a slider, take a Tool from the Shop into a fight, start a tiny sweeping business, and open the merchant’s boxes after dark.',
+          'Every hero, Tool and monster on it is the game’s own art. A switch at the top dresses the whole page in either of the game’s two looks. It opens in Paper Guild.',
+          'It keeps the game’s secrets. It shows the first twelve levels and the first room of the Colosseum and seals everything past them, so there is still something to find when you play.',
+          'The Tools you can pick up attack with the same animation and sound as in the game. The fight and the sweeping game each have a song, but the music stays off until you turn it on.',
+          'Five dust bunnies are hidden around the page for anyone who looks.',
         ],
         receipts: [
           {
-            value: '81 KB',
-            label: 'The size of the whole website, so it opens fast',
+            value: '7',
+            label: 'Chapters, each with a piece of the game to try',
           },
+          { value: '2', label: 'Looks, and the whole page can wear either' },
           {
-            value: '0',
-            label: 'Pictures to load. The artwork is part of the page',
+            value: '12',
+            label: 'Levels it shows. The rest stay sealed for players',
           },
-          { value: '6', label: 'Layers that move separately as you scroll' },
         ],
       },
     ],
