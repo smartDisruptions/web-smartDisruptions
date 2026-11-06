@@ -451,7 +451,7 @@ export const skillGroups: SkillGroup[] = [
         plain:
           'Their constraints, their data, their sign-off — and the parts you decide not to ship.',
         used: 'Robert has been a friend since high school and runs a Japanese catering business. Two calls on that job were mine rather than technical: I deleted a loyalty panel that promised points nothing awarded, and removed a review funnel that routed happy customers to Google and unhappy ones to a private form. Both were working features. Neither was honest. It went live with real payments at the end of August 2026. Then his first tap on Ready sent no text, because Square only texts orders its own products create — so rather than promise one, the success page now says to give your name at the window, and the text pipeline I built sits switched off until it is wired to a number. The calls since have been his, not mine: no menu photos, a classic list instead; last orders half an hour before close; take orders now, texts later.',
-        apps: ['samurai-kitchen'],
+        apps: ['samurai-kitchen', 'paper-crane-insights'],
         links: [
           {
             kind: 'site',

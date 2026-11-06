@@ -140,6 +140,15 @@ const nextConfig: NextConfig = {
         // one file in public/demo, built in the vault (Tools/flush) with
         // --site, which adds its share cards and gives its About card a link
         // back to /built/siphon-and-seal.
+        // Paper Crane Insights: the owner's sales report on a made-up food
+        // truck, one file in public/demo. Built in the private insights repo
+        // (npm run build:sample), which swaps the real business's name, site
+        // and town for the invented truck's and refuses to write the file if
+        // any of them are left in it.
+        {
+          source: '/demo/paper-crane-insights',
+          destination: '/demo/paper-crane-insights/index.html',
+        },
         {
           source: '/demo/siphon-and-seal',
           destination: '/demo/siphon-and-seal/index.html',
