@@ -101,6 +101,11 @@ const OWN_FACTS: Record<string, { category: string; tech: string[] }> = {
     category: 'Website',
     tech: ['HTML', 'esbuild', 'sharp'],
   },
+  // Built at Josh's day job (2026-11-06); one file, no framework.
+  'net-price-calculator': {
+    category: 'Education',
+    tech: ['JavaScript', 'HTML', 'CSS'],
+  },
 };
 
 const otherProjects: CatalogueEntry[] = projects
@@ -131,6 +136,7 @@ const MORE_ORDER = [
   'voltic',
   'gilt-and-lather',
   'ironwheel',
+  'net-price-calculator',
   'siphon-and-seal',
   'portfolio-ledger',
   'paper-crane-insights',

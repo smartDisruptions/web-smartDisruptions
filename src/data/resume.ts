@@ -137,7 +137,7 @@ export const FEATURED: Featured[] = [
     id: 'net-price-calculator',
     context: 'Day job · University of Idaho · live for 2026–27',
     title: 'The University of Idaho’s Net Price Calculator',
-    image: '/images/resume/net-price-calculator.webp',
+    image: '/images/websites/net-price-calculator.webp',
     imageAlt:
       'The University of Idaho Net Price Calculator results screen: an estimated net price of $15,616 a year, from a $30,791 cost of attendance less $15,175 in gift aid.',
     imageWidth: 1200,
@@ -160,7 +160,10 @@ export const FEATURED: Featured[] = [
       'jsdom tests',
       'Accessibility',
     ],
-    links: [{ label: 'Try the calculator', href: NPC }],
+    links: [
+      { label: 'Try the calculator', href: NPC },
+      { label: 'How it’s built', href: builtHref('net-price-calculator') },
+    ],
   },
   {
     id: 'samurai-kitchen',
@@ -367,6 +370,16 @@ export const HOW_I_BUILD: { title: string; line: string; proof?: ProofLink }[] =
     },
   ];
 
+/**
+ * Websites with a write-up: every project part that is a website, less the
+ * Notebook (this site's own old look). Counted from the parts, not the
+ * projects, because the Net Price Calculator is a project and an app.
+ */
+const WEBSITES = projects
+  .filter((p) => p.slug !== 'notebook')
+  .flatMap((p) => p.parts)
+  .filter((part) => part.kind === 'Website').length;
+
 /* ── 5. The résumé facts ───────────────────────────────────────────────── */
 
 /**
@@ -391,7 +404,7 @@ export const EXPERIENCE: {
     where: 'SmartDisruptions',
     points: [
       'Shipped online ordering and card payments for a food truck, live on its own domain since August 2026.',
-      `Built and published ${apps.length} apps and games and ${projects.length - 1} websites, all live and free to try.`,
+      `Built and published ${apps.length} apps and games and ${WEBSITES} websites, all live and free to try.`,
     ],
   },
   {
@@ -479,6 +492,6 @@ export function resumeTotals() {
   return {
     live: apps.length,
     games: GAME_SLUGS.length,
-    websites: projects.length - 1, // less the Notebook, this site's old look
+    websites: WEBSITES,
   };
 }
