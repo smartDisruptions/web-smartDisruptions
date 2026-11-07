@@ -49,10 +49,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/neo-dojo-survivors-2.webp': [1600, 900],
   '/images/apps/neo-dojo-survivors-3.webp': [780, 1688],
   '/images/apps/neo-dojo-survivors-thumbnail.webp': [1200, 630],
-  '/images/apps/path-not-taken-1.webp': [1600, 900],
-  '/images/apps/path-not-taken-2.webp': [1600, 900],
-  '/images/apps/path-not-taken-3.webp': [780, 1688],
-  '/images/apps/path-not-taken-thumbnail.webp': [1200, 630],
+  '/images/apps/rhythm-and-blade-1.webp': [1600, 900],
+  '/images/apps/rhythm-and-blade-2.webp': [1600, 900],
+  '/images/apps/rhythm-and-blade-3.webp': [780, 1688],
+  '/images/apps/rhythm-and-blade-thumbnail.webp': [1200, 630],
   '/images/apps/moondrift-1.webp': [1600, 900],
   '/images/apps/moondrift-2.webp': [1600, 900],
   '/images/apps/moondrift-3.webp': [780, 1688],
@@ -199,7 +199,7 @@ const MARKS: Record<string, string> = {
   'night-parade': '斬', // cut: Kiru cuts each yokai in two
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道
   'neo-dojo-survivors': '守', // defend: Tengu-9 holds the dojo for fifteen minutes
-  'path-not-taken': '岐', // a fork in the road, as in 岐路: the path not taken
+  'rhythm-and-blade': '刃', // a blade: the duel's, every blow on the beat
   moondrift: '漂', // to drift, as in 漂う: Cosmo drifting across the moon
   'cosmo-outbound': '航', // to voyage, as in 航宙, a voyage through space: Cosmo outbound, star to star
   'rubble-rouser': '崩', // to crumble, as in 崩れる: every building comes down

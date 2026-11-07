@@ -84,12 +84,13 @@ const nextConfig: NextConfig = {
           source: '/games/neo-dojo-survivors',
           destination: '/games/neo-dojo-survivors/index.html',
         },
-        // Path Not Taken (pre-alpha): the same page, and its six songs are MP3s
-        // beside it in songs/, each fetched when its level is picked. Real files
-        // are served before this rewrite runs, so they need no rule of their own.
+        // Rhythm and Blade (pre-alpha; Path Not Taken until 2026-11-06): the
+        // same page, and its six songs are MP3s beside it in songs/, each
+        // fetched when its level is picked. Real files are served before this
+        // rewrite runs, so they need no rule of their own.
         {
-          source: '/games/path-not-taken',
-          destination: '/games/path-not-taken/index.html',
+          source: '/games/rhythm-and-blade',
+          destination: '/games/rhythm-and-blade/index.html',
         },
         // Cosmo's Moondrift: the same, one file in public/games, built in the
         // vault (Tools/cosmo-moondrift) with --site, which adds its share cards
@@ -210,6 +211,12 @@ const nextConfig: NextConfig = {
         destination: '/content',
         permanent: true,
       })),
+      // Rhythm and Blade was Path Not Taken until 2026-11-06 (Josh's call). That
+      // name now belongs to a different game, Kiru's story, which will want
+      // these addresses back, so the redirects are temporary: a browser does
+      // not keep them, and dropping them later frees the old slug.
+      { source: '/games/path-not-taken', destination: '/games/rhythm-and-blade', permanent: false },
+      { source: '/built/path-not-taken', destination: '/built/rhythm-and-blade', permanent: false },
       { source: '/apps', destination: '/about', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/about', permanent: true },
