@@ -14,6 +14,18 @@ import type { WallDrive } from './armory-drive';
  *    within 400px of the screen, so a reader who never scrolls that far
  *    never downloads it. Under reduced motion it never loads at all: the
  *    ring lies flat as a grid of links and needs nothing.
+ *  - It loads the plaques' pictures before they are needed. Each one is
+ *    lazy in the markup, so the page's first paint never waits on the wall,
+ *    but a lazy image in a 3D ring only loads as its plaque turns toward
+ *    you: measured 2026-11-07 on a throttled phone, ten of the 32 loaded as
+ *    the ring came into view and the rest two at a time, one turn behind,
+ *    so a turning ring kept bringing round empty plaques (Josh: slow on the
+ *    iPad and the phone). So once the ring is within two screens, every
+ *    picture is set to load, the plaques nearest the front first, and
+ *    decoded, so each one is ready before it comes round. They are small
+ *    pre-sized files (scripts/make-wall-thumbs.mjs), about 400 KB for all
+ *    of them. Under reduced motion the grid is flat and lazy loading does
+ *    its usual job, so they are left to it.
  *  - The chips (All · Games · Apps · Websites) are shown only once they
  *    work (data-chips). A chip keeps the plaques of its kind and the rest go
  *    (data-out, display: none), on the ring and on the flat grid alike (Josh,
@@ -39,7 +51,23 @@ export default function ArmoryWallIsland() {
     let drive: ((root: HTMLElement) => WallDrive) | null = null;
     let wall: WallDrive | null = null;
     let io: IntersectionObserver | null = null;
+    let warmIo: IntersectionObserver | null = null;
     let alive = true;
+
+    // Every picture on the ring, nearest the front first: the ring settles
+    // on the first plaque, so that one, then its neighbours either side,
+    // outward round the ring.
+    const warm = () => {
+      const n = panels.length;
+      panels
+        .map((p, i) => ({ img: p.querySelector('img'), d: Math.min(i, n - i) }))
+        .sort((a, b) => a.d - b.d)
+        .forEach(({ img }) => {
+          if (!img) return;
+          img.loading = 'eager';
+          img.decode().catch(() => {});
+        });
+    };
 
     const choose = (chip: HTMLButtonElement) => {
       const id = chip.dataset.wallChip ?? 'all';
@@ -81,6 +109,17 @@ export default function ArmoryWallIsland() {
         root.setAttribute('data-chips', '');
         return;
       }
+      if (!warmIo) {
+        warmIo = new IntersectionObserver(
+          (entries) => {
+            if (!entries.some((e) => e.isIntersecting)) return;
+            warmIo?.disconnect();
+            warm();
+          },
+          { rootMargin: '200% 0px' }
+        );
+        warmIo.observe(root);
+      }
       if (wall || io) return;
       io = new IntersectionObserver(
         (entries) => {
@@ -113,6 +152,7 @@ export default function ArmoryWallIsland() {
     reduce.addEventListener('change', onChange);
     return () => {
       alive = false;
+      warmIo?.disconnect();
       reduce.removeEventListener('change', onChange);
       for (const c of chips) c.removeEventListener('click', onChip);
       stop();
