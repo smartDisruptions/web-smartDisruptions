@@ -4,7 +4,18 @@ import type { CSSProperties } from 'react';
 import { Glyph, GlyphSeal } from '@/components/about/work/glyphs';
 import ArmoryWallIsland from './ArmoryWallIsland';
 import { sizeOf } from './media';
+import THUMBS from './wall-thumbs.json';
 import './wall.css';
+
+/**
+ * Each plaque's picture, made ahead of time at the size the plaque draws it
+ * (scripts/make-wall-thumbs.mjs, `npm run wall:thumbs`): a plain ~12 KB file
+ * from the CDN, instead of a 1200 px screenshot resized by /_next/image on
+ * the first request after its cache lapses. Keyed by the screenshot's path.
+ */
+const thumbs: Record<string, { thumb: string } | undefined> = THUMBS;
+const THUMB_W = 528;
+const THUMB_H = 330;
 
 export type WallItem = {
   key: string;
@@ -116,6 +127,7 @@ export default function ArmoryWall({
 
         <ul className="bt-ring" role="list" aria-label={label}>
           {items.map((item, i) => {
+            const thumb = thumbs[item.src]?.thumb;
             const [w, h] = sizeOf(item.src);
             // The label painted on the plaque is part of the picture: the
             // hall's light shades it as the plaque turns away (wall.css), so
@@ -130,15 +142,34 @@ export default function ArmoryWall({
             const face = (
               <>
                 <span className="bt-panel-shot">
-                  <Image
-                    src={item.src}
-                    alt=""
-                    width={w}
-                    height={h}
-                    sizes="(max-width: 639px) 176px, 252px"
-                    loading="lazy"
-                    draggable={false}
-                  />
+                  {/* Lazy in the markup, so the page's first paint never
+                      waits on the wall. A lazy image in a 3D ring only
+                      loads as its plaque turns toward you, though, so the
+                      island loads them all, front first, once the ring is
+                      near (ArmoryWallIsland). A screenshot with no
+                      thumbnail yet still shows, through next/image. */}
+                  {thumb ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- a pre-sized ~12 KB webp at the plaque's own size: nothing for next/image to do
+                    <img
+                      src={thumb}
+                      alt=""
+                      width={THUMB_W}
+                      height={THUMB_H}
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                    />
+                  ) : (
+                    <Image
+                      src={item.src}
+                      alt=""
+                      width={w}
+                      height={h}
+                      sizes="(max-width: 639px) 176px, 252px"
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  )}
                 </span>
                 <span className="bt-panel-cap" aria-hidden="true">
                   <span className="bt-panel-name">{item.name}</span>
