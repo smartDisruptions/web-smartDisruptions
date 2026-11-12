@@ -77,6 +77,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/portfolio-ledger-2.webp': [780, 1688],
   '/images/apps/portfolio-ledger-3.webp': [1600, 900],
   '/images/apps/portfolio-ledger-thumbnail.webp': [1200, 630],
+  '/images/apps/inside-the-heart-1.webp': [1600, 900],
+  '/images/apps/inside-the-heart-2.webp': [780, 1688],
+  '/images/apps/inside-the-heart-3.webp': [780, 1688],
+  '/images/apps/inside-the-heart-thumbnail.webp': [1200, 630],
   '/images/apps/variable-speed-1.webp': [1600, 900],
   '/images/apps/variable-speed-2.webp': [780, 1688],
   '/images/apps/variable-speed-3.webp': [780, 1688],
@@ -191,6 +195,7 @@ const MARKS: Record<string, string> = {
   'cloth-simulator': '風', // wind
   'ai-diary': '心', // heart, mind
   'portfolio-ledger': '帳', // a ledger, as in 帳簿: an account book
+  'inside-the-heart': '拍', // a beat, as in 心拍: a heartbeat
   'variable-speed': '解', // to solve, as in 問題を解く: to solve a problem
   ironwheel: '鍛', // to forge, as in 体を鍛える: to build up the body
   'paper-crane-insights': '鶴', // a crane: the paper crane the sample truck is named for

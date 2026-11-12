@@ -15,6 +15,10 @@
     "thumb": "/images/wall/apps-hoop-quest-thumbnail.webp",
     "hash": "d7abe7f73e1c"
   },
+  "/images/apps/inside-the-heart-thumbnail.webp": {
+    "thumb": "/images/wall/apps-inside-the-heart-thumbnail.webp",
+    "hash": "be637f38da85"
+  },
   "/images/apps/ironwheel-thumbnail.webp": {
     "thumb": "/images/wall/apps-ironwheel-thumbnail.webp",
     "hash": "e9405322b5a6"
@@ -47,10 +51,6 @@
     "thumb": "/images/wall/apps-paper-crane-insights-thumbnail.webp",
     "hash": "f63707890135"
   },
-  "/images/apps/path-not-taken-thumbnail.webp": {
-    "thumb": "/images/wall/apps-path-not-taken-thumbnail.webp",
-    "hash": "3872d29fec26"
-  },
   "/images/apps/pomodoro-thumbnail.webp": {
     "thumb": "/images/wall/apps-pomodoro-thumbnail.webp",
     "hash": "3218ae44e02a"
@@ -58,6 +58,10 @@
   "/images/apps/portfolio-ledger-thumbnail.webp": {
     "thumb": "/images/wall/apps-portfolio-ledger-thumbnail.webp",
     "hash": "5b14c4682b24"
+  },
+  "/images/apps/rhythm-and-blade-thumbnail.webp": {
+    "thumb": "/images/wall/apps-rhythm-and-blade-thumbnail.webp",
+    "hash": "ff6a75990892"
   },
   "/images/apps/ring-toss-thumbnail.webp": {
     "thumb": "/images/wall/apps-ring-toss-thumbnail.webp",
