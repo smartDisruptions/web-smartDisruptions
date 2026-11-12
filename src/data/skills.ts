@@ -340,8 +340,8 @@ export const skillGroups: SkillGroup[] = [
         name: 'Physics, canvas and real-time rendering',
         plain:
           'Maths that has to hold up sixty times a second — orbital mechanics, cloth, collisions.',
-        used: 'A Mars transfer simulation that models a real launch window, and a cloth simulator where every thread stretches, folds and tears. Both are hand-written with no game engine underneath, which is the only way I would have learned what the maths actually does. The newest rep is a 3D drink can rendered live in the browser, spun by scroll or by hand. Smaller, and in the Arcade: in Milk Bottle Knockdown every bottle on the shelf has its own position, speed and spin, and knows which bottle it stands on.',
-        apps: ['spacex-mars', 'cloth-simulator', 'milk-bottle-knockdown'],
+        used: 'A Mars transfer simulation that models a real launch window, and a cloth simulator where every thread stretches, folds and tears. Both are hand-written with no game engine underneath, which is the only way I would have learned what the maths actually does. A 3D drink can renders live in the browser, spun by scroll or by hand. The newest rep is a heart you can cut open, built from math with no model files, its chambers squeezing in a real heartbeat’s order. Smaller, and in the Arcade: in Milk Bottle Knockdown every bottle on the shelf has its own position, speed and spin, and knows which bottle it stands on.',
+        apps: ['spacex-mars', 'cloth-simulator', 'milk-bottle-knockdown', 'inside-the-heart'],
         links: [
           {
             kind: 'site',

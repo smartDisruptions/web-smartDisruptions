@@ -130,6 +130,13 @@ const nextConfig: NextConfig = {
           source: '/demo/gilt-and-lather',
           destination: '/demo/gilt-and-lather/index.html',
         },
+        // Inside the Heart: a 3D heart lesson, one file in public/demo, built in
+        // ~/Documents/src/beating-heart with tools/build-site.mjs, which adds its
+        // share cards and links the lesson back to /built/inside-the-heart.
+        {
+          source: '/demo/inside-the-heart',
+          destination: '/demo/inside-the-heart/index.html',
+        },
         // Variable Speed: an algebra speed game, one file in public/demo, built in the
         // vault (Tools/variable-speed) with --site, which adds its share cards and
         // gives Settings a link back to /built/variable-speed.

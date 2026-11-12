@@ -289,6 +289,34 @@ export const apps: App[] = [
     liveUrl: '/demo/portfolio-ledger',
   },
   {
+    slug: 'inside-the-heart',
+    name: 'Inside the Heart',
+    description:
+      'A 3D heart you can open. Follow one drop of blood all the way around, cut the heart in half, hear the valves shut, and push the heart rate up to a sparring pace.',
+    longDescription:
+      'I wanted a heart lesson you could play with: a real heart beating in front of you that you can turn, slow down and cut open. It is built from math in your browser, with no model files to download, and it walks you through how the heart works in seven short steps.',
+    thumbnailUrl: '/images/apps/inside-the-heart-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/inside-the-heart-1.webp',
+      '/images/apps/inside-the-heart-2.webp',
+      '/images/apps/inside-the-heart-3.webp',
+    ],
+    techStack: ['three.js', 'WebGL shaders', 'Web Audio API', 'Playwright'],
+    category: 'Education',
+    status: 'live',
+    outcomes: [
+      'Follow one bright drop the whole way around: into the right side, out to the lungs where it turns red, back through the left side and out the aorta. It only moves when a real beat would push it.',
+      'Cut the heart open to see all four chambers, the wall between them, and why the left wall is about three times thicker than the right.',
+      'Watch the four valves open and shut in slow motion, and hear the lub-dub they make, in time with a live ECG.',
+      'Push the heart rate from asleep to a sparring round and watch the ECG bunch up as blood flow climbs from 5 to about 20 liters a minute.',
+      'Finish with a quiz: tap the right chamber on the heart. Tap a vessel next to it and you get a hint instead of a plain wrong.',
+    ],
+    buildDate: '2026-11',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/demo/inside-the-heart',
+  },
+  {
     slug: 'variable-speed',
     name: 'Variable Speed',
     description:
