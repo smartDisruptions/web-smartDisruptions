@@ -100,7 +100,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
-      url: `${BASE}/demo/paper-crane-insights`,
+      url: `${BASE}/demo/moonbowl-insights`,
       changeFrequency: 'monthly',
       priority: 0.4,
     },

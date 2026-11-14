@@ -35,6 +35,10 @@
     "thumb": "/images/wall/apps-milk-bottle-knockdown-thumbnail.webp",
     "hash": "b54179c9dccd"
   },
+  "/images/apps/moonbowl-insights-thumbnail.webp": {
+    "thumb": "/images/wall/apps-moonbowl-insights-thumbnail.webp",
+    "hash": "5511039a8848"
+  },
   "/images/apps/moondrift-thumbnail.webp": {
     "thumb": "/images/wall/apps-moondrift-thumbnail.webp",
     "hash": "05153dab99b1"
@@ -46,10 +50,6 @@
   "/images/apps/night-parade-thumbnail.webp": {
     "thumb": "/images/wall/apps-night-parade-thumbnail.webp",
     "hash": "1b38bb3506c0"
-  },
-  "/images/apps/paper-crane-insights-thumbnail.webp": {
-    "thumb": "/images/wall/apps-paper-crane-insights-thumbnail.webp",
-    "hash": "f63707890135"
   },
   "/images/apps/pomodoro-thumbnail.webp": {
     "thumb": "/images/wall/apps-pomodoro-thumbnail.webp",

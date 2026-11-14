@@ -74,7 +74,7 @@ export const CAPABILITIES: Capability[] = [
       { label: 'Net Price Calculator', href: NPC },
       {
         label: 'Insights demo',
-        href: 'https://paper-crane-insights.vercel.app',
+        href: '/demo/moonbowl-insights',
       },
       { label: 'Portfolio Ledger demo', href: '/demo/portfolio-ledger' },
     ],

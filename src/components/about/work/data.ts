@@ -142,7 +142,7 @@ const MORE_ORDER = [
   'net-price-calculator',
   'siphon-and-seal',
   'portfolio-ledger',
-  'paper-crane-insights',
+  'moonbowl-insights',
   'pomodoro-timer',
   'spacex-mars',
   'ai-diary',

@@ -89,10 +89,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/ironwheel-2.webp': [780, 1688],
   '/images/apps/ironwheel-3.webp': [780, 1688],
   '/images/apps/ironwheel-thumbnail.webp': [1200, 630],
-  '/images/apps/paper-crane-insights-1.webp': [780, 1688],
-  '/images/apps/paper-crane-insights-2.webp': [780, 1688],
-  '/images/apps/paper-crane-insights-3.webp': [1600, 900],
-  '/images/apps/paper-crane-insights-thumbnail.webp': [1200, 630],
+  '/images/apps/moonbowl-insights-1.webp': [780, 1688],
+  '/images/apps/moonbowl-insights-2.webp': [780, 1688],
+  '/images/apps/moonbowl-insights-3.webp': [1600, 900],
+  '/images/apps/moonbowl-insights-thumbnail.webp': [1200, 630],
   '/images/apps/siphon-and-seal-1.webp': [1600, 900],
   '/images/apps/siphon-and-seal-2.webp': [780, 1688],
   '/images/apps/siphon-and-seal-3.webp': [780, 1688],
@@ -198,7 +198,7 @@ const MARKS: Record<string, string> = {
   'inside-the-heart': '拍', // a beat, as in 心拍: a heartbeat
   'variable-speed': '解', // to solve, as in 問題を解く: to solve a problem
   ironwheel: '鍛', // to forge, as in 体を鍛える: to build up the body
-  'paper-crane-insights': '鶴', // a crane: the paper crane the sample truck is named for
+  'moonbowl-insights': '月', // the moon: the sample truck is Moonbowl Ramen
   'siphon-and-seal': '流', // to flow, as in 水に流す: to wash it away with water
   'lantern-night': '光', // light: "Light the night"
   'night-parade': '斬', // cut: Kiru cuts each yokai in two

@@ -155,14 +155,14 @@ const nextConfig: NextConfig = {
         // one file in public/demo, built in the vault (Tools/flush) with
         // --site, which adds its share cards and gives its About card a link
         // back to /built/siphon-and-seal.
-        // Paper Crane Insights: the owner's sales report on a made-up food
-        // truck, one file in public/demo. Built in the private insights repo
+        // Moonbowl Insights (Paper Crane Insights until 2026-11-13): the
+        // owner's sales report on a made-up ramen truck, one file in public/demo. Built in the private insights repo
         // (npm run build:sample), which swaps the real business's name, site
         // and town for the invented truck's and refuses to write the file if
         // any of them are left in it.
         {
-          source: '/demo/paper-crane-insights',
-          destination: '/demo/paper-crane-insights/index.html',
+          source: '/demo/moonbowl-insights',
+          destination: '/demo/moonbowl-insights/index.html',
         },
         {
           source: '/demo/siphon-and-seal',
@@ -197,6 +197,12 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      // Paper Crane Insights became Moonbowl Insights on 2026-11-13, so the
+      // report and the ramen ordering site are one made-up truck. Old links land on it.
+      { source: '/demo/paper-crane-insights', destination: '/demo/moonbowl-insights', permanent: true },
+      { source: '/demo/paper-crane-insights/:path*', destination: '/demo/moonbowl-insights', permanent: true },
+      { source: '/built/paper-crane-insights', destination: '/built/moonbowl-insights', permanent: true },
+      { source: '/apps/paper-crane-insights', destination: '/apps/moonbowl-insights', permanent: true },
       // What I Built's index, folded into About.
       { source: '/built', destination: '/about', permanent: true },
       // Pages taken off the site (Josh's call): five on 2026-10-07 and AUREUM
