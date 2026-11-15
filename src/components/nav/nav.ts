@@ -33,12 +33,17 @@ export const NAV: NavItem[] = [
  * same month, and each thing's own page (/built/<slug>) lights About too. The
  * three Build pages are the three tracks /learn promises ("websites, apps and
  * games"), so they light Learn.
+ *
+ * The music videos (/videos, November 2026) are work too, but the About wall
+ * counts websites, apps and games and nothing else, so they have a page of
+ * their own that lights About, the way each thing's /built page does.
  */
 const PARENT: Record<string, string> = {
   'market-storm': '/content',
   guides: '/content',
   'about-me': '/about',
   built: '/about',
+  videos: '/about',
   'build-websites': '/learn',
   'build-apps': '/learn',
   'build-games': '/learn',
