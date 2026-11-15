@@ -68,6 +68,17 @@ export default function Footer() {
                   Market Storm
                 </Link>
               </li>
+              {/* The music videos have a page of their own (/videos) and no
+                  tab: it lights About. Linked here so it is one tap from
+                  any page. */}
+              <li>
+                <Link
+                  href="/videos"
+                  className="text-[0.95rem] font-semibold text-[#dfe3fb] transition-colors hover:text-[#ff8166]"
+                >
+                  Videos
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/privacy"

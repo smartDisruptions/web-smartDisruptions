@@ -232,6 +232,13 @@ animation of layout properties, nothing that animates while off screen.
   the archive. That page and every report light the Writing tab, and so do
   the guides, which Writing lists among its field notes (`sectionOf()` in
   `nav/nav.ts`).
+- **The music videos have a page of their own** (since November 2026):
+  `/videos`. Nothing else holds a film: Writing is words, the Arcade is things
+  you play, and the About wall counts websites, apps and games and nothing
+  else. It has no tab; like each thing's `/built` page it lights About, and
+  the footer and the command palette link to it. Each film is a plain
+  `<video preload="none">` with a sized poster and a captions track, so the
+  page ships no JavaScript of its own and fetches no video until play.
 - **Writing's earlier notes live in its archive** (since 2026-10-26): the
   front keeps the field guide and Market Storm, and the posts written for the
   older design moved to `/content/archive` (`ARCHIVED_POST_SLUGS` in

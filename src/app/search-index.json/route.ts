@@ -96,6 +96,13 @@ export function GET() {
       x: 'about builds built projects receipts work',
     },
     {
+      t: 'Videos',
+      u: '/videos',
+      k: 'Page',
+      d: 'Music videos made with AI, and how each was made',
+      x: 'video videos music song lofi film animation keep the light on learn again lyrics',
+    },
+    {
       t: 'About Josh',
       u: '/about-me',
       k: 'Page',
