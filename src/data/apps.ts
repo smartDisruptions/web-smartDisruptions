@@ -1396,7 +1396,7 @@ export const apps: App[] = [
     description:
       'Draw steel beams on a blueprint, then let physics roll the ball. A plain ramp can’t reach the socket, but a beam drawn through the pivot becomes a seesaw.',
     longDescription:
-      'A steel ball waits in a chute at the top of an engineer’s drawing, and the socket it has to reach sits behind a wall. Drag to draw a beam and it turns to steel, then press Run and physics takes over. A ramp on its own can’t get there. Draw a beam through the pivot pin on top of the wall instead and it becomes a seesaw that tips the ball over. Every beam costs ink, so the fewer millimetres you use, the more stars you get, and when it works an Approved stamp lands on the drawing.',
+      'A steel ball waits in a chute at the top of an engineer’s drawing, and the socket it has to reach sits behind a wall. Drag to draw a beam and it turns to steel, bolted where you drew it, then press Run and physics takes over the ball. A ramp on its own can’t get there. Draw a beam through the pivot pin on top of the wall instead and it becomes a seesaw that tips the ball over. Every beam costs ink, so the fewer millimetres you use, the more stars you get, and when it works an Approved stamp lands on the drawing.',
     thumbnailUrl: '/images/apps/blueline-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/blueline-1.webp',
