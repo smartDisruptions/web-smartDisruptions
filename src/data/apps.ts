@@ -1343,6 +1343,107 @@ export const apps: App[] = [
       ],
     },
   },
+  {
+    slug: 'tumbler',
+    name: 'Tumbler',
+    description:
+      'Crack an Art Deco bank vault from 1928. Turn its four rings until a path runs from the rim to the lock, but two of them are geared together and turn each other the opposite way.',
+    longDescription:
+      'A steel ball waits at the rim of a 1928 vault door. Drag a ring round, a notch at a time, until its gaps line up into one path, and the ball rolls through to the lock. The catch is the brass gears between the two middle rings: turn one and its neighbour turns the other way, so lining one up can knock the other out. Find the order that works and the door swings open on a vault full of gold. Par is three turns.',
+    thumbnailUrl: '/images/apps/tumbler-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/tumbler-1.webp',
+      '/images/apps/tumbler-2.webp',
+      '/images/apps/tumbler-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'SVG', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'One file of about 100 KB with no pictures or sound files in it: the gold, the lacquer, the gears and the vault behind the door are all drawn in code, and every click and chime is made in the browser.',
+      'A search through every position of the four rings (12 to the power of 4) sets par at three turns. It also proves only one solved position can be reached once the gears tie two rings together, and that no single turn solves it.',
+      'Played to the win with real touch drags in a phone-sized browser: in par for three stars, and again in five turns for two.',
+      'One of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own.',
+    ],
+    buildDate: '2026-11',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/tumbler',
+    howToPlay: {
+      on: 'Plays on a phone or a computer, and it’s best with the sound on for the clicks of the tumblers.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Turn a ring',
+              how: 'Drag it round. It clicks into place a notch at a time.',
+            },
+            { action: 'Spin a ring', how: 'Flick it and let go.' },
+            {
+              action: 'Get a hint',
+              how: 'It shows one by itself after nine turns.',
+            },
+            { action: 'Start over', how: 'Tap the restart button at the top.' },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    slug: 'blueline',
+    name: 'Blueline',
+    description:
+      'Draw steel beams on a blueprint, then let physics roll the ball. A plain ramp can’t reach the socket, but a beam drawn through the pivot becomes a seesaw.',
+    longDescription:
+      'A steel ball waits in a chute at the top of an engineer’s drawing, and the socket it has to reach sits behind a wall. Drag to draw a beam and it turns to steel, then press Run and physics takes over. A ramp on its own can’t get there. Draw a beam through the pivot pin on top of the wall instead and it becomes a seesaw that tips the ball over. Every beam costs ink, so the fewer millimetres you use, the more stars you get, and when it works an Approved stamp lands on the drawing.',
+    thumbnailUrl: '/images/apps/blueline-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/blueline-1.webp',
+      '/images/apps/blueline-2.webp',
+      '/images/apps/blueline-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'Planck.js', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'One file of about 280 KB: planck.js, a port of the Box2D physics engine, is bundled in, and every line of the drawing and every sound is made in code.',
+      'Tested against the lines a player might draw: none of 22,286 straight ramps reach the socket, six different seesaws do, and the intended beam still works 300 times out of 300 with its ends moved up to 11 pixels on a phone.',
+      'Played to the win with a real touch drag in a phone-sized browser, for three stars.',
+      'One of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own.',
+    ],
+    buildDate: '2026-11',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/blueline',
+    howToPlay: {
+      on: 'Plays on a phone or a computer.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            { action: 'Draw a beam', how: 'Drag across the drawing.' },
+            {
+              action: 'Make a seesaw',
+              how: 'Draw the beam through the pivot pin on the wall.',
+            },
+            {
+              action: 'Roll the ball',
+              how: 'Tap Run. While it rolls the button says Reset, to stop it and try again.',
+            },
+            { action: 'Take back a beam', how: 'Tap Erase.' },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Run', how: '`Space` or `Enter`' },
+            { action: 'Take back a beam', how: '`Backspace`, or `Ctrl` `Z`' },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -1359,12 +1460,14 @@ export function getAppBySlug(slug: string): App | undefined {
  * door (Josh's call, the same day). It was called Path Not Taken until
  * 2026-11-06, when that name went to a different game: the one Kiru's story
  * will be told in (his story's cast is on /kiru).
+ * Tumbler and Blueline, two puzzles from a set of eighteen first levels,
+ * come after Rubble Rouser (Josh's call, 2026-11-16).
  *
  * These live here rather than in the games page because /built reads them too:
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser', 'tumbler', 'blueline'];
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door
