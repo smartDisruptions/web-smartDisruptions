@@ -33,6 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     { url: `${BASE}/learn`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/videos`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE}/films`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE}/games`, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${BASE}/kiru/cast`, changeFrequency: 'monthly', priority: 0.4 },
     {

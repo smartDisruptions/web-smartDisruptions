@@ -79,6 +79,16 @@ export default function Footer() {
                   Videos
                 </Link>
               </li>
+              {/* The short films made of code (/films) sit beside the music
+                  videos: no tab, they light About. */}
+              <li>
+                <Link
+                  href="/films"
+                  className="text-[0.95rem] font-semibold text-[#dfe3fb] transition-colors hover:text-[#ff8166]"
+                >
+                  Films
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/privacy"

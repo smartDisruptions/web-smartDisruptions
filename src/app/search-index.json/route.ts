@@ -103,6 +103,13 @@ export function GET() {
       x: 'video videos music song lofi film animation keep the light on learn again lyrics',
     },
     {
+      t: 'Films',
+      u: '/films',
+      k: 'Page',
+      d: 'Six short films made entirely of code',
+      x: 'films film short movie shader code generative 186,282 speed of light three against four fox moon rose window one drop escapement',
+    },
+    {
       t: 'About Josh',
       u: '/about-me',
       k: 'Page',

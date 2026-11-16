@@ -239,6 +239,12 @@ animation of layout properties, nothing that animates while off screen.
   the footer and the command palette link to it. Each film is a plain
   `<video preload="none">` with a sized poster and a captions track, so the
   page ships no JavaScript of its own and fetches no video until play.
+- **The short films have a page beside it** (since November 2026): `/films`,
+  six films made entirely of code, shown as a screening room. It lights About
+  the same way. It holds one `<video preload="none">` however many films it
+  lists, and before the first play the screen is a sized frame (640 or 1280
+  wide) with the play button on it, so a phone's first paint is one small
+  image. The films are 720p at about 1 Mbps: they start at once on a phone.
 - **Writing's earlier notes live in its archive** (since 2026-10-26): the
   front keeps the field guide and Market Storm, and the posts written for the
   older design moved to `/content/archive` (`ARCHIVED_POST_SLUGS` in
