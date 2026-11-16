@@ -53,7 +53,7 @@ export const films: Film[] = [
     about:
       'Brush and ink on rice paper that is generated too. The moon is never painted: it is always the bare paper the brush went around.',
     date: '2026-11-15',
-    seconds: 84,
+    seconds: 88,
   },
   {
     slug: 'rose-window',
@@ -63,7 +63,7 @@ export const films: Film[] = [
     about:
       'Dawn is spring, noon is summer, the afternoon is autumn and dusk is winter. Then the camera pulls back into the stone nave as the window’s colours slide across the floor.',
     date: '2026-11-15',
-    seconds: 72,
+    seconds: 77.5,
   },
   {
     slug: 'one-drop',
@@ -73,7 +73,7 @@ export const films: Film[] = [
     about:
       'Glass diatoms, rolling Volvox with daughter colonies inside, a rotifer whose crown spins like a wheel, and a water flea whose heart you can watch beating.',
     date: '2026-11-15',
-    seconds: 69,
+    seconds: 81,
   },
   {
     slug: 'escapement',
@@ -83,7 +83,7 @@ export const films: Film[] = [
     about:
       'The mainspring winds, the gear train carries the energy, and the escapement lets it out in equal steps while the balance swings back and forth four times a second.',
     date: '2026-11-15',
-    seconds: 72,
+    seconds: 96,
   },
 ];
 
@@ -92,6 +92,6 @@ export const filmFile = (
   name: 'film.mp4' | 'poster.webp' | 'thumb.webp'
 ) => `/films/${f.slug}/${name}`;
 
-/** "1:48" */
+/** "1:48" (whole seconds: a film can run 77.5 s) */
 export const runTime = (s: number) =>
-  `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;

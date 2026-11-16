@@ -33,7 +33,7 @@ export const metadata: Metadata = {
  * Styles: ./films.css (fm-).
  */
 const BASE = 'https://smartdisruptions.com';
-const iso8601 = (s: number) => `PT${Math.floor(s / 60)}M${s % 60}S`;
+const iso8601 = (s: number) => `PT${Math.floor(s / 60)}M${Math.round(s % 60)}S`;
 const total = films.reduce((a, f) => a + f.seconds, 0);
 
 export default function FilmsPage() {
