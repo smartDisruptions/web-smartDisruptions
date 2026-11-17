@@ -4,7 +4,8 @@
  * that names them, so a name or a line changes in one place. (The /learn
  * sections write their own lines, in the words of each page's header.)
  *
- * `source` is the page's email list (SubscribeForm / /api/subscribe).
+ * `source` was the page's own email list. Since 2026-11-16 there is one list,
+ * on Substack, and SubscribeForm no longer uses it.
  */
 export type BuildRoom = {
   href: '/build-websites' | '/build-apps' | '/build-games';

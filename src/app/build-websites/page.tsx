@@ -67,11 +67,11 @@ export default function BuildWebsitesPage() {
         <aside className="bw-join" aria-labelledby="bw-join-title">
           <Seal char={ROOM.kanji} className="bw-stamp" />
           <p id="bw-join-title" className="sd-kicker">
-            The websites list
+            The newsletter
           </p>
           <p className="bw-join-line font-read">
-            When I post a new guide on building websites, you get one email.
-            Nothing else.
+            One list for websites, apps and games. When I post a new guide, you
+            get one email.
           </p>
           <SubscribeForm
             source="websites"

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal } from '@/components/brand/Kanji';
 import './privacy.css';
@@ -79,7 +78,7 @@ export default function PrivacyPage() {
               <Kanji char="秘" draw className="pv-kanji" />
               <h1 className="pv-h1 font-display">Privacy</h1>
             </div>
-            <p className="pv-updated">Last updated: July 9, 2026</p>
+            <p className="pv-updated">Last updated: November 16, 2026</p>
           </div>
           <div className="pv-ninja">
             <Kiru pose="shh" />
@@ -102,16 +101,20 @@ export default function PrivacyPage() {
           </div>
           <div className="pv-sec-body">
             <p>
-              I store the email address you give me, which page you signed up
-              from, and when. That&rsquo;s it. I use it for one thing: sending
-              you an email when I publish a new build breakdown. I never sell
-              it, share it, or use it for anything else.
+              The signup boxes on this site are Substack&rsquo;s own. When you
+              sign up, your email goes to my Smart Disruptions newsletter on
+              Substack, which keeps the list and sends the emails. I use it for
+              one thing: emailing you when I publish something new. I never
+              sell it, share it, or use it for anything else.
             </p>
             <p>
-              Want out? Reply &ldquo;unsubscribe&rdquo; to any email I send, and
-              I&rsquo;ll delete your address. You can also ask me what I have
-              stored about you — the honest answer will be &ldquo;your email
-              address.&rdquo;
+              Want out? Every email has an unsubscribe link, or reply to any of
+              them and I&rsquo;ll take you off. What Substack itself records is
+              covered by{' '}
+              <a href="https://substack.com/privacy">
+                Substack&rsquo;s privacy policy
+              </a>
+              .
             </p>
           </div>
         </section>
@@ -125,9 +128,8 @@ export default function PrivacyPage() {
           </div>
           <div className="pv-sec-body">
             <p>
-              To stop bots from flooding the signup form, the site briefly
-              records the network address a signup came from. Those records are
-              deleted automatically within about two hours.
+              Substack&rsquo;s signup box handles keeping bots out. This site
+              itself records nothing when you sign up.
             </p>
           </div>
         </section>
@@ -158,13 +160,7 @@ export default function PrivacyPage() {
           </div>
           <div className="pv-sec-body">
             <p>
-              The site runs on Vercel; the subscriber list lives in a locked
-              Supabase database that the public site can write to but never read
-              from. I wrote up how that works —{' '}
-              <Link href="/content/i-tried-to-break-my-friends-ai-site">
-                security is kind of a thing here
-              </Link>
-              .
+              The site runs on Vercel. The subscriber list lives on Substack.
             </p>
           </div>
         </section>
