@@ -934,6 +934,108 @@
   text-shadow: 0 1px 3px #000;
 }
 
+/* ── The featured cabinet (./Featured): the Rooftop Run cabinet's body in
+   brass, for whichever game is featured. Its screen is a picture and a link. */
+.ft .rr-cab {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 40px 90px -40px rgba(255, 190, 90, 0.4),
+    0 0 60px -20px rgba(255, 190, 90, 0.26);
+}
+.ft .rr-cab::before,
+.ft .rr-cab::after {
+  background: #fff1cf;
+  box-shadow:
+    0 0 6px #ffcf70,
+    0 0 16px rgba(255, 207, 112, 0.8),
+    0 0 34px rgba(255, 207, 112, 0.45);
+}
+.ft .rr-marquee {
+  background:
+    radial-gradient(ellipse 70% 140% at 50% 130%, rgba(255, 190, 90, 0.26), transparent 70%),
+    linear-gradient(180deg, #1c1526, #0f0b1d);
+  border-color: rgba(255, 207, 112, 0.38);
+  box-shadow: inset 0 0 24px -10px rgba(255, 207, 112, 0.6);
+}
+.ft {
+  --c: var(--arc-amber);
+  --c-ink: var(--arc-amber-ink);
+}
+.ft-head {
+  min-width: 0;
+}
+.ft-labels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.ft-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--arc-amber-ink);
+  border: 1px solid color-mix(in srgb, var(--arc-amber) 55%, transparent);
+  background: color-mix(in srgb, var(--arc-amber) 10%, transparent);
+}
+/* New release: the one filled label on the page. #1a0d06 on #ff8166 is 8:1. */
+.ft-new {
+  color: #1a0d06;
+  border-color: transparent;
+  background: #ff8166;
+  box-shadow: 0 0 14px -2px rgba(255, 91, 61, 0.8);
+}
+.ft-art {
+  object-fit: cover;
+}
+.ft .rr-poster-hit {
+  display: block;
+}
+.ft .rr-start {
+  text-decoration: none;
+}
+/* The Start sits low, under the vault door, so the door is all there. */
+.ft-start-wrap.rr-start-wrap {
+  top: auto;
+  bottom: 7%;
+  translate: -50% 0;
+}
+.ft-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+.ft-foot .arc-tags {
+  margin: 0;
+}
+
+/* Rooftop Run's own page (./rooftop-run): room above the cabinet for the way
+   back and for Kiru, who stands on its roof. */
+.rr-page {
+  padding-top: 1.5rem;
+  padding-bottom: 4rem;
+}
+.rr-page .arc-back {
+  margin-top: 0;
+  margin-bottom: 5.5rem;
+}
+@media (min-width: 64rem) {
+  .rr-page .arc-back {
+    margin-bottom: 8rem;
+  }
+}
+
 /* The deck under the screen: what the game is and how to play it. */
 .rr-deck {
   display: grid;

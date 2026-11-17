@@ -664,10 +664,12 @@ export const apps: App[] = [
       'Tengu-9, the mech samurai of the Neo Dojo, holds a neon rooftop for fifteen minutes against six rogues and their hordes. You only move him: his weapons fire on their own.',
     longDescription:
       'Hold the Neo Dojo’s neon rooftop for fifteen minutes. Tengu-9’s weapons fire on their own, so all you do is keep moving while hundreds of rogues pour in: buzzwords, pitch decks, deepfakes and flocks of em-dashes. Level up, stack your weapons, and stand your ground when each act’s boss arrives.',
-    thumbnailUrl: '/images/apps/neo-dojo-survivors-thumbnail.webp',
+    // The cabinet's picture is the boss fight (Josh's call, 2026-11-17); the
+    // close-up it used to wear is in the screenshots now.
+    thumbnailUrl: '/images/apps/neo-dojo-survivors-2.webp',
     screenshotUrls: [
       '/images/apps/neo-dojo-survivors-1.webp',
-      '/images/apps/neo-dojo-survivors-2.webp',
+      '/images/apps/neo-dojo-survivors-thumbnail.webp',
       '/images/apps/neo-dojo-survivors-3.webp',
     ],
     techStack: ['HTML5', 'WebGL2', 'Vanilla JavaScript', 'Web Audio API'],
@@ -1398,6 +1400,49 @@ export const apps: App[] = [
       ],
     },
   },
+  {
+    slug: 'rooftop-run',
+    name: "Kiru's Rooftop Run",
+    description:
+      'Kiru runs the rooftops of his town. Six levels, each timed to its own song, and six ways to move through them: run, kite, roll, parasol, dragon and shadow step.',
+    longDescription:
+      'Kiru runs the rooftops of the town below, and every jump lands on the beat. There are six levels, each one timed to its own song, and six ways to move through them: run, kite, roll, parasol, dragon and shadow step. Practice mode lets you drop checkpoints, every level hides three secret scrolls, and Classic, the endless run the game started as, is still on the menu.',
+    thumbnailUrl: '/images/apps/rooftop-run-thumbnail.webp',
+    screenshotUrls: [],
+    techStack: ['HTML5', 'Canvas', 'React', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'Six levels, each built to its own song, with six ways to move through them.',
+      'A solver plays every level to prove it can be finished before it ships.',
+      'Nothing about the game loads until you press Start: the cabinet is a picture until then.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/rooftop-run',
+    howToPlay: {
+      on: 'Plays on a phone or a computer, right on its page.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            { action: 'Jump', how: 'Tap the screen.' },
+            { action: 'Keep jumping, or climb', how: 'Hold.' },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Jump', how: '`Space` or `↑`. Hold to keep jumping, or to climb.' },
+            { action: 'Pause', how: '`P`' },
+            { action: 'Sound', how: '`M`' },
+            { action: 'Checkpoints, in practice mode', how: '`C` drops one and `X` removes it.' },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -1417,12 +1462,22 @@ export function getAppBySlug(slug: string): App | undefined {
  * Tumbler, a puzzle from a set of eighteen first levels, comes after Rubble
  * Rouser (Josh's call, 2026-11-16); it grew to ten levels the next day. Blueline,
  * its sister puzzle, waits in the vault for now (Josh's call, 2026-11-17).
+ * Kiru's Rooftop Run, which played at the top of /games, became a cabinet
+ * with Kiru's other games on 2026-11-17, when Tumbler took the featured spot
+ * (Josh's call).
  *
  * These live here rather than in the games page because /built reads them too:
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser', 'tumbler'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'rooftop-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser', 'tumbler'];
+
+/**
+ * The featured game: the big cabinet at the top of /games, marked as a new
+ * release. It is one of ARCADE_SLUGS, and /games leaves it out of the row
+ * below so it isn't listed twice. Tumbler since 2026-11-17 (Josh's call).
+ */
+export const ARCADE_FEATURED_SLUG = 'tumbler';
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door

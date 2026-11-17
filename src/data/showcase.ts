@@ -62,7 +62,7 @@ export const SHOWCASE: Showcase[] = [
     href: '/games',
     image: '/images/websites/arcade.webp',
     imageAlt:
-      'The Arcade: a neon Arcade sign under paper lanterns, a glowing 遊 sign, Kiru, and Kiru’s Rooftop Run, which plays right on the page.',
+      'The Arcade: a neon Arcade sign under paper lanterns, a glowing 遊 sign, Kiru, and the featured game’s cabinet.',
     side: {
       image: '/images/apps/lantern-night-1.webp',
       imageAlt: 'Kiru’s Lantern Night, the first game in the Arcade.',

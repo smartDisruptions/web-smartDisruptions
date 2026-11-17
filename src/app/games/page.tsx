@@ -1,12 +1,10 @@
 import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, BROOM_BLADE_ARCADE_SLUGS, ESCAPE_ROOM_SLUGS, type App } from '@/data/apps';
-import Kiru from '@/components/kiru/Kiru';
-import Kanji, { Seal } from '@/components/brand/Kanji';
+import { apps, ARCADE_SLUGS, ARCADE_FEATURED_SLUG, ARCADE_ARCHIVE_SLUGS, BROOM_BLADE_ARCADE_SLUGS, ESCAPE_ROOM_SLUGS, type App } from '@/data/apps';
+import Kanji from '@/components/brand/Kanji';
 import PlayRooms from '@/components/nav/PlayRooms';
-import RooftopRun from '@/components/arcade/RooftopRun';
-import RooftopPoster from './Poster';
+import Featured from './Featured';
 import Cabinets, { ArrowIcon } from './Cabinets';
 import MarketFX from './MarketFX';
 import GuildHall from './guild/GuildHall';
@@ -17,11 +15,16 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, a 1928 bank vault to crack, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
+    "Hand-built browser games: Tumbler, ten 1928 bank vaults to crack, up front as the featured game, Kiru and the Neo Dojo Cast, Kiru's Rooftop Run, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**
  * THE ARCADE — a neon night market (Shadow Dojo, October 2026).
+ *
+ * The big cabinet at the top is the featured game, ARCADE_FEATURED_SLUG
+ * (./Featured): Tumbler, a new release, since 2026-11-17. Kiru's Rooftop Run
+ * stood there until then; it is a cabinet in the row now, with its own page
+ * (./rooftop-run), and the featured game is left out of the row.
  *
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
  * call on the ordering): Kiru's games, then Neo Dojo Survivors, then Path Not
@@ -42,14 +45,16 @@ export const metadata: Metadata = {
  * the neon's rare flicker, the lanterns, the ticker, the hall's firelight —
  * and stops under reduced motion. The platform filter is native radio buttons
  * and :has(), so it costs no JavaScript either. The client code is small:
- * the Rooftop Run cabinet's Start button (the game itself is a separate chunk
- * fetched by pressing it), MarketFX (pauses the market's loops off screen),
+ * MarketFX (pauses the market's loops off screen),
  * and in the hall, HallFX, Pip's mouse hole and the machines' best scores.
  */
 
 const byslug = (slugs: string[]) =>
   slugs.map((slug) => apps.find((app) => app.slug === slug)).filter((app): app is App => app !== undefined);
 const games = byslug(ARCADE_SLUGS);
+// The featured game has the big cabinet at the top, so it stays out of the row.
+const featured = games.find((g) => g.slug === ARCADE_FEATURED_SLUG);
+const cabinets = games.filter((g) => g !== featured);
 const guild = byslug(BROOM_BLADE_ARCADE_SLUGS);
 const rooms = byslug(ESCAPE_ROOM_SLUGS);
 const archived = byslug(ARCADE_ARCHIVE_SLUGS);
@@ -125,55 +130,8 @@ export default function Arcade() {
           </div>
         </header>
 
-        {/* Free play: Kiru's Rooftop Run */}
-        <section id="rooftop-run" className="rr" aria-labelledby="rr-title" data-market="">
-          <Kiru pose="game" className="rr-kiru" />
-          <div className="rr-cab">
-            <div className="rr-marquee">
-              <Seal char="速" className="rr-seal" />
-              <div>
-                <p className="rr-kick">
-                  Free play<span className="rr-kick-more"> · plays right here</span>
-                </p>
-                <h2 id="rr-title" className="rr-title font-display arc-neon" data-tube="red">
-                  Kiru&apos;s Rooftop Run
-                </h2>
-              </div>
-            </div>
-            <div className="rr-bezel">
-              <RooftopRun poster={<RooftopPoster />} helpId="rr-help" />
-            </div>
-            <div className="rr-deck">
-              <p className="rr-blurb">
-                Kiru runs the rooftops of the town below. I built six levels for him, each one timed to its own
-                song, and six ways to move through them: run, kite, roll, parasol, dragon and shadow step. Practice
-                mode lets you drop checkpoints, every level hides three secret scrolls, and Classic, the endless run
-                this cabinet started with, is still on the menu. Nothing about the game loads until you press Start.
-              </p>
-              <p id="rr-help" className="rr-keys">
-                <span className="rr-kbd">
-                  <kbd>Space</kbd> or{' '}
-                  <kbd>
-                    <span aria-hidden="true">↑</span>
-                    <span className="sr-only">Up arrow</span>
-                  </kbd>{' '}
-                  to jump
-                </span>
-                <span className="rr-touch">Tap to jump</span>
-                <span>hold to keep jumping, or to climb</span>
-                <span className="rr-kbd">
-                  <kbd>P</kbd> pause
-                </span>
-                <span className="rr-kbd">
-                  <kbd>M</kbd> sound
-                </span>
-                <span className="rr-kbd">
-                  practice: <kbd>C</kbd> / <kbd>X</kbd> checkpoints
-                </span>
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* The featured cabinet (ARCADE_FEATURED_SLUG): Tumbler, a new release. */}
+        {featured && <Featured game={featured} seal="錠" screen="/images/apps/tumbler-1.webp" newRelease />}
       </div>
 
       {/* The ticker */}
@@ -199,7 +157,7 @@ export default function Arcade() {
       </div>
 
       <div className="arc-wrap">
-        <Cabinets games={games} from="arcade" title="The cabinets" titleId="arc-cabinets" />
+        <Cabinets games={cabinets} from="arcade" title="The cabinets" titleId="arc-cabinets" />
       </div>
 
       {/* The Lantern Theater, on the market: the Escape Rooms. */}

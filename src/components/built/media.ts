@@ -207,6 +207,7 @@ const MARKS: Record<string, string> = {
   'lantern-night': '光', // light: "Light the night"
   'night-parade': '斬', // cut: Kiru cuts each yokai in two
   'tokaido-run': '道', // the road: the Tōkaidō, 東海道
+  'rooftop-run': '速', // fast, as in 速い: the seal on the cabinet's marquee
   'neo-dojo-survivors': '守', // defend: Tengu-9 holds the dojo for fifteen minutes
   'rhythm-and-blade': '刃', // a blade: the duel's, every blow on the beat
   moondrift: '漂', // to drift, as in 漂う: Cosmo drifting across the moon
