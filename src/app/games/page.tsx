@@ -27,7 +27,7 @@ export const metadata: Metadata = {
  * Taken, a rhythm duel in pre-alpha, then Cosmo's Moondrift, a 3D moonboarding
  * game, Cosmo Outbound, a 3D flight from a canyon to orbit and on to other
  * worlds, Rubble Rouser, a 3D demolition game whose forty buildings stand
- * and fall by their structure, and two puzzles: Tumbler, five 1928 vault doors
+ * and fall by their structure, and two puzzles: Tumbler, fifteen 1928 vault doors
  * of geared rings, and Blueline, five blueprints where you draw the beams and physics
  * decides (2026-11-16). Then the Lantern Theater, the Escape
  * Rooms (./escape, ESCAPE_ROOM_SLUGS): a marquee, a stage that plays the night

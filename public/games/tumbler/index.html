@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Smart Disruptions">
 <meta property="og:title" content="Tumbler">
-<meta property="og:description" content="Crack five Art Deco bank vaults from 1928. Turn the geared rings until the ball can roll from the rim to the lock. A browser puzzle from the Smart Disruptions Arcade.">
+<meta property="og:description" content="Crack fifteen Art Deco bank vaults from 1928. Turn the geared rings until the ball can roll from the rim to the lock. A browser puzzle from the Smart Disruptions Arcade.">
 <meta property="og:url" content="https://smartdisruptions.com/games/tumbler">
 <meta property="og:image" content="https://smartdisruptions.com/images/apps/tumbler-og.jpg">
 <meta property="og:image:width" content="1200">
@@ -147,7 +147,20 @@ body.land .wbtns .btn{font-size:11px;height:46px;letter-spacing:.14em;padding:0 
 .sHead{text-align:center}
 #selH{margin:8px 0 0;font-size:26px;line-height:1.1;letter-spacing:.16em;padding-left:.16em;font-weight:600;text-transform:uppercase;
   background:linear-gradient(180deg,#fffbe6,#f4d585 35%,#b8862e 60%,#f7e2a2 80%,#c9963e);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 2px rgba(0,0,0,.8))}
-#doors{display:flex;justify-content:center;align-items:flex-start;gap:4px;width:100%;max-width:440px}
+#doors{display:flex;justify-content:center;align-items:flex-start;gap:4px;width:100%;max-width:440px;touch-action:pan-y}
+#doors.in-l{animation:floorL .34s cubic-bezier(.2,.8,.3,1)}#doors.in-r{animation:floorR .34s cubic-bezier(.2,.8,.3,1)}
+@keyframes floorL{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes floorR{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
+.door.off{display:none}
+#floors{display:flex;justify-content:center;gap:6px;width:min(372px,100%);margin-bottom:-6px}
+.ftab{appearance:none;-webkit-appearance:none;flex:1 1 0;min-width:0;height:46px;padding:0 4px;border:1px solid rgba(201,162,79,.45);border-radius:3px;background:linear-gradient(180deg,rgba(25,24,29,.85),rgba(9,9,11,.9));
+  color:#a8916a;font-family:var(--deco);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px);transition:color .2s ease,border-color .2s ease}
+.ftab b{font-size:13px;letter-spacing:.24em;padding-left:.24em;font-weight:600}
+.ftab span{font-size:8.5px;letter-spacing:.2em;padding-left:.2em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.ftab[aria-selected="true"]{color:#1a1206;border-color:#fff1c2;background:linear-gradient(180deg,#f9e7a8 0%,#e3bd62 40%,#a87726 75%,#d9b25c 100%)}
+.ftab.shut{opacity:.55}
+.ftab:active{transform:scale(.95)}
 .door{appearance:none;-webkit-appearance:none;background:none;border:0;padding:6px 0 6px;flex:1 1 0;min-width:0;max-width:84px;min-height:44px;display:flex;flex-direction:column;align-items:center;gap:5px;
   cursor:pointer;color:var(--gold);font-family:var(--deco);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .dface{position:relative;width:92%;aspect-ratio:1;display:block;transition:transform .3s cubic-bezier(.3,1.6,.5,1),filter .3s ease}
@@ -178,7 +191,7 @@ body.land .wbtns .btn{font-size:11px;height:46px;letter-spacing:.14em;padding:0 
 #wfin{display:none;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#a8f5cf;text-shadow:0 1px 3px #000;text-align:center}
 #win.finale #wfin{display:block}
 #win.finale #btnVaults{display:none}
-#win.finale #wfin{font-size:12.5px;color:#f3dc9a}
+#win.finale #wfin{font-size:11.5px;letter-spacing:.12em;color:#f3dc9a}
 #btnNext{width:min(330px,100%)}
 #wfoot .btn.ghost{height:40px;min-width:0;font-size:11px;letter-spacing:.24em;padding:0 16px 0 calc(16px + .24em);background:none;box-shadow:none;border-color:rgba(201,162,79,.45);color:#d8bd7a}
 #roomCard{position:absolute;left:0;right:0;top:calc(var(--sat) + 16px);text-align:center;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .45s ease,transform .45s ease}
@@ -188,6 +201,10 @@ body.land .wbtns .btn{font-size:11px;height:46px;letter-spacing:.14em;padding:0 
 body.land #roomCard{left:auto;right:calc(var(--sar) + 8px);width:min(330px,42vw);top:calc(var(--sat) + 24px)}
 body.land #select{align-items:center;gap:2.4vh;padding-top:calc(var(--sat) + 12px)}
 body.land #doors{max-width:520px}
+body.land #floors{width:min(420px,60vw);margin-bottom:-10px}
+body.land .ftab{height:30px;flex-direction:row;gap:8px}
+body.land .sHead .kicker{display:none}
+body.land #selH{font-size:22px;margin-top:0}
 body.land .dface{width:72%}
 body.land #selCard{padding:6px 10px 8px}
 body.land #sName{font-size:19px;margin-top:2px}
@@ -228,7 +245,8 @@ body.land #btnNext{height:48px;font-size:13px}
 <section id="select" class="screen" aria-labelledby="selH">
   <button id="btnLobby" class="pill" aria-label="Back to the title">‹&nbsp;Lobby</button>
   <div class="sHead"><div class="kicker">The Vaults · 1928</div><h2 id="selH">Choose a vault</h2></div>
-  <div id="doors" role="list" aria-label="Vaults"></div>
+  <div id="floors" role="tablist" aria-label="Floors"></div>
+  <div id="doors" role="list" aria-label="Vaults on this floor"></div>
   <div id="selCard"><div id="sKick" class="lbl"></div><div id="sName"></div><div class="sRule"></div><div id="sIdea"></div><div id="sStars"></div></div>
   <div class="sFoot"><button id="btnEnter" class="btn big">Open vault 1</button><div class="hint2">Stars&nbsp; <span id="sTotal"></span></div></div>
 </section>
@@ -356,7 +374,7 @@ function levelGeometry(){
   RG.forEach(r=>{r.mid=(r.rin+r.rout)/2});SEAM_R=[BEZ0].concat(RG.slice(0,NR-1).map(r=>r.rin));
   // pinion stations on every geared seam (half-notch angles, clear of the channels when the rings are settled)
   PINS=[];let si=0;for(const g of LEVEL.gears||[]){const o=Math.min(g.a,g.b),inn=Math.max(g.a,g.b);if(inn-o!==1)continue;const off=[0,60,30,90][si++%4],cmp=Math.abs(Math.abs(g.ratio)-1)>.01;
-    PINS.push({r:RG[o].rin,inner:inn,outer:o,R:PIN_R*(cmp?1.5:1),ang:[45,165,285].map(d=>(d+off)*PI/180),compound:cmp})}}
+    const idl=g.ratio>0;PINS.push({r:RG[o].rin,inner:inn,outer:o,R:PIN_R*(cmp?1.5:idl?.86:1),ang:[45,165,285].map(d=>(d+off)*PI/180),compound:cmp?Math.abs(g.ratio):0,idler:idl})}}
 /* ================= layout ================= */
 const cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
 let W=0,H=0,DPR=1,S=1,SC=1,SAFE={t:0,b:0,l:0,r:0},LAND=false;
@@ -406,6 +424,12 @@ const GL={};
   GL['3']={w:42,p:[band(19,23.5,21,23.5,-PI*.8,h,15.5,23.5,12.5,19),band(19,72,23,28,-h,PI*.8,15,72,14,23.5)]};
   GL['4']={w:46,p:[P([[26,0],[31,0],[4.5,66.5],[0,66.5]]),R(26,0,16,100),R(0,64,46,4.5)]};
   GL['5']={w:42,p:[R(6,0,36,4.5),R(6,0,4.5,45),band(19,67,23,33,-PI*.7,PI*.78,15,67,14,28.5)]};
+  const flip=(gl,w)=>gl.map(pts=>pts.map(([x,y])=>[w-x,100-y]));
+  GL['0']={w:42,p:ring(21,50,21,50,8,45.5)};
+  GL['6']={w:42,p:[band(30,52,30,52,PI*.95,PI*1.64,31,52,18,47.5)].concat(ring(21,71,21,29,8,24.5))};
+  GL['9']={w:42,p:flip(GL['6'].p,42)};
+  GL['7']={w:40,p:[R(0,0,40,4.5),P([[27,0],[40,0],[22,100],[8,100]])]};
+  GL['8']={w:42,p:ring(21,24,18,24,6.5,19.5).concat(ring(21,72,21,28,8,23.5))};
 })();
 function wordPath(str,track,space){let x=0,d='';track=track==null?9:track;space=space||26;
   for(const ch of str){if(ch===' '){x+=space;continue}const g=GL[ch];if(!g)continue;
@@ -661,13 +685,14 @@ function makeRingTex(i){if(LEVEL!==LEVELS[0])return makeRingTexGen(i);
 /* metal finishes for the deeper vaults (same lathe language as vault 1) */
 const ramp=(c0,c1,c2,c3)=>b=>b<.5?mixc(c0,c1,b*2):b<.85?mixc(c1,c2,(b-.5)/.35):mixc(c2,c3,(b-.85)/.15);
 const METAL={gold:GOLD3,rose:ramp([36,16,8],[170,96,58],[236,170,130],[255,226,204]),silver:ramp([16,18,22],[112,120,132],[206,214,224],[250,252,255]),
-  copper:ramp([34,12,4],[150,66,32],[228,136,88],[255,214,182]),plat:ramp([24,24,30],[134,138,150],[218,222,232],[255,255,255]),bronze:ramp([30,18,6],[128,84,38],[210,162,96],[252,230,184])};
+  copper:ramp([34,12,4],[150,66,32],[228,136,88],[255,214,182]),gun:ramp([12,13,16],[66,72,82],[150,158,170],[226,232,240]),plat:ramp([24,24,30],[134,138,150],[218,222,232],[255,255,255]),bronze:ramp([30,18,6],[128,84,38],[210,162,96],[252,230,184])};
 const metalProf=(M,ph)=>t=>M(clamp(.38+.3*Math.pow(Math.sin(PI*t),1.4)+.1*Math.sin(t*PI*6+ph)+(Math.abs(t-.5)<.05?.2:0)-(Math.abs(t-.14)<.02||Math.abs(t-.86)<.02?.3:0),0,1));
 const lacqProf=(lo,hi)=>t=>mixc(lo,hi,Math.pow(Math.sin(PI*t),3));
 const ivoryProf=(lo,hi)=>t=>mixc(lo,hi,.35+.55*Math.pow(Math.sin(PI*t),.8));
-/* ================= the five vaults ================= */
+/* ================= the vaults ================= */
 const ST_=(k,o)=>Object.assign({kind:k},o);
 const SILVER_CH=['rgba(244,248,255,.95)','rgba(16,22,34,.95)','#8994a6'],SILVER_T=['#b9c3d2','rgba(255,255,255,.8)'];
+const BRONZE_T=['#c9965a','rgba(255,236,200,.8)'],ROSE_T=['#d79a72','rgba(255,236,220,.8)'];
 const LEVELS=[
   Object.assign(LEVEL,{room:'The Gold Room',idea:'One geared pair',
     theme:{bg:'#03100b',marble:{b0:[5,24,18],bk:[15,42,30],v1:[55,95,78],v2:[14,30,24]},
@@ -727,7 +752,57 @@ const LEVELS=[
              ST_('lacq',{prof:lacqProf([5,5,6],[36,34,32]),deco:'inlay'}),
              ST_('gold',{prof:metalProf(METAL.gold,1.7),deco:'rays'}),
              ST_('gold',{prof:metalProf(METAL.rose,.9),deco:'chev'}),
-             ST_('ivory',{prof:ivoryProf([120,104,78],[232,220,190]),deco:'dots'})]}}
+             ST_('ivory',{prof:ivoryProf([120,104,78],[232,220,190]),deco:'dots'})]}},
+  {name:'Vault 6',room:'The Coupon Room',idea:'Same way, through an idler',
+    intro:'An idler between two rings',teach:{gear:'Both turn the same way'},hints:['The pair keeps its gap lined up','Aim the pair, then set the rest'],
+    rings:[{O:[2,11],I:[4],G:[2,3,11]},{O:[1,6],I:[11],G:[0,5,11]},{O:[4,10],I:[4],G:[10,11]},{O:[1,7],I:[9],G:[0,7,8,11]},{O:[0,3,5,7],I:[0],G:[3,4,7]}],
+    gears:[{a:1,b:2,ratio:1}],start:[1,2,9,6,1],
+    theme:{bg:'#04100e',marble:{seed:21,b0:[3,15,14],bk:[8,40,36],v1:[60,128,116],v2:[14,40,36]},acc:{deep:'#0b3d36',mid:'#2bb5a0',tri:'#16806f',dot:'#3cc9b2',gem:['#e4fff9','#6ff0d8','#12907a','#032a24'],rgb:[80,240,210],rgb2:[90,245,215]},room:{bg:'#04100e',ceil:'#081613',side:[[8,22,20],[80,130,118]],back:[[30,52,48],[150,190,176],[16,30,28],[96,130,120]],floor:[[50,60,56],[150,166,158]]},treasure:'deposit',rings:[ST_('gold',{prof:metalProf(METAL.bronze,0),deco:'chev',teeth:BRONZE_T}),ST_('lacq',{prof:lacqProf([2,12,10],[20,92,78]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.bronze,1.6),deco:'rays',teeth:BRONZE_T}),ST_('lacq',{prof:lacqProf([5,6,8],[34,36,42]),deco:'inlay'}),ST_('ivory',{prof:ivoryProf([110,112,100],[228,232,220]),deco:'dots'})]}},
+  {name:'Vault 7',room:'The Tellers\' Cage',idea:'A three-ring gear train',
+    intro:'Three rings, one gear train',teach:{gear:'Turn one, all three move'},hints:['Its outer and inner turn together','Line up the middle ring last'],
+    rings:[{O:[2,7],I:[2],G:[7,8]},{O:[4,7,8,11],I:[4],G:[7,10]},{O:[10],I:[5,10],G:[4]},{O:[3,8],I:[0],G:[0,1,2,7]},{O:[0,4,6],I:[0],G:[4,5]}],
+    gears:[{a:1,b:2,ratio:-1},{a:2,b:3,ratio:-1}],start:[4,9,1,10,0],
+    theme:{bg:'#120a02',marble:{seed:27,b0:[20,12,3],bk:[54,34,10],v1:[150,110,48],v2:[40,26,10],gv:[[220,35],[170,50],[60,40]]},acc:{deep:'#4a2a04',mid:'#f0a020',tri:'#b8700c',dot:'#f5b23a',gem:['#fff4dc','#ffc860','#b86e08','#3a1e02'],rgb:[255,190,80],rgb2:[255,200,100]},room:{bg:'#120a02',ceil:'#1a1004',side:[[30,18,4],[150,104,40]],back:[[60,40,12],[200,150,70],[36,22,6],[130,92,36]],floor:[[64,54,40],[160,144,112]]},treasure:'counting',rings:[ST_('gold',{prof:metalProf(METAL.gold,.4),deco:'chev'}),ST_('gold',{prof:metalProf(METAL.gun,1),deco:'rays',ch:SILVER_CH,teeth:SILVER_T}),ST_('lacq',{prof:lacqProf([5,5,6],[38,34,30]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.gun,2.2),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('ivory',{prof:ivoryProf([122,108,86],[236,224,196]),deco:'dots'})]}},
+  {name:'Vault 8',room:'The Bond Room',idea:'A three-to-one gear',
+    intro:'One ring runs at triple speed',teach:{ratio:'Three notches for every one'},hints:['The fast ring has only four stops','Pick a gap one stop can reach'],
+    rings:[{O:[0,10],I:[5,10],G:[0,5]},{O:[3,5,10],I:[5],G:[2,9]},{O:[2,7],I:[2],G:[7]},{O:[10],I:[0,7],G:[7,10,11]},{O:[0,4,10],I:[10],G:[0,4]}],
+    gears:[{a:2,b:3,ratio:-3}],start:[8,5,9,5,10],
+    theme:{bg:'#12060a',marble:{seed:33,b0:[22,8,12],bk:[56,22,32],v1:[150,92,112],v2:[40,18,26]},acc:{deep:'#5a1834',mid:'#e8689a',tri:'#b23a6c',dot:'#f07aa8',gem:['#fff0f6','#ff9cc4','#b02c64','#3a0a1e'],rgb:[255,140,190],rgb2:[255,150,195]},room:{bg:'#12060a',ceil:'#1a0a10',side:[[30,12,18],[150,96,112]],back:[[60,28,38],[200,140,156],[36,14,22],[132,84,98]],floor:[[64,52,56],[160,140,146]]},treasure:'jewels',rings:[ST_('gold',{prof:metalProf(METAL.plat,.3),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('lacq',{prof:lacqProf([12,3,8],[70,20,46]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.gold,1.1),deco:'rays'}),ST_('gold',{prof:metalProf(METAL.rose,2),deco:'chev',teeth:ROSE_T}),ST_('ivory',{prof:ivoryProf([124,106,108],[238,226,228]),deco:'dots'})]}},
+  {name:'Vault 9',room:'The Bullion Lift',idea:'A key ring inside a gear pair',
+    intro:'This latch\'s key is geared',teach:{latch:'Latched. Its key is geared'},hints:['Freeing the latch moves two rings','Turn the pair away, then home'],
+    rings:[{O:[5,9],I:[9],G:[5]},{O:[3,9],I:[4],G:[3,8]},{O:[7,10,11],I:[5],G:[5,6,10]},{O:[0,4],I:[2],G:[2,3,11]},{O:[2,7],I:[2],G:[6]}],
+    gears:[{a:1,b:2,ratio:-1}],latches:[{lock:3,key:2,at:7.5,notch:6.5}],start:[0,9,6,1,6],
+    theme:{bg:'#060a0e',marble:{seed:41,b0:[8,11,15],bk:[22,30,40],v1:[112,132,152],v2:[30,36,46],gv:[[190,40],[200,40],[210,40]],halo:'rgba(210,225,240,.05)'},acc:{deep:'#0c3a44',mid:'#3ec8d8',tri:'#1e8fa0',dot:'#56d6e4',gem:['#eafcff','#8ef0fa','#1a98aa','#04262c'],rgb:[100,230,245],rgb2:[110,235,248]},room:{bg:'#060a0e',ceil:'#0a1016',side:[[12,18,24],[100,120,136]],back:[[40,50,60],[170,186,200],[22,30,38],[110,124,138]],floor:[[52,58,64],[152,160,168]]},treasure:'gold',rings:[ST_('gold',{prof:metalProf(METAL.silver,.7),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('lacq',{prof:lacqProf([2,10,14],[18,78,92]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.silver,2),deco:'rays',ch:SILVER_CH,teeth:SILVER_T}),ST_('lacq',{prof:lacqProf([5,6,8],[34,36,42]),deco:'inlay'}),ST_('ivory',{prof:ivoryProf([112,114,116],[230,232,234]),deco:'dots'})]}},
+  {name:'Vault 10',room:'The Night Depository',idea:'A latch your own turn can close',
+    intro:'The latch is open. Keep it so',teach:{close:'Your turn closed the latch',latch:'Latched. Find its key notch'},hints:['Turn the held pair before its key','Leave the key ring for last'],
+    rings:[{O:[3,9],I:[11],G:[3,9,10]},{O:[0,8],I:[0],G:[6,7]},{O:[7],I:[5,10],G:[5,6,9]},{O:[2,10],I:[9],G:[1,9]},{O:[5,7,10],I:[11],G:[5,6,10]}],
+    gears:[{a:2,b:3,ratio:-1}],latches:[{lock:2,key:1,at:8.5,notch:3.5}],start:[10,5,6,3,10],
+    theme:{bg:'#04050c',marble:{seed:47,b0:[4,5,12],bk:[12,14,32],v1:[90,96,140],v2:[22,24,40],gv:[[196,40],[200,40],[214,38]],halo:'rgba(210,214,240,.05)'},acc:{deep:'#20264a',mid:'#c6cdf6',tri:'#7a84c4',dot:'#d8ddff',gem:['#ffffff','#e4e8ff','#8a96d8','#161a3a'],rgb:[200,210,255],rgb2:[205,214,255]},room:{bg:'#04050c',ceil:'#080a16',side:[[10,12,24],[96,104,140]],back:[[34,38,60],[160,168,200],[18,20,36],[100,106,138]],floor:[[50,52,62],[150,152,166]]},treasure:'deposit',rings:[ST_('lacq',{prof:lacqProf([4,5,16],[30,36,86]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.plat,1.2),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('gold',{prof:metalProf(METAL.gold,.2),deco:'rays'}),ST_('lacq',{prof:lacqProf([5,6,8],[34,36,42]),deco:'inlay'}),ST_('ivory',{prof:ivoryProf([108,110,122],[226,228,240]),deco:'dots'})]}},
+  {name:'Vault 11',room:'The Clearing House',idea:'One key, two latches',
+    intro:'One key ring serves two latches',teach:{latch:'Latched. One key, two notches'},hints:['The key frees one latch at a time','Free one, turn it, then the other'],
+    rings:[{O:[6,9,11],I:[9],G:[4,5,11]},{O:[3,8],I:[8],G:[2]},{O:[1,6],I:[6],G:[0]},{O:[7,9],I:[7],G:[9]},{O:[2,4],I:[2],G:[4,5]}],
+    gears:[{a:0,b:1,ratio:-1}],latches:[{lock:1,key:2,at:7.5,notch:5.5},{lock:3,key:2,at:0.5,notch:11.5}],start:[6,1,6,11,6],
+    theme:{bg:'#060a04',marble:{seed:53,b0:[6,12,5],bk:[18,34,14],v1:[110,140,80],v2:[26,36,18]},acc:{deep:'#2e4208',mid:'#a8d43a',tri:'#6e9a1c',dot:'#b8e04c',gem:['#f8ffe0','#d4f878','#6a9a10','#1a2804'],rgb:[190,240,90],rgb2:[195,245,100]},room:{bg:'#060a04',ceil:'#0c1208',side:[[14,22,8],[110,130,70]],back:[[40,52,24],[170,190,120],[22,30,12],[110,128,70]],floor:[[54,58,46],[154,160,136]]},treasure:'counting',rings:[ST_('gold',{prof:metalProf(METAL.gold,.8),deco:'chev'}),ST_('lacq',{prof:lacqProf([4,10,4],[30,70,24]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.plat,1.4),deco:'rays',ch:SILVER_CH,teeth:SILVER_T}),ST_('gold',{prof:metalProf(METAL.gold,2.3),deco:'chev'}),ST_('gold',{prof:metalProf(METAL.rose,.6),deco:'dots',teeth:ROSE_T})]}},
+  {name:'Vault 12',room:'The Transfer Room',idea:'A train with a two-to-one link',
+    intro:'A geared train with a fast link',teach:{ratio:'One link turns two for one'},hints:['Watch the fast ring as it turns','Aim the fast ring, then finish'],
+    rings:[{O:[8,11],I:[11],G:[7]},{O:[3,7],I:[8],G:[3,4,7]},{O:[1,9],I:[9],G:[1,2]},{O:[8,11],I:[1],G:[0,8,11]},{O:[3,5,7],I:[7],G:[3,4]}],
+    gears:[{a:1,b:2,ratio:-1},{a:2,b:3,ratio:-2}],start:[6,4,5,0,4],
+    theme:{bg:'#10040c',marble:{seed:59,b0:[16,4,10],bk:[44,14,28],v1:[130,70,100],v2:[34,14,24]},acc:{deep:'#4a1040',mid:'#d65cc0',tri:'#9c2c8a',dot:'#e070cc',gem:['#ffeefc','#f6a0e6','#a0288c','#300a2a'],rgb:[240,130,220],rgb2:[242,140,225]},room:{bg:'#10040c',ceil:'#160810',side:[[26,10,20],[140,88,120]],back:[[56,26,46],[196,140,180],[32,12,26],[128,82,112]],floor:[[62,52,58],[158,140,150]]},treasure:'strong',rings:[ST_('gold',{prof:metalProf(METAL.copper,.5),deco:'chev',teeth:ROSE_T}),ST_('lacq',{prof:lacqProf([10,2,10],[66,18,62]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.copper,1.8),deco:'rays',teeth:ROSE_T}),ST_('gold',{prof:metalProf(METAL.rose,.4),deco:'chev',teeth:ROSE_T}),ST_('ivory',{prof:ivoryProf([122,104,112],[236,222,230]),deco:'dots'})]}},
+  {name:'Vault 13',room:'The Trust Vault',idea:'The entry ring, latched from inside',
+    intro:'The outer ring is latched',teach:{latch:'Latched. Its key is one ring in',ratio:'Three notches for every one'},hints:['The second ring is the key','Free the outer ring, then go back'],
+    rings:[{O:[4,6],I:[6],G:[2,3]},{O:[5,10],I:[0],G:[3,4,10,11]},{O:[9],I:[7,9],G:[6]},{O:[4,10],I:[10],G:[3]},{O:[3,9],I:[9],G:[2]}],
+    gears:[{a:2,b:3,ratio:-3}],latches:[{lock:0,key:1,at:11.5,notch:7.5}],start:[4,2,10,1,4],
+    theme:{bg:'#0c0c0e',marble:{seed:61,b0:[92,92,96],bk:[46,46,48],v1:[-60,-58,-52],v2:[-26,-26,-24],halo:'rgba(30,30,34,.05)'},acc:{deep:'#0e1e5a',mid:'#3a5ad8',tri:'#22389c',dot:'#4a6ae6',gem:['#eef2ff','#8aa2ff','#2440b0','#081040'],rgb:[110,150,255],rgb2:[120,160,255]},room:{bg:'#0c0c0e',ceil:'#16161a',side:[[30,30,34],[180,180,188]],back:[[70,70,76],[220,220,228],[40,40,46],[150,150,158]],floor:[[60,60,64],[170,170,176]]},treasure:'jewels',rings:[ST_('lacq',{prof:lacqProf([4,4,6],[32,32,36]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.silver,.9),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('gold',{prof:metalProf(METAL.gold,.3),deco:'rays'}),ST_('gold',{prof:metalProf(METAL.plat,1.5),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('ivory',{prof:ivoryProf([118,116,112],[236,234,230]),deco:'dots'})]}},
+  {name:'Vault 14',room:'The Cash Vault',idea:'One pair, two latches at once',
+    intro:'Two latches hold one pair',teach:{latch:'Held twice. Free both latches'},hints:['Both keys under their latches','Turn the pair, then send keys home'],
+    rings:[{O:[6],I:[6,11],G:[0,11]},{O:[6,11],I:[11],G:[5]},{O:[0,7],I:[11],G:[7,11]},{O:[5,10],I:[9],G:[3,4,9]},{O:[0,6,7],I:[0],G:[6]}],
+    gears:[{a:1,b:2,ratio:1}],latches:[{lock:1,key:0,at:2.5,notch:0.5},{lock:2,key:3,at:3.5,notch:4.5}],start:[6,8,7,1,1],
+    theme:{bg:'#0e0a02',marble:{seed:67,b0:[16,9,3],bk:[48,28,8],v1:[170,120,40],v2:[44,28,8],gv:[[230,25],[180,45],[70,40]]},acc:{deep:'#4a3a04',mid:'#e8c830',tri:'#a88a10',dot:'#f0d440',gem:['#fffbe0','#ffe870','#b09010','#302602'],rgb:[255,225,90],rgb2:[255,230,100]},room:{bg:'#0e0a02',ceil:'#160f04',side:[[28,18,4],[150,110,46]],back:[[58,40,12],[196,150,72],[34,22,6],[128,92,38]],floor:[[60,54,44],[158,146,120]]},treasure:'gold',rings:[ST_('gold',{prof:metalProf(METAL.gun,.6),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('gold',{prof:metalProf(METAL.bronze,1.3),deco:'rays',teeth:BRONZE_T}),ST_('lacq',{prof:lacqProf([6,4,2],[52,36,14]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.gun,2),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),ST_('ivory',{prof:ivoryProf([124,110,88],[238,226,200]),deco:'dots'})]}},
+  {name:'Vault 15',room:'The Directors\' Vault',idea:'Everything at once',
+    intro:'Three latches. Take your time',teach:{latch:'Latched. Follow the keys'},hints:['Work from the inside out','The pair keys two latches in turn'],
+    rings:[{O:[1,8,9],I:[1],G:[8]},{O:[8,11],I:[3,8],G:[3,4,11]},{O:[1,8],I:[0,7],G:[0,7]},{O:[7,11],I:[7],G:[0,11]},{O:[0,9],I:[11],G:[8,11]}],
+    gears:[{a:1,b:2,ratio:-1}],latches:[{lock:0,key:1,at:2.5,notch:0.5},{lock:3,key:2,at:7.5,notch:4.5},{lock:4,key:3,at:4.5,notch:3.5}],start:[4,4,4,4,7],
+    theme:{bg:'#0e0404',marble:{seed:71,b0:[10,3,4],bk:[28,8,8],v1:[150,70,44],v2:[40,14,10],gv:[[226,30],[176,50],[72,40]]},acc:{deep:'#2a2418',mid:'#f4e6c0',tri:'#b8a070',dot:'#fff0cc',gem:['#ffffff','#fff2d0','#c0a060','#2a2010'],rgb:[255,240,200],rgb2:[255,242,210]},room:{bg:'#0e0404',ceil:'#180606',side:[[34,10,8],[170,90,60]],back:[[70,24,18],[220,150,100],[40,12,8],[150,80,52]],floor:[[60,50,44],[160,140,120]]},treasure:'reserve',rings:[ST_('gold',{prof:metalProf(METAL.gold,0),deco:'chev'}),ST_('lacq',{prof:lacqProf([16,2,4],[112,16,26]),deco:'inlay'}),ST_('gold',{prof:metalProf(METAL.gold,1.5),deco:'rays'}),ST_('gold',{prof:metalProf(METAL.rose,.8),deco:'chev',teeth:ROSE_T}),ST_('lacq',{prof:lacqProf([5,5,6],[38,34,30]),deco:'inlay'})]}}
 ];
 const gearEdge=(i,j)=>(LEVEL.gears||[]).find(g=>(g.a===i&&g.b===j)||(g.a===j&&g.b===i));
 // the slow ring of a 2:1 train carries coarse teeth, the fast ring fine ones
@@ -738,7 +813,7 @@ function makeRingTexGen(i){
   let a=r.rin+.9,b=r.rout-.9;if(gIn)a=r.rin+3;if(gOut)b=r.rout-3;
   lathe(g,a,b,st.prof,false);
   const tc=st.teeth||['#c9a04e','rgba(255,244,210,.8)'],coarse=fastTrain(i)&&Math.abs(MULT[i])===1;
-  const tN=coarse?36:72,tH=coarse?3.1:2.3;
+  const big=coarse&&GEAR[i].some(p=>Math.abs(p.r)>2.5),tN=coarse?(big?24:36):72,tH=coarse?(big?3.6:3.1):2.3;
   if(gIn)teeth(g,a+.2,a+.2-tH,tN,tc[0],tc[1]);
   if(gOut)teeth(g,b-.2,b-.2+tH,tN,tc[0],tc[1]);
   g.save();annulus(g,a,b);g.clip();
@@ -800,7 +875,7 @@ function makePinion(PR,compound){PR=PR||PIN_R;const k=PR/12.5;
     if(jewel){g.fillStyle='#0d0c0f';g.beginPath();g.arc(0,0,4.4,0,TAU);g.fill();emerald(g,0,0,2.7)}};
   wheel(['#fff3c6','#d7a94e','#8a5d1c','#5a3a10'],!compound);
   // a 2:1 train: a small wheel riding on the big one (clockwork compound pinion), so the ratio reads at a glance
-  if(compound){g.save();g.rotate(.3);g.scale(.52,.52);g.fillStyle='rgba(0,0,0,.6)';g.beginPath();g.arc(1.2,2,13.6,0,TAU);g.fill();g.fillStyle='#120c06';g.beginPath();g.arc(0,0,13.4,0,TAU);g.fill();
+  if(compound){const sc=compound>=3?.4:.52;g.save();g.rotate(.3);g.scale(sc,sc);g.fillStyle='rgba(0,0,0,.6)';g.beginPath();g.arc(1.2,2,13.6,0,TAU);g.fill();g.fillStyle='#120c06';g.beginPath();g.arc(0,0,13.4,0,TAU);g.fill();
     wheel(['#fff0e6','#e8a07a','#9a4a2a','#4a1a0a'],true);g.restore()}
   c.R=R;return c}
 function makeBall(){
@@ -907,7 +982,8 @@ function makeInterior(){
   // tunnel vignette
   gr=g.createRadialGradient(0,0,R*.62,0,0,R);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.88)');g.fillStyle=gr;g.fillRect(-R,-R,2*R,2*R);
   g.restore();c.R=R;c.glints=G;return c}
-// the hoard behind vaults 2-5 (vault 1's gold room is painted inline above)
+// the hoard behind the deeper vaults (vault 1's gold room is painted inline above)
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 function treasure(g,T,H){const{bar,coins,bond,G}=H,A=TH.acc.gem;
   const shadow=(x,y,rx,ry)=>{g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.ellipse(x,y,rx,ry,0,0,TAU);g.fill()};
   const pearl=(x,y,r)=>{const pg=g.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);pg.addColorStop(0,'#ffffff');pg.addColorStop(.5,'#ece4ef');pg.addColorStop(1,'#7e7488');g.fillStyle=pg;g.beginPath();g.arc(x,y,r,0,TAU);g.fill()};
@@ -944,6 +1020,24 @@ function treasure(g,T,H){const{bar,coins,bond,G}=H,A=TH.acc.gem;
     sack(-128,140,1.1);sack(-100,146,.85);coins(-82,148,3);coins(-70,150,2);
     coins(90,144,8);coins(104,146,10);coins(118,144,6);coins(132,146,4);coins(80,150,3);
     for(let k=0;k<7;k++){const x=-66+k*7+Math.sin(k)*3,y=150-(k%3);g.fillStyle='#ffd77a';g.beginPath();g.ellipse(x,y,5,1.8,0,0,TAU);g.fill()}
+  }else if(T==='jewels'){
+    // a tiered jewel cabinet under glass: tiara on top, pearls below, rings and stones on the lowest velvet
+    shadow(0,142,120,10);const V=TH.acc.deep;
+    const tier=(y,w,h)=>{const vg=g.createLinearGradient(0,y-h,0,y);vg.addColorStop(0,rgba(mixc(hex(V),[255,255,255],.12),1));vg.addColorStop(1,V);g.fillStyle=vg;g.fillRect(-w/2,y-h,w,h);
+      g.fillStyle=metal(y-h-3,y-h,BRASS);g.fillRect(-w/2-2,y-h-3,w+4,3)};
+    g.fillStyle='#120c08';g.fillRect(-78,64,156,78);tier(140,150,22);tier(116,118,20);tier(94,86,18);
+    // tiara
+    const tg=g.createLinearGradient(0,52,0,76);tg.addColorStop(0,'#ffffff');tg.addColorStop(1,'#9aa4b4');g.strokeStyle=tg;g.lineWidth=1.6;
+    g.beginPath();g.moveTo(-26,76);g.quadraticCurveTo(0,62,26,76);g.stroke();
+    for(let k=-3;k<=3;k++){const x=k*7.5,h=10+(3-Math.abs(k))*4;g.beginPath();g.moveTo(x-3,72-(3-Math.abs(k))*.6);g.lineTo(x,72-h);g.lineTo(x+3,72-(3-Math.abs(k))*.6);g.stroke();gem(x,72-h,1.8,A[1],A[2])}
+    gem(0,66,3.2,A[1],A[2]);
+    strand(-46,100,-6,100,9,13,2.2);strand(6,100,46,100,9,13,2.2);
+    for(let k=0;k<6;k++){const x=-60+k*24,y=126;g.strokeStyle=metal(y-6,y+4,BRASS);g.lineWidth=1.4;g.beginPath();g.ellipse(x,y,4.2,3,0,0,TAU);g.stroke();gem(x,y-3.6,2.2,k%2?A[1]:'#ffd0dc',k%2?A[2]:'#a01a3a')}
+    // the glass
+    g.fillStyle='rgba(200,230,255,.06)';g.fillRect(-80,44,160,98);g.strokeStyle='rgba(255,255,255,.4)';g.lineWidth=.8;g.strokeRect(-80,44,160,98);
+    g.beginPath();g.moveTo(-72,50);g.lineTo(-56,130);g.strokeStyle='rgba(255,255,255,.25)';g.stroke();g.fillStyle=metal(40,45,BRASS);g.fillRect(-82,40,164,5);
+    for(const sd of[-1,1]){const x=sd*128;g.fillStyle='#0c0b0e';g.fillRect(x-16,118,32,22);g.fillStyle=V;g.fillRect(x-14,112,28,8);g.fillStyle=metal(110,114,BRASS);g.fillRect(x-17,108,34,4);
+      pearl(x-6,116,2);pearl(x,115,2.2);pearl(x+6,116,2);gem(x,110,2.4,A[1],A[2])}
   }else if(T==='strong'){
     // a jewelled egg on a marble plinth, with bars stacked either side
     shadow(0,140,118,10);
@@ -1106,7 +1200,8 @@ function tip(text,cls,dur){const el=$('tip');el.textContent=text;el.className=te
 /* ================= progress (one key, per device) ================= */
 const PKEY='tumbler.progress';
 const PROG={best:LEVELS.map(()=>0),open:1};
-(function(){try{const o=JSON.parse(localStorage.getItem(PKEY)||'null');if(o&&Array.isArray(o.best)){PROG.best=LEVELS.map((_,i)=>clamp(o.best[i]|0,0,3));PROG.open=clamp(o.open|0,1,LEVELS.length)}}catch(e){}})();
+(function(){try{const o=JSON.parse(localStorage.getItem(PKEY)||'null');if(o&&Array.isArray(o.best)){PROG.best=LEVELS.map((_,i)=>clamp(o.best[i]|0,0,3));PROG.open=clamp(o.open|0,1,LEVELS.length);
+  const cleared=PROG.best.reduce((m,b,i)=>b>0?i:m,-1);PROG.open=clamp(Math.max(PROG.open,cleared+2),1,LEVELS.length)}}catch(e){}})();
 function saveProg(){try{localStorage.setItem(PKEY,JSON.stringify({v:1,best:PROG.best,open:PROG.open}))}catch(e){}}
 const totalStars=()=>PROG.best.reduce((a,b)=>a+b,0);
 
@@ -1169,7 +1264,7 @@ function latchBlocked(c){
 function onTurn(i){
   if($('tip').textContent.indexOf('Drag')===0)tip('');
   if(GEAR[i])ST.touchedPair=true;
-  if(ST.turns>=9&&ST.depth<NR-1)offerHint();
+  if(ST.turns>=Math.max(9,PARN)&&ST.depth<NR-1)offerHint();
 }
 // Hints wait behind a button that turns up after nine turns. Using one costs the
 // no-hint star, so asking for help is the player's choice (Josh, 2026-11-17).
@@ -1219,7 +1314,7 @@ function enterLevel(n){
     titlePose(ST.time+7.3);Object.assign(CAM,LAY.title);startPlay();roomCard();$('fade').classList.remove('on')},380)}
 function showSelect(fromWin){
   audioInit();SFX.ui();DR=null;
-  const go=()=>{clearWin();hudShow(false);tip('');PT.length=0;resetLevel(false);ST.phase='select';$('title').classList.remove('show');refreshSelect();$('select').classList.add('show');$('fade').classList.remove('on')};
+  const go=()=>{clearWin();hudShow(false);tip('');PT.length=0;resetLevel(false);ST.phase='select';$('title').classList.remove('show');if(!fromWin)SEL=PROG.open-1;refreshSelect();$('select').classList.add('show');$('fade').classList.remove('on')};
   if(fromWin){$('fade').classList.add('on');setTimeout(go,380)}else go()}
 $('btnPlay').addEventListener('click',()=>showSelect(false));
 $('btnLobby').addEventListener('click',()=>{audioInit();SFX.ui();$('select').classList.remove('show');ST.phase='title';$('title').classList.add('show')});
@@ -1248,15 +1343,30 @@ function doorSVG(n){const L=LEVELS[n],nr=L.rings.length,acc=L.theme.acc,rr=[];co
   s+='<circle cy="-44.2" r="2.4" fill="'+acc.mid+'" stroke="#e9c877" stroke-width=".7"/></svg>';return s}
 const LOCK_SVG='<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 11V8a4.5 4.5 0 0 1 9 0v3" fill="none" stroke="#e9c877" stroke-width="2"/><rect x="5" y="11" width="14" height="10" rx="1.5" fill="#1a1712" stroke="#e9c877" stroke-width="1.4"/><circle cx="12" cy="15.4" r="1.6" fill="#e9c877"/><path d="M12 16.4v2.4" stroke="#e9c877" stroke-width="1.4"/></svg>';
 const miniStars=n=>'<span class="ms">'+[0,1,2].map(k=>'<i class="'+(k<n?'on':'')+'"></i>').join('')+'</span>';
+const FLOORS=[['I','Banking Hall'],['II','Mezzanine'],['III','Lower Vaults']],PER=5;
+let FLOOR=Math.floor(SEL/PER),swiped=false;
 function buildSelect(){const row=$('doors');row.innerHTML='';
+  $('floors').innerHTML=FLOORS.slice(0,Math.ceil(LEVELS.length/PER)).map((f,k)=>'<button class="ftab" role="tab" data-f="'+k+'"><b>'+f[0]+'</b><span>'+f[1]+'</span></button>').join('');
+  [...document.querySelectorAll('.ftab')].forEach(t=>t.addEventListener('click',()=>{audioInit();SFX.ui();goFloor(+t.dataset.f)}));
   LEVELS.forEach((L,n)=>{const b=document.createElement('button');b.className='door';b.dataset.n=n;b.setAttribute('role','listitem');
     b.innerHTML='<span class="dface">'+doorSVG(n)+LOCK_SVG+'</span><span class="dnum">'+(n+1)+'</span>'+miniStars(0);
-    b.addEventListener('click',()=>{audioInit();if(n>=PROG.open){SFX.held();haptic([8,40,8]);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}else SFX.ui();
+    b.addEventListener('click',()=>{if(swiped)return;audioInit();if(n>=PROG.open){SFX.held();haptic([8,40,8]);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}else SFX.ui();
       if(SEL===n&&n<PROG.open){enterLevel(n);return}SEL=n;refreshSelect()});
-    row.appendChild(b)})}
+    row.appendChild(b)});
+  // swipe the row of doors to change floor
+  let sx=null,sy=0;row.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;swiped=false});
+  row.addEventListener('pointerup',e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.4){swiped=true;setTimeout(()=>swiped=false,60);audioInit();SFX.ui();goFloor(FLOOR+(dx<0?1:-1))}});
+  row.addEventListener('pointercancel',()=>{sx=null})}
+// a floor opens on its newest open vault (or its first door, if the floor is still shut)
+function goFloor(f){const nf=clamp(f,0,Math.ceil(LEVELS.length/PER)-1);if(nf===FLOOR)return;const dir=nf>FLOOR?'in-l':'in-r';FLOOR=nf;
+  let k=-1;for(let n=FLOOR*PER;n<Math.min(LEVELS.length,FLOOR*PER+PER);n++)if(n<PROG.open)k=n;SEL=k>=0?k:FLOOR*PER;
+  const row=$('doors');row.classList.remove('in-l','in-r');void row.offsetWidth;row.classList.add(dir);refreshSelect()}
 function refreshSelect(){
-  if(SEL>=LEVELS.length)SEL=0;
-  [...document.querySelectorAll('.door')].forEach((b,n)=>{const L=LEVELS[n],open=n<PROG.open;b.classList.toggle('locked',!open);b.classList.toggle('sel',n===SEL);
+  if(SEL>=LEVELS.length)SEL=0;FLOOR=Math.floor(SEL/PER);
+  [...document.querySelectorAll('.ftab')].forEach((t,k)=>{t.setAttribute('aria-selected',String(k===FLOOR));t.classList.toggle('shut',k*PER>=PROG.open);
+    t.setAttribute('aria-label','Floor '+(k+1)+', '+FLOORS[k][1]+', vaults '+(k*PER+1)+' to '+Math.min(LEVELS.length,k*PER+PER))});
+  [...document.querySelectorAll('.door')].forEach((b,n)=>{const L=LEVELS[n],open=n<PROG.open;b.classList.toggle('off',Math.floor(n/PER)!==FLOOR);b.classList.toggle('locked',!open);b.classList.toggle('sel',n===SEL);
     b.querySelector('.ms').outerHTML=miniStars(PROG.best[n]);
     b.setAttribute('aria-label',L.name+(L.room?', '+L.room:'')+(open?', '+PROG.best[n]+' of 3 stars':', locked'));b.setAttribute('aria-pressed',String(n===SEL))});
   const L=LEVELS[SEL],open=SEL<PROG.open;
@@ -1313,7 +1423,7 @@ function update(dt){
     const n=Math.round(R.ang/NOTCH);if(n!==R.notch){R.notch=n;if(!idle){const lead=DR?DR.i===i:i===ST.lead||!GEAR[i]&&R.phys;SFX.click(i,!lead);if(lead)haptic(4)}}
     R.hl=Math.max(0,R.hl-dt*(R.drag?0:2.2));R.hlE=Math.max(0,R.hlE-dt*(DR&&GEAR[DR.i]&&GEAR[DR.i].some(q=>q.j===i)?0:2.2))}
   // relocker latches: the lever drops into its key notch (and lets go of its ring) when the notch comes under it
-  if(LATCH.length){const pos=livePos();LATCH.forEach((l,k)=>{const f=latchFree(pos,l);if(f!==ST.latchFree[k]){ST.latchFree[k]=f;if(ST.phase==='play'){SFX.latch(f);if(f){const[x,y]=polar(l.lock<l.key?RG[l.lock].rin:RG[l.lock].rout,l.at*NOTCH);spark(x,y,8,0,50,.5)}}}
+  if(LATCH.length){const pos=livePos();LATCH.forEach((l,k)=>{const f=latchFree(pos,l);if(f!==ST.latchFree[k]){ST.latchFree[k]=f;if(ST.phase==='play'){SFX.latch(f);if(!f&&LEVEL.teach&&LEVEL.teach.close&&!ST.taught.close){ST.taught.close=1;ST.latchFl[k]=1;tip(LEVEL.teach.close,'em',4.6)}if(f){const[x,y]=polar(l.lock<l.key?RG[l.lock].rin:RG[l.lock].rout,l.at*NOTCH);spark(x,y,8,0,50,.5)}}}
     ST.latchV[k]=lerp(ST.latchV[k],f?1:0,1-Math.exp(-dt*16));ST.latchFl[k]=Math.max(0,ST.latchFl[k]-dt*1.1)})}
   // live alignment + reachability
   if(ST.phase==='play'||ST.phase==='intro'){
@@ -1360,12 +1470,13 @@ function update(dt){
   ST.shake=Math.max(0,ST.shake-dt*14);
   setLoops(dt);
 }
+const NUMW={5:'five',10:'ten',15:'fifteen'};
 function showWin(){
   const inPar=ST.turns<=PARN,noHint=!ST.hintUsed,stars=1+(noHint?1:0)+(inPar?1:0);ST.stars=stars;hudShow(false);
   PROG.best[CUR]=Math.max(PROG.best[CUR],stars);PROG.open=Math.max(PROG.open,Math.min(LEVELS.length,CUR+2));saveProg();SEL=Math.min(CUR+1,LEVELS.length-1);
   const fin=CUR===LEVELS.length-1;$('win').classList.toggle('finale',fin);
   $('btnNext').textContent=fin?'The vaults':'Next vault';
-  $('wfin').textContent=fin?'All five vaults open · '+totalStars()+' of '+LEVELS.length*3+' stars':'';
+  $('wfin').textContent=fin?'All '+NUMW[LEVELS.length]+' vaults open · '+totalStars()+' of '+LEVELS.length*3+' stars':'';
   const wy=LAY.play.y,s=S,st=$('stamp'),sr=$('stars');
   if(LAND){const cx=W-SAFE.r-Math.min(330,W*.42)/2-8;st.style.left=sr.style.left=cx+'px';st.style.width='min(300px,40vw)';st.style.top=(SAFE.t+H*.3)+'px';sr.style.top=(SAFE.t+H*.3+Math.min(300,W*.4)*310/460*.42+2)+'px'}
   else{st.style.left=sr.style.left='';st.style.width='';const top=Math.max(SAFE.t+90,wy-150*s);st.style.top=top+'px';sr.style.top=(top+Math.min(W*.86,380)*310/460*.42+6)+'px'}
@@ -1410,8 +1521,11 @@ function drawRing(g,i,forSnap){
     if(R.hlE>0){g.fillStyle=rgba(TH.acc.rgb,(R.hlE*.09).toFixed(3));g.fill('evenodd')}g.restore()}
 }
 function drawPinions(g){for(const S of PINS){const I=ST.rings[S.inner],O=ST.rings[S.outer],pa=-I.ang*S.r/S.R,P=S.tex||TX.pinion,em=Math.max(O.hl,I.hl,O.hlE,I.hlE),gs=S.R*.96;
-  for(const a of S.ang){const[x,y]=polar(S.r,a);g.save();g.translate(x,y);g.rotate(pa+a*3);g.drawImage(P,-P.R,-P.R,2*P.R,2*P.R);g.restore();
-    if(em>0){g.save();g.globalCompositeOperation='lighter';g.globalAlpha=em*.7;g.drawImage(TX.dotE,x-gs,y-gs,2*gs,2*gs);g.restore()}}}}
+  for(const a of S.ang){
+    // an idler: two wheels side by side on the seam, so the rings either side turn the same way
+    const ws=S.idler?[[a-S.R*.97/S.r,1],[a+S.R*.97/S.r,-1]]:[[a,1]];
+    for(const[aa,sg]of ws){const[x,y]=polar(S.r,aa);g.save();g.translate(x,y);g.rotate(sg*pa+a*3);g.drawImage(P,-P.R,-P.R,2*P.R,2*P.R);g.restore();
+      if(em>0){g.save();g.globalCompositeOperation='lighter';g.globalAlpha=em*.7;g.drawImage(TX.dotE,x-gs,y-gs,2*gs,2*gs);g.restore()}}}}}
 // relocker latches: a brass lever across the seam, its jewel red while it holds, the vault's stone once its key notch is under it
 function drawLatches(g){for(let k=0;k<LATCH.length;k++){const l=LATCH[k],v=ST.latchV[k]||0,fl=ST.latchFl[k]||0,out=l.lock<l.key,rs=out?RG[l.lock].rin:RG[l.lock].rout,dir=out?-1:1;
   // a knock also lights the key notch, wherever its ring has carried it, so the lever points at its key
@@ -1549,6 +1663,7 @@ window.__game={
   levels:()=>LEVELS.map((L,i)=>({n:i+1,name:L.name,room:L.room||'',idea:L.idea||'',rings:L.rings.length,gears:L.gears||[],latches:L.latches||[],start:L.start,best:PROG.best[i],open:i<PROG.open})),
   progress:()=>({best:PROG.best.slice(),open:PROG.open,total:totalStars()}),
   unlockAll:()=>{PROG.open=LEVELS.length;saveProg();refreshSelect();return PROG.open},
+  floor:f=>{if(f!=null)goFloor(f-1);return FLOOR+1},
   select:()=>showSelect(false),
   turn:(i,k)=>{if(ST.phase!=='play')return false;const c=COMP[i];if(compLocked(livePos(),c)){latchBlocked(c);return false}
     const D=COMPS[c].driver,RD=ST.rings[D],kd=Math.round(k*MULT[D]/MULT[i]);for(const j of COMPS[c].rings){ST.rings[j].phys=false;ST.rings[j].vel=0}
