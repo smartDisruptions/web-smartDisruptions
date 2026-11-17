@@ -1349,7 +1349,7 @@ export const apps: App[] = [
     description:
       'Crack five Art Deco bank vaults from 1928. Turn the rings until a path runs from the rim to the lock, while gears turn their partners the other way and latches hold them still.',
     longDescription:
-      'A steel ball waits at the rim of a 1928 vault door. Drag a ring round, a notch at a time, until its gaps line up into one path, and the ball rolls through to the lock. The catch is the brass gears: turn one ring and its partner turns the other way, so lining one up can knock the other out. There are five vaults, and each one adds a single new trick. The second has two geared pairs. The third has a gear that runs at double speed, so its ring only stops on every other notch. The fourth has a latch that holds a pair still until you turn the outer ring away from where it belongs, and the last has two latches you have to free in the right order. Every door swings open on a different room, and par runs from three turns to six.',
+      'A steel ball waits at the rim of a 1928 vault door. Drag a ring round, a notch at a time, until its gaps line up into one path, and the ball rolls through to the lock. The catch is the brass gears: turn one ring and its partner turns the other way, so lining one up can knock the other out. There are five vaults, and each one adds a single new trick. The second has two geared pairs. The third has a gear that runs at double speed, so its ring only stops on every other notch. The fourth has a latch that holds a pair still until you turn the outer ring away from where it belongs, and the last has two latches you have to free in the right order. Every door swings open on a different room. Each vault has three stars to earn: one for opening it, one for doing it without a hint, and one for doing it in par.',
     thumbnailUrl: '/images/apps/tumbler-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/tumbler-1.webp',
@@ -1361,7 +1361,7 @@ export const apps: App[] = [
     status: 'live',
     outcomes: [
       'One file of about 145 KB with no pictures or sound files in it: the gold, the lacquer, the gears and the five rooms behind the doors are all drawn in code, and every click and chime is made in the browser.',
-      'A search through every position the rings can reach sets each vault’s par: three, three, four, five and six turns. It also proves none of them starts open or opens in one turn. Of 200,000 random ten-turn tries, 640 open the first vault and none open the last two.',
+      'A search through every position the rings can reach finds the fewest turns each vault opens in: three, three, four, five and six. Par allows half as many again, and moving the same ring twice in a row counts as one turn, so a slip of the finger doesn’t cost a star. The search also proves no vault starts open or opens in one turn, and of 200,000 random ten-turn tries, none open the last two.',
       'Played to the win with real touch drags in a phone-sized browser, vaults one, three and five in par. Clearing a vault unlocks the next, and the progress is still there after a reload.',
       'It started as one of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own, and grew to five vaults.',
     ],
@@ -1386,7 +1386,11 @@ export const apps: App[] = [
             { action: 'Spin a ring', how: 'Flick it and let go.' },
             {
               action: 'Get a hint',
-              how: 'It shows one by itself after nine turns.',
+              how: 'After nine turns a ? button appears at the top. A hint costs one star.',
+            },
+            {
+              action: 'Earn the stars',
+              how: 'One for opening the vault, one for no hint, one for doing it in par. Moving the same ring again straight away is still one turn.',
             },
             { action: 'Start over', how: 'Tap the restart button at the top.' },
           ],
