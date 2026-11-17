@@ -40,9 +40,11 @@ const PER_IP_PER_HOUR = 5;
 
 // Busy hours are logged at 200 signups. Only a real flood is refused, at
 // 1,000 an hour: high enough that locking real people out would take ~200
-// addresses each maxing out the per-IP limit, low enough that a script can't
-// bury the list. Junk that gets under it is cleaned up when sending is built
-// (with confirmation emails).
+// separate IPv4 addresses or IPv6 /64s each maxing out the per-IP limit, low
+// enough that a script can't bury the list. This is a deliberate trade-off
+// (an automated review argued both sides): the real fix is confirmation
+// emails, which arrive with sending, after which only unconfirmed signups
+// should count toward this ceiling.
 const BUSY_HOUR = 200;
 const FLOOD_HOUR = 1000;
 
@@ -78,6 +80,30 @@ function allowedOrigin(origin: string | null): boolean {
   return (
     origin.startsWith('https://web-smart-disruptions-') &&
     origin.endsWith('.vercel.app')
+  );
+}
+
+// The unit the per-IP limit counts. One IPv6 connection usually owns a whole
+// /64 (2^64 addresses), so counting single IPv6 addresses would let one
+// visitor rotate past the limit for free; IPv6 is grouped by its /64 prefix.
+// IPv4 stays whole, so people sharing an office or phone network aren't
+// lumped together. An IPv4 address written in IPv6 form (::ffff:1.2.3.4) is
+// treated as IPv4.
+function limitKey(ip: string): string {
+  const mapped = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i);
+  if (mapped) return mapped[1];
+  if (!ip.includes(':')) return ip;
+  const [head, tail = ''] = ip.toLowerCase().split('::');
+  const left = head ? head.split(':') : [];
+  const right = tail ? tail.split(':') : [];
+  const groups = ip.includes('::')
+    ? [...left, ...Array(8 - left.length - right.length).fill('0'), ...right]
+    : left;
+  return (
+    groups
+      .slice(0, 4)
+      .map((g) => (g || '0').replace(/^0+(?=.)/, ''))
+      .join(':') + '::/64'
   );
 }
 
@@ -148,8 +174,9 @@ export async function POST(request: Request) {
 
   const source = SOURCES.has(body.source ?? '') ? body.source! : 'site';
 
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = limitKey(
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown',
+  );
   if (rateLimited(ip)) {
     return NextResponse.json({ error: TOO_MANY }, { status: 429 });
   }
