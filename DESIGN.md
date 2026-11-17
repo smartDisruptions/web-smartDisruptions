@@ -221,9 +221,19 @@ animation of layout properties, nothing that animates while off screen.
 
 ## Native on a phone
 
-- A **tab bar** (Home, Writing, Learn, Arcade, About) where a thumb reaches.
+- A **tab bar** (Home, Writing, Learn, Play, About) where a thumb reaches.
   About's tab is Josh's photo, the way an app's last tab is its profile. The
   top bar tucks away while you scroll down and returns when you scroll up.
+- **The tab bar holds five, and Play holds two rooms** (since November 2026):
+  the Arcade and Videos. You play a game and you press play on a video, so
+  one word covers both, and Videos did not need a sixth tab. A strip under the
+  top bar on both pages switches rooms (`PlayRooms`): a segmented control in
+  the tab bar's own language, the current room on the same soft vermilion
+  pill, its stamp inked. It is two links, not two tabs, so each room keeps
+  its own address and Back works. The pill has a view-transition-name and
+  slides across when the page changes. A wide window has room for both words,
+  so the header names Arcade and Videos and the strip steps aside. If Videos
+  outgrows the room, promoting it is one line in `nav.ts`.
 - **What I Built lives on About** (since October 2026): its index was folded
   into `/about`, the work, and `/built` redirects there. Each thing keeps its
   own page at `/built/<slug>`, which lights the About tab.
@@ -236,8 +246,9 @@ animation of layout properties, nothing that animates while off screen.
   `/videos` holds the music videos, the short films drawn in code and the game
   trailers. Nothing else holds a film: Writing is words, the Arcade is things
   you play, and the About wall counts websites, apps and games and nothing
-  else. It has no tab; like each thing's `/built` page it lights About, and
-  the footer and the command palette link to it. `/films` redirects to it.
+  else. On a phone it is one of the Play tab's two rooms; on a wide window
+  the header names it. The footer and the command palette link to it too.
+  `/films` redirects to it.
   - **One screen, one library.** The screen never leaves: it holds its place
     beside the library on a wide window, and on a phone it pins under the top
     bar once something is playing, so the library scrolls beneath it.

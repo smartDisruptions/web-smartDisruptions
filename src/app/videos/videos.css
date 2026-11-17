@@ -43,6 +43,16 @@
     gap: 0.9rem;
   }
 }
+/* The switch above already says "Videos" where there is one (below a wide
+   window), so the kicker would say it twice. */
+@media (max-width: 63.99rem) {
+  .vd-hero {
+    padding-top: 1rem;
+  }
+  .vd-hero .sd-kicker {
+    display: none;
+  }
+}
 .vd-mark {
   z-index: -1;
   top: 0.25rem;

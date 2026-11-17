@@ -4,6 +4,7 @@ import Kanji from '@/components/brand/Kanji';
 import { GLYPHS } from '@/components/brand/glyphs';
 import { shareMeta } from '@/lib/shareCard';
 import { videos, kinds, kindOf, makerOf, videoFile } from '@/data/videos';
+import PlayRooms from '@/components/nav/PlayRooms';
 import Library from './Library';
 import './videos.css';
 
@@ -30,8 +31,10 @@ export const metadata: Metadata = {
  * it is about. Whatever the finder leaves is also the queue. Library.tsx is
  * the page's one island; this file is its static shell.
  *
- * It lights the About tab (nav/nav.ts), and the footer and the command palette
- * link to it. /films, the short films' first address, redirects here with the
+ * On a phone it is one of the Play tab's two rooms, beside the Arcade: the
+ * switch under the top bar (PlayRooms) moves between them. On a wide window
+ * the header names it (nav/nav.ts). The footer and the command palette link
+ * to it too. /films, the short films' first address, redirects here with the
  * films picked (next.config.ts).
  *
  * The list lives in src/data/videos.ts; the files in each video's `dir`.
@@ -72,48 +75,56 @@ export default function VideosPage() {
   };
 
   return (
-    <div className="vd-page">
-      {/* Static local data, JSON-encoded; < escaped so it can never close
-          the script tag. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
-        }}
+    <>
+      {/* The Play tab's two rooms: the Arcade, and this one. Its two stamps
+          reuse the glyphs already in this page's sprite. */}
+      <PlayRooms
+        current="videos"
+        glyphs={{ arcade: 'vd-g-game-trailer', videos: 'vd-g-all' }}
       />
-      {/* Without JavaScript the finder and the buttons can't work, so they
+      <div className="vd-page">
+        {/* Static local data, JSON-encoded; < escaped so it can never close
+          the script tag. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
+        {/* Without JavaScript the finder and the buttons can't work, so they
           step aside: the screen plays the first video with the browser's own
           controls, every card is a plain link to its file, and every
           "how it was made" is on the page. */}
-      <noscript>
-        <style>{`.vd-start,.vd-finder,.vd-controls{display:none!important}.vd-how-item[data-off]{display:grid!important;margin-bottom:3rem}`}</style>
-      </noscript>
+        <noscript>
+          <style>{`.vd-start,.vd-finder,.vd-controls{display:none!important}.vd-how-item[data-off]{display:grid!important;margin-bottom:3rem}`}</style>
+        </noscript>
 
-      <svg
-        className="vd-sprite"
-        width="0"
-        height="0"
-        aria-hidden="true"
-        focusable="false"
-      >
-        {STAMPS.map(([id, char]) => (
-          <symbol key={id} id={`vd-g-${id}`} viewBox="0 0 1000 1000">
-            <path d={GLYPHS.brush[char].d} />
-          </symbol>
-        ))}
-      </svg>
+        <svg
+          className="vd-sprite"
+          width="0"
+          height="0"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {STAMPS.map(([id, char]) => (
+            <symbol key={id} id={`vd-g-${id}`} viewBox="0 0 1000 1000">
+              <path d={GLYPHS.brush[char].d} />
+            </symbol>
+          ))}
+        </svg>
 
-      <header className="vd-hero">
-        <Kanji char="影" draw className="sd-watermark vd-mark" />
-        <p className="sd-kicker">Videos</p>
-        <h1 className="vd-h1 font-display">Videos made with AI.</h1>
-        <p className="vd-lede font-read">
-          Music videos, short films drawn in code, and game trailers. Each one
-          says which Claude model made it, how, and what it cost.
-        </p>
-      </header>
+        <header className="vd-hero">
+          <Kanji char="影" draw className="sd-watermark vd-mark" />
+          <p className="sd-kicker">Videos</p>
+          <h1 className="vd-h1 font-display">Videos made with AI.</h1>
+          <p className="vd-lede font-read">
+            Music videos, short films drawn in code, and game trailers. Each one
+            says which Claude model made it, how, and what it cost.
+          </p>
+        </header>
 
-      <Library perch={<Kiru pose="sit" />} />
-    </div>
+        <Library perch={<Kiru pose="sit" />} />
+      </div>
+    </>
   );
 }

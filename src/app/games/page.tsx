@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { apps, ARCADE_SLUGS, ARCADE_ARCHIVE_SLUGS, BROOM_BLADE_ARCADE_SLUGS, ESCAPE_ROOM_SLUGS, type App } from '@/data/apps';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Seal } from '@/components/brand/Kanji';
+import PlayRooms from '@/components/nav/PlayRooms';
 import RooftopRun from '@/components/arcade/RooftopRun';
 import RooftopPoster from './Poster';
 import Cabinets, { ArrowIcon } from './Cabinets';
@@ -61,6 +62,11 @@ export default function Arcade() {
   const onPage = [...games, ...rooms, ...guild];
   const live = onPage.filter((g) => g.status === 'live').length;
   return (
+    <>
+      {/* The Play tab's two rooms: this one, and Videos. Above the market, in
+          the site's own colours, because it is the site's nav, not the
+          arcade's. (The market below keeps its indent: one wrapper, no churn.) */}
+      <PlayRooms current="arcade" />
     <div className="arc">
       <MarketFX />
       {/* The lantern string */}
@@ -233,5 +239,6 @@ export default function Arcade() {
         </div>
       </div>
     </div>
+    </>
   );
 }
