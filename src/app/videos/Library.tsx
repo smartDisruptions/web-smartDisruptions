@@ -654,7 +654,11 @@ export default function Library({ perch }: { perch?: ReactNode }) {
 
       <section className="vd-how" id="vd-how" aria-label="How it was made">
         {videos.map((x) => (
-          <article key={x.slug} className="vd-how-item" data-off={x.slug !== cur || undefined}>
+          <article
+            key={x.slug}
+            className="vd-how-item"
+            data-off={x.slug !== cur || undefined}
+          >
             <div className="vd-how-about">
               <h2 className="vd-how-h font-display">How {x.title} was made</h2>
               <p className="vd-p font-read">{x.about}</p>
