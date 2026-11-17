@@ -379,17 +379,17 @@ export const apps: App[] = [
     liveUrl: '/demo/ironwheel',
   },
   {
-    slug: 'paper-crane-insights',
-    name: 'Paper Crane Insights',
+    slug: 'moonbowl-insights',
+    name: 'Moonbowl Insights',
     description:
       'A sales report for a food-truck owner, built on Square orders. This copy runs on a made-up truck, so you can click through every screen.',
     longDescription:
-      'I built this report for a food-truck owner from his Square orders. It opens on one page: how the last four weeks went, four numbers that only turn green or red when the change is real, and the three things to do this week. Everything else sits behind More. This copy runs on a made-up truck called Paper Crane, so none of the numbers are real.',
-    thumbnailUrl: '/images/apps/paper-crane-insights-thumbnail.webp',
+      'I built this report for a food-truck owner from his Square orders. It opens on one page: how the last four weeks went, four numbers that only turn green or red when the change is real, and the three things to do this week. Everything else sits behind More. This copy runs on Moonbowl Ramen, the same made-up truck as my ramen ordering site, so none of the numbers are real.',
+    thumbnailUrl: '/images/apps/moonbowl-insights-thumbnail.webp',
     screenshotUrls: [
-      '/images/apps/paper-crane-insights-1.webp',
-      '/images/apps/paper-crane-insights-2.webp',
-      '/images/apps/paper-crane-insights-3.webp',
+      '/images/apps/moonbowl-insights-1.webp',
+      '/images/apps/moonbowl-insights-2.webp',
+      '/images/apps/moonbowl-insights-3.webp',
     ],
     techStack: ['Next.js', 'TypeScript', 'SVG', 'React', 'esbuild'],
     category: 'Business',
@@ -405,7 +405,7 @@ export const apps: App[] = [
     buildDate: '2026-09',
     hasFullBreakdown: false,
     buildPlanAvailable: false,
-    liveUrl: '/demo/paper-crane-insights',
+    liveUrl: '/demo/moonbowl-insights',
   },
   {
     slug: 'siphon-and-seal',
