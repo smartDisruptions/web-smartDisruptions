@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { Glyph, GlyphSeal } from '@/components/about/work/glyphs';
 import ArmoryWallIsland from './ArmoryWallIsland';
+import { BEHIND, lapOf, turnsFor } from './helix';
 import { sizeOf } from './media';
 import THUMBS from './wall-thumbs.json';
 import './wall.css';
@@ -44,6 +45,12 @@ export type WallGroup = { id: string; label: string; count: number };
  */
 const PARK = 3;
 /**
+ * The spiral stands five short instead, close to half a turn: its entrance
+ * brings the back of the tower round to the front as it climbs into place,
+ * which is the one moment that shows what it is.
+ */
+const PARK_SPIRAL = 5;
+/**
  * Which plaques show their backs while the ring stands parked. The drive
  * works this out exactly for the screen it is on (a plaque turns its back
  * on you a little before 90°, about 68–70° here); before it loads, any
@@ -60,6 +67,15 @@ const AWAY = 0.36;
  * own rotateY, which the drive writes as its transform. Before the behaviour
  * loads (and if it never does) this is already a ring of real links in tab
  * order, standing three plaques short of the first.
+ *
+ * Past seventeen plaques the ring is wound into a spiral (./helix): the
+ * same placement with n/turns plaques to a turn, and each plaque a little
+ * lower than the one before it, so a turn of the ring is a row of the
+ * tower. The ring then climbs as it turns (one translateY beside its
+ * rotateY, still one transform) and the plaque in front stays where it is.
+ * The spiral has no end: a plaque that has gone most of a turn up the back
+ * is moved to the bottom (its --lap) at the tower's side, at the moment it
+ * is edge-on to the eye and has no width to be seen moving.
  *
  * Each plaque is one composited layer. Its back — lacquer, its seal, its
  * name — is drawn inside it, mirrored, and shown while that plaque faces
@@ -86,12 +102,18 @@ export default function ArmoryWall({
   groups?: WallGroup[];
 }) {
   const n = items.length;
-  const step = 360 / n;
-  const park = n > 6 ? PARK : 0;
+  // Past seventeen plaques the ring is wound into a spiral (./helix).
+  const turns = turnsFor(n);
+  const step = (360 * turns) / n;
+  const park = turns > 1 ? PARK_SPIRAL : n > 6 ? PARK : 0;
   const spin = park * step;
   const front = (n - park) % n;
   const away = (i: number) =>
     Math.cos(((spin + i * step) * Math.PI) / 180) < AWAY;
+  // On the spiral, a back below the front row carries no seal (wall.css).
+  const lap = (i: number) =>
+    turns > 1 ? lapOf(i, -park, n, (BEHIND * n) / turns) : 0;
+  const under = (i: number) => turns > 1 && away(i) && i + lap(i) * n > -park;
   const first = items[front];
 
   return (
@@ -99,7 +121,8 @@ export default function ArmoryWall({
       className="bt-wall"
       data-wall
       data-park={park ? '' : undefined}
-      style={{ '--n': n, '--park': park } as CSSProperties}
+      data-helix={turns > 1 ? '' : undefined}
+      style={{ '--n': n, '--t': turns, '--park': park } as CSSProperties}
     >
       {groups && groups.length > 1 && (
         <div className="bt-wall-chips" role="group" aria-label="Show me">
@@ -165,7 +188,7 @@ export default function ArmoryWall({
                       alt=""
                       width={w}
                       height={h}
-                      sizes="(max-width: 639px) 176px, 252px"
+                      sizes="(max-width: 639px) 176px, 240px"
                       loading="lazy"
                       draggable={false}
                     />
@@ -189,7 +212,15 @@ export default function ArmoryWall({
                 data-groups={item.groups?.join(' ') || undefined}
                 data-front={i === front ? '' : undefined}
                 data-away={away(i) ? '' : undefined}
-                style={{ '--i': i } as CSSProperties}
+                data-under={under(i) ? '' : undefined}
+                style={
+                  {
+                    '--i': i,
+                    // Which copy of the spiral it hangs on while the
+                    // ring stands parked (the drive keeps it up to date).
+                    '--lap': lap(i),
+                  } as CSSProperties
+                }
               >
                 {item.external ? (
                   <a

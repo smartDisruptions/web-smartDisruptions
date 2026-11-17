@@ -4,6 +4,11 @@
   one property (the ring's transform) that armory-drive.ts writes.
   Prefix bt-wall / bt-ring / bt-panel.
 
+  Past seventeen plaques the ring is a spiral ([data-helix], helix.ts):
+  --t turns of about a dozen plaques, each plaque --rise lower than the
+  last. Same plaques, same light, same one transform; the stage is the
+  same height either way, so a chip never moves the page.
+
   Why it is cheap to turn:
    - The ring's place (translate, rotate) is CSS; its turn is the one value
      the drive writes, as the transform itself. Measured in Chrome, a frame
@@ -46,6 +51,9 @@
   --bt-halo:
     0 18px 30px -18px var(--sd-card-shadow),
     0 0 38px -6px rgba(255, 214, 140, 0.75);
+  /* The inside of the spiral, below the front row: lacquer out of the
+     light, most of the way to the hall's own colour. */
+  --bt-under: color-mix(in srgb, #141729 30%, var(--bt-hall));
 }
 /* Night: a hall under one lantern. */
 :root[data-theme='dark'] .bt-wall {
@@ -65,24 +73,34 @@
   --bt-halo:
     0 18px 30px -18px var(--sd-card-shadow),
     0 0 38px -6px rgba(255, 178, 96, 0.4);
+  --bt-under: color-mix(in srgb, #141729 62%, var(--bt-hall));
 }
 
 /* ── Geometry ────────────────────────────────────────────────────────────── */
 
 .bt-wall {
   --n: 20;
-  --pw: 252px; /* plaque width */
-  --ph: 158px; /* its screenshot (16:10) */
-  --cap: 52px; /* its label */
+  --t: 1; /* how many turns the ring is wound into (helix.ts) */
+  --pw: 240px; /* plaque width */
+  --ph: 150px; /* its screenshot (16:10) */
+  --cap: 50px; /* its label */
   --gap: 22px;
   --tilt: -5deg;
   --persp: 1700px;
-  --stage-h: 548px;
-  --ring-y: 304px; /* the ring's centre, from the top of the stage */
-  --eye-y: 150px; /* where the eye is (perspective-origin) */
+  /* The stage is as tall as the spiral needs, and a plain ring (a chip
+     with seventeen plaques or fewer) hangs lower in it, the lantern on a
+     longer cord, so choosing a chip never moves the page under it. */
+  --stage-h: 712px;
+  --ring-y: 360px; /* the ring's centre, from the top of the stage */
+  --eye-y: 206px; /* where the eye is (perspective-origin) */
   --lw: 54px; /* the lantern */
-  --lantern-y: 8px;
-  --r: calc(var(--pw) / 2 / sin(180deg / var(--n)) + var(--gap));
+  --lantern-y: 56px;
+  /* One plaque's share of the way round, and how far it drops for it: no
+     way on a ring, a row's height per turn on the spiral. */
+  --step: calc(360deg * var(--t) / var(--n));
+  --rise: 0px;
+  --bt-well: 0; /* 1 on the spiral: the dark its lower rows go down into */
+  --r: calc(var(--pw) / 2 / sin(var(--step) / 2) + var(--gap));
   /* Where the front plaque lands: the tilt lowers it by r·sin(tilt). */
   --front-y: calc(var(--ring-y) + var(--r) * sin(var(--tilt) * -1));
   --front-bottom: calc(var(--front-y) + (var(--ph) + var(--cap)) / 2);
@@ -96,10 +114,29 @@
     --gap: 14px;
     --tilt: -6deg;
     --persp: 1000px;
-    --stage-h: 410px;
-    --ring-y: 220px;
-    --eye-y: 96px;
+    --stage-h: 528px;
+    --ring-y: 264px;
+    --eye-y: 140px;
     --lw: 40px;
+    --lantern-y: 40px;
+  }
+}
+
+/* The spiral: the same plaques, a dozen to a turn, each turn a row lower. */
+.bt-wall[data-helix] {
+  --row-gap: 24px;
+  --pitch: calc(var(--ph) + var(--cap) + var(--row-gap));
+  --rise: calc(var(--pitch) * var(--t) / var(--n));
+  --bt-well: 1;
+  --ring-y: 300px;
+  --eye-y: 300px;
+  --lantern-y: 8px;
+}
+@media (max-width: 39.99rem) {
+  .bt-wall[data-helix] {
+    --row-gap: 14px;
+    --ring-y: 222px;
+    --eye-y: 222px;
     --lantern-y: 2px;
   }
 }
@@ -116,6 +153,7 @@
      lantern's glow rises above the stage, behind the chips. */
   overflow-x: clip;
   overflow-y: visible;
+  clip-path: inset(-12rem 0 0 0);
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
@@ -181,6 +219,20 @@
       calc(var(--bt-far) - 40px),
     transparent calc(var(--bt-far) - 4px)
   );
+  /* The spiral goes down out of the lantern's light: the row under the
+     front one a little dimmer, the one under that most of the way into the
+     dark, and nothing left at the stage's bottom edge. (On a plain ring
+     --bt-well is 0 and these layers are clear.) */
+  --bt-row-1: calc(var(--front-bottom) + var(--pitch, 0px) * 0.4);
+  --bt-row-2: calc(var(--front-bottom) + var(--pitch, 0px) * 0.92);
+  --bt-row-3: calc(var(--front-bottom) + var(--pitch, 0px) * 1.24);
+  --bt-well-mask: linear-gradient(
+    180deg,
+    transparent var(--front-bottom),
+    rgb(0 0 0 / calc(var(--bt-well) * 0.24)) var(--bt-row-1),
+    rgb(0 0 0 / calc(var(--bt-well) * 0.32)) var(--bt-row-2),
+    rgb(0 0 0 / var(--bt-well)) var(--bt-row-3)
+  );
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -202,8 +254,39 @@
       180deg,
       var(--bt-haze) calc(var(--bt-far) - 40px),
       transparent calc(var(--bt-far) - 4px)
+    ),
+    linear-gradient(
+      180deg,
+      transparent var(--front-bottom),
+      color-mix(in srgb, var(--bt-hall) calc(var(--bt-well) * 24%), transparent)
+        var(--bt-row-1),
+      color-mix(in srgb, var(--bt-hall) calc(var(--bt-well) * 32%), transparent)
+        var(--bt-row-2),
+      color-mix(
+          in srgb,
+          var(--bt-hall) calc(var(--bt-well) * 100%),
+          transparent
+        )
+        var(--bt-row-3)
     );
 }
+/* No floor under the front row: the next turn hangs there. */
+.bt-wall[data-helix] .bt-wall-floor {
+  display: none;
+}
+/* The far side of the turns below the front row is the inside of the
+   tower, out of the light: plain lacquer, no seal, so nothing but the
+   plaques in front asks to be read. */
+.bt-panel[data-under] .bt-panel-face,
+.bt-panel[data-under] .bt-panel-back {
+  border-color: transparent;
+  background: var(--bt-under);
+}
+.bt-panel[data-under] .bt-panel-back > *,
+.bt-panel[data-under] .bt-panel-cap {
+  visibility: hidden;
+}
+
 /* The room's washi grain over its own dark, with the same fall-off, so the
    shade reads as the ground and never as a box over it. */
 .bt-wall-light::before {
@@ -212,8 +295,8 @@
   inset: 0;
   background: var(--sd-noise) 0 0 / 180px 180px;
   opacity: var(--bt-shade-a);
-  -webkit-mask: var(--bt-dark), var(--bt-haze-mask);
-  mask: var(--bt-dark), var(--bt-haze-mask);
+  -webkit-mask: var(--bt-dark), var(--bt-haze-mask), var(--bt-well-mask);
+  mask: var(--bt-dark), var(--bt-haze-mask), var(--bt-well-mask);
 }
 
 /* ── The lantern ─────────────────────────────────────────────────────────── */
@@ -250,7 +333,7 @@
   left: 50%;
   bottom: 88%;
   width: 2px;
-  height: 64px;
+  height: calc(64px + var(--lantern-y));
   margin-left: -1px;
   background: linear-gradient(to top, var(--bt-cord), transparent);
 }
@@ -299,14 +382,16 @@
      and from then on is the inline transform the drive writes. */
   translate: 0 0 calc(var(--r) * -1);
   rotate: x var(--tilt);
-  transform: rotateY(calc(var(--park, 0) * 360deg / var(--n)));
+  transform: translateY(calc(var(--park, 0) * var(--rise)))
+    rotateY(calc(var(--park, 0) * var(--step)));
 }
 /* Flat on purpose: the plaque is one layer, with its face and its back
    painted into it. */
 .bt-panel {
   position: absolute;
   inset: 0;
-  transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--r));
+  translate: 0 calc((var(--i) + var(--lap, 0) * var(--n)) * var(--rise));
+  transform: rotateY(calc(var(--i) * var(--step))) translateZ(var(--r));
 }
 .bt-panel-face {
   position: absolute;
@@ -443,7 +528,11 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  display: none;
+  /* Laid out once and shown by visibility: a plaque turning its back
+     (three at a time on the spiral, one for each row) then costs a repaint
+     of its own layer and no layout. */
+  display: grid;
+  visibility: hidden;
   place-items: center;
   align-content: center;
   gap: 10px;
@@ -465,7 +554,7 @@
   background: #141729;
 }
 .bt-panel[data-away] .bt-panel-back {
-  display: grid;
+  visibility: visible;
 }
 /* The back is opaque, so the picture under it needn't be painted. The
    label stays: it is the link's name, and visibility: hidden would take it
@@ -540,13 +629,17 @@
 .bt-wall-chip[aria-pressed='true'] .bt-wall-chip-n {
   color: inherit;
 }
-/* A phone gets them two by two, so four never wrap into three and one. */
+/* A phone gets them two by two, All across the top, so the four kinds
+   under it never wrap into three and one. */
 @media (max-width: 39.99rem) {
   .bt-wall-chips {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     max-width: 24rem;
+  }
+  .bt-wall-chip[data-wall-chip='all'] {
+    grid-column: 1 / -1;
   }
   .bt-wall-chip {
     justify-content: center;
@@ -722,6 +815,16 @@
     inset: auto;
     transform: none;
   }
+  /* In a rule of its own: the CSS minifier folds a `translate` into the
+     `transform: none` beside it and drops it, which would leave the
+     spiral's drop on every card. */
+  .bt-ring > .bt-panel {
+    translate: none;
+  }
+  /* A card is a card here, whichever way its plaque was facing. */
+  .bt-panel[data-under] .bt-panel-cap {
+    visibility: visible;
+  }
   .bt-panel-face {
     position: relative;
     inset: auto;
@@ -733,7 +836,7 @@
     background: var(--bt-face);
     box-shadow: 0 18px 30px -18px var(--sd-card-shadow);
   }
-  .bt-panel[data-away] .bt-panel-back {
+  .bt-panel-back {
     display: none;
   }
   .bt-panel[data-away] .bt-panel-shot {

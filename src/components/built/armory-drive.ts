@@ -24,6 +24,16 @@
  * edge-on and can't be seen. Only the one or two plaques that crossed get
  * their attribute flipped.
  *
+ *  THE SPIRAL. Past seventeen plaques the ring is wound into `turns` turns
+ *  (./helix), each plaque `rise` lower than the last. Everything below is
+ *  the same: `spin` still counts degrees, `step` is still one plaque's
+ *  share of them, and one full pass is `cycle` (360° × turns). The ring's
+ *  transform gains a translateY that climbs as it turns, and each frame
+ *  also checks which copy of the spiral every plaque hangs on (its lap),
+ *  rewriting --lap for the one that has just gone round the top. That
+ *  happens at the angle where the plaque is edge-on to the eye (`edge`,
+ *  the same number the backs flip at), so it is never seen.
+ *
  *  - Drag / swipe: horizontal only. The stage is `touch-action: pan-y`, so a
  *    vertical swipe still scrolls the page; the browser cancels our pointer
  *    when that happens. iOS Safari doesn't always honour pan-y over the 3D
@@ -51,6 +61,8 @@
  *    short way and settles on the first plaque — once, and anything the
  *    reader does first cancels it.
  */
+
+import { lapOf } from './helix';
 
 export type WallDrive = {
   /** Turn to the first plaque and say so, after `lead`. */
@@ -85,6 +97,7 @@ type Tween = {
 };
 
 export function drive(root: HTMLElement): WallDrive {
+  const turns = parseFloat(root.style.getPropertyValue('--t')) || 1;
   const stage = root.querySelector<HTMLElement>('.bt-wall-stage');
   const ring = root.querySelector<HTMLElement>('.bt-ring');
   // The plaques a chip has left on the ring (ArmoryWallIsland numbers them
@@ -113,8 +126,16 @@ export function drive(root: HTMLElement): WallDrive {
   const controls = q('.bt-wall-controls');
   const prev = q<HTMLButtonElement>('[data-wall-prev]');
   const next = q<HTMLButtonElement>('[data-wall-next]');
-  const step = 360 / n;
+  const step = (360 * turns) / n;
+  // One whole pass through the plaques: a turn of the ring, or every turn
+  // of the spiral.
+  const cycle = 360 * turns;
   const mod = (i: number) => ((i % n) + n) % n;
+  const laps = panels.map(
+    (p) => parseInt(p.style.getPropertyValue('--lap'), 10) || 0
+  );
+  let rise = 0; // px a plaque drops for its step round (0 on a ring)
+  let back = 0; // how many plaques back up the spiral one still hangs
 
   // Where the server left it (--park plaques short of the first, see
   // ArmoryWall), or wherever a previous run of this file stopped.
@@ -129,6 +150,7 @@ export function drive(root: HTMLElement): WallDrive {
   let onScreen = false;
   let front = panels.findIndex((p) => p.hasAttribute('data-front'));
   const away = panels.map((p) => p.hasAttribute('data-away'));
+  const under = panels.map((p) => p.hasAttribute('data-under'));
   let lit = -1;
   let said = front; // what the status line last said
   let intro: 'parked' | 'playing' | 'done' = root.hasAttribute('data-park')
@@ -152,12 +174,22 @@ export function drive(root: HTMLElement): WallDrive {
     const pw = panels[0].offsetWidth || 200;
     const gap = parseFloat(cs.getPropertyValue('--gap')) || 20;
     const tilt = (parseFloat(cs.getPropertyValue('--tilt')) || 0) * RAD;
-    const r = pw / 2 / Math.sin(Math.PI / n) + gap;
+    const r = pw / 2 / Math.sin((Math.PI * turns) / n) + gap;
+    // A row's height (wall.css --pitch), shared out over a turn's plaques.
+    const px = (name: string) => parseFloat(cs.getPropertyValue(name)) || 0;
+    rise =
+      turns > 1
+        ? ((px('--ph') + px('--cap') + px('--row-gap')) * turns) / n
+        : 0;
     const P = parseFloat(ss.perspective) || 1500;
     const eye = parseFloat(ss.perspectiveOrigin.split(' ')[1]) || 0;
     const yO = ring.offsetTop + ring.offsetHeight / 2 - eye;
     dpp = step / (pw + gap);
     edge = r / (yO * Math.sin(tilt) + (P + r) * Math.cos(tilt));
+    // The spiral's two ends meet where a plaque is edge-on to the eye, on
+    // its way round to the back: it has no width there, so the one being
+    // moved from the top of the tower to the bottom is never seen to go.
+    back = (360 - Math.acos(edge) / RAD) / step;
   };
 
   const frontOf = (s: number) => mod(Math.round(-s / step));
@@ -203,12 +235,33 @@ export function drive(root: HTMLElement): WallDrive {
   };
 
   const paint = () => {
-    ring.style.transform = `rotateY(${spin.toFixed(2)}deg)`;
+    // The spiral climbs as it turns, so the plaque in front stays put.
+    ring.style.transform = rise
+      ? `translateY(${((spin / step) * rise).toFixed(2)}px) rotateY(${spin.toFixed(2)}deg)`
+      : `rotateY(${spin.toFixed(2)}deg)`;
+    // Where the front of the ring is, in plaques.
+    const c = -spin / step;
+    if (rise) {
+      for (let i = 0; i < n; i++) {
+        const lap = lapOf(i, c, n, back);
+        if (lap !== laps[i]) {
+          laps[i] = lap;
+          panels[i].style.setProperty('--lap', String(lap));
+        }
+      }
+    }
     for (let i = 0; i < n; i++) {
       const a = Math.cos((spin + i * step) * RAD) < edge;
       if (a !== away[i]) {
         away[i] = a;
         panels[i].toggleAttribute('data-away', a);
+      }
+      // On the spiral, a back below the front row is the inside of the
+      // tower: it carries no seal (wall.css).
+      const u = a && rise > 0 && i + laps[i] * n > c;
+      if (u !== under[i]) {
+        under[i] = u;
+        panels[i].toggleAttribute('data-under', u);
       }
     }
     const f = frontOf(spin);
@@ -290,8 +343,8 @@ export function drive(root: HTMLElement): WallDrive {
 
   const rest = () => {
     // Keep the number small; a whole turn changes nothing on screen.
-    spin = ((spin % 360) + 360) % 360;
-    if (spin > 180) spin -= 360;
+    spin = ((spin % cycle) + cycle) % cycle;
+    if (spin > cycle / 2) spin -= cycle;
     paint();
     dest = -1;
     setTurning(false);
@@ -361,11 +414,18 @@ export function drive(root: HTMLElement): WallDrive {
   const moving = () =>
     raf !== 0 || tween !== null || target !== null || Math.abs(vel) > 12;
 
-  /** Turn so plaque i is at the front, the short way round. */
-  const goTo = (i: number, say = false) => {
+  /**
+   * Turn so plaque i is at the front, the short way round. `here` turns to
+   * where that plaque hangs now instead: on the spiral, a plaque pressed two
+   * rows down is brought up to the front, not swapped for itself coming
+   * down the other way.
+   */
+  const goTo = (i: number, say = false, here = false) => {
     const j = mod(i);
     const base = -j * step;
-    const to = base + 360 * Math.round((spin - base) / 360);
+    const to = here
+      ? base - laps[j] * cycle
+      : base + cycle * Math.round((spin - base) / cycle);
     endIntro();
     halt();
     dest = j;
@@ -468,11 +528,16 @@ export function drive(root: HTMLElement): WallDrive {
     // front, lit, its name in the caption, and the next tap opens it.
     // (Pointers only: a keyboard or a screen reader activating the link
     // always opens it, and only the front plaque is in the Tab order.)
+    // On the spiral the row under the front one is in the light too, and a
+    // tap opens it; a row further down is most of the way into the dark, so
+    // a tap brings it up first.
     const face = (e.target as Element | null)?.closest?.('.bt-panel-face');
     const i = indexOfLink(face ?? null);
-    if (i >= 0 && (away[i] || Math.cos((spin + i * step) * RAD) < READABLE)) {
+    if (i < 0) return;
+    const rows = rise ? ((i + laps[i] * n + spin / step) * turns) / n : 0;
+    if (away[i] || Math.cos((spin + i * step) * RAD) < READABLE || rows > 1.5) {
       swallowClick();
-      goTo(i, true);
+      goTo(i, true, true);
     }
   };
   const onCancel = (e: PointerEvent) => {
@@ -613,16 +678,18 @@ export function drive(root: HTMLElement): WallDrive {
         dest = 0;
         tween = {
           from: spin,
-          to: 360 * Math.round(spin / 360), // the first plaque
+          to: cycle * Math.round(spin / cycle), // the first plaque
           t0: performance.now(),
-          dur: 1700,
+          dur: turns > 1 ? 2100 : 1700,
           ease: easeSettle,
         };
         run();
       },
-      { rootMargin: '0px 0px -15% 0px' }
+      // (The spiral's stage is taller than most screens, so there it waits
+      // for the front row instead: the top two thirds of the stage.)
+      turns > 1 ? { threshold: 0.65 } : { rootMargin: '0px 0px -15% 0px' }
     );
-    introIo.observe(controls ?? stage);
+    introIo.observe(turns > 1 ? stage : (controls ?? stage));
   }
 
   const onVisibility = () => {
