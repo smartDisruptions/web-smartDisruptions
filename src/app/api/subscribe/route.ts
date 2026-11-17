@@ -38,10 +38,13 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 // keep the two in step.
 const PER_IP_PER_HOUR = 5;
 
-// Unusually busy hours are logged, not refused: a hard cap on everyone would
-// let someone with enough addresses lock real people out. Junk signups are
-// cleaned up when sending is built (with confirmation emails).
+// Busy hours are logged at 200 signups. Only a real flood is refused, at
+// 1,000 an hour: high enough that locking real people out would take ~200
+// addresses each maxing out the per-IP limit, low enough that a script can't
+// bury the list. Junk that gets under it is cleaned up when sending is built
+// (with confirmation emails).
 const BUSY_HOUR = 200;
+const FLOOD_HOUR = 1000;
 
 // First-layer per-IP limit, in memory, per serverless instance. Cheap, and it
 // turns away a burst before it costs a database round trip.
@@ -173,9 +176,13 @@ export async function POST(request: Request) {
       sql`select pg_advisory_xact_lock(hashtext(${code}))`,
       sql`
         with gate as (
-          select count(*) < ${PER_IP_PER_HOUR} as ok
-          from sd_subscribe_hits
-          where ip = ${code} and ts > now() - interval '1 hour'
+          select
+            (select count(*) from sd_subscribe_hits
+              where ip = ${code} and ts > now() - interval '1 hour')
+              < ${PER_IP_PER_HOUR}
+            and (select count(*) from sd_subscribers
+              where created_at > now() - interval '1 hour')
+              < ${FLOOD_HOUR} as ok
         ), hit as (
           insert into sd_subscribe_hits (ip)
           select ${code} from gate where ok
