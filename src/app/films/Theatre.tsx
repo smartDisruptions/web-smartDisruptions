@@ -11,9 +11,8 @@ import { filmFile, runTime, totalSeconds, type FilmModel } from '@/data/films';
 
 /**
  * The screening room, by model: pick the Claude model, then one screen with
- * the film that's on, the programme, what that model was asked, how its films
- * were made, and its numbers. Switching model swaps all of it, which is the
- * comparison: same kind of ask, different model.
+ * the film that's on, the programme, how its films were made, and its
+ * numbers. Switching model swaps all of it, which is the comparison.
  *
  * There is a single <video>, so the page holds one player however many films
  * and models it lists, and nothing is fetched until a film is played
@@ -269,33 +268,18 @@ export default function Theatre({ models }: { models: FilmModel[] }) {
         </section>
 
         <section className="fm-how" aria-labelledby="fm-how-h">
-          <div className="fm-how-main">
-            <figure className="fm-ask sd-note">
-              <figcaption className="fm-ask-cap">
-                What I asked {model.short}
-              </figcaption>
-              {model.ask.map((a) => (
-                <blockquote key={a} className="fm-ask-q font-read">
-                  <p>{a}</p>
-                </blockquote>
+          <div className="fm-how-sheet sd-sheet">
+            <h2 id="fm-how-h" className="fm-h3">
+              How {model.short}&rsquo;s films were made
+            </h2>
+            <ol className="fm-steps">
+              {model.steps.map((s) => (
+                <li key={s.title}>
+                  <b>{s.title}</b>
+                  <span className="font-read">{s.body}</span>
+                </li>
               ))}
-              <p className="fm-ask-rule">{model.rule}</p>
-            </figure>
-
-            <div className="fm-how-sheet sd-sheet">
-              <h2 id="fm-how-h" className="fm-h3">
-                How {model.short}&rsquo;s films were made
-              </h2>
-              <p className="fm-note font-read">{model.note}</p>
-              <ol className="fm-steps">
-                {model.steps.map((s) => (
-                  <li key={s.title}>
-                    <b>{s.title}</b>
-                    <span className="font-read">{s.body}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
+            </ol>
           </div>
 
           <dl className="fm-facts">

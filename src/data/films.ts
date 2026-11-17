@@ -40,12 +40,6 @@ export type FilmModel = {
   short: string;
   /** ISO date the set was made. */
   made: string;
-  /** What Josh asked for, in his own words, in order. */
-  ask: string[];
-  /** One sentence about the set: how many it made, which are shown. */
-  note: string;
-  /** The standing rule the set was made under, as a plain fact. */
-  rule: string;
   /** How this model's films were made, and what notes it was given. */
   steps: FilmStep[];
   films: Film[];
@@ -62,12 +56,6 @@ export const models: FilmModel[] = [
     name: 'Claude Opus 5.5',
     short: 'Opus 5.5',
     made: '2026-11-15',
-    ask: [
-      'Make 6 more videos of your own creation and on your own topics. They can be any topic you want. Make them creative and blow me away with the visuals and the design. Use 4 different design directions. Spawn a separate agent per video.',
-      'Make 10 more video creations. Each should have it’s own style and creativeness. Spawn an agent to handle each video.',
-    ],
-    note: 'Opus 5.5 made seventeen films in one day. These are the six I picked.',
-    rule: 'Every film kept the rule I set for the first one: zero API credits.',
     steps: [
       {
         title: 'Opus 5.5 chose the films.',

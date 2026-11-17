@@ -1,9 +1,8 @@
 /*
   /films — 光, "light": the short films made of code, by the Claude model
   that made them. A model switcher, then a screening room: the screen with
-  the film that's on beside it, the programme under it, then what that model
-  was asked (on a paper slip, in Josh's words), how its films were made, and
-  its numbers. The screen is always night, whichever theme the page is in:
+  the film that's on beside it, the programme under it, then how that model's
+  films were made, and its numbers. The screen is always night, whichever theme the page is in:
   it holds a film. Nothing here moves on its own except the kanji inking itself
   once and Kiru idling; the films are the motion. Prefix: fm-
 */
@@ -496,56 +495,6 @@
     align-items: start;
     margin-top: 4rem;
   }
-}
-.fm-how-main {
-  display: grid;
-  gap: 1.25rem;
-  min-width: 0;
-}
-/* What Josh asked, on a paper slip: the same object in both themes, so its
-   ink is the slip's own, never a theme colour. */
-.fm-ask {
-  padding: 1.15rem 1.25rem 1.2rem;
-}
-@media (min-width: 40rem) {
-  .fm-ask {
-    padding: 1.4rem 1.75rem 1.5rem;
-  }
-}
-.fm-ask-cap {
-  font-size: 0.72rem;
-  font-weight: 750;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--sd-sticky-ink);
-  opacity: 0.72;
-}
-.fm-ask-q {
-  margin-top: 0.75rem;
-  max-width: 62ch;
-  font-size: 1.04rem;
-  line-height: 1.7;
-  color: var(--sd-sticky-ink);
-}
-.fm-ask-q p::before {
-  content: '\201C';
-}
-.fm-ask-q p::after {
-  content: '\201D';
-}
-.fm-ask-rule {
-  margin-top: 0.9rem;
-  padding-top: 0.7rem;
-  border-top: 1px solid rgba(31, 26, 20, 0.16);
-  font-size: 0.88rem;
-  font-weight: 650;
-  color: var(--sd-sticky-ink);
-}
-.fm-note {
-  margin-top: 0.7rem;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: var(--sd-text-primary);
 }
 .fm-how-sheet {
   padding: 1.25rem 1.25rem 1.4rem;
