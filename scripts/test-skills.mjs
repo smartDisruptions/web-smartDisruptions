@@ -28,7 +28,7 @@ import {
   skillGroups,
   skillTotals,
 } from '../src/data/skills.ts';
-import { apps } from '../src/data/apps.ts';
+import { apps, ARCADE_DEMO_SLUGS } from '../src/data/apps.ts';
 import { getAllPosts } from '../src/lib/posts.ts';
 import { marketStormReports } from '../src/data/marketStorm.ts';
 
@@ -45,6 +45,8 @@ const ok = (label, cond, extra = '') => {
 };
 
 const appSlugs = new Set(apps.map((a) => a.slug));
+// The gallery: every app but the archive's demos, which don't count as built.
+const gallery = apps.filter((a) => !ARCADE_DEMO_SLUGS.includes(a.slug));
 const reportSlugs = new Set(marketStormReports.map((r) => r.slug));
 
 /*
@@ -160,8 +162,8 @@ console.log('— reach —');
 const linkedApps = new Set(allSkills.flatMap((s) => s.apps ?? []));
 ok(
   'the skills point at most of the app gallery',
-  linkedApps.size >= Math.ceil(apps.length * 0.7),
-  `${linkedApps.size} of ${apps.length} apps referenced`
+  linkedApps.size >= Math.ceil(gallery.length * 0.7),
+  `${linkedApps.size} of ${gallery.length} apps referenced`
 );
 
 ok(
@@ -177,7 +179,7 @@ ok(
 const totals = skillTotals();
 ok(
   'the totals agree with the data they are counted from',
-  totals.skills === allSkills.length && totals.apps === apps.length
+  totals.skills === allSkills.length && totals.apps === gallery.length
 );
 
 console.log(
