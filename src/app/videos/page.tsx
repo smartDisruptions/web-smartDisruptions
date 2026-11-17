@@ -86,7 +86,7 @@ export default function VideosPage() {
           controls, every card is a plain link to its file, and every
           "how it was made" is on the page. */}
       <noscript>
-        <style>{`.vd-start,.vd-finder,.vd-controls{display:none!important}.vd-how-item[hidden]{display:grid!important}`}</style>
+        <style>{`.vd-start,.vd-finder,.vd-controls{display:none!important}.vd-how-item[data-off]{display:grid!important;margin-bottom:3rem}`}</style>
       </noscript>
 
       <svg

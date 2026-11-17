@@ -696,7 +696,9 @@ html.vd-glide::view-transition-new(root) {
   display: grid;
   gap: 1.5rem;
 }
-.vd-how-item[hidden] {
+/* Not `hidden`: Tailwind's reset makes that one unbeatable, and without
+   JavaScript every one of these has to show (page.tsx, <noscript>). */
+.vd-how-item[data-off] {
   display: none;
 }
 @media (min-width: 60rem) {
