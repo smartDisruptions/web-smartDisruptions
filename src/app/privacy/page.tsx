@@ -125,9 +125,10 @@ export default function PrivacyPage() {
           </div>
           <div className="pv-sec-body">
             <p>
-              To stop bots from flooding the signup form, the site briefly
-              records the network address a signup came from. Those records are
-              deleted automatically within about two hours.
+              To stop bots from flooding the signup form, the site keeps a
+              scrambled, one-way code made from the network address a signup
+              came from — never the address itself. Codes older than two hours
+              are deleted the next time anyone signs up.
             </p>
           </div>
         </section>

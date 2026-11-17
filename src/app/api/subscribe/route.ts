@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 import { NextResponse } from 'next/server';
 
@@ -30,11 +31,17 @@ const SOURCES = new Set([
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-// Durable limits, held in the database so they apply across every serverless
-// instance. The per-IP records are deleted after two hours — the privacy page
-// promises exactly that, so keep the two in step.
+// Durable per-IP limit, held in the database so it applies across every
+// serverless instance. The database never sees the address itself, only a
+// keyed one-way code made from it (ipCode below), and codes older than two
+// hours are cleared on every signup. The privacy page says exactly that, so
+// keep the two in step.
 const PER_IP_PER_HOUR = 5;
-const GLOBAL_PER_HOUR = 200; // backstop against a scripted flood
+
+// Unusually busy hours are logged, not refused: a hard cap on everyone would
+// let someone with enough addresses lock real people out. Junk signups are
+// cleaned up when sending is built (with confirmation emails).
+const BUSY_HOUR = 200;
 
 // First-layer per-IP limit, in memory, per serverless instance. Cheap, and it
 // turns away a burst before it costs a database round trip.
@@ -69,6 +76,14 @@ function allowedOrigin(origin: string | null): boolean {
     origin.startsWith('https://web-smart-disruptions-') &&
     origin.endsWith('.vercel.app')
   );
+}
+
+// A keyed one-way code for the visitor's IP, so the rate-limit table never
+// holds the address itself. The key is the database's own connection string:
+// it is already secret and server-only, and anyone holding it could read the
+// list anyway. If it rotates, codes change and the limit simply starts over.
+function ipCode(ip: string, key: string): string {
+  return createHmac('sha256', key).update(ip).digest('base64url');
 }
 
 // The tables create themselves on the first signup an instance handles, so a
@@ -145,30 +160,46 @@ export async function POST(request: Request) {
   try {
     const sql = neon(url);
     await ensureSchema(sql);
+    const code = ipCode(ip, url);
 
-    await sql`delete from sd_subscribe_hits where ts < now() - interval '2 hours'`;
+    // One transaction. The advisory lock serialises signups from the same
+    // address, so two requests fired at once can't both read "4 so far" and
+    // both get in. The check, the hit and the signup are then one statement:
+    // the subscriber row is only written if the hit was allowed. A repeat
+    // signup succeeds quietly, so the form never reveals whether an address
+    // is already on the list.
+    const [, , [result]] = await sql.transaction([
+      sql`delete from sd_subscribe_hits where ts < now() - interval '2 hours'`,
+      sql`select pg_advisory_xact_lock(hashtext(${code}))`,
+      sql`
+        with gate as (
+          select count(*) < ${PER_IP_PER_HOUR} as ok
+          from sd_subscribe_hits
+          where ip = ${code} and ts > now() - interval '1 hour'
+        ), hit as (
+          insert into sd_subscribe_hits (ip)
+          select ${code} from gate where ok
+          returning 1
+        ), joined as (
+          insert into sd_subscribers (email, source)
+          select ${email}, ${source} from hit
+          on conflict (email) do nothing
+          returning 1
+        )
+        select
+          (select count(*) from hit)::int as allowed,
+          (select count(*) from sd_subscribers
+            where created_at > now() - interval '1 hour')::int as this_hour`,
+    ]);
 
-    const [limits] = await sql`
-      select
-        (select count(*) from sd_subscribe_hits
-          where ip = ${ip} and ts > now() - interval '1 hour')::int as from_ip,
-        (select count(*) from sd_subscribers
-          where created_at > now() - interval '1 hour')::int as everyone`;
-    if (
-      limits.from_ip >= PER_IP_PER_HOUR ||
-      limits.everyone >= GLOBAL_PER_HOUR
-    ) {
+    if (result.allowed === 0) {
       return NextResponse.json({ error: TOO_MANY }, { status: 429 });
     }
-
-    // A repeat signup succeeds quietly, so the form never reveals whether an
-    // address is already on the list.
-    await sql.transaction([
-      sql`insert into sd_subscribe_hits (ip) values (${ip})`,
-      sql`insert into sd_subscribers (email, source)
-          values (${email}, ${source})
-          on conflict (email) do nothing`,
-    ]);
+    if (result.this_hour >= BUSY_HOUR) {
+      console.warn(
+        `[subscribe] ${result.this_hour} signups in the last hour — check for junk`,
+      );
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
