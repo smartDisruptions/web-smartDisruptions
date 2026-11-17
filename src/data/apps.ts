@@ -1398,9 +1398,9 @@ export const apps: App[] = [
     slug: 'blueline',
     name: 'Blueline',
     description:
-      'Draw steel beams on a blueprint, then let physics roll the ball. A plain ramp can’t reach the socket, but a beam drawn through the pivot becomes a seesaw.',
+      'Draw steel beams on five blueprint sheets, then let physics roll the ball. A beam drawn through a pivot becomes a seesaw, and the last sheet needs a kick, a bank and a tip on very little ink.',
     longDescription:
-      'A steel ball waits in a chute at the top of an engineer’s drawing, and the socket it has to reach sits behind a wall. Drag to draw a beam and it turns to steel, bolted where you drew it, then press Run and physics takes over the ball. A ramp on its own can’t get there. Draw a beam through the pivot pin on top of the wall instead and it becomes a seesaw that tips the ball over. Every beam costs ink, so the fewer millimetres you use, the more stars you get, and when it works an Approved stamp lands on the drawing.',
+      'A steel ball waits in a chute at the top of an engineer’s drawing, and the socket it has to reach is somewhere it can’t roll to by itself. Drag to draw a beam and it turns to steel, bolted where you drew it, then press Run and physics takes over the ball. Draw a beam through a pivot pin instead and it becomes a seesaw. There are five sheets in the set, and each one adds a single idea. On the first a seesaw tips the ball over a wall. On the second it banks off two beams to turn back under a ledge, on the third a spring plate kicks it, and on the fourth one seesaw hands it to another. The last sheet needs a kick, a bank and a tip on very little ink. Every beam costs ink, so the fewer millimetres you use, the more stars you get, and when it works an Approved stamp lands on the drawing.',
     thumbnailUrl: '/images/apps/blueline-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/blueline-1.webp',
@@ -1411,10 +1411,10 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'One file of about 280 KB: planck.js, a port of the Box2D physics engine, is bundled in, and every line of the drawing and every sound is made in code.',
-      'Tested against the lines a player might draw: none of 22,286 straight ramps reach the socket, six different seesaws do, and the intended beam still works 300 times out of 300 with its ends moved up to 11 pixels on a phone.',
-      'Played to the win with a real touch drag in a phone-sized browser, for three stars.',
-      'One of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own.',
+      'One file of about 305 KB: planck.js, a port of the Box2D physics engine, is bundled in, and every line of the five drawings and every sound is made in code.',
+      'Tested against the lines a player might try first: on the first sheet none of 22,286 straight ramps reach the socket, and on the fourth no drawing with only one seesaw does (0 of 4,342). Each sheet’s three-star answer still wins at least 93 times in 100 with its ends moved up to 10 pixels.',
+      'Played to the win with real touch drags in a phone-sized browser, sheets one, three and five for three stars. Approving a sheet unlocks the next, and the progress is still there after a reload.',
+      'It started as one of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own, and grew to a set of five sheets.',
     ],
     buildDate: '2026-11',
     hasFullBreakdown: false,
@@ -1426,10 +1426,14 @@ export const apps: App[] = [
         {
           device: 'Touch or mouse',
           controls: [
+            {
+              action: 'Pick a sheet',
+              how: 'Tap Play, then a sheet in the drawing set. Approving one unlocks the next.',
+            },
             { action: 'Draw a beam', how: 'Drag across the drawing.' },
             {
               action: 'Make a seesaw',
-              how: 'Draw the beam through the pivot pin on the wall.',
+              how: 'Draw the beam through a pivot pin.',
             },
             {
               action: 'Roll the ball',
@@ -1465,7 +1469,8 @@ export function getAppBySlug(slug: string): App | undefined {
  * 2026-11-06, when that name went to a different game: the one Kiru's story
  * will be told in (his story's cast is on /kiru).
  * Tumbler and Blueline, two puzzles from a set of eighteen first levels,
- * come after Rubble Rouser (Josh's call, 2026-11-16).
+ * come after Rubble Rouser (Josh's call, 2026-11-16). Each grew to five
+ * levels the next day.
  *
  * These live here rather than in the games page because /built reads them too:
  * anything in the arcade, front room or archive, is deliberately absent from
