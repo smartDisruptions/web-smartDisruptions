@@ -129,15 +129,18 @@ function glide(change: () => void) {
   }
 }
 
+/** Set when the full copy stalls on this visit: every video after that plays
+    its lighter copy. */
+let struggled = false;
+
 /**
- * The file to play. A video that has a lighter copy (about 1 Mbps) plays it
- * when the browser reports a slow or data-saving connection, so it starts at
- * once and doesn't stall. A browser that reports a fast one plays the full
- * film, even on a phone. Where the browser doesn't say (Safari), a phone gets
- * the lighter copy and anything bigger gets the full film.
+ * The file to play. Every video has two copies: film.mp4, the full one, and
+ * lite.mp4, about 1 Mbps. The full copy plays unless the browser reports a
+ * slow or data-saving connection, or the full copy has already stalled on
+ * this visit (see `onWaiting` on the video). Safari reports nothing, so it
+ * starts on the full copy and steps down only if it has to.
  */
 function source(x: Video) {
-  if (!x.lite) return videoFile(x, 'film.mp4');
   const net = (
     navigator as Navigator & {
       connection?: {
@@ -147,10 +150,12 @@ function source(x: Video) {
       };
     }
   ).connection;
-  const phone = Math.min(window.screen.width, window.screen.height) < 600;
-  const slow = net
-    ? !!net.saveData || net.effectiveType !== '4g' || (net.downlink ?? 10) < 4
-    : phone;
+  const slow =
+    struggled ||
+    (!!net &&
+      (!!net.saveData ||
+        net.effectiveType !== '4g' ||
+        (net.downlink ?? 10) < 5));
   return videoFile(x, slow ? 'lite.mp4' : 'film.mp4');
 }
 
@@ -185,6 +190,10 @@ export default function Library({ perch }: { perch?: ReactNode }) {
   // True once a video was chosen (not just shown by default): its slug then
   // belongs in the address.
   const chosen = useRef(false);
+  // How often the full copy has run dry on this video, and when the viewer
+  // last jumped (a jump waits for data too, and isn't a stall).
+  const stalls = useRef(0);
+  const jumped = useRef(0);
 
   const list = pick(f);
   const total = list.reduce((a, v) => a + v.seconds, 0);
@@ -196,6 +205,7 @@ export default function Library({ perch }: { perch?: ReactNode }) {
   function show(x: Video) {
     const el = video.current;
     if (el) {
+      stalls.current = 0;
       el.src = source(x);
       el.poster = videoFile(x, 'thumb.webp');
     }
@@ -219,7 +229,7 @@ export default function Library({ perch }: { perch?: ReactNode }) {
       setStarted(true);
     });
     // The first play of the video the page opened on: the markup names the
-    // full film, so a phone is handed its lighter copy here.
+    // full copy, so a slow connection is handed the lighter one here.
     if (el.getAttribute('src') !== source(x)) el.src = source(x);
     el.play().catch(() => {});
     window.history.replaceState(null, '', address(f, x.slug));
@@ -361,6 +371,32 @@ export default function Library({ perch }: { perch?: ReactNode }) {
                 src={videoFile(videos[0], 'film.mp4')}
                 poster={videoFile(videos[0], 'thumb.webp')}
                 aria-label={`${v.title}, a ${kind.one.toLowerCase()} made with ${makerOf(v).name}, ${runTime(v.seconds)}`}
+                onSeeking={() => {
+                  jumped.current = Date.now();
+                }}
+                onWaiting={() => {
+                  // The full copy ran out of data mid-play. Twice on one
+                  // video means the connection can't carry it: carry on from
+                  // the same moment on the lighter copy.
+                  const el = video.current;
+                  if (!el || el.seeking || el.currentTime < 0.5) return;
+                  if (Date.now() - jumped.current < 3000) return;
+                  if (!el.currentSrc.endsWith('film.mp4')) return;
+                  if (++stalls.current < 2) return;
+                  struggled = true;
+                  const at = el.currentTime;
+                  // Changing the file pauses the player and (preload is
+                  // "none") fetches nothing, so play() is what loads it.
+                  el.addEventListener(
+                    'loadedmetadata',
+                    () => {
+                      el.currentTime = at;
+                    },
+                    { once: true }
+                  );
+                  el.src = videoFile(v, 'lite.mp4');
+                  el.play().catch(() => {});
+                }}
                 onEnded={() => {
                   if (!queue) return;
                   const i = list.findIndex((x) => x.slug === cur);
