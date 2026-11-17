@@ -4,7 +4,8 @@
  * that names them, so a name or a line changes in one place. (The /learn
  * sections write their own lines, in the words of each page's header.)
  *
- * `source` is the page's email list (SubscribeForm / /api/subscribe).
+ * `source` tags which page a signup came from (SubscribeForm /
+ * /api/subscribe). There is one email list for everyone.
  */
 export type BuildRoom = {
   href: '/build-websites' | '/build-apps' | '/build-games';

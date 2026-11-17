@@ -3,11 +3,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-// Email-capture form. Posts to /api/subscribe (Supabase-backed, insert-only).
-// `source` tags where the signup came from so we can see which surface works.
-// On the three Build pages it is also the list: 'websites', 'apps' and
-// 'games' are each that page's own email list, so a send for one category
-// goes to the people who asked for it.
+// Email-capture form. Posts to /api/subscribe, which saves to the site's own
+// Postgres database (insert-only from here). There is one list for everyone;
+// `source` only tags where the signup came from, so we can see which surface
+// works.
 //
 // The look: in a narrow space, a full-width field above a full-width
 // vermilion button — both thumb-sized. Given 24rem or more they join into one

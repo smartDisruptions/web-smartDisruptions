@@ -79,7 +79,7 @@ export default function PrivacyPage() {
               <Kanji char="秘" draw className="pv-kanji" />
               <h1 className="pv-h1 font-display">Privacy</h1>
             </div>
-            <p className="pv-updated">Last updated: July 9, 2026</p>
+            <p className="pv-updated">Last updated: November 16, 2026</p>
           </div>
           <div className="pv-ninja">
             <Kiru pose="shh" />
@@ -158,9 +158,10 @@ export default function PrivacyPage() {
           </div>
           <div className="pv-sec-body">
             <p>
-              The site runs on Vercel; the subscriber list lives in a locked
-              Supabase database that the public site can write to but never read
-              from. I wrote up how that works —{' '}
+              The site runs on Vercel; the subscriber list lives in a private
+              database that only the site&rsquo;s own server can reach. Nothing
+              in your browser can read it. I wrote up how I think about this
+              —{' '}
               <Link href="/content/i-tried-to-break-my-friends-ai-site">
                 security is kind of a thing here
               </Link>

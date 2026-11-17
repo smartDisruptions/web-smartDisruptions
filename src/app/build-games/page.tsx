@@ -69,18 +69,18 @@ export default function BuildGamesPage() {
           className="bg-optin"
           aria-labelledby="bg-optin-title"
         >
-          <p className="sd-kicker">The games list</p>
+          <p className="sd-kicker">The newsletter</p>
           <h2 id="bg-optin-title" className="bg-optin-title font-display">
             Get the guides as I write them.
           </h2>
           <p className="bg-optin-copy font-read">
-            When I write a guide to building a small game, it comes to you. One
-            email per new guide. Nothing else.
+            When I write a new guide, on games or anything else I build, it
+            comes to you. One email per guide.
           </p>
           <SubscribeForm
             source={ROOM.source}
             cta="Get the game guides"
-            done="You’re on the games list."
+            done="You’re in. Next guide, your inbox."
             className="bg-form"
           />
         </section>
