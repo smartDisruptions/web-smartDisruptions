@@ -123,10 +123,11 @@ function glide(change: () => void) {
 }
 
 /**
- * The file to play. A video that has a lighter copy plays it on a phone and on
- * a slow or data-saving connection: about 1 Mbps, so it starts at once and
- * doesn't stall. Where the browser reports a fast connection the full film
- * plays, even on a phone.
+ * The file to play. A video that has a lighter copy (about 1 Mbps) plays it
+ * when the browser reports a slow or data-saving connection, so it starts at
+ * once and doesn't stall. A browser that reports a fast one plays the full
+ * film, even on a phone. Where the browser doesn't say (Safari), a phone gets
+ * the lighter copy and anything bigger gets the full film.
  */
 function source(x: Video) {
   if (!x.lite) return videoFile(x, 'film.mp4');
@@ -141,7 +142,7 @@ function source(x: Video) {
   ).connection;
   const phone = Math.min(window.screen.width, window.screen.height) < 600;
   const slow = net
-    ? !!net.saveData || net.effectiveType !== '4g' || (net.downlink ?? 10) < 3
+    ? !!net.saveData || net.effectiveType !== '4g' || (net.downlink ?? 10) < 4
     : phone;
   return videoFile(x, slow ? 'lite.mp4' : 'film.mp4');
 }
