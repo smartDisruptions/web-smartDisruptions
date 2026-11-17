@@ -80,6 +80,16 @@ export const IconArcade = (p: IconProps) => (
   </Icon>
 );
 
+/** The Play tab: a gamepad whose buttons are a play triangle. Games you
+    play on the left of it, videos you press play on on the right. */
+export const IconPlay = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M17.3 6H6.7a4 4 0 0 0-3.9 3.2l-1 5.6A2.9 2.9 0 0 0 4.6 18.3c.8 0 1.6-.3 2.2-.9L8.4 16h7.2l1.6 1.4c.6.6 1.4.9 2.2.9a2.9 2.9 0 0 0 2.8-3.5l-1-5.6A4 4 0 0 0 17.3 6Z" />
+    <path d="M7.5 9.5v3M6 11h3" />
+    <path d="M15.2 9.1v3.8l3.3-1.9z" fill="currentColor" strokeWidth={1.3} />
+  </Icon>
+);
+
 export const IconSearch = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="11" cy="11" r="6.5" />
