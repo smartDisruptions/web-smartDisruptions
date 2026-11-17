@@ -125,17 +125,13 @@ const nextConfig: NextConfig = {
           source: '/games/rubble-rouser',
           destination: '/games/rubble-rouser/index.html',
         },
-        // Tumbler and Blueline: two puzzles from a set of eighteen first levels,
+        // Tumbler: a puzzle from a set of eighteen first levels,
         // each one file in public/games, built in the vault with
         // Tools/puzzle-six/build-site.mjs, which adds their share cards and
         // points "‹ Arcade" back here.
         {
           source: '/games/tumbler',
           destination: '/games/tumbler/index.html',
-        },
-        {
-          source: '/games/blueline',
-          destination: '/games/blueline/index.html',
         },
         // Portfolio Ledger: the public demo of my net-worth tracker, one file in
         // public/demo on made-up data (built from my private ledger's source
