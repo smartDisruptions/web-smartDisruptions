@@ -224,13 +224,17 @@ const nextConfig: NextConfig = {
       ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling', 'aureum-snake'].flatMap((slug) => [
         { source: `/built/${slug}`, destination: '/about', permanent: true },
         { source: `/apps/${slug}`, destination: '/about', permanent: true },
-        // the frozen Notebook archive dropped them too (scripts/archive-site.mjs)
-        {
-          source: `/archive/notebook/built/${slug}`,
-          destination: '/archive/notebook/built',
-          permanent: true,
-        },
       ]),
+      // The Notebook design (this site's old look, kept as a static copy under
+      // /archive/notebook) came off the site on 2026-11-17, Josh's call. Its
+      // page and the copy itself land on the work, on About.
+      { source: '/built/notebook', destination: '/about', permanent: true },
+      { source: '/archive/notebook', destination: '/about', permanent: true },
+      {
+        source: '/archive/notebook/:path*',
+        destination: '/about',
+        permanent: true,
+      },
       // The two Pembroke File articles went with the game (Josh, 2026-10-07).
       ...['escape-room-ate-my-resume', 'escape-room-build-playbook'].map((slug) => ({
         source: `/content/${slug}`,

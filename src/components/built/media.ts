@@ -128,8 +128,8 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/websites/moonbowl.webp': [1200, 750],
   '/images/websites/net-price-calculator.webp': [1200, 750],
   '/images/websites/net-price-calculator-phone.webp': [780, 1688],
-  '/images/websites/notebook.webp': [1200, 750],
   '/images/websites/samurai-kitchen.webp': [1200, 750],
+  '/images/websites/videos.webp': [1200, 750],
   '/images/websites/voltic.webp': [1200, 750],
 };
 
@@ -187,12 +187,12 @@ export function hostOf(url?: string): string | undefined {
 const MARKS: Record<string, string> = {
   arcade: '戯', // play, as in 遊戯: the Arcade
   kiru: '切', // his name: 切る, kiru, "to cut"
+  videos: '影', // shadow, as in 撮影, filming: the Videos page's own kanji
   'broom-blade': '遊', // play: chores turned into a game
   'samurai-kitchen': '侍', // samurai
   voltic: '雷', // thunder: "liquid lightning"
   moonbowl: '月', // moon: the egg yolk is the moon in the bowl
   'gilt-and-lather': '剃', // to shave, as in 剃刀, a razor: the barber's chair
-  notebook: '書', // writing: the notebook this site used to be
   'net-price-calculator': '学', // learning, as in 大学, a university
   'pomodoro-timer': '技', // technique: the Pomodoro technique
   'spacex-mars': '探', // explore
