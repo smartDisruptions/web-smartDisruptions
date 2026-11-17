@@ -1047,7 +1047,7 @@ export const apps: App[] = [
     status: 'live',
     outcomes: [
       'Every answer has at least two clues that point to it, and a reason in the story for being there. I wrote the whole story first, with a table that pairs each lock with its clues, before any art existed.',
-      'Five voiced characters (37 lines), a theme song and 19 sound effects, all made with ElevenLabs, one take each.',
+      'Every line of dialogue is voiced (129 lines, seven voices), with a theme song and 19 sound effects, all made with ElevenLabs, one take each.',
       'Four AI agents built it side by side on one written contract: the dressing room, the cast and the stage, the cabinet and the props, and the screens with the phone and the intercom.',
       'Measured with the processor slowed four times, every scene\u2019s code takes under 4 ms a frame, so it runs smoothly on an old phone.',
     ],

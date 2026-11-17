@@ -61,7 +61,7 @@ export const ROOMS: Record<string, Room> = {
       { n: '1', label: 'dressing room' },
       { n: '3', label: 'suspects' },
       { n: '8', label: 'hours till dawn' },
-      { n: '38', label: 'voiced lines' },
+      { n: '129', label: 'voiced lines' },
     ],
     stage: {
       show: {
