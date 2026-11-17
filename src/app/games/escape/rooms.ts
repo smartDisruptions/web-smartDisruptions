@@ -56,12 +56,12 @@ export const ROOMS: Record<string, Room> = {
     tagline:
       'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, it didn’t come back.',
     blurb:
-      'The lights went out for seven seconds at her farewell show, and the new lighting tech got the blame. That’s Mei. She’s locked in the dressing room until the police arrive at dawn, with one night to find the pearl and prove who took it.',
+      'The lights went out for seven seconds at her farewell show, and Madame trusts one person to find it: Mei, the new lighting tech, who saw it all from her booth. She shuts herself in the dressing room with Madame’s cabinet. The police arrive at dawn, so she has one night to find the pearl and prove who took it.',
     facts: [
-      { n: '1', label: 'locked room' },
+      { n: '1', label: 'dressing room' },
       { n: '3', label: 'suspects' },
       { n: '8', label: 'hours till dawn' },
-      { n: '37', label: 'voiced lines' },
+      { n: '38', label: 'voiced lines' },
     ],
     stage: {
       show: {
@@ -78,7 +78,7 @@ export const ROOMS: Record<string, Room> = {
       captions: [
         '9:42 PM. Madame Luna’s farewell show: the Vanishing Moon.',
         'The lights go out for seven seconds. In the dark, the pearl still glows.',
-        'The lights come back on an empty stand. And the girl on the lights gets the blame.',
+        'The lights come back on an empty stand. Madame asks Mei, on the lights, to find it.',
       ],
     },
     suspects: [

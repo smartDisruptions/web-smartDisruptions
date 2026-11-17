@@ -285,7 +285,7 @@ export default function EscapeRooms({ rooms }: { rooms: App[] }) {
         <div className="er-front-foot">
           <Seal char="探" className="er-seal" />
           <p className="er-intro font-read">
-            You&apos;re locked in until dawn. Search the room, open the locks
+            You have until dawn. Search the room, open the locks
             with what you find, and name the thief before the sun comes up.
             Every clue is something you can pick up.
           </p>

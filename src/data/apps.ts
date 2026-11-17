@@ -1033,9 +1033,9 @@ export const apps: App[] = [
     slug: 'the-moon-pearl',
     name: 'The Moon Pearl',
     description:
-      'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, the new lighting tech gets the blame, and you have one night locked in the dressing room to find it and prove who took it.',
+      'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, Madame asks the new lighting tech to find it, and you have one night in the dressing room to do it and prove who took it.',
     longDescription:
-      'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds, and it doesn’t come back. Mei, the theater’s new lighting tech, gets the blame and is locked in the dressing room until the police arrive at dawn. You have one night to find the pearl and prove who really took it.',
+      'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds, and it doesn’t come back. Madame trusts one person to find it: Mei, the theater’s new lighting tech, who shuts herself in the dressing room with Madame’s cabinet until the police arrive at dawn. You have one night to find the pearl and prove who really took it.',
     thumbnailUrl: '/images/apps/the-moon-pearl-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/the-moon-pearl-1.webp',
