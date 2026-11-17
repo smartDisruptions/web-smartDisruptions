@@ -122,6 +122,30 @@ function glide(change: () => void) {
   }
 }
 
+/**
+ * The file to play. A video that has a lighter copy plays it on a phone and on
+ * a slow or data-saving connection: about 1 Mbps, so it starts at once and
+ * doesn't stall. Where the browser reports a fast connection the full film
+ * plays, even on a phone.
+ */
+function source(x: Video) {
+  if (!x.lite) return videoFile(x, 'film.mp4');
+  const net = (
+    navigator as Navigator & {
+      connection?: {
+        saveData?: boolean;
+        effectiveType?: string;
+        downlink?: number;
+      };
+    }
+  ).connection;
+  const phone = Math.min(window.screen.width, window.screen.height) < 600;
+  const slow = net
+    ? !!net.saveData || net.effectiveType !== '4g' || (net.downlink ?? 10) < 3
+    : phone;
+  return videoFile(x, slow ? 'lite.mp4' : 'film.mp4');
+}
+
 function Stamp({ id }: { id: string }) {
   return (
     <span className="sd-seal vd-stamp" aria-hidden="true">
@@ -164,7 +188,7 @@ export default function Library({ perch }: { perch?: ReactNode }) {
   function show(x: Video) {
     const el = video.current;
     if (el) {
-      el.src = videoFile(x, 'film.mp4');
+      el.src = source(x);
       el.poster = videoFile(x, 'thumb.webp');
     }
     setCur(x.slug);
@@ -186,6 +210,9 @@ export default function Library({ perch }: { perch?: ReactNode }) {
       if (x.slug !== cur) show(x);
       setStarted(true);
     });
+    // The first play of the video the page opened on: the markup names the
+    // full film, so a phone is handed its lighter copy here.
+    if (el.getAttribute('src') !== source(x)) el.src = source(x);
     el.play().catch(() => {});
     window.history.replaceState(null, '', address(f, x.slug));
     // Bring the screen into view only if it isn't already (it is whenever
@@ -350,12 +377,15 @@ export default function Library({ perch }: { perch?: ReactNode }) {
                   className="vd-start"
                   onClick={() => play(v)}
                 >
+                  {/* A phone is told the frame is 45vw wide so it takes the 640
+                      one (20 KB, not 80): full width at 640 is what phones show
+                      for any video, and it is the page's first big paint. */}
                   {/* eslint-disable-next-line @next/next/no-img-element -- a sized
                     WebP pair; next/image would add a request hop for nothing. */}
                   <img
                     src={videoFile(v, 'thumb.webp')}
                     srcSet={`${videoFile(v, 'thumb.webp')} 640w, ${videoFile(v, 'poster.webp')} 1280w`}
-                    sizes="(min-width: 64rem) 44rem, 100vw"
+                    sizes="(min-width: 64rem) 44rem, (min-width: 40rem) 100vw, 45vw"
                     width={1280}
                     height={720}
                     alt=""

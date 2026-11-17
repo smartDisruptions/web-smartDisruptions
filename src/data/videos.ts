@@ -10,6 +10,8 @@
  *
  * Each video's files live in its `dir` under public/:
  *   film.mp4      H.264 with faststart, so it plays while it downloads
+ *   lite.mp4      a lighter copy (about 1 Mbps) for phones and slow
+ *                 connections, where film.mp4 is heavier than that
  *   poster.webp   1280x720, the frame on the screen before play
  *   thumb.webp     640x360, the same frame for the library and for phones
  *   captions.vtt  the lyrics, timed (music videos only)
@@ -80,6 +82,9 @@ export type Video = {
   dir: string;
   /** True when the folder has captions.vtt. */
   captions?: boolean;
+  /** True when the folder has lite.mp4, a lighter copy (about 1 Mbps) that
+      phones and slow connections play instead. */
+  lite?: boolean;
   /** Two colours from its poster: the light it throws on the room. */
   tint: [string, string];
   facts: string[];
@@ -173,6 +178,7 @@ export const videos: Video[] = [
     maker: 'fable-5-2',
     topics: ['stories', 'work'],
     dir: '/videos/keep-the-light-on',
+    lite: true,
     captions: true,
     tint: ['#4ba0d2', '#d2834b'],
     cost: 'About $1.40 for the paintings and the animation, plus one song.',
@@ -300,6 +306,7 @@ export const videos: Video[] = [
     maker: 'fable-5-2',
     topics: ['games'],
     dir: '/videos/kiru',
+    lite: true,
     tint: ['#4b5cd2', '#e63845'],
     cost: TRAILER_COST,
     facts: [
@@ -339,6 +346,7 @@ export const videos: Video[] = [
     maker: 'fable-5-2',
     topics: ['work'],
     dir: '/videos/learn-again',
+    lite: true,
     captions: true,
     tint: ['#de8340', '#4b9bd2'],
     cost: 'About $1 of paintings, plus one song.',
@@ -450,6 +458,7 @@ export const videos: Video[] = [
     maker: 'fable-5-2',
     topics: ['games'],
     dir: '/videos/tether-ball',
+    lite: true,
     tint: ['#e7eb33', '#86e23c'],
     cost: TRAILER_COST,
     facts: [
@@ -506,6 +515,7 @@ export const videos: Video[] = [
     maker: 'fable-5-2',
     topics: ['games'],
     dir: '/videos/serious-slap-champion',
+    lite: true,
     tint: ['#f32b33', '#e98d35'],
     cost: TRAILER_COST,
     facts: [
@@ -538,7 +548,7 @@ export const videos: Video[] = [
 export const videoHref = (v: Video) => `/videos#${v.slug}`;
 export const videoFile = (
   v: Video,
-  name: 'film.mp4' | 'poster.webp' | 'thumb.webp' | 'captions.vtt'
+  name: 'film.mp4' | 'lite.mp4' | 'poster.webp' | 'thumb.webp' | 'captions.vtt'
 ) => `${v.dir}/${name}`;
 
 export const kindOf = (v: Video) => kinds.find((k) => k.id === v.kind)!;
