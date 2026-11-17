@@ -106,8 +106,8 @@ export function GET() {
       t: 'Films',
       u: '/films',
       k: 'Page',
-      d: 'Six short films made entirely of code',
-      x: 'films film short movie shader code generative 186,282 speed of light three against four fox moon rose window one drop escapement',
+      d: 'Short films made entirely of code, by Claude model',
+      x: 'films film short movie shader code generative model benchmark compare claude opus 5.5 fable 186,282 speed of light three against four fox moon rose window one drop escapement',
     },
     {
       t: 'About Josh',

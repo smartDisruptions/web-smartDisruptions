@@ -240,8 +240,11 @@ animation of layout properties, nothing that animates while off screen.
   `<video preload="none">` with a sized poster and a captions track, so the
   page ships no JavaScript of its own and fetches no video until play.
 - **The short films have a page beside it** (since November 2026): `/films`,
-  six films made entirely of code, shown as a screening room. It lights About
-  the same way. It holds one `<video preload="none">` however many films it
+  films made entirely of code, grouped by the Claude model that made them, so
+  it is a benchmark as well as a screening room: a "Made by" tab row picks the
+  model, and the screen, programme, Josh's ask (on an ofuda slip) and the
+  numbers all swap with it. A new model is one entry in `src/data/films.ts`.
+  It lights About the same way. It holds one `<video preload="none">` however many films it
   lists, and before the first play the screen is a sized frame (640 or 1280
   wide) with the play button on it, so a phone's first paint is one small
   image. The films are 720p at about 1 Mbps: they start at once on a phone.
