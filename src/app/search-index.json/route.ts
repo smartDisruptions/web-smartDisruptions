@@ -99,15 +99,8 @@ export function GET() {
       t: 'Videos',
       u: '/videos',
       k: 'Page',
-      d: 'Music videos made with AI, and how each was made',
-      x: 'video videos music song lofi film animation keep the light on learn again lyrics',
-    },
-    {
-      t: 'Films',
-      u: '/films',
-      k: 'Page',
-      d: 'Short films made entirely of code, by Claude model',
-      x: 'films film short movie shader code generative model benchmark compare claude opus 5.5 fable 186,282 speed of light three against four fox moon rose window one drop escapement',
+      d: 'Music videos, films drawn in code and game trailers, by Claude model',
+      x: 'video videos music song lofi film films short movie animation shader code generative trailer trailers game showcase model benchmark compare claude opus 5.5 fable 5.2 keep the light on learn again lyrics 186,282 speed of light three against four fox moon rose window one drop escapement kiru tether ball slap champion',
     },
     {
       t: 'About Josh',

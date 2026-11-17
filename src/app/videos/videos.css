@@ -1,14 +1,19 @@
 /*
-  /videos — 影, "shadow": the music videos. A short header, then each film on
-  a print with what it is beside how it was made, and its lyrics folded away
-  under it. Nothing here moves except the kanji inking itself once and Kiru
-  idling: the films are the motion. Prefix: vd-
+  /videos — 影, "shadow": every video in one screening room. A short header,
+  then the room: one screen, and the whole library beside it (under it on a
+  phone), then how the video on the screen was made.
+
+  The screen is always night, whichever theme the page is in: it holds a film.
+  It throws that film's colours on the room as a soft light. Nothing moves on
+  its own except the kanji inking itself once and Kiru idling; the one authored
+  motion is the library gliding into its new order when the finder changes it.
+  Prefix: vd-
 */
 
 .vd-page {
   position: relative;
   overflow-x: clip;
-  max-width: 68rem;
+  max-width: 78rem;
   margin-inline: auto;
   padding: 0 1rem 3rem;
 }
@@ -16,6 +21,9 @@
   .vd-page {
     padding-inline: 1.5rem;
   }
+}
+.vd-sprite {
+  position: absolute;
 }
 
 /* ── The header ─────────────────────────────────────────────────────────── */
@@ -25,21 +33,21 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.9rem;
-  max-width: 46rem;
-  padding: 2.25rem 0 0.5rem;
+  gap: 0.7rem;
+  max-width: 44rem;
+  padding: 1.75rem 0 0;
 }
 @media (min-width: 40rem) {
   .vd-hero {
-    padding-top: 3.25rem;
-    gap: 1.1rem;
+    padding-top: 2.75rem;
+    gap: 0.9rem;
   }
 }
 .vd-mark {
   z-index: -1;
   top: 0.25rem;
-  right: -7rem;
-  width: clamp(14rem, 62vw, 26rem);
+  right: -6rem;
+  width: clamp(13rem, 58vw, 24rem);
   height: auto;
   opacity: 0.06;
 }
@@ -48,87 +56,671 @@
 }
 @media (min-width: 64rem) {
   .vd-mark {
-    right: -24rem;
+    right: -30rem;
   }
 }
-.vd-kiru {
-  width: clamp(4.5rem, 20vw, 6rem);
-}
-.vd-kiru svg {
-  width: 100%;
-  height: auto;
-}
 .vd-h1 {
-  font-size: clamp(2.05rem, 8.4vw, 3.6rem);
+  font-size: clamp(1.95rem, 8vw, 3.4rem);
   line-height: 1.04;
   letter-spacing: -0.01em;
   color: var(--sd-text-primary);
   text-wrap: balance;
 }
 .vd-lede {
-  max-width: 40rem;
-  font-size: clamp(1.02rem, 3.6vw, 1.14rem);
-  line-height: 1.7;
+  max-width: 36rem;
+  font-size: clamp(1rem, 3.5vw, 1.12rem);
+  line-height: 1.65;
   color: var(--sd-text-secondary);
+  text-wrap: pretty;
 }
 
-/* ── One film ───────────────────────────────────────────────────────────── */
-.vd-item {
-  margin-top: 2.75rem;
-  /* The header is sticky: a link to /videos#slug should land under it. */
-  scroll-margin-top: calc(var(--sd-header-h, 65px) + 1rem);
+/* ── The room ───────────────────────────────────────────────────────────── */
+/* Kiru sits on the screen's top edge, so the room leaves him headroom. */
+.vd-room {
+  --vd-perch: clamp(3.4rem, 15vw, 4.6rem);
+  position: relative;
+  margin-top: calc(var(--vd-perch) * 0.62 + 0.5rem);
 }
-@media (min-width: 40rem) {
-  .vd-item {
-    margin-top: 4rem;
+@media (min-width: 64rem) {
+  .vd-room {
+    margin-top: calc(var(--vd-perch) * 0.62 + 1rem);
+  }
+  .vd-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(21rem, 1fr);
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+  /* The screen holds its place while the library scrolls past it. (It is
+     held inside .vd-main, so it lets go before "how it was made".) */
+  .vd-stage {
+    position: sticky;
+    top: calc(var(--sd-header-h, 65px) + 1.25rem);
   }
 }
-/* The screen. Always night, whichever theme the page is in: it holds a film. */
+/* A short window can't hold the screen and its words at once: let it scroll. */
+@media (min-width: 64rem) and (max-height: 43.99rem) {
+  .vd-stage {
+    position: static;
+  }
+}
+/* Below that the page is one column, and both wrappers step aside so the
+   screen can stay pinned for the length of the whole room, "how it was made"
+   included. */
+@media (max-width: 63.99rem) {
+  .vd-main,
+  .vd-stage {
+    display: contents;
+  }
+}
+
+/* ── The screen ─────────────────────────────────────────────────────────── */
+.vd-screen {
+  position: relative;
+  isolation: isolate;
+  scroll-margin-top: calc(var(--sd-header-h, 65px) + 0.75rem);
+}
 .vd-frame {
+  position: relative;
   aspect-ratio: 16 / 9;
   background: #05060c;
 }
+/* On a phone the screen runs edge to edge, like a phone's own player. */
+@media (max-width: 39.99rem) {
+  .vd-frame {
+    margin-inline: -1rem;
+    border-inline: 0;
+    border-radius: 0;
+  }
+}
 .vd-video {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   background: #05060c;
 }
-
-.vd-cols {
-  display: grid;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+.vd-start {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: #05060c;
+  cursor: pointer;
 }
-@media (min-width: 60rem) {
-  .vd-cols {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    gap: 2.5rem;
-    margin-top: 2rem;
+.vd-start img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* The play button is a button, so it is the primary-button vermilion in both
+   themes (DESIGN.md: a button is an object, like the headband). */
+.vd-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(3.5rem, 13vw, 5.25rem);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: #d63a22;
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.55);
+  translate: -50% -50%;
+  transition: scale 0.2s ease;
+}
+.vd-play::after {
+  content: '';
+  position: absolute;
+  left: 39%;
+  top: 29%;
+  border-style: solid;
+  border-width: 0.95em 0 0.95em 1.55em;
+  border-color: transparent transparent transparent #fff;
+  font-size: clamp(0.62rem, 2.3vw, 0.92rem);
+}
+@media (hover: hover) {
+  .vd-start:hover .vd-play {
+    scale: 1.06;
   }
 }
-.vd-about {
+.vd-start:active .vd-play {
+  scale: 0.94;
+}
+.vd-start:focus-visible {
+  outline-offset: -4px;
+}
+
+/* The light the film throws on the room: two colours from its poster. Two
+   layers, and only their opacity changes, so the swap is the compositor's. */
+.vd-glow {
+  position: absolute;
+  z-index: -1;
+  inset: -26% -12% -30%;
+  pointer-events: none;
+}
+.vd-glow span {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(
+      52% 58% at 26% 42%,
+      color-mix(in srgb, var(--vd-a) 46%, transparent),
+      transparent 74%
+    ),
+    radial-gradient(
+      50% 56% at 76% 60%,
+      color-mix(in srgb, var(--vd-b) 40%, transparent),
+      transparent 74%
+    );
+  transition: opacity 0.9s ease;
+}
+.vd-glow span[data-on] {
+  opacity: 0.5;
+}
+:root[data-theme='dark'] .vd-glow span[data-on] {
+  opacity: 0.62;
+}
+
+/* Kiru, sitting on the top edge of the screen to watch. */
+.vd-perch {
+  position: absolute;
+  right: clamp(0.5rem, 4vw, 2rem);
+  bottom: calc(100% - var(--vd-perch) * 0.2);
+  z-index: 2;
+  width: var(--vd-perch);
+  pointer-events: none;
+}
+.vd-perch svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* A phone, upright, once something is playing: the screen pins under the top
+   bar and the library scrolls beneath it. The bar tucks away on the way down
+   (SiteHeader sets data-hidden), and the pinned screen follows it up. */
+@media (max-width: 63.99rem) and (orientation: portrait) and (min-height: 34rem) {
+  .vd-room[data-pin] .vd-screen {
+    position: sticky;
+    top: calc(var(--sd-header-h, 65px) + env(safe-area-inset-top, 0px));
+    z-index: 30;
+    transition: translate 0.3s ease-out;
+  }
+  body:has(header[data-hidden='true'])
+    .vd-room[data-pin]
+    .vd-screen[data-stuck] {
+    translate: 0 calc(-1 * var(--sd-header-h, 65px));
+  }
+  .vd-room[data-pin] .vd-screen[data-stuck] .vd-frame {
+    box-shadow: 0 18px 30px -20px rgba(0, 0, 0, 0.7);
+  }
+  .vd-room[data-pin] .vd-screen[data-stuck] .vd-perch,
+  .vd-room[data-pin] .vd-screen[data-stuck] .vd-glow {
+    visibility: hidden;
+  }
+  /* "How it was made" lands under the pinned screen, not behind it. */
+  .vd-room[data-pin] .vd-how {
+    scroll-margin-top: calc(var(--sd-header-h, 65px) + 56.25vw + 1rem);
+  }
+}
+
+/* ── What's on ──────────────────────────────────────────────────────────── */
+.vd-now {
   min-width: 0;
+  margin-top: 1rem;
+}
+@media (min-width: 64rem) {
+  .vd-now {
+    margin-top: 1.25rem;
+  }
+}
+.vd-now-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-secondary);
+}
+.vd-stamp {
+  flex: none;
+  width: 1.5rem;
 }
 .vd-h2 {
-  margin-top: 0.6rem;
-  font-size: clamp(1.7rem, 6.4vw, 2.5rem);
+  margin-top: 0.5rem;
+  font-size: clamp(1.6rem, 6.2vw, 2.3rem);
   line-height: 1.08;
   color: var(--sd-text-primary);
   text-wrap: balance;
 }
 .vd-line {
-  margin-top: 0.6rem;
-  font-size: 1.05rem;
-  font-weight: 650;
+  max-width: 38rem;
+  margin-top: 0.55rem;
+  font-size: 1.02rem;
+  font-weight: 600;
   line-height: 1.45;
   color: var(--sd-text-primary);
   text-wrap: pretty;
 }
+.vd-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.vd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--sd-border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sd-text-primary);
+  font-size: 0.92rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    scale 0.15s ease;
+}
+@media (hover: hover) {
+  .vd-btn:hover:not(:disabled) {
+    border-color: var(--sd-accent);
+    color: var(--sd-accent);
+  }
+}
+.vd-btn:active:not(:disabled) {
+  scale: 0.96;
+}
+.vd-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.vd-icon {
+  flex: none;
+}
+/* Indigo presses: a toggle that is on is filled with the accent. */
+.vd-btn[aria-pressed='true'],
+.vd-btn[aria-pressed='true']:hover {
+  border-color: var(--sd-accent);
+  background: var(--sd-accent);
+  color: var(--sd-bg);
+}
+.vd-more,
+.vd-clear {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--sd-accent);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .vd-more:hover,
+  .vd-clear:hover {
+    color: var(--sd-accent-hover);
+  }
+}
+
+/* ── The library ────────────────────────────────────────────────────────── */
+.vd-lib {
+  min-width: 0;
+  margin-top: 2rem;
+}
+@media (min-width: 64rem) {
+  .vd-lib {
+    margin-top: 0;
+  }
+}
+.vd-finder {
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* Kind: four stamps. The one you pressed is inked. */
+.vd-kinds {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+.vd-kind {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 0.4rem;
+  min-height: 5.2rem;
+  padding: 0.65rem 0.2rem 0.55rem;
+  border: 1px solid var(--sd-border-strong);
+  border-radius: var(--radius-xl);
+  background: transparent;
+  color: var(--sd-text-secondary);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    scale 0.15s ease;
+}
+@media (hover: hover) {
+  .vd-kind:hover:not(:disabled) {
+    border-color: var(--sd-accent);
+    color: var(--sd-text-primary);
+  }
+}
+.vd-kind:active:not(:disabled) {
+  scale: 0.97;
+}
+.vd-kind:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.vd-kind .vd-stamp {
+  width: 1.75rem;
+  background: transparent;
+  color: currentColor;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.vd-kind[aria-pressed='true'] {
+  border-color: var(--sd-accent);
+  background: var(--sd-surface);
+  color: var(--sd-text-primary);
+  box-shadow:
+    0 0 0 1px var(--sd-accent),
+    0 14px 30px -22px var(--sd-card-shadow);
+}
+.vd-kind[aria-pressed='true'] .vd-stamp {
+  background: var(--sd-pen);
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.22) inset;
+}
+.vd-kind-name {
+  font-size: 0.8rem;
+  font-weight: 750;
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+}
+.vd-kind-n {
+  margin-left: 0.3em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-secondary);
+}
+
+/* The rest of the finder is one sentence. Each underlined word is a native
+   picker, so on a phone it opens the phone's own list. */
+.vd-say {
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 2.75rem;
+  color: var(--sd-text-secondary);
+}
+.vd-pick {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+}
+.vd-pick select {
+  appearance: none;
+  -webkit-appearance: none;
+  field-sizing: content;
+  max-width: 100%;
+  height: 2.75rem;
+  padding: 0 1.2rem 0 0.1rem;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(currentColor, currentColor) 0 80% / 100% 1.5px
+    no-repeat;
+  color: var(--sd-accent);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+/* A choice you've made is a mark, so its underline is vermilion. */
+.vd-pick[data-set] select {
+  background-image: linear-gradient(var(--sd-pen), var(--sd-pen));
+  background-size: 100% 2.5px;
+}
+.vd-pick select option {
+  background: #fffcf5;
+  color: #15172b;
+  font-weight: 500;
+}
+.vd-pick::after {
+  content: '';
+  position: absolute;
+  right: 0.28rem;
+  top: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 2px solid var(--sd-accent);
+  border-bottom: 2px solid var(--sd-accent);
+  rotate: 45deg;
+  translate: 0 -75%;
+  pointer-events: none;
+}
+
+.vd-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--sd-border);
+}
+.vd-tally {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.5rem;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--sd-text-secondary);
+}
+.vd-tally .vd-clear {
+  padding-inline: 0;
+}
+.vd-tally b {
+  color: var(--sd-text-primary);
+}
+
+/* The wall. Two across on a phone, so a screenful shows six. */
+.vd-wall {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+}
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .vd-wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+@media (min-width: 64rem) {
+  .vd-wall {
+    gap: 0.9rem;
+  }
+}
+.vd-wall > li {
+  min-width: 0;
+}
+.vd-card {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+  height: 100%;
+  padding: 0.4rem 0.4rem 0.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+.vd-card[aria-current='true'] {
+  border-color: color-mix(in srgb, var(--sd-pen) 70%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sd-pen) 55%, transparent);
+}
+.vd-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: clip;
+  border-radius: 11px;
+  background: #05060c;
+}
+.vd-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale 0.7s var(--ease-out-expo);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .vd-card:hover .vd-thumb img {
+    scale: 1.06;
+  }
+}
+.vd-thumb .vd-stamp {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  width: 1.45rem;
+}
+.vd-len {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.35rem;
+  padding: 0.12rem 0.42rem;
+  border-radius: 6px;
+  background: rgba(5, 6, 12, 0.74);
+  color: #f1f2f8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+.vd-card[aria-current='true'] .vd-len {
+  background: #d63a22;
+  color: #fff;
+}
+.vd-card-text {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+  padding-inline: 0.25rem;
+}
+.vd-title {
+  font-size: 0.98rem;
+  font-weight: 750;
+  line-height: 1.25;
+  color: var(--sd-text-primary);
+}
+.vd-sub {
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--sd-text-secondary);
+}
+.vd-card-line {
+  display: none;
+}
+@media (min-width: 40rem) {
+  .vd-card-line {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 0.15rem;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: var(--sd-text-secondary);
+  }
+}
+.vd-empty {
+  margin-top: 1.25rem;
+  font-size: 1rem;
+  color: var(--sd-text-secondary);
+}
+
+/* The library gliding into a new order. Cards are named only while the change
+   runs (Library.tsx adds .vd-glide to <html>), and the page behind them does
+   not cross-fade, so a video that is playing never ghosts. */
+html.vd-glide .vd-wall > li:nth-child(-n + 30) {
+  view-transition-name: var(--vt);
+}
+html.vd-glide::view-transition-group(*) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+html.vd-glide::view-transition-old(root) {
+  display: none;
+}
+html.vd-glide::view-transition-new(root) {
+  animation: none;
+}
+
+/* ── How it was made ────────────────────────────────────────────────────── */
+.vd-how {
+  margin-top: 3rem;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--sd-border);
+  scroll-margin-top: calc(var(--sd-header-h, 65px) + 0.5rem);
+}
+@media (min-width: 64rem) {
+  .vd-how {
+    margin-top: 4rem;
+    padding-top: 3rem;
+  }
+}
+.vd-how-item {
+  display: grid;
+  gap: 1.5rem;
+}
+.vd-how-item[hidden] {
+  display: none;
+}
+@media (min-width: 60rem) {
+  .vd-how-item {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 1.5rem 2.5rem;
+    align-items: start;
+  }
+  .vd-lyrics {
+    grid-column: 1 / -1;
+  }
+}
+.vd-how-about {
+  min-width: 0;
+}
+.vd-how-h {
+  font-size: clamp(1.45rem, 5.6vw, 2.1rem);
+  line-height: 1.1;
+  color: var(--sd-text-primary);
+  text-wrap: balance;
+}
 .vd-p {
-  margin-top: 0.8rem;
   max-width: 62ch;
+  margin-top: 0.8rem;
   font-size: 1.04rem;
   line-height: 1.75;
   color: var(--sd-text-secondary);
@@ -146,7 +738,6 @@
   font-size: 0.82rem;
   font-weight: 650;
   color: var(--sd-text-secondary);
-  white-space: nowrap;
 }
 .vd-cost {
   margin-top: 1.1rem;
@@ -158,28 +749,18 @@
   color: var(--sd-text-primary);
 }
 
-/* How it was made: a sheet, because it is the part meant to be read. */
-.vd-how {
-  min-width: 0;
-  padding: 1.25rem 1.25rem 1.4rem;
-}
-@media (min-width: 40rem) {
-  .vd-how {
-    padding: 1.6rem 1.75rem 1.8rem;
-  }
-}
-.vd-h3 {
-  font-size: 0.72rem;
-  font-weight: 750;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--sd-text-secondary);
-}
+/* The steps sit on a sheet, because they are the part meant to be read. */
 .vd-steps {
   display: grid;
   gap: 0.95rem;
-  margin-top: 1rem;
+  min-width: 0;
+  padding: 1.25rem 1.25rem 1.4rem;
   counter-reset: vd-step;
+}
+@media (min-width: 40rem) {
+  .vd-steps {
+    padding: 1.6rem 1.75rem 1.8rem;
+  }
 }
 .vd-steps li {
   position: relative;
@@ -215,7 +796,6 @@
 
 /* The lyrics, folded away. They are also the film's captions track. */
 .vd-lyrics {
-  margin-top: 1.25rem;
   border-top: 1px solid var(--sd-border);
 }
 .vd-lyrics summary {

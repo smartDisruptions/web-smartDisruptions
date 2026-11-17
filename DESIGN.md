@@ -232,22 +232,28 @@ animation of layout properties, nothing that animates while off screen.
   the archive. That page and every report light the Writing tab, and so do
   the guides, which Writing lists among its field notes (`sectionOf()` in
   `nav/nav.ts`).
-- **The music videos have a page of their own** (since November 2026):
-  `/videos`. Nothing else holds a film: Writing is words, the Arcade is things
+- **Every video lives in one screening room** (since November 2026):
+  `/videos` holds the music videos, the short films drawn in code and the game
+  trailers. Nothing else holds a film: Writing is words, the Arcade is things
   you play, and the About wall counts websites, apps and games and nothing
   else. It has no tab; like each thing's `/built` page it lights About, and
-  the footer and the command palette link to it. Each film is a plain
-  `<video preload="none">` with a sized poster and a captions track, so the
-  page ships no JavaScript of its own and fetches no video until play.
-- **The short films have a page beside it** (since November 2026): `/films`,
-  films made entirely of code, grouped by the Claude model that made them, so
-  it is a benchmark as well as a screening room: a "Made by" tab row picks the
-  model, and the screen, programme, how its films were made and the numbers
-  all swap with it. A new model is one entry in `src/data/films.ts`.
-  It lights About the same way. It holds one `<video preload="none">` however many films it
-  lists, and before the first play the screen is a sized frame (640 or 1280
-  wide) with the play button on it, so a phone's first paint is one small
-  image. The films are 720p at about 1 Mbps: they start at once on a phone.
+  the footer and the command palette link to it. `/films` redirects to it.
+  - **One screen, one library.** The screen never leaves: it holds its place
+    beside the library on a wide window, and on a phone it pins under the top
+    bar once something is playing, so the library scrolls beneath it.
+  - **The finder sorts three ways**: kind (four stamps, the pressed one
+    inked), the Claude model that made it, and what it is about (one sentence
+    whose underlined words are native pickers). What it leaves is the queue.
+    Every view is an address (`?kind=…&by=…&about=…`), so the page is a model
+    benchmark as well: pick a model and see what it made.
+  - **The room takes the film's colour.** Two colours from the poster
+    (`tint`, printed by `scripts/video-assets.mjs`) are a soft light behind
+    the screen. They are the film's light, not UI colour: nothing you press or
+    read is ever tinted.
+  - **Speed.** One `<video preload="none">` however many videos it lists; the
+    screen before play is a sized frame (640 or 1280 wide); thumbnails are
+    640 wide and lazy; the library's glide is a View Transition that names
+    cards only while it runs. A new video is one entry in `src/data/videos.ts`.
 - **Writing's earlier notes live in its archive** (since 2026-10-26): the
   front keeps the field guide and Market Storm, and the posts written for the
   older design moved to `/content/archive` (`ARCHIVED_POST_SLUGS` in

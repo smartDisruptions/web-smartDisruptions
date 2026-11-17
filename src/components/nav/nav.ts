@@ -34,10 +34,10 @@ export const NAV: NavItem[] = [
  * three Build pages are the three tracks /learn promises ("websites, apps and
  * games"), so they light Learn.
  *
- * The music videos (/videos, November 2026) are work too, but the About wall
+ * The videos (/videos, November 2026: the music videos, the short films
+ * drawn in code and the game trailers) are work too, but the About wall
  * counts websites, apps and games and nothing else, so they have a page of
- * their own that lights About, the way each thing's /built page does. The
- * short films made of code (/films, November 2026) do the same.
+ * their own that lights About, the way each thing's /built page does.
  */
 const PARENT: Record<string, string> = {
   'market-storm': '/content',
@@ -45,7 +45,6 @@ const PARENT: Record<string, string> = {
   'about-me': '/about',
   built: '/about',
   videos: '/about',
-  films: '/about',
   'build-websites': '/learn',
   'build-apps': '/learn',
   'build-games': '/learn',

@@ -224,6 +224,9 @@ const nextConfig: NextConfig = {
       // not keep them, and dropping them later frees the old slug.
       { source: '/games/path-not-taken', destination: '/games/rhythm-and-blade', permanent: false },
       { source: '/built/path-not-taken', destination: '/built/rhythm-and-blade', permanent: false },
+      // The short films' first address. They live in the one video library
+      // now (Josh's call, 2026-11-16), so /films opens it with the films picked.
+      { source: '/films', destination: '/videos?kind=code-film', permanent: false },
       { source: '/apps', destination: '/about', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/about', permanent: true },
