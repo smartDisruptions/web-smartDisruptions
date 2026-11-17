@@ -17,7 +17,7 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
+    "Hand-built browser games: Kiru and the Neo Dojo Cast, Kiru's Rooftop Run playable right here on the page, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, a 1928 bank vault to crack, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**
@@ -27,8 +27,9 @@ export const metadata: Metadata = {
  * call on the ordering): Kiru's games, then Neo Dojo Survivors, then Path Not
  * Taken, a rhythm duel in pre-alpha, then Cosmo's Moondrift, a 3D moonboarding
  * game, Cosmo Outbound, a 3D flight from a canyon to orbit and on to other
- * worlds, and Rubble Rouser, a 3D demolition game whose forty buildings stand
- * and fall by their structure. Then the Lantern Theater, the Escape
+ * worlds, Rubble Rouser, a 3D demolition game whose forty buildings stand
+ * and fall by their structure, and Tumbler, a puzzle of ten 1928 vault doors
+ * of geared rings (2026-11-16). Then the Lantern Theater, the Escape
  * Rooms (./escape, ESCAPE_ROOM_SLUGS): a marquee, a stage that plays the night
  * of the theft as you scroll, and a lineup you can hear. Below it the page
  * goes downstairs into

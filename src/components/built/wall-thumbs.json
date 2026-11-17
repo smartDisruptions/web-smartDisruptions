@@ -87,6 +87,10 @@
     "thumb": "/images/wall/apps-tokaido-run-thumbnail.webp",
     "hash": "858a22e61219"
   },
+  "/images/apps/tumbler-thumbnail.webp": {
+    "thumb": "/images/wall/apps-tumbler-thumbnail.webp",
+    "hash": "1fe89a7fdf26"
+  },
   "/images/apps/variable-speed-thumbnail.webp": {
     "thumb": "/images/wall/apps-variable-speed-thumbnail.webp",
     "hash": "6e28f1661a38"
