@@ -2,19 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
-import {
-  IconHome,
-  IconWriting,
-  IconLearn,
-  IconArcade,
-} from '@/components/icons';
-import { NAV, isActive, direction, sectionOf } from './nav';
+import { IconHome, IconWriting, IconLearn, IconPlay } from '@/components/icons';
+import { NAV, isActive, direction, sectionOf, tabOf } from './nav';
 
 const ICONS: Record<string, (p: { size?: number }) => React.ReactElement> = {
   '/': IconHome,
   '/content': IconWriting,
   '/learn': IconLearn,
-  '/games': IconArcade,
+  '/games': IconPlay,
 };
 
 /**
@@ -45,10 +40,13 @@ function Avatar({ active }: { active: boolean }) {
  * vermilion pill behind the current tab has a view-transition-name, so when
  * the page changes the browser slides it to the new tab. A short vibration
  * confirms the tap on phones that support it (Android; iOS ignores it).
+ *
+ * The Play tab holds two rooms, the Arcade and Videos, so it is lit on both
+ * (tabOf). It opens the Arcade; the switch under the top bar reaches Videos.
  */
 export default function TabBar() {
   const pathname = usePathname();
-  const section = sectionOf(useSelectedLayoutSegment());
+  const tab = tabOf(sectionOf(useSelectedLayoutSegment()));
   return (
     <nav
       aria-label="Sections"
@@ -63,7 +61,7 @@ export default function TabBar() {
         role="list"
       >
         {NAV.filter((n) => n.tab).map((item) => {
-          const active = isActive(section, item.href);
+          const active = isActive(tab, item.href);
           const Icon = ICONS[item.href];
           return (
             <li key={item.href} className="relative">

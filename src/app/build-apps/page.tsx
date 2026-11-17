@@ -14,7 +14,7 @@ import './build-apps.css';
 const ROOM = buildRoom('apps');
 const TITLE = 'Build Apps — SmartDisruptions';
 const DESCRIPTION =
-  'Guides to building small, useful apps with AI, in plain words. Join the apps list and each new guide comes to you.';
+  'Guides to building small, useful apps with AI, in plain words. Join the list and each new guide comes to you.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -55,18 +55,19 @@ export default function BuildAppsPage() {
               <Kanji char="器" />
             </span>
           </span>
-          <p className="sd-kicker">The apps list</p>
+          <p className="sd-kicker">The newsletter</p>
           <h2 className="ba-list-title font-display">
             Get each guide when it&rsquo;s done.
           </h2>
           <p className="ba-list-body font-read">
             The guides aren&rsquo;t written yet. Leave your email and each new
-            app guide comes to you: one email per new guide, nothing else.
+            guide comes to you, on apps, websites and games: one email per
+            guide.
           </p>
           <SubscribeForm
             source={ROOM.source}
             cta="Get the app guides"
-            done="You’re on the apps list."
+            done="You’re in. Next guide, your inbox."
             className="ba-list-form"
           />
         </div>

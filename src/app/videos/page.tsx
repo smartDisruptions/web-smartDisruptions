@@ -1,13 +1,16 @@
 import type { Metadata } from 'next';
 import Kiru from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
+import { GLYPHS } from '@/components/brand/glyphs';
 import { shareMeta } from '@/lib/shareCard';
-import { videos, videoFile, type Video } from '@/data/videos';
+import { videos, kinds, kindOf, makerOf, videoFile } from '@/data/videos';
+import PlayRooms from '@/components/nav/PlayRooms';
+import Library from './Library';
 import './videos.css';
 
 const TITLE = 'Videos — SmartDisruptions';
 const DESCRIPTION =
-  'Music videos made with AI: the song, the paintings, the animation and the edit. Each one comes with how it was made and what it cost.';
+  'Music videos, short films drawn in code and game trailers, all made with AI. Sort them by kind, by the Claude model that made them or by topic, and see how each one was made.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,30 +20,38 @@ export const metadata: Metadata = {
 };
 
 /**
- * /videos — the music videos. 影 ("shadow", the character in the Japanese
- * words for filming and for a picture on a screen) is the page kanji, and
- * Kiru sits down to watch.
+ * /videos — every video in one screening room: the music videos, the short
+ * films drawn in code and the game trailers. 影 ("shadow", the character in
+ * the Japanese words for filming and for a picture on a screen) is the page
+ * kanji, and Kiru sits on the screen to watch.
  *
- * It is its own page because nothing else on the site holds a film: Writing
- * is words, the Arcade is things you play, and the About wall counts
- * websites, apps and games and nothing else (Josh's call, 2026-10-21). Like
- * each thing's /built page it lights the About tab (nav/nav.ts), and the
- * footer and the command palette link to it.
+ * One screen, one library. The screen stays put (beside the library on a wide
+ * window, pinned to the top on a phone once something is playing) and the
+ * library sorts three ways: by kind, by the Claude model that made it, by what
+ * it is about. Whatever the finder leaves is also the queue. Library.tsx is
+ * the page's one island; this file is its static shell.
  *
- * Each film is a plain <video>: nothing is fetched until it is played
- * (preload="none"), the poster is a sized WebP, and the controls are the
- * browser's own, so they work with a keyboard and a screen reader. The lyrics
- * are a captions track as well as text on the page. No JavaScript ships for
- * this page beyond the site's own.
+ * On a phone it is one of the Play tab's two rooms, beside the Arcade: the
+ * switch under the top bar (PlayRooms) moves between them. On a wide window
+ * the header names it (nav/nav.ts). The footer and the command palette link
+ * to it too. /films, the short films' first address, redirects here with the
+ * films picked (next.config.ts).
  *
- * The list lives in src/data/videos.ts; the files in public/videos/<slug>/.
+ * The list lives in src/data/videos.ts; the files in each video's `dir`.
  * Styles: ./videos.css (vd-).
  */
 const BASE = 'https://smartdisruptions.com';
 
-const iso8601 = (s: number) => `PT${Math.floor(s / 60)}M${s % 60}S`;
-const spoken = (v: Video) =>
-  `${Math.floor(v.seconds / 60)} minutes ${v.seconds % 60} seconds`;
+const iso8601 = (s: number) => {
+  const t = Math.round(s);
+  return `PT${Math.floor(t / 60)}M${t % 60}S`;
+};
+
+/** The kind stamps, drawn once here and reused by every card (<use>). */
+const STAMPS: [string, string][] = [
+  ['all', '影'],
+  ...kinds.map((k): [string, string] => [k.id, k.kanji]),
+];
 
 export default function VideosPage() {
   const jsonLd = {
@@ -52,7 +63,8 @@ export default function VideosPage() {
       item: {
         '@type': 'VideoObject',
         name: v.title,
-        description: v.about,
+        description: `${v.line} ${kindOf(v).one}, made with ${makerOf(v).name}.`,
+        genre: kindOf(v).one,
         thumbnailUrl: `${BASE}${videoFile(v, 'poster.webp')}`,
         contentUrl: `${BASE}${videoFile(v, 'film.mp4')}`,
         uploadDate: `${v.date}T12:00:00-08:00`,
@@ -63,109 +75,56 @@ export default function VideosPage() {
   };
 
   return (
-    <div className="vd-page">
-      {/* Static local data, JSON-encoded; < escaped so it can never close
-          the script tag. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
-        }}
+    <>
+      {/* The Play tab's two rooms: the Arcade, and this one. Its two stamps
+          reuse the glyphs already in this page's sprite. */}
+      <PlayRooms
+        current="videos"
+        glyphs={{ arcade: 'vd-g-game-trailer', videos: 'vd-g-all' }}
       />
+      <div className="vd-page">
+        {/* Static local data, JSON-encoded; < escaped so it can never close
+          the script tag. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
+        {/* Without JavaScript the finder and the buttons can't work, so they
+          step aside: the screen plays the first video with the browser's own
+          controls, every card is a plain link to its file, and every
+          "how it was made" is on the page. */}
+        <noscript>
+          <style>{`.vd-start,.vd-finder,.vd-controls{display:none!important}.vd-how-item[data-off]{display:grid!important;margin-bottom:3rem}`}</style>
+        </noscript>
 
-      <header className="vd-hero">
-        <Kanji char="影" draw className="sd-watermark vd-mark" />
-        <div className="vd-kiru">
-          <Kiru pose="sit" />
-        </div>
-        <p className="sd-kicker">Videos</p>
-        <h1 className="vd-h1 font-display">Music videos, made with AI.</h1>
-        <p className="vd-lede font-read">
-          Each one started as a paragraph I typed. Claude wrote the lyrics and
-          ran the rest: one model sang the song, one painted the frames, one
-          made them move, and Claude&rsquo;s own code cut the film to the beat.
-          How each one was made, and what it cost, is under it.
-        </p>
-      </header>
-
-      {videos.map((v, i) => (
-        <article
-          key={v.slug}
-          id={v.slug}
-          className="vd-item"
-          aria-labelledby={`vd-${v.slug}`}
+        <svg
+          className="vd-sprite"
+          width="0"
+          height="0"
+          aria-hidden="true"
+          focusable="false"
         >
-          <div className="vd-frame sd-print">
-            <video
-              className="vd-video"
-              controls
-              playsInline
-              preload="none"
-              width={1920}
-              height={1080}
-              poster={videoFile(v, 'poster.webp')}
-              aria-label={`${v.title}, a music video, ${spoken(v)}`}
-            >
-              <source src={videoFile(v, 'film.mp4')} type="video/mp4" />
-              <track
-                kind="captions"
-                src={videoFile(v, 'captions.vtt')}
-                srcLang="en"
-                label="Lyrics"
-              />
-              Your browser can&rsquo;t play this video.{' '}
-              <a href={videoFile(v, 'film.mp4')}>Download it</a> instead.
-            </video>
-          </div>
+          {STAMPS.map(([id, char]) => (
+            <symbol key={id} id={`vd-g-${id}`} viewBox="0 0 1000 1000">
+              <path d={GLYPHS.brush[char].d} />
+            </symbol>
+          ))}
+        </svg>
 
-          <div className="vd-cols">
-            <div className="vd-about">
-              <p className="sd-kicker">
-                {i === 0 ? 'Newest' : 'Earlier'} &middot; {v.length}
-              </p>
-              <h2 id={`vd-${v.slug}`} className="vd-h2 font-display">
-                {v.title}
-              </h2>
-              <p className="vd-line">{v.line}</p>
-              <p className="vd-p font-read">{v.about}</p>
-              <ul className="vd-facts" role="list">
-                {v.facts.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
-              <p className="vd-cost">
-                <b>What it cost.</b> {v.cost}
-              </p>
-            </div>
+        <header className="vd-hero">
+          <Kanji char="影" draw className="sd-watermark vd-mark" />
+          <p className="sd-kicker">Videos</p>
+          <h1 className="vd-h1 font-display">Videos made with AI.</h1>
+          <p className="vd-lede font-read">
+            Music videos, short films drawn in code, and game trailers. Each one
+            says which Claude model made it, how, and what it cost.
+          </p>
+        </header>
 
-            <div className="vd-how sd-sheet">
-              <h3 className="vd-h3">How it was made</h3>
-              <ol className="vd-steps">
-                {v.steps.map((s) => (
-                  <li key={s.title}>
-                    <b>{s.title}</b>
-                    <span className="font-read">{s.body}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-
-          <details className="vd-lyrics">
-            <summary>Lyrics</summary>
-            <div className="vd-lyrics-body font-read">
-              {v.lyrics.map((sec, k) => (
-                <p key={k} className={sec.hook ? 'vd-hook' : undefined}>
-                  <em>{sec.label}</em>
-                  {sec.lines.map((line, n) => (
-                    <span key={n}>{line}</span>
-                  ))}
-                </p>
-              ))}
-            </div>
-          </details>
-        </article>
-      ))}
-    </div>
+        <Library perch={<Kiru pose="sit" />} />
+      </div>
+    </>
   );
 }

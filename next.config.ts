@@ -11,6 +11,17 @@ const nextConfig: NextConfig = {
     viewTransition: true,
   },
   /**
+   * Videos never ride along in a server bundle. A post's images are read from
+   * public/ by a path worked out at run time (content/post-extras.ts), so the
+   * tracer packs all of public/ into every function that touches a post. The
+   * video files pushed one of those past Vercel's 250 MB limit (277 MB,
+   * 2026-11-16) and the deploy was refused. Nothing on the server reads these
+   * two folders: the CDN serves them.
+   */
+  outputFileTracingExcludes: {
+    '/*': ['public/videos/**/*', 'public/films/**/*'],
+  },
+  /**
    * The service worker must never be cached, or a fix to it could take days
    * to reach people. See public/sw.js.
    */
@@ -236,6 +247,9 @@ const nextConfig: NextConfig = {
       // not keep them, and dropping them later frees the old slug.
       { source: '/games/path-not-taken', destination: '/games/rhythm-and-blade', permanent: false },
       { source: '/built/path-not-taken', destination: '/built/rhythm-and-blade', permanent: false },
+      // The short films' first address. They live in the one video library
+      // now (Josh's call, 2026-11-16), so /films opens it with the films picked.
+      { source: '/films', destination: '/videos?kind=code-film', permanent: false },
       { source: '/apps', destination: '/about', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/about', permanent: true },
