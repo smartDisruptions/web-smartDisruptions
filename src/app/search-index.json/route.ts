@@ -96,6 +96,13 @@ export function GET() {
       x: 'about builds built projects receipts work',
     },
     {
+      t: 'Videos',
+      u: '/videos',
+      k: 'Page',
+      d: 'Music videos, films drawn in code and game trailers, by Claude model',
+      x: 'video videos music song lofi film films short movie animation shader code generative trailer trailers game showcase model benchmark compare claude opus 5.5 fable 5.2 keep the light on learn again lyrics 186,282 speed of light three against four fox moon rose window one drop escapement kiru tether ball slap champion',
+    },
+    {
       t: 'About Josh',
       u: '/about-me',
       k: 'Page',

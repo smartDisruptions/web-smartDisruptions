@@ -87,6 +87,10 @@
     "thumb": "/images/wall/apps-tokaido-run-thumbnail.webp",
     "hash": "858a22e61219"
   },
+  "/images/apps/tumbler-thumbnail.webp": {
+    "thumb": "/images/wall/apps-tumbler-thumbnail.webp",
+    "hash": "1fe89a7fdf26"
+  },
   "/images/apps/variable-speed-thumbnail.webp": {
     "thumb": "/images/wall/apps-variable-speed-thumbnail.webp",
     "hash": "6e28f1661a38"
@@ -119,13 +123,13 @@
     "thumb": "/images/wall/websites-net-price-calculator.webp",
     "hash": "ee90cb3548d1"
   },
-  "/images/websites/notebook.webp": {
-    "thumb": "/images/wall/websites-notebook.webp",
-    "hash": "44c3b32221f2"
-  },
   "/images/websites/samurai-kitchen.webp": {
     "thumb": "/images/wall/websites-samurai-kitchen.webp",
     "hash": "3fda5f066c67"
+  },
+  "/images/websites/videos.webp": {
+    "thumb": "/images/wall/websites-videos.webp",
+    "hash": "8b273e9e1d3f"
   },
   "/images/websites/voltic.webp": {
     "thumb": "/images/wall/websites-voltic.webp",

@@ -1,7 +1,14 @@
 /**
  * The site's sections, in tab order. The desktop header, the phone tab bar
  * and the footer all read this list, so a section is added in one place.
- * `tab` marks the ones in the phone tab bar, which holds five.
+ * `tab` marks the ones in the phone tab bar, which holds five. `label` is the
+ * word in the header and the footer; `short` is the word under the tab.
+ *
+ * Arcade and Videos share one phone tab, Play (November 2026, Josh's call:
+ * no sixth tab). You play a game and you press play on a video, so one word
+ * covers both, and a switch under the top bar moves between the two rooms
+ * (PlayRooms.tsx). A wide window has room for both words, so the header
+ * names each one.
  *
  * What I Built left the nav in October 2026, when its page was folded into
  * About (the work), so About took the last tab: on a phone it is Josh's
@@ -18,7 +25,8 @@ export const NAV: NavItem[] = [
   { href: '/', label: 'Home', short: 'Home', tab: true },
   { href: '/content', label: 'Writing', short: 'Writing', tab: true },
   { href: '/learn', label: 'Learn', short: 'Learn', tab: true },
-  { href: '/games', label: 'Arcade', short: 'Arcade', tab: true },
+  { href: '/games', label: 'Arcade', short: 'Play', tab: true },
+  { href: '/videos', label: 'Videos', short: 'Videos', tab: false },
   { href: '/about', label: 'About', short: 'About', tab: true },
 ];
 
@@ -54,6 +62,19 @@ const PARENT: Record<string, string> = {
 export function sectionOf(segment: string | null): string {
   if (segment === null) return '/';
   return PARENT[segment] ?? `/${segment}`;
+}
+
+/**
+ * Sections that are a room inside another section's phone tab. Videos lives
+ * in the Play tab, whose own address is the Arcade's.
+ */
+const ROOM_OF: Record<string, string> = {
+  '/videos': '/games',
+};
+
+/** The phone tab a section lights: its own, or the tab it is a room of. */
+export function tabOf(section: string): string {
+  return ROOM_OF[section] ?? section;
 }
 
 export function isActive(pathname: string, href: string): boolean {

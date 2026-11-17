@@ -1033,9 +1033,9 @@ export const apps: App[] = [
     slug: 'the-moon-pearl',
     name: 'The Moon Pearl',
     description:
-      'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, the new lighting tech gets the blame, and you have one night locked in the dressing room to find it and prove who took it.',
+      'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, Madame asks the new lighting tech to find it, and you have one night in the dressing room to do it and prove who took it.',
     longDescription:
-      'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds, and it doesn’t come back. Mei, the theater’s new lighting tech, gets the blame and is locked in the dressing room until the police arrive at dawn. You have one night to find the pearl and prove who really took it.',
+      'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds, and it doesn’t come back. Madame trusts one person to find it: Mei, the theater’s new lighting tech, who shuts herself in the dressing room with Madame’s cabinet until the police arrive at dawn. You have one night to find the pearl and prove who really took it.',
     thumbnailUrl: '/images/apps/the-moon-pearl-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/the-moon-pearl-1.webp',
@@ -1047,7 +1047,7 @@ export const apps: App[] = [
     status: 'live',
     outcomes: [
       'Every answer has at least two clues that point to it, and a reason in the story for being there. I wrote the whole story first, with a table that pairs each lock with its clues, before any art existed.',
-      'Five voiced characters (37 lines), a theme song and 19 sound effects, all made with ElevenLabs, one take each.',
+      'Every line of dialogue is voiced (129 lines, seven voices), with a theme song and 19 sound effects, all made with ElevenLabs, one take each.',
       'Four AI agents built it side by side on one written contract: the dressing room, the cast and the stage, the cabinet and the props, and the screens with the phone and the intercom.',
       'Measured with the processor slowed four times, every scene\u2019s code takes under 4 ms a frame, so it runs smoothly on an old phone.',
     ],
@@ -1343,6 +1343,61 @@ export const apps: App[] = [
       ],
     },
   },
+  {
+    slug: 'tumbler',
+    name: 'Tumbler',
+    description:
+      'Crack ten Art Deco bank vaults from 1928. Turn the rings until a path runs from the rim to the lock, while gears turn their partners the other way and latches hold them still.',
+    longDescription:
+      'A steel ball waits at the rim of a 1928 vault door. Drag a ring round, a notch at a time, until its gaps line up into one path, and the ball rolls through to the lock. The catch is the brass gears: turn one ring and its partner turns the other way, so lining one up can knock the other out. There are ten vaults on two floors. The first two teach the gears, one of them at double speed so its ring only stops on every other notch. From the third on, every vault has latches: a latch holds a ring still until another ring sits on its key notch, so the order you turn them in matters, and sometimes a ring has to move away from where it belongs first. One latch your own turn can close, one key frees two latches, and the last, the Directors’ Vault, has three latches that free each other in a cascade. Every door swings open on a different room. Each vault has three stars to earn: one for opening it, one for doing it without a hint, and one for doing it in par.',
+    thumbnailUrl: '/images/apps/tumbler-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/tumbler-1.webp',
+      '/images/apps/tumbler-2.webp',
+      '/images/apps/tumbler-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas', 'SVG', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'One file of about 160 KB with no pictures or sound files in it: the gold, the lacquer, the gears and the rooms behind ten doors are all drawn in code, and every click and chime is made in the browser.',
+      'A search through every position the rings can reach finds the fewest turns each vault opens in, from three up to seven for the last. Par allows half as many again, and moving the same ring twice in a row counts as one turn, so a slip of the finger doesn’t cost a star. The search also proves no vault starts open or opens in one turn, and of 200,000 random tries as long as par, none open the finale.',
+      'Played to the win with real touch drags in a phone-sized browser: vaults one, two, four, seven and ten. Clearing a vault unlocks the next, and the progress is still there after a reload.',
+      'It started as one of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own. It grew to fifteen vaults, then I cut the five without latches: without a latch you can read the answer straight off the channels.',
+    ],
+    buildDate: '2026-11',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/tumbler',
+    howToPlay: {
+      on: 'Plays on a phone or a computer, and it’s best with the sound on for the clicks of the tumblers.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Pick a vault',
+              how: 'Tap Play, then a vault door. There are two floors of five, and clearing one vault unlocks the next.',
+            },
+            {
+              action: 'Turn a ring',
+              how: 'Drag it round. It clicks into place a notch at a time.',
+            },
+            { action: 'Spin a ring', how: 'Flick it and let go.' },
+            {
+              action: 'Get a hint',
+              how: 'After nine turns a ? button appears at the top. A hint costs one star.',
+            },
+            {
+              action: 'Earn the stars',
+              how: 'One for opening the vault, one for no hint, one for doing it in par. Moving the same ring again straight away is still one turn.',
+            },
+            { action: 'Start over', how: 'Tap the restart button at the top.' },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -1359,12 +1414,15 @@ export function getAppBySlug(slug: string): App | undefined {
  * door (Josh's call, the same day). It was called Path Not Taken until
  * 2026-11-06, when that name went to a different game: the one Kiru's story
  * will be told in (his story's cast is on /kiru).
+ * Tumbler, a puzzle from a set of eighteen first levels, comes after Rubble
+ * Rouser (Josh's call, 2026-11-16); it grew to ten levels the next day. Blueline,
+ * its sister puzzle, waits in the vault for now (Josh's call, 2026-11-17).
  *
  * These live here rather than in the games page because /built reads them too:
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser', 'tumbler'];
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door

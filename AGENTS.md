@@ -309,8 +309,9 @@ not in degree:
   today, which is exactly the property that makes this a rule rather than a
   preference.
 - **Secrets stay in environment variables.** The pattern is already in this
-  repo: `/api/subscribe` holds no privileged key, and the service-role key that
-  can actually write lives inside Supabase. Copy that shape.
+  repo: `/api/subscribe` reads its database connection string from
+  `DATABASE_URL`, set in Vercel's settings, never from the code. Copy that
+  shape.
 
 The reasoning is the same one that produced the honest-copy rule and the
 liveness rule: a control that has never been watched denying anybody is a

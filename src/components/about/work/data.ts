@@ -82,18 +82,13 @@ export type CatalogueEntry = {
 
 /**
  * The projects with a write-up that are not among the four (Samurai Kitchen
- * and The Notebook design since 2026-10-10, VOLTIC since 2026-10-12, Gilt &
- * Lather since 2026-11-05). Their
- * category and three tech names come from the apps data where they have an
- * entry; The Notebook design is this site's own past design, kept as a
- * static export of its commit (scripts/archive-site.mjs), and VOLTIC and
- * Gilt & Lather have no apps entry, so all three are given here.
+ * since 2026-10-10, VOLTIC since 2026-10-12, Gilt & Lather since
+ * 2026-11-05). Their category and three tech names come from the apps data
+ * where they have an entry; VOLTIC and Gilt & Lather have no apps entry, so
+ * they are given here. (The Notebook design, this site's old look, came off
+ * the site on 2026-11-17, Josh's call.)
  */
 const OWN_FACTS: Record<string, { category: string; tech: string[] }> = {
-  notebook: {
-    category: 'Website',
-    tech: ['Next.js', 'Tailwind CSS', 'Static export'],
-  },
   voltic: {
     category: 'Website',
     tech: ['Vite', 'three.js'],
@@ -133,7 +128,6 @@ const otherProjects: CatalogueEntry[] = projects
 /** Everything else, in this order: the websites first, then the apps. */
 const MORE_ORDER = [
   'samurai-kitchen',
-  'notebook',
   'voltic',
   'gilt-and-lather',
   'inside-the-heart',
@@ -209,8 +203,32 @@ export const counts = {
   games: partsOf('Game') + alsoOf('Game') + games.length,
 };
 
-/** The wall's chips, besides All (Josh, 2026-10-26). */
-export type WorkKind = 'games' | 'apps' | 'websites';
+/**
+ * The wall's chips, besides All (Josh, 2026-10-26). Other media (Josh,
+ * 2026-11-17) holds what is neither a website, an app nor a game: Kiru, the
+ * character, and the Videos page. The receipt still counts only websites,
+ * apps and games, so neither adds to it.
+ */
+export type WorkKind = 'games' | 'apps' | 'websites' | 'media';
+
+/** The slugs among the four that hang under Other media. */
+const MEDIA_SLUGS = new Set(['kiru']);
+
+/**
+ * Other media that isn't one of the four: the Videos page, which isn't an
+ * app but is on the wall all the same (Josh, 2026-11-17).
+ */
+const otherMedia: WallItem[] = [
+  {
+    key: 'videos',
+    name: 'Videos',
+    kind: 'Films & music videos',
+    href: '/videos',
+    src: '/images/websites/videos.webp',
+    mark: markFor('videos'),
+    groups: ['media'],
+  },
+];
 const KIND_OF: Record<ProjectPart['kind'], WorkKind> = {
   Website: 'websites',
   App: 'apps',
@@ -232,7 +250,8 @@ const kindsOf = (slug: string, otherwise: WorkKind[] = []): WorkKind[] => {
 };
 
 /**
- * Everything on one wall: the four, everything else, then the games. Each
+ * Everything on one wall: the four, the other media, everything else, then
+ * the games. Each
  * plaque opens the thing's own page (one without a page would open the
  * thing itself, in a new tab).
  */
@@ -244,8 +263,9 @@ export const wall: WallItem[] = [
     href: f.href,
     src: f.image,
     mark: markFor(f.slug),
-    groups: kindsOf(f.slug),
+    groups: MEDIA_SLUGS.has(f.slug) ? ['media'] : kindsOf(f.slug),
   })),
+  ...otherMedia,
   ...catalogue.map((c) => ({
     key: c.key,
     name: c.name,

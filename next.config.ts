@@ -11,6 +11,17 @@ const nextConfig: NextConfig = {
     viewTransition: true,
   },
   /**
+   * Videos never ride along in a server bundle. A post's images are read from
+   * public/ by a path worked out at run time (content/post-extras.ts), so the
+   * tracer packs all of public/ into every function that touches a post. The
+   * video files pushed one of those past Vercel's 250 MB limit (277 MB,
+   * 2026-11-16) and the deploy was refused. Nothing on the server reads these
+   * two folders: the CDN serves them.
+   */
+  outputFileTracingExcludes: {
+    '/*': ['public/videos/**/*', 'public/films/**/*'],
+  },
+  /**
    * The service worker must never be cached, or a fix to it could take days
    * to reach people. See public/sw.js.
    */
@@ -114,6 +125,14 @@ const nextConfig: NextConfig = {
           source: '/games/rubble-rouser',
           destination: '/games/rubble-rouser/index.html',
         },
+        // Tumbler: a puzzle from a set of eighteen first levels,
+        // each one file in public/games, built in the vault with
+        // Tools/puzzle-six/build-site.mjs, which adds their share cards and
+        // points "‹ Arcade" back here.
+        {
+          source: '/games/tumbler',
+          destination: '/games/tumbler/index.html',
+        },
         // Portfolio Ledger: the public demo of my net-worth tracker, one file in
         // public/demo on made-up data (built from my private ledger's source
         // with --public, which leaves its real settings out). Its Home Screen
@@ -211,13 +230,17 @@ const nextConfig: NextConfig = {
       ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling', 'aureum-snake'].flatMap((slug) => [
         { source: `/built/${slug}`, destination: '/about', permanent: true },
         { source: `/apps/${slug}`, destination: '/about', permanent: true },
-        // the frozen Notebook archive dropped them too (scripts/archive-site.mjs)
-        {
-          source: `/archive/notebook/built/${slug}`,
-          destination: '/archive/notebook/built',
-          permanent: true,
-        },
       ]),
+      // The Notebook design (this site's old look, kept as a static copy under
+      // /archive/notebook) came off the site on 2026-11-17, Josh's call. Its
+      // page and the copy itself land on the work, on About.
+      { source: '/built/notebook', destination: '/about', permanent: true },
+      { source: '/archive/notebook', destination: '/about', permanent: true },
+      {
+        source: '/archive/notebook/:path*',
+        destination: '/about',
+        permanent: true,
+      },
       // The two Pembroke File articles went with the game (Josh, 2026-10-07).
       ...['escape-room-ate-my-resume', 'escape-room-build-playbook'].map((slug) => ({
         source: `/content/${slug}`,
@@ -230,6 +253,9 @@ const nextConfig: NextConfig = {
       // not keep them, and dropping them later frees the old slug.
       { source: '/games/path-not-taken', destination: '/games/rhythm-and-blade', permanent: false },
       { source: '/built/path-not-taken', destination: '/built/rhythm-and-blade', permanent: false },
+      // The short films' first address. They live in the one video library
+      // now (Josh's call, 2026-11-16), so /films opens it with the films picked.
+      { source: '/films', destination: '/videos?kind=code-film', permanent: false },
       { source: '/apps', destination: '/about', permanent: true },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
       { source: '/websites', destination: '/about', permanent: true },
