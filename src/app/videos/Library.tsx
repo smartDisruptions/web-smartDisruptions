@@ -98,7 +98,10 @@ function address(f: Filter, slug?: string) {
 }
 
 type DocVT = Document & {
-  startViewTransition?: (cb: () => void) => { finished: Promise<void> };
+  startViewTransition?: (cb: () => void) => {
+    ready: Promise<void>;
+    finished: Promise<void>;
+  };
 };
 
 /** Run a change to the library so its cards glide instead of jumping. */
@@ -115,7 +118,11 @@ function glide(change: () => void) {
   root.classList.add('vd-glide');
   const done = () => root.classList.remove('vd-glide');
   try {
-    doc.startViewTransition(() => flushSync(change)).finished.then(done, done);
+    const vt = doc.startViewTransition(() => flushSync(change));
+    // A tab in the background skips the animation (the change still happens)
+    // and says so by rejecting `ready`: that is not an error.
+    vt.ready.catch(() => {});
+    vt.finished.then(done, done);
   } catch {
     done();
     change();
