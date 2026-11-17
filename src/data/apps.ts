@@ -1347,9 +1347,9 @@ export const apps: App[] = [
     slug: 'tumbler',
     name: 'Tumbler',
     description:
-      'Crack an Art Deco bank vault from 1928. Turn its four rings until a path runs from the rim to the lock, but two of them are geared together and turn each other the opposite way.',
+      'Crack five Art Deco bank vaults from 1928. Turn the rings until a path runs from the rim to the lock, while gears turn their partners the other way and latches hold them still.',
     longDescription:
-      'A steel ball waits at the rim of a 1928 vault door. Drag a ring round, a notch at a time, until its gaps line up into one path, and the ball rolls through to the lock. The catch is the brass gears between the two middle rings: turn one and its neighbour turns the other way, so lining one up can knock the other out. Find the order that works and the door swings open on a vault full of gold. Par is three turns.',
+      'A steel ball waits at the rim of a 1928 vault door. Drag a ring round, a notch at a time, until its gaps line up into one path, and the ball rolls through to the lock. The catch is the brass gears: turn one ring and its partner turns the other way, so lining one up can knock the other out. There are five vaults, and each one adds a single new trick. The second has two geared pairs. The third has a gear that runs at double speed, so its ring only stops on every other notch. The fourth has a latch that holds a pair still until you turn the outer ring away from where it belongs, and the last has two latches you have to free in the right order. Every door swings open on a different room, and par runs from three turns to six.',
     thumbnailUrl: '/images/apps/tumbler-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/tumbler-1.webp',
@@ -1360,10 +1360,10 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'One file of about 100 KB with no pictures or sound files in it: the gold, the lacquer, the gears and the vault behind the door are all drawn in code, and every click and chime is made in the browser.',
-      'A search through every position of the four rings (12 to the power of 4) sets par at three turns. It also proves only one solved position can be reached once the gears tie two rings together, and that no single turn solves it.',
-      'Played to the win with real touch drags in a phone-sized browser: in par for three stars, and again in five turns for two.',
-      'One of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own.',
+      'One file of about 145 KB with no pictures or sound files in it: the gold, the lacquer, the gears and the five rooms behind the doors are all drawn in code, and every click and chime is made in the browser.',
+      'A search through every position the rings can reach sets each vault’s par: three, three, four, five and six turns. It also proves none of them starts open or opens in one turn. Of 200,000 random ten-turn tries, 640 open the first vault and none open the last two.',
+      'Played to the win with real touch drags in a phone-sized browser, vaults one, three and five in par. Clearing a vault unlocks the next, and the progress is still there after a reload.',
+      'It started as one of eighteen first levels I built in a day with AI agents, each on a different App Store puzzle loop with one twist of its own, and grew to five vaults.',
     ],
     buildDate: '2026-11',
     hasFullBreakdown: false,
@@ -1375,6 +1375,10 @@ export const apps: App[] = [
         {
           device: 'Touch or mouse',
           controls: [
+            {
+              action: 'Pick a vault',
+              how: 'Tap Play, then a vault door. Clearing one unlocks the next.',
+            },
             {
               action: 'Turn a ring',
               how: 'Drag it round. It clicks into place a notch at a time.',

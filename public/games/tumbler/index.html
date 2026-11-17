@@ -135,6 +135,63 @@ body.land #wfoot{left:auto;right:calc(var(--sar) + 8px);width:min(330px,42vw);ba
 body.land .wbtns .btn{font-size:11px;height:46px;letter-spacing:.14em;padding:0 8px 0 calc(8px + .14em)}
 .btn{white-space:nowrap}
 #fade.on{opacity:1}
+/* vault select: a corridor of little doors */
+#select{justify-content:flex-start;gap:min(3.2vh,26px);padding:calc(var(--sat) + 62px) 12px calc(var(--sab) + 18px);
+  background:radial-gradient(ellipse 90% 60% at 50% 34%,rgba(2,4,4,.5),rgba(2,3,3,.86) 75%)}
+#btnLobby{top:calc(var(--sat) + 8px);left:calc(var(--sal) + 8px)}
+.sHead{text-align:center}
+#selH{margin:8px 0 0;font-size:26px;line-height:1.1;letter-spacing:.16em;padding-left:.16em;font-weight:600;text-transform:uppercase;
+  background:linear-gradient(180deg,#fffbe6,#f4d585 35%,#b8862e 60%,#f7e2a2 80%,#c9963e);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 2px rgba(0,0,0,.8))}
+#doors{display:flex;justify-content:center;align-items:flex-start;gap:4px;width:100%;max-width:440px}
+.door{appearance:none;-webkit-appearance:none;background:none;border:0;padding:6px 0 6px;flex:1 1 0;min-width:0;max-width:84px;min-height:44px;display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;color:var(--gold);font-family:var(--deco);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.dface{position:relative;width:92%;aspect-ratio:1;display:block;transition:transform .3s cubic-bezier(.3,1.6,.5,1),filter .3s ease}
+.dface>svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.8))}
+.dface .lock{position:absolute;left:50%;top:50%;width:44%;height:44%;transform:translate(-50%,-50%);display:none;filter:drop-shadow(0 2px 3px #000)}
+.door.locked .dface>svg:first-child{filter:grayscale(.8) brightness(.42) drop-shadow(0 4px 6px rgba(0,0,0,.8))}
+.door.locked .lock{display:block}
+.door.sel .dface{transform:scale(1.12)}
+.door.sel .dface>svg:first-child{filter:drop-shadow(0 0 9px rgba(255,206,110,.75)) drop-shadow(0 4px 6px rgba(0,0,0,.8))}
+.door.sel.locked .dface>svg:first-child{filter:grayscale(.8) brightness(.5) drop-shadow(0 0 8px rgba(255,206,110,.45))}
+.door:active .dface{transform:scale(.94)}
+.dnum{font-size:13px;letter-spacing:.18em;padding-left:.18em;font-weight:600;color:#e9c877;text-shadow:0 1px 2px #000}
+.door.locked .dnum{color:#8a7650}
+.ms{display:flex;gap:2px;justify-content:center}
+.ms i{display:block;width:10px;height:10px;background:#66553a;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.ms i.on{background:linear-gradient(160deg,#fff6cf,#e2b456 55%,#a8701e)}
+#sStars .ms i{width:22px;height:22px}#sStars .ms{gap:6px;margin-top:10px}
+.door.shake .dface{animation:shake .42s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+#selCard{text-align:center;width:min(360px,100%);padding:14px 10px 12px;border:1px solid rgba(201,162,79,.55);border-radius:3px;
+  background:linear-gradient(180deg,rgba(25,24,29,.92),rgba(9,9,11,.94));box-shadow:inset 0 0 0 3px #0a0a0c,inset 0 0 0 4px rgba(233,200,119,.35),0 8px 22px rgba(0,0,0,.6);
+  clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px)}
+#sName{margin-top:6px;font-size:22px;letter-spacing:.12em;padding-left:.12em;font-weight:600;text-transform:uppercase;color:#f3dc9a;text-shadow:0 1px 3px #000}
+.sRule{width:140px;height:1px;margin:9px auto 8px;background:linear-gradient(90deg,transparent,rgba(233,200,119,.85),transparent)}
+#sIdea{font-size:11.5px;letter-spacing:.22em;padding-left:.22em;text-transform:uppercase;color:#e6d3a3;line-height:1.5}
+.sFoot{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:10px}
+.btn.big.dim{filter:grayscale(.9) brightness(.55);animation:none}
+#wfin{display:none;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#a8f5cf;text-shadow:0 1px 3px #000;text-align:center}
+#win.finale #wfin{display:block}
+#win.finale #btnVaults{display:none}
+#win.finale #wfin{font-size:12.5px;color:#f3dc9a}
+#btnNext{width:min(330px,100%)}
+#wfoot .btn.ghost{height:40px;min-width:0;font-size:11px;letter-spacing:.24em;padding:0 16px 0 calc(16px + .24em);background:none;box-shadow:none;border-color:rgba(201,162,79,.45);color:#d8bd7a}
+#roomCard{position:absolute;left:0;right:0;top:calc(var(--sat) + 16px);text-align:center;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .45s ease,transform .45s ease}
+#roomCard.on{opacity:1;transform:none}
+#roomCard .k{font-size:10.5px;letter-spacing:.42em;padding-left:.42em;color:#cdb27a;text-transform:uppercase;font-weight:600;text-shadow:0 1px 3px #000}
+#roomCard .n{margin-top:6px;font-size:22px;letter-spacing:.16em;padding-left:.16em;text-transform:uppercase;font-weight:600;color:#f3dc9a;text-shadow:0 2px 6px #000,0 0 14px rgba(0,0,0,.9)}
+body.land #roomCard{left:auto;right:calc(var(--sar) + 8px);width:min(330px,42vw);top:calc(var(--sat) + 24px)}
+body.land #select{align-items:center;gap:2.4vh;padding-top:calc(var(--sat) + 12px)}
+body.land #doors{max-width:520px}
+body.land .dface{width:72%}
+body.land #selCard{padding:6px 10px 8px}
+body.land #sName{font-size:19px;margin-top:2px}
+body.land .sRule{margin:5px auto 4px}
+body.land #sStars .ms{margin-top:4px}
+body.land #sStars .ms i{width:16px;height:16px}
+body.land .sFoot .hint2{display:none}
+body.land #wfoot{gap:8px}
+body.land #btnNext{height:48px;font-size:13px}
 </style>
 </head>
 <body>
@@ -162,12 +219,22 @@ body.land .wbtns .btn{font-size:11px;height:46px;letter-spacing:.14em;padding:0 
   </div>
   <div class="tBottom"><button id="btnPlay" class="btn big">Play</button><div class="hint2">Sound on for the tumblers</div></div>
 </section>
+<section id="select" class="screen" aria-labelledby="selH">
+  <button id="btnLobby" class="pill" aria-label="Back to the title">‹&nbsp;Lobby</button>
+  <div class="sHead"><div class="kicker">The Vaults · 1928</div><h2 id="selH">Choose a vault</h2></div>
+  <div id="doors" role="list" aria-label="Vaults"></div>
+  <div id="selCard"><div id="sKick" class="lbl"></div><div id="sName"></div><div class="sRule"></div><div id="sIdea"></div><div id="sStars"></div></div>
+  <div class="sFoot"><button id="btnEnter" class="btn big">Open vault 1</button><div class="hint2">Stars&nbsp; <span id="sTotal"></span></div></div>
+</section>
 <section id="win" class="screen" aria-live="polite">
   <div id="stamp"><svg id="stampSvg" role="img" aria-label="Vault 1 Open"></svg></div>
   <div id="stars"></div>
-  <div id="wfoot"><div id="wstat"></div>
-    <div class="wbtns"><button id="btnReplay" class="btn">Replay</button><a class="btn" href="/games">‹ Arcade</a></div></div>
+  <div id="wfoot"><div id="wstat"></div><div id="wfin"></div>
+    <button id="btnNext" class="btn big">Next vault</button>
+    <div class="wbtns"><button id="btnReplay" class="btn">Replay</button><button id="btnVaults" class="btn">Vaults</button></div>
+    <a class="btn ghost" href="/games">‹ Arcade</a></div>
 </section>
+<div id="roomCard" aria-live="polite"><div class="k" id="rcK"></div><div class="n" id="rcN"></div></div>
 <div id="fade"></div>
 <script>
 (function(){
@@ -194,26 +261,42 @@ function fbm(n,x,y,o){let s=0,a=.5,f=1;for(let i=0;i<o;i++){s+=a*n(x*f+i*17.3,y*
 function haptic(ms){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
 let MUTED=false;try{MUTED=localStorage.getItem('tumbler.muted')==='1'}catch(e){}
 
-/* ================= level + solver ================= */
+/* ================= levels + solver ================= */
 // rings outer -> inner. O: openings in the outer edge, I: openings in the inner edge,
 // G: groove edges (j means the ball can roll inside the band from notch j to j+1). Positions are local notches (30deg).
-const LEVEL={name:'Vault 1',
+let LEVEL={name:'Vault 1',
   rings:[{O:[0,6,10],I:[3,6],G:[0,1,2,10]},   // ring 1: curved channel 0->3, straight gap at 6, pocket 10->11
          {O:[0,6],I:[0],G:[6,7]},             // ring 2 (geared): straight gap at 0, pocket 6->8
          {O:[0,8],I:[2],G:[0,1,8]},           // ring 3 (geared): curved channel 0->2, pocket 8->9
          {O:[0,6],I:[0],G:[6]}],              // ring 4: straight gap at 0, pocket 6->7
   gears:[{a:1,b:2,ratio:-1}],                 // rings 2 and 3 mesh 1:1, opposite directions
   start:[4,0,6,9]};
-const NR=4;
-const FEAT=LEVEL.rings.map(r=>{const m=a=>a.reduce((s,j)=>s|(1<<mod(j,12)),0);return{O:m(r.O),I:m(r.I),G:m(r.G)}});
+// Vaults 2-5. gears: ring b turns `ratio` notches for each notch ring a turns (negative: the other way).
+// latches: ring `lock`, and everything geared to it, is held unless ring `key`'s notch (local, in notches) sits at world angle `at` (notches).
+// (the vault list itself, LEVELS, sits after the metal finishes further down: it is mostly art direction)
+let NR=4,FEAT=[],GEAR={},COMP=[],MULT=[],COMPS=[],LATCH=[],NODE_E=48,NODE_C=49,SOLVE=null;
 const has=(m,j)=>(m>>mod(j,12))&1;
-const GEAR={};LEVEL.gears.forEach(g=>{GEAR[g.a]={j:g.b,r:g.ratio};GEAR[g.b]={j:g.a,r:1/g.ratio}});
-const NODE_E=NR*12,NODE_C=NR*12+1;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=a%b;a=b;b=t}return a};
+// gear trains: rings meshed together form one component; each ring turns MULT[i] notches per step of the component
+function prepLevel(L){
+  const n=L.rings.length,adj=[...Array(n)].map(()=>[]);(L.gears||[]).forEach(g=>{adj[g.a].push([g.b,g.ratio]);adj[g.b].push([g.a,1/g.ratio])});
+  const comp=new Array(n).fill(-1),mult=new Array(n).fill(0),comps=[];
+  for(let i=0;i<n;i++){if(comp[i]>=0)continue;const c=comps.length,rs=[i],st=[i];comp[i]=c;mult[i]=1;
+    while(st.length){const u=st.pop();for(const[v,r]of adj[u])if(comp[v]<0){comp[v]=c;mult[v]=mult[u]*r;rs.push(v);st.push(v)}}
+    let s=1;while(s<12&&!rs.every(r=>Math.abs(mult[r]*s-Math.round(mult[r]*s))<1e-9))s++;rs.forEach(r=>mult[r]=Math.round(mult[r]*s));
+    const g=rs.reduce((a,r)=>gcd(a,mult[r]),0);rs.forEach(r=>mult[r]/=g);rs.sort((a,b)=>a-b);
+    let P=1;while(!rs.every(r=>mod(mult[r]*P,12)===0))P++;
+    comps.push({rings:rs,period:P,driver:rs.find(r=>Math.abs(mult[r])===1)})}
+  return{n,comp,mult,comps}}
+function setLevelTables(L){
+  const P=prepLevel(L);LEVEL=L;NR=P.n;COMP=P.comp;MULT=P.mult;COMPS=P.comps;LATCH=L.latches||[];NODE_E=NR*12;NODE_C=NR*12+1;
+  FEAT=L.rings.map(r=>{const m=a=>(a||[]).reduce((s,j)=>s|(1<<mod(j,12)),0);return{O:m(r.O),I:m(r.I),G:m(r.G)}});
+  GEAR={};for(let i=0;i<NR;i++){const C=COMPS[COMP[i]];if(C.rings.length>1)GEAR[i]=C.rings.filter(j=>j!==i).map(j=>({j,r:MULT[j]/MULT[i]}))}}
 // graph search for the ball: nodes are (ring, local notch) on each ring's mid-track, plus Entry and Core.
 function reach(pos){
-  const prev=new Int16Array(NR*12+2).fill(-2);prev[NODE_E]=-1;const q=[NODE_E];
+  const prev=new Int16Array(NR*12+2).fill(-2);prev[NODE_E]=-1;const q=[NODE_E];let qh=0;
   const push=(v,u)=>{if(prev[v]===-2){prev[v]=u;q.push(v)}};
-  while(q.length){const u=q.shift();
+  while(qh<q.length){const u=q[qh++];
     if(u===NODE_E){if(pos[0]!=null&&has(FEAT[0].O,-pos[0]))push(mod(-pos[0],12),u);continue}
     if(u===NODE_C)continue;
     const i=(u/12)|0,j=u%12,f=FEAT[i];if(pos[i]==null)continue;
@@ -228,30 +311,46 @@ function reach(pos){
   if(win){path=[];let v=NODE_C;while(v!==-1){path.push(v);v=prev[v]}path.reverse()}
   return{prev,depth,win,path};
 }
-function applyTurn(p,i,k){const q=p.slice();q[i]=mod(q[i]+k,12);const g=GEAR[i];if(g)q[g.j]=mod(q[g.j]+Math.round(g.r*k),12);return q}
-function solveBFS(){
-  const enc=p=>((p[0]*12+p[1])*12+p[2])*12+p[3],dec=c=>[(c/1728|0)%12,(c/144|0)%12,(c/12|0)%12,c%12];
-  const bfs=ks=>{const d=new Int16Array(20736).fill(-1),s=enc(LEVEL.start);d[s]=0;const q=[s];let h=0;
-    while(h<q.length){const c=q[h++],p=dec(c);for(let i=0;i<NR;i++)for(const k of ks){const v=enc(applyTurn(p,i,k));if(d[v]<0){d[v]=d[c]+1;q.push(v)}}}return d};
-  const dT=bfs([1,2,3,4,5,6,7,8,9,10,11]),dN=bfs([1,-1]);
-  let all=0,reachable=0,par=99,parNotches=99,sols=[],reachStates=0;
-  for(let c=0;c<20736;c++){if(dT[c]>=0)reachStates++;const p=dec(c);if(reach(p).win){all++;if(dT[c]>=0){reachable++;sols.push(p);par=Math.min(par,dT[c]);parNotches=Math.min(parNotches,dN[c])}}}
-  let oneMoveWins=0;for(let i=0;i<NR;i++)for(let k=1;k<12;k++)if(reach(applyTurn(LEVEL.start,i,k)).win)oneMoveWins++;
+const latchFree=(p,l)=>p[l.key]!=null&&Math.abs(mod(p[l.key]+l.notch-l.at+6,12)-6)<1e-6;
+const compLocked=(p,c)=>LATCH.some(l=>COMP[l.lock]===c&&!latchFree(p,l));
+function applyComp(p,c,k){const q=p.slice();for(const r of COMPS[c].rings)q[r]=mod(q[r]+MULT[r]*k,12);return q}
+function applyTurn(p,i,k){return applyComp(p,COMP[i],Math.round(k/MULT[i]))}   // k notches on ring i (a fast ring moves in steps of |MULT|)
+function solveBFS(full){
+  const n=NR,N=Math.pow(12,n),enc=p=>{let s=0;for(let i=0;i<n;i++)s=s*12+p[i];return s},dec=c=>{const p=new Array(n);for(let i=n-1;i>=0;i--){p[i]=c%12;c=Math.floor(c/12)}return p};
+  const bfs=ks=>{const d=new Int16Array(N).fill(-1),pv=new Int32Array(N).fill(-1),s=enc(LEVEL.start);d[s]=0;const q=[s];let h=0;
+    while(h<q.length){const c=q[h++],p=dec(c);for(let ci=0;ci<COMPS.length;ci++){if(compLocked(p,ci))continue;for(const k of ks(COMPS[ci].period)){const v=enc(applyComp(p,ci,k));if(d[v]<0){d[v]=d[c]+1;pv[v]=c;q.push(v)}}}}return{d,pv}};
+  const T=bfs(P=>{const a=[];for(let k=1;k<P;k++)a.push(k);return a}),dT=T.d,dN=bfs(P=>[1,P-1]).d;
+  let all=0,reachable=0,par=99,parNotches=99,sols=[],reachStates=0,parCode=-1;const scan=full||n<5;
+  for(let c=0;c<N;c++){if(dT[c]>=0)reachStates++;else if(!scan)continue;const p=dec(c);if(reach(p).win){all++;if(dT[c]>=0){reachable++;sols.push(p);if(dT[c]<par){par=dT[c];parCode=c}parNotches=Math.min(parNotches,dN[c])}}}
+  // one optimal line of play, in order (order matters once a latch is involved)
+  const line=[];for(let v=parCode;v>=0&&T.pv[v]>=0;v=T.pv[v]){const a=dec(T.pv[v]),b=dec(v),ci=COMPS.findIndex(C=>C.rings.some(r=>a[r]!==b[r])),D=COMPS[ci].driver;
+    line.unshift({ring:D,notches:mod(b[D]-a[D]+6,12)-6})}
+  let oneMoveWins=0;for(let ci=0;ci<COMPS.length;ci++){if(compLocked(LEVEL.start,ci))continue;for(let k=1;k<COMPS[ci].period;k++)if(reach(applyComp(LEVEL.start,ci,k)).win)oneMoveWins++}
   const st=reach(LEVEL.start);
-  return{par,parNotches,solutionStatesAll:all,solutionStatesReachable:reachable,solutions:sols,reachableStates:reachStates,
-    startSolved:st.win,startDepth:st.depth,oneMoveWins,obviousTurnDepth:reach([6,0,6,9]).depth,obviousTurnSolved:reach([6,0,6,9]).win};
+  const out={par,parNotches,parSol:parCode>=0?dec(parCode):null,solutionStatesAll:scan?all:null,solutionStatesReachable:reachable,solutions:sols,reachableStates:reachStates,
+    startSolved:st.win,startDepth:st.depth,oneMoveWins,line};
+  if(LEVEL===LEVELS[0])Object.assign(out,{obviousTurnDepth:reach([6,0,6,9]).depth,obviousTurnSolved:reach([6,0,6,9]).win});
+  return out;
 }
-const SOLVE=solveBFS();
 
 /* ================= geometry (door units) ================= */
-const RG=[{rin:146,rout:182},{rin:101,rout:146},{rin:56,rout:101},{rin:26,rout:56}];
+let RG=[{rin:146,rout:182},{rin:101,rout:146},{rin:56,rout:101},{rin:26,rout:56}];
 RG.forEach(r=>{r.mid=(r.rin+r.rout)/2});
-const BALL=8,CHW=19,BEZ0=182,BEZ1=196,FACE=208,FR1=240,SEAM=101,CRADLE=194,PIN_R=12.5;
+const BALL=8,BEZ0=182,BEZ1=196,FACE=208,FR1=240,SEAM=101,CRADLE=194;
+let CHW=19,PIN_R=12.5;
 const PIN_A=[45,165,285].map(d=>d*PI/180);
 const BOLT_A=[0,1,2,3,4,5,6,7].map(k=>(22.5+45*k)*PI/180);
 const WT=-326,WB=246;
-const SEAM_R=[BEZ0,RG[0].rin,RG[1].rin,RG[2].rin];
-
+let SEAM_R=[BEZ0,RG[0].rin,RG[1].rin,RG[2].rin];
+let CUR=0,TH=null,PINS=[];const SOLVES=[];
+// ring bands for the vault in hand: vault 1 keeps its four hand-set bands, five-ring vaults split the dial evenly
+function levelGeometry(){
+  if(NR===4){RG=[{rin:146,rout:182},{rin:101,rout:146},{rin:56,rout:101},{rin:26,rout:56}];CHW=19;PIN_R=12.5}
+  else{const w=(182-26)/NR;RG=[];for(let i=0;i<NR;i++)RG.push({rin:Math.round(182-(i+1)*w),rout:Math.round(182-i*w)});CHW=17;PIN_R=7}
+  RG.forEach(r=>{r.mid=(r.rin+r.rout)/2});SEAM_R=[BEZ0].concat(RG.slice(0,NR-1).map(r=>r.rin));
+  // pinion stations on every geared seam (half-notch angles, clear of the channels when the rings are settled)
+  PINS=[];let si=0;for(const g of LEVEL.gears||[]){const o=Math.min(g.a,g.b),inn=Math.max(g.a,g.b);if(inn-o!==1)continue;const off=[0,60,30,90][si++%4],cmp=Math.abs(Math.abs(g.ratio)-1)>.01;
+    PINS.push({r:RG[o].rin,inner:inn,outer:o,R:PIN_R*(cmp?1.5:1),ang:[45,165,285].map(d=>(d+off)*PI/180),compound:cmp})}}
 /* ================= layout ================= */
 const cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
 let W=0,H=0,DPR=1,S=1,SC=1,SAFE={t:0,b:0,l:0,r:0},LAND=false;
@@ -297,6 +396,10 @@ const GL={};
   GL.P={w:44,p:[R(0,0,16,100),band(16,27,28,27,-h,h,16,27,14,22.5)]};
   GL.N={w:48,p:[R(0,0,4.5,100),P([[0,0],[16,0],[48,100],[32,100]]),R(43.5,0,4.5,100)]};
   GL['1']={w:30,p:[R(13,0,16,100),P([[13,0],[17,0],[0,17],[0,11.5]]),R(5,95.5,32,4.5)]};
+  GL['2']={w:44,p:[band(22,26,22,26,-PI,.5,17.5,26,13.5,21.5),P([[43.6,30],[31,30],[0,95.5],[6.5,95.5]]),R(0,95.5,44,4.5)]};
+  GL['3']={w:42,p:[band(19,23.5,21,23.5,-PI*.8,h,15.5,23.5,12.5,19),band(19,72,23,28,-h,PI*.8,15,72,14,23.5)]};
+  GL['4']={w:46,p:[P([[26,0],[31,0],[4.5,66.5],[0,66.5]]),R(26,0,16,100),R(0,64,46,4.5)]};
+  GL['5']={w:42,p:[R(6,0,36,4.5),R(6,0,4.5,45),band(19,67,23,33,-PI*.7,PI*.78,15,67,14,28.5)]};
 })();
 function wordPath(str,track,space){let x=0,d='';track=track==null?9:track;space=space||26;
   for(const ch of str){if(ch===' '){x+=space;continue}const g=GL[ch];if(!g)continue;
@@ -323,7 +426,7 @@ function buildTitleSVG(){
     '<path d="M-6 112 H'+(w.w+6)+'" stroke="#e9c877" stroke-width="1.2"/><path d="M20 118 H'+(w.w-20)+'" stroke="#e9c877" stroke-opacity=".6" stroke-width=".8"/>';
 }
 function buildStampSVG(){
-  const a=wordPath('VAULT 1',9,22),b=wordPath('OPEN',12);const svg=$('stampSvg');
+  const a=wordPath('VAULT '+(CUR+1),9,22),b=wordPath('OPEN',12);const svg=$('stampSvg');svg.setAttribute('aria-label','Vault '+(CUR+1)+' Open');
   const W2=400,H2=250;const s1=.42,s2=.86;
   const ax=(W2-a.w*s1)/2,bx=(W2-b.w*s2)/2;
   const step=(i)=>{const d=i;return 'M'+(40+d)+' '+(14+d)+' H'+(W2-40-d)+' V'+(34+d)+' H'+(W2-14-d)+' V'+(H2-34-d)+' H'+(W2-40-d)+' V'+(H2-14-d)+' H'+(40+d)+' V'+(H2-34-d)+' H'+(14+d)+' V'+(34+d)+' H'+(40+d)+'Z'};
@@ -334,9 +437,9 @@ function buildStampSVG(){
     '<g fill="url(#sray)" transform="translate(0 0)">'+rays+'</g>'+
     '<path d="'+step(0)+'" transform="translate(5 8)" fill="#000" opacity=".55"/>'+
     '<path d="'+step(0)+'" fill="url(#sgf)"/><path d="'+step(4)+'" fill="#120d06"/><path d="'+step(6)+'" fill="url(#sgf)"/><path d="'+step(8.5)+'" fill="url(#slq)"/>'+
-    '<path d="'+step(14)+'" fill="none" stroke="#1aa36c" stroke-width="2.4"/><path d="'+step(17)+'" fill="none" stroke="#e9c877" stroke-width=".9"/>'+
+    '<path d="'+step(14)+'" fill="none" stroke="'+TH.acc.dot+'" stroke-width="2.4"/><path d="'+step(17)+'" fill="none" stroke="#e9c877" stroke-width=".9"/>'+
     '<path d="M70 104 H330" stroke="#e9c877" stroke-width="1.1"/><path d="M110 109 H290" stroke="#e9c877" stroke-opacity=".55" stroke-width=".8"/>'+
-    '<circle cx="200" cy="106.5" r="5" fill="#0c4a31" stroke="#e9c877" stroke-width="1.2"/><circle cx="198.6" cy="105" r="1.6" fill="#b9ffe0"/>'+
+    '<circle cx="200" cy="106.5" r="5" fill="'+(TH.acc.stamp||[TH.acc.deep])[0]+'" stroke="#e9c877" stroke-width="1.2"/><circle cx="198.6" cy="105" r="1.6" fill="'+(TH.acc.stamp||[0,TH.acc.gem[0]])[1]+'"/>'+
     goldWord('sg',a.d,ax,46,s1)+goldWord('sg',b.d,bx,122,s2);
 }
 function starSVG(){const pts=[],o=[];for(let k=0;k<10;k++){const r=k%2?19:46,a=-PI/2+k*PI/5;pts.push([Math.cos(a)*r,Math.sin(a)*r])}
@@ -362,23 +465,23 @@ function annulus(g,r0,r1){g.beginPath();g.arc(0,0,r1,0,TAU);g.arc(0,0,r0,0,TAU,t
 function makeMarble(){
   const w=Math.ceil(W*DPR),h=Math.ceil(H*DPR),c=mk(w,h),g=c.getContext('2d');
   const q=3,lw=Math.ceil(w/q),lh=Math.ceil(h/q),lo=mk(lw,lh),lg=lo.getContext('2d'),im=lg.createImageData(lw,lh),d=im.data;
-  const n1=vnoise(11),n2=vnoise(23),n3=vnoise(37),f=q/(DPR*130);
+  const M=TH.marble,sd=M.seed||0,n1=vnoise(11+sd),n2=vnoise(23+sd),n3=vnoise(37+sd),f=q/(DPR*130);
   for(let y=0;y<lh;y++)for(let x=0;x<lw;x++){
     const X=x*f,Y=y*f,t=fbm(n1,X,Y,5);
     const s=Math.sin((X*.8+Y*1.5)*1.6+t*8.5),vein=Math.pow(1-Math.abs(s),16);
     const s2=Math.sin((X*1.7-Y*.5)*2.1+fbm(n2,X*1.4,Y*1.4,4)*7.5),vein2=Math.pow(1-Math.abs(s2),26);
     const cl=fbm(n3,X*.7,Y*.7,4),dk=clamp((t-.42)*2.4,0,1)*.45;
-    let r=5+cl*15,gg=24+cl*42,b=18+cl*30;r*=1-dk;gg*=1-dk;b*=1-dk;
-    r+=vein*55+vein2*14;gg+=vein*95+vein2*30;b+=vein*78+vein2*24;
+    let r=M.b0[0]+cl*M.bk[0],gg=M.b0[1]+cl*M.bk[1],b=M.b0[2]+cl*M.bk[2];r*=1-dk;gg*=1-dk;b*=1-dk;
+    r+=vein*M.v1[0]+vein2*M.v2[0];gg+=vein*M.v1[1]+vein2*M.v2[1];b+=vein*M.v1[2]+vein2*M.v2[2];
     const i=(y*lw+x)*4;d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255}
   lg.putImageData(im,0,0);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(lo,0,0,w,h);
   // gold veins
-  const R=rng(5),nn=vnoise(77);g.lineCap='round';g.lineJoin='round';
+  const R=rng(5+sd),nn=vnoise(77+sd),GV=M.gv||[[200,55],[150,60],[60,40]];g.lineCap='round';g.lineJoin='round';
   const vein=(x,y,a,steps,wd,depth)=>{const pts=[[x,y]],st=(6+R()*4)*DPR,a0=a;
     for(let s=0;s<steps;s++){a+=(nn(x/(70*DPR),y/(70*DPR))-.5)*.55+(R()-.5)*.5;a+=(a0-a)*.09;x+=Math.cos(a)*st;y+=Math.sin(a)*st;pts.push([x,y]);
       if(depth<2&&R()<.022)vein(x,y,a+(R()<.5?.6:-.6),steps*.35|0,wd*.55,depth+1)}
-    g.strokeStyle='rgba(235,185,80,.06)';g.lineWidth=wd*6;g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();
-    for(let i=1;i<pts.length;i++){const k=nn(pts[i][0]/(25*DPR),pts[i][1]/(25*DPR));g.strokeStyle='rgba('+(200+k*55|0)+','+(150+k*60|0)+','+(60+k*40|0)+','+(.35+k*.5).toFixed(2)+')';
+    g.strokeStyle=M.halo||'rgba(235,185,80,.06)';g.lineWidth=wd*6;g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();
+    for(let i=1;i<pts.length;i++){const k=nn(pts[i][0]/(25*DPR),pts[i][1]/(25*DPR));g.strokeStyle='rgba('+(GV[0][0]+k*GV[0][1]|0)+','+(GV[1][0]+k*GV[1][1]|0)+','+(GV[2][0]+k*GV[2][1]|0)+','+(.35+k*.5).toFixed(2)+')';
       g.lineWidth=wd*(.25+k*1.2);g.beginPath();g.moveTo(pts[i-1][0],pts[i-1][1]);g.lineTo(pts[i][0],pts[i][1]);g.stroke()}};
   for(let v=0;v<8;v++)vein(R()*w,R()*h,(R()<.65?.62:2.45)+(R()-.5)*.5,70+R()*90|0,(.7+R()*1.4)*DPR,0);
   // soft vignette
@@ -393,7 +496,7 @@ function lathe(g,r0,r1,prof,lit){const step=1/SC;for(let r=r0;r<=r1+1e-6;r+=step
 const GOLD3=(b)=>b<.5?mixc([34,20,6],[168,116,38],b*2):b<.85?mixc([168,116,38],[236,196,110],(b-.5)/.35):mixc([236,196,110],[255,244,206],(b-.85)/.15);
 function rivet(g,x,y,r){const gr=g.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);gr.addColorStop(0,'#fff6d6');gr.addColorStop(.4,'#d9ad55');gr.addColorStop(1,'#5a3a10');
   g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.arc(x+r*.25,y+r*.35,r*1.05,0,TAU);g.fill();g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,TAU);g.fill()}
-function emerald(g,x,y,r){const gr=g.createRadialGradient(x-r*.3,y-r*.35,r*.05,x,y,r);gr.addColorStop(0,'#d8ffee');gr.addColorStop(.25,'#3fe0a0');gr.addColorStop(.7,'#0b7a4c');gr.addColorStop(1,'#03301d');
+function emerald(g,x,y,r){const gr=g.createRadialGradient(x-r*.3,y-r*.35,r*.05,x,y,r),C=TH.acc.gem;gr.addColorStop(0,C[0]);gr.addColorStop(.25,C[1]);gr.addColorStop(.7,C[2]);gr.addColorStop(1,C[3]);
   g.fillStyle='#c79a46';g.beginPath();g.arc(x,y,r*1.32,0,TAU);g.fill();g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,TAU);g.fill();
   g.fillStyle='rgba(255,255,255,.85)';g.beginPath();g.ellipse(x-r*.32,y-r*.38,r*.28,r*.16,-.6,0,TAU);g.fill()}
 const PX0=-300,PY0=-345,PWU=600,PHU=690;
@@ -422,12 +525,12 @@ function makePortal(){
   g.strokeStyle='#e2bf6c';g.lineWidth=1.4;[264,300].forEach(y=>{g.beginPath();g.moveTo(-262,y);g.lineTo(262,y);g.stroke()});
   for(let row=0;row<2;row++){g.beginPath();for(let x=-270,i=0;x<=270;x+=18,i++){const y=282+(i%2?-11:11)-row*0;g.lineTo(x,y+row*0)}g.lineWidth=row?0.8:2.2;g.strokeStyle=row?'rgba(233,200,119,.6)':'#d9b25c';
     if(row){g.save();g.translate(0,6);g.stroke();g.restore()}else g.stroke()}
-  for(let x=-261,i=0;x<=261;x+=18,i++){if(i%2)continue;const y=271;g.fillStyle='#0f7a4f';g.beginPath();g.moveTo(x+18,y+2);g.lineTo(x+12,y+11);g.lineTo(x+24,y+11);g.closePath();g.fill()}
+  for(let x=-261,i=0;x<=261;x+=18,i++){if(i%2)continue;const y=271;g.fillStyle=TH.acc.tri;g.beginPath();g.moveTo(x+18,y+2);g.lineTo(x+12,y+11);g.lineTo(x+24,y+11);g.closePath();g.fill()}
   g.restore();
   // emerald + gold double border along the stepped outline
     path(P(9.5));gr=g.createLinearGradient(0,-302,0,345);gr.addColorStop(0,'#16161b');gr.addColorStop(.4,'#0b0b0e');gr.addColorStop(1,'#050506');
   g.save();g.beginPath();P(5).forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();P(9.5).slice().reverse().forEach(([x,y],i)=>g.lineTo(x,y));g.closePath();
-  const eg=g.createLinearGradient(-262,0,262,0);eg.addColorStop(0,'#064a30');eg.addColorStop(.5,'#18a56c');eg.addColorStop(1,'#064a30');g.fillStyle=eg;g.fill('evenodd');g.restore();
+  const eg=g.createLinearGradient(-262,0,262,0);eg.addColorStop(0,TH.acc.deep);eg.addColorStop(.5,TH.acc.mid);eg.addColorStop(1,TH.acc.deep);g.fillStyle=eg;g.fill('evenodd');g.restore();
   g.strokeStyle='#f0cf7e';g.lineWidth=1.8;path(P(4.5));g.stroke();g.lineWidth=1;g.strokeStyle='#d9b25c';path(P(10));g.stroke();
   g.strokeStyle='rgba(255,240,200,.35)';g.lineWidth=.6;path(P(1));g.stroke();
   // lamp: inverted fan sconce
@@ -481,11 +584,11 @@ function makeDoorStatic(){
   for(let k=1;k<12;k++){const a=k*NOTCH;const[x,y]=polar(189.4,a);drawNumeral(g,String(k),x,y,9,a,'#120c06',1.5);
     const[t0,t1]=polar(183.2,a),[t2,t3]=polar(185.2,a);g.strokeStyle='#8a6020';g.lineWidth=1.2;g.beginPath();g.moveTo(t0,t1);g.lineTo(t2,t3);g.stroke()}
   // core: black lacquer, gold fan, keyhole
-  g.fillStyle='#0b0a0c';g.beginPath();g.arc(0,0,RG[3].rin+.5,0,TAU);g.fill();
+  g.fillStyle='#0b0a0c';g.beginPath();g.arc(0,0,RG[NR-1].rin+.5,0,TAU);g.fill();
   for(let k=0;k<24;k++){const a=k*TAU/24;const fg=g.createRadialGradient(0,0,10,0,0,25);fg.addColorStop(0,'#fff0c0');fg.addColorStop(.5,'#d9a84c');fg.addColorStop(1,'#7a5016');
     g.fillStyle=k%2?fg:'#141215';g.beginPath();g.moveTo(Math.sin(a)*11,-Math.cos(a)*11);g.arc(0,0,24.2,a-PI/2,a+TAU/24-PI/2);g.arc(0,0,11,a+TAU/24-PI/2,a-PI/2,true);g.closePath();g.fill()}
   g.strokeStyle='#f0cf7e';g.lineWidth=1;g.beginPath();g.arc(0,0,24.8,0,TAU);g.stroke();g.beginPath();g.arc(0,0,11,0,TAU);g.stroke();
-  for(let k=0;k<8;k++){const a=k*TAU/8+TAU/16;const[x,y]=polar(25.6,a);g.fillStyle='#1aa36c';g.beginPath();g.arc(x,y,.9,0,TAU);g.fill()}
+  for(let k=0;k<8;k++){const a=k*TAU/8+TAU/16;const[x,y]=polar(25.6,a);g.fillStyle=TH.acc.dot;g.beginPath();g.arc(x,y,.9,0,TAU);g.fill()}
   // keyhole
   const kh=()=>{g.beginPath();g.arc(0,0,8.9,PI*.62,PI*.38);g.lineTo(3.1,15);g.lineTo(-3.1,15);g.closePath()};
   g.save();g.translate(0,.8);kh();g.fillStyle='rgba(255,236,190,.7)';g.fill();g.restore();
@@ -502,15 +605,16 @@ function makeDoorStatic(){
   c.R=R;return c}
 
 /* ring styles: 0 polished gold, 1 black lacquer (geared), 2 rose gold (geared), 3 ivory enamel */
-const RSTY=[
-  {kind:'gold',prof:t=>GOLD3(clamp(.38+.3*Math.pow(Math.sin(PI*t),1.4)+.1*Math.sin(t*PI*7)+(Math.abs(t-.5)<.06?.22:0)-(Math.abs(t-.1)<.025||Math.abs(t-.9)<.025?.3:0)+(Math.abs(t-.06)<.02||Math.abs(t-.94)<.02?.3:0),0,1))},
+const RSTY1=[
+  {kind:'gold',glintR:150.6,prof:t=>GOLD3(clamp(.38+.3*Math.pow(Math.sin(PI*t),1.4)+.1*Math.sin(t*PI*7)+(Math.abs(t-.5)<.06?.22:0)-(Math.abs(t-.1)<.025||Math.abs(t-.9)<.025?.3:0)+(Math.abs(t-.06)<.02||Math.abs(t-.94)<.02?.3:0),0,1))},
   {kind:'lacq',prof:t=>mixc([5,6,8],[34,36,42],Math.pow(Math.sin(PI*t),3))},
-  {kind:'gold',prof:t=>{const b=clamp(.36+.32*Math.pow(Math.sin(PI*t),1.3)+.1*Math.sin(t*PI*5+1)+(Math.abs(t-.5)<.05?.2:0)-(Math.abs(t-.14)<.02||Math.abs(t-.86)<.02?.3:0),0,1);return b<.5?mixc([36,16,8],[170,96,58],b*2):b<.85?mixc([170,96,58],[236,170,130],(b-.5)/.35):mixc([236,170,130],[255,226,204],(b-.85)/.15)}},
+  {kind:'gold',glintR:92.8,prof:t=>{const b=clamp(.36+.32*Math.pow(Math.sin(PI*t),1.3)+.1*Math.sin(t*PI*5+1)+(Math.abs(t-.5)<.05?.2:0)-(Math.abs(t-.14)<.02||Math.abs(t-.86)<.02?.3:0),0,1);return b<.5?mixc([36,16,8],[170,96,58],b*2):b<.85?mixc([170,96,58],[236,170,130],(b-.5)/.35):mixc([236,170,130],[255,226,204],(b-.85)/.15)}},
   {kind:'ivory',prof:t=>mixc([120,104,78],[232,220,190],.35+.55*Math.pow(Math.sin(PI*t),.8))}];
+let RSTY=RSTY1;
 function teeth(g,rBase,rTip,n,col,hi){for(let k=0;k<n;k++){const a=k*TAU/n,w=TAU/n*.27,w2=TAU/n*.18;
   const p=[polar(rBase,a-w),polar(rTip,a-w2),polar(rTip,a+w2),polar(rBase,a+w)];g.fillStyle=col;g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();
   g.strokeStyle=hi;g.lineWidth=.35;g.beginPath();g.moveTo(p[1][0],p[1][1]);g.lineTo(p[2][0],p[2][1]);g.stroke()}}
-function makeRingTex(i){
+function makeRingTex(i){if(LEVEL!==LEVELS[0])return makeRingTexGen(i);
   const r=RG[i],Ru=r.rout+3,px=Math.ceil(2*Ru*SC),c=mk(px,px),g=c.getContext('2d');g.setTransform(SC,0,0,SC,px/2,px/2);
   const st=RSTY[i],R=rng(100+i*7);let a=r.rin+.9,b=r.rout-.9;if(i===1)a=104;if(i===2)b=98;
   lathe(g,a,b,st.prof,false);
@@ -548,6 +652,123 @@ function makeRingTex(i){
   g.strokeStyle='rgba(20,10,2,.75)';g.lineWidth=.8;g.beginPath();g.arc(0,0,a+.4,0,TAU);g.stroke();
   if(st.kind==='lacq'){g.strokeStyle='#e2bd68';g.lineWidth=.7;g.beginPath();g.arc(0,0,104.4,0,TAU);g.stroke()}
   c.ru=Ru;return c}
+/* metal finishes for the deeper vaults (same lathe language as vault 1) */
+const ramp=(c0,c1,c2,c3)=>b=>b<.5?mixc(c0,c1,b*2):b<.85?mixc(c1,c2,(b-.5)/.35):mixc(c2,c3,(b-.85)/.15);
+const METAL={gold:GOLD3,rose:ramp([36,16,8],[170,96,58],[236,170,130],[255,226,204]),silver:ramp([16,18,22],[112,120,132],[206,214,224],[250,252,255]),
+  copper:ramp([34,12,4],[150,66,32],[228,136,88],[255,214,182]),plat:ramp([24,24,30],[134,138,150],[218,222,232],[255,255,255]),bronze:ramp([30,18,6],[128,84,38],[210,162,96],[252,230,184])};
+const metalProf=(M,ph)=>t=>M(clamp(.38+.3*Math.pow(Math.sin(PI*t),1.4)+.1*Math.sin(t*PI*6+ph)+(Math.abs(t-.5)<.05?.2:0)-(Math.abs(t-.14)<.02||Math.abs(t-.86)<.02?.3:0),0,1));
+const lacqProf=(lo,hi)=>t=>mixc(lo,hi,Math.pow(Math.sin(PI*t),3));
+const ivoryProf=(lo,hi)=>t=>mixc(lo,hi,.35+.55*Math.pow(Math.sin(PI*t),.8));
+/* ================= the five vaults ================= */
+const ST_=(k,o)=>Object.assign({kind:k},o);
+const SILVER_CH=['rgba(244,248,255,.95)','rgba(16,22,34,.95)','#8994a6'],SILVER_T=['#b9c3d2','rgba(255,255,255,.8)'];
+const LEVELS=[
+  Object.assign(LEVEL,{room:'The Gold Room',idea:'One geared pair',
+    theme:{bg:'#03100b',marble:{b0:[5,24,18],bk:[15,42,30],v1:[55,95,78],v2:[14,30,24]},
+      acc:{deep:'#064a30',mid:'#18a56c',tri:'#0f7a4f',dot:'#1aa36c',gem:['#d8ffee','#3fe0a0','#0b7a4c','#03301d'],rgb:[60,255,170],rgb2:[90,255,180],stamp:['#0c4a31','#b9ffe0']}}}),
+  {name:'Vault 2',room:'Safe Deposit',idea:'Two geared pairs',
+    intro:'Two geared pairs this time',teach:{gear:'Each pair turns as one'},hints:['Set the outer pair first','Then the inner pair'],
+    rings:[{O:[2,11],I:[5,8,11],G:[2,3,4,7]},  // ring 1 (pair A): curve 2->5, straight gap at 11, inner pocket 8->7
+           {O:[1,3],I:[0,3,5],G:[0,5,6]},      // ring 2 (pair A): curve 1->0, straight gap at 3, inner pocket 5->7
+           {O:[0,3,8],I:[3],G:[8,11]},         // ring 3 (pair B): straight gap at 3, pockets 0->11 and 8->9
+           {O:[3],I:[4,11],G:[3,10]},          // ring 4 (pair B): curve 3->4, inner pocket 11->10
+           {O:[5,10],I:[10],G:[3,4]}],         // ring 5: straight gap at 10, pocket 5->3
+    gears:[{a:0,b:1,ratio:-1},{a:2,b:3,ratio:-1}],start:[9,1,11,7,11],
+    theme:{bg:'#030612',marble:{seed:3,b0:[4,8,22],bk:[10,22,56],v1:[64,88,150],v2:[16,26,62]},
+      acc:{deep:'#0a2358',mid:'#2e64d6',tri:'#1d47a8',dot:'#3a74e6',gem:['#e8f1ff','#79aaff','#1b44b0','#061238'],rgb:[90,160,255],rgb2:[110,170,255]},
+      room:{bg:'#060912',ceil:'#0b0f1a',side:[[8,14,28],[96,112,140]],back:[[40,48,64],[176,186,204],[22,28,40],[112,122,142]],floor:[[48,54,66],[150,158,172]]},treasure:'deposit',
+      rings:[ST_('gold',{prof:metalProf(METAL.silver,0),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),
+             ST_('lacq',{prof:lacqProf([3,6,18],[26,46,98]),deco:'inlay'}),
+             ST_('gold',{prof:metalProf(METAL.silver,1.4),deco:'rays',ch:SILVER_CH,teeth:SILVER_T}),
+             ST_('lacq',{prof:lacqProf([3,6,18],[26,46,98]),deco:'inlay'}),
+             ST_('ivory',{prof:ivoryProf([118,108,96],[236,228,214]),deco:'dots'})]}},
+  {name:'Vault 3',room:'The Counting Room',idea:'A two-to-one gear',
+    intro:'One gear runs at double speed',teach:{ratio:'Two notches for every one'},hints:['It stops on every other notch','Pick a gap it can reach'],
+    rings:[{O:[3,9],I:[8],G:[3,8]},             // ring 1: curve 9->8, pocket 3->4
+           {O:[3,8],I:[5],G:[3,4,7]},          // ring 2: curve 3->5, pocket 8->7
+           {O:[2,8,10],I:[2],G:[7,10,11]},     // ring 3 (slow, 2:1): straight gap at 2, pockets 8->7 and 10->12
+           {O:[2,11],I:[3],G:[2,10]},          // ring 4 (fast, turns twice as far): curve 2->3, pocket 11->10
+           {O:[0,2],I:[0],G:[2,3]}],           // ring 5: straight gap at 0, pocket 2->4
+    gears:[{a:2,b:3,ratio:-2}],start:[0,1,10,1,5],
+    theme:{bg:'#120405',marble:{seed:6,b0:[18,4,5],bk:[48,12,12],v1:[118,64,54],v2:[32,12,10]},
+      acc:{deep:'#4c0a14',mid:'#c8293f',tri:'#9b1a2c',dot:'#d43a50',gem:['#ffe6ea','#ff6a80','#a3122a','#3a0309'],rgb:[255,110,120],rgb2:[255,120,130]},
+      room:{bg:'#120604',ceil:'#1a0805',side:[[30,10,6],[146,74,42]],back:[[60,24,14],[196,114,72],[36,12,6],[132,66,36]],floor:[[66,46,40],[160,130,116]]},treasure:'counting',
+      rings:[ST_('gold',{prof:metalProf(METAL.copper,0),deco:'chev',teeth:['#d79a72','rgba(255,236,220,.8)']}),
+             ST_('lacq',{prof:lacqProf([14,3,4],[86,18,22]),deco:'inlay'}),
+             ST_('gold',{prof:metalProf(METAL.gold,1.2),deco:'rays'}),
+             ST_('gold',{prof:metalProf(METAL.rose,2.4),deco:'chev',teeth:['#d79a72','rgba(255,236,220,.8)']}),
+             ST_('ivory',{prof:ivoryProf([122,104,92],[236,224,206]),deco:'dots'})]}},
+  {name:'Vault 4',room:'The Strong Room',idea:'A relocker latch',
+    intro:'A latch holds the gear pair',teach:{latch:'Latched. Find its key notch'},hints:['Turn the outer ring to free it','Then turn the outer ring back'],
+    rings:[{O:[2,7,9],I:[2],G:[5,6,9]},{O:[4,8],I:[4],G:[8]},{O:[6,9],I:[2,9],G:[2,3,6]},{O:[3,11],I:[8],G:[3,8,9,10]},{O:[3,7],I:[3],G:[6]}],
+    gears:[{a:1,b:2,ratio:-1}],latches:[{lock:1,key:0,at:7.5,notch:7.5}],start:[10,6,5,10,2],
+    theme:{bg:'#07050c',marble:{seed:9,b0:[7,6,11],bk:[18,14,28],v1:[150,138,168],v2:[38,32,50],gv:[[206,40],[200,40],[214,38]],halo:'rgba(220,210,240,.05)'},
+      acc:{deep:'#2c0f4e',mid:'#8a4fd8',tri:'#6a32b4',dot:'#9a62e6',gem:['#f4ebff','#c39bff','#6a2fc0','#1c0838'],rgb:[190,130,255],rgb2:[196,150,255]},
+      room:{bg:'#08060e',ceil:'#0e0a16',side:[[14,10,20],[104,94,124]],back:[[36,28,48],[154,144,174],[20,14,30],[98,88,118]],floor:[[56,52,64],[156,150,168]]},treasure:'strong',
+      rings:[ST_('gold',{prof:metalProf(METAL.plat,.6),deco:'chev',ch:SILVER_CH,teeth:SILVER_T}),
+             ST_('lacq',{prof:lacqProf([10,4,20],[58,30,98]),deco:'inlay'}),
+             ST_('gold',{prof:metalProf(METAL.plat,2.1),deco:'rays',ch:SILVER_CH,teeth:SILVER_T}),
+             ST_('lacq',{prof:lacqProf([5,6,8],[34,36,42]),deco:'inlay'}),
+             ST_('ivory',{prof:ivoryProf([116,106,104],[234,226,222]),deco:'dots'})]}},
+  {name:'Vault 5',room:'The Reserve',idea:'Two latches and a 2:1 train',
+    intro:'Two latches. Find the order',teach:{latch:'Latched. Find its key notch',ratio:'Two notches for every one'},hints:['Every latch has a key ring','The 2:1 pair must leave home'],
+    rings:[{O:[3,6],I:[1],G:[1,2,5]},{O:[0,4,8],I:[0,5],G:[4,8,9]},{O:[2,10],I:[2,8],G:[7,10,11]},{O:[4,8],I:[8],G:[3]},{O:[2,6,10],I:[6],G:[2,10,11]}],
+    gears:[{a:2,b:3,ratio:-2}],latches:[{lock:3,key:4,at:3.5,notch:8.5},{lock:1,key:2,at:9.5,notch:.5}],start:[3,8,8,2,5],
+    theme:{bg:'#0a0804',marble:{seed:14,b0:[6,5,3],bk:[16,13,8],v1:[120,96,46],v2:[36,28,12],gv:[[214,40],[168,50],[70,40]]},
+      acc:{deep:'#16202c',mid:'#9fc8ef',tri:'#5f8ab8',dot:'#b8dcff',gem:['#ffffff','#d6ecff','#7fa8d6','#1e2c40'],rgb:[180,220,255],rgb2:[190,225,255]},
+      room:{bg:'#0e0a03',ceil:'#1a1206',side:[[30,22,6],[170,130,52]],back:[[70,50,14],[224,174,84],[40,28,6],[152,112,42]],floor:[[60,52,40],[160,146,116]]},treasure:'reserve',
+      rings:[ST_('gold',{prof:metalProf(METAL.gold,0),deco:'chev'}),
+             ST_('lacq',{prof:lacqProf([5,5,6],[36,34,32]),deco:'inlay'}),
+             ST_('gold',{prof:metalProf(METAL.gold,1.7),deco:'rays'}),
+             ST_('gold',{prof:metalProf(METAL.rose,.9),deco:'chev'}),
+             ST_('ivory',{prof:ivoryProf([120,104,78],[232,220,190]),deco:'dots'})]}}
+];
+const gearEdge=(i,j)=>(LEVEL.gears||[]).find(g=>(g.a===i&&g.b===j)||(g.a===j&&g.b===i));
+// the slow ring of a 2:1 train carries coarse teeth, the fast ring fine ones
+const fastTrain=i=>GEAR[i]&&GEAR[i].some(p=>Math.abs(Math.abs(p.r)-1)>.01);
+function makeRingTexGen(i){
+  const r=RG[i],Ru=r.rout+3,px=Math.ceil(2*Ru*SC),c=mk(px,px),g=c.getContext('2d');g.setTransform(SC,0,0,SC,px/2,px/2);
+  const st=RSTY[i],R=rng(100+i*7+CUR*53),gOut=i>0&&gearEdge(i-1,i),gIn=i<NR-1&&gearEdge(i,i+1),ACC=TH.acc;
+  let a=r.rin+.9,b=r.rout-.9;if(gIn)a=r.rin+3;if(gOut)b=r.rout-3;
+  lathe(g,a,b,st.prof,false);
+  const tc=st.teeth||['#c9a04e','rgba(255,244,210,.8)'],coarse=fastTrain(i)&&Math.abs(MULT[i])===1;
+  const tN=coarse?36:72,tH=coarse?3.1:2.3;
+  if(gIn)teeth(g,a+.2,a+.2-tH,tN,tc[0],tc[1]);
+  if(gOut)teeth(g,b-.2,b-.2+tH,tN,tc[0],tc[1]);
+  g.save();annulus(g,a,b);g.clip();
+  const N=st.kind==='lacq'?380:1300;
+  for(let k=0;k<N;k++){const rr=lerp(a,b,R()),a0=R()*TAU,len=.03+R()*.5,light=R()<.5;
+    const al=st.kind==='lacq'?(light?.015+R()*.03:.04):(light?.03+R()*.08:.03+R()*.09);
+    g.strokeStyle=light?'rgba(255,248,226,'+al.toFixed(3)+')':'rgba(40,20,4,'+al.toFixed(3)+')';g.lineWidth=.2+R()*.4;g.beginPath();g.arc(0,0,rr,a0,a0+len);g.stroke()}
+  const line=(rr,col,lw)=>{g.strokeStyle=col;g.lineWidth=lw;g.beginPath();g.arc(0,0,rr,0,TAU);g.stroke()};
+  const zig=(r0,amp,n,col,lw)=>{g.beginPath();for(let k=0;k<=n;k++){const an=k*TAU/n,[x,y]=polar(r0+(k%2?-amp:amp),an);k?g.lineTo(x,y):g.moveTo(x,y)}g.strokeStyle=col;g.lineWidth=lw;g.stroke()};
+  const ink=st.ink||'rgba(60,30,8,.8)',hair=st.hair||'#e2bd68';
+  if(st.deco==='chev'){zig(b-2.4,1.2,144,ink,.7);zig(b-3.1,1.2,144,'rgba(255,246,214,.55)',.4);
+    for(let k=0;k<12;k++){const an=(k+.5)*NOTCH,[x,y]=polar(a+3.4,an);if(k%3===1)emerald(g,x,y,1.45);else rivet(g,x,y,1.1)}
+    for(let k=0;k<12;k++){const an=k*NOTCH,[x0,y0]=polar(a+.6,an),[x1,y1]=polar(a+4.2,an);g.strokeStyle=ink;g.lineWidth=.8;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y1);g.stroke()}}
+  if(st.deco==='inlay'){line(a+1.4,hair,1);line(b-1.4,hair,1);line(a+3,hair,.5);line(b-3,hair,.5);
+    for(let k=0;k<12;k++){const an=(k+.5)*NOTCH,[x,y]=polar((a+b)/2,an);g.save();g.translate(x,y);g.rotate(an);g.fillStyle=hair;g.beginPath();g.moveTo(0,-3.4);g.lineTo(2.3,0);g.lineTo(0,3.4);g.lineTo(-2.3,0);g.closePath();g.fill();
+      g.fillStyle=ACC.tri;g.beginPath();g.moveTo(0,-1.5);g.lineTo(1,0);g.lineTo(0,1.5);g.lineTo(-1,0);g.closePath();g.fill();g.restore()}
+    for(let k=0;k<24;k++){const an=(k+.5)*TAU/24,[x,y]=polar(a+4.4,an);g.fillStyle=ACC.dot;g.beginPath();g.arc(x,y,.8,0,TAU);g.fill()}}
+  if(st.deco==='rays'){for(let k=0;k<120;k++){const an=k*TAU/120,[x0,y0]=polar(a+.4,an),[x1,y1]=polar(a+(k%2?3.6:5.4),an);g.strokeStyle=ink;g.lineWidth=.42;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y1);g.stroke()}
+    zig(b-2.6,1.4,96,ink,.75);for(let k=0;k<12;k++){const an=(k+.5)*NOTCH,[x,y]=polar(b-2.6,an);if(k%3===0)emerald(g,x,y,1.3)}}
+  if(st.deco==='dots'){line(a+1.6,'rgba(30,22,12,.7)',.5);line(b-1.6,'rgba(30,22,12,.7)',.5);
+    for(let k=0;k<12;k++){const an=(k+.5)*NOTCH,[x,y]=polar(b-2.8,an);g.fillStyle='#b8862e';g.beginPath();g.arc(x,y,.75,0,TAU);g.fill()}
+    for(let k=0;k<36;k++){const an=k*TAU/36,[x,y]=polar(a+2.8,an);g.fillStyle='rgba(30,22,12,.45)';g.beginPath();g.arc(x,y,.45,0,TAU);g.fill()}}
+  g.restore();
+  // a latched ring wears a ratchet band where the latch bites
+  for(const l of LATCH)if(l.lock===i){const e=l.key>i?a:b,s=l.key>i?1:-1;g.fillStyle='rgba(20,10,4,.55)';
+    for(let k=0;k<60;k++){const an=k*TAU/60,w=TAU/60;const p=[polar(e,an),polar(e+s*2.2,an+w*.15),polar(e,an+w*.85)];g.beginPath();p.forEach(([x,y],j)=>j?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill()}}
+  // edge bevels
+  g.lineWidth=.7;g.strokeStyle=st.kind==='lacq'?'rgba(233,200,119,.9)':'rgba(255,248,222,.7)';g.beginPath();g.arc(0,0,b-.35,0,TAU);g.stroke();
+  g.strokeStyle='rgba(20,10,2,.75)';g.lineWidth=.8;g.beginPath();g.arc(0,0,a+.4,0,TAU);g.stroke();
+  // the key notch: a slot cut in the edge the latch lever drops into
+  for(const l of LATCH)if(l.key===i){const out=l.lock<i,e=out?r.rout:r.rin,s=out?-1:1,an=l.notch*NOTCH,hw=4.6/e;
+    const p=[polar(e+(out?.5:-.5),an-hw),polar(e+s*6.4,an-hw*.75),polar(e+s*6.4,an+hw*.75),polar(e+(out?.5:-.5),an+hw)];
+    g.fillStyle='#050403';g.beginPath();p.forEach(([x,y],j)=>j?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();
+    g.strokeStyle=ACC.mid;g.lineWidth=1.3;g.stroke();const[x,y]=polar(e+s*8.8,an);emerald(g,x,y,1.8)}
+  st.glintR=st.deco==='chev'?a+3.4:st.deco==='rays'?b-2.6:0;
+  c.ru=Ru;return c}
 function makeSheen(i){
   const r=RG[i],Ru=r.rout+3,px=Math.ceil(2*Ru*SC*.5),sc=SC*.5,c=mk(px,px),g=c.getContext('2d');g.setTransform(sc,0,0,sc,px/2,px/2);
   const kind=RSTY[i].kind,R=rng(300+i);
@@ -561,16 +782,20 @@ function makeSheen(i){
   g.globalCompositeOperation='destination-in';const rg=g.createRadialGradient(0,0,r.rin,0,0,r.rout);
   rg.addColorStop(0,'rgba(0,0,0,.25)');rg.addColorStop(.5,'rgba(0,0,0,1)');rg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=rg;annulus(g,r.rin+1,r.rout-1);g.fill('evenodd');
   c.ru=Ru;return c}
-function makePinion(){
-  const R=PIN_R+2,px=Math.ceil(2*R*SC),c=mk(px,px),g=c.getContext('2d');g.setTransform(SC,0,0,SC,px/2,px/2);
-  const n=10,ro=PIN_R,ri=PIN_R-2.6;g.beginPath();
-  for(let k=0;k<n;k++){const a=k*TAU/n,w=TAU/n;const pts=[[ri,a-w*.5],[ri,a-w*.26],[ro,a-w*.16],[ro,a+w*.16],[ri,a+w*.26]];pts.forEach(([rr,aa],j)=>{const[x,y]=polar(rr,aa);(k||j)?g.lineTo(x,y):g.moveTo(x,y)})}
-  g.closePath();g.fillStyle='rgba(0,0,0,.5)';g.save();g.translate(.8,1.4);g.fill();g.restore();
-  const gr=g.createRadialGradient(-3,-4,1,0,0,ro);gr.addColorStop(0,'#fff3c6');gr.addColorStop(.45,'#d7a94e');gr.addColorStop(.85,'#8a5d1c');gr.addColorStop(1,'#5a3a10');g.fillStyle=gr;g.fill();
-  g.strokeStyle='rgba(50,28,6,.9)';g.lineWidth=.45;g.stroke();
-  g.strokeStyle='rgba(70,40,10,.8)';g.lineWidth=.6;g.beginPath();g.arc(0,0,ri-1.6,0,TAU);g.stroke();
-  for(let k=0;k<4;k++){const a=k*TAU/4;g.fillStyle='rgba(40,22,4,.55)';g.beginPath();const[x,y]=polar(5.6,a+.4);g.arc(x,y,1.25,0,TAU);g.fill()}
-  g.fillStyle='#0d0c0f';g.beginPath();g.arc(0,0,4.4,0,TAU);g.fill();emerald(g,0,0,2.7);
+function makePinion(PR,compound){PR=PR||PIN_R;const k=PR/12.5;
+  const R=PR+2,px=Math.ceil(2*R*SC),c=mk(px,px),g=c.getContext('2d');g.setTransform(SC*k,0,0,SC*k,px/2,px/2);
+  const wheel=(cols,jewel)=>{const n=10,ro=12.5,ri=9.9;g.beginPath();
+    for(let k=0;k<n;k++){const a=k*TAU/n,w=TAU/n;const pts=[[ri,a-w*.5],[ri,a-w*.26],[ro,a-w*.16],[ro,a+w*.16],[ri,a+w*.26]];pts.forEach(([rr,aa],j)=>{const[x,y]=polar(rr,aa);(k||j)?g.lineTo(x,y):g.moveTo(x,y)})}
+    g.closePath();g.fillStyle='rgba(0,0,0,.5)';g.save();g.translate(.8,1.4);g.fill();g.restore();
+    const gr=g.createRadialGradient(-3,-4,1,0,0,ro);gr.addColorStop(0,cols[0]);gr.addColorStop(.45,cols[1]);gr.addColorStop(.85,cols[2]);gr.addColorStop(1,cols[3]);g.fillStyle=gr;g.fill();
+    g.strokeStyle='rgba(50,28,6,.9)';g.lineWidth=.45;g.stroke();
+    g.strokeStyle='rgba(70,40,10,.8)';g.lineWidth=.6;g.beginPath();g.arc(0,0,ri-1.6,0,TAU);g.stroke();
+    for(let k=0;k<4;k++){const a=k*TAU/4;g.fillStyle='rgba(40,22,4,.55)';g.beginPath();const[x,y]=polar(5.6,a+.4);g.arc(x,y,1.25,0,TAU);g.fill()}
+    if(jewel){g.fillStyle='#0d0c0f';g.beginPath();g.arc(0,0,4.4,0,TAU);g.fill();emerald(g,0,0,2.7)}};
+  wheel(['#fff3c6','#d7a94e','#8a5d1c','#5a3a10'],!compound);
+  // a 2:1 train: a small wheel riding on the big one (clockwork compound pinion), so the ratio reads at a glance
+  if(compound){g.save();g.rotate(.3);g.scale(.52,.52);g.fillStyle='rgba(0,0,0,.6)';g.beginPath();g.arc(1.2,2,13.6,0,TAU);g.fill();g.fillStyle='#120c06';g.beginPath();g.arc(0,0,13.4,0,TAU);g.fill();
+    wheel(['#fff0e6','#e8a07a','#9a4a2a','#4a1a0a'],true);g.restore()}
   c.R=R;return c}
 function makeBall(){
   const R=BALL+1,px=Math.ceil(2*R*SC),c=mk(px,px),g=c.getContext('2d');g.setTransform(SC,0,0,SC,px/2,px/2);const r=BALL;
@@ -609,27 +834,28 @@ function makeGlove(){
 function makeInterior(){
   const R=FACE,px=Math.ceil(2*R*SC),c=mk(px,px),g=c.getContext('2d');g.setTransform(SC,0,0,SC,px/2,px/2);const rnd=rng(909);
   g.save();g.beginPath();g.arc(0,0,R,0,TAU);g.clip();
-  g.fillStyle='#120a04';g.fillRect(-R,-R,2*R,2*R);
+  const RM=TH.room||{};g.fillStyle=RM.bg||'#120a04';g.fillRect(-R,-R,2*R,2*R);
+  const SW=RM.side||[[26,15,5],[128,84,34]],BK=RM.back||[[54,34,12],[176,128,58],[34,20,6],[122,84,34]],FL=RM.floor||[[60,52,40],[150,136,108]];
   const VPY=-30,f=72,BW=1.64,HC=1.67,sx=(X,Z)=>f*X/Z,fy=Z=>VPY+72/Z,cy=Z=>VPY-120/Z;
   // ceiling + walls
   const quad=(p,fill)=>{g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fillStyle=fill;g.fill()};
-  quad([[-R,-R],[R,-R],[118,-150],[-118,-150]],'#1a0f05');
+  quad([[-R,-R],[R,-R],[118,-150],[-118,-150]],RM.ceil||'#1a0f05');
   // deposit boxes on side walls
   for(const sd of[-1,1]){const Zs=[1,.84,.7,.58,.48,.4,.33,.27];for(let zi=0;zi<Zs.length-1;zi++){const z0=Zs[zi],z1=Zs[zi+1];for(let row=0;row<6;row++){
         const y0=lerp(-HC,1,row/6),y1=lerp(-HC,1,(row+1)/6);const P=(Z,Y)=>[sd*f*BW/Z,VPY+72*Y/Z];
-        const a=P(z0,y0),b=P(z1,y0),cc=P(z1,y1),d=P(z0,y1);const sh=.35+.5*(1-zi/7);quad([a,b,cc,d],rgba(mixc([26,15,5],[128,84,34],sh*(.75+rnd()*.25)),1));
+        const a=P(z0,y0),b=P(z1,y0),cc=P(z1,y1),d=P(z0,y1);const sh=.35+.5*(1-zi/7);quad([a,b,cc,d],rgba(mixc(SW[0],SW[1],sh*(.75+rnd()*.25)),1));
         g.strokeStyle='rgba(10,5,0,.7)';g.lineWidth=.8;g.beginPath();g.moveTo(...a);g.lineTo(...b);g.lineTo(...cc);g.lineTo(...d);g.closePath();g.stroke();
         const m=P((z0+z1)/2,(y0+y1)/2);g.fillStyle='rgba(20,10,0,.8)';g.beginPath();g.arc(m[0],m[1],.9/((z0+z1)/2)*.6,0,TAU);g.fill()}}}
   // back wall boxes
   for(let row=0;row<6;row++)for(let col=0;col<8;col++){const x=-118+col*29.5,y=-150+row*32;const lum=1-Math.abs(col-3.5)/6-row*.03;
-    const gr=g.createLinearGradient(x,y,x,y+32);gr.addColorStop(0,rgba(mixc([54,34,12],[176,128,58],lum),1));gr.addColorStop(1,rgba(mixc([34,20,6],[122,84,34],lum),1));
+    const gr=g.createLinearGradient(x,y,x,y+32);gr.addColorStop(0,rgba(mixc(BK[0],BK[1],lum),1));gr.addColorStop(1,rgba(mixc(BK[2],BK[3],lum),1));
     g.fillStyle=gr;g.fillRect(x+1,y+1,27.5,30);g.strokeStyle='rgba(255,230,170,.35)';g.lineWidth=.6;g.strokeRect(x+3,y+3,23.5,26);
     g.fillStyle='#1a0e04';g.beginPath();g.arc(x+14.75,y+14,1.6,0,TAU);g.fill();g.fillRect(x+14.1,y+14,1.3,4);g.fillStyle='rgba(255,236,190,.6)';g.fillRect(x+9,y+24,11.5,1.2)}
   // floor: black and ivory checker in perspective
   const Zr=[1,.86,.74,.63,.54,.46,.39,.33,.28,.235];
   for(let zi=0;zi<Zr.length-1;zi++)for(let xi=-12;xi<12;xi++){const X0=xi*.205,X1=X0+.205,z0=Zr[zi],z1=Zr[zi+1];
     const p=[[sx(X0,z0),fy(z0)],[sx(X1,z0),fy(z0)],[sx(X1,z1),fy(z1)],[sx(X0,z1),fy(z1)]];const dark=(xi+zi)%2===0;const dd=1-zi*.04;
-    quad(p,dark?rgba([10,9,8],1):rgba(mixc([60,52,40],[150,136,108],dd),1))}
+    quad(p,dark?rgba([10,9,8],1):rgba(mixc(FL[0],FL[1],dd),1))}
   // pendant lamp
   g.fillStyle='#2a1a08';g.fillRect(-1,-R,2,R-152+(-150+R)*0);g.fillRect(-1,-208,2,60);
   let gr=g.createRadialGradient(0,-138,2,0,-138,26);gr.addColorStop(0,'#fffbe8');gr.addColorStop(.5,'#ffd98a');gr.addColorStop(1,'rgba(255,190,90,0)');g.fillStyle=gr;g.beginPath();g.arc(0,-138,26,0,TAU);g.fill();
@@ -644,8 +870,6 @@ function makeInterior(){
     g.fillStyle='#e9e0c4';g.fillRect(-w/2,-h,w,h-13);g.strokeStyle='#2f7a55';g.lineWidth=1.1;g.strokeRect(-w/2+2,-h+2,w-4,h-17);g.lineWidth=.5;g.strokeRect(-w/2+4,-h+4,w-8,h-21);
     g.strokeStyle='rgba(47,122,85,.6)';for(let k=0;k<3;k++){g.beginPath();g.moveTo(-w/2+8,-h+10+k*4);g.lineTo(w/2-8,-h+10+k*4);g.stroke()}
     g.fillStyle='#a3241c';g.fillRect(-2,-h,4,h);g.fillStyle='#c9a04e';g.beginPath();g.arc(0,-h/2-6,3.4,0,TAU);g.fill();g.restore()};
-  bond(-140,112,44,36,-.05);bond(-104,120,40,26,.04);bond(-124,90,38,22,-.02);
-  g.save();g.translate(-96,96);g.rotate(-.3);g.fillStyle='#eadfbf';g.fillRect(-16,-4,32,8);g.fillStyle='#d4c8a4';g.beginPath();g.ellipse(16,0,2.4,4,0,0,TAU);g.fill();g.fillStyle='#a3241c';g.fillRect(-2,-4,4,8);g.restore();
   // gold bars pyramid (center)
   const bar=(x,y)=>{const fr=g.createLinearGradient(0,y-12,0,y);fr.addColorStop(0,'#fff0b0');fr.addColorStop(.3,'#f0bd52');fr.addColorStop(.7,'#b07a22');fr.addColorStop(1,'#6e4510');
     g.fillStyle=fr;g.beginPath();g.moveTo(x-19,y);g.lineTo(x+19,y);g.lineTo(x+15,y-12);g.lineTo(x-15,y-12);g.closePath();g.fill();
@@ -654,6 +878,10 @@ function makeInterior(){
     g.strokeStyle='rgba(255,250,220,.8)';g.lineWidth=.5;g.beginPath();g.moveTo(x-15,y-12);g.lineTo(x+15,y-12);g.stroke();
     G.push([x-11+rnd()*22,y-18+rnd()*2]);G.push([x+15,y-12]);};
   const coins=(x,y,n)=>{for(let k=0;k<n;k++){const yy=y-k*2.6;g.fillStyle=k%2?'#a9741f':'#c48b2c';g.fillRect(x-7,yy-2.6,14,2.6);g.fillStyle='#ffe08a';g.beginPath();g.ellipse(x,yy-2.6,7,2.2,0,0,TAU);g.fill()}G.push([x-3,y-n*2.6-2])};
+  const T=TH.treasure||'gold';
+  if(T==='gold'){
+  bond(-140,112,44,36,-.05);bond(-104,120,40,26,.04);bond(-124,90,38,22,-.02);
+  g.save();g.translate(-96,96);g.rotate(-.3);g.fillStyle='#eadfbf';g.fillRect(-16,-4,32,8);g.fillStyle='#d4c8a4';g.beginPath();g.ellipse(16,0,2.4,4,0,0,TAU);g.fill();g.fillStyle='#a3241c';g.fillRect(-2,-4,4,8);g.restore();
   g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.ellipse(0,134,104,10,0,0,TAU);g.fill();
   [[4,132],[3,114],[2,96],[1,78]].forEach(([n,y])=>{for(let k=0;k<n;k++)bar((k-(n-1)/2)*39,y)});
   coins(-92,136,7);coins(-78,140,4);coins(88,138,6);coins(100,142,3);
@@ -669,16 +897,85 @@ function makeInterior(){
   g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=.8;g.strokeRect(-21,30,42,38);g.fillStyle='rgba(200,230,255,.07)';g.fillRect(-21,30,42,38);
   g.strokeStyle='rgba(255,255,255,.4)';g.beginPath();g.moveTo(-17,34);g.lineTo(-9,64);g.stroke();g.fillStyle=brassGrad(g,-22,26,22,30);g.fillRect(-22,27,44,3);
   g.restore();
+  }else treasure(g,T,{bar,coins,bond,G,rnd});
   // tunnel vignette
   gr=g.createRadialGradient(0,0,R*.62,0,0,R);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.88)');g.fillStyle=gr;g.fillRect(-R,-R,2*R,2*R);
   g.restore();c.R=R;c.glints=G;return c}
+// the hoard behind vaults 2-5 (vault 1's gold room is painted inline above)
+function treasure(g,T,H){const{bar,coins,bond,G}=H,A=TH.acc.gem;
+  const shadow=(x,y,rx,ry)=>{g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.ellipse(x,y,rx,ry,0,0,TAU);g.fill()};
+  const pearl=(x,y,r)=>{const pg=g.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);pg.addColorStop(0,'#ffffff');pg.addColorStop(.5,'#ece4ef');pg.addColorStop(1,'#7e7488');g.fillStyle=pg;g.beginPath();g.arc(x,y,r,0,TAU);g.fill()};
+  const gem=(x,y,r,cA,cB)=>{const gg=g.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);gg.addColorStop(0,'#fff');gg.addColorStop(.3,cA);gg.addColorStop(1,cB);g.fillStyle=gg;g.beginPath();
+    for(let k=0;k<8;k++){const a=k*TAU/8;g.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r*.9)}g.closePath();g.fill();G.push([x-r*.3,y-r*.4])};
+  const strand=(x0,y0,x1,y1,sag,n,r)=>{for(let k=0;k<=n;k++){const t=k/n;pearl(lerp(x0,x1,t),lerp(y0,y1,t)+Math.sin(t*PI)*sag,r)}G.push([lerp(x0,x1,.5)-r*.3,lerp(y0,y1,.5)+sag-r*.5])};
+  const metal=(y0,y1,c)=>{const m=g.createLinearGradient(0,y0,0,y1);m.addColorStop(0,c[0]);m.addColorStop(.35,c[1]);m.addColorStop(.7,c[2]);m.addColorStop(1,c[3]);return m};
+  const NICKEL=['#ffffff','#c9d0da','#7d8592','#3a3f48'],BRASS=['#fff2c4','#e2b85e','#9a6a22','#4e3008'];
+  const quadF=(p,f)=>{g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fillStyle=f;g.fill()};
+  if(T==='deposit'){
+    // a pulled-out deposit drawer spilling pearls and sapphires; letters to the left, a stack of locked boxes to the right
+    shadow(0,140,118,10);bond(-142,118,40,30,-.05);bond(-112,124,36,22,.05);
+    quadF([[-74,104],[74,104],[60,86],[-60,86]],'#06102a');
+    const vel=g.createLinearGradient(0,86,0,104);vel.addColorStop(0,'#0b1f55');vel.addColorStop(1,'#1d3d8c');quadF([[-68,103],[68,103],[56,88],[-56,88]],vel);
+    strand(-50,96,-6,92,5,12,2.6);strand(-40,100,30,97,6,16,2.3);strand(6,92,48,95,4,10,2.5);
+    gem(-18,95,5.2,A[1],A[2]);gem(22,99,4,A[1],A[2]);gem(40,92,3.4,'#ffd0dc','#a01a3a');
+    g.fillStyle=metal(104,138,NICKEL);g.fillRect(-74,104,148,34);g.strokeStyle='rgba(20,24,32,.8)';g.lineWidth=.8;g.strokeRect(-70,108,140,26);
+    g.fillStyle=metal(116,126,BRASS);g.fillRect(-14,116,28,9);g.fillStyle='#1a1206';g.beginPath();g.arc(0,120.5,2,0,TAU);g.fill();
+    strand(-64,104,-38,104,13,9,2.4);strand(30,104,56,104,10,8,2.3);G.push([60,104]);
+    for(let k=0;k<4;k++){const y=138-k*15,x=124;g.fillStyle=metal(y-14,y,NICKEL);g.fillRect(x-22,y-14,44,14);g.strokeStyle='rgba(20,24,32,.75)';g.strokeRect(x-20,y-12,40,10);
+      g.fillStyle='#2a2f38';g.beginPath();g.arc(x+12,y-7,1.6,0,TAU);g.fill();g.fillStyle=metal(y-10,y-4,BRASS);g.fillRect(x-14,y-10,12,5)}
+    G.push([110,82]);
+  }else if(T==='counting'){
+    // banknote bundles stacked in a pyramid, a split coin sack, columns of coin
+    shadow(0,140,112,10);
+    const bundle=(x,y)=>{const fr=g.createLinearGradient(0,y-10,0,y);fr.addColorStop(0,'#c9d6bf');fr.addColorStop(1,'#6f8468');g.fillStyle=fr;g.fillRect(x-17,y-10,34,10);
+      g.fillStyle='#dfe8d4';g.beginPath();g.moveTo(x-17,y-10);g.lineTo(x+17,y-10);g.lineTo(x+14,y-15);g.lineTo(x-14,y-15);g.closePath();g.fill();
+      g.strokeStyle='rgba(60,80,56,.6)';g.lineWidth=.4;for(let k=1;k<4;k++){g.beginPath();g.moveTo(x-17,y-10+k*2.5);g.lineTo(x+17,y-10+k*2.5);g.stroke()}
+      g.fillStyle='#f4ecd8';g.fillRect(x-3,y-15,6,15);g.fillStyle='#b8323c';g.fillRect(x-3,y-13.5,6,1.2);G.push([x-9+Math.random()*18,y-14])};
+    [[5,136],[4,121],[3,106],[2,91],[1,76]].forEach(([n,y])=>{for(let k=0;k<n;k++)bundle((k-(n-1)/2)*35,y)});
+    const sack=(x,y,s)=>{g.save();g.translate(x,y);g.scale(s,s);const sg=g.createRadialGradient(-6,-14,2,0,-10,26);sg.addColorStop(0,'#cfa874');sg.addColorStop(1,'#5a3e1e');g.fillStyle=sg;
+      g.beginPath();g.moveTo(-18,0);g.quadraticCurveTo(-24,-20,-8,-30);g.lineTo(8,-30);g.quadraticCurveTo(24,-20,18,0);g.closePath();g.fill();
+      g.fillStyle='#3a2810';g.fillRect(-9,-32,18,3);g.fillStyle='#cfa874';g.beginPath();g.moveTo(-8,-32);g.lineTo(-12,-40);g.lineTo(0,-34);g.lineTo(12,-40);g.lineTo(8,-32);g.closePath();g.fill();g.restore()};
+    sack(-128,140,1.1);sack(-100,146,.85);coins(-82,148,3);coins(-70,150,2);
+    coins(90,144,8);coins(104,146,10);coins(118,144,6);coins(132,146,4);coins(80,150,3);
+    for(let k=0;k<7;k++){const x=-66+k*7+Math.sin(k)*3,y=150-(k%3);g.fillStyle='#ffd77a';g.beginPath();g.ellipse(x,y,5,1.8,0,0,TAU);g.fill()}
+  }else if(T==='strong'){
+    // a jewelled egg on a marble plinth, with bars stacked either side
+    shadow(0,140,118,10);
+    [[3,138],[2,124],[1,110]].forEach(([n,y])=>{for(let k=0;k<n;k++){bar(-104+(k-(n-1)/2)*39*.8,y);bar(104+(k-(n-1)/2)*39*.8,y)}});
+    const pg=g.createLinearGradient(-26,0,26,0);pg.addColorStop(0,'#3a3440');pg.addColorStop(.4,'#e4dde8');pg.addColorStop(.7,'#b5adbd');pg.addColorStop(1,'#2a2530');
+    g.fillStyle=pg;g.fillRect(-22,92,44,48);g.fillStyle=metal(86,94,BRASS);g.fillRect(-28,86,56,8);g.fillRect(-26,136,52,6);
+    const eg=g.createRadialGradient(-8,40,3,0,52,34);eg.addColorStop(0,'#fff6d4');eg.addColorStop(.35,'#e6b95a');eg.addColorStop(.75,'#8a5a16');eg.addColorStop(1,'#3a2206');
+    g.fillStyle=eg;g.beginPath();g.ellipse(0,58,22,29,0,0,TAU);g.fill();
+    g.save();g.beginPath();g.ellipse(0,58,22,29,0,0,TAU);g.clip();g.strokeStyle=A[1];g.lineWidth=1.3;
+    for(let k=-4;k<=4;k++){g.beginPath();g.moveTo(k*9-20,26);g.lineTo(k*9+20,90);g.stroke();g.beginPath();g.moveTo(k*9+20,26);g.lineTo(k*9-20,90);g.stroke()}
+    g.restore();for(let k=-3;k<=3;k++)for(let j=-2;j<=2;j++){const x=k*9,y=58+j*12.5+(k%2?6:0);if(x*x/484+(y-58)*(y-58)/841<.8)gem(x,y,2.1,A[1],A[2])}
+    gem(0,27,4,'#fff','#9aa');g.fillStyle=metal(82,88,BRASS);g.beginPath();g.ellipse(0,85,16,4,0,0,TAU);g.fill();
+    bond(-60,140,34,22,-.06);bond(64,140,32,20,.06);
+  }else{
+    // the Reserve: a wall of bullion and the crown on its cushion
+    shadow(0,140,150,12);
+    [[7,124],[6,108],[5,92],[4,76],[3,60],[2,44]].forEach(([n,y])=>{for(let k=0;k<n;k++)bar((k-(n-1)/2)*38,y)});
+    coins(-150,150,9);coins(-136,152,6);coins(146,150,8);coins(132,152,5);
+    // the crown sits forward on its cushion, a pool of shadow behind it so gold reads against gold
+    const dk=g.createRadialGradient(0,128,6,0,128,62);dk.addColorStop(0,'rgba(10,4,2,.75)');dk.addColorStop(1,'rgba(10,4,2,0)');g.fillStyle=dk;g.fillRect(-70,70,140,100);
+    const g0=G.length;g.save();g.translate(0,150);g.scale(1.3,1.3);g.translate(0,-138);
+    const cu=g.createLinearGradient(0,126,0,146);cu.addColorStop(0,'#7a1a30');cu.addColorStop(1,'#24040c');g.fillStyle=cu;g.beginPath();g.ellipse(0,138,46,11,0,0,TAU);g.fill();
+    g.fillStyle='#d9b25c';for(const s of[-1,1]){g.beginPath();g.arc(s*44,138,3,0,TAU);g.fill()}
+    const cg=g.createLinearGradient(0,96,0,132);cg.addColorStop(0,'#fff5cc');cg.addColorStop(.4,'#e8b850');cg.addColorStop(1,'#7a4a10');g.fillStyle=cg;
+    g.beginPath();g.moveTo(-30,132);g.lineTo(-34,104);g.lineTo(-20,116);g.lineTo(-10,96);g.lineTo(0,112);g.lineTo(10,96);g.lineTo(20,116);g.lineTo(34,104);g.lineTo(30,132);g.closePath();g.fill();
+    g.strokeStyle='rgba(60,30,4,.85)';g.lineWidth=.8;g.stroke();
+    g.fillStyle='#5a1222';g.fillRect(-28,124,56,6);g.fillStyle=metal(122,132,BRASS);g.fillRect(-31,130,62,4);
+    for(const[x,y]of[[-34,103],[-10,95],[10,95],[34,103]])pearl(x,y,2.6);
+    gem(0,121,4.4,'#ff8aa0','#7a0820');gem(-17,121,3,A[1],A[2]);gem(17,121,3,A[1],A[2]);gem(0,106,3.2,'#fff','#89a');g.restore();for(let k=g0;k<G.length;k++)G[k]=[G[k][0]*1.3,150+(G[k][1]-138)*1.3];
+  }}
 function makeRays(){const sc=SC*.4,R=420,px=Math.ceil(2*R*sc),c=mk(px,px),g=c.getContext('2d');g.setTransform(sc,0,0,sc,px/2,px/2);
   for(let k=0;k<22;k++){const a=k*TAU/22+(k%3)*.05,w=.03+(k%4)*.018;const gr=g.createRadialGradient(0,0,40,0,0,R);gr.addColorStop(0,'rgba(255,220,150,.45)');gr.addColorStop(1,'rgba(255,200,120,0)');
     g.fillStyle=gr;g.beginPath();g.moveTo(0,0);g.arc(0,0,R,a-w,a+w);g.closePath();g.fill()}c.R=R;return c}
 function buildAssets(){
   TX.bg=makeMarble();TX.cone=makeLightCone();TX.portal=makePortal();TX.door=makeDoorStatic();
-  TX.ring=[0,1,2,3].map(makeRingTex);TX.sheen=[0,1,2,3].map(makeSheen);TX.pinion=makePinion();TX.ball=makeBall();TX.bolt=makeBolt();
-  TX.glint=TX.glint||makeGlint();TX.dot=TX.dot||makeDot([255,200,90]);TX.dotE=TX.dotE||makeDot([90,255,180]);TX.glove=makeGlove();TX.interior=null;TX.rays=null;TX.snap=null;
+  const ix=[...Array(NR).keys()];TX.ring=ix.map(makeRingTex);TX.sheen=ix.map(makeSheen);TX.pinion=makePinion();TX.ball=makeBall();TX.bolt=makeBolt();
+  PINS.forEach(P=>P.tex=makePinion(P.R,P.compound));
+  TX.glint=TX.glint||makeGlint();TX.dot=TX.dot||makeDot([255,200,90]);TX.dotE=makeDot(TH.acc.rgb2||[90,255,180]);TX.dotR=TX.dotR||makeDot([255,70,80]);TX.glove=makeGlove();TX.interior=null;TX.rays=null;TX.snap=null;
   buildChannelPaths();
 }
 
@@ -731,13 +1028,18 @@ function tone(type,f,t,dur,gain,f2,dest,att){const a=AU.ctx;if(!a)return;const o
 function nburst(t,dur,gain,type,fq,Q,dest,buf){const a=AU.ctx;if(!a)return;const s=a.createBufferSource();s.buffer=buf||AU.noise;const f=a.createBiquadFilter();f.type=type;f.frequency.value=fq;f.Q.value=Q||1;
   const g=a.createGain();g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(g);g.connect(dest||AU.master);s.start(t,Math.random()*1.5);s.stop(t+dur+.05);return f}
 const SFX={
-  click(i,soft){if(!AU.ctx)return;const t=T0(),k=soft?.45:1,p=[1,1.12,1.26,1.4][i];nburst(t,.022,.32*k,'highpass',3200,.8);
+  click(i,soft){if(!AU.ctx)return;const t=T0(),k=soft?.45:1,p=[1,1.12,1.26,1.4,1.55][i]||1;nburst(t,.022,.32*k,'highpass',3200,.8);
     tone('sine',2650*p,t,.05,.06*k);tone('sine',3870*p,t,.035,.035*k);tone('triangle',420*p,t,.03,.08*k,260*p)},
   grab(i){if(!AU.ctx)return;const t=T0();nburst(t,.03,.12,'bandpass',1800,2);tone('sine',300+i*40,t,.05,.05,220)},
   tock(n){if(!AU.ctx)return;const t=T0(),f=[392,440,523.25,587.33,659.25][clamp(n,0,4)];tone('sine',f,t,.32,.22,f*.985,null,.003);tone('triangle',f*2,t,.09,.06);
     nburst(t,.03,.25,'lowpass',900,1);tone('sine',f*.5,t,.18,.12,f*.4);const g=tone('sine',f*1.5,t+.01,.4,.03);if(g&&AU.rv)g.connect(AU.rv)},
   depth(n){if(!AU.ctx)return;const t=T0();const notes=[[523.25],[523.25,659.25],[523.25,659.25,783.99],[523.25,659.25,783.99,1046.5]][clamp(n-1,0,3)];
     notes.forEach((f,k)=>{const g=tone('triangle',f,t+k*.055,.5,.05);if(g)g.connect(AU.rv);tone('sine',f*2,t+k*.055,.3,.02)})},
+  // a held gear train knocking against its latch
+  held(){if(!AU.ctx)return;const t=T0();nburst(t,.05,.5,'bandpass',900,2.5);tone('square',96,t,.09,.07,70);tone('sine',180,t+.06,.12,.12,120);nburst(t+.07,.04,.3,'bandpass',1400,3)},
+  // a latch lever dropping into (or riding out of) its key notch
+  latch(open){if(!AU.ctx)return;const t=T0();nburst(t,.03,.35,'highpass',2600,1);tone('sine',open?1480:980,t,.14,.06,open?1760:820);tone('triangle',open?330:220,t,.08,.08,open?440:160);
+    if(open){const g=tone('sine',2217,t+.05,.4,.03);if(g)g.connect(AU.rv)}},
   ui(){if(!AU.ctx)return;const t=T0();nburst(t,.04,.15,'bandpass',2200,3);tone('sine',880,t,.08,.05,660)},
   gate(){if(!AU.ctx)return;const t=T0();nburst(t,.05,.3,'bandpass',1500,3);tone('sine',1900,t,.12,.06,1500);tone('sine',140,t,.12,.15,90)},
   seam(){if(!AU.ctx)return;const t=T0();tone('sine',2400+Math.random()*600,t,.04,.05);nburst(t,.02,.12,'highpass',4000,1)},
@@ -765,20 +1067,23 @@ const SFX={
     [84,88,91,96].forEach(n=>{const g=tone('triangle',m(n),t+.85,1.2,.035);if(g)g.connect(AU.rv)})}
 };
 function setLoops(dt){if(!AU.ctx)return;const t=T0();
-  const w=Math.abs(ST.rings[2].omega||0);AU.whirr.gain.setTargetAtTime(clamp(w*.045,0,.12),t,.04);AU.whirrOsc.frequency.setTargetAtTime(20+w*26,t,.04);
+  let w=0;for(const i in GEAR)w=Math.max(w,Math.abs(ST.rings[i].omega||0));AU.whirr.gain.setTargetAtTime(clamp(w*.045,0,.12),t,.04);AU.whirrOsc.frequency.setTargetAtTime(20+w*26,t,.04);
   const v=ST.phase==='roll'?ST.ball.v:0;AU.roll.gain.setTargetAtTime(v>0?clamp(.05+v/330*.3,0,.36):0,t,.05);AU.rollBP.frequency.setTargetAtTime(220+v*2.4,t,.05)}
 
 /* ================= state ================= */
-const ST={phase:'title',time:0,rings:[],turns:0,depth:0,stars:0,junctions:new Set(),prevSig:'',glow:[null,null,null,null],entryGlow:false,
-  ghost:{on:false,t:0},tip:{text:'',t:0},hint:0,touchedPair:false,gearTipShown:false,
+const ST={phase:'title',time:0,rings:[],turns:0,depth:0,stars:0,junctions:new Set(),prevSig:'',glow:[],entryGlow:false,
+  ghost:{on:false,t:0},tip:{text:'',t:0},hint:0,touchedPair:false,gearTipShown:false,taught:{},lead:-1,latchV:[],latchFl:[],latchFree:[],
   ball:{x:0,y:-CRADLE,v:0,s:0,path:null,len:0,scale:1,dark:0,shake:0,lastSeam:-1},win:{t:0,bolt:[0,0,0,0,0,0,0,0],phi:0,open:0,leak:0,boltsDone:0,fanfare:false,stamped:false},
   shake:0,settleT:0,intro:0,camFrom:null,flash:[]};
 function initRings(){ST.rings=LEVEL.start.map((p,i)=>({ang:p*NOTCH,prevAng:p*NOTCH,omega:0,vel:0,target:p*NOTCH,phys:false,drag:false,notch:p,hl:0,hlE:0}))}
 initRings();
-function moveRing(i,na){const R=ST.rings[i],d=na-R.ang;R.ang=na;const g=GEAR[i];if(g)ST.rings[g.j].ang+=g.r*d}
+function moveRing(i,na){const R=ST.rings[i],d=na-R.ang;R.ang=na;const g=GEAR[i];if(g)for(const q of g)ST.rings[q.j].ang+=q.r*d}
 function livePos(){return ST.rings.map(R=>{const f=R.ang/NOTCH,n=Math.round(f);return Math.abs(f-n)<.13?mod(n,12):null})}
 function junctionSet(pos){const s=new Set();if(pos[0]!=null&&has(FEAT[0].O,-pos[0]))s.add(0);
   for(let k=1;k<NR;k++){if(pos[k-1]==null||pos[k]==null)continue;for(let j=0;j<12;j++)if(has(FEAT[k-1].I,j)){const w=mod(j+pos[k-1],12);if(has(FEAT[k].O,w-pos[k]))s.add(k*12+w)}}return s}
+// the idle drift of the dial on the title card and the vault select (each gear train drifts as one)
+function titlePose(t){const d=Math.sin(t*.35)*.9+Math.sin(t*.13)*1.4,amp=[d*1.3,Math.sin(t*.27)*2.2,-d*1.7,Math.sin(t*.21+1)*1.8,-d*1.1];
+  COMPS.forEach((C,c)=>{const ph=amp[c%amp.length];for(const r of C.rings)ST.rings[r].ang=(LEVEL.start[r]+MULT[r]*ph)*NOTCH})}
 
 /* ================= particles ================= */
 const PT=[];
@@ -786,85 +1091,163 @@ function spark(x,y,n,col,spd,life){for(let k=0;k<n;k++){const a=Math.random()*TA
 function flashAt(x,y,r,c){ST.flash.push({x,y,r,t:0,c:c||0})}
 
 /* ================= HUD helpers ================= */
-const pins=[...document.querySelectorAll('.pins i')];
+let pins=[];
+function buildPins(){const el=document.querySelector('.pins');el.innerHTML='<i></i>'.repeat(NR);pins=[...el.querySelectorAll('i')]}
 function setPins(d,win){pins.forEach((p,k)=>{p.classList.toggle('on',k<d);p.classList.toggle('em',!!win&&k<d)})}
 function setTurns(){const el=$('turnN');el.textContent=ST.turns;el.classList.add('pop');setTimeout(()=>el.classList.remove('pop'),180)}
 function tip(text,cls,dur){const el=$('tip');el.textContent=text;el.className=text?('on'+(cls?' '+cls:'')):'';ST.tip.t=dur||0}
-$('parN').textContent='Par '+SOLVE.par;
+
+/* ================= progress (one key, per device) ================= */
+const PKEY='tumbler.progress';
+const PROG={best:LEVELS.map(()=>0),open:1};
+(function(){try{const o=JSON.parse(localStorage.getItem(PKEY)||'null');if(o&&Array.isArray(o.best)){PROG.best=LEVELS.map((_,i)=>clamp(o.best[i]|0,0,3));PROG.open=clamp(o.open|0,1,LEVELS.length)}}catch(e){}})();
+function saveProg(){try{localStorage.setItem(PKEY,JSON.stringify({v:1,best:PROG.best,open:PROG.open}))}catch(e){}}
+const totalStars=()=>PROG.best.reduce((a,b)=>a+b,0);
 
 /* ================= input ================= */
 let DR=null;
 function toWorld(cx,cy){const k=S*CAM.k;return{x:(cx-CAM.x)/k,y:(cy-CAM.y)/k}}
-function pickRing(r){return r>=RG[0].rin?0:r>=RG[1].rin?1:r>=RG[2].rin?2:3}
+function pickRing(r){for(let i=0;i<NR-1;i++)if(r>=RG[i].rin)return i;return NR-1}
+// a drag always drives the gear train through its driver ring (the one that turns a notch per step), so a 2:1 ring snaps every other notch
 cv.addEventListener('pointerdown',e=>{
   audioInit();
   if(ST.phase!=='play'||DR)return;
   const p=toWorld(e.clientX,e.clientY),r=Math.hypot(p.x,p.y);if(r>262)return;
   e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}
-  const i=pickRing(r),R=ST.rings[i],a=Math.atan2(p.x,-p.y);
-  // stop any spring motion on this ring and its geared partner; the gear keeps them exactly coupled
-  R.phys=false;R.vel=0;const g=GEAR[i];if(g){ST.rings[g.j].phys=false;ST.rings[g.j].vel=0}
-  const startNotch=Math.round(R.ang/NOTCH);
-  DR={id:e.pointerId,i,aPrev:a,acc:0,ang0:R.ang,raw0:R.ang,startNotch,samples:[{t:performance.now(),a:R.ang}],r};
-  R.drag=true;R.hl=1;if(g)ST.rings[g.j].hlE=1;
+  const i=pickRing(r),R=ST.rings[i],a=Math.atan2(p.x,-p.y),c=COMP[i],D=COMPS[c].driver,RD=ST.rings[D];
+  // stop any spring motion on this gear train; the gears keep its rings exactly coupled
+  for(const j of COMPS[c].rings){ST.rings[j].phys=false;ST.rings[j].vel=0}
+  const locked=compLocked(livePos(),c);
+  DR={id:e.pointerId,i,D,k:MULT[D]/MULT[i],aPrev:a,acc:0,angD0:RD.ang,startNotch:Math.round(RD.ang/NOTCH),samples:[{t:performance.now(),a:RD.ang}],r,locked};
+  const g=GEAR[i];R.drag=true;R.hl=1;ST.lead=i;if(g)for(const q of g)ST.rings[q.j].hlE=1;
   SFX.grab(i);haptic(5);
   if(ST.ghost.on){ST.ghost.on=false}
-  if(g&&!ST.gearTipShown){ST.gearTipShown=true;tip('Geared rings turn together','em',3.6)}
+  if(locked){latchBlocked(c);return}
+  if(g)teachGear(i);
 });
 cv.addEventListener('pointermove',e=>{
   if(!DR||e.pointerId!==DR.id)return;e.preventDefault();
   const p=toWorld(e.clientX,e.clientY),r=Math.hypot(p.x,p.y);if(r<14)return;
   const a=Math.atan2(p.x,-p.y);let da=angDiff(a,DR.aPrev);DR.aPrev=a;DR.acc+=da;
-  const raw=DR.raw0+DR.acc,n=raw/NOTCH,shaped=(n-(.4/TAU)*Math.sin(TAU*n))*NOTCH;
-  moveRing(DR.i,shaped);const now=performance.now();DR.samples.push({t:now,a:shaped});while(DR.samples.length>2&&now-DR.samples[0].t>110)DR.samples.shift();
+  const accD=DR.acc*DR.k;let shaped;
+  if(DR.locked)shaped=DR.angD0+Math.tanh(accD/.22)*.045;   // held: the train only rattles against the latch
+  else{const raw=DR.angD0+accD,n=raw/NOTCH;shaped=(n-(.4/TAU)*Math.sin(TAU*n))*NOTCH}
+  moveRing(DR.D,shaped);const now=performance.now();DR.samples.push({t:now,a:shaped});while(DR.samples.length>2&&now-DR.samples[0].t>110)DR.samples.shift();
 });
 function release(e){
-  if(!DR||(e&&e.pointerId!==DR.id))return;const i=DR.i,R=ST.rings[i];
+  if(!DR||(e&&e.pointerId!==DR.id))return;const i=DR.i,R=ST.rings[i],RD=ST.rings[DR.D];
+  R.drag=false;R.hl=Math.max(R.hl,.6);
+  if(DR.locked){RD.target=DR.angD0;RD.vel=0;RD.phys=true;DR=null;return}
   const s=DR.samples,a0=s[0],a1=s[s.length-1],dt=Math.max(16,a1.t-a0.t)/1000;let v=(a1.a-a0.a)/dt;if(performance.now()-a1.t>90)v=0;
-  const proj=R.ang+clamp(v*.1,-NOTCH*2.4,NOTCH*2.4),tn=Math.round(proj/NOTCH);
-  R.target=tn*NOTCH;R.vel=clamp(v*.35,-8,8);R.phys=true;R.drag=false;R.hl=Math.max(R.hl,.6);
-  if(mod(tn,12)!==mod(DR.startNotch,12)){ST.turns++;setTurns();onTurn(i)}
+  const fl=clamp(v/DR.k*.1,-NOTCH*2.4,NOTCH*2.4)*DR.k,proj=RD.ang+fl,tn=Math.round(proj/NOTCH);
+  RD.target=tn*NOTCH;RD.vel=clamp(v*.35,-8,8);RD.phys=true;
+  if(mod(tn-DR.startNotch,COMPS[COMP[i]].period)!==0){ST.turns++;setTurns();onTurn(i)}
   DR=null;
 }
 cv.addEventListener('pointerup',release);cv.addEventListener('pointercancel',release);cv.addEventListener('lostpointercapture',e=>{if(DR&&e.pointerId===DR.id)release(e)});
+function teachGear(i){
+  if(CUR===0){if(!ST.gearTipShown){ST.gearTipShown=true;tip('Geared rings turn together','em',3.6)}return}
+  const T=LEVEL.teach||{};if(T.ratio&&fastTrain(i)&&!ST.taught.ratio){ST.taught.ratio=1;tip(T.ratio,'em',4)}
+  else if(T.gear&&!ST.taught.gear){ST.taught.gear=1;tip(T.gear,'em',3.6)}}
+function latchBlocked(c){
+  LATCH.forEach((l,k)=>{if(COMP[l.lock]===c&&!latchFree(livePos(),l))ST.latchFl[k]=1});
+  SFX.held();haptic([8,40,8]);
+  const T=LEVEL.teach||{};if(T.latch&&!ST.taught.latch){ST.taught.latch=1;tip(T.latch,'em',4.6)}}
 function onTurn(i){
-  if(ST.tip.text==='')0;
   if($('tip').textContent.indexOf('Drag')===0)tip('');
   if(GEAR[i])ST.touchedPair=true;
-  if(ST.turns>=9&&ST.depth<3&&ST.hint<1){ST.hint=1;tip('Find where the geared gaps meet','em',6)}
-  else if(ST.turns>=16&&ST.depth<3&&ST.hint<2){ST.hint=2;tip('Then bring the outer ring’s curve to it','em',7)}
+  const H=LEVEL.hints||['Find where the geared gaps meet','Then bring the outer ring’s curve to it'];
+  if(ST.turns>=9&&ST.depth<NR-1&&ST.hint<1){ST.hint=1;tip(H[0],'em',6)}
+  else if(ST.turns>=16&&ST.depth<NR-1&&ST.hint<2){ST.hint=2;tip(H[1],'em',7)}
 }
 
 /* ================= game flow ================= */
+function scramble(){ST.lead=-1;ST.rings.forEach((R,i)=>{const st=LEVEL.start[i]*NOTCH;R.target=st+Math.round((R.ang-st)/TAU)*TAU;R.drag=false});
+  for(const C of COMPS)for(const j of C.rings){ST.rings[j].phys=j===C.driver;if(j===C.driver)ST.rings[j].vel=0}}
 function startPlay(){
-  audioInit();SFX.ui();$('title').classList.remove('show');
+  audioInit();SFX.ui();$('title').classList.remove('show');$('select').classList.remove('show');
   ST.phase='intro';ST.intro=0;ST.camFrom={x:CAM.x,y:CAM.y,k:CAM.k};
   // the vault scrambles into its starting combination
-  ST.rings.forEach((R,i)=>{const st=LEVEL.start[i]*NOTCH;R.target=st+Math.round((R.ang-st)/TAU)*TAU;});
-  const g=GEAR[1];ST.rings[1].phys=true;ST.rings[1].vel=0;ST.rings[0].phys=true;ST.rings[3].phys=true;ST.rings[2].phys=false;
+  scramble();
 }
 function resetLevel(animated){
-  ST.turns=0;setTurns();ST.depth=0;setPins(0);ST.hint=0;ST.junctions=new Set();ST.prevSig='';
+  ST.turns=0;setTurns();ST.depth=0;setPins(0);ST.hint=0;ST.junctions=new Set();ST.prevSig='';ST.lead=-1;
   ST.ball={x:0,y:-CRADLE,v:0,s:0,path:null,len:0,scale:1,dark:0,shake:0,lastSeam:-1};
   ST.win={t:0,bolt:[0,0,0,0,0,0,0,0],phi:0,open:0,leak:0,boltsDone:0,fanfare:false,stamped:false};
-  if(animated){ST.rings.forEach((R,i)=>{const st=LEVEL.start[i]*NOTCH;R.target=st+Math.round((R.ang-st)/TAU)*TAU;R.drag=false});
-    ST.rings[0].phys=ST.rings[1].phys=ST.rings[3].phys=true;ST.rings[2].phys=false;}
+  if(animated)scramble();
   else initRings();
 }
+// switch the whole vault: tables, solver, look
+function loadLevel(n){
+  CUR=clamp(n,0,LEVELS.length-1);const L=LEVELS[CUR];setLevelTables(L);TH=L.theme;RSTY=L.theme.rings||RSTY1;levelGeometry();
+  SOLVE=SOLVES[CUR]||(SOLVES[CUR]=solveBFS());ST.latchV=LATCH.map(()=>0);ST.latchFl=LATCH.map(()=>0);ST.latchFree=LATCH.map(()=>false);ST.taught={};
+  ST.glow=[];ST.ghost.on=false;ST.hint=0;initRings();buildPins();$('parN').textContent='Par '+SOLVE.par;resetLevel(false);
+  if(W)buildAssets();buildStampSVG();
+  document.querySelector('meta[name="theme-color"]').setAttribute('content',TH.bg);
+  cv.setAttribute('aria-label','An Art Deco vault door with '+['','','two','three','four','five'][NR]+' turning rings around a keyhole: '+L.name+(L.room?', '+L.room:''));
+}
 function hudShow(on){$('hud').classList.toggle('show',on)}
-$('btnPlay').addEventListener('click',startPlay);
+function clearWin(){$('win').classList.remove('show','finale');[...document.querySelectorAll('.star')].forEach(s=>s.classList.remove('in'));$('wfoot').classList.remove('in')}
+// fade to black, change vault, open on its intro (the dial scrambles into the start combination)
+function roomCard(){$('rcK').textContent='Vault Nº '+(CUR+1);$('rcN').textContent=LEVEL.room||LEVEL.name;$('roomCard').classList.add('on')}
+function enterLevel(n){
+  audioInit();SFX.ui();DR=null;$('fade').classList.add('on');
+  setTimeout(()=>{clearWin();$('title').classList.remove('show');$('select').classList.remove('show');hudShow(false);tip('');PT.length=0;
+    if(n!==CUR||!TX.door)loadLevel(n);else resetLevel(false);
+    titlePose(ST.time+7.3);Object.assign(CAM,LAY.title);startPlay();roomCard();$('fade').classList.remove('on')},380)}
+function showSelect(fromWin){
+  audioInit();SFX.ui();DR=null;
+  const go=()=>{clearWin();hudShow(false);tip('');PT.length=0;resetLevel(false);ST.phase='select';$('title').classList.remove('show');refreshSelect();$('select').classList.add('show');$('fade').classList.remove('on')};
+  if(fromWin){$('fade').classList.add('on');setTimeout(go,380)}else go()}
+$('btnPlay').addEventListener('click',()=>showSelect(false));
+$('btnLobby').addEventListener('click',()=>{audioInit();SFX.ui();$('select').classList.remove('show');ST.phase='title';$('title').classList.add('show')});
+$('btnEnter').addEventListener('click',()=>{if(SEL<PROG.open)enterLevel(SEL);else{SFX.held();haptic([8,40,8])}});
+$('btnNext').addEventListener('click',()=>{if(CUR<LEVELS.length-1)enterLevel(CUR+1);else showSelect(true)});
+$('btnVaults').addEventListener('click',()=>showSelect(true));
 $('btnRestart').addEventListener('click',()=>{audioInit();SFX.ui();if(ST.phase!=='play')return;DR=null;resetLevel(true);tip('')});
 $('btnSound').addEventListener('click',()=>{audioInit();MUTED=!MUTED;try{localStorage.setItem('tumbler.muted',MUTED?'1':'0')}catch(e){}
   $('btnSound').setAttribute('aria-pressed',String(!MUTED));if(AU.master)AU.master.gain.setTargetAtTime(MUTED?0:.9,T0(),.05);if(!MUTED)SFX.ui()});
 $('btnSound').setAttribute('aria-pressed',String(!MUTED));
 $('btnReplay').addEventListener('click',()=>{audioInit();SFX.ui();$('fade').classList.add('on');setTimeout(()=>{
-  $('win').classList.remove('show');[...document.querySelectorAll('.star')].forEach(s=>s.classList.remove('in'));$('wfoot').classList.remove('in');
-  resetLevel(false);PT.length=0;ST.phase='play';hudShow(true);$('fade').classList.remove('on')},380)});
+  clearWin();resetLevel(false);PT.length=0;ST.phase='play';hudShow(true);$('fade').classList.remove('on')},380)});
+
+/* ================= vault select: a row of little doors ================= */
+let SEL=PROG.open-1;   // the newest open vault is the one waiting
+function ringRGB(L,i){const st=(L.theme.rings||RSTY1)[i];return st.prof(.62)}
+function doorSVG(n){const L=LEVELS[n],nr=L.rings.length,acc=L.theme.acc,rr=[];const r0=11,r1=37,w=(r1-r0)/nr;
+  let s='<svg viewBox="-50 -50 100 100" aria-hidden="true"><defs><radialGradient id="dg'+n+'" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#3a3530"/><stop offset="1" stop-color="#08080a"/></radialGradient></defs>';
+  s+='<circle r="48" fill="#050505"/><circle r="46.5" fill="url(#dg'+n+')" stroke="#d9b25c" stroke-width="1.6"/>';
+  for(let k=0;k<8;k++){const a=(22.5+45*k)*PI/180,[x,y]=polar(43,a);s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1.5" fill="#c9cfd8"/>'}
+  s+='<circle r="'+(r1+3)+'" fill="#e6dcc2"/><circle r="'+(r1+.6)+'" fill="#120c06"/>';
+  for(let i=0;i<nr;i++){const c=ringRGB(L,i),ro=r1-i*w,ri=ro-w+.7;s+='<circle r="'+((ro+ri)/2).toFixed(2)+'" fill="none" stroke="'+rgba(c,1)+'" stroke-width="'+(ro-ri).toFixed(2)+'"/>';
+    const sl=(L.start[i]*30+[200,40,130,300,250][i])*PI/180,[x0,y0]=polar(ro-.4,sl),[x1,y1]=polar(ri+.4,sl);s+='<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+x1.toFixed(1)+'" y2="'+y1.toFixed(1)+'" stroke="#120a04" stroke-width="2.4" stroke-linecap="round"/>'}
+  s+='<circle r="'+(r0-.3)+'" fill="#0b0a0c" stroke="'+acc.mid+'" stroke-width=".8"/><path d="M0 -4.6a3 3 0 1 1 -.1 0zM-1.4 -2.5L-2.2 4.4H2.2L1.4 -2.5Z" fill="#e9c877"/>';
+  s+='<circle cy="-44.2" r="2.4" fill="'+acc.mid+'" stroke="#e9c877" stroke-width=".7"/></svg>';return s}
+const LOCK_SVG='<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 11V8a4.5 4.5 0 0 1 9 0v3" fill="none" stroke="#e9c877" stroke-width="2"/><rect x="5" y="11" width="14" height="10" rx="1.5" fill="#1a1712" stroke="#e9c877" stroke-width="1.4"/><circle cx="12" cy="15.4" r="1.6" fill="#e9c877"/><path d="M12 16.4v2.4" stroke="#e9c877" stroke-width="1.4"/></svg>';
+const miniStars=n=>'<span class="ms">'+[0,1,2].map(k=>'<i class="'+(k<n?'on':'')+'"></i>').join('')+'</span>';
+function buildSelect(){const row=$('doors');row.innerHTML='';
+  LEVELS.forEach((L,n)=>{const b=document.createElement('button');b.className='door';b.dataset.n=n;b.setAttribute('role','listitem');
+    b.innerHTML='<span class="dface">'+doorSVG(n)+LOCK_SVG+'</span><span class="dnum">'+(n+1)+'</span>'+miniStars(0);
+    b.addEventListener('click',()=>{audioInit();if(n>=PROG.open){SFX.held();haptic([8,40,8]);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}else SFX.ui();
+      if(SEL===n&&n<PROG.open){enterLevel(n);return}SEL=n;refreshSelect()});
+    row.appendChild(b)})}
+function refreshSelect(){
+  if(SEL>=LEVELS.length)SEL=0;
+  [...document.querySelectorAll('.door')].forEach((b,n)=>{const L=LEVELS[n],open=n<PROG.open;b.classList.toggle('locked',!open);b.classList.toggle('sel',n===SEL);
+    b.querySelector('.ms').outerHTML=miniStars(PROG.best[n]);
+    b.setAttribute('aria-label',L.name+(L.room?', '+L.room:'')+(open?', '+PROG.best[n]+' of 3 stars':', locked'));b.setAttribute('aria-pressed',String(n===SEL))});
+  const L=LEVELS[SEL],open=SEL<PROG.open;
+  $('sName').textContent=L.room||L.name;$('sKick').textContent='Vault Nº '+(SEL+1);
+  $('sIdea').textContent=open?L.idea:'Open vault '+SEL+' to unlock';
+  $('sStars').innerHTML=open?miniStars(PROG.best[SEL]):'';
+  $('btnEnter').textContent=open?'Open vault '+(SEL+1):'Locked';$('btnEnter').classList.toggle('dim',!open);
+  $('sTotal').textContent=totalStars()+' / '+LEVELS.length*3;
+}
 $('stars').innerHTML=starSVG()+starSVG()+starSVG();
 
 function beginRoll(){
   const res=reach(ST.rings.map(R=>mod(Math.round(R.ang/NOTCH),12)));if(!res.win)return;
-  ST.phase='roll';tip('');DR=null;hudPins(5);
+  ST.phase='roll';tip('');DR=null;hudPins(NR+1);
   const pts=[[0,-CRADLE]],path=res.path,pos=ST.rings.map(R=>R.ang);
   const add=(x,y)=>pts.push([x,y]);
   const seg=(r0,r1,a)=>{const n=Math.max(2,Math.ceil(Math.abs(r1-r0)/2));for(let k=1;k<=n;k++){const[x,y]=polar(lerp(r0,r1,k/n),a);add(x,y)}};
@@ -884,7 +1267,7 @@ function beginRoll(){
   ST.ball.path=P;ST.ball.cum=L;ST.ball.len=L[L.length-1];ST.ball.s=0;ST.ball.v=40;ST.ball.delay=.32;
   SFX.gate();haptic(15);
 }
-function hudPins(d){setPins(Math.min(4,d),d>=5)}
+function hudPins(d){setPins(Math.min(NR,d),d>NR)}
 function ballAt(s){const B=ST.ball,L=B.cum,P=B.path;let lo=0,hi=L.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(L[m]<=s)lo=m;else hi=m}
   const t=(s-L[lo])/Math.max(1e-6,L[hi]-L[lo]);return[lerp(P[lo][0],P[hi][0],t),lerp(P[lo][1],P[hi][1],t),(P[hi][1]-P[lo][1])/Math.max(1e-6,L[hi]-L[lo])]}
 
@@ -893,19 +1276,22 @@ let last=performance.now(),running=true,FPS={frames:0,t0:performance.now(),fps:0
 function update(dt){
   ST.time+=dt;const t=ST.time;
   // camera
-  if(ST.phase==='title'){Object.assign(CAM,LAY.title);
+  const idle=ST.phase==='title'||ST.phase==='select';
+  if(idle){Object.assign(CAM,LAY.title);
     // idle drift of the dial on the title card
-    const d=Math.sin(t*.35)*.9+Math.sin(t*.13)*1.4;ST.rings[0].ang=(LEVEL.start[0]+d*1.3)*NOTCH;ST.rings[3].ang=(LEVEL.start[3]-d*1.7)*NOTCH;
-    const p2=(LEVEL.start[1]+Math.sin(t*.27)*2.2)*NOTCH;ST.rings[1].ang=p2;ST.rings[2].ang=LEVEL.start[2]*NOTCH-(p2-LEVEL.start[1]*NOTCH)}
+    titlePose(t)}
   else if(ST.phase==='intro'){ST.intro+=dt;const k=EZ.io3(clamp(ST.intro/1.1,0,1)),F=ST.camFrom,P=LAY.play;CAM.x=lerp(F.x,P.x,k);CAM.y=lerp(F.y,P.y,k);CAM.k=lerp(F.k,P.k,k);
-    if(ST.intro>1.25&&ST.rings.every(R=>!R.phys)){ST.phase='play';hudShow(true);ST.ghost.on=true;ST.ghost.t=0;tip('Drag a ring to turn it')}}
+    if(ST.intro>1.25&&ST.rings.every(R=>!R.phys)){ST.phase='play';hudShow(true);$('roomCard').classList.remove('on');if(CUR===0){ST.ghost.on=true;ST.ghost.t=0;tip('Drag a ring to turn it')}else tip(LEVEL.intro||'','em',4.2)}}
   else{CAM.x=LAY.play.x;CAM.y=LAY.play.y;CAM.k=LAY.play.k}
   // ring physics (springs to the snapped notch; geared partner follows through moveRing)
   for(let i=0;i<NR;i++){const R=ST.rings[i];if(R.phys&&!R.drag){const a=380*(R.target-R.ang)-28*R.vel;R.vel+=a*dt;let na=R.ang+R.vel*dt;
       if(Math.abs(R.target-na)<.0008&&Math.abs(R.vel)<.02){na=R.target;R.vel=0;R.phys=false}moveRing(i,na)}}
   for(let i=0;i<NR;i++){const R=ST.rings[i];const om=(R.ang-R.prevAng)/Math.max(dt,1e-4);R.omega=lerp(R.omega,om,.35);R.prevAng=R.ang;
-    const n=Math.round(R.ang/NOTCH);if(n!==R.notch){R.notch=n;if(ST.phase!=='title'){const lead=DR?DR.i===i:!GEAR[i]||R.phys;SFX.click(i,!lead);if(lead)haptic(4)}}
-    R.hl=Math.max(0,R.hl-dt*(R.drag?0:2.2));R.hlE=Math.max(0,R.hlE-dt*(DR&&GEAR[DR.i]&&GEAR[DR.i].j===i?0:2.2))}
+    const n=Math.round(R.ang/NOTCH);if(n!==R.notch){R.notch=n;if(!idle){const lead=DR?DR.i===i:i===ST.lead||!GEAR[i]&&R.phys;SFX.click(i,!lead);if(lead)haptic(4)}}
+    R.hl=Math.max(0,R.hl-dt*(R.drag?0:2.2));R.hlE=Math.max(0,R.hlE-dt*(DR&&GEAR[DR.i]&&GEAR[DR.i].some(q=>q.j===i)?0:2.2))}
+  // relocker latches: the lever drops into its key notch (and lets go of its ring) when the notch comes under it
+  if(LATCH.length){const pos=livePos();LATCH.forEach((l,k)=>{const f=latchFree(pos,l);if(f!==ST.latchFree[k]){ST.latchFree[k]=f;if(ST.phase==='play'){SFX.latch(f);if(f){const[x,y]=polar(l.lock<l.key?RG[l.lock].rin:RG[l.lock].rout,l.at*NOTCH);spark(x,y,8,0,50,.5)}}}
+    ST.latchV[k]=lerp(ST.latchV[k],f?1:0,1-Math.exp(-dt*16));ST.latchFl[k]=Math.max(0,ST.latchFl[k]-dt*1.1)})}
   // live alignment + reachability
   if(ST.phase==='play'||ST.phase==='intro'){
     const pos=livePos(),js=junctionSet(pos);
@@ -914,7 +1300,7 @@ function update(dt){
     const res=reach(pos);let sig='';for(let v=0;v<NR*12;v++)if(res.prev[v]!==-2)sig+=v+',';
     if(sig!==ST.prevSig){ST.prevSig=sig;for(let i=0;i<NR;i++)ST.glow[i]=glowPathFor(i,res.prev);ST.entryGlow=res.depth>0}
     if(res.depth!==ST.depth){if(res.depth>ST.depth&&ST.phase==='play'&&res.depth>=2)SFX.depth(res.depth);ST.depth=res.depth;setPins(res.depth,false);
-      if(res.depth>=3&&ST.hint)tip('')}
+      if(res.depth>=NR-1&&ST.hint)tip('')}
     // settle -> roll
     const settled=!DR&&ST.rings.every(R=>!R.phys);
     if(ST.phase==='play'&&settled&&res.win){ST.settleT+=dt;if(ST.settleT>.12){ST.settleT=0;beginRoll()}}else ST.settleT=0;
@@ -942,7 +1328,9 @@ function update(dt){
     if(w.t>2.05&&!w.fanfare){w.fanfare=true;SFX.fanfare()}
     if(w.t>2.25&&!w.stamped){w.stamped=true;showWin()}
     if(ST.phase==='swing'&&w.t>3.4)ST.phase='won';
-    if(w.open>.2&&Math.random()<dt*14){const r=Math.random()*190,a=Math.random()*TAU;PT.push({x:Math.cos(a)*r,y:Math.sin(a)*r,vx:(Math.random()-.5)*8,vy:-4-Math.random()*8,life:3+Math.random()*3,t:0,s:1+Math.random()*1.6,c:2,g:0})}}
+    if(w.open>.2&&Math.random()<dt*14){const r=Math.random()*190,a=Math.random()*TAU;PT.push({x:Math.cos(a)*r,y:Math.sin(a)*r,vx:(Math.random()-.5)*8,vy:-4-Math.random()*8,life:3+Math.random()*3,t:0,s:1+Math.random()*1.6,c:2,g:0})}
+    // the finale: the Reserve rains gold dust over the whole door
+    if(CUR===LEVELS.length-1&&w.open>.3&&PT.length<260)for(let k=0;k<2;k++)if(Math.random()<dt*22){PT.push({x:(Math.random()-.5)*480,y:-300-Math.random()*40,vx:(Math.random()-.5)*14,vy:40+Math.random()*50,life:5+Math.random()*3,t:0,s:1.2+Math.random()*1.8,c:2,g:6})}}
   // particles
   for(let k=PT.length-1;k>=0;k--){const p=PT[k];p.t+=dt;if(p.t>=p.life){PT.splice(k,1);continue}p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=1-dt*1.5}
   for(let k=ST.flash.length-1;k>=0;k--){ST.flash[k].t+=dt;if(ST.flash[k].t>.5)ST.flash.splice(k,1)}
@@ -951,6 +1339,10 @@ function update(dt){
 }
 function showWin(){
   const stars=ST.turns<=SOLVE.par?3:ST.turns<=SOLVE.par+2?2:1;ST.stars=stars;hudShow(false);
+  PROG.best[CUR]=Math.max(PROG.best[CUR],stars);PROG.open=Math.max(PROG.open,Math.min(LEVELS.length,CUR+2));saveProg();SEL=Math.min(CUR+1,LEVELS.length-1);
+  const fin=CUR===LEVELS.length-1;$('win').classList.toggle('finale',fin);
+  $('btnNext').textContent=fin?'The vaults':'Next vault';
+  $('wfin').textContent=fin?'All five vaults open · '+totalStars()+' of '+LEVELS.length*3+' stars':'';
   const wy=LAY.play.y,s=S,st=$('stamp'),sr=$('stars');
   if(LAND){const cx=W-SAFE.r-Math.min(330,W*.42)/2-8;st.style.left=sr.style.left=cx+'px';st.style.width='min(300px,40vw)';st.style.top=(SAFE.t+H*.3)+'px';sr.style.top=(SAFE.t+H*.3+Math.min(300,W*.4)*310/460*.42+2)+'px'}
   else{st.style.left=sr.style.left='';st.style.width='';const top=Math.max(SAFE.t+90,wy-150*s);st.style.top=top+'px';sr.style.top=(top+Math.min(W*.86,380)*310/460*.42+6)+'px'}
@@ -961,12 +1353,12 @@ function showWin(){
 }
 
 /* ================= rendering ================= */
-function drawChannels(g,i){const R=ST.rings[i],r=RG[i],p=CH[i];
+function drawChannels(g,i){const R=ST.rings[i],r=RG[i],p=CH[i],C=RSTY[i].ch||(RSTY[i].kind==='gold'?['rgba(255,246,214,.95)','rgba(60,32,6,.95)','#a8792c']:['#f6dc90','#8a5f1c','#d4ad58']);
   g.save();annulus(g,r.rin+.9,r.rout-.9);g.clip('evenodd');g.lineCap='round';g.lineJoin='round';
   const lw=CHW;
-  g.save();g.translate(0,1.3);g.rotate(R.ang);g.lineWidth=lw+3.4;g.strokeStyle=RSTY[i].kind==='gold'?'rgba(255,246,214,.95)':'#f6dc90';g.stroke(p);g.restore();
-  g.save();g.translate(0,-1.1);g.rotate(R.ang);g.lineWidth=lw+3.4;g.strokeStyle=RSTY[i].kind==='gold'?'rgba(60,32,6,.95)':'#8a5f1c';g.stroke(p);g.restore();
-  g.save();g.rotate(R.ang);g.lineWidth=lw+2.2;g.strokeStyle=RSTY[i].kind==='gold'?'#a8792c':'#d4ad58';g.stroke(p);
+  g.save();g.translate(0,1.3);g.rotate(R.ang);g.lineWidth=lw+3.4;g.strokeStyle=C[0];g.stroke(p);g.restore();
+  g.save();g.translate(0,-1.1);g.rotate(R.ang);g.lineWidth=lw+3.4;g.strokeStyle=C[1];g.stroke(p);g.restore();
+  g.save();g.rotate(R.ang);g.lineWidth=lw+2.2;g.strokeStyle=C[2];g.stroke(p);
   g.lineWidth=lw;g.strokeStyle='#120a04';g.stroke(p);g.restore();
   g.save();g.translate(0,2.4);g.rotate(R.ang);g.lineWidth=lw*.48;g.strokeStyle='rgba(120,84,36,.4)';g.stroke(p);g.restore();
   g.save();g.translate(0,-2.6);g.rotate(R.ang);g.lineWidth=lw*.4;g.strokeStyle='rgba(0,0,0,.55)';g.stroke(p);g.restore();
@@ -985,16 +1377,40 @@ function drawRing(g,i,forSnap){
   g.globalAlpha=clamp((RSTY[i].kind==='gold'?.55:.45)+Math.abs(w)*.06,0,1);g.rotate(clamp(w*.03,-.28,.28));g.drawImage(sh,-sh.ru,-sh.ru,2*sh.ru,2*sh.ru);g.restore();
   drawChannels(g,i);
   // glints on rivets/emeralds sweeping through the lamp's highlight
-  if(i===0||i===2){g.save();g.globalCompositeOperation='lighter';const rr=i===0?150.6:92.8;
+  if(RSTY[i].glintR){g.save();g.globalCompositeOperation='lighter';const rr=RSTY[i].glintR;
     for(let k=0;k<12;k++){const a=(k+.5)*NOTCH+R.ang,d=angDiff(a,0);const I=Math.exp(-sq(d/.16));if(I<.05)continue;const[x,y]=polar(rr,a);const s=(5+Math.abs(w)*3)*I;
       g.globalAlpha=clamp(I*(.55+Math.abs(w)*.25),0,1);g.drawImage(TX.glint,x-s,y-s,2*s,2*s)}g.restore()}
   if(!forSnap&&(R.hl>0||R.hlE>0)){g.save();g.globalCompositeOperation='lighter';annulus(g,r.rin+1,r.rout-1);
     if(R.hl>0){g.fillStyle='rgba(255,214,140,'+(R.hl*.13).toFixed(3)+')';g.fill('evenodd')}
-    if(R.hlE>0){g.fillStyle='rgba(60,255,170,'+(R.hlE*.09).toFixed(3)+')';g.fill('evenodd')}g.restore()}
+    if(R.hlE>0){g.fillStyle=rgba(TH.acc.rgb,(R.hlE*.09).toFixed(3));g.fill('evenodd')}g.restore()}
 }
-function drawPinions(g){const pa=-ST.rings[2].ang*SEAM/PIN_R,P=TX.pinion,em=Math.max(ST.rings[1].hl,ST.rings[2].hl,ST.rings[1].hlE,ST.rings[2].hlE);
-  for(const a of PIN_A){const[x,y]=polar(SEAM,a);g.save();g.translate(x,y);g.rotate(pa+a*3);g.drawImage(P,-P.R,-P.R,2*P.R,2*P.R);g.restore();
-    if(em>0){g.save();g.globalCompositeOperation='lighter';g.globalAlpha=em*.7;g.drawImage(TX.dotE,x-12,y-12,24,24);g.restore()}}}
+function drawPinions(g){for(const S of PINS){const I=ST.rings[S.inner],O=ST.rings[S.outer],pa=-I.ang*S.r/S.R,P=S.tex||TX.pinion,em=Math.max(O.hl,I.hl,O.hlE,I.hlE),gs=S.R*.96;
+  for(const a of S.ang){const[x,y]=polar(S.r,a);g.save();g.translate(x,y);g.rotate(pa+a*3);g.drawImage(P,-P.R,-P.R,2*P.R,2*P.R);g.restore();
+    if(em>0){g.save();g.globalCompositeOperation='lighter';g.globalAlpha=em*.7;g.drawImage(TX.dotE,x-gs,y-gs,2*gs,2*gs);g.restore()}}}}
+// relocker latches: a brass lever across the seam, its jewel red while it holds, the vault's stone once its key notch is under it
+function drawLatches(g){for(let k=0;k<LATCH.length;k++){const l=LATCH[k],v=ST.latchV[k]||0,fl=ST.latchFl[k]||0,out=l.lock<l.key,rs=out?RG[l.lock].rin:RG[l.lock].rout,dir=out?-1:1;
+  // a knock also lights the key notch, wherever its ring has carried it, so the lever points at its key
+  if(fl>0){const[kx,ky]=polar(rs,ST.rings[l.key].ang+l.notch*NOTCH),sz=9+8*(1-fl);g.save();g.globalCompositeOperation='lighter';g.globalAlpha=fl*.9;g.drawImage(TX.dotE,kx-sz,ky-sz,2*sz,2*sz);g.restore()}
+  g.save();g.rotate(l.at*NOTCH);g.translate(0,-rs);
+  // the mounting plate, fixed to the door across the seam
+  const pw=6.4,ph=13.5;g.fillStyle='rgba(0,0,0,.55)';g.beginPath();g.ellipse(1.2,2,pw+1.6,ph+1.6,0,0,TAU);g.fill();
+  g.fillStyle='#0d0c0f';g.beginPath();g.moveTo(-pw,-ph+pw);g.arc(0,-ph+pw,pw,PI,0);g.lineTo(pw,ph-pw);g.arc(0,ph-pw,pw,0,PI);g.closePath();g.fill();
+  g.strokeStyle='#e2bd68';g.lineWidth=.9;g.stroke();
+  // halo: red while it holds (slow pulse), the vault's stone once free; a hard flash when a held train knocks
+  const pulse=.5+.5*Math.sin(ST.time*3.2);g.save();g.globalCompositeOperation='lighter';
+  if(fl>0){const s=12+fl*14;g.globalAlpha=fl;g.drawImage(TX.dotR,-s,-s,2*s,2*s)}
+  else{const s=10+pulse*2;g.globalAlpha=(1-v)*.28*(.6+.4*pulse)+v*.45;g.drawImage(v>.5?TX.dotE:TX.dotR,-s,-s,2*s,2*s)}g.restore();
+  // the lever: drops toward the key ring when its notch arrives
+  g.translate(0,-dir*v*2.6);const hl=10.5,hw=3.9;
+  const gr=g.createLinearGradient(-hw,0,hw,0);gr.addColorStop(0,'#6b4512');gr.addColorStop(.35,'#fff0bf');gr.addColorStop(.6,'#d6a64c');gr.addColorStop(1,'#5a3a10');
+  g.fillStyle=gr;g.beginPath();g.moveTo(-hw,-hl+hw);g.arc(0,-hl+hw,hw,PI,0);g.lineTo(hw,hl-hw);g.arc(0,hl-hw,hw,0,PI);g.closePath();g.fill();
+  g.strokeStyle='rgba(40,22,4,.9)';g.lineWidth=.6;g.stroke();
+  // the dog's tooth, biting the held ring
+  const ty=-dir*(hl-.6);g.fillStyle='#2a1a08';g.beginPath();g.moveTo(-2.6,ty);g.lineTo(2.6,ty);g.lineTo(0,ty-dir*3.4);g.closePath();g.fill();
+  const c=mixc([255,74,94],TH.acc.rgb2||[90,255,180],v);
+  g.fillStyle='#120c06';g.beginPath();g.arc(0,0,4.3,0,TAU);g.fill();g.strokeStyle='#e9c877';g.lineWidth=.7;g.stroke();
+  const jg=g.createRadialGradient(-1.1,-1.3,.2,0,0,3.4);jg.addColorStop(0,'#fff');jg.addColorStop(.35,rgba(c,1));jg.addColorStop(1,rgba(mixc(c,[0,0,0],.6),1));g.fillStyle=jg;g.beginPath();g.arc(0,0,3.4,0,TAU);g.fill();
+  g.restore()}}
 function drawBall(g){const B=ST.ball;if(B.hidden)return;const s=B.scale,x=B.x+B.shake,y=B.y,b=TX.ball;
   const q=ST.phase==='drop'?Math.sin(clamp(ST.win.t/.3,0,1)*PI)*.22:0;g.save();g.translate(x,y);g.scale(1+q,1-q*.8);g.translate(-x,-y);
   g.fillStyle='rgba(0,0,0,'+(.45*s).toFixed(3)+')';g.beginPath();g.ellipse(x+1.6*s,y+3*s,BALL*s*.95,BALL*s*.8,0,0,TAU);g.fill();
@@ -1008,7 +1424,7 @@ function drawDoor(g,forSnap){
   if(ST.phase==='roll'||ST.phase==='drop'){for(let i=0;i<NR;i++)drawGlow(g,i,.7)}
   if(!forSnap&&(ST.entryGlow&&pulse>0||ST.phase==='roll')){g.save();g.globalCompositeOperation='lighter';g.lineCap='round';g.strokeStyle='rgba(255,200,100,'+(.35*(pulse||1)).toFixed(3)+')';g.lineWidth=CHW*.5;
     g.beginPath();g.moveTo(0,-CRADLE);g.lineTo(0,-180);g.stroke();g.restore()}
-  drawPinions(g);
+  drawPinions(g);drawLatches(g);
   // keyhole glow when the lock trips
   if(ST.phase==='drop'||ST.phase==='unlock'){const k=ST.phase==='drop'?clamp(ST.win.t/.3,0,1):1-clamp(ST.win.t/1.2,0,1)*.6;g.save();g.globalCompositeOperation='lighter';g.globalAlpha=k*.9;g.drawImage(TX.dot,-26,-26,52,52);g.restore()}
   drawBall(g);
@@ -1086,20 +1502,36 @@ document.addEventListener('touchend',()=>{if(AU.ctx&&AU.ctx.state==='suspended'&
 document.addEventListener('dblclick',e=>e.preventDefault());
 
 /* ================= debug hooks ================= */
+// a line of play for the vault in hand: in order (a latch makes order matter); vault 1 keeps its ring 1, pair, ring 4 order
+function solutionMoves(){if(LATCH.length)return SOLVE.line.map(m=>({ring:m.ring,notches:m.notches}));
+  const s=SOLVE.parSol,moves=[],cur=LEVEL.start.slice();
+  for(const C of COMPS){const i=C.driver,d=mod(s[i]-cur[i]+6,12)-6;if(d)moves.push({ring:i,notches:d})}return moves}
+function withLevel(n,fn){const keep=LEVEL;setLevelTables(LEVELS[n]);try{if(!SOLVES[n])SOLVES[n]=solveBFS();const S0=SOLVE;SOLVE=SOLVES[n];const r=fn();SOLVE=S0;return r}finally{setLevelTables(keep)}}
+const levelHook=n=>{const i=clamp((n|0)-1,0,LEVELS.length-1);DR=null;clearWin();$('title').classList.remove('show');$('select').classList.remove('show');hudShow(false);tip('');PT.length=0;
+  loadLevel(i);titlePose(ST.time+7.3);Object.assign(CAM,LAY.title);startPlay();roomCard();return LEVELS[i].name};
+// __game.level is also the vault in hand (its rings, gears, start), as it always was
+Object.defineProperties(levelHook,{name:{get:()=>LEVEL.name,configurable:true},rings:{get:()=>LEVEL.rings},gears:{get:()=>LEVEL.gears},start:{get:()=>LEVEL.start},latches:{get:()=>LEVEL.latches||[]}});
 window.__game={
-  get state(){return{phase:ST.phase,rings:ST.rings.map(R=>mod(Math.round(R.ang/NOTCH),12)),turns:ST.turns,depth:ST.depth,par:SOLVE.par,stars:ST.stars,won:ST.phase==='won'||ST.phase==='swing'&&ST.win.stamped,fps:Math.round(FPS.fps)}},
-  level:LEVEL,solve:()=>SOLVE,reach:p=>{const r=reach(p);return{win:r.win,depth:r.depth}},
+  get state(){return{phase:ST.phase,rings:ST.rings.map(R=>mod(Math.round(R.ang/NOTCH),12)),turns:ST.turns,depth:ST.depth,par:SOLVE.par,stars:ST.stars,won:ST.phase==='won'||ST.phase==='swing'&&ST.win.stamped,fps:Math.round(FPS.fps),
+    level:CUR+1,latches:LATCH.map((l,k)=>ST.latchFree[k]?'free':'held')}},
+  level:levelHook,solve:()=>SOLVE,reach:p=>{const r=reach(p);return{win:r.win,depth:r.depth}},
   center:()=>({x:CAM.x,y:CAM.y,unit:S*CAM.k}),
   ringRadius:i=>RG[i].mid,
   screenPoint:(r,deg)=>{const[x,y]=polar(r,deg*PI/180);return{x:CAM.x+x*S*CAM.k,y:CAM.y+y*S*CAM.k}},
-  solution:()=>{const s=SOLVE.solutions[0],moves=[];const cur=LEVEL.start.slice();
-    // ring 1, the geared pair (via ring 2), ring 4 — shortest signed notch turns
-    for(const i of[0,1,3]){const d=mod(s[i]-cur[i]+6,12)-6;if(d)moves.push({ring:i,notches:d})}return moves},
-  turn:(i,k)=>{if(ST.phase!=='play')return false;const R=ST.rings[i];R.target=Math.round(R.ang/NOTCH)*NOTCH+k*NOTCH;R.phys=true;if(mod(k,12)){ST.turns++;setTurns();onTurn(i)}return true},
+  solution:solutionMoves,
+  solutionFor:n=>withLevel(clamp((n|0)-1,0,LEVELS.length-1),solutionMoves),
+  solveFor:n=>withLevel(clamp((n|0)-1,0,LEVELS.length-1),()=>{const o=Object.assign({},SOLVE);delete o.solutions;return o}),
+  levels:()=>LEVELS.map((L,i)=>({n:i+1,name:L.name,room:L.room||'',idea:L.idea||'',rings:L.rings.length,gears:L.gears||[],latches:L.latches||[],start:L.start,best:PROG.best[i],open:i<PROG.open})),
+  progress:()=>({best:PROG.best.slice(),open:PROG.open,total:totalStars()}),
+  unlockAll:()=>{PROG.open=LEVELS.length;saveProg();refreshSelect();return PROG.open},
+  select:()=>showSelect(false),
+  turn:(i,k)=>{if(ST.phase!=='play')return false;const c=COMP[i];if(compLocked(livePos(),c)){latchBlocked(c);return false}
+    const D=COMPS[c].driver,RD=ST.rings[D],kd=Math.round(k*MULT[D]/MULT[i]);for(const j of COMPS[c].rings){ST.rings[j].phys=false;ST.rings[j].vel=0}
+    RD.target=Math.round(RD.ang/NOTCH)*NOTCH+kd*NOTCH;RD.phys=true;ST.lead=i;if(mod(kd,COMPS[c].period)){ST.turns++;setTurns();onTurn(i)}return true},
   play:startPlay,fps:()=>FPS.fps,frameMs:()=>({avg:+FPS.ms.toFixed(2),peak:+FPS.max.toFixed(2)}),particles:()=>PT.length,audio:()=>AU.ctx?AU.ctx.state:'none'
 };
 
-computeLayout();buildTitleSVG();buildStampSVG();buildAssets();Object.assign(CAM,LAY.title);
+computeLayout();buildTitleSVG();loadLevel(0);buildSelect();refreshSelect();Object.assign(CAM,LAY.title);
 requestAnimationFrame(t=>{last=t;frame(t)});
 })();
 </script>
