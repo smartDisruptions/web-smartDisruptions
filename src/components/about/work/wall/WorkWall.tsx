@@ -18,7 +18,7 @@ import './work-wall.css';
  * The ring itself, its light and its behaviour are components/built/
  * ArmoryWall (+ ArmoryWallIsland, armory-drive.ts, wall.css). This file is
  * the room: the header, the chips (All, Games, Apps, Websites, Josh's four,
- * 2026-10-26; each plaque's kinds come from data.ts by the receipt's own
+ * 2026-10-26, and Other media, 2026-11-17; each plaque's kinds come from data.ts by the receipt's own
  * rule, so "Games 16" there is the Games chip's sixteen here), and the line
  * that closes the work before the card to About Me.
  *
@@ -41,6 +41,7 @@ export default function WorkWall() {
     chip('games', 'Games'),
     chip('apps', 'Apps'),
     chip('websites', 'Websites'),
+    chip('media', 'Other media'),
   ];
 
   return (

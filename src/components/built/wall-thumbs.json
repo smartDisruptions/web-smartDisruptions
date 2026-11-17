@@ -123,13 +123,13 @@
     "thumb": "/images/wall/websites-net-price-calculator.webp",
     "hash": "ee90cb3548d1"
   },
-  "/images/websites/notebook.webp": {
-    "thumb": "/images/wall/websites-notebook.webp",
-    "hash": "44c3b32221f2"
-  },
   "/images/websites/samurai-kitchen.webp": {
     "thumb": "/images/wall/websites-samurai-kitchen.webp",
     "hash": "3fda5f066c67"
+  },
+  "/images/websites/videos.webp": {
+    "thumb": "/images/wall/websites-videos.webp",
+    "hash": "750df59908a3"
   },
   "/images/websites/voltic.webp": {
     "thumb": "/images/wall/websites-voltic.webp",
