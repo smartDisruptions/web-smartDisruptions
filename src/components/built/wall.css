@@ -37,8 +37,13 @@
   --bt-shade-a: 0.78;
   --bt-haze: color-mix(in srgb, var(--bt-hall) 34%, transparent);
   --bt-haze-a: 0.34;
-  --bt-lamp: rgba(255, 226, 168, 0.66);
-  --bt-pool: rgba(255, 248, 232, 0.3);
+  --bt-lamp: rgba(255, 226, 168, 0.4);
+  --bt-pool: rgba(255, 248, 232, 0.12);
+  /* The plaque in front is the light in the room (Josh, 2026-11-17): the
+     glow it throws on what hangs round it, and how far everything else
+     falls back from it. */
+  --bt-glow: rgba(255, 236, 186, 0.34);
+  --bt-dim: color-mix(in srgb, var(--bt-hall) 18%, transparent);
   --bt-gleam: rgba(255, 252, 244, 0.78);
   --bt-floor-far: color-mix(in oklab, var(--bt-hall), #7a5c30 9%);
   --bt-floor: color-mix(in oklab, var(--bt-hall), #7a5c30 16%);
@@ -50,7 +55,7 @@
      the front, never animated. */
   --bt-halo:
     0 18px 30px -18px var(--sd-card-shadow),
-    0 0 38px -6px rgba(255, 214, 140, 0.75);
+    0 0 38px -6px rgba(255, 200, 110, 0.95);
   /* The inside of the spiral, below the front row: lacquer out of the
      light, most of the way to the hall's own colour. */
   --bt-under: color-mix(in srgb, #141729 30%, var(--bt-hall));
@@ -61,8 +66,10 @@
   --bt-shade-a: 0.86;
   --bt-haze: color-mix(in srgb, var(--bt-hall) 30%, transparent);
   --bt-haze-a: 0.3;
-  --bt-lamp: rgba(255, 150, 72, 0.3);
-  --bt-pool: rgba(255, 200, 130, 0.1);
+  --bt-lamp: rgba(255, 150, 72, 0.17);
+  --bt-pool: rgba(255, 200, 130, 0.05);
+  --bt-glow: rgba(255, 176, 96, 0.3);
+  --bt-dim: color-mix(in srgb, var(--bt-hall) 26%, transparent);
   --bt-gleam: rgba(255, 186, 112, 0.3);
   --bt-floor-far: color-mix(in oklab, var(--bt-hall), #39406e 22%);
   --bt-floor: color-mix(in oklab, var(--bt-hall), #5a4a4a 30%);
@@ -72,7 +79,7 @@
   --bt-lit: rgba(255, 207, 112, 0.8);
   --bt-halo:
     0 18px 30px -18px var(--sd-card-shadow),
-    0 0 38px -6px rgba(255, 178, 96, 0.4);
+    0 0 38px -6px rgba(255, 184, 104, 0.8);
   --bt-under: color-mix(in srgb, #141729 62%, var(--bt-hall));
 }
 
@@ -243,6 +250,15 @@
       var(--bt-pool),
       transparent
     ),
+    /* Everything but the plaque in front falls back a little, more the
+       further it hangs from it: the near edge of a neighbour and the top
+       of the plaque below are almost as bright as it is. */
+    radial-gradient(
+        calc(var(--pw) * 1.5) calc((var(--ph) + var(--cap)) * 1.5) at 50%
+          var(--front-y),
+        transparent 40%,
+        var(--bt-dim)
+      ),
     linear-gradient(
       90deg,
       var(--bt-shade) calc(50% - var(--r) * 0.8),
@@ -258,9 +274,9 @@
     linear-gradient(
       180deg,
       transparent var(--front-bottom),
-      color-mix(in srgb, var(--bt-hall) calc(var(--bt-well) * 24%), transparent)
+      color-mix(in srgb, var(--bt-hall) calc(var(--bt-well) * 14%), transparent)
         var(--bt-row-1),
-      color-mix(in srgb, var(--bt-hall) calc(var(--bt-well) * 32%), transparent)
+      color-mix(in srgb, var(--bt-hall) calc(var(--bt-well) * 24%), transparent)
         var(--bt-row-2),
       color-mix(
           in srgb,
@@ -270,6 +286,38 @@
         var(--bt-row-3)
     );
 }
+/* The glow the plaque in front throws: brightest just off its edges, on
+   the near sides of its neighbours and the top of the plaque below, and
+   clear over the plaque itself so its picture stays crisp. It is fixed to
+   the room like the rest of the light (the front plaque is always here),
+   so the ring turns through it at no cost. While the ring turns nothing is
+   in front, so it sinks, and comes back up as a plaque settles. */
+.bt-wall-light::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: var(--front-y);
+  width: calc(var(--pw) * 3);
+  height: calc((var(--ph) + var(--cap)) * 2.7);
+  translate: -50% -50%;
+  background: radial-gradient(
+    closest-side,
+    transparent 31%,
+    var(--bt-glow) 44%,
+    color-mix(in srgb, var(--bt-glow) 38%, transparent) 66%,
+    transparent
+  );
+  /* A layer of its own, so sinking and rising is the compositor's work.
+     Without it each frame of the fade repainted the whole light layer
+     (measured: ten times the raster while the ring turned). */
+  will-change: opacity;
+  transition: opacity 0.5s ease-out;
+}
+.bt-wall[data-turning] .bt-wall-light::after {
+  opacity: 0.35;
+  transition-duration: 0.15s;
+}
+
 /* No floor under the front row: the next turn hangs there. */
 .bt-wall[data-helix] .bt-wall-floor {
   display: none;
