@@ -56,7 +56,11 @@ function resolves(href) {
   if ((m = path.match(/^\/market-storm\/([^/]+)$/))) return reports.has(m[1]);
   if ((m = path.match(/^\/built\/([^/]+)$/))) return builtSlugs.has(m[1]);
   if ((m = path.match(/^\/games\/([^/]+)$/)))
-    return existsSync(`public/games/${m[1]}/index.html`);
+    return (
+      existsSync(`public/games/${m[1]}/index.html`) ||
+      // A game that is a page of the site, not a single file: Rooftop Run.
+      existsSync(`src/app/games/${m[1]}/page.tsx`)
+    );
   if ((m = path.match(/^\/demo\/([^/]+)$/)))
     return existsSync(`public/demo/${m[1]}`);
   return false;

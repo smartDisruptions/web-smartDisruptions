@@ -56,6 +56,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
+      url: `${BASE}/games/rooftop-run`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
       url: `${BASE}/games/neo-dojo-survivors`,
       changeFrequency: 'monthly',
       priority: 0.4,
