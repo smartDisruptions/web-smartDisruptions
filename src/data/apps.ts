@@ -1033,9 +1033,9 @@ export const apps: App[] = [
     slug: 'the-moon-pearl',
     name: 'The Moon Pearl',
     description:
-      'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, the new lighting tech gets the blame, and you have one night locked in the dressing room to find it and prove who took it.',
+      'An escape room starring Mei, all grown up. A magician\u2019s glowing pearl vanishes in a seven-second blackout, Madame asks the new lighting tech to find it, and you have one night in the dressing room to do it and prove who took it.',
     longDescription:
-      'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds, and it doesn’t come back. Mei, the theater’s new lighting tech, gets the blame and is locked in the dressing room until the police arrive at dawn. You have one night to find the pearl and prove who really took it.',
+      'Every night, Madame Luna makes the Moon Pearl vanish. Tonight, at her farewell show, the lights go out for seven seconds, and it doesn’t come back. Madame trusts one person to find it: Mei, the theater’s new lighting tech, who shuts herself in the dressing room with Madame’s cabinet until the police arrive at dawn. You have one night to find the pearl and prove who really took it.',
     thumbnailUrl: '/images/apps/the-moon-pearl-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/the-moon-pearl-1.webp',
@@ -1047,7 +1047,7 @@ export const apps: App[] = [
     status: 'live',
     outcomes: [
       'Every answer has at least two clues that point to it, and a reason in the story for being there. I wrote the whole story first, with a table that pairs each lock with its clues, before any art existed.',
-      'Five voiced characters (37 lines), a theme song and 19 sound effects, all made with ElevenLabs, one take each.',
+      'Every line of dialogue is voiced (129 lines, seven voices), with a theme song and 19 sound effects, all made with ElevenLabs, one take each.',
       'Four AI agents built it side by side on one written contract: the dressing room, the cast and the stage, the cabinet and the props, and the screens with the phone and the intercom.',
       'Measured with the processor slowed four times, every scene\u2019s code takes under 4 ms a frame, so it runs smoothly on an old phone.',
     ],
