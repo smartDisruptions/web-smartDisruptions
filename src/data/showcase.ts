@@ -7,9 +7,9 @@
  * with the other websites). Two of them are projects with a
  * write-up under /built (src/data/projects.ts); the Arcade and Kiru are
  * parts of this site, and their own pages (/games, /kiru) are where you meet
- * them, so they are described here instead. Samurai Kitchen and The Notebook
- * design, the four until then, keep their pages and hang with everything
- * else on /about.
+ * them, so they are described here instead. Samurai Kitchen, one of the
+ * four until then, keeps its page and hangs with everything else on /about.
+ * (The Notebook design, the other, was taken off the site on 2026-11-17.)
  *
  * VOICE and FACTS as src/data/projects.ts: plain words for the average
  * person, nothing widened. The facts are the Arcade's and Kiru's own pages

@@ -299,9 +299,9 @@ export interface WorkCard {
 const FEATURED_IDS = new Set(FEATURED.map((f) => f.id));
 const GAMES = new Set<string>(GAME_SLUGS);
 
-/** Websites with a write-up, minus the featured ones and this site's old look. */
+/** Websites with a write-up, minus the featured ones. */
 const siteCards: WorkCard[] = projects
-  .filter((p) => !FEATURED_IDS.has(p.slug) && p.slug !== 'notebook')
+  .filter((p) => !FEATURED_IDS.has(p.slug))
   .map((p) => {
     const part = p.parts.find((x) => x.kind === 'Website') ?? p.parts[0];
     return {
@@ -371,12 +371,11 @@ export const HOW_I_BUILD: { title: string; line: string; proof?: ProofLink }[] =
   ];
 
 /**
- * Websites with a write-up: every project part that is a website, less the
- * Notebook (this site's own old look). Counted from the parts, not the
- * projects, because the Net Price Calculator is a project and an app.
+ * Websites with a write-up: every project part that is a website. Counted
+ * from the parts, not the projects, because the Net Price Calculator is a
+ * project and an app.
  */
 const WEBSITES = projects
-  .filter((p) => p.slug !== 'notebook')
   .flatMap((p) => p.parts)
   .filter((part) => part.kind === 'Website').length;
 
