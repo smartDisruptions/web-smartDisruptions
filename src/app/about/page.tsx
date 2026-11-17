@@ -33,9 +33,10 @@ export const metadata: Metadata = {
  *
  *  1. the threshold — the noren, the h1 (the LCP) and the receipt, whose
  *     lines open the wall;
- *  2. everything on one wall (#wall), the ring, reading the same lists as
- *     the receipt (components/about/work/data.ts), so a count can't
- *     disagree with the plaques;
+ *  2. everything on one wall (#wall), the ring (a spiral since
+ *     2026-11-17, once it passed seventeen plaques), reading the same
+ *     lists as the receipt (components/about/work/data.ts), so a count
+ *     can't disagree with the plaques;
  *  3. the card to About Me.
  *
  * Every kanji and seal in those sections is drawn from one copy of its

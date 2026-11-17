@@ -15,6 +15,14 @@ import './work-wall.css';
  * far side shows the backs of the plaques with their seals. Day is the same
  * hall by paper-lamp light.
  *
+ * Past seventeen plaques the ring is wound into a spiral (Josh, 2026-11-17:
+ * the one ring was "getting big" at thirty-four): about a dozen plaques to a
+ * turn, each turn a row lower, so the wall is a tower that gets taller as
+ * things are added and never wider. The front row is in the light, the row
+ * under it is the plaques a turn ahead, and the rest go down into the dark.
+ * A chip with seventeen plaques or fewer is still one plain ring
+ * (components/built/helix.ts).
+ *
  * The ring itself, its light and its behaviour are components/built/
  * ArmoryWall (+ ArmoryWallIsland, armory-drive.ts, wall.css). This file is
  * the room: the header, the chips (All, Games, Apps, Websites, Josh's four,
@@ -56,8 +64,8 @@ export default function WorkWall() {
         </h2>
         <p className="font-read mx-auto mt-5 max-w-[52ch] text-lg leading-[1.7] text-text-secondary">
           <span className="bt-motion-only">
-            Every project, app and game on this site, hung on one ring. Drag it
-            round or use the arrows, and press any of them to open it.
+            Every project, app and game on this site, hung on one spiral. Drag
+            it round or use the arrows, and press any of them to open it.
           </span>
           <span className="bt-still-only">
             Every project, app and game on this site, in one place. Press any of

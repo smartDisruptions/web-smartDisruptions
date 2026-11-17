@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { WallDrive } from './armory-drive';
+import { turnsFor } from './helix';
 
 /**
  * The switch that wakes the ring up, the chips, and the status line.
@@ -84,18 +85,27 @@ export default function ArmoryWallIsland() {
         status.textContent = `Showing ${what.toLowerCase()}.`;
         return;
       }
-      // A new ring of just these plaques.
+      // A new ring of just these plaques, wound into as many turns as
+      // that many make (./helix): a plain ring up to seventeen, a spiral
+      // past that.
       wall.stop();
+      const turns = turnsFor(count);
       kept.forEach((p, i) => p.style.setProperty('--i', String(i)));
       root.style.setProperty('--n', String(count));
+      root.style.setProperty('--t', String(turns));
+      root.toggleAttribute('data-helix', turns > 1);
       root.style.setProperty('--park', '0');
       root.removeAttribute('data-park');
       for (const p of panels) {
+        p.style.setProperty('--lap', '0');
         p.removeAttribute('data-front');
         p.removeAttribute('data-away');
+        p.removeAttribute('data-under');
       }
       if (total) total.textContent = ` / ${String(count).padStart(2, '0')}`;
-      root.dataset.spin = String((360 / count) * Math.min(2, count - 1));
+      root.dataset.spin = String(
+        ((360 * turns) / count) * Math.min(2, count - 1)
+      );
       wall = drive(root);
       wall.first(`${what}: `);
     };

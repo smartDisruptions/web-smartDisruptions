@@ -20,14 +20,16 @@
     var(--wk-wl-hall);
   /* The last thing on a long page: skip its layout and paint until it is
      near. The placeholder is the band's measured content height at each
-     width (the padding is added on top), and the flat grid's under reduced
-     motion, which is about twice as tall on a phone. */
+     width (the padding is added on top; measured 2026-11-17 with 34
+     plaques), and the flat grid's under reduced motion, which is about
+     three times as tall on a phone. The spiral's height doesn't change as
+     plaques are added; the grid's does, a row at a time. */
   content-visibility: auto;
-  contain-intrinsic-size: auto 1064px;
+  contain-intrinsic-size: auto 1234px;
 }
 @media (prefers-reduced-motion: reduce) {
   .wk-wl {
-    contain-intrinsic-size: auto 2300px;
+    contain-intrinsic-size: auto 3595px;
   }
 }
 :root[data-theme='dark'] .wk-wl {
@@ -37,22 +39,22 @@
 @media (min-width: 40rem) {
   .wk-wl {
     padding-top: 8rem;
-    contain-intrinsic-size: auto 1119px;
+    contain-intrinsic-size: auto 1283px;
   }
 }
 @media (min-width: 40rem) and (prefers-reduced-motion: reduce) {
   .wk-wl {
-    contain-intrinsic-size: auto 2075px;
+    contain-intrinsic-size: auto 3065px;
   }
 }
 @media (min-width: 64rem) {
   .wk-wl {
-    contain-intrinsic-size: auto 1089px;
+    contain-intrinsic-size: auto 1253px;
   }
 }
 @media (min-width: 64rem) and (prefers-reduced-motion: reduce) {
   .wk-wl {
-    contain-intrinsic-size: auto 1378px;
+    contain-intrinsic-size: auto 2200px;
   }
 }
 
