@@ -1143,9 +1143,9 @@ export const apps: App[] = [
     slug: 'kid-volt-knockout',
     name: 'Kid Volt Knockout',
     description:
-      'A boxing game I built for phones. Kid Volt vs Disco Danny on a rooftop: he punches on the beat, a sparkle shows where he’s open, and three knockdowns is a TKO.',
+      'A boxing game I built for phones. Kid Volt climbs a ladder of five opponents on a rooftop: each one punches on the beat, a sparkle shows where he’s open, and three knockdowns is a TKO.',
     longDescription:
-      'Kid Volt takes on Disco Danny on a rooftop dance floor. Danny throws every punch on the beat, so listen to the music, watch for the sparkle that shows where he’s open, and hit back. Charge up a Volt Hook, save up for a Supernova, and put him down three times before the clock runs out.',
+      'Kid Volt fights his way up a rooftop ladder of five opponents, from Disco Danny to King Kilowatt. Each one throws every punch on the beat, so listen to the music, watch for the sparkle that shows where he’s open, and hit back. Danny goes first and lights up the right buttons while you learn. Charge up a Volt Hook, save up for a Supernova, and put each fighter down three times before the clock runs out.',
     thumbnailUrl: '/images/apps/kid-volt-knockout-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/kid-volt-knockout-1.webp',
@@ -1156,9 +1156,10 @@ export const apps: App[] = [
     category: 'Game',
     status: 'live',
     outcomes: [
-      'Danny punches on the beat: 104 beats a minute to start, 116 after his first knockdown and 128 for the last dance.',
+      'Five opponents, each faster than the last: Disco Danny opens at 88 beats a minute, and King Kilowatt finishes at 138.',
+      'Each fighter has one big move with its own answer: duck, dodge, block, or read his pose.',
       'A counter charges half a super, and saving three charges unlocks the Supernova.',
-      'The fight clock starts at 3:00, runs one and a half times faster than real time, and stops while Danny is dizzy.',
+      'The fight clock starts at 3:00, runs one and a half times faster than real time, and stops while he’s dizzy.',
       'Three knockdowns is a TKO, and your fastest win is kept on your device as your best KO time.',
     ],
     buildDate: '2026-09',
