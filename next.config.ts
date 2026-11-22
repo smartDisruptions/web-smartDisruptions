@@ -133,6 +133,15 @@ const nextConfig: NextConfig = {
           source: '/games/tumbler',
           destination: '/games/tumbler/index.html',
         },
+        // King of the Pole: tetherball against the kids from the story, one
+        // file in public/games (the vault's Tools/tether-ball, built with
+        // --prod), and its fourteen music tracks are scripts beside it in
+        // music/, each fetched when it is about to play. Real files are served
+        // before this rewrite runs, so they need no rule of their own.
+        {
+          source: '/games/king-of-the-pole',
+          destination: '/games/king-of-the-pole/index.html',
+        },
         // Portfolio Ledger: the public demo of my net-worth tracker, one file in
         // public/demo on made-up data (built from my private ledger's source
         // with --public, which leaves its real settings out). Its Home Screen

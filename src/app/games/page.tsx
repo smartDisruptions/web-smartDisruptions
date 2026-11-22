@@ -15,15 +15,16 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games: Tumbler, ten 1928 bank vaults to crack, up front as the featured game, Kiru and the Neo Dojo Cast, Kiru's Rooftop Run, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
+    "Hand-built browser games: King of the Pole, tetherball against the kids from my story, up front as the featured game, Kiru and the Neo Dojo Cast, Kiru's Rooftop Run, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, Tumbler, ten 1928 bank vaults to crack, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**
  * THE ARCADE — a neon night market (Shadow Dojo, October 2026).
  *
  * The big cabinet at the top is the featured game, ARCADE_FEATURED_SLUG
- * (./Featured): Tumbler, a new release, since 2026-11-17. Kiru's Rooftop Run
- * stood there until then; it is a cabinet in the row now, with its own page
+ * (./Featured): King of the Pole, a new release, since 2026-11-22 (Josh's
+ * call). Tumbler stood there from 2026-11-17, and Kiru's Rooftop Run before
+ * it; both are cabinets in the row now, Rooftop Run with its own page
  * (./rooftop-run), and the featured game is left out of the row.
  *
  * The line-up is ARCADE_SLUGS in src/data/apps.ts, in cabinet order (Josh's
@@ -31,8 +32,10 @@ export const metadata: Metadata = {
  * Taken, a rhythm duel in pre-alpha, then Cosmo's Moondrift, a 3D moonboarding
  * game, Cosmo Outbound, a 3D flight from a canyon to orbit and on to other
  * worlds, Rubble Rouser, a 3D demolition game whose forty buildings stand
- * and fall by their structure, and Tumbler, a puzzle of ten 1928 vault doors
- * of geared rings (2026-11-16). Then the Lantern Theater, the Escape
+ * and fall by their structure, Tumbler, a puzzle of ten 1928 vault doors
+ * of geared rings (2026-11-16), and King of the Pole, tetherball against the
+ * kids from the story of the same name (2026-11-22). Then the Lantern
+ * Theater, the Escape
  * Rooms (./escape, ESCAPE_ROOM_SLUGS): a marquee, a stage that plays the night
  * of the theft as you scroll, and a lineup you can hear. Below it the page
  * goes downstairs into
@@ -130,8 +133,16 @@ export default function Arcade() {
           </div>
         </header>
 
-        {/* The featured cabinet (ARCADE_FEATURED_SLUG): Tumbler, a new release. */}
-        {featured && <Featured game={featured} seal="錠" screen="/images/apps/tumbler-1.webp" newRelease />}
+        {/* The featured cabinet (ARCADE_FEATURED_SLUG): King of the Pole, a new release. */}
+        {featured && (
+          <Featured
+            game={featured}
+            seal="王"
+            screen="/images/apps/king-of-the-pole-3.webp"
+            alt="King of the Pole: Marcus, a kid in a grey hoodie, hits the tetherball and a row of five balls swings round the pole toward a kid in a lime-green gi, on a school blacktop with four-square and hopscotch painted on it. The caption says “Decoys! Which one’s real?”"
+            newRelease
+          />
+        )}
       </div>
 
       {/* The ticker */}
