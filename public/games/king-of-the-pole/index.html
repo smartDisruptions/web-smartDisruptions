@@ -468,7 +468,10 @@ input[type="range"]:focus-visible::-webkit-slider-thumb, .sl.held input[type="ra
 .m-tag.you { background: var(--accent); color: var(--ink); }
 .m-tag.opp { background: #e93dff; color: var(--kage-ink); left: auto; right: 6px; }
 .m-card.is-you .m-tag.you, .m-card.is-opp .m-tag.opp { display: block; }
-.m-edit { position: absolute; right: 6px; top: 6px; height: 26px; padding: 0 9px; border-radius: 13px; border: 1px solid rgba(255,255,255,.2); background: rgba(9,11,19,.75); font: 800 11px/1 var(--ui); }
+.m-cell { position: relative; display: flex; min-width: 0; }
+.m-cell > .m-card { flex: 1 1 auto; min-width: 0; }
+.m-steps:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.m-edit { position: absolute; right: 8px; top: 8px; height: 26px; padding: 0 9px; border-radius: 13px; border: 1px solid rgba(255,255,255,.2); background: rgba(9,11,19,.75); font: 800 11px/1 var(--ui); }
 .m-card.is-opp .m-edit { top: 30px; }
 .m-foot { position: sticky; bottom: calc(-1 * (var(--sb) + 16px)); z-index: 2; display: flex; gap: 8px; margin: auto -6px calc(-1 * (var(--sb) + 16px)); padding: 12px 6px calc(var(--sb) + 14px); background: linear-gradient(0deg, rgba(9,11,19,.98) 70%, rgba(9,11,19,0)); }
 .m-foot .m-btn { flex: 1; }
@@ -619,6 +622,20 @@ body.st-on #panel.full { background: rgb(12,15,24); }
 .vi-ladder { position: absolute; left: 50%; bottom: calc(var(--sb) + 10px); transform: translateX(-50%); display: flex; gap: 3px; margin: 0; padding: 4px 6px; list-style: none; border-radius: 12px; background: rgba(9,11,19,.7); animation: viFade .3s .6s both; }
 .vi-ladder li { width: 24px; border-radius: 6px; background: color-mix(in srgb, var(--acc) 22%, transparent); }
 .vi-ladder li .pt { width: 24px; }
+/* A browser without color-mix() (Safari before 16.2, iOS 15 and older): these stand in for every use of it above. They have to
+   be an @supports block, not an earlier declaration in the same rule: a declaration with var() in it isn't checked when the CSS
+   is read, so in such a browser the color-mix one still wins, fails only once it is computed, and leaves the property empty
+   (the versus intro's halves went see-through, the court showing through them). */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  .vi-half.l { background: linear-gradient(160deg, #0b0e18 10%, var(--a) 140%); }
+  .vi-half.r { background: linear-gradient(340deg, #0b0e18 10%, var(--b) 140%); }
+  .vi-x { text-shadow: 6px 6px 0 var(--a), -6px -6px 0 var(--b), 0 0 40px rgba(255,255,255,.35); }
+  .vi-ladder li { background: rgba(255,255,255,.12); }
+  .m-step { background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.02)); }
+  .m-step:last-child { box-shadow: inset 0 0 0 1px var(--acc); }
+  .m-card .pt { background: radial-gradient(70% 60% at 50% 45%, rgba(255,255,255,.1), transparent 75%); }
+  .m-ofig { background: radial-gradient(55% 55% at 50% 50%, rgba(255,255,255,.12), transparent 72%); }
+}
 .vi-ladder li.done { opacity: .35; filter: grayscale(1); }
 .vi-ladder li.now { box-shadow: 0 0 0 2px #ffd54a; transform: scale(1.18); }
 /* splitting open onto the court */
@@ -663,7 +680,7 @@ body.st-on #panel.full { background: rgb(12,15,24); }
 </style>
 </head>
 <body>
-<div id="app">
+<div id="app" role="main">
   <canvas id="c" aria-label="Tether ball court. Swipe across the ball to hit it."></canvas>
 
   <div id="hud" data-state="ready">
@@ -15620,7 +15637,7 @@ function createMenu(doc, opts) {
   // ───────────── home ─────────────
   function home() {
     const s = el('div', 'm-scr m-home');
-    const head = el('header', 'm-title');
+    const head = el('div', 'm-title');
     head.append(el('div', 'm-kick', 'Tetherball'), el('h1', '', 'King of the Pole'));
     s.appendChild(head);
     if (opts.storyInfo) s.appendChild(storyCard());
@@ -15682,7 +15699,7 @@ function createMenu(doc, opts) {
   // a character's card (the grid's): their portrait, name, special, and their level or role
   function card(i, e) {
     const c = btn('m-card', '');
-    c.dataset.i = String(i); c.setAttribute('role', 'listitem');
+    c.dataset.i = String(i);
     c.style.setProperty('--acc', e.accent);
     place(c, e, true);
     const t = el('span', 'm-ct');
@@ -15703,11 +15720,15 @@ function createMenu(doc, opts) {
       if (!arcadePlays(e)) continue; // in the story only, Yuji and Rei (the arcade's last), and Kiru and Kage in the prod version
       const c = card(i, e);
       c.addEventListener('click', () => { CFG.roster.you = i; changed(); paint(); });
-      if (e.key === 'you') { const ed = btn('m-edit', 'Edit', (ev) => { ev.stopPropagation(); makeFrom = 'arcade'; show('make'); }); ed.setAttribute('aria-label', 'Edit your character'); c.appendChild(ed); }
-      grid.appendChild(c);
+      // each card sits in a cell of the list, with your Edit button beside it rather than inside it (a button may not hold a
+      // button: a screen reader and a keyboard can't reach the inner one properly). QA 2026-11-22
+      const cell = el('div', 'm-cell'); cell.setAttribute('role', 'listitem'); cell.appendChild(c);
+      if (e.key === 'you') { const ed = btn('m-edit', 'Edit', (ev) => { ev.stopPropagation(); makeFrom = 'arcade'; show('make'); }); ed.setAttribute('aria-label', 'Edit your character'); cell.appendChild(ed); }
+      grid.appendChild(cell);
     }
     s.appendChild(grid);
     const lad = el('section', 'm-ladder'), lh = el('h3', 'm-lab', ''), row = el('ol', 'm-steps');
+    row.tabIndex = 0; row.setAttribute('aria-label', 'The matches, in order'); // it scrolls sideways: a keyboard can scroll it too
     lad.append(lh, row);
     s.appendChild(lad);
     const foot = el('div', 'm-foot');
@@ -15736,7 +15757,7 @@ function createMenu(doc, opts) {
     return s;
   }
   function bar(title, back) {
-    const h = el('header', 'm-bar');
+    const h = el('div', 'm-bar');
     const b = btn('m-back', '', back);
     b.setAttribute('aria-label', 'Back');
     b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
@@ -15847,7 +15868,8 @@ function createMenu(doc, opts) {
     swatches('clothes', 'Trousers', Object.keys(YOU_PANTS), (k) => YOU_PANTS[k], 'pants');
     swatches('clothes', 'Trainers', Object.keys(YOU_COL), (k) => YOU_COL[k], 'shoes');
     tiles('extras', 'Extras (any number)', names(YOU_EXTRA), 'extras', 'extra', true);
-    panes.extras.appendChild(el('p', 'm-note', "You're the new kid, and the story never draws you. Your special is Slip, as it is in the story: the Characters tab in Dev settings can change it."));
+    // the players' version has no story and no Dev settings, so its note names neither (QA 2026-11-22: it told players about both)
+    panes.extras.appendChild(el('p', 'm-note', opts.onDev ? "You're the new kid, and the story never draws you. Your special is Slip, as it is in the story: the Characters tab in Dev settings can change it." : "You're the new kid, and your special is Slip."));
     function refresh() {
       K.forget(['yt', 'eye']); // each tile and the preview carry their own gradients
       for (const gp of groups) { gp.paint(); if (gp.pane === tab && gp.draw) gp.draw(); }
@@ -15887,8 +15909,12 @@ function createMenu(doc, opts) {
     if (f && f.focus) try { f.focus({ preventScroll: true }); } catch (e) { /* old browsers */ }
   }
   const pickKey = () => Math.round(CFG.roster.you) + '/' + Math.round(CFG.roster.opp) + '/' + youSig() + '/' + CFG.match.opponent + '/' + CFG.gfx.quality;
-  function open(name) { root.hidden = false; app.classList.add('menu-up'); show(name || 'home'); }
-  function close() { endVersus(); root.hidden = true; app.classList.remove('menu-up'); screen = ''; delete root.dataset.screen; }
+  // while the menu is up it is modal (aria-modal says so): the game behind it is out of reach of Tab and a screen reader too, or
+  // a keyboard walks through the HUD's buttons before it reaches Play (QA 2026-11-22). The start gate is left alone, and so is the
+  // dev version's Feel panel, which Dev settings opens over the menu.
+  function behind(on) { for (const n of app.children) if (n !== root && n.id !== 'panel' && !(n.classList && n.classList.contains('m-gate'))) { if (on) n.setAttribute('inert', ''); else n.removeAttribute('inert'); } }
+  function open(name) { root.hidden = false; app.classList.add('menu-up'); behind(true); show(name || 'home'); }
+  function close() { endVersus(); root.hidden = true; app.classList.remove('menu-up'); behind(false); screen = ''; delete root.dataset.screen; }
   // every frame while it is up (main.js): a pick changed elsewhere (the Characters tab) shows here too
   function sync() { if (!root.hidden && (screen === 'home' || screen === 'arcade') && pickKey() !== shownPick) show(screen); }
   doc.addEventListener('keydown', (e) => {
@@ -15905,7 +15931,7 @@ function createMenu(doc, opts) {
     const fig = el('div', 'm-ofig');
     fig.style.setProperty('--acc', e.accent);
     place(fig, e, false);
-    const head = el('header', 'm-title');
+    const head = el('div', 'm-title');
     if (o.clear) {
       head.append(el('div', 'm-kick', 'Arcade clear'), el('h1', '', 'King of the Pole'));
       s.append(head, fig, el('p', 'm-lead', nameOf(you) + ' beat all ' + o.of + ', the whole story, up to Rei.'));
@@ -15932,7 +15958,7 @@ function createMenu(doc, opts) {
   function versus(info, done) {
     endVersus();
     info = info || {};
-    root.hidden = false; app.classList.add('menu-up');
+    root.hidden = false; app.classList.add('menu-up'); behind(true);
     screen = 'vs'; root.textContent = ''; root.dataset.screen = 'vs'; root.scrollTop = 0;
     const you = info.you || rosterEntry('you'), opp = info.opp || rosterEntry('opp');
     const v = el('div', 'm-vsi');
@@ -16009,7 +16035,7 @@ function createMenu(doc, opts) {
     if (gateEl) return;
     const fine = typeof matchMedia === 'function' && matchMedia('(hover: hover) and (pointer: fine)').matches; // a mouse: Click
     const word = fine ? 'Click to start' : 'Tap to start';
-    const g = el('div', 'm-gate'), head = el('header', 'm-title');
+    const g = el('div', 'm-gate'), head = el('div', 'm-title');
     g.setAttribute('role', 'button'); g.setAttribute('aria-label', word); g.tabIndex = 0;
     head.append(el('div', 'm-kick', 'Tetherball'), el('h1', '', 'King of the Pole'));
     g.append(head, el('span', 'm-btn go m-start', word), el('p', 'm-note', 'Sound on 🔊'));
