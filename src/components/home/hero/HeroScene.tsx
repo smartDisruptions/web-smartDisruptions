@@ -133,8 +133,8 @@ export default function HeroScene() {
           and the parts worth copying.
         </p>
         <div className="hx-actions hx-rise" style={{ animationDelay: '0.7s' }}>
-          <Button variant="primary" size="lg" href="/content">
-            Read the notes
+          <Button variant="primary" size="lg" href="/learn">
+            Start learning
           </Button>
           <Button variant="secondary" size="lg" href="/apps">
             See what I&apos;ve built

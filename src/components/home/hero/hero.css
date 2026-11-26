@@ -80,7 +80,13 @@
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: linear-gradient(180deg, var(--hx-sky-1) 0%, var(--hx-sky-2) 46%, var(--hx-sky-3) 82%, var(--sd-bg) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--hx-sky-1) 0%,
+    var(--hx-sky-2) 46%,
+    var(--hx-sky-3) 82%,
+    var(--sd-bg) 100%
+  );
 }
 
 .hx-scene {
@@ -114,7 +120,8 @@
   transform: translate3d(calc(var(--px) * -32px), calc(var(--py) * -10px), 0);
 }
 .hx-bamboo {
-  transform: translate3d(calc(var(--px) * -56px), calc(var(--py) * -12px), 0) scaleX(-1);
+  transform: translate3d(calc(var(--px) * -56px), calc(var(--py) * -12px), 0)
+    scaleX(-1);
 }
 .hx-roofbox {
   transform: translate3d(calc(var(--px) * -40px), calc(var(--py) * -10px), 0);
@@ -173,10 +180,26 @@
 }
 :root[data-theme='dark'] .hx-orb-disc {
   background:
-    radial-gradient(circle at 34% 38%, rgba(60, 50, 30, 0.06) 0 9%, transparent 10%),
-    radial-gradient(circle at 62% 60%, rgba(60, 50, 30, 0.07) 0 13%, transparent 14%),
-    radial-gradient(circle at 60% 26%, rgba(60, 50, 30, 0.05) 0 6%, transparent 7%),
-    radial-gradient(circle at 26% 66%, rgba(60, 50, 30, 0.05) 0 7%, transparent 8%),
+    radial-gradient(
+      circle at 34% 38%,
+      rgba(60, 50, 30, 0.06) 0 9%,
+      transparent 10%
+    ),
+    radial-gradient(
+      circle at 62% 60%,
+      rgba(60, 50, 30, 0.07) 0 13%,
+      transparent 14%
+    ),
+    radial-gradient(
+      circle at 60% 26%,
+      rgba(60, 50, 30, 0.05) 0 6%,
+      transparent 7%
+    ),
+    radial-gradient(
+      circle at 26% 66%,
+      rgba(60, 50, 30, 0.05) 0 7%,
+      transparent 8%
+    ),
     radial-gradient(circle at 42% 40%, #fffcf3, var(--hx-orb) 72%);
 }
 .hx.hx-rising .hx-orb-disc {
@@ -357,7 +380,12 @@
   aspect-ratio: 1;
   translate: -50% -50%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 210, 122, 0.7), rgba(255, 154, 74, 0.25) 45%, transparent);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 210, 122, 0.7),
+    rgba(255, 154, 74, 0.25) 45%,
+    transparent
+  );
   opacity: 0;
 }
 :root[data-theme='dark'] .hx-glow {
@@ -549,9 +577,15 @@
 .hx-fade {
   position: absolute;
   inset: auto 0 0 0;
-  height: 70px;
+  height: 96px;
   z-index: 1;
-  background: linear-gradient(transparent, var(--sd-bg));
+  /* The page itself (its colour and its paper grain, as on body), let in
+     through a mask, so the hero ends in exactly what comes next. A plain
+     fade to the colour alone left a faint edge where the grain began,
+     which the receipts band used to cover (November 2026). */
+  background: var(--sd-noise) 0 0 / 180px 180px repeat var(--sd-bg);
+  -webkit-mask-image: linear-gradient(transparent, #000);
+  mask-image: linear-gradient(transparent, #000);
   pointer-events: none;
 }
 
@@ -726,7 +760,13 @@
     background: linear-gradient(transparent, var(--hx-sky-3) 70%);
   }
   .hx-sky {
-    background: linear-gradient(180deg, var(--hx-sky-1) 0%, var(--hx-sky-2) 26%, var(--hx-sky-3) 40%, var(--sd-bg) 100%);
+    background: linear-gradient(
+      180deg,
+      var(--hx-sky-1) 0%,
+      var(--hx-sky-2) 26%,
+      var(--hx-sky-3) 40%,
+      var(--sd-bg) 100%
+    );
   }
   .hx-stars {
     height: 300px;

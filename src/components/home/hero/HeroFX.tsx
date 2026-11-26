@@ -76,10 +76,12 @@ export default function HeroFX() {
       t: EventTarget,
       type: K | string,
       fn: (e: never) => void,
-      opts?: AddEventListenerOptions,
+      opts?: AddEventListenerOptions
     ) => {
       t.addEventListener(type, fn as EventListener, opts);
-      cleanups.push(() => t.removeEventListener(type, fn as EventListener, opts));
+      cleanups.push(() =>
+        t.removeEventListener(type, fn as EventListener, opts)
+      );
     };
 
     // ── Intro: Kiru waves, then settles into his watch ────────────────────
@@ -116,18 +118,33 @@ export default function HeroFX() {
       parallaxLive = true;
       wake();
     };
-    on(window, 'pointermove', (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse') return;
-      setTarget((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1);
-    }, { passive: true });
+    on(
+      window,
+      'pointermove',
+      (e: PointerEvent) => {
+        if (e.pointerType !== 'mouse') return;
+        setTarget(
+          (e.clientX / innerWidth) * 2 - 1,
+          (e.clientY / innerHeight) * 2 - 1
+        );
+      },
+      { passive: true }
+    );
     // Phone tilt — Android grants it freely; iOS needs a permission prompt we
     // won't spring on anyone, so iOS gets the scroll depth only.
-    const DOE = window.DeviceOrientationEvent as unknown as { requestPermission?: unknown } | undefined;
+    const DOE = window.DeviceOrientationEvent as unknown as
+      | { requestPermission?: unknown }
+      | undefined;
     if (DOE && typeof DOE.requestPermission !== 'function') {
-      on(window, 'deviceorientation', (e: DeviceOrientationEvent) => {
-        if (e.gamma == null || e.beta == null) return;
-        setTarget(e.gamma / 25, (e.beta - 45) / 30);
-      }, { passive: true });
+      on(
+        window,
+        'deviceorientation',
+        (e: DeviceOrientationEvent) => {
+          if (e.gamma == null || e.beta == null) return;
+          setTarget(e.gamma / 25, (e.beta - 45) / 30);
+        },
+        { passive: true }
+      );
     }
 
     // ── Petals ────────────────────────────────────────────────────────────
@@ -169,7 +186,9 @@ export default function HeroFX() {
       petals.length = target;
     };
     const themeSprites = () => {
-      sprites = makeSprites(document.documentElement.getAttribute('data-theme') === 'dark');
+      sprites = makeSprites(
+        document.documentElement.getAttribute('data-theme') === 'dark'
+      );
     };
 
     const startPetals = () => {
@@ -184,7 +203,10 @@ export default function HeroFX() {
     // the CSS petals carry the scene and no frame runs any script.
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const first = () => startPetals();
-      window.addEventListener('pointermove', first, { once: true, passive: true });
+      window.addEventListener('pointermove', first, {
+        once: true,
+        passive: true,
+      });
       cleanups.push(() => window.removeEventListener('pointermove', first));
     }
 
@@ -201,11 +223,16 @@ export default function HeroFX() {
     });
 
     // Pointer position relative to the hero, for the petals to flee from.
-    on(hero, 'pointermove', (e: PointerEvent) => {
-      const r = hero.getBoundingClientRect();
-      pointerX = e.clientX - r.left;
-      pointerY = e.clientY - r.top;
-    }, { passive: true });
+    on(
+      hero,
+      'pointermove',
+      (e: PointerEvent) => {
+        const r = hero.getBoundingClientRect();
+        pointerX = e.clientX - r.left;
+        pointerY = e.clientY - r.top;
+      },
+      { passive: true }
+    );
     on(hero, 'pointerleave', () => {
       pointerX = pointerY = -9999;
     });
@@ -215,7 +242,12 @@ export default function HeroFX() {
     let last = 0;
     let t = 0;
     function wake() {
-      if (!raf && visible && !document.hidden && (petalsReady || parallaxLive)) {
+      if (
+        !raf &&
+        visible &&
+        !document.hidden &&
+        (petalsReady || parallaxLive)
+      ) {
         last = performance.now();
         raf = requestAnimationFrame(frame);
       }
@@ -232,7 +264,8 @@ export default function HeroFX() {
         cy += (ty - cy) * Math.min(1, dt * 5);
         hero.style.setProperty('--px', cx.toFixed(4));
         hero.style.setProperty('--py', cy.toFixed(4));
-        if (Math.abs(tx - cx) < 0.001 && Math.abs(ty - cy) < 0.001) parallaxLive = false;
+        if (Math.abs(tx - cx) < 0.001 && Math.abs(ty - cy) < 0.001)
+          parallaxLive = false;
       }
 
       if (petalsReady && ctx) {
@@ -251,17 +284,25 @@ export default function HeroFX() {
             p.vr += (Math.random() - 0.5) * 6 * dt;
           }
           // Drag back toward the drift, so a scattered petal settles again.
-          p.vx += ((26 + gust) - p.vx) * 0.9 * dt;
+          p.vx += (26 + gust - p.vx) * 0.9 * dt;
           p.vy += (38 - p.vy) * 0.9 * dt;
           p.x += (p.vx + Math.sin(p.phase + t * p.spin) * 18) * dt;
           p.y += p.vy * dt;
           p.rot += p.vr * dt;
-          if (p.y > H + 30 || p.x > W + 40 || p.x < -80 || p.y < -200) Object.assign(p, spawn());
+          if (p.y > H + 30 || p.x > W + 40 || p.x < -80 || p.y < -200)
+            Object.assign(p, spawn());
           const flip = Math.cos(p.phase + t * p.spin * 0.8);
           const s = p.size * dpr;
           const c = Math.cos(p.rot);
           const sn = Math.sin(p.rot);
-          ctx.setTransform(c * s * flip, sn * s * flip, -sn * s, c * s, p.x * dpr, p.y * dpr);
+          ctx.setTransform(
+            c * s * flip,
+            sn * s * flip,
+            -sn * s,
+            c * s,
+            p.x * dpr,
+            p.y * dpr
+          );
           ctx.drawImage(sprites[p.tone], -SPRITE / 2, -SPRITE / 2);
         }
       }
@@ -276,14 +317,23 @@ export default function HeroFX() {
     let poseTimer = 0;
     let down: { x: number; y: number; t: number } | null = null;
 
-    on(hero, 'pointerdown', (e: PointerEvent) => {
-      down = { x: e.clientX, y: e.clientY, t: performance.now() };
-    }, { passive: true });
+    on(
+      hero,
+      'pointerdown',
+      (e: PointerEvent) => {
+        down = { x: e.clientX, y: e.clientY, t: performance.now() };
+      },
+      { passive: true }
+    );
     on(hero, 'pointerup', (e: PointerEvent) => {
       const d = down;
       down = null;
       if (!d || e.button > 0) return;
-      if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10 || performance.now() - d.t > 450) return;
+      if (
+        Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10 ||
+        performance.now() - d.t > 450
+      )
+        return;
       const target = e.target as Element;
       if (target.closest('a, button, input, h1, p, kbd')) return;
       throwAt(e.clientX, e.clientY);
@@ -321,10 +371,17 @@ export default function HeroFX() {
       const fly = star.animate(
         [
           { transform: `translate(${x0}px, ${y0}px) rotate(0deg) scale(.6)` },
-          { transform: `translate(${mx}px, ${my}px) rotate(540deg) scale(1)`, offset: 0.5 },
+          {
+            transform: `translate(${mx}px, ${my}px) rotate(540deg) scale(1)`,
+            offset: 0.5,
+          },
           { transform: `translate(${x1}px, ${y1}px) rotate(1080deg) scale(1)` },
         ],
-        { duration: dur, easing: 'cubic-bezier(.25,.6,.35,1)', fill: 'forwards' },
+        {
+          duration: dur,
+          easing: 'cubic-bezier(.25,.6,.35,1)',
+          fill: 'forwards',
+        }
       );
       fly.onfinish = () => {
         star.classList.add('is-stuck');
@@ -341,16 +398,30 @@ export default function HeroFX() {
               for (let i = 0; i < 26; i++) {
                 const a = Math.random() * Math.PI * 2;
                 const v = 120 + Math.random() * 260;
-                petals.push(spawn({ x: x1, y: y1, vx: Math.cos(a) * v, vy: Math.sin(a) * v }));
+                petals.push(
+                  spawn({
+                    x: x1,
+                    y: y1,
+                    vx: Math.cos(a) * v,
+                    vy: Math.sin(a) * v,
+                  })
+                );
               }
-              window.setTimeout(() => (petals.length = Math.max(28, petals.length - 26)), 4000);
+              window.setTimeout(
+                () => (petals.length = Math.max(28, petals.length - 26)),
+                4000
+              );
             } else {
               burst(x1, y1);
             }
           }
         }
         star
-          .animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, delay: 1100, fill: 'forwards' })
+          .animate([{ opacity: 1 }, { opacity: 0 }], {
+            duration: 500,
+            delay: 1100,
+            fill: 'forwards',
+          })
           .finished.then(() => {
             star.remove();
             flying--;
@@ -372,11 +443,25 @@ export default function HeroFX() {
         const dy = Math.sin(a) * r;
         p.animate(
           [
-            { transform: `translate(${x}px, ${y}px) rotate(0deg) scale(.4)`, opacity: 1 },
-            { transform: `translate(${x + dx}px, ${y + dy}px) rotate(${180 + Math.random() * 180}deg) scale(1)`, opacity: 1, offset: 0.45 },
-            { transform: `translate(${x + dx * 1.2}px, ${y + dy + 140}px) rotate(${400 + Math.random() * 200}deg) scale(.8)`, opacity: 0 },
+            {
+              transform: `translate(${x}px, ${y}px) rotate(0deg) scale(.4)`,
+              opacity: 1,
+            },
+            {
+              transform: `translate(${x + dx}px, ${y + dy}px) rotate(${180 + Math.random() * 180}deg) scale(1)`,
+              opacity: 1,
+              offset: 0.45,
+            },
+            {
+              transform: `translate(${x + dx * 1.2}px, ${y + dy + 140}px) rotate(${400 + Math.random() * 200}deg) scale(.8)`,
+              opacity: 0,
+            },
           ],
-          { duration: 1600 + Math.random() * 600, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' },
+          {
+            duration: 1600 + Math.random() * 600,
+            easing: 'cubic-bezier(.2,.7,.3,1)',
+            fill: 'forwards',
+          }
         ).onfinish = () => p.remove();
       }
     }
@@ -390,13 +475,20 @@ export default function HeroFX() {
         const r = 18 + Math.random() * 22;
         s.animate(
           [
-            { transform: `translate(${x}px, ${y}px) rotate(${a}rad) scaleX(.2)`, opacity: 1 },
+            {
+              transform: `translate(${x}px, ${y}px) rotate(${a}rad) scaleX(.2)`,
+              opacity: 1,
+            },
             {
               transform: `translate(${x + Math.cos(a) * r}px, ${y + Math.sin(a) * r}px) rotate(${a}rad) scaleX(1)`,
               opacity: 0,
             },
           ],
-          { duration: 420, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' },
+          {
+            duration: 420,
+            easing: 'cubic-bezier(.2,.8,.3,1)',
+            fill: 'forwards',
+          }
         ).onfinish = () => s.remove();
       }
     }

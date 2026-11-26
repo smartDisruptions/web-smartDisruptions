@@ -1,5 +1,5 @@
 import HeroScene from '@/components/home/hero/HeroScene';
-import ReceiptsBand from '@/components/home/ReceiptsBand';
+import HeroSeam from '@/components/home/HeroSeam';
 import DojoMap from '@/components/home/DojoMap';
 import AboutTeaser from '@/components/home/AboutTeaser';
 import CTASection from '@/components/home/CTASection';
@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <HeroScene />
-      <ReceiptsBand />
+      <HeroSeam />
       <DojoMap />
       <AboutTeaser />
       <CTASection />

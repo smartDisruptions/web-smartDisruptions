@@ -11,4 +11,7 @@ export const KIRU_X = 600;
 /** Feet sit at y≈232 of his 240-unit box; put them on top of the ridge. */
 export const KIRU_Y = RIDGE_Y - 8 - Math.round((232 / 240) * KIRU_S);
 /** The throwing hand in the 'throw' pose, in roof units. */
-export const HAND = { x: KIRU_X + 175 * (KIRU_S / 240), y: KIRU_Y + 136 * (KIRU_S / 240) };
+export const HAND = {
+  x: KIRU_X + 175 * (KIRU_S / 240),
+  y: KIRU_Y + 136 * (KIRU_S / 240),
+};
