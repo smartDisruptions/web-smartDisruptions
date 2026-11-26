@@ -69,6 +69,10 @@ export const SIZES: Record<string, readonly [number, number]> = {
   '/images/apps/tumbler-2.webp': [1600, 900],
   '/images/apps/tumbler-3.webp': [780, 1688],
   '/images/apps/tumbler-thumbnail.webp': [1200, 630],
+  '/images/apps/king-of-the-pole-1.webp': [780, 1688],
+  '/images/apps/king-of-the-pole-2.webp': [780, 1688],
+  '/images/apps/king-of-the-pole-3.webp': [1600, 900],
+  '/images/apps/king-of-the-pole-thumbnail.webp': [1200, 630],
   '/images/apps/the-moon-pearl-1.webp': [1600, 900],
   '/images/apps/the-moon-pearl-2.webp': [1600, 900],
   '/images/apps/the-moon-pearl-3.webp': [780, 1688],
@@ -214,6 +218,7 @@ const MARKS: Record<string, string> = {
   'cosmo-outbound': '航', // to voyage, as in 航宙, a voyage through space: Cosmo outbound, star to star
   'rubble-rouser': '崩', // to crumble, as in 崩れる: every building comes down
   tumbler: '錠', // a lock, as in 錠前: the vault door's
+  'king-of-the-pole': '王', // king
   // The Broom & Blade Arcade
   'hoop-quest': '籠', // a basket
   'kid-volt-knockout': '拳', // a fist

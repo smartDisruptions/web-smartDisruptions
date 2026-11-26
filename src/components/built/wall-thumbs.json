@@ -27,6 +27,10 @@
     "thumb": "/images/wall/apps-kid-volt-knockout-thumbnail.webp",
     "hash": "0e5e2a8a686a"
   },
+  "/images/apps/king-of-the-pole-thumbnail.webp": {
+    "thumb": "/images/wall/apps-king-of-the-pole-thumbnail.webp",
+    "hash": "09a0fe5c1727"
+  },
   "/images/apps/lantern-night-thumbnail.webp": {
     "thumb": "/images/wall/apps-lantern-night-thumbnail.webp",
     "hash": "548fb5701260"
@@ -43,9 +47,9 @@
     "thumb": "/images/wall/apps-moondrift-thumbnail.webp",
     "hash": "05153dab99b1"
   },
-  "/images/apps/neo-dojo-survivors-thumbnail.webp": {
-    "thumb": "/images/wall/apps-neo-dojo-survivors-thumbnail.webp",
-    "hash": "ef93df49c05e"
+  "/images/apps/neo-dojo-survivors-2.webp": {
+    "thumb": "/images/wall/apps-neo-dojo-survivors-2.webp",
+    "hash": "0b42987a1bf5"
   },
   "/images/apps/night-parade-thumbnail.webp": {
     "thumb": "/images/wall/apps-night-parade-thumbnail.webp",
@@ -66,6 +70,10 @@
   "/images/apps/ring-toss-thumbnail.webp": {
     "thumb": "/images/wall/apps-ring-toss-thumbnail.webp",
     "hash": "6e3a39cc97fb"
+  },
+  "/images/apps/rooftop-run-thumbnail.webp": {
+    "thumb": "/images/wall/apps-rooftop-run-thumbnail.webp",
+    "hash": "5bb1f36b74c1"
   },
   "/images/apps/rubble-rouser-thumbnail.webp": {
     "thumb": "/images/wall/apps-rubble-rouser-thumbnail.webp",

@@ -376,13 +376,23 @@ function AppPage({ app }: { app: App }) {
           </Badge>
         </div>
         {/* The button comes before the long description, so on a phone it
-            is on the first screen rather than a long scroll down. */}
-        {app.liveUrl && (
-          <div className="mt-6">
-            <Button href={app.liveUrl} size="lg">
-              {game ? 'Play' : 'Try it'}
-              <IconExternal size={17} />
-            </Button>
+            is on the first screen rather than a long scroll down. Beside it,
+            more quietly, the thing's own website when it has one. */}
+        {(app.liveUrl || app.siteUrl) && (
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            {app.liveUrl && (
+              <Button href={app.liveUrl} size="lg">
+                {game ? 'Play' : 'Try it'}
+                <IconExternal size={17} />
+              </Button>
+            )}
+            {app.siteUrl && (
+              <a href={app.siteUrl} target="_blank" rel="noopener" className="bt-jump">
+                Visit the website
+                <span className="sr-only"> for {app.name} (opens in a new tab)</span>
+                <IconExternal />
+              </a>
+            )}
           </div>
         )}
         {app.setupNote && (
