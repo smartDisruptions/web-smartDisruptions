@@ -6,7 +6,11 @@ import type { SVGProps } from 'react';
  */
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
-function Icon({ size = 24, children, ...rest }: IconProps & { children: React.ReactNode }) {
+function Icon({
+  size = 24,
+  children,
+  ...rest
+}: IconProps & { children: React.ReactNode }) {
   return (
     <svg
       width={size}
@@ -62,8 +66,7 @@ export const IconStorm = (p: IconProps) => (
   </Icon>
 );
 
-/** Hammer — what I built. Left the tab bar when What I Built was folded
-    into About (October 2026); still exported. */
+/** Hammer — what I built. The Apps tab since November 2026. */
 export const IconBuilt = (p: IconProps) => (
   <Icon {...p}>
     <path d="M12.4 4.6 19.4 11.6 16.6 14.4 9.6 7.4Z" />

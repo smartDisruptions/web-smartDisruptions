@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     { url: `${BASE}/market-storm`, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE}/about`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${BASE}/apps`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/about-me`, changeFrequency: 'monthly', priority: 0.7 },
     {
       url: `${BASE}/build-websites`,

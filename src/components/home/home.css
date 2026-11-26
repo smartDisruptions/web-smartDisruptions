@@ -499,3 +499,39 @@
   color: #ff5bd0;
   opacity: 0.22;
 }
+
+/* 書 Writing — ai-iro, the indigo of the site's ink, ruled like a page, with
+   a lamp's light on it. The same at night and by day, like the Arcade. */
+.hm-room-writing {
+  background:
+    radial-gradient(
+      90% 60% at 30% 0%,
+      rgba(155, 176, 255, 0.3),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 1.55rem,
+      rgba(255, 255, 255, 0.07) 1.55rem calc(1.55rem + 1px)
+    ),
+    linear-gradient(165deg, #2b3a96, #141b4d);
+  color: #fff;
+  border-color: rgba(155, 176, 255, 0.35);
+}
+.hm-room-writing .hm-room-title {
+  color: #fff;
+}
+.hm-room-writing .hm-room-line,
+.hm-room-writing .hm-room-count {
+  color: #dfe5ff;
+}
+.hm-room-writing .hm-room-count {
+  background: rgba(255, 255, 255, 0.1);
+}
+.hm-room-writing .hm-room-arrow {
+  color: #9bb0ff;
+}
+.hm-room-writing .hm-room-kanji {
+  color: #9bb0ff;
+  opacity: 0.2;
+}

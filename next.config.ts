@@ -195,7 +195,13 @@ const nextConfig: NextConfig = {
           destination: '/games/the-moon-pearl/index.html',
         },
         // The Broom & Blade Arcade's five machines: the same, one file each.
-        ...['hoop-quest', 'kid-volt-knockout', 'whack-a-dust-bunny', 'ring-toss', 'milk-bottle-knockdown'].map((name) => ({
+        ...[
+          'hoop-quest',
+          'kid-volt-knockout',
+          'whack-a-dust-bunny',
+          'ring-toss',
+          'milk-bottle-knockdown',
+        ].map((name) => ({
           source: `/games/${name}`,
           destination: `/games/${name}/index.html`,
         })),
@@ -218,47 +224,85 @@ const nextConfig: NextConfig = {
     return [
       // Paper Crane Insights became Moonbowl Insights on 2026-11-13, so the
       // report and the ramen ordering site are one made-up truck. Old links land on it.
-      { source: '/demo/paper-crane-insights', destination: '/demo/moonbowl-insights', permanent: true },
-      { source: '/demo/paper-crane-insights/:path*', destination: '/demo/moonbowl-insights', permanent: true },
-      { source: '/built/paper-crane-insights', destination: '/built/moonbowl-insights', permanent: true },
-      { source: '/apps/paper-crane-insights', destination: '/apps/moonbowl-insights', permanent: true },
-      // What I Built's index, folded into About.
-      { source: '/built', destination: '/about', permanent: true },
+      {
+        source: '/demo/paper-crane-insights',
+        destination: '/demo/moonbowl-insights',
+        permanent: true,
+      },
+      {
+        source: '/demo/paper-crane-insights/:path*',
+        destination: '/demo/moonbowl-insights',
+        permanent: true,
+      },
+      {
+        source: '/built/paper-crane-insights',
+        destination: '/built/moonbowl-insights',
+        permanent: true,
+      },
+      {
+        source: '/apps/paper-crane-insights',
+        destination: '/apps/moonbowl-insights',
+        permanent: true,
+      },
+      // What I Built's index, folded into the work, which is the Apps page
+      // (/apps) since November 2026. /apps itself redirected to /about until
+      // then, so /about must never redirect back (app/about/page.tsx).
+      { source: '/built', destination: '/apps', permanent: true },
       // Pages taken off the site (Josh's call): five on 2026-10-07 and AUREUM
       // Snake on 2026-10-12. Their old addresses land on the work, on About,
       // instead of a 404.
-      ...['pembroke-file', 'field-office', 'grove', 'pebble-kart', 'going-traveling', 'aureum-snake'].flatMap((slug) => [
-        { source: `/built/${slug}`, destination: '/about', permanent: true },
-        { source: `/apps/${slug}`, destination: '/about', permanent: true },
+      ...[
+        'pembroke-file',
+        'field-office',
+        'grove',
+        'pebble-kart',
+        'going-traveling',
+        'aureum-snake',
+      ].flatMap((slug) => [
+        { source: `/built/${slug}`, destination: '/apps', permanent: true },
+        { source: `/apps/${slug}`, destination: '/apps', permanent: true },
       ]),
       // The Notebook design (this site's old look, kept as a static copy under
       // /archive/notebook) came off the site on 2026-11-17, Josh's call. Its
       // page and the copy itself land on the work, on About.
-      { source: '/built/notebook', destination: '/about', permanent: true },
-      { source: '/archive/notebook', destination: '/about', permanent: true },
+      { source: '/built/notebook', destination: '/apps', permanent: true },
+      { source: '/archive/notebook', destination: '/apps', permanent: true },
       {
         source: '/archive/notebook/:path*',
-        destination: '/about',
+        destination: '/apps',
         permanent: true,
       },
       // The two Pembroke File articles went with the game (Josh, 2026-10-07).
-      ...['escape-room-ate-my-resume', 'escape-room-build-playbook'].map((slug) => ({
-        source: `/content/${slug}`,
-        destination: '/content',
-        permanent: true,
-      })),
+      ...['escape-room-ate-my-resume', 'escape-room-build-playbook'].map(
+        (slug) => ({
+          source: `/content/${slug}`,
+          destination: '/content',
+          permanent: true,
+        })
+      ),
       // Rhythm and Blade was Path Not Taken until 2026-11-06 (Josh's call). That
       // name now belongs to a different game, Kiru's story, which will want
       // these addresses back, so the redirects are temporary: a browser does
       // not keep them, and dropping them later frees the old slug.
-      { source: '/games/path-not-taken', destination: '/games/rhythm-and-blade', permanent: false },
-      { source: '/built/path-not-taken', destination: '/built/rhythm-and-blade', permanent: false },
+      {
+        source: '/games/path-not-taken',
+        destination: '/games/rhythm-and-blade',
+        permanent: false,
+      },
+      {
+        source: '/built/path-not-taken',
+        destination: '/built/rhythm-and-blade',
+        permanent: false,
+      },
       // The short films' first address. They live in the one video library
       // now (Josh's call, 2026-11-16), so /films opens it with the films picked.
-      { source: '/films', destination: '/videos?kind=code-film', permanent: false },
-      { source: '/apps', destination: '/about', permanent: true },
+      {
+        source: '/films',
+        destination: '/videos?kind=code-film',
+        permanent: false,
+      },
       { source: '/apps/:slug', destination: '/built/:slug', permanent: true },
-      { source: '/websites', destination: '/about', permanent: true },
+      { source: '/websites', destination: '/apps', permanent: true },
       // The Writing page was paged (/content/page/2, …) until 2026-10-26. Its
       // front holds the current notes now, and every note that was on a
       // numbered page is in the archive.

@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
-import { IconHome, IconWriting, IconLearn, IconPlay } from '@/components/icons';
+import { IconHome, IconBuilt, IconLearn, IconPlay } from '@/components/icons';
 import { NAV, isActive, direction, sectionOf, tabOf } from './nav';
 
 const ICONS: Record<string, (p: { size?: number }) => React.ReactElement> = {
   '/': IconHome,
-  '/content': IconWriting,
+  '/apps': IconBuilt,
   '/learn': IconLearn,
   '/games': IconPlay,
 };

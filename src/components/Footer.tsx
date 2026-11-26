@@ -34,9 +34,8 @@ export default function Footer() {
               <span className="font-display text-xl">Smart Disruptions</span>
             </Link>
             <p className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-[#b4b8d2]">
-              I build real things with AI and write up exactly how — so
-              it&apos;s usable for people who feel behind, stuck, or
-              underpowered.
+              I build things with AI and write up exactly how — so it&apos;s
+              usable for people who feel behind, stuck, or underpowered.
             </p>
           </div>
 

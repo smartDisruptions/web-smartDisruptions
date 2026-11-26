@@ -3,10 +3,10 @@ import Kanji from '@/components/brand/Kanji';
 import SwitchFX from './SwitchFX';
 import './switch.css';
 
-export type AboutSide = 'work' | 'person';
+export type AboutSide = 'writing' | 'person';
 
 const SIDES = [
-  { id: 'work', href: '/about', label: 'The work', kanji: '場' },
+  { id: 'writing', href: '/content', label: 'The writing', kanji: '書' },
   { id: 'person', href: '/about-me', label: 'The person', kanji: '私' },
 ] as const;
 
@@ -14,7 +14,8 @@ const SIDES = [
  * The fusuma: About's two pages as a pair of sliding paper doors in a
  * lacquer frame. The door (washi, with its pull) stands over the page you
  * are on; tap the other side and it slides across while the page follows,
- * the person to the right of the work.
+ * the person to the right of the writing. (The left door was the work
+ * until November 2026, when the work became the Apps tab.)
  *
  * Two real links in a nav, so a keyboard, a screen reader and a browser
  * without JavaScript all get the same switch. SwitchFX only adds the slide:
@@ -23,7 +24,7 @@ const SIDES = [
  * the page under it slides in the door's direction (the root layout maps
  * the nav-forward / nav-back types to sd-fwd / sd-back).
  *
- * Used at the top of /about and /about-me. Styles: ./switch.css (au-fsm-).
+ * Used at the top of /content and /about-me. Styles: ./switch.css (au-fsm-).
  */
 export default function AboutSwitch({ current }: { current: AboutSide }) {
   return (

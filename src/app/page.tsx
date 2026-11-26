@@ -6,9 +6,9 @@ import CTASection from '@/components/home/CTASection';
 import '@/components/home/home.css';
 
 // The newest notes, the reel of builds and the Market Storm panel moved to
-// /about in October 2026. Three of the doors open the Build rooms; the
-// rooms' own sections (websites, apps, games) live on /learn, the page whose
-// headline promises all three.
+// the work (now /apps) in October 2026. The four doors are Apps, Learn,
+// Arcade and Writing (Josh, November 2026); the three Build rooms are
+// reached through /learn, the page whose headline promises all three.
 export default function Home() {
   return (
     <>
