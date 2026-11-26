@@ -75,9 +75,8 @@ export default function WorkThreshold() {
 
       <div className="au-body">
         <p className="au-lede font-read">
-          I build things with AI. Then I show my work: honest breakdowns of what
-          I build &mdash; the timeline, the method, and the parts worth copying.
-          Everything below is online, and all of it is free to try.
+          I build things with AI. Then I show my work. Everything below is
+          online, and all of it is free to try.
         </p>
       </div>
 
