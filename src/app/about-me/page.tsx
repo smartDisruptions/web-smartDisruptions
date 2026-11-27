@@ -6,6 +6,7 @@ import { IconArrowRight } from '@/components/icons';
 import AboutSwitch from '@/components/about/AboutSwitch';
 import AboutNext from '@/components/about/AboutNext';
 import { shareMeta } from '@/lib/shareCard';
+import StoryOptions from './StoryOptions';
 import './about.css';
 
 const TITLE = 'About me — SmartDisruptions';
@@ -36,11 +37,6 @@ export const metadata: Metadata = {
  *
  * Styles: ./about.css (ab-).
  */
-const BIO = [
-  'I’ve been teaching myself to build things since 2008, and by day I’m a software engineer at a university.',
-  'After hours I build websites, apps and games, and I put them here. A few of the games I made with my son.',
-];
-
 const DOORS = [
   {
     href: '/games',
@@ -92,11 +88,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="ab-body font-read">
-            {BIO.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-          </div>
+          {/* PREVIEW ONLY: three candidate stories to compare in place
+              (StoryOptions.tsx). The winner replaces BIO. Not for main. */}
+          <StoryOptions />
 
           <p className="ab-foot">
             <strong>I use Claude heavily.</strong> It helped build this site and

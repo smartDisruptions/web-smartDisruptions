@@ -270,3 +270,47 @@
 .ab-meet:hover .ab-meet-go {
   translate: 4px 0;
 }
+
+/* PREVIEW ONLY — the story picker (StoryOptions.tsx). Goes with it. */
+.ab-pick {
+  margin-top: 1.35rem;
+  padding: 0.75rem 0.85rem;
+  border: 1.5px dashed var(--sd-pen);
+  border-radius: 0.75rem;
+}
+.ab-pick-k {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sd-pen-ink, var(--sd-pen));
+}
+.ab-pick-tabs {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+.ab-pick-tab {
+  min-height: 2.75rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 0.6rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--sd-text-primary);
+  background: transparent;
+  cursor: pointer;
+}
+.ab-pick-tab[aria-pressed='true'] {
+  background: var(--sd-pen);
+  border-color: var(--sd-pen);
+  color: #fff;
+}
+.ab-pick-name {
+  margin-top: 0.55rem;
+  font-size: 0.85rem;
+  color: var(--sd-text-secondary);
+}
+.ab-pick + .ab-body {
+  margin-top: 1rem;
+}
