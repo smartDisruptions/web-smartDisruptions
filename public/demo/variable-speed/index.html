@@ -153,9 +153,10 @@ b{font-weight:700}
 .sh-glyph{flex:none;width:58px;height:58px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;background:var(--chip-2);font:700 22px/1 var(--f-display)}
 .sh-top h2{font:700 24px/1.1 var(--f-display);margin:4px 0 0;letter-spacing:.02em}
 .sh-top .icon-btn{margin-left:auto}
-.sh-aim{font-size:16px}
-.sh-aim b{font:400 12px var(--f-mono);letter-spacing:.14em;color:var(--hot);margin-right:6px}
-.sh-modes{display:grid;gap:6px;font-size:14px;line-height:1.4;color:var(--dim)}
+.sh-aim{font-size:16px;line-height:1.45;margin:0}
+.sh-sec{display:grid;gap:10px}
+.sh-h{margin:0;font:400 12px/1.2 var(--f-mono);letter-spacing:.16em;color:var(--copper);border-top:1px solid var(--line);padding-top:14px}
+.sh-modes{display:grid;gap:8px;font-size:15px;line-height:1.45}
 .sh-modes b{font:400 11px var(--f-mono);letter-spacing:.14em;margin-right:6px}
 .sh-modes .w{color:var(--cold)}
 .sh-modes .p{color:var(--hot)}
@@ -360,13 +361,13 @@ b{font-weight:700}
 <section id="board" class="screen" role="main" aria-label="Variable Speed board">
   <div class="board-inner">
     <header class="top">
-      <div class="top-row"><p class="eyebrow">Algebra speed rig</p><button class="icon-btn on" id="snd" aria-pressed="true">SFX ON</button></div>
+      <div class="top-row"><p class="eyebrow">Algebra, but fast</p><button class="icon-btn on" id="snd" aria-pressed="true">SFX ON</button></div>
       <h1 class="mark"><span>VARIABLE</span><span class="hot">SPEED</span></h1>
       <p class="tag">Get fast at the small moves. The big ones get easy.</p>
     </header>
 
     <div class="sector-head">
-      <span class="mono">SECTOR 01</span><b>INTEGER CORE</b><span class="mono prog" id="sectorProg">0/5 OC</span>
+      <span class="mono">SECTOR 01</span><b>INTEGER CORE</b><span class="mono prog" id="sectorProg">0/5 LIT</span>
     </div>
     <div id="chips"></div>
 
@@ -375,7 +376,7 @@ b{font-weight:700}
     <details class="settings" id="settings">
       <summary>SETTINGS</summary>
       <div class="set-body">
-        <label class="set-row" for="opt-unlock"><input type="checkbox" id="opt-unlock"> Unlock every chip (for parents and testing)</label>
+        <label class="set-row" for="opt-unlock"><input type="checkbox" id="opt-unlock"> Unlock every chip</label>
         <div><button class="btn-ghost small" id="opt-reset">Wipe progress</button></div>
         <p class="set-about" id="opt-about" hidden><a id="about-link" href="#">About Variable Speed on Smart Disruptions</a></p>
       </div>
@@ -387,20 +388,25 @@ b{font-weight:700}
   <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sh-title">
     <div class="sh-top">
       <span class="sh-glyph" id="sh-glyph"></span>
-      <div><p class="eyebrow" id="sh-kind">ATOM</p><h2 id="sh-title"></h2></div>
+      <div><p class="eyebrow" id="sh-kind">CHIP</p><h2 id="sh-title"></h2></div>
       <button class="icon-btn" id="sh-close" aria-label="Close">CLOSE</button>
     </div>
-    <p class="sh-aim" id="sh-aim"></p>
-    <div class="rungs" id="sh-rungs"></div>
-    <ul class="learn" id="sh-learn"></ul>
-    <p class="sh-feeds" id="sh-feeds"></p>
-    <div class="hist" id="sh-hist"></div>
     <p class="sh-lock" id="sh-lock" hidden></p>
-    <div class="sh-modes">
-      <p><b class="w">WARM UP</b>One problem at a time, with help on every miss. Doesn't count for medals.</p>
-      <p><b class="p">PLAY</b>Problems fall toward your core. Medals and records count here.</p>
-    </div>
-    <p class="sh-keys">Keyboard: 1 to 4 answer (+ and − for signs). Enter carries on after a miss. Esc quits a run.</p>
+    <section class="sh-sec"><h3 class="sh-h">HOW TO PLAY</h3><ul class="learn" id="sh-learn"></ul></section>
+    <section class="sh-sec"><h3 class="sh-h">HOW TO WIN</h3>
+      <p class="sh-aim" id="sh-aim"></p>
+      <div class="rungs" id="sh-rungs"></div>
+      <p class="sh-aim" id="sh-shields"></p>
+      <p class="sh-aim" id="sh-feeds"></p>
+    </section>
+    <section class="sh-sec"><h3 class="sh-h">YOUR RUNS</h3><div class="hist" id="sh-hist"></div></section>
+    <section class="sh-sec"><h3 class="sh-h">PICK A MODE</h3>
+      <div class="sh-modes">
+        <p><b class="w">WARM UP</b>Practice first. When you miss, you’ll see how to fix it. Warm-ups don’t earn medals.</p>
+        <p><b class="p">PLAY</b>Problems fall toward your core. Tap the right answer before they hit it. This is where you earn medals.</p>
+      </div>
+      <p class="sh-keys">On a keyboard, press 1 to 4 to answer, or + and − for signs. Press Enter to keep going and Esc to quit.</p>
+    </section>
     <div class="sh-btns">
       <button class="btn-ghost" id="sh-warm">WARM UP</button>
       <button class="btn-primary" id="sh-go">PLAY</button>
@@ -515,13 +521,13 @@ function numChoices(c, first, rest) {
 function why(a, o, b) {
   const c = calc(a, o, b);
   if (o === '+') return {
-    rule: Math.sign(a) === Math.sign(b) ? 'Same signs: add the sizes, keep the sign.' : 'Different signs: subtract the sizes. The number farther from 0 picks the sign.',
+    rule: Math.sign(a) === Math.sign(b) ? 'The signs match, so add the numbers and keep the sign.' : 'The signs don’t match, so subtract. The number farther from 0 decides the sign.',
     ex: `${expr(a, '+', b)} = ${fmt(c)}` };
   if (o === '-') return {
-    rule: b < 0 ? 'Minus a negative is a plus.' : 'Subtracting is adding the opposite.',
+    rule: b < 0 ? 'Subtracting a negative is the same as adding.' : 'Subtracting is the same as adding the opposite.',
     ex: `${expr(a, '-', b)} = ${expr(a, '+', -b)} = ${fmt(c)}` };
   const same = Math.sign(a) === Math.sign(b);
-  return { rule: same ? 'Same signs give a positive.' : 'Different signs give a negative.', ex: `${expr(a, o, b)} = ${fmt(c)}` };
+  return { rule: same ? 'The signs match, so the answer is positive.' : 'The signs don’t match, so the answer is negative.', ex: `${expr(a, o, b)} = ${fmt(c)}` };
 }
 
 function signWhy(a, o, b) {
@@ -529,11 +535,11 @@ function signWhy(a, o, b) {
   if (o === '*' || o === '/') return why(a, o, b);
   const far = (p, q) => fmt(Math.abs(p) > Math.abs(q) ? p : q);
   if (o === '+') return {
-    rule: Math.sign(a) === Math.sign(b) ? `Both ${a > 0 ? 'positive' : 'negative'}, so it stays ${a > 0 ? 'positive' : 'negative'}.` : `Different signs. ${far(a, b)} is farther from 0, so its sign wins.`,
+    rule: Math.sign(a) === Math.sign(b) ? `Both ${a > 0 ? 'positive' : 'negative'}, so it stays ${a > 0 ? 'positive' : 'negative'}.` : `The signs don’t match. ${far(a, b)} is farther from 0, so its sign wins.`,
     ex: `${expr(a, o, b)} = ${fmt(c)}` };
   const b2 = -b;
   const then = Math.sign(a) === Math.sign(b2) ? `both are ${a > 0 ? 'positive' : 'negative'}` : `${far(a, b2)} is farther from 0`;
-  return { rule: `Flip it to plus the opposite. Then ${then}.`, ex: `${expr(a, '-', b)} = ${expr(a, '+', b2)} = ${fmt(c)}` };
+  return { rule: `Change it to adding the opposite. Then ${then}.`, ex: `${expr(a, '-', b)} = ${expr(a, '+', b2)} = ${fmt(c)}` };
 }
 
 function genSign() {
@@ -550,7 +556,7 @@ function genSign() {
     if ((o === '*' || o === '/') && Math.abs(b) === 1 && Math.random() < 0.7) continue;
     const w = signWhy(a, o, b);
     return { key: `s${a}${o}${b}`, q: expr(a, o, b), meta: { a, o, b, c },
-      steps: [{ ask: 'Sign of the answer?', kind: 'sign', choices: ['+', M], answer: c > 0 ? 0 : 1, slip: 'sign', rule: w.rule, ex: w.ex }] };
+      steps: [{ ask: 'Plus or minus?', kind: 'sign', choices: ['+', M], answer: c > 0 ? 0 : 1, slip: 'sign', rule: w.rule, ex: w.ex }] };
   }
   return genSign();
 }
@@ -588,12 +594,12 @@ const UNDO_FORMS = ['x+k', 'x-k', 'k+x', 'kx', '-kx', 'x/k'];
 function undoOf(form, k) {
   let q, right, rule, ex;
   switch (form) {
-    case 'x+k': q = `${X}${opH('+')}${k}`; right = { o: '-', v: k }; rule = `+ ${k} is undone by ${M} ${k}. Opposites cancel to 0.`; ex = `${X} + ${k} ${M} ${k} = ${X}`; break;
-    case 'k+x': q = `${k}${opH('+')}${X}`; right = { o: '-', v: k }; rule = `+ ${k} is undone by ${M} ${k}. Opposites cancel to 0.`; ex = `${k} + ${X} ${M} ${k} = ${X}`; break;
-    case 'x-k': q = `${X}${opH('-')}${k}`; right = { o: '+', v: k }; rule = `${M} ${k} is undone by + ${k}. Opposites cancel to 0.`; ex = `${X} ${M} ${k} + ${k} = ${X}`; break;
-    case 'kx': q = `${k}${X}`; right = { o: '/', v: k }; rule = `${k}${X} means ${k} ${TIMES} ${X}. Undo ${TIMES} with ${DIVS}.`; ex = `${k}${X} ${DIVS} ${k} = ${X}`; break;
-    case '-kx': q = `${M}${k}${X}`; right = { o: '/', v: -k }; rule = `${M}${k}${X} means ${M}${k} ${TIMES} ${X}. Divide by ${M}${k}, sign and all.`; ex = `${M}${k}${X} ${DIVS} (${M}${k}) = ${X}`; break;
-    case 'x/k': q = frac(X, k); right = { o: '*', v: k }; rule = `${X} over ${k} means ${X} ${DIVS} ${k}. Undo ${DIVS} with ${TIMES}.`; ex = `${X} ${DIVS} ${k} ${TIMES} ${k} = ${X}`; break;
+    case 'x+k': q = `${X}${opH('+')}${k}`; right = { o: '-', v: k }; rule = `${M} ${k} undoes + ${k}.`; ex = `${X} + ${k} ${M} ${k} = ${X}`; break;
+    case 'k+x': q = `${k}${opH('+')}${X}`; right = { o: '-', v: k }; rule = `${M} ${k} undoes + ${k}.`; ex = `${k} + ${X} ${M} ${k} = ${X}`; break;
+    case 'x-k': q = `${X}${opH('-')}${k}`; right = { o: '+', v: k }; rule = `+ ${k} undoes ${M} ${k}.`; ex = `${X} ${M} ${k} + ${k} = ${X}`; break;
+    case 'kx': q = `${k}${X}`; right = { o: '/', v: k }; rule = `${k}${X} means ${k} ${TIMES} ${X}. Divide by ${k} to undo it.`; ex = `${k}${X} ${DIVS} ${k} = ${X}`; break;
+    case '-kx': q = `${M}${k}${X}`; right = { o: '/', v: -k }; rule = `${M}${k}${X} means ${M}${k} ${TIMES} ${X}. Divide by ${M}${k} to undo it, and keep the minus sign.`; ex = `${M}${k}${X} ${DIVS} (${M}${k}) = ${X}`; break;
+    case 'x/k': q = frac(X, k); right = { o: '*', v: k }; rule = `${X} over ${k} means ${X} ${DIVS} ${k}. Multiply by ${k} to undo it.`; ex = `${X} ${DIVS} ${k} ${TIMES} ${k} = ${X}`; break;
   }
   const opts = form === '-kx'
     ? [{ o: '*', v: k }, { o: '*', v: -k }, { o: '/', v: k }, { o: '/', v: -k }]
@@ -632,7 +638,7 @@ function genOneStep() {
   return {
     key: `o${form}${k}${b}`, q: eq, meta: { form, k, b, x, s2, right: u.right },
     steps: [
-      { ask: 'Undo it on both sides', kind: 'op', q: eq, choices: u.choices, answer: u.answer, slip: 'undo',
+      { ask: 'What gets x alone?', kind: 'op', q: eq, choices: u.choices, answer: u.answer, slip: 'undo',
         rule: u.rule + ' Do it to both sides.', ex: `${eq} → ${xRhs}` },
       Object.assign({ ask: 'Now the math', kind: 'num', q: xRhs, sub: `${eq} &nbsp;·&nbsp; ${u.rightLabel} on both sides`,
         slip: isAdd ? 'addsub' : 'muldiv', rule: w.rule, ex: `${xRhs} = ${fmt(x)}`.replace(`${X} = `, '') }, numChoices(x, [-x], rest))
@@ -645,32 +651,35 @@ function genOneStep() {
 const CHIPS = [
   { id: 'sign', name: 'SIGN', full: 'Sign Sense', glyph: '±', kind: 'ATOM', tiers: [16, 22, 28], needs: [], col: '2 / 4', row: 1, gen: genSign,
     learn: [
-      'Don’t solve it. Just call the sign of the answer, + or −.',
-      `<b>${TIMES} and ${DIVS}</b>: same signs give +, different signs give ${M}. <span class="ex">${M}6 ${TIMES} (${M}4)</span> is +.`,
-      `<b>+</b>: different signs? The number farther from 0 wins. <span class="ex">${M}9 + 4</span> is ${M}.`,
-      `<b>${M}</b>: flip it to plus the opposite first. <span class="ex">5 ${M} (${M}3) = 5 + 3</span>`] },
+      `You don’t need the full answer. Tap <b>+</b> if the answer is positive or <b>${M}</b> if it’s negative.`,
+      `<b>Times and divide:</b> if the two signs match, the answer is +. If they don’t match, it’s ${M}. So <span class="ex">${M}6 ${TIMES} (${M}4)</span> is +.`,
+      `<b>Adding:</b> if the signs don’t match, the number farther from 0 decides the sign. So <span class="ex">${M}9 + 4</span> is ${M}.`,
+      `<b>Subtracting:</b> change it to adding the opposite first. So <span class="ex">5 ${M} (${M}3)</span> becomes <span class="ex">5 + 3</span>.`] },
   { id: 'undo', name: 'UNDO', full: 'Undo It', glyph: '↺', kind: 'ATOM', tiers: [18, 24, 30], needs: [], col: '5 / 7', row: 1, gen: genUndo,
     learn: [
-      `Every move has an opposite. + and ${M} undo each other. ${TIMES} and ${DIVS} undo each other.`,
-      `<span class="ex">3<i class="x">x</i></span> means 3 ${TIMES} <i class="x">x</i>, so ${DIVS} 3 undoes it.`,
-      `<span class="ex"><i class="x">x</i>/4</span> means <i class="x">x</i> ${DIVS} 4, so ${TIMES} 4 undoes it.`,
-      `<span class="ex">${M}2<i class="x">x</i></span>: divide by ${M}2, sign and all.`] },
+      `You’ll see something done to <i class="x">x</i>. Tap the move that undoes it.`,
+      `Plus and minus undo each other. Times and divide undo each other.`,
+      `<span class="ex">3<i class="x">x</i></span> means 3 ${TIMES} <i class="x">x</i>. Divide by 3 to undo it.`,
+      `<span class="ex"><i class="x">x</i>/4</span> means <i class="x">x</i> ${DIVS} 4. Multiply by 4 to undo it.`,
+      `<span class="ex">${M}2<i class="x">x</i></span> means ${M}2 ${TIMES} <i class="x">x</i>. Divide by ${M}2 to undo it, and keep the minus sign.`] },
   { id: 'addsub', name: 'ADD/SUB', full: 'Add & Subtract', glyph: `+/${M}`, kind: 'ATOM', tiers: [12, 16, 21], needs: ['sign'], col: '1 / 3', row: 2, gen: genAddSub,
     learn: [
-      `Same signs: add the sizes, keep the sign. <span class="ex">${M}4 + (${M}7) = ${M}11</span>`,
-      `Different signs: subtract the sizes, keep the sign of the one farther from 0. <span class="ex">${M}9 + 4 = ${M}5</span>`,
-      `Minus a negative is a plus. <span class="ex">5 ${M} (${M}3) = 8</span>`,
-      'Answers sit in number-line order, smallest on the left.'] },
+      'Tap the right answer.',
+      `If the signs match, add the numbers and keep the sign. <span class="ex">${M}4 + (${M}7) = ${M}11</span>`,
+      `If the signs don’t match, subtract the smaller number from the bigger one. The answer takes the sign of the number farther from 0. <span class="ex">${M}9 + 4 = ${M}5</span>`,
+      `Subtracting a negative is the same as adding. <span class="ex">5 ${M} (${M}3) = 8</span>`] },
   { id: 'muldiv', name: 'MUL/DIV', full: 'Multiply & Divide', glyph: `${TIMES}/${DIVS}`, kind: 'ATOM', tiers: [12, 16, 21], needs: ['sign'], col: '3 / 5', row: 2, gen: genMulDiv,
     learn: [
-      'Do the sizes like normal, then pick the sign.',
-      `Same signs give +. Different signs give ${M}.`,
-      `<span class="ex">${M}6 ${TIMES} (${M}4) = 24</span> &nbsp; <span class="ex">18 ${DIVS} (${M}3) = ${M}6</span>`] },
+      'Tap the right answer.',
+      'First do the math without the signs. Then pick the sign.',
+      `If the signs match, the answer is positive. If they don’t match, it’s negative.`,
+      `Examples: <span class="ex">${M}6 ${TIMES} (${M}4) = 24</span> and <span class="ex">18 ${DIVS} (${M}3) = ${M}6</span>.`] },
   { id: 'onestep', name: 'ONE-STEP', full: 'One-Step Equations', glyph: '<i class="x">x</i>=', kind: 'COMPOSITE', tiers: [7, 10, 13], needs: ['addsub', 'muldiv', 'undo'], col: '3 / 5', row: 3, gen: genOneStep,
     learn: [
-      'Two taps per equation. First pick the move that gets <i class="x">x</i> alone. It happens to both sides.',
-      `Then do the math that’s left. <span class="ex"><i class="x">x</i> + 5 = ${M}3</span> → <span class="ex">${M} 5</span> → <span class="ex"><i class="x">x</i> = ${M}3 ${M} 5 = ${M}8</span>`,
-      'Nothing new in here. It’s UNDO plus ADD/SUB or MUL/DIV, chained fast.'] },
+      'Each equation takes two taps.',
+      '<b>Tap 1:</b> pick the move that gets <i class="x">x</i> by itself. You do it to both sides.',
+      '<b>Tap 2:</b> do the math to find what <i class="x">x</i> equals.',
+      `Example: for <span class="ex"><i class="x">x</i> + 5 = ${M}3</span>, tap <span class="ex">${M} 5</span>. Then <span class="ex">${M}3 ${M} 5 = ${M}8</span>, so <span class="ex"><i class="x">x</i> = ${M}8</span>.`] },
 ];
 // Medals. Bronze is the aim: it overclocks the chip and powers the board. Silver and Gold are bragging rights;
 // Gold is the stretch (Josh, 2026-11-03). Fuses keep every run honest, so any run's score counts.
@@ -776,9 +785,9 @@ function renderBoard() {
     `<span class="glyph">${TEASER.glyph}</span><span class="cname">${TEASER.name}</span><span class="pips"><i></i><i></i><i></i></span><span class="cstat">COMING SOON</span></div>`;
   $('#chips').innerHTML = h;
   const n = CHIPS.filter(c => chipSave(c.id).oc).length;
-  $('#sectorProg').textContent = `${n}/${CHIPS.length} OC`;
+  $('#sectorProg').textContent = `${n}/${CHIPS.length} LIT`;
   $('#sectors').innerHTML = '<h2>NEXT SECTORS</h2>' + SECTORS.map(s =>
-    `<div class="sec"><span class="n">${s[0]}</span><b>${s[1]}</b><span class="lk">COMING SOON</span><span class="atoms">${s[2]}</span></div>`).join('');
+    `<div class="sec"><span class="n">${s[0]}</span><b>${s[1]}</b><span class="lk">COMING SOON</span></div>`).join('');
   const snd = $('#snd'); snd.textContent = save.muted ? 'SFX OFF' : 'SFX ON'; snd.classList.toggle('on', !save.muted); snd.setAttribute('aria-pressed', String(!save.muted));
   $('#opt-unlock').checked = !!save.unlockAll;
   requestAnimationFrame(drawTraces);
@@ -838,22 +847,24 @@ function openSheet(id) {
   const s = chipSave(id), un = isUnlocked(c);
   sheetId = id;
   $('#sh-glyph').innerHTML = c.glyph;
-  $('#sh-kind').textContent = c.kind === 'COMPOSITE' ? 'COMPOSITE · ' + c.needs.map(n => byId(n).name).join(' + ') : 'ATOM';
+  $('#sh-kind').textContent = c.kind === 'COMPOSITE' ? 'MIXES ' + listAnd(c.needs.map(n => byId(n).name)).toUpperCase() : 'CHIP';
   $('#sh-title').textContent = c.full;
   const rungs = $('#sh-rungs');
   {
     const t = s.tier || 0;
-    $('#sh-aim').innerHTML = `<b>MEDALS</b>correct in ${Math.round(RUN_MS / 1000)} seconds. Bronze overclocks the chip and powers the next ones. Silver and Gold are bragging rights. Each miss uses one of your ${FUSES} shields; when they're gone the run ends.`;
+    $('#sh-aim').textContent = `Get as many right answers as you can in ${Math.round(RUN_MS / 1000)} seconds. Reach a number below to earn that medal.`;
+    $('#sh-shields').textContent = `You have ${FUSES} shields. Each wrong answer breaks one. When all ${FUSES} break, the run is over.`;
     rungs.innerHTML = TIERS.map((T, k) => `<div class="rung${k < t ? ' got' : ''}" style="--tc:${T.color}"><i></i><span>${T.name}</span><b>${c.tiers[k]}</b></div>`).join('');
   }
   $('#sh-learn').innerHTML = c.learn.map(l => `<li>${l}</li>`).join('');
   const feeds = CHIPS.concat([TEASER]).filter(k => k.needs.includes(id)).map(k => k.name);
-  $('#sh-feeds').textContent = feeds.length ? 'POWERS → ' + feeds.join(' · ') : '';
-  $('#sh-hist').innerHTML = s.runs.length ? histSVG(s.runs, targetFor(c)) : '<p class="dim small">No runs yet. Your first run sets your PB.</p>';
+  $('#sh-feeds').textContent = feeds.length ? `Earn Bronze to unlock ${listAnd(feeds)}.` : '';
+  $('#sh-feeds').hidden = !feeds.length;
+  $('#sh-hist').innerHTML = s.runs.length ? histSVG(s.runs, targetFor(c)) : '<p class="dim small">No runs yet. Your first Play run shows up here.</p>';
   const lock = $('#sh-lock'), go = $('#sh-go'), warm = $('#sh-warm');
   if (!un) {
     lock.hidden = false;
-    lock.textContent = 'Locked. Overclock ' + listAnd(c.needs.filter(n => !chipSave(n).oc).map(n => byId(n).name)) + ' to power it up.';
+    lock.textContent = 'This chip is locked. Earn Bronze on ' + listAnd(c.needs.filter(n => !chipSave(n).oc).map(n => byId(n).name)) + ' to open it.';
     go.disabled = true; warm.disabled = true;
   } else { lock.hidden = true; go.disabled = false; warm.disabled = false; }
   $('#sheet').hidden = false;
@@ -1155,8 +1166,8 @@ function endRun() {
 // "You got faster": this run against the first run ever on this chip, per answer.
 function proof(s) {
   const runs = s.runs, cur = runs[runs.length - 1], first = s.first || runs[0], n = s.n || runs.length;
-  if (!cur || n < 2) return { h: 'RUN 1', t: 'Your first run on this one. Every run after it gets compared to it, so you can watch yourself get faster.' };
-  const rate = x => x.c / (x.s || 60), spa = x => ((x.s || 60) / x.c).toFixed(1);
+  if (!cur || n < 2) return { h: 'RUN 1', t: 'Your first run. Now beat it.' };
+  const rate = x => x.c / (x.s || 60);
   const fair = !first.k && !cur.k; // both ran the full minute
   if (!first.c) return cur.c ? { h: 'YOU GOT FASTER', t: `Run 1: <b>0</b>. Run ${n}: <b>${cur.c}</b>.` } : null;
   if (!fair) {
@@ -1165,7 +1176,7 @@ function proof(s) {
     return null;
   }
   if (rate(cur) > rate(first)) return { h: 'YOU GOT FASTER',
-    t: `Run 1: <b>${first.c}</b>. Run ${n}: <b>${cur.c}</b>. That’s <b>${Math.round((rate(cur) / rate(first) - 1) * 100)}% faster</b>, from ${spa(first)} seconds an answer to ${spa(cur)}.` };
+    t: `Run 1: <b>${first.c}</b>. Run ${n}: <b>${cur.c}</b>. That’s <b>${Math.round((rate(cur) / rate(first) - 1) * 100)}% faster</b>.` };
   if ((s.best || 0) > first.c) return { h: 'STILL FASTER THAN RUN 1',
     t: `Run 1: <b>${first.c}</b>. Your best: <b>${s.best}</b>, ${Math.round((s.best / first.c - 1) * 100)}% faster. Slow runs happen. Your best is still yours.` };
   return null;
@@ -1189,7 +1200,7 @@ function showResults(r, o) {
   show('results'); setStreakHeat(-1);
   say(`Run over. ${r.correct} correct${r.miss ? `, ${r.miss} missed` : ''}.${!o.warm && o.tierAfter > o.tierBefore ? ` ${TIERS[o.tierAfter - 1].label} medal.` : ''}`);
   const warm = !!o.warm;
-  $('#r-chip').textContent = `${c.name} \u00b7 ${c.kind} \u00b7 ${warm ? 'WARM-UP' : 'PLAY'}`;
+  $('#r-chip').textContent = `${c.name} \u00b7 ${warm ? 'WARM-UP' : 'PLAY'}`;
   $('#r-cpm').textContent = r.correct;
   $('#r-secs').textContent = Math.round((r.crashed ? r.elapsed : r.dur) / 1000);
   $('#r-aim').hidden = warm;
@@ -1208,31 +1219,29 @@ function showResults(r, o) {
     const t = o.tierAfter; banC = TIERS[t - 1].color;
     banT = `${TIERS[t - 1].name} MEDAL`;
     const jump = t - o.tierBefore > 1 ? listAnd(TIERS.slice(o.tierBefore, t).map(T => T.label)) + ' in one run. ' : '';
-    banS = jump + (o.tierBefore === 0 ? (o.newly.length ? 'Chip overclocked. Powered up: ' + o.newly.join(' · ') + '.' : 'Chip overclocked. It powers the board now.') + ' '
-      : '') + (t < TOP ? `Next: ${TIERS[t].label} at ${c.tiers[t]}.` : 'Every medal on this chip.');
+    banS = jump + (o.tierBefore === 0 ? (o.newly.length ? 'Unlocked: ' + o.newly.join(' · ') + '.' : 'Chip powered up.') + ' '
+      : '') + (t < TOP ? '' : 'Every medal on this chip.');
   }
   const ban = $('#r-banner');
   ban.hidden = !banT;
   if (banT) { ban.style.setProperty('--tc', banC); $('#r-ban-t').textContent = banT; $('#r-unlock').textContent = banS; sfxOC(); }
 
   let note;
-  if (warm) note = `${r.crashed ? '' : 'Warm-up done. '}Warm-ups don\u2019t count for medals or records. Ready? Hit <b>PLAY</b>.`;
+  if (warm) note = 'Warm-up done. Ready? Hit <b>PLAY</b>.';
   else {
     const t = o.tierAfter, next = t < TOP ? c.tiers[t] : null, nextName = t < TOP ? TIERS[t].label : '';
-    if (t > o.tierBefore) note = (o.tierBefore === 0 ? `${TIERS[t - 1].label} on ${c.name}, so it\u2019s overclocked. It stays lit and powers the chips wired below it.` : `${TIERS[t - 1].label} on ${c.name}.`)
-      + (next ? ` Next up: <b>${nextName} at ${next}</b>.` : ' That’s every medal on this chip. Now it’s you against your PB.');
-    else if (next === null) note = newPB ? 'New PB on a maxed-out chip.' : 'Every medal earned here. Go after the PB.';
-    else if (newPB) note = `New PB. <b>${next - r.correct} more</b> for ${nextName}.`;
-    else note = `<b>${next - r.correct} more</b> for ${nextName}.${r.crashed ? '' : ' Runs get faster when you stop thinking about the rule and just see it.'}`;
+    if (t > o.tierBefore) note = next ? `Next up: <b>${nextName} at ${next}</b>.` : 'Every medal. Now beat your PB.';
+    else if (next === null) note = newPB ? 'New PB!' : 'You’ve got every medal. Beat your PB.';
+    else if (newPB) note = `New PB! <b>${next - r.correct} more</b> for ${nextName}.`;
+    else note = `<b>${next - r.correct} more</b> for ${nextName}.`;
   }
   const slipIds = Object.keys(r.slips);
   if (c.kind === 'COMPOSITE' && slipIds.length) {
     const worst = slipIds.sort((a, b) => r.slips[b] - r.slips[a])[0];
-    const list = slipIds.map(k => `${byId(SLIP_CHIP[k]).name} ${r.slips[k]}`).join(' · ');
-    note += ` Slips came from: ${list}. A run on <b>${byId(SLIP_CHIP[worst]).name}</b> sharpens that piece.`;
+    note += ` Most misses: <b>${byId(SLIP_CHIP[worst]).name}</b>. Go practice it.`;
   }
   const at = Math.max(1, Math.round(r.elapsed / 1000));
-  if (r.crashed) note = `Your <b>shields ran out</b> at ${at} second${at === 1 ? '' : 's'}, so the run ended there. Careful answers keep your shields up and your speed high. ` + note;
+  if (r.crashed) note = `Your <b>shields ran out</b> at ${at} second${at === 1 ? '' : 's'}. ` + note;
   $('#r-note').innerHTML = note;
   const pf = warm ? null : proof(s), pe = $('#r-proof');
   pe.hidden = !pf;
