@@ -1452,9 +1452,9 @@ export const apps: App[] = [
     slug: 'king-of-the-pole',
     name: 'King of the Pole',
     description:
-      'Tetherball on a school playground, against the kids from my story King of the Pole. Each one throws their own special. Swipe to hit the ball, and the first to wind the rope all the way round the pole wins the round.',
+      'Tetherball on a school playground, against thirteen kids who each throw a special of their own. Swipe to hit the ball, and the first to wind the rope all the way round the pole wins the round.',
     longDescription:
-      'Tetherball on a school blacktop. You’re the new kid, and a ball on a rope hangs from the pole between you and whoever is up next. Swipe to hit it your way round the pole, and the first to wind the rope all the way up takes the round. The Arcade is a ladder of thirteen kids from King of the Pole, the story I wrote for this playground, in the order the story meets them: Milo first, in his paper crown, and Rei, three years undefeated, last. Every one of them throws a special of their own, from a ball that fades out and leaves only its shadow to five balls where only one is on the rope. You can play as yourself, with a kid you make in the character creator, or as any of eleven of them. There’s also a quick match against Milo, a solo time trial, and a song about becoming King of the Pole on the start menu.',
+      'Tetherball on a school blacktop. You’re the new kid, and a ball on a rope hangs from the pole between you and whoever is up next. Swipe to hit it your way round the pole, and the first to wind the rope all the way up takes the round. In the Arcade you climb a ladder of thirteen kids, one match each, from Milo in his paper crown up to Rei, three years undefeated. Every one of them throws a special of their own, from a ball that fades out and leaves only its shadow to five balls where only one is on the rope. You can play as yourself, with a kid you make in the character creator, or as any of eleven of them. There’s also a quick match against Milo, a solo time trial, and a song about becoming King of the Pole on the start menu.',
     thumbnailUrl: '/images/apps/king-of-the-pole-thumbnail.webp',
     screenshotUrls: [
       '/images/apps/king-of-the-pole-1.webp',
@@ -1495,7 +1495,7 @@ export const apps: App[] = [
           controls: [
             {
               action: 'Start a match',
-              how: 'Tap Play for a quick match against Milo, first to three rounds. Or tap Arcade, pick who you play as, and face the kids from the story one match at a time.',
+              how: 'Tap Play for a quick match against Milo, first to three rounds. Or tap Arcade, pick who you play as, and take on all thirteen kids, one match at a time.',
             },
             {
               action: 'Hit the ball',

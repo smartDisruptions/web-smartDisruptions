@@ -15,7 +15,7 @@ import './arcade.css';
 export const metadata: Metadata = {
   title: 'Arcade',
   description:
-    "Hand-built browser games: King of the Pole, tetherball against the kids from my story, up front as the featured game, Kiru and the Neo Dojo Cast, Kiru's Rooftop Run, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, Tumbler, ten 1928 bank vaults to crack, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
+    "Hand-built browser games: King of the Pole, tetherball against thirteen kids with specials, up front as the featured game, Kiru and the Neo Dojo Cast, Kiru's Rooftop Run, a rhythm duel in pre-alpha, Cosmo moonboarding under a ringed giant planet and flying his ship from a canyon floor to orbit, forty buildings to bring down with a rocket launcher, Tumbler, ten 1928 bank vaults to crack, The Moon Pearl escape room in the Lantern Theater, and downstairs, Pip's Broom & Blade Arcade.",
 };
 
 /**
