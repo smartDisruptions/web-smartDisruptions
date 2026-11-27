@@ -7,7 +7,6 @@ import AboutSwitch from '@/components/about/AboutSwitch';
 import AboutNext from '@/components/about/AboutNext';
 import { shareMeta } from '@/lib/shareCard';
 import { GAME_SLUGS } from '@/data/apps';
-import StoryOptions from './StoryOptions';
 import './about.css';
 
 const TITLE = 'About me — SmartDisruptions';
@@ -33,11 +32,26 @@ export const metadata: Metadata = {
  * designs previewed side by side (the letter, the card, three doors, made
  * with Claude); the timeline and the other three are in git history.
  *
- * Every claim on the card is one the site already made before the redesign:
- * self-taught since 2008, an engineer at a university, games with my son.
+ * The story itself (BIO) grew from two sentences to five short paragraphs
+ * in November 2026.
  *
  * Styles: ./about.css (ab-).
  */
+/*
+ * The story (Josh's pick, November 2026, from candidates previewed on the
+ * card): the path in one paragraph, then the AI skills he wants it to
+ * carry, then what they built. Every claim is one the site already makes
+ * (most are on /resume) or is in his own record. "Almost anything" and
+ * "take software apart" are worded to what that record backs.
+ */
+const BIO = [
+  'I’ve been teaching myself to build things since 2008. My degree is in psychology, not computer science, so I learned by building: first websites for small businesses, then software at a university, where I’m an engineer today.',
+  'Around 2023 I started using AI every day. Today I can build almost anything digital with Claude.',
+  'I do it by setting the AI up well. I organize data so it can read it. I plug in tools through MCP so it can act. I run teams of AI agents on one written plan. And I design the full system, from the page you see to the database behind it.',
+  'I also pull data out of messy sources, and I take software apart to learn how it works, then build my own.',
+  `That’s how a food truck got online ordering with real card payments, how my university got its Net Price Calculator, and how this site got ${GAME_SLUGS.length} games. A few of them I made with my son.`,
+];
+
 const DOORS = [
   {
     href: '/games',
@@ -89,9 +103,11 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* PREVIEW ONLY: three candidate stories to compare in place
-              (StoryOptions.tsx). The winner replaces BIO. Not for main. */}
-          <StoryOptions games={GAME_SLUGS.length} />
+          <div className="ab-body font-read">
+            {BIO.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+          </div>
 
           <p className="ab-foot">
             <strong>I use Claude heavily.</strong> It helped build this site and
