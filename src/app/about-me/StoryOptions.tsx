@@ -5,8 +5,10 @@ import { useState } from 'react';
 /**
  * PREVIEW ONLY (November 2026): candidate stories for the About Me card,
  * beside the one that is live, with a switch to compare them in place.
- * Round two: Josh picked A (the path, in order) and asked for more built
- * like it that say more about his AI skills and what he has done with them.
+ * Round three: Josh picked A (the path, in order) and named the AI skills
+ * he wants it to carry: organizing data for AI, MCP and tools, multi-agent
+ * work, architecture and full-stack building, data extraction, and taking
+ * software apart.
  * This file is deleted when he picks one; the winner becomes BIO in
  * page.tsx. Not for main.
  *
@@ -46,73 +48,63 @@ const stories = (games: number) =>
       ],
     },
     {
-      id: 'a1',
-      tab: 'A1',
-      name: 'The path, then how I work with AI',
+      id: 's1',
+      tab: 'New 1',
+      name: 'The path, then the six skills, one by one',
       text: [
         ...START,
-        'Around 2023 I started using AI every day. Three years on, it’s the main skill I’ve built.',
-        'I don’t use one AI as a helper. I run a team of them. Four to ten AI agents work at once, and each has one job: some build, one looks for what’s weak, one tests, and one reviews the code.',
-        'Before they start, I write one set of rules that all of them build to. That’s how ten of them built a 3D running game in a single session.',
-        'Claude writes most of the code. I decide what gets built, I read every change, and nothing goes live until I say so.',
-        'After hours I build websites, apps and games this way, and I put them here. A few of the games I made with my son.',
+        'Around 2023 I started using AI every day. Three years later, these are the things I do best with it.',
+        [
+          'Organizing knowledge so AI can use it.',
+          'I keep my notes, projects and decisions in one linked library with a map at the front, so Claude can find what it needs in a couple of steps.',
+        ],
+        [
+          'Giving AI tools.',
+          'Through MCP, a standard way to plug tools into an AI, I connect Claude to databases, hosting, code and more. Then it can do the work itself, not only tell me how.',
+        ],
+        [
+          'Running teams of AI agents.',
+          'Four to ten at once, each with one job, all building to one written set of rules.',
+        ],
+        [
+          'Designing the whole system.',
+          'Front to back: the pages you see, the database behind them, logins and card payments. I decide how the parts fit before anything gets built.',
+        ],
+        [
+          'Pulling data out of messy places.',
+          'I turned 953 of a food truck’s orders into a ranked plan of what to try next.',
+        ],
+        [
+          'Taking software apart to see how it works.',
+          'Then I build my own version. I rebuilt one of my apps from nothing but the copy running online, because its source code was gone.',
+        ],
+        'Put together, that means I can build almost anything digital with Claude: websites, apps, games, even films. It’s all on this site, and a few of the games I made with my son.',
       ],
     },
     {
-      id: 'a2',
-      tab: 'A2',
-      name: 'The path, then the proof',
+      id: 's2',
+      tab: 'New 2',
+      name: 'The path, then how the skills fit together',
       text: [
         ...START,
-        'Around 2023 I started using AI every day. Here’s what three years of that has let me build.',
-        'A real food truck takes card payments through a site I built. Its menu, prices and stock come straight from the till.',
-        'I built my university’s Net Price Calculator, the tool families use to see what college will cost them.',
-        `I’ve made ${games} browser games, and short films drawn entirely in code.`,
-        'And I built a research team of fourteen AI agents. Some dig into a question from different angles. The rest try to prove them wrong.',
-        'I didn’t write most of that code. Claude did. My job is to decide what gets built, check every change, and say when it’s good enough to show.',
-        'It’s all on this site. A few of the games I made with my son.',
+        'Around 2023 I started using AI every day. What I’ve learned since is how to set an AI up to do far more than answer questions.',
+        'It starts with what the AI can read. I organize my notes, data and projects into one linked library, so Claude can find what it needs fast.',
+        'Next come tools. Using MCP, a standard way to plug tools into an AI, I connect Claude to databases, hosting, code and payment systems. Each tool is one more thing it can do on its own.',
+        'Then I scale it up. I run four to ten AI agents at once, each with one job, all working from one written plan.',
+        'I design the whole system myself, from the screen you tap to the database behind it. I pull data out of wherever it lives. And when I want to know how a piece of software works, I take it apart and build my own.',
+        `The result: with Claude I can build almost anything digital. A food truck’s online ordering with real card payments. My university’s Net Price Calculator. ${games} games. It’s all here, and a few of the games I made with my son.`,
       ],
     },
     {
-      id: 'a3',
-      tab: 'A3',
-      name: 'The path, short, with the skill up front',
+      id: 's3',
+      tab: 'New 3',
+      name: 'The path, short, with the skills packed in',
       text: [
         'I’ve been teaching myself to build things since 2008. My degree is in psychology, not computer science, so I learned by building: first websites for small businesses, then software at a university, where I’m an engineer today.',
-        'Around 2023 I started using AI every day. Building with it is now what I do best.',
-        'Here’s what that means. I write down exactly what I want, in a way that can be tested. I hand the work to a team of AI agents. Then I check what comes back by using it, measuring it, and trying to break it.',
-        `That’s how a food truck got online ordering with real card payments, how my university got its Net Price Calculator, and how this site got ${games} games.`,
-        'After hours I keep building, and I put it all here. A few of the games I made with my son.',
-      ],
-    },
-    {
-      id: 'a4',
-      tab: 'A4',
-      name: 'The path, then the five skills, one by one',
-      text: [
-        ...START,
-        'Around 2023 I started using AI every day. Three years later, these are the skills I’ve built.',
-        [
-          'Saying exactly what I want.',
-          '“Make it fast” is a wish. “Runs smoothly on an old phone” is something I can test.',
-        ],
-        [
-          'Running a team.',
-          'I direct four to ten AI agents at once. Each has one job, and all of them work from one written set of rules.',
-        ],
-        [
-          'Checking the work.',
-          'I open the real thing and try it, not the report that says it’s done. For research, I have some agents try to disprove what the others found.',
-        ],
-        [
-          'Measuring before deciding.',
-          'When one of my games felt too hard, I measured how hard before I changed anything.',
-        ],
-        [
-          'Knowing what to cut.',
-          'I once had ten designs for one kind of image. I kept four.',
-        ],
-        'The AI does most of the typing. The judgment is mine. Everything I’ve made this way is on this site, and a few of the games I made with my son.',
+        'Around 2023 I started using AI every day. Today I can build almost anything digital with Claude.',
+        'I do it by setting the AI up well. I organize data so it can read it. I plug in tools through MCP so it can act. I run teams of AI agents on one written plan. And I design the full system, from the page you see to the database behind it.',
+        'I also pull data out of messy sources, and I take software apart to learn how it works, then build my own.',
+        `That’s how a food truck got online ordering with real card payments, how my university got its Net Price Calculator, and how this site got ${games} games. A few of them I made with my son.`,
       ],
     },
   ] as const satisfies readonly {
@@ -128,7 +120,7 @@ const words = (text: readonly Para[]) =>
 
 export default function StoryOptions({ games }: { games: number }) {
   const all = stories(games);
-  const [id, setId] = useState<string>('a1');
+  const [id, setId] = useState<string>('s1');
   const story = all.find((s) => s.id === id)!;
 
   return (
