@@ -6,6 +6,7 @@ import { IconArrowRight } from '@/components/icons';
 import AboutSwitch from '@/components/about/AboutSwitch';
 import AboutNext from '@/components/about/AboutNext';
 import { shareMeta } from '@/lib/shareCard';
+import { GAME_SLUGS } from '@/data/apps';
 import StoryOptions from './StoryOptions';
 import './about.css';
 
@@ -90,7 +91,7 @@ export default function AboutPage() {
 
           {/* PREVIEW ONLY: three candidate stories to compare in place
               (StoryOptions.tsx). The winner replaces BIO. Not for main. */}
-          <StoryOptions />
+          <StoryOptions games={GAME_SLUGS.length} />
 
           <p className="ab-foot">
             <strong>I use Claude heavily.</strong> It helped build this site and
