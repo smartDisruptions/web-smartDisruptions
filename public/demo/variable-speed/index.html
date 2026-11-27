@@ -153,9 +153,10 @@ b{font-weight:700}
 .sh-glyph{flex:none;width:58px;height:58px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;background:var(--chip-2);font:700 22px/1 var(--f-display)}
 .sh-top h2{font:700 24px/1.1 var(--f-display);margin:4px 0 0;letter-spacing:.02em}
 .sh-top .icon-btn{margin-left:auto}
-.sh-aim{font-size:16px}
-.sh-aim b{font:400 12px var(--f-mono);letter-spacing:.14em;color:var(--hot);margin-right:6px}
-.sh-modes{display:grid;gap:6px;font-size:14px;line-height:1.4;color:var(--dim)}
+.sh-aim{font-size:16px;line-height:1.45;margin:0}
+.sh-sec{display:grid;gap:10px}
+.sh-h{margin:0;font:400 12px/1.2 var(--f-mono);letter-spacing:.16em;color:var(--copper);border-top:1px solid var(--line);padding-top:14px}
+.sh-modes{display:grid;gap:8px;font-size:15px;line-height:1.45}
 .sh-modes b{font:400 11px var(--f-mono);letter-spacing:.14em;margin-right:6px}
 .sh-modes .w{color:var(--cold)}
 .sh-modes .p{color:var(--hot)}
@@ -390,17 +391,22 @@ b{font-weight:700}
       <div><p class="eyebrow" id="sh-kind">CHIP</p><h2 id="sh-title"></h2></div>
       <button class="icon-btn" id="sh-close" aria-label="Close">CLOSE</button>
     </div>
-    <p class="sh-aim" id="sh-aim"></p>
-    <div class="rungs" id="sh-rungs"></div>
-    <ul class="learn" id="sh-learn"></ul>
-    <p class="sh-feeds" id="sh-feeds"></p>
-    <div class="hist" id="sh-hist"></div>
     <p class="sh-lock" id="sh-lock" hidden></p>
-    <div class="sh-modes">
-      <p><b class="w">WARM UP</b>Practice. You get help when you miss. No medals.</p>
-      <p><b class="p">PLAY</b>Stop each problem before it hits your core. Medals count.</p>
-    </div>
-    <p class="sh-keys">Keys: 1–4 to answer (+ or − for signs). Enter to keep going. Esc to quit.</p>
+    <section class="sh-sec"><h3 class="sh-h">HOW TO PLAY</h3><ul class="learn" id="sh-learn"></ul></section>
+    <section class="sh-sec"><h3 class="sh-h">HOW TO WIN</h3>
+      <p class="sh-aim" id="sh-aim"></p>
+      <div class="rungs" id="sh-rungs"></div>
+      <p class="sh-aim" id="sh-shields"></p>
+      <p class="sh-aim" id="sh-feeds"></p>
+    </section>
+    <section class="sh-sec"><h3 class="sh-h">YOUR RUNS</h3><div class="hist" id="sh-hist"></div></section>
+    <section class="sh-sec"><h3 class="sh-h">PICK A MODE</h3>
+      <div class="sh-modes">
+        <p><b class="w">WARM UP</b>Practice first. When you miss, you’ll see how to fix it. Warm-ups don’t earn medals.</p>
+        <p><b class="p">PLAY</b>Problems fall toward your core. Tap the right answer before they hit it. This is where you earn medals.</p>
+      </div>
+      <p class="sh-keys">On a keyboard, press 1 to 4 to answer, or + and − for signs. Press Enter to keep going and Esc to quit.</p>
+    </section>
     <div class="sh-btns">
       <button class="btn-ghost" id="sh-warm">WARM UP</button>
       <button class="btn-primary" id="sh-go">PLAY</button>
@@ -515,13 +521,13 @@ function numChoices(c, first, rest) {
 function why(a, o, b) {
   const c = calc(a, o, b);
   if (o === '+') return {
-    rule: Math.sign(a) === Math.sign(b) ? 'Same signs: add them and keep the sign.' : 'Different signs: subtract. The one farther from 0 picks the sign.',
+    rule: Math.sign(a) === Math.sign(b) ? 'The signs match, so add the numbers and keep the sign.' : 'The signs don’t match, so subtract. The number farther from 0 decides the sign.',
     ex: `${expr(a, '+', b)} = ${fmt(c)}` };
   if (o === '-') return {
-    rule: b < 0 ? 'Minus a negative is a plus.' : 'Minus is the same as + the opposite.',
+    rule: b < 0 ? 'Subtracting a negative is the same as adding.' : 'Subtracting is the same as adding the opposite.',
     ex: `${expr(a, '-', b)} = ${expr(a, '+', -b)} = ${fmt(c)}` };
   const same = Math.sign(a) === Math.sign(b);
-  return { rule: same ? 'Same signs make +.' : 'Different signs make −.', ex: `${expr(a, o, b)} = ${fmt(c)}` };
+  return { rule: same ? 'The signs match, so the answer is positive.' : 'The signs don’t match, so the answer is negative.', ex: `${expr(a, o, b)} = ${fmt(c)}` };
 }
 
 function signWhy(a, o, b) {
@@ -529,11 +535,11 @@ function signWhy(a, o, b) {
   if (o === '*' || o === '/') return why(a, o, b);
   const far = (p, q) => fmt(Math.abs(p) > Math.abs(q) ? p : q);
   if (o === '+') return {
-    rule: Math.sign(a) === Math.sign(b) ? `Both ${a > 0 ? 'positive' : 'negative'}, so it stays ${a > 0 ? 'positive' : 'negative'}.` : `Different signs. ${far(a, b)} is farther from 0, so its sign wins.`,
+    rule: Math.sign(a) === Math.sign(b) ? `Both ${a > 0 ? 'positive' : 'negative'}, so it stays ${a > 0 ? 'positive' : 'negative'}.` : `The signs don’t match. ${far(a, b)} is farther from 0, so its sign wins.`,
     ex: `${expr(a, o, b)} = ${fmt(c)}` };
   const b2 = -b;
   const then = Math.sign(a) === Math.sign(b2) ? `both are ${a > 0 ? 'positive' : 'negative'}` : `${far(a, b2)} is farther from 0`;
-  return { rule: `Turn it into + the opposite. Then ${then}.`, ex: `${expr(a, '-', b)} = ${expr(a, '+', b2)} = ${fmt(c)}` };
+  return { rule: `Change it to adding the opposite. Then ${then}.`, ex: `${expr(a, '-', b)} = ${expr(a, '+', b2)} = ${fmt(c)}` };
 }
 
 function genSign() {
@@ -591,9 +597,9 @@ function undoOf(form, k) {
     case 'x+k': q = `${X}${opH('+')}${k}`; right = { o: '-', v: k }; rule = `${M} ${k} undoes + ${k}.`; ex = `${X} + ${k} ${M} ${k} = ${X}`; break;
     case 'k+x': q = `${k}${opH('+')}${X}`; right = { o: '-', v: k }; rule = `${M} ${k} undoes + ${k}.`; ex = `${k} + ${X} ${M} ${k} = ${X}`; break;
     case 'x-k': q = `${X}${opH('-')}${k}`; right = { o: '+', v: k }; rule = `+ ${k} undoes ${M} ${k}.`; ex = `${X} ${M} ${k} + ${k} = ${X}`; break;
-    case 'kx': q = `${k}${X}`; right = { o: '/', v: k }; rule = `${k}${X} means ${k} ${TIMES} ${X}. Undo ${TIMES} with ${DIVS}.`; ex = `${k}${X} ${DIVS} ${k} = ${X}`; break;
-    case '-kx': q = `${M}${k}${X}`; right = { o: '/', v: -k }; rule = `${M}${k}${X} means ${M}${k} ${TIMES} ${X}. Divide by ${M}${k}. Keep the minus.`; ex = `${M}${k}${X} ${DIVS} (${M}${k}) = ${X}`; break;
-    case 'x/k': q = frac(X, k); right = { o: '*', v: k }; rule = `${X} over ${k} means ${X} ${DIVS} ${k}. Undo ${DIVS} with ${TIMES}.`; ex = `${X} ${DIVS} ${k} ${TIMES} ${k} = ${X}`; break;
+    case 'kx': q = `${k}${X}`; right = { o: '/', v: k }; rule = `${k}${X} means ${k} ${TIMES} ${X}. Divide by ${k} to undo it.`; ex = `${k}${X} ${DIVS} ${k} = ${X}`; break;
+    case '-kx': q = `${M}${k}${X}`; right = { o: '/', v: -k }; rule = `${M}${k}${X} means ${M}${k} ${TIMES} ${X}. Divide by ${M}${k} to undo it, and keep the minus sign.`; ex = `${M}${k}${X} ${DIVS} (${M}${k}) = ${X}`; break;
+    case 'x/k': q = frac(X, k); right = { o: '*', v: k }; rule = `${X} over ${k} means ${X} ${DIVS} ${k}. Multiply by ${k} to undo it.`; ex = `${X} ${DIVS} ${k} ${TIMES} ${k} = ${X}`; break;
   }
   const opts = form === '-kx'
     ? [{ o: '*', v: k }, { o: '*', v: -k }, { o: '/', v: k }, { o: '/', v: -k }]
@@ -645,30 +651,35 @@ function genOneStep() {
 const CHIPS = [
   { id: 'sign', name: 'SIGN', full: 'Sign Sense', glyph: '±', kind: 'ATOM', tiers: [16, 22, 28], needs: [], col: '2 / 4', row: 1, gen: genSign,
     learn: [
-      'Don’t solve it. Just pick the sign: + or −.',
-      `<b>${TIMES} and ${DIVS}</b>: same signs make +. Different signs make ${M}. <span class="ex">${M}6 ${TIMES} (${M}4)</span> is +.`,
-      `<b>+</b>: different signs? The number farther from 0 wins. <span class="ex">${M}9 + 4</span> is ${M}.`,
-      `<b>${M}</b>: turn it into + the opposite. <span class="ex">5 ${M} (${M}3) = 5 + 3</span>`] },
+      `You don’t need the full answer. Tap <b>+</b> if the answer is positive or <b>${M}</b> if it’s negative.`,
+      `<b>Times and divide:</b> if the two signs match, the answer is +. If they don’t match, it’s ${M}. So <span class="ex">${M}6 ${TIMES} (${M}4)</span> is +.`,
+      `<b>Adding:</b> if the signs don’t match, the number farther from 0 decides the sign. So <span class="ex">${M}9 + 4</span> is ${M}.`,
+      `<b>Subtracting:</b> change it to adding the opposite first. So <span class="ex">5 ${M} (${M}3)</span> becomes <span class="ex">5 + 3</span>.`] },
   { id: 'undo', name: 'UNDO', full: 'Undo It', glyph: '↺', kind: 'ATOM', tiers: [18, 24, 30], needs: [], col: '5 / 7', row: 1, gen: genUndo,
     learn: [
-      `+ and ${M} undo each other. So do ${TIMES} and ${DIVS}.`,
-      `<span class="ex">3<i class="x">x</i></span> means 3 ${TIMES} <i class="x">x</i>, so ${DIVS} 3 undoes it.`,
-      `<span class="ex"><i class="x">x</i>/4</span> means <i class="x">x</i> ${DIVS} 4, so ${TIMES} 4 undoes it.`,
-      `<span class="ex">${M}2<i class="x">x</i></span>: divide by ${M}2. Keep the minus.`] },
+      `You’ll see something done to <i class="x">x</i>. Tap the move that undoes it.`,
+      `Plus and minus undo each other. Times and divide undo each other.`,
+      `<span class="ex">3<i class="x">x</i></span> means 3 ${TIMES} <i class="x">x</i>. Divide by 3 to undo it.`,
+      `<span class="ex"><i class="x">x</i>/4</span> means <i class="x">x</i> ${DIVS} 4. Multiply by 4 to undo it.`,
+      `<span class="ex">${M}2<i class="x">x</i></span> means ${M}2 ${TIMES} <i class="x">x</i>. Divide by ${M}2 to undo it, and keep the minus sign.`] },
   { id: 'addsub', name: 'ADD/SUB', full: 'Add & Subtract', glyph: `+/${M}`, kind: 'ATOM', tiers: [12, 16, 21], needs: ['sign'], col: '1 / 3', row: 2, gen: genAddSub,
     learn: [
-      `Same signs: add them and keep the sign. <span class="ex">${M}4 + (${M}7) = ${M}11</span>`,
-      `Different signs: subtract. The one farther from 0 picks the sign. <span class="ex">${M}9 + 4 = ${M}5</span>`,
-      `Minus a negative is a plus. <span class="ex">5 ${M} (${M}3) = 8</span>`] },
+      'Tap the right answer.',
+      `If the signs match, add the numbers and keep the sign. <span class="ex">${M}4 + (${M}7) = ${M}11</span>`,
+      `If the signs don’t match, subtract the smaller number from the bigger one. The answer takes the sign of the number farther from 0. <span class="ex">${M}9 + 4 = ${M}5</span>`,
+      `Subtracting a negative is the same as adding. <span class="ex">5 ${M} (${M}3) = 8</span>`] },
   { id: 'muldiv', name: 'MUL/DIV', full: 'Multiply & Divide', glyph: `${TIMES}/${DIVS}`, kind: 'ATOM', tiers: [12, 16, 21], needs: ['sign'], col: '3 / 5', row: 2, gen: genMulDiv,
     learn: [
-      'Do the math like normal. Then pick the sign.',
-      `Same signs make +. Different signs make ${M}.`,
-      `<span class="ex">${M}6 ${TIMES} (${M}4) = 24</span> &nbsp; <span class="ex">18 ${DIVS} (${M}3) = ${M}6</span>`] },
+      'Tap the right answer.',
+      'First do the math without the signs. Then pick the sign.',
+      `If the signs match, the answer is positive. If they don’t match, it’s negative.`,
+      `Examples: <span class="ex">${M}6 ${TIMES} (${M}4) = 24</span> and <span class="ex">18 ${DIVS} (${M}3) = ${M}6</span>.`] },
   { id: 'onestep', name: 'ONE-STEP', full: 'One-Step Equations', glyph: '<i class="x">x</i>=', kind: 'COMPOSITE', tiers: [7, 10, 13], needs: ['addsub', 'muldiv', 'undo'], col: '3 / 5', row: 3, gen: genOneStep,
     learn: [
-      'Two taps. First, pick the move that gets <i class="x">x</i> alone.',
-      `Then do the math. <span class="ex"><i class="x">x</i> + 5 = ${M}3</span> → <span class="ex">${M} 5</span> → <span class="ex"><i class="x">x</i> = ${M}3 ${M} 5 = ${M}8</span>`] },
+      'Each equation takes two taps.',
+      '<b>Tap 1:</b> pick the move that gets <i class="x">x</i> by itself. You do it to both sides.',
+      '<b>Tap 2:</b> do the math to find what <i class="x">x</i> equals.',
+      `Example: for <span class="ex"><i class="x">x</i> + 5 = ${M}3</span>, tap <span class="ex">${M} 5</span>. Then <span class="ex">${M}3 ${M} 5 = ${M}8</span>, so <span class="ex"><i class="x">x</i> = ${M}8</span>.`] },
 ];
 // Medals. Bronze is the aim: it overclocks the chip and powers the board. Silver and Gold are bragging rights;
 // Gold is the stretch (Josh, 2026-11-03). Fuses keep every run honest, so any run's score counts.
@@ -836,22 +847,24 @@ function openSheet(id) {
   const s = chipSave(id), un = isUnlocked(c);
   sheetId = id;
   $('#sh-glyph').innerHTML = c.glyph;
-  $('#sh-kind').textContent = c.kind === 'COMPOSITE' ? 'COMBO · ' + c.needs.map(n => byId(n).name).join(' + ') : 'CHIP';
+  $('#sh-kind').textContent = c.kind === 'COMPOSITE' ? 'MIXES ' + listAnd(c.needs.map(n => byId(n).name)).toUpperCase() : 'CHIP';
   $('#sh-title').textContent = c.full;
   const rungs = $('#sh-rungs');
   {
     const t = s.tier || 0;
-    $('#sh-aim').innerHTML = `<b>MEDALS</b>Right answers in ${Math.round(RUN_MS / 1000)} seconds. Bronze unlocks the next chips. You get ${FUSES} shields. Lose them all and you're out.`;
+    $('#sh-aim').textContent = `Get as many right answers as you can in ${Math.round(RUN_MS / 1000)} seconds. Reach a number below to earn that medal.`;
+    $('#sh-shields').textContent = `You have ${FUSES} shields. Each wrong answer breaks one. When all ${FUSES} break, the run is over.`;
     rungs.innerHTML = TIERS.map((T, k) => `<div class="rung${k < t ? ' got' : ''}" style="--tc:${T.color}"><i></i><span>${T.name}</span><b>${c.tiers[k]}</b></div>`).join('');
   }
   $('#sh-learn').innerHTML = c.learn.map(l => `<li>${l}</li>`).join('');
   const feeds = CHIPS.concat([TEASER]).filter(k => k.needs.includes(id)).map(k => k.name);
-  $('#sh-feeds').textContent = feeds.length ? 'POWERS → ' + feeds.join(' · ') : '';
-  $('#sh-hist').innerHTML = s.runs.length ? histSVG(s.runs, targetFor(c)) : '<p class="dim small">No runs yet.</p>';
+  $('#sh-feeds').textContent = feeds.length ? `Earn Bronze to unlock ${listAnd(feeds)}.` : '';
+  $('#sh-feeds').hidden = !feeds.length;
+  $('#sh-hist').innerHTML = s.runs.length ? histSVG(s.runs, targetFor(c)) : '<p class="dim small">No runs yet. Your first Play run shows up here.</p>';
   const lock = $('#sh-lock'), go = $('#sh-go'), warm = $('#sh-warm');
   if (!un) {
     lock.hidden = false;
-    lock.textContent = 'Locked. Get Bronze on ' + listAnd(c.needs.filter(n => !chipSave(n).oc).map(n => byId(n).name)) + ' to open it.';
+    lock.textContent = 'This chip is locked. Earn Bronze on ' + listAnd(c.needs.filter(n => !chipSave(n).oc).map(n => byId(n).name)) + ' to open it.';
     go.disabled = true; warm.disabled = true;
   } else { lock.hidden = true; go.disabled = false; warm.disabled = false; }
   $('#sheet').hidden = false;
