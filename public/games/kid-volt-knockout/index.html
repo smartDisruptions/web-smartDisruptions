@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <title>Kid Volt Knockout</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="description" content="Kid Volt vs Disco Danny on a rooftop dance floor. He punches on the beat and a sparkle marks his opening. Counter, charge your super, and put him down three times for a TKO.">
+<meta name="description" content="Kid Volt climbs a five-fighter ladder on a rooftop dance floor, starting with Disco Danny. Every opponent punches on the beat and a sparkle marks his opening. Counter, charge your super, and put him down three times for a TKO.">
 <link rel="canonical" href="https://smartdisruptions.com/games/kid-volt-knockout">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Smart Disruptions">
 <meta property="og:title" content="Kid Volt Knockout">
-<meta property="og:description" content="A boxing game for phones: Kid Volt against Disco Danny under a neon skyline. Read the sparkle, counter on the beat, save up a Supernova, and beat the clock. From the Broom &amp; Blade Arcade.">
+<meta property="og:description" content="A boxing game for phones: Kid Volt against five opponents under a neon skyline, from Disco Danny up to King Kilowatt. Read the sparkle, counter on the beat, save up a Supernova, and beat the clock. From the Broom &amp; Blade Arcade.">
 <meta property="og:url" content="https://smartdisruptions.com/games/kid-volt-knockout">
 <meta property="og:image" content="https://smartdisruptions.com/images/apps/kid-volt-knockout-og.jpg">
 <meta property="og:image:width" content="1200">
@@ -120,6 +120,17 @@
   }
   .go:active { transform: translateY(3px); box-shadow: 0 2px 0 #7a6200; }
   .ghost { font-size: 13px; letter-spacing: .12em; padding: 10px 0; border-radius: 12px; border: 2px solid var(--line); background: transparent; color: var(--mute); cursor: pointer; }
+  .ladder { display: flex; gap: 6px; }
+  .rung { flex: 1 1 0; min-width: 0; padding: 7px 2px 6px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--mute); cursor: pointer;
+          display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 8px; letter-spacing: .04em; line-height: 1; }
+  .rung b { font-size: 15px; color: var(--text); }
+  .rung.done b { color: var(--volt); }
+  .rung.sel { border-color: var(--pink); background: rgba(255,79,163,.14); color: var(--text); }
+  .rung:disabled { opacity: .38; cursor: default; }
+  .btn.hintD { --c: #fff; animation: hintD .36s steps(2) infinite; }
+  .btn.hintC { --c: var(--volt); animation: hintC .3s steps(2) infinite; }
+  @keyframes hintD { 50% { box-shadow: 0 4px 0 #04030c, 0 0 18px var(--cyan), inset 0 0 16px rgba(94,242,255,.6); } }
+  @keyframes hintC { 50% { box-shadow: 0 4px 0 #04030c, 0 0 20px var(--volt), inset 0 0 18px rgba(255,210,31,.7); } }
   .fine { font-size: 10px; letter-spacing: .08em; color: var(--mute); margin-bottom: auto; line-height: 1.6; }
   #rTitle { font-family: "Monoton", "Silkscreen", cursive; font-weight: 400; font-size: clamp(56px, 22vw, 96px); margin: 0; line-height: 1; }
   #rTitle.win { color: var(--volt); text-shadow: 0 0 12px rgba(255,210,31,.8), 0 0 30px rgba(94,242,255,.5); }
@@ -207,17 +218,17 @@
 
 <div id="title" class="ov">
   <a class="home" href="/games#broom-blade-arcade"><span class="arw" aria-hidden="true">&#9664;</span><span>SMART DISRUPTIONS ·<b>BROOM &amp; BLADE ARCADE</b></span></a>
-  <div class="kicker">STAGE 1 · ROOFTOP RUMBLE</div>
-  <h1 class="logo">KID VOLT</h1>
-  <div class="vs">VS</div>
+  <div class="kicker" id="tKicker">STAGE 1 OF 5 · ROOFTOP RUMBLE</div>
+  <h1 class="logo" id="logo">KID VOLT</h1>
+  <div class="ladder" id="ladder"></div>
   <div class="card">
-    <div class="name">DISCO DANNY</div>
-    <div class="meta">AGE 52 · LAS VEGAS · RECORD 3–47 (2 KO)</div>
-    <p>Forty years on the dance floor. He still throws every punch on the beat.</p>
+    <div class="name" id="tName">DISCO DANNY</div>
+    <div class="meta" id="tMeta"></div>
+    <p id="tBlurb"></p>
   </div>
   <ul class="how">
     <li>A <b>sparkle</b> marks where he's open. Punch that spot during his wind-up to <b>counter</b>.</li>
-    <li>He hits <b>on the beat</b>. Jabs: dodge, duck or block. Uppercuts: <b>dodge</b>. The Fever Hook: <b>duck</b>.</li>
+    <li>He hits <b>on the beat</b>. Jabs: dodge, duck or block. Uppercuts: <b>dodge</b>. Every fighter's big move has its own answer.</li>
     <li>Counters charge <b>SUPER</b>. When he's dizzy, hit him as he sways back to center.</li>
   </ul>
   <button class="go" id="startBtn">FIGHT</button>
@@ -230,6 +241,7 @@
   <h1 class="logo" style="font-size:52px">TIMEOUT</h1>
   <button class="go" id="resumeBtn">RESUME</button>
   <div class="row"><button class="ghost" id="soundBtn">SOUND: ON</button><button class="ghost" id="restartBtn">RESTART</button></div>
+  <button class="ghost" id="quitBtn">BACK TO THE LADDER</button>
   <div class="fine">Keyboard: A / D dodge · S duck · W block · J / K jab · N / M body · Space super</div>
 </div>
 
@@ -242,15 +254,19 @@
     <div><span>SCORE</span><strong id="rScore">0</strong></div>
     <div><span>BEST</span><strong id="rBest">-</strong></div>
   </div>
+  <button class="go" id="nextBtn" hidden>NEXT</button>
   <button class="go" id="againBtn">REMATCH</button>
+  <button class="ghost" id="ladderBtn">BACK TO THE LADDER</button>
   <a class="ghost" href="/games#broom-blade-arcade"><span aria-hidden="true">&#9664;</span> BROOM &amp; BLADE ARCADE</a>
-  <div class="next">NEXT ON THE ROOFTOP: "IRON" IVAN BRASKO<br>STAGE 2 IS STILL IN THE GYM</div>
+  <div class="next" id="rNext"></div>
 </div>
 
 <script>
 "use strict";
 // Kid Volt Knockout: Stage 1. A boxer for phones, built from a study of the 16-bit classics.
 // Pixel engine from the vault's pixel-art skill (palette-index framebuffer, integer scale, fixed 60 Hz step).
+// v2 (2026-11): fighters are 240x280 polygon rigs; HUD, text and particles ride a 120x140 overlay.
+// v3 (2026-11): a five-opponent ladder. Each opponent is a row of numbers and a look in FIGHTERS.
 (function () {
   // ================================================================ palette
   var PAL = [
@@ -303,7 +319,41 @@
     "#b0182e", // 46 deep red
     "#0f0c24"  // 47 HUD panel
   ];
-  var NC = PAL.length, W = 120, H = 140, DT = 1 / 60, EMPTY = 255;
+  // Fighter materials: each is a dark-to-light ramp appended to the palette.
+  var MAT = {}, RTOP = new Uint8Array(256);
+  (function () {
+    var defs = {
+      skin: ["#3a1c10", "#5c301a", "#824727", "#a96237", "#cf8a52", "#eaae78"],
+      afro: ["#0e0806", "#1f130c", "#352015", "#523321"],
+      shirt: ["#3d0a30", "#7c175c", "#c22f93", "#f068c0", "#ffc4ea"],
+      trunks: ["#4a0c22", "#94183f", "#d8346c", "#ff8fb5"],
+      band: ["#7a1c38", "#e8375a", "#ff9ab0"],
+      glove: ["#4e0a18", "#951428", "#d82a3a", "#ff7d7d"],
+      cuff: ["#8a82b0", "#c9c1e6", "#ffffff"],
+      gold: ["#6e4a00", "#b8860a", "#ffd21f", "#fff4a8"],
+      white: ["#c9c1e6", "#ffffff"],
+      eye: ["#0a0818"],
+      mouth: ["#2a0610"],
+      kskin: ["#6a3a1e", "#9c5e36", "#c98656", "#e9ae7e", "#fbd2a8"],
+      khair: ["#0b1f66", "#1d4fd0", "#2f7cff", "#9fd6ff"],
+      ktank: ["#0b0a20", "#1a1840", "#2c2a66", "#4a48a0"],
+      kglove: ["#7a5c00", "#d0a000", "#ffd21f", "#fff4a8"],
+      skinL: ["#6b3a26", "#9a5a3c", "#c68058", "#e6a67e", "#f7c9a4", "#ffe2c8"],
+      skinT: ["#4a2a14", "#734520", "#9c6430", "#c48a4c", "#e0ad72", "#f2cf9c"],
+      steel: ["#1a2030", "#33405c", "#566a90", "#8fa4c8", "#cfdcf2"],
+      red: ["#3a0a0a", "#7a1414", "#c02222", "#f05a4a", "#ffb0a0"],
+      green: ["#062a14", "#0c5a2a", "#18963f", "#5fd67a", "#b8f5c4"],
+      saffron: ["#4a1c00", "#8a3c00", "#d06a10", "#f8a030", "#ffd890"],
+      whiteh: ["#7a7a90", "#a8a8c0", "#d8d8ea", "#ffffff"],
+      purple: ["#230938", "#481676", "#7a2fc0", "#b077f2", "#e6ccff"]
+    };
+    for (var q = 0; q < 256; q++) RTOP[q] = q;
+    Object.keys(defs).forEach(function (k) {
+      MAT[k] = defs[k].map(function (h) { PAL.push(h); return PAL.length - 1; });
+      MAT[k].forEach(function (ix) { RTOP[ix] = MAT[k][MAT[k].length - 1]; });
+    });
+  })();
+  var NC = PAL.length, W = 120, H = 140, W2 = 240, H2 = 280, DT = 1 / 60, EMPTY = 255;
 
   function abgr(r, g, b) { return (0xff000000 | (b << 16) | (g << 8) | r) >>> 0; }
   var lut = new Uint32Array(NC), lutFlash = new Uint32Array(NC), lutInv = new Uint32Array(NC);
@@ -321,13 +371,15 @@
     .forEach(function (m) { BRIGHT[m[0]] = m[1]; });
   [[11, 13], [12, 13], [13, 44], [41, 42], [42, 44], [37, 8], [36, 7], [38, 9], [39, 40], [1, 3], [2, 3], [3, 4], [5, 4], [4, 13]]
     .forEach(function (m) { LIGHTEN[m[0]] = m[1]; });
+  Object.keys(MAT).forEach(function (k) { MAT[k].forEach(function (ix, n) { BRIGHT[ix] = n + 1 < MAT[k].length ? MAT[k][n + 1] : 10; }); });
 
   // ================================================================ buffers + scaling
-  var off = document.createElement("canvas"); off.width = W; off.height = H;
+  var off = document.createElement("canvas"); off.width = W2; off.height = H2;
   var octx = off.getContext("2d");
-  var img = octx.createImageData(W, H);
+  var img = octx.createImageData(W2, H2);
   var pix = new Uint32Array(img.data.buffer);
-  var fb = new Uint8Array(W * H), bg = new Uint8Array(W * H);
+  var fb2 = new Uint8Array(W2 * H2), bg2 = new Uint8Array(W2 * H2);
+  var fb = new Uint8Array(W * H);                // overlay: HUD, text, particles (EMPTY = see-through)
   var stage = document.getElementById("stage");
   var screen = document.getElementById("screen");
   var dctx = screen.getContext("2d", { alpha: false });
@@ -339,12 +391,13 @@
     dprNow = Math.min(3, window.devicePixelRatio || 1);
     cw = Math.max(1, Math.round(rc.width * dprNow)); ch = Math.max(1, Math.round(rc.height * dprNow));
     screen.width = cw; screen.height = ch;
-    scale = Math.max(1, Math.floor(Math.min(cw / W, ch / H)));
-    offX = (cw - W * scale) >> 1; offY = (ch - H * scale) >> 1;
+    scale = Math.min(cw / W2, ch / H2);
+    scale = Math.max(1, Math.floor(scale * 2) / 2);
+    offX = Math.round((cw - W2 * scale) / 2); offY = Math.round((ch - H2 * scale) / 2);
     dctx.imageSmoothingEnabled = false;
-    tipEl.style.bottom = Math.round((ch - offY - H * scale) / dprNow + 8) + "px";
-    pauseBtn.style.top = Math.round((offY + 20 * scale) / dprNow) + "px";
-    pauseBtn.style.right = Math.round((cw - offX - W * scale) / dprNow + 2 * scale / dprNow) + "px";
+    tipEl.style.bottom = Math.round((ch - offY - H2 * scale) / dprNow + 8) + "px";
+    pauseBtn.style.top = Math.round((offY + 40 * scale) / dprNow) + "px";
+    pauseBtn.style.right = Math.round((cw - offX - W2 * scale) / dprNow + 4 * scale / dprNow) + "px";
     if (BAYER) bakeSides();   // the desktop rooftop (a no-op elsewhere); BAYER is set once the helpers below exist
   }
   addEventListener("resize", resize);
@@ -400,142 +453,239 @@
   }
   function drawTextC(s, cx, y, c, sc, oc) { drawText(s, Math.round(cx - textW(s, sc || 1) / 2), y, c, sc, oc); }
 
-  // ================================================================ sprite buffers + shaded primitives
-  var OW = 80, OH = 100, oppSpr = new Uint8Array(OW * OH);
-  var PW = W, PH = H, plSpr = new Uint8Array(PW * PH);
-  var cur = oppSpr, curW = OW, curH = OH;
-  function tgt(buf, w, h) { cur = buf; curW = w; curH = h; }
-  function sp(x, y, c) { x |= 0; y |= 0; if (x >= 0 && y >= 0 && x < curW && y < curH) cur[y * curW + x] = c; }
-  function sg(x, y) { return (x < 0 || y < 0 || x >= curW || y >= curH) ? EMPTY : cur[y * curW + x]; }
-  // Light from the upper left, toward the viewer. Dithered 3-step ramps.
-  function ramp3(I, x, y, r0, r1, r2) {
-    var t = I + (bay(x, y) / 16 - 0.47) * 0.16;
-    return t > 0.78 ? r2 : (t > 0.3 ? r1 : r0);
+  // ================================================================ hi-res sprite rasterizer
+  // Fighters are built from filled polygons (flattened curves) written straight into palette-index
+  // sprite buffers at 240x280. Each part is lit from the upper left with a dithered ramp.
+  var oppSpr = new Uint8Array(W2 * H2), plSpr = new Uint8Array(W2 * H2);
+  oppSpr.fill(EMPTY); plSpr.fill(EMPTY);
+  var oppBB = { x0: W2, y0: H2, x1: -1, y1: -1 }, plBB = { x0: W2, y0: H2, x1: -1, y1: -1 };
+  var cur = oppSpr, curBB = oppBB, DITH = 0.7;
+  function sprBegin(buf, bb) {
+    cur = buf; curBB = bb;
+    for (var y = bb.y0; y <= bb.y1; y++) buf.fill(EMPTY, y * W2 + bb.x0, y * W2 + bb.x1 + 1);
+    bb.x0 = W2; bb.y0 = H2; bb.x1 = -1; bb.y1 = -1;
   }
-  function ellipse(cx, cy, rx, ry, r0, r1, r2, rim) {
-    var x0 = Math.floor(cx - rx - 1), x1 = Math.ceil(cx + rx + 1), y0 = Math.floor(cy - ry - 1), y1 = Math.ceil(cy + ry + 1);
-    var rimT = rim >= 0 ? Math.pow(Math.max(0, 1 - 1.15 / Math.min(rx, ry)), 2) : 2;
-    for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) {
-      var nx = (x + 0.5 - cx) / rx, ny = (y + 0.5 - cy) / ry, d = nx * nx + ny * ny;
-      if (d > 1) continue;
-      if (d > rimT) { sp(x, y, rim); continue; }
-      var I = nx * -0.5 + ny * -0.6 + Math.sqrt(1 - d) * 0.62;
-      sp(x, y, ramp3(I, x, y, r0, r1, r2));
+  // transform: an optional whole-figure matrix (used when Danny is flat on the canvas), then a translate
+  var ga = 1, gb = 0, gc = 0, gd = 1, ge = 0, gf = 0, gs = 1;
+  var ta = 1, tb = 0, tc = 0, td = 1, te = 0, tf = 0;
+  function setG(a, b, c, d, e, f, s) { ga = a; gb = b; gc = c; gd = d; ge = e; gf = f; gs = s; setT(0, 0); }
+  function setT(dx, dy) { ta = ga; tb = gb; tc = gc; td = gd; te = ga * dx + gc * dy + ge; tf = gb * dx + gd * dy + gf; }
+  var TXP = new Float32Array(600), XS = new Float32Array(64);
+  function grow(x0, y0, x1, y1) {
+    x0 = Math.max(0, Math.floor(x0) - 2); y0 = Math.max(0, Math.floor(y0) - 2); x1 = Math.min(W2 - 1, Math.ceil(x1) + 2); y1 = Math.min(H2 - 1, Math.ceil(y1) + 2);
+    if (x0 < curBB.x0) curBB.x0 = x0; if (y0 < curBB.y0) curBB.y0 = y0; if (x1 > curBB.x1) curBB.x1 = x1; if (y1 > curBB.y1) curBB.y1 = y1;
+  }
+  function span(y, xa, xb, c) {
+    if (y < 0 || y >= H2) return;
+    if (xa < 0) xa = 0; if (xb >= W2) xb = W2 - 1;
+    for (var r = y * W2, x = xa; x <= xb; x++) cur[r + x] = c;
+  }
+  // Fill a closed polygon. gr > 0: shaded by distance from a light point; else flat ramp value v. ol: 1px outline.
+  function rFill(pts, ramp, gx, gy, gr, v, ol) {
+    var n = pts.length >> 1, i, k, x, y, y0 = 1e9, y1 = -1e9, xmn = 1e9, xmx = -1e9;
+    for (i = 0; i < n; i++) {
+      x = pts[i * 2]; y = pts[i * 2 + 1];
+      var X = ta * x + tc * y + te, Y = tb * x + td * y + tf;
+      TXP[i * 2] = X; TXP[i * 2 + 1] = Y;
+      if (Y < y0) y0 = Y; if (Y > y1) y1 = Y; if (X < xmn) xmn = X; if (X > xmx) xmx = X;
     }
-  }
-  function capsule(x1, y1, x2, y2, rr, r0, r1, r2) {
-    var dx = x2 - x1, dy = y2 - y1, L2 = dx * dx + dy * dy || 1;
-    var bx0 = Math.floor(Math.min(x1, x2) - rr - 1), bx1 = Math.ceil(Math.max(x1, x2) + rr + 1);
-    var by0 = Math.floor(Math.min(y1, y2) - rr - 1), by1 = Math.ceil(Math.max(y1, y2) + rr + 1);
-    for (var y = by0; y <= by1; y++) for (var x = bx0; x <= bx1; x++) {
-      var px = x + 0.5, py = y + 0.5, t = clamp(((px - x1) * dx + (py - y1) * dy) / L2, 0, 1);
-      var ex = (px - (x1 + dx * t)) / rr, ey = (py - (y1 + dy * t)) / rr, d = ex * ex + ey * ey;
-      if (d > 1) continue;
-      var I = ex * -0.5 + ey * -0.6 + Math.sqrt(1 - d) * 0.62;
-      sp(x, y, ramp3(I, x, y, r0, r1, r2));
-    }
-  }
-  function tri(ax, ay, bx, by, cx, cy, c) {
-    var x0 = Math.floor(Math.min(ax, bx, cx)), x1 = Math.ceil(Math.max(ax, bx, cx));
-    var y0 = Math.floor(Math.min(ay, by, cy)), y1 = Math.ceil(Math.max(ay, by, cy));
-    var den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
-    for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) {
-      var px = x + 0.5, py = y + 0.5;
-      var w1 = ((by - cy) * (px - cx) + (cx - bx) * (py - cy)) / den;
-      var w2 = ((cy - ay) * (px - cx) + (ax - cx) * (py - cy)) / den;
-      if (w1 >= 0 && w2 >= 0 && w1 + w2 <= 1) sp(x, y, c);
-    }
-  }
-  function glove(gx, gy, gr, sx, sy, r0, r1, r2, cuff) {
-    var dx = sx - gx, dy = sy - gy, L = Math.sqrt(dx * dx + dy * dy) || 1;
-    ellipse(gx + dx / L * gr * 0.82, gy + dy / L * gr * 0.82, gr * 0.52, gr * 0.52, cuff, 43, 10, -1);
-    ellipse(gx, gy, gr, gr * 0.94, r0, r1, r2, 0);
-    ellipse(gx - (dx < 0 ? -1 : 1) * gr * 0.62, gy + gr * 0.05, gr * 0.36, gr * 0.44, r0, r1, r2, 0);   // thumb
-    sp(gx - gr * 0.38, gy - gr * 0.45, 10);
-  }
-  // Composite a sprite: auto 1px outline, optional colour remap for hit flashes.
-  function composite(buf, w, h, ox, oy, remap) {
-    ox |= 0; oy |= 0;
-    for (var sy = 0; sy < h; sy++) {
-      var wy = oy + sy; if (wy < 0 || wy >= H) continue;
-      for (var sx = 0; sx < w; sx++) {
-        var wx = ox + sx; if (wx < 0 || wx >= W) continue;
-        var c = buf[sy * w + sx];
-        if (c !== EMPTY) { fb[wy * W + wx] = remap ? remap[c] : c; }
-        else if ((sx > 0 && buf[sy * w + sx - 1] !== EMPTY) || (sx < w - 1 && buf[sy * w + sx + 1] !== EMPTY) ||
-                 (sy > 0 && buf[(sy - 1) * w + sx] !== EMPTY) || (sy < h - 1 && buf[(sy + 1) * w + sx] !== EMPTY)) {
-          fb[wy * W + wx] = 0;
+    if (xmx < -2 || xmn > W2 + 2 || y1 < -2 || y0 > H2 + 2) return;
+    grow(xmn, y0, xmx, y1);
+    var ya = Math.max(0, Math.floor(y0)), yb = Math.min(H2 - 1, Math.ceil(y1)), nr = ramp.length, lx = 0, ly = 0, inv = 0, flat = 0;
+    if (gr > 0) { var R = gr * gs; lx = ta * gx + tc * gy + te - R * 0.3; ly = tb * gx + td * gy + tf - R * 0.4; inv = 1 / (R * 1.3); }
+    else flat = ramp[Math.min(nr - 1, (v * nr) | 0)];
+    for (var pass = ol ? 0 : 1; pass < 2; pass++) {
+      for (y = ya; y <= yb; y++) {
+        var yc = y + 0.5; k = 0;
+        for (i = 0; i < n; i++) {
+          var j = i + 1 === n ? 0 : i + 1, ay = TXP[i * 2 + 1], by = TXP[j * 2 + 1];
+          if ((ay <= yc) !== (by <= yc) && k < 64) XS[k++] = TXP[i * 2] + (yc - ay) * (TXP[j * 2] - TXP[i * 2]) / (by - ay);
+        }
+        for (i = 1; i < k; i++) { var t = XS[i], q = i - 1; while (q >= 0 && XS[q] > t) { XS[q + 1] = XS[q]; q--; } XS[q + 1] = t; }
+        for (i = 0; i + 1 < k; i += 2) {
+          var xa = Math.ceil(XS[i] - 0.5), xb = Math.floor(XS[i + 1] - 0.5);
+          if (xb < xa) continue;
+          if (pass === 0) { span(y, xa - 1, xb + 1, 0); span(y - 1, xa, xb, 0); span(y + 1, xa, xb, 0); continue; }
+          if (xa < 0) xa = 0; if (xb >= W2) xb = W2 - 1;
+          var row = y * W2;
+          if (gr > 0) {
+            var dy = yc - ly, dy2 = dy * dy, brow = (y & 3) * 4;
+            for (x = xa; x <= xb; x++) {
+              var dx = x + 0.5 - lx, idx = ((1 - Math.sqrt(dx * dx + dy2) * inv) * nr + (BAYER[brow + (x & 3)] / 16 - 0.5) * DITH) | 0;
+              cur[row + x] = ramp[idx < 0 ? 0 : idx >= nr ? nr - 1 : idx];
+            }
+          } else for (x = xa; x <= xb; x++) cur[row + x] = flat;
         }
       }
     }
   }
-
-  // ================================================================ scene (baked once)
-  var FLOOR_Y = 76, SIGN = [];
-  (function bake() {
-    var x, y, n;
-    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
-      var t = bay(x, y), c;
-      if (y < 26) c = 1;
-      else if (y < 34) c = ((y - 26) * 2 > t) ? 2 : 1;
-      else if (y < 44) c = 2;
-      else if (y < 52) c = ((y - 44) * 2 > t) ? 3 : 2;
-      else c = 3;
-      fb[y * W + x] = c;
+  // Thin line work: creases, chains, stripes.
+  function rStroke(pts, ramp, v, w) {
+    var n = pts.length >> 1, nr = ramp.length, c = ramp[Math.min(nr - 1, (v * nr) | 0)], fat = w >= 1.7, i, s;
+    for (i = 0; i + 1 < n; i++) {
+      var x0 = ta * pts[i * 2] + tc * pts[i * 2 + 1] + te, y0 = tb * pts[i * 2] + td * pts[i * 2 + 1] + tf;
+      var x1 = ta * pts[i * 2 + 2] + tc * pts[i * 2 + 3] + te, y1 = tb * pts[i * 2 + 2] + td * pts[i * 2 + 3] + tf;
+      var len = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0)), st = Math.max(1, Math.ceil(len * 1.5));
+      for (s = 0; s <= st; s++) {
+        var px = x0 + (x1 - x0) * s / st, py = y0 + (y1 - y0) * s / st;
+        if (fat) { px = Math.floor(px - 0.5); py = Math.floor(py - 0.5); span(py, px, px + 1, c); span(py + 1, px, px + 1, c); }
+        else { px = Math.floor(px); span(Math.floor(py), px, px, c); }
+      }
     }
-    var stars = [8, 22, 27, 20, 44, 27, 71, 21, 88, 25, 112, 20, 101, 30, 16, 31, 60, 24];
-    for (n = 0; n < stars.length; n += 2) pset(stars[n], stars[n + 1], 44);
-    // moon
-    for (y = -5; y <= 5; y++) for (x = -5; x <= 5; x++) if (x * x + y * y <= 26) pset(17 + x, 30 + y, (x - 2) * (x - 2) + (y + 1) * (y + 1) < 12 ? 43 : 44);
-    // far skyline
-    var fx = 0, seed = 7;
+  }
+  // geometry: everything flattens to [x0, y0, x1, y1, ...]
+  function gEll(cx, cy, rx, ry, rot) {
+    var a = [], c = Math.cos(rot || 0), s = Math.sin(rot || 0), n = rx + ry > 44 ? 26 : rx + ry > 14 ? 18 : 10;
+    for (var i = 0; i < n; i++) { var t = i / n * 6.2832, ex = Math.cos(t) * rx, ey = Math.sin(t) * ry; a.push(cx + ex * c - ey * s, cy + ex * s + ey * c); }
+    return a;
+  }
+  function gLimb(ax, ay, bx, by, r0, r1) {
+    var dx = bx - ax, dy = by - ay, L = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / L, ny = dx / L, an = Math.atan2(ny, nx), a = [], i;
+    for (i = 0; i <= 6; i++) { var t = an - Math.PI * i / 6; a.push(bx + Math.cos(t) * r1, by + Math.sin(t) * r1); }
+    for (i = 0; i <= 6; i++) { t = an - Math.PI - Math.PI * i / 6; a.push(ax + Math.cos(t) * r0, ay + Math.sin(t) * r0); }
+    return a;
+  }
+  function gPath(c) {
+    var a = [], x = 0, y = 0;
+    for (var i = 0; i < c.length;) {
+      if (c[i] === "Q") {
+        var cx = c[i + 1], cy = c[i + 2], ex = c[i + 3], ey = c[i + 4];
+        for (var s = 1; s <= 7; s++) { var t = s / 7, u = 1 - t; a.push(u * u * x + 2 * u * t * cx + t * t * ex, u * u * y + 2 * u * t * cy + t * t * ey); }
+        x = ex; y = ey; i += 5;
+      } else { x = c[i + 1]; y = c[i + 2]; a.push(x, y); i += 3; }
+    }
+    return a;
+  }
+  function gBumpy(cx, cy, r, n, amp, seed) {
+    var a = [], s = seed;
+    for (var i = 0; i < n * 2; i++) {
+      s = (s * 16807) % 2147483647;
+      var ang = i / (n * 2) * 6.2832, rr = r + ((i & 1) ? amp * (0.6 + s / 2147483647 * 0.5) : -amp * 0.2);
+      a.push(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr);
+    }
+    return a;
+  }
+  function gMove(pts, u, dx, dy) { var a = []; for (var i = 0; i < pts.length; i += 2) a.push(pts[i] * u + dx, pts[i + 1] * u + dy); return a; }
+  // Part lists for the pieces that never change shape (built once).
+  function mkList(fn) {
+    var L = [];
+    fn(function (pts, mat, g, ol) { L.push([0, pts, MAT[mat], g, ol !== false]); },
+       function (pts, mat, v, ol) { L.push([1, pts, MAT[mat], v, !!ol]); },
+       function (pts, mat, v, w) { L.push([2, pts, MAT[mat], v, w]); });
+    return L;
+  }
+  function runList(L) {
+    for (var i = 0; i < L.length; i++) {
+      var o = L[i];
+      if (o[0] === 0) rFill(o[1], o[2], o[3][0], o[3][1], o[3][2], 0, o[4]);
+      else if (o[0] === 1) rFill(o[1], o[2], 0, 0, 0, o[3], o[4]);
+      else rStroke(o[1], o[2], o[3], o[4]);
+    }
+  }
+  // Stage light from the right: the last lit pixel on each right-hand edge takes the top of its ramp.
+  function rimLight(buf, bb) {
+    for (var y = bb.y0; y <= bb.y1; y++) for (var x = bb.x0, r = y * W2; x < bb.x1 - 1; x++) {
+      var c = buf[r + x]; if (c === EMPTY || c === 0) continue;
+      var n1 = buf[r + x + 1];
+      if (n1 === EMPTY || (n1 === 0 && buf[r + x + 2] === EMPTY)) buf[r + x] = RTOP[c];
+    }
+  }
+  // Composite a sprite into the frame: silhouette outline, optional colour remap for hit flashes.
+  function composite(buf, bb, ox, oy, remap) {
+    var y0 = Math.max(1, bb.y0 - 1), y1 = Math.min(H2 - 2, bb.y1 + 1), x0 = Math.max(1, bb.x0 - 1), x1 = Math.min(W2 - 2, bb.x1 + 1);
+    for (var sy = y0; sy <= y1; sy++) {
+      var wy = oy + sy; if (wy < 0 || wy >= H2) continue;
+      for (var sx = x0, r = sy * W2; sx <= x1; sx++) {
+        var wx = ox + sx; if (wx < 0 || wx >= W2) continue;
+        var c = buf[r + sx];
+        if (c !== EMPTY) fb2[wy * W2 + wx] = remap ? remap[c] : c;
+        else if (buf[r + sx - 1] !== EMPTY || buf[r + sx + 1] !== EMPTY || buf[r + sx - W2] !== EMPTY || buf[r + sx + W2] !== EMPTY) fb2[wy * W2 + wx] = 0;
+      }
+    }
+  }
+  // Elbow solver that allows foreshortening: the elbow hangs toward a hint and both bones may read
+  // shorter than their length (an arm pointing at the camera), but never longer.
+  function solveHint(sx, sy, tx, ty, l1, l2, hx, hy) {
+    var ex = hx, ey = hy, dx, dy, d;
+    for (var i = 0; i < 8; i++) {
+      dx = ex - tx; dy = ey - ty; d = Math.sqrt(dx * dx + dy * dy) || 0.001; if (d > l2) { ex = tx + dx / d * l2; ey = ty + dy / d * l2; }
+      dx = ex - sx; dy = ey - sy; d = Math.sqrt(dx * dx + dy * dy) || 0.001; if (d > l1) { ex = sx + dx / d * l1; ey = sy + dy / d * l1; }
+    }
+    dx = tx - ex; dy = ty - ey; d = Math.sqrt(dx * dx + dy * dy) || 0.001;
+    if (d > l2) { tx = ex + dx / d * l2; ty = ey + dy / d * l2; }
+    IK.ex = ex; IK.ey = ey; IK.hx = tx; IK.hy = ty;
+  }
+
+  // ================================================================ scene (baked once, 240x280)
+  var FLOOR_Y = 76, SIGN = [], signDim = 37;
+  function bakeScene(word, neon, dim) {
+    var x, y, n, seed = 7;
+    SIGN.length = 0; signDim = dim;
     function srand() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
-    while (fx < W) {
-      var bw = 6 + (srand() * 9 | 0), top = 36 + (srand() * 12 | 0);
-      for (y = top; y < 60; y++) for (x = fx; x < fx + bw && x < W; x++) pset(x, y, 4);
-      for (y = top + 2; y < 58; y += 3) for (x = fx + 1; x < fx + bw - 1; x += 2) if (srand() < 0.25) pset(x, y, srand() < 0.8 ? 38 : 36);
-      fx += bw + (srand() * 3 | 0);
+    function hp(px, py, c) { px |= 0; py |= 0; if (px >= 0 && py >= 0 && px < W2 && py < H2) fb2[py * W2 + px] = c; }
+    function hr(px, py, w, h, c) { for (var yy = py; yy < py + h; yy++) for (var xx = px; xx < px + w; xx++) hp(xx, yy, c); }
+    function hc(cx, cy, r, c) { for (var yy = -r; yy <= r; yy++) for (var xx = -r; xx <= r; xx++) if (xx * xx + yy * yy <= r * r + r * 0.6) hp(cx + xx, cy + yy, c); }
+    for (y = 0; y < H2; y++) for (x = 0; x < W2; x++) {
+      var t = bay(x, y), c;
+      if (y < 52) c = 1; else if (y < 68) c = (y - 52 > t) ? 2 : 1; else if (y < 88) c = 2; else if (y < 104) c = (y - 88 > t) ? 3 : 2; else c = 3;
+      fb2[y * W2 + x] = c;
+    }
+    for (n = 0; n < 34; n++) { x = srand() * W2 | 0; y = 36 + srand() * 44 | 0; hp(x, y, srand() < 0.3 ? 43 : 44); if (srand() < 0.18) { hp(x - 1, y, 44); hp(x + 1, y, 44); hp(x, y - 1, 44); hp(x, y + 1, 44); hp(x, y, 10); } }
+    // moon
+    hc(34, 60, 11, 44); hc(32, 58, 9, 43); hc(29, 56, 2, 44); hc(37, 63, 3, 44); hc(30, 64, 1, 44); hp(38, 54, 44);
+    // far skyline
+    var fx = 0;
+    while (fx < W2) {
+      var bw = 12 + (srand() * 18 | 0), top = 70 + (srand() * 26 | 0);
+      hr(fx, top, bw, 124 - top, 4);
+      if (srand() < 0.35) hr(fx + (bw >> 1), top - 8, 1, 8, 4);
+      for (y = top + 4; y < 118; y += 6) for (x = fx + 3; x < fx + bw - 3; x += 5) if (srand() < 0.3) hr(x, y, 2, 2, srand() < 0.8 ? 38 : 36);
+      fx += bw + (srand() * 5 | 0);
     }
     // near skyline with neon trim
-    fx = -3;
-    while (fx < W) {
-      var nbw = 10 + (srand() * 12 | 0), ntop = 44 + (srand() * 9 | 0);
-      for (y = ntop; y < 62; y++) for (x = fx; x < fx + nbw; x++) pset(x, y, 5);
-      for (x = fx; x < fx + nbw; x++) pset(x, ntop, srand() < 0.5 ? 37 : 39);
-      for (y = ntop + 3; y < 60; y += 3) for (x = fx + 2; x < fx + nbw - 2; x += 3) if (srand() < 0.4) pset(x, y, srand() < 0.75 ? 6 : 7);
-      fx += nbw + 2;
+    fx = -6;
+    while (fx < W2) {
+      var nbw = 20 + (srand() * 24 | 0), ntop = 88 + (srand() * 18 | 0);
+      hr(fx, ntop, nbw, 126 - ntop, 5);
+      hr(fx, ntop, nbw, 2, srand() < 0.5 ? 37 : 39);
+      for (y = ntop + 6; y < 120; y += 7) for (x = fx + 4; x < fx + nbw - 4; x += 6) if (srand() < 0.42) hr(x, y, 2, 3, srand() < 0.75 ? 6 : 7);
+      fx += nbw + 4;
     }
-    // rooftop neon sign "DISCO" on the left, remembered for the flicker
-    for (y = 37; y < 45; y++) for (x = 2; x < 25; x++) pset(x, y, 0);
-    drawText("DISCO", 4, 38, 8, 1, -1);
-    for (y = 37; y < 45; y++) for (x = 2; x < 25; x++) if (fb[y * W + x] === 8) SIGN.push(y * W + x);
-    for (x = 2; x < 25; x++) { pset(x, 36, 37); pset(x, 45, 37); }
-    // crowd behind the ropes
+    // rooftop neon sign, remembered for the flicker
+    hr(4, 72, 48, 20, 0);
+    var wx0 = 28 - (word.length * 8 - 2) / 2;
+    for (n = 0; n < word.length; n++) { var bits = FONT[word[n]]; for (var k = 0; k < bits.length; k += 2) hr(wx0 + n * 8 + bits[k] * 2, 77 + bits[k + 1] * 2, 2, 2, 254); }
+    for (y = 72; y < 92; y++) for (x = 4; x < 52; x++) if (fb2[y * W2 + x] === 254) { fb2[y * W2 + x] = neon; SIGN.push(y * W2 + x); }
+    hr(4, 71, 48, 1, dim); hr(4, 92, 48, 1, dim); hr(3, 72, 1, 20, dim); hr(52, 72, 1, 20, dim);
+    hr(14, 93, 2, 12, 0); hr(40, 93, 2, 12, 0);
+    // crowd behind the ropes: three rows, nearer rows larger and brighter
     for (var row = 0; row < 3; row++) {
-      var cy = 58 + row * 6;
-      for (x = (row & 1) * 3 - 2; x < W + 4; x += 6) {
-        var head = row === 2 ? 42 : 41, shirt = [37, 36, 39, 42, 38][((x * 7 + row * 3) >> 1) % 5];
-        for (y = -3; y <= 3; y++) for (var xx = -3; xx <= 3; xx++) {
-          if (xx * xx + y * y <= 8) pset(x + xx, cy - 3 + y, head);
-          if (y >= 1 && Math.abs(xx) <= 3) pset(x + xx, cy + 1 + y, shirt);
-        }
+      var cy = 114 + row * 12, rad = 4 + (row > 0 ? 1 : 0);
+      for (x = (row & 1) * 7 - 4; x < W2 + 8; x += 13) {
+        var jx = x + (srand() * 3 | 0), head = row === 2 ? 42 : 41, shirt = [37, 36, 39, 42, 38][(srand() * 5) | 0];
+        hr(jx - rad - 2, cy + 3, rad * 2 + 5, 12, shirt);
+        hr(jx - rad - 2, cy + 3, rad * 2 + 5, 1, row === 2 ? 13 : 12);
+        hc(jx, cy - 2, rad, head);
+        hr(jx - rad, cy - 2 - rad, rad * 2 + 1, 3, 5);
+        if (srand() < 0.22) { hr(jx - rad - 4, cy - 8, 2, 12, head); hr(jx + rad + 3, cy - 10, 2, 14, head); }
       }
     }
     // ring apron line
-    for (x = 0; x < W; x++) { pset(x, FLOOR_Y - 1, 13); pset(x, FLOOR_Y - 2, 0); }
+    hr(0, FLOOR_Y * 2 - 4, W2, 2, 0); hr(0, FLOOR_Y * 2 - 2, W2, 2, 13);
     // corner posts
-    [[8, 50], [108, 50]].forEach(function (pp) {
-      for (y = pp[1]; y < FLOOR_Y; y++) for (x = pp[0]; x < pp[0] + 4; x++) pset(x, y, x === pp[0] ? 36 : 7);
-      for (x = pp[0] - 1; x < pp[0] + 5; x++) pset(x, pp[1] - 1, 10);
+    [16, 216].forEach(function (px) {
+      hr(px, 100, 8, FLOOR_Y * 2 - 100, 7); hr(px, 100, 2, FLOOR_Y * 2 - 100, 36); hr(px + 6, 100, 2, FLOOR_Y * 2 - 100, 10);
+      hr(px - 2, 96, 12, 4, 10); hr(px - 2, 99, 12, 1, 43);
     });
     // back ropes
-    [54, 61, 68].forEach(function (ry) {
-      for (x = 12; x < 108; x++) { pset(x, ry, 14); pset(x, ry + 1, 15); }
-      for (x = 0; x < 8; x++) { pset(x, ry + ((8 - x) >> 1), 14); pset(x, ry + 1 + ((8 - x) >> 1), 15); }
-      for (x = 112; x < W; x++) { pset(x, ry + ((x - 111) >> 1), 14); pset(x, ry + 1 + ((x - 111) >> 1), 15); }
+    [108, 122, 136].forEach(function (ry) {
+      for (x = 24; x < 216; x++) { var sag = Math.round(Math.sin((x - 24) / 192 * Math.PI) * 2); hp(x, ry + sag - 1, 23); hp(x, ry + sag, 14); hp(x, ry + sag + 1, 14); hp(x, ry + sag + 2, 15); }
+      for (x = 0; x < 16; x++) { var d = (16 - x) >> 2; hp(x, ry + d, 14); hp(x, ry + d + 1, 14); hp(x, ry + d + 2, 15); }
+      for (x = 224; x < W2; x++) { d = (x - 223) >> 2; hp(x, ry + d, 14); hp(x, ry + d + 1, 14); hp(x, ry + d + 2, 15); }
+      hr(14, ry - 1, 12, 5, 46); hr(214, ry - 1, 12, 5, 46);
     });
-    bg.set(fb);
-  })();
+    bg2.set(fb2);
+  }
 
   // ================================================================ desktop sides (static)
   // On a wide screen with a mouse and keyboard, the rooftop carries on past the ring: the same sky,
@@ -545,7 +695,7 @@
   var sideMQ = window.matchMedia ? matchMedia("(orientation: landscape) and (min-aspect-ratio: 5/4) and (hover: hover) and (pointer: fine)") : null;
   function bakeSides() {
     if (!sideCv || !sideMQ || !sideMQ.matches) { if (sideCv && sideCv.width) { sideCv.width = 0; sideCv.height = 0; } return; }
-    var s = scale, d = dprNow, rc = stage.getBoundingClientRect();
+    var s = scale * 2, d = dprNow, rc = stage.getBoundingClientRect();   // side pixels are world pixels: two frame pixels each
     var gx = rc.left * d + offX, gy = rc.top * d + offY;                     // the ring's top-left, device px
     var ox = ((gx % s) + s) % s, oy = ((gy % s) + s) % s;                     // keep both pixel grids in step
     var fx = Math.round((gx - ox) / s) + 1, fy = Math.round((gy - oy) / s) + 1; // the ring's top-left, in side pixels
@@ -770,6 +920,176 @@
   }
   function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* not supported */ } }
 
+  // ================================================================ the ladder: five opponents
+  // Everything that makes one opponent easier or harder than the next lives here. Arrays indexed
+  // by phase are [unused, phase 1, phase 2, phase 3]; a phase starts each time he gets back up.
+  //   bpm    tempo: he punches on the beat, so this is the pace of the whole fight
+  //   tell   wind-up length multiplier (bigger = more time to read him)
+  //   dmg    how hard he hits            rec   how long he stays open after a miss
+  //   idle   [beats between moves, chance of one more]
+  //   take   damage he takes             stun  seconds stunned by a counter      combo  hits per stun
+  //   quickP chance he answers a blocked punch with a quick jab
+  //   glint  fraction of the wind-up that passes before the sparkle shows
+  //   coach  how many times the right buttons light up per punch: [defend, counter]
+  function spMove(sp, av) { return { kind: "fever", side: 1, tell: 0, dmg: sp.dmg, dodge: av === "dodge" ? 1 : 0, duck: av === "duck" ? 1 : 0, block: av === "block" ? 1 : 0, low: 0, kd: sp.kd, rec: 1.1 }; }
+  var FIGHTERS = [
+    {
+      name: "DISCO DANNY", short: "DANNY", card: "52 - LAS VEGAS - 3-47", meta: "AGE 52 · LAS VEGAS · RECORD 3–47 (2 KO)",
+      blurb: "Forty years on the dance floor. He still throws every punch on the beat, and he shows you each one first.",
+      sign: "DISCO", neon: [8, 37],
+      look: { skin: "skin", hair: "afro", hairMat: "afro", facial: "stache", headband: 1, goldTooth: 1, outfit: "shirt", cloth: "shirt", sleeve: "roll", chain: 1, trunks: "trunks", band: "gold", glove: "glove", sequin: 1 },
+      bpm: [0, 88, 96, 104], tell: [0, 1.5, 1.35, 1.2], dmg: [0, 0.55, 0.65, 0.75], rec: [0, 1.5, 1.35, 1.2],
+      idle: [0, [3, 0.4], [2, 0.5], [2, 0.3]], take: 1.35, stun: [0, 1.4, 1.2, 1.1], combo: [0, 6, 5, 5], dizzyMul: 1.3, quickP: 0.1, glint: 0,
+      tables: [0, [["jab", 46], ["hook", 30], ["taunt", 24]],
+                  [["jab", 36], ["hook", 24], ["up", 16], ["taunt", 10], ["fever", 14]],
+                  [["jab", 30], ["jabjab", 8], ["hook", 22], ["up", 18], ["taunt", 6], ["fever", 16]]],
+      opener: ["jabA", "jabA", "jabB", "hookB", "taunt", "hookA"], reup: [0, 0, ["jabB", "upA", "fever"], ["jabA", "hookB", "fever"]],
+      spCD: [10, 16], getHp: [70, 50], mash: [6, 4], coach: { jab: [2, 3], hook: [1, 2], upper: [2, 1], special: 2 },
+      special: {
+        name: "FEVER HOOK", breakName: "FEVER BREAK!", avoid: ["duck"], breakZone: "low", dmg: 20, kd: 0,
+        pose: function (fs, o, dip) {
+          var k;
+          switch (fs) {
+            case 0: P.by = -7; P.exp = "shout"; G2(33, 41, 8, 47, 41, 8); break;
+            case 1: P.by = -3; P.exp = "shout"; P.bx = 2; G2(24, 10, 7, 54, 64, 8); break;
+            case 2: P.bx = -10; P.by = dip - 2; P.exp = "grin"; G2(26, 58 + dip * 2, 8, 44, 64 - dip * 2, 8); break;
+            case 3: P.bx = 10; P.by = dip - 2; P.exp = "grin"; G2(36, 64 - dip * 2, 8, 54, 58 + dip * 2, 8); break;
+            case 4: P.bx = 6; P.exp = "grin"; k = ease(o.t / Math.max(0.05, o.dur)); G2(33, 42, 8, lerp(54, 66, k), lerp(50, 36, k), lerp(8, 7, k)); break;
+            case 5: P.bx = -3; P.exp = "shout"; k = easeOut(o.t / 0.1); G2(33, 42, 8, lerp(66, 30, k), lerp(36, 56, k), lerp(7, 20, k)); break;
+            default: P.bx = -4; P.by = 2; P.exp = "oops"; G2(24, 62, 8, 52, 64, 8);
+          }
+        }
+      },
+      lines: { intro: "LET'S DANCE!", taunt: ["SHOW ME WHATCHA GOT", "FEEL THE GROOVE"], hit: ["WHOO!", "HA HA!", "GROOVY!"], psych: "PSYCH!", enough: "ENOUGH!", hey: "HEY!",
+               start: "C'MON!", open: "OW!", mid: "BOOGIE!", armor: "CAN'T STOP!", whoa: "WHOA!", up2: "NOW IT'S A PARTY!", up3: "FEVER TIME!", down: "WHOO!", still: "STILL GOT IT?", win: "STAYIN' ALIVE!", lose: "DANNY KEEPS DANCING" }
+    },
+    {
+      name: "IRON IVAN", short: "IVAN", card: "38 - PITTSBURGH - 12-9", meta: "AGE 38 · PITTSBURGH · RECORD 12–9 (11 KO)",
+      blurb: "Swings like a wrecking ball and takes about as long to wind up. His uppercut goes straight through a block.",
+      sign: "IRON", neon: [7, 36],
+      look: { skin: "skinL", build: "heavy", hair: "buzz", hairMat: "steel", facial: "stubble", scar: 1, stern: 1, outfit: "track", cloth: "steel", trim: "red", sleeve: "long", glove: "ktank" },
+      bpm: [0, 96, 104, 112], tell: [0, 1.25, 1.15, 1.05], dmg: [0, 0.78, 0.88, 0.98], rec: [0, 1.25, 1.1, 1.0],
+      idle: [0, [2, 0.6], [2, 0.3], [1, 0.6]], take: 1.2, stun: [0, 1.15, 1.0, 0.9], combo: [0, 5, 5, 4], dizzyMul: 1.15, quickP: 0.2, glint: 0,
+      tables: [0, [["jab", 40], ["hook", 24], ["up", 24], ["taunt", 12]],
+                  [["jab", 30], ["jabjab", 10], ["hook", 20], ["up", 22], ["taunt", 6], ["fever", 12]],
+                  [["jab", 26], ["jabjab", 14], ["hook", 18], ["up", 22], ["taunt", 5], ["fever", 15]]],
+      opener: ["jabA", "upB", "jabB", "hookA", "taunt"], reup: [0, 0, ["jabB", "hookA", "fever"], ["jabA", "upB", "fever"]],
+      spCD: [14, 18], getHp: [75, 55], mash: [8, 5], coach: { upper: [1, 1], special: 1 },
+      special: {
+        name: "HAMMER DROP", breakName: "HAMMER JAM!", avoid: ["dodge"], breakZone: "low", dmg: 34, kd: 0,
+        pose: function (fs, o, dip) {
+          var k;
+          switch (fs) {
+            case 0: P.by = -4; P.exp = "shout"; G2(33, 41, 8, 47, 41, 8); break;
+            case 1: P.by = -6; P.exp = "shout"; G2(28, 6, 7, 52, 6, 7); break;
+            case 2: P.bx = -5; P.by = dip * 2; P.exp = "grin"; G2(28, 8, 7, 52, 8, 7); break;
+            case 3: P.bx = 5; P.by = dip * 2; P.exp = "grin"; G2(28, 8, 7, 52, 8, 7); break;
+            case 4: k = ease(o.t / Math.max(0.05, o.dur)); P.by = -8 * k; P.exp = "shout"; G2(lerp(28, 34, k), lerp(8, 2, k), 7, lerp(52, 46, k), lerp(8, 2, k), 7); break;
+            case 5: k = easeOut(o.t / 0.1); P.by = 6 * k; P.exp = "shout"; G2(36, lerp(2, 58, k), lerp(7, 17, k), 44, lerp(2, 58, k), lerp(7, 17, k)); break;
+            default: P.by = 6; P.exp = "oops"; G2(30, 74, 8, 50, 74, 8);
+          }
+        }
+      },
+      lines: { intro: "YOU WILL BREAK.", taunt: ["IS THAT ALL?", "LIKE HITTING STEEL"], hit: ["HA!", "CRUNCH!", "TOO SLOW!"], psych: "HAH!", enough: "ENOUGH!", hey: "OOF!",
+               start: "HAMMER TIME!", open: "RRRAAH!", mid: "STOMP!", armor: "IRON!", whoa: "HUH?", up2: "NOW I AM ANGRY.", up3: "I DO NOT BEND!", down: "STAY DOWN.", still: "AGAIN?", win: "IRON NEVER BREAKS.", lose: "IVAN STANDS TALL" }
+    },
+    {
+      name: "EL COMETA", short: "COMETA", card: "29 - TIJUANA - 21-6", meta: "AGE 29 · TIJUANA · RECORD 21–6 (14 KO)",
+      blurb: "A masked showman who loves the crowd more than his guard. Watch for the fake in the last round.",
+      sign: "LUCHA", neon: [9, 38],
+      look: { skin: "skinT", hair: "mask", maskMat: "khair", trim: "gold", outfit: "bare", sleeve: "none", tattoo: 1, trunks: "khair", band: "gold", glove: "green" },
+      bpm: [0, 104, 116, 128], tell: [0, 1, 1, 1], dmg: [0, 1, 1.15, 1.3], rec: [0, 1, 0.88, 0.76],
+      idle: [0, [2, 0.4], [1, 0.5], [1, 0]], take: 1, stun: [0, 1.0, 0.85, 0.75], combo: [0, 5, 4, 4], dizzyMul: 1, quickP: 0.3, glint: 0,
+      tables: [0, [["jab", 42], ["hook", 22], ["up", 14], ["taunt", 9], ["fever", 13]],
+                  [["jab", 28], ["jabjab", 16], ["hook", 18], ["up", 18], ["taunt", 5], ["fever", 15]],
+                  [["jab", 20], ["jabjab", 12], ["hook", 14], ["up", 16], ["feint", 18], ["taunt", 4], ["fever", 16]]],
+      opener: ["jabA", "jabB", "hookB", "taunt", "upA"], reup: [0, 0, ["jabB", "hookA", "fever"], ["jabA", "upB", "fever"]],
+      spCD: [16, 18], getHp: [80, 60], mash: [10, 6], coach: { special: 1 },
+      special: {
+        name: "COMET SPIN", breakName: "COMET CRASH!", avoid: ["duck"], breakZone: "high", dmg: 34, kd: 1,
+        pose: function (fs, o, dip) {
+          var k;
+          switch (fs) {
+            case 0: P.by = -5; P.exp = "grin"; G2(33, 41, 8, 47, 41, 8); break;
+            case 1: P.by = -2; P.exp = "wink"; G2(14, 34, 7, 66, 34, 7); break;
+            case 2: P.bx = -9; P.by = dip - 2; P.exp = "grin"; G2(20, 52, 8, 40, 44, 8); break;
+            case 3: P.bx = 9; P.by = dip - 2; P.exp = "grin"; G2(40, 44, 8, 60, 52, 8); break;
+            case 4: P.bx = 8; P.exp = "grin"; k = ease(o.t / Math.max(0.05, o.dur)); G2(33, 44, 8, lerp(58, 72, k), lerp(46, 40, k), 7); break;
+            case 5: P.bx = -4; P.exp = "shout"; k = easeOut(o.t / 0.1); G2(33, 44, 8, lerp(72, 28, k), lerp(40, 52, k), lerp(7, 20, k)); break;
+            default: P.bx = -5; P.by = 2; P.exp = "oops"; G2(24, 62, 8, 50, 66, 8);
+          }
+        }
+      },
+      lines: { intro: "FOR THE CROWD!", taunt: ["OLE!", "ARE YOU WATCHING?"], hit: ["OLE!", "JA JA!", "BRAVO!"], psych: "ENGANADO!", enough: "BASTA!", hey: "AY!",
+               start: "MIRA!", open: "GRACIAS!", mid: "VUELTA!", armor: "NO PARO!", whoa: "AY AY AY!", up2: "ROUND TWO, AMIGO!", up3: "NOW THE REAL SHOW!", down: "GRACIAS!", still: "OTRA VEZ?", win: "THE COMET NEVER FALLS!", lose: "EL COMETA TAKES A BOW" }
+    },
+    {
+      name: "MASTER MANTIS", short: "MANTIS", card: "71 - SAN FRANCISCO - 40-3", meta: "AGE 71 · SAN FRANCISCO · RECORD 40–3 (9 KO)",
+      blurb: "Half his punches are lies and the sparkle shows late. He will change his rhythm just to watch you flinch.",
+      sign: "DOJO", neon: [40, 39],
+      look: { skin: "skinL", hair: "bald", hairMat: "whiteh", browMat: "whiteh", browV: 0.8, longBrow: 1, facial: "beard", stern: 1, outfit: "robe", cloth: "saffron", trim: "ktank", sleeve: "long", glove: "saffron" },
+      bpm: [0, 110, 120, 130], tell: [0, 0.92, 0.9, 0.88], dmg: [0, 1.3, 1.45, 1.6], rec: [0, 0.85, 0.75, 0.66],
+      idle: [0, [1, 0.5], [1, 0.2], [1, 0]], take: 0.84, stun: [0, 0.8, 0.7, 0.62], combo: [0, 4, 4, 3], dizzyMul: 0.9, quickP: 0.5, glint: 0.2,
+      tables: [0, [["jab", 28], ["sjab", 10], ["jabjab", 12], ["hook", 18], ["up", 14], ["feint", 12], ["taunt", 6]],
+                  [["jab", 20], ["sjab", 8], ["jabjab", 14], ["hook", 14], ["up", 14], ["feint", 15], ["taunt", 3], ["fever", 12]],
+                  [["jab", 16], ["sjab", 8], ["jabjab", 14], ["hook", 12], ["up", 14], ["feint", 19], ["taunt", 2], ["fever", 15]]],
+      opener: ["jabB", "feintA", "jabA", "hookB", "upA"], reup: [0, 0, ["sjabB", "hookA", "fever"], ["feintA", "upB", "fever"]],
+      spCD: [12, 14], getHp: [85, 65], mash: [11, 6], coach: { special: 1 },
+      special: {
+        name: "HUNDRED HANDS", breakName: "STILLNESS BROKEN!", avoid: ["block"], breakZone: "high", dmg: 30, kd: 1, strikeT: 0.3,
+        pose: function (fs, o, dip) {
+          var k, w, a;
+          switch (fs) {
+            case 0: P.by = -3; P.exp = "smug"; G2(33, 41, 8, 47, 41, 8); break;
+            case 1: P.by = 6; P.hy = 2; P.exp = "smug"; G2(36, 68, 7, 44, 68, 7); break;
+            case 2: case 3: w = o.t * (fs === 2 ? 12 : 18); P.exp = "grin"; P.by = dip; G2(40 + Math.cos(w) * 9, 50 + Math.sin(w) * 6, 8, 40 - Math.cos(w) * 9, 50 - Math.sin(w) * 6, 8); break;
+            case 4: k = ease(o.t / Math.max(0.05, o.dur)); P.exp = "shout"; G2(lerp(33, 20, k), 50, 8, lerp(47, 60, k), 50, 8); break;
+            case 5: a = (o.t * 40 | 0) & 1; P.exp = "shout"; G2(a ? 42 : 28, 56, a ? 17 : 9, a ? 52 : 38, 56, a ? 9 : 17); break;
+            default: P.by = 3; P.exp = "oops"; G2(26, 64, 8, 54, 64, 8);
+          }
+        }
+      },
+      lines: { intro: "SHOW ME YOUR SPIRIT.", taunt: ["PATIENCE, CHILD", "YOU RUSH"], hit: ["HMM.", "TOO EAGER.", "AGAIN."], psych: "A LESSON.", enough: "ENOUGH.", hey: "OH?",
+               start: "OBSERVE.", open: "BREATHE...", mid: "FLOW...", armor: "UNMOVED.", whoa: "WELL DONE.", up2: "GOOD. NOW FASTER.", up3: "NO MORE LESSONS.", down: "REST, CHILD.", still: "YOU RISE. GOOD.", win: "RETURN WHEN YOU ARE READY.", lose: "THE MASTER BOWS" }
+    },
+    {
+      name: "KING KILOWATT", short: "KING", card: "33 - CHICAGO - 31-0", meta: "AGE 33 · CHICAGO · RECORD 31–0 (31 KO)",
+      blurb: "Undefeated, and the rooftop belt is his. Fast hands, real fakes, and a finisher you have to read from his pose.",
+      sign: "KING", neon: [7, 36],
+      look: { skin: "skin", hair: "mohawk", hairMat: "whiteh", browMat: "whiteh", browV: 0.8, facial: "goatee", outfit: "bare", sleeve: "none", tattoo: 1, chain: 1, trunks: "gold", band: "purple", belt: 1, glove: "purple" },
+      bpm: [0, 118, 128, 138], tell: [0, 0.88, 0.85, 0.82], dmg: [0, 1.4, 1.6, 1.8], rec: [0, 0.8, 0.7, 0.62],
+      idle: [0, [1, 0.4], [1, 0.15], [1, 0]], take: 0.78, stun: [0, 0.78, 0.68, 0.58], combo: [0, 4, 3, 3], dizzyMul: 0.82, quickP: 0.55, glint: 0.3,
+      tables: [0, [["jab", 22], ["sjab", 10], ["jabjab", 14], ["hook", 16], ["up", 14], ["feint", 14], ["feint2", 6], ["taunt", 4]],
+                  [["jab", 18], ["sjab", 10], ["jabjab", 14], ["hook", 14], ["up", 14], ["feint", 12], ["feint2", 8], ["taunt", 2], ["fever", 8]],
+                  [["jab", 16], ["sjab", 10], ["jabjab", 14], ["hook", 12], ["up", 14], ["feint", 12], ["feint2", 10], ["taunt", 2], ["fever", 10]]],
+      opener: ["jabA", "jabB", "feintA", "upB", "hookA"], reup: [0, 0, ["jabB", "feintA", "fever"], ["sjabA", "upB", "fever"]],
+      spCD: [12, 14], getHp: [90, 70], mash: [12, 7], coach: { special: 1 },
+      special: {
+        name: "THUNDERCLAP", breakName: "SHORT CIRCUIT!", avoid: ["duck", "dodge"], breakZone: "low", dmg: 36, kd: 1,
+        tip: "<b>Thunderclap!</b> Arm out wide: <b>DUCK</b>. Fists overhead: <b>DODGE</b>. Or hit his body while he flexes.",
+        pose: function (fs, o, dip) {
+          var k, hook = o.spAvoid === "duck";
+          switch (fs) {
+            case 0: P.by = -6; P.exp = "shout"; G2(33, 41, 8, 47, 41, 8); break;
+            case 1: P.by = -3; P.exp = "grin"; G2(16, 24, 8, 64, 24, 8); break;
+            case 2: P.bx = -6; P.by = dip - 2; P.exp = "grin"; G2(22, 30, 8, 58, 30, 8); break;
+            case 3: P.bx = 6; P.by = dip - 2; P.exp = "grin"; G2(22, 30, 8, 58, 30, 8); break;
+            case 4: k = ease(o.t / Math.max(0.05, o.dur)); P.exp = "shout";
+              if (hook) { P.bx = 6; G2(33, 42, 8, lerp(54, 70, k), lerp(48, 38, k), 7); } else { P.by = -6 * k; G2(lerp(33, 36, k), lerp(41, 4, k), 7, lerp(47, 44, k), lerp(41, 4, k), 7); }
+              break;
+            case 5: k = easeOut(o.t / 0.1); P.exp = "shout";
+              if (hook) { P.bx = -3; G2(33, 42, 8, lerp(70, 28, k), lerp(38, 56, k), lerp(7, 21, k)); } else { P.by = 6 * k; G2(36, lerp(4, 58, k), lerp(7, 18, k), 44, lerp(4, 58, k), lerp(7, 18, k)); }
+              break;
+            default: P.bx = -4; P.by = 3; P.exp = "oops"; G2(24, 64, 8, 52, 66, 8);
+          }
+        }
+      },
+      lines: { intro: "KNEEL, KID.", taunt: ["THE BELT STAYS HERE", "IS THAT A SPARK?"], hit: ["ZAP!", "LIGHTS OUT!", "TOO SLOW!"], psych: "GOT YOU.", enough: "ENOUGH!", hey: "HMPH!",
+               start: "FEEL THE POWER!", open: "BEHOLD!", mid: "CHARGING!", armor: "CAN'T TOUCH ME!", whoa: "WHAT?", up2: "YOU GOT LUCKY.", up3: "FULL POWER!", down: "STAY DOWN, KID.", still: "STILL STANDING?", win: "LONG LIVE THE KING.", lose: "THE KING KEEPS HIS CROWN" }
+    }
+  ];
+  var stageIx = 0, FT = FIGHTERS[0], LOOKS = [];
+
   // ================================================================ game state
   var G = {
     mode: "title", t: 0, clock: 180, hitstop: 0, slow: 0, shake: 0, flash: 0, invert: 0, hurtFlash: 0,
@@ -778,15 +1098,14 @@
   };
   var CLOCK_RATE = 1.5;                 // the fight clock runs faster than real time, like the 16-bit classics
   var bpm = 104, beatLen = 60 / bpm, beatT = 0, beatN = 0, beatPhase = 0;
-  var PHASE_BPM = [104, 104, 116, 128];
 
   var p = { st: "idle", t: 0, side: 0, zone: "high", wind: 0, dur: 0, fired: false, blocked: false,
             health: 100, ghost: 100, superG: 0, lvl: 0, kd: 0, mash: 0, need: 0, lastHitT: -9, hurtBy: 0, aside: 0 };
   var opp = { st: "intro", t: 0, dur: 0, mv: null, feint: false, fs: 0, health: 100, ghost: 100, dizzy: 0,
               guard: "high", guardBeats: 0, bodyHits: 0, blocks: 0, flinches: 0, comboHits: 0, stunLeft: 0,
               x: 0, kd: 0, phase: 1, queue: [], idleBeats: 2, specialCD: 10, lastGetUp: -99, say: "", sayT: 0,
-              flash: 0, hitSide: 0, quick: false, armorSaid: false };
-  var blockHeld = 0, bufAct = null, bufT = 0, tipsShown = {};
+              flash: 0, hitSide: 0, quick: false, armorSaid: false, coach: null, spAvoid: "duck", spCoach: false };
+  var blockHeld = 0, bufAct = null, bufT = 0, tipsShown = {}, coachN = {};
 
   // Opponent moves. tell is in beats; cz/cs = which of your punches counters it (zone, side; 0 = either).
   var MOVES = {
@@ -798,9 +1117,9 @@
     hookB: { kind: "hook",  side: 1,  tell: 1,   dmg: 9,  dodge: 1, duck: 0, block: 1, low: 1, cz: "low",  cs: 1,  rec: 0.6 },
     upA:   { kind: "upper", side: -1, tell: 1.5, dmg: 18, dodge: 1, duck: 0, block: 0, low: 0, cz: "high", cs: 0,  rec: 0.85 },
     upB:   { kind: "upper", side: 1,  tell: 1.5, dmg: 18, dodge: 1, duck: 0, block: 0, low: 0, cz: "high", cs: 0,  rec: 0.85 },
-    fever: { kind: "fever", side: 1,  tell: 0,   dmg: 34, dodge: 0, duck: 1, block: 0, low: 0, kd: 1, rec: 1.1 }
+    sjabA: { kind: "jab",   side: -1, tell: 1.7, dmg: 12, dodge: 1, duck: 1, block: 1, low: 0, cz: "high", cs: -1, rec: 0.62 },
+    sjabB: { kind: "jab",   side: 1,  tell: 1.7, dmg: 12, dodge: 1, duck: 1, block: 1, low: 0, cz: "high", cs: 1,  rec: 0.62 }
   };
-  var OPENER = ["jabA", "jabB", "hookB", "taunt", "upA"];
 
   function say(s, sylls) { opp.say = s; opp.sayT = 1.1; sfx("voice", sylls || 2); }
   function showTip(key, html, force) {
@@ -816,9 +1135,9 @@
     G.flow = 0; G.score = 0; G.count = 0; G.plan = null; G.introT = 0; G.resT = 0; G.outcome = null; G.fightTime = 0;
     p.health = p.ghost = 100; p.superG = 0; p.kd = 0; p.aside = 0; p.lastHitT = -9; setP("idle");
     opp.health = opp.ghost = 100; opp.dizzy = 0; opp.guard = "high"; opp.guardBeats = 0; opp.bodyHits = 0; opp.blocks = 0;
-    opp.flinches = 0; opp.x = 0; opp.kd = 0; opp.phase = 1; opp.queue = OPENER.slice(); opp.idleBeats = 2; opp.specialCD = 16;
+    opp.flinches = 0; opp.x = 0; opp.kd = 0; opp.phase = 1; opp.queue = FT.opener.slice(); opp.idleBeats = 2; opp.specialCD = FT.spCD[0]; opp.coach = null; coachN = {};
     opp.lastGetUp = -99; opp.sayT = 0; opp.flash = 0; opp.armorSaid = false;
-    setBpm(PHASE_BPM[1]);
+    setBpm(FT.bpm[1]);
     for (var k = 0; k < MAXP; k++) pOn[k] = 0;
     for (k = 0; k < MAXPOP; k++) popOn[k] = 0;
     bufAct = null; tipEl.hidden = true;
@@ -840,9 +1159,10 @@
       if (--opp.idleBeats <= 0) startNextMove();
     } else if (opp.st === "fever" && opp.fs <= 3) {
       opp.fs++; opp.t = 0; dirty = true;
-      if (opp.fs === 1) { say("OW!", 1); showTip("fever", "<b>Fever time!</b> Body shot while he points, or <b>DUCK</b> the big hook."); }
-      if (opp.fs === 2) say("BOOGIE!", 3);
-      if (opp.fs === 4) { opp.dur = beatLen * 0.5; sfx("tell"); }
+      var sp = FT.special;
+      if (opp.fs === 1) { say(FT.lines.open, 1); showTip("sp" + stageIx, sp.tip || ("<b>" + sp.name + "!</b> " + (sp.breakZone === "low" ? "Hit his <b>BODY</b>" : "<b>JAB</b> his chin") + " while he's wide open, or <b>" + opp.spAvoid.toUpperCase() + "</b> the big one.")); }
+      if (opp.fs === 2) say(FT.lines.mid, 3);
+      if (opp.fs === 4) { opp.dur = beatLen * 0.5 * FT.tell[opp.phase]; sfx("tell"); }
     }
   }
 
@@ -850,9 +1170,7 @@
   function pickMove() {
     var ph = opp.phase, r = Math.random() * 100, side = Math.random() < 0.5 ? "A" : "B";
     var feverOk = opp.specialCD <= 0;
-    var table = ph === 1 ? [["jab", 42], ["hook", 22], ["up", 14], ["taunt", 9], ["fever", 13]]
-              : ph === 2 ? [["jab", 28], ["jabjab", 16], ["hook", 18], ["up", 18], ["taunt", 5], ["fever", 15]]
-              :            [["jab", 20], ["jabjab", 12], ["hook", 14], ["up", 16], ["feint", 18], ["taunt", 4], ["fever", 16]];
+    var table = FT.tables[ph], other = side === "A" ? "B" : "A";
     for (var n = 0; n < table.length; n++) {
       r -= table[n][1];
       if (r < 0) {
@@ -860,7 +1178,8 @@
         if (k === "fever" && !feverOk) return "jab" + side;
         if (k === "jabjab") { opp.queue.push("qjab" + (side === "A" ? "B" : "A")); return "jab" + side; }
         if (k === "feint") return "feint" + side;
-        if (k === "jab" || k === "hook" || k === "up") return k + side;
+        if (k === "feint2") { opp.queue.push("qjab" + other); return "feint" + side; }
+        if (k === "jab" || k === "hook" || k === "up" || k === "sjab") return k + side;
         return k;
       }
     }
@@ -869,20 +1188,42 @@
   function startNextMove() {
     var name = opp.queue.length ? opp.queue.shift() : pickMove();
     opp.flinches = 0;
-    if (name === "taunt") { setOpp("taunt", 1.5); say(Math.random() < 0.5 ? "SHOW ME WHATCHA GOT" : "FEEL THE GROOVE", 4); return; }
-    if (name === "fever") { setOpp("fever", 0); opp.fs = 0; opp.mv = MOVES.fever; opp.specialCD = 18; opp.armorSaid = false; say("C'MON!", 2); return; }
+    opp.coach = null;
+    if (name === "taunt") { setOpp("taunt", 1.5); say(FT.lines.taunt[Math.random() * FT.lines.taunt.length | 0], 4); return; }
+    if (name === "fever") {
+      var sp = FT.special;
+      opp.spAvoid = sp.avoid[Math.random() * sp.avoid.length | 0];
+      setOpp("fever", 0); opp.fs = 0; opp.mv = spMove(sp, opp.spAvoid); opp.specialCD = FT.spCD[1]; opp.armorSaid = false; say(FT.lines.start, 2);
+      coachN.special = (coachN.special || 0) + 1;
+      opp.spCoach = !!FT.coach && coachN.special <= (FT.coach.special || 0);
+      return;
+    }
     var feint = false;
     if (name.indexOf("feint") === 0) { feint = true; name = "jab" + name.slice(5); }
     startMove(MOVES[name], feint);
   }
   function startMove(mv, feint) {
     opp.mv = mv; opp.feint = feint;
-    setOpp("tell", Math.max(0.2, mv.tell * beatLen - 0.09));
+    setOpp("tell", Math.max(0.2, mv.tell * FT.tell[opp.phase] * beatLen - 0.09));
+    // coaching: the first few times each punch comes, the buttons that answer it light up
+    var cc = FT.coach && FT.coach[mv.kind];
+    if (cc && !feint) {
+      var cn = coachN[mv.kind] = (coachN[mv.kind] || 0) + 1;
+      if (cn <= cc[0]) {
+        opp.coach = { cls: "hintD", acts: mv.kind === "jab" ? ["dodgeL", "dodgeR", "duck"] : ["dodgeL", "dodgeR"] };
+        showTip("cDef" + mv.kind, mv.kind === "jab" ? "Here comes a jab. Tap a <b>glowing button</b> to get out of the way."
+          : mv.kind === "hook" ? "A body hook. <b>DODGE</b> it, or stand still and you'll block it." : "An uppercut goes through a block. <b>DODGE</b> it.");
+      } else if (cn <= cc[0] + cc[1]) {
+        opp.coach = { cls: "hintC", acts: mv.cz === "high" ? (mv.cs < 0 ? ["jabL"] : mv.cs > 0 ? ["jabR"] : ["jabL", "jabR"]) : (mv.cs < 0 ? ["bodyL"] : mv.cs > 0 ? ["bodyR"] : ["bodyL", "bodyR"]) };
+        showTip("cCtr", "Now beat him to it. Tap the <b>glowing punch</b> while he winds up to <b>COUNTER</b>.");
+      }
+    }
     if (mv.kind === "upper") { sfx("tell"); say("HUP!", 1); }
   }
   function afterMove() {
     setOpp("idle");
-    opp.idleBeats = opp.phase === 1 ? 2 + (Math.random() < 0.4 ? 1 : 0) : opp.phase === 2 ? 1 + (Math.random() < 0.5 ? 1 : 0) : 1;
+    var ib = FT.idle[opp.phase];
+    opp.idleBeats = ib[0] + (Math.random() < ib[1] ? 1 : 0);
   }
 
   function updOpp(dt) {
@@ -891,7 +1232,7 @@
     switch (opp.st) {
       case "tell":
         if (opp.t >= opp.dur) {
-          if (opp.feint) { say("PSYCH!", 2); afterMove(); opp.idleBeats = 1; }
+          if (opp.feint) { say(FT.lines.psych, 2); afterMove(); opp.idleBeats = 1; }
           else setOpp("strike", 0.09);
         }
         break;
@@ -916,7 +1257,7 @@
         break;
       case "fever":
         if (opp.fs === 4 && opp.t >= opp.dur) { opp.fs = 5; opp.t = 0; dirty = true; }
-        else if (opp.fs === 5 && opp.t >= 0.1) finishAttack(MOVES.fever);
+        else if (opp.fs === 5 && opp.t >= (FT.special.strikeT || 0.1)) finishAttack(opp.mv);
         else if (opp.fs === 6 && opp.t >= opp.dur) afterMove();
         break;
       case "dizzy":
@@ -933,10 +1274,11 @@
     if (mv.duck && p.st === "duck" && p.t > 0.02 && p.t < 0.4) { res = "avoid"; perfect = p.t < 0.2; }
     else if (mv.dodge && p.st === "dodge" && p.t > 0.02 && p.t < 0.36) { res = "avoid"; perfect = p.t < 0.18; }
     else if (mv.block && (p.st === "idle" && (blockHeld > 0 || mv.low))) res = "block";
+    if (res === "block" && mv.kind === "fever") { res = "avoid"; pop("BLOCK", 60, 92, 43, 1, 0.6); sfx("block"); }
 
     if (res === "avoid") {
-      var rec = mv.rec * (opp.phase === 1 ? 1 : opp.phase === 2 ? 0.88 : 0.76) * (perfect ? 1.45 : 1);
-      if (mv.kind === "fever") { opp.fs = 6; opp.t = 0; opp.dur = rec; dirty = true; say("WHOA!", 2); }
+      var rec = mv.rec * FT.rec[opp.phase] * (perfect ? 1.45 : 1);
+      if (mv.kind === "fever") { opp.fs = 6; opp.t = 0; opp.dur = rec; dirty = true; say(FT.lines.whoa, 2); }
       else setOpp("recover", rec);
       sfx(perfect ? "slip" : "whiff");
       if (perfect) {
@@ -952,7 +1294,7 @@
       return;
     }
     // Hit.
-    var mult = opp.phase === 1 ? 1 : opp.phase === 2 ? 1.15 : 1.3;
+    var mult = FT.dmg[opp.phase];
     p.health -= mv.dmg * mult; p.lastHitT = G.t; p.hurtBy = mv.side;
     G.flow = 0; p.superG = Math.max(0, p.superG - 1);
     G.shake = 8; G.hurtFlash = 0.35; sfx("phit"); buzz(45);
@@ -960,12 +1302,12 @@
     if (mv.kind === "upper") showTip("upperHit", "Uppercuts smash through blocks. <b>DODGE</b> them.");
     else if (mv.kind === "hook") showTip("hookHit", "Body hooks: stand still to <b>auto-block</b>, or <b>DODGE</b>.");
     else if (mv.kind === "jab") showTip("jabHit", "Jabs: <b>DODGE</b>, <b>DUCK</b> or hold <b>BLOCK</b>.");
-    else if (mv.kind === "fever") showTip("feverHit", "<b>DUCK</b> the Fever Hook. Dodging won't save you.");
+    else if (mv.kind === "fever") showTip("spHit" + stageIx + opp.spAvoid, opp.spAvoid === "block" ? "Hold <b>BLOCK</b> through the " + FT.special.name + "." : "<b>" + opp.spAvoid.toUpperCase() + "</b> the " + FT.special.name + ". Nothing else will save you.");
     if (mv.kind === "fever") { opp.fs = 7; }
     if (p.health <= 0 || mv.kd) { p.health = Math.max(0, p.health); knockdownPlayer(); return; }
     setP("hurt");
     afterMove();
-    if (Math.random() < 0.35) say(["WHOO!", "HA HA!", "GROOVY!"][Math.random() * 3 | 0], 2);
+    if (Math.random() < 0.35) say(FT.lines.hit[Math.random() * FT.lines.hit.length | 0], 2);
   }
 
   // ================================================================ Kid Volt's punches
@@ -985,7 +1327,7 @@
   }
   function score(n) { G.score += Math.round(n * (1 + G.flow * 0.5)); }
   function hurtOpp(dmg, side) {
-    opp.health -= dmg; opp.flash = 0.1; opp.hitSide = side; dirty = true;
+    opp.health -= dmg * FT.take; opp.flash = 0.1; opp.hitSide = side; dirty = true;
     if (opp.health <= 0) { opp.health = 0; knockdownOpp("hp"); return true; }
     return false;
   }
@@ -1011,8 +1353,8 @@
       var mv = o.mv;
       if (!o.feint && (isSuper || (zone === mv.cz && (mv.cs === 0 || mv.cs === side)))) {
         var perfect = o.t < o.dur * 0.45;
-        setOpp("stunned", 0); o.stunLeft = [0, 1.0, 0.85, 0.75][o.phase]; o.comboHits = 0;
-        o.dizzy += 28 + (isSuper ? 25 : 0) + (perfect ? 6 : 0);
+        setOpp("stunned", 0); o.stunLeft = FT.stun[o.phase]; o.comboHits = 0;
+        o.dizzy += (28 + (isSuper ? 25 : 0) + (perfect ? 6 : 0)) * FT.dizzyMul;
         G.hitstop = isSuper ? 10 : 5; G.flash = 2; G.shake = 4;
         sfx(isSuper ? "super" : "counter"); buzz(30);
         pop(perfect ? "PERFECT READ" : "COUNTER!", 60, 24, perfect ? 9 : 7, 2, 0.9);
@@ -1027,8 +1369,8 @@
       return;
     }
     if (o.st === "fever") {
-      if (o.fs === 1 && (zone === "low" || isSuper)) {
-        landFx(side, "low", true); sfx("counter"); pop("FEVER BREAK!", 60, 24, 8, 2, 1.1);
+      if (o.fs === 1 && (zone === FT.special.breakZone || isSuper)) {
+        landFx(side, FT.special.breakZone, true); sfx("counter"); pop(FT.special.breakName, 60, 24, 8, 2, 1.1);
         addFlow(2); score(300); o.health = Math.max(1, o.health - 20); knockdownOpp("fever");
         return;
       }
@@ -1036,7 +1378,7 @@
       if (o.fs >= 6) { cleanHit(side, zone, isSuper, lvl); return; }
       // Mid-routine: he takes the hit but can't stop the boogie.
       sfx("hit"); landFx(side, zone, false); addSuper(0.08); score(10);
-      if (!o.armorSaid) { o.armorSaid = true; say("CAN'T STOP!", 2); }
+      if (!o.armorSaid) { o.armorSaid = true; say(FT.lines.armor, 2); }
       hurtOpp(isSuper ? dmgSuper : 3, side);
       return;
     }
@@ -1046,7 +1388,7 @@
       if ((zone === "high" && o.guard === "high") || (zone === "low" && o.guard === "low")) { blockedByOpp(false); return; }
       cleanHit(side, zone, false, 0);
       if (zone === "low") {
-        if (++o.bodyHits >= 3) { o.bodyHits = 0; o.guard = "low"; o.guardBeats = 3; say("HEY!", 1); dirty = true; }
+        if (++o.bodyHits >= 3) { o.bodyHits = 0; o.guard = "low"; o.guardBeats = 3; say(FT.lines.hey, 1); dirty = true; }
       } else { o.guard = "high"; o.bodyHits = 0; }
       return;
     }
@@ -1055,7 +1397,7 @@
   function cleanHit(side, zone, isSuper, lvl) {
     var o = opp, dmg;
     if (o.st === "stunned") {
-      if (!isSuper && ++o.comboHits > [0, 5, 4, 4][o.phase]) { blockedByOpp(false); say("ENOUGH!", 2); return; }
+      if (!isSuper && ++o.comboHits > FT.combo[o.phase]) { blockedByOpp(false); say(FT.lines.enough, 2); return; }
       o.stunLeft = Math.min(o.stunLeft + 0.16, 0.9);
       dmg = isSuper ? [0, 12, 22, 36][lvl] : 3;
       o.dizzy += isSuper ? 25 * lvl : 3;
@@ -1063,7 +1405,7 @@
     } else if (o.st === "idle") {
       dmg = isSuper ? [0, 12, 22, 36][lvl] : (zone === "low" ? 2.5 : 4);
       o.dizzy += isSuper ? 25 * lvl : 2;
-      if (++o.flinches >= 3) { o.flinches = 0; o.quick = Math.random() < 0.5; setOpp("block", 0.25); }
+      if (++o.flinches >= 3) { o.flinches = 0; o.quick = Math.random() < Math.min(0.8, FT.quickP * 1.6); setOpp("block", 0.25); }
       else setOpp("flinch", 0.22);
     } else {
       dmg = isSuper ? [0, 12, 22, 36][lvl] : (o.st === "taunt" ? 6 : 4.5);
@@ -1090,7 +1432,7 @@
     if (opp.st === "idle" || opp.st === "block") {
       opp.blocks++;
       if (opp.blocks >= 2) showTip("blocked", "He guards his face. Go to the <b>BODY</b>, or wait for a <b>sparkle</b>.");
-      if (feint || Math.random() < 0.3) { opp.quick = true; setOpp("block", 0.12); }
+      if (feint || Math.random() < FT.quickP) { opp.quick = true; setOpp("block", 0.12); }
       else setOpp("block", 0.18);
     } else if (feint) {
       showTip("feint", "No sparkle means it's a <b>fake</b>. Wait for the shine.");
@@ -1108,16 +1450,16 @@
     var quick = type !== "fever" && opp.lastGetUp > 0 && (G.t - opp.lastGetUp) < 4;
     if (opp.kd >= 3) G.plan = { end: "TKO" };
     else if (quick || (type === "supernova" && opp.kd >= 2)) G.plan = { end: "KO" };
-    else G.plan = { getUp: (opp.kd === 1 ? 4 : 6) + (type === "dizzy" || type === "fever" ? 2 : 0) + (Math.random() < 0.5 ? 1 : 0), hp: opp.kd === 1 ? 80 : 60 };
+    else G.plan = { getUp: (opp.kd === 1 ? 4 : 6) + (type === "dizzy" || type === "fever" ? 2 : 0) + (Math.random() < 0.5 ? 1 : 0), hp: FT.getHp[opp.kd === 1 ? 0 : 1] };
     setP("idle"); bufAct = null;
     showTip("oppDown", "He's down! <b>Mash any button</b> to pump yourself back up.");
   }
   function knockdownPlayer() {
     p.kd++; setP("down"); G.mode = "playerDown"; G.count = 0; G.countT = -1.0;
-    p.mash = 0; p.need = 10 + p.kd * 6; bufAct = null;
+    p.mash = 0; p.need = FT.mash[0] + p.kd * FT.mash[1]; bufAct = null;
     G.shake = 12; G.hurtFlash = 0.6; buzz([60, 40, 90]);
     pop("DOWN!", 60, 24, 14, 3, 1.3); cheer(0.2, 1.5);
-    setOpp("celebrate", 0); say("WHOO!", 2);
+    setOpp("celebrate", 0); say(FT.lines.down, 2);
     showTip("playerDown", "<b>Mash buttons</b> to get up before ten!", true);
   }
   function endFight(kind) {
@@ -1129,31 +1471,49 @@
       score(Math.max(0, Math.round(G.clock)) * 20 + 2000);
       for (var n = 0; n < 60; n++) spawn(n % 5, rnd(1.2, 2.2), rnd(10, 110), rnd(-10, 10), rnd(-20, 20), rnd(10, 40), 30);
     } else {
-      setOpp("celebrate", 0); say("STAYIN' ALIVE!", 4); sfx("bell", 3); sfx("sad");
+      setOpp("celebrate", 0); say(FT.lines.win, 4); sfx("bell", 3); sfx("sad");
     }
     tipEl.hidden = true;
   }
   function showResult() {
-    var o = G.outcome, tm = fmtClock(o.time);
+    var o = G.outcome, tm = fmtClock(o.time), last = stageIx === FIGHTERS.length - 1, nx = FIGHTERS[stageIx + 1];
     var rt = document.getElementById("rTitle");
     rt.textContent = o.win ? o.kind + "!" : (o.kind === "TIME" ? "TIME!" : "DOWN");
     rt.className = o.win ? "win" : "lose";
-    document.getElementById("rKicker").textContent = o.win ? "STAGE 1 CLEAR" : "DANNY KEEPS DANCING";
+    document.getElementById("rKicker").textContent = o.win ? (last ? "ROOFTOP CHAMPION" : "STAGE " + (stageIx + 1) + " CLEAR") : FT.lines.lose;
     document.getElementById("rLine").textContent = o.win
-      ? "Kid Volt def. Disco Danny by " + o.kind + " in " + tm
-      : (o.kind === "TIME" ? "Time ran out. Danny wins on the judges' cards." : "Disco Danny wins by " + (o.kind === "TKO_LOSS" ? "TKO" : "KO") + " at " + tm);
+      ? "Kid Volt def. " + titleCase(FT.name) + " by " + o.kind + " in " + tm
+      : (o.kind === "TIME" ? "Time ran out. " + titleCase(FT.short) + " wins on the judges' cards." : titleCase(FT.name) + " wins by " + (o.kind === "TKO_LOSS" ? "TKO" : "KO") + " at " + tm);
     var grade = !o.win ? "-" : o.time < 50 ? "SUPERB" : o.time < 80 ? "V.GOOD" : o.time < 115 ? "GOOD" : "OK";
     document.getElementById("rGrade").textContent = grade;
     document.getElementById("rScore").textContent = G.score.toLocaleString();
     var best = loadBest();
     if (o.win && (best === null || o.time < best)) { best = o.time; saveBest(best); }
+    if (o.win && prog < stageIx + 1) { prog = stageIx + 1; saveProg(); }
     document.getElementById("rBest").textContent = best === null ? "-" : fmtClock(best);
-    document.getElementById("againBtn").textContent = o.win ? "FIGHT AGAIN" : "REMATCH";
+    var nextBtn = document.getElementById("nextBtn"), againBtn = document.getElementById("againBtn");
+    nextBtn.hidden = !(o.win && nx);
+    if (nx) nextBtn.textContent = "NEXT: " + nx.short;
+    againBtn.textContent = o.win ? "FIGHT AGAIN" : "REMATCH";
+    againBtn.className = nextBtn.hidden ? "go" : "ghost";
+    document.getElementById("rNext").innerHTML = o.win ? (nx ? "NEXT ON THE ROOFTOP: " + nx.name : "THE ROOFTOP BELT IS YOURS") : "TIP: " + LOSE_TIPS[stageIx];
     document.getElementById("result").hidden = false;
   }
+  var LOSE_TIPS = [
+    "WATCH HIS GLOVES. GET OUT OF THE WAY FIRST, PUNCH SECOND.",
+    "HIS UPPERCUT GOES THROUGH A BLOCK. DODGE IT, THEN HIT HIM WHILE HE RESETS.",
+    "PUNCH THE SPARKLE DURING HIS WIND-UP. COUNTERS ARE HOW YOU WIN THIS ONE.",
+    "NO SPARKLE MEANS A FAKE. WAIT FOR THE SHINE BEFORE YOU SWING.",
+    "READ HIS POSE ON THE THUNDERCLAP: ARM WIDE, DUCK. FISTS UP, DODGE."
+  ];
+  function titleCase(t) { return t.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); }
   function fmtClock(s) { s = Math.max(0, Math.ceil(s)); return (s / 60 | 0) + ":" + ("0" + (s % 60)).slice(-2); }
-  function loadBest() { try { var v = localStorage.getItem("kidvolt.best"); return v === null ? null : +v; } catch (e) { return null; } }
-  function saveBest(v) { try { localStorage.setItem("kidvolt.best", String(v)); } catch (e) { /* storage blocked */ } }
+  function bestKey() { return "kidvolt.best" + (stageIx ? stageIx : ""); }
+  function loadBest() { try { var v = localStorage.getItem(bestKey()); return v === null ? null : +v; } catch (e) { return null; } }
+  function saveBest(v) { try { localStorage.setItem(bestKey(), String(v)); } catch (e) { /* storage blocked */ } }
+  var prog = 0;                                  // how many opponents are beaten; the next one is unlocked
+  try { prog = Math.min(FIGHTERS.length, +(localStorage.getItem("kidvolt.prog") || 0) || 0); } catch (e) { prog = 0; }
+  function saveProg() { try { localStorage.setItem("kidvolt.prog", String(prog)); } catch (e) { /* storage blocked */ } }
 
   // ================================================================ input
   function press(act) {
@@ -1217,6 +1577,26 @@
     btn.addEventListener("lostpointercapture", up);
     btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   });
+  var hintEls = {}, hintKey = "", AVOID_ACTS = { duck: ["duck"], dodge: ["dodgeL", "dodgeR"], block: ["block"] };
+  Array.prototype.forEach.call(btns, function (b) { hintEls[b.getAttribute("data-act")] = b; });
+  function setHints(acts, cls) {
+    var key = acts ? cls + acts.join() : "";
+    if (key === hintKey) return;
+    hintKey = key;
+    for (var a in hintEls) hintEls[a].classList.remove("hintD", "hintC");
+    if (acts) acts.forEach(function (a2) { if (hintEls[a2]) hintEls[a2].classList.add(cls); });
+  }
+  function coachHints() {
+    var acts = null, cls = "hintD", o = opp;
+    if (G.mode === "fight" && !G.paused) {
+      if (o.st === "tell" && !o.feint && o.coach) { acts = o.coach.acts; cls = o.coach.cls; }
+      else if (o.st === "fever" && o.spCoach) {
+        if (o.fs === 1) { acts = FT.special.breakZone === "low" ? ["bodyL", "bodyR"] : ["jabL", "jabR"]; cls = "hintC"; }
+        else if (o.fs >= 2 && o.fs <= 5) acts = AVOID_ACTS[o.spAvoid];
+      } else if (o.st === "dizzy" && FT.coach && FT.coach.jab && Math.abs(o.x) <= 6 && o.t > 0.4) { acts = ["jabL", "jabR"]; cls = "hintC"; }
+    }
+    setHints(acts, cls);
+  }
   stage.addEventListener("pointerdown", function (e) {
     if (e.target === screen && (G.mode === "oppDown" || G.mode === "playerDown")) { e.preventDefault(); press("mash"); }
   });
@@ -1303,15 +1683,7 @@
         G2(40 + Math.cos(w) * 7, 58 + Math.sin(w) * 4, 8, 40 - Math.cos(w) * 7, 58 - Math.sin(w) * 4, 8);
         break;
       case "fever":
-        switch (o.fs) {
-          case 0: P.by = -7; P.exp = "shout"; G2(33, 41, 8, 47, 41, 8); break;
-          case 1: P.by = -3; P.exp = "shout"; P.bx = 2; G2(24, 10, 7, 54, 64, 8); break;
-          case 2: P.bx = -10; P.by = dip - 2; P.exp = "grin"; G2(26, 58 + dip * 2, 8, 44, 64 - dip * 2, 8); break;
-          case 3: P.bx = 10; P.by = dip - 2; P.exp = "grin"; G2(36, 64 - dip * 2, 8, 54, 58 + dip * 2, 8); break;
-          case 4: P.bx = 6; P.exp = "grin"; k = ease(o.t / Math.max(0.05, o.dur)); G2(33, 42, 8, lerp(54, 66, k), lerp(50, 36, k), lerp(8, 7, k)); break;
-          case 5: P.bx = -3; P.exp = "shout"; k = easeOut(o.t / 0.1); G2(33, 42, 8, lerp(66, 30, k), lerp(36, 56, k), lerp(7, 20, k)); break;
-          default: P.bx = -4; P.by = 2; P.exp = "oops"; G2(24, 62, 8, 52, 64, 8); break;
-        }
+        FT.special.pose(o.fs, o, dip);
         break;
       case "dizzy":
         P.exp = "dazed"; P.hx = Math.round(Math.sin(o.t * 9) * 2); P.by = 2;
@@ -1330,130 +1702,287 @@
     }
   }
 
-  function drawFace(hx, hy, exp) {
-    var L = hx - 4, R = hx + 3;
-    // sideburns
-    for (var y = hy - 3; y <= hy + 2; y++) { sp(hx - 8, y, 19); sp(hx + 7, y, 19); }
-    // brows
-    if (exp === "grin" || exp === "shout") { sp(L - 1, hy - 4, 19); sp(L, hy - 3, 19); sp(L + 1, hy - 3, 19); sp(R + 2, hy - 4, 19); sp(R + 1, hy - 3, 19); sp(R, hy - 3, 19); }
-    else if (exp === "oops" || exp === "hurt") { sp(L - 1, hy - 3, 19); sp(L, hy - 4, 19); sp(L + 1, hy - 4, 19); sp(R, hy - 4, 19); sp(R + 1, hy - 4, 19); sp(R + 2, hy - 3, 19); }
-    else { sp(L - 1, hy - 3, 19); sp(L, hy - 3, 19); sp(L + 1, hy - 3, 19); sp(R, hy - 3, 19); sp(R + 1, hy - 3, 19); sp(R + 2, hy - 3, 19); }
-    // eyes
-    if (exp === "dazed") {
-      sp(L - 1, hy - 2, 0); sp(L + 1, hy - 2, 0); sp(L, hy - 1, 0); sp(L - 1, hy, 0); sp(L + 1, hy, 0);
-      sp(R, hy - 2, 0); sp(R + 2, hy - 2, 0); sp(R + 1, hy - 1, 0); sp(R, hy, 0); sp(R + 2, hy, 0);
-    } else if (exp === "hurt") {
-      sp(L - 1, hy - 2, 0); sp(L, hy - 1, 0); sp(L - 1, hy, 0); sp(R + 2, hy - 2, 0); sp(R + 1, hy - 1, 0); sp(R + 2, hy, 0);
-    } else if (exp === "grin" || exp === "smug") {
-      sp(L - 1, hy - 1, 0); sp(L, hy - 1, 0); sp(L + 1, hy - 1, 0); sp(R, hy - 1, 0); sp(R + 1, hy - 1, 0); sp(R + 2, hy - 1, 0);
-    } else if (exp === "wink") {
-      sp(L - 1, hy - 1, 10); sp(L, hy - 1, 0); sp(L, hy - 2, 0); sp(R, hy - 1, 0); sp(R + 1, hy - 1, 0); sp(R + 2, hy - 1, 0);
+  // Opponents share one rig: anatomy first (traps, shoulder caps, chest, abs or belly, lats tapering
+  // to the waist), then hair, face and clothes from a look config. Drawn in a 240x280 design space,
+  // 14px lower in play.
+  function X(s, dx) { return 120 + s * dx; }
+  var DAN_Y = 14, HEAD_Y = 45, RIB_Y = 88;
+  var FX = 120, FY = 75, FRX = 18.5, FRY = 22.5;
+  var EXPS = ["norm", "grin", "smug", "shout", "oops", "hurt", "wink", "dazed"];
+  function buildLook(c) {
+    var sk = c.skin, heavy = c.build === "heavy", hm = c.hairMat || "afro", cl = c.cloth, tr = c.trim || "gold";
+    var L = { skin: sk, glove: c.glove || "glove", sleeve: c.sleeve || "none", cloth: cl, trim: tr, sequin: !!c.sequin, bounce: c.hair === "afro" };
+    var fx = FX, fy = FY, rx = FRX, ry = FRY;
+    // behind the head
+    L.back = mkList(function (F) {
+      if (c.hair === "afro") F(gBumpy(120, 57, 38, 13, 5, 7), hm, [120, 57, 43]);
+      if (c.hair === "mohawk") F([106, 62, 103, 36, 110, 42, 113, 20, 120, 32, 127, 16, 130, 38, 137, 30, 134, 62], hm, [114, 36, 26]);
+    });
+    L.torso = mkList(function (F, V, S) {
+      if (c.outfit === "robe") F(gEll(120, 114, 38, 13, 0), cl, [110, 108, 34]);
+      var tor = heavy
+        ? gPath(["M", 78, 123, "L", 162, 123, "Q", 173, 150, 168, 174, "Q", 166, 194, 158, 206, "L", 157, 216, "L", 83, 216, "L", 82, 206, "Q", 74, 194, 72, 174, "Q", 67, 150, 78, 123])
+        : gPath(["M", 78, 123, "L", 162, 123, "Q", 169, 146, 161, 161, "Q", 150, 182, 148, 199, "L", 150, 216, "L", 90, 216, "L", 92, 199, "Q", 90, 182, 79, 161, "Q", 71, 146, 78, 123]);
+      F(tor, sk, [110, 150, 60]);
+      F(gPath(["M", 107, 98, "Q", 101, 114, 78, 123, "L", 162, 123, "Q", 139, 114, 133, 98]), sk, [112, 112, 34], false);
+      F([108, 86, 132, 86, 134, 121, 106, 121], sk, [116, 104, 20], false);
+      S([110, 102, 117, 121], sk, 0.3, 1); S([130, 102, 123, 121], sk, 0.3, 1);
+      S(gPath(["M", 118, 123, "Q", 104, 119, 86, 123]), sk, 0.9, 1.3); S(gPath(["M", 122, 123, "Q", 136, 119, 154, 123]), sk, 0.9, 1.3);
+      var low = heavy ? 159 : 153;
+      [-1, 1].forEach(function (s) {
+        F(gPath(["M", 120, 125, "Q", X(s, 16), 121, X(s, 37), 127, "Q", X(s, 44), 140, X(s, 37), low - 2, "Q", X(s, 18), low + 6, 120, low]), sk, [X(s, 20) - 5, 134, 27], false);
+        S(gPath(["M", X(s, 39), low - 4, "Q", X(s, 20), low + 7, 120, low + 1]), sk, 0.08, 1.5);
+      });
+      S([120, 127, 120, low - 1], sk, 0.2, 1.1);
+      if (heavy) {
+        F(gEll(120, 186, 40, 30, 0), sk, [108, 174, 46], false);
+        S(gPath(["M", 84, 196, "Q", 120, 222, 156, 196]), sk, 0.1, 1.4);
+        V(gEll(120, 192, 2, 2.6, 0), sk, 0.02);
+        S(gPath(["M", 92, 164, "Q", 98, 172, 94, 180]), sk, 0.25, 1); S(gPath(["M", 148, 164, "Q", 142, 172, 146, 180]), sk, 0.25, 1);
+      } else {
+        [162, 174, 186].forEach(function (y, i) { [-1, 1].forEach(function (s) { F(gEll(X(s, 8), y, 7 - i * 0.4, 5, 0), sk, [X(s, 8) - 2, y - 2, 9], false); }); });
+        S([120, 156, 120, 196], sk, 0.15, 1.1); S([107, 168, 133, 168], sk, 0.22, 0.9); S([108, 180, 132, 180], sk, 0.22, 0.9);
+        [-1, 1].forEach(function (s) {
+          [0, 1, 2].forEach(function (k) { S([X(s, 36 - k * 2), 160 + k * 8, X(s, 27 - k * 2), 165 + k * 8], sk, 0.22, 1); });
+          S(gPath(["M", X(s, 22), 190, "Q", X(s, 18), 200, X(s, 10), 208]), sk, 0.2, 1.1);
+        });
+      }
+      if (c.tattoo) V([X(-1, 24), 130, X(-1, 34), 141, X(-1, 28), 141, X(-1, 33), 152, X(-1, 19), 138, X(-1, 25), 138], "gold", 0.8);
+      // clothes over the torso
+      if (c.outfit === "shirt" || c.outfit === "robe") {
+        [-1, 1].forEach(function (s) {
+          F(gPath(["M", X(s, 12), 105, "L", X(s, 46), 121, "Q", X(s, heavy ? 55 : 51), 146, X(s, heavy ? 48 : 43), 161, "Q", X(s, heavy ? 44 : 31), 183, X(s, heavy ? 38 : 29), 200, "L", X(s, 4), 200, "Q", X(s, 17), 160, X(s, 12), 124]), cl, [X(s, 30) - 7, 138, 46]);
+          S(gPath(["M", X(s, 43), 150, "Q", X(s, 32), 156, X(s, 21), 170]), cl, 0.1, 1.2);
+          S(gPath(["M", X(s, 41), 166, "Q", X(s, 31), 174, X(s, 17), 186]), cl, 0.1, 1.2);
+          S(gPath(["M", X(s, 36), 184, "Q", X(s, 28), 190, X(s, 14), 196]), cl, 0.12, 1.1);
+          S(gPath(["M", X(s, 34), 126, "Q", X(s, 38), 138, X(s, 33), 150]), cl, 0.92, 1.4);
+          if (c.outfit === "shirt") { F([X(s, 9), 101, X(s, 34), 106, X(s, 43), 138, X(s, 14), 124], cl, [X(s, 24) - 2, 116, 16]); S([X(s, 14), 124, X(s, 43), 138], cl, 0.1, 1); }
+          else F(gPath(["M", X(s, 9), 103, "L", X(s, 23), 108, "Q", X(s, 24), 150, X(s, 13), 200, "L", X(s, 3), 200, "Q", X(s, 15), 160, X(s, 10), 122]), tr, [X(s, 16) - 4, 130, 40]);
+        });
+      }
+      if (c.outfit === "track") {
+        F(tor, cl, [108, 146, 62]);
+        F([106, 104, 134, 104, 120, 152], sk, [116, 112, 26]);
+        V([heavy ? 73 : 79, 156, heavy ? 167 : 161, 156, heavy ? 168 : 160, 164, heavy ? 72 : 80, 164], "cuff", 1);
+        V([heavy ? 73 : 79, 159, heavy ? 167 : 161, 159, heavy ? 167 : 161, 161, heavy ? 73 : 79, 161], tr, 0.5);
+        [-1, 1].forEach(function (s) {
+          F([X(s, 9), 101, X(s, 21), 97, X(s, 24), 118, X(s, 3), 151, X(s, 0), 148], cl, [X(s, 14) - 3, 112, 22]);
+          S(gPath(["M", X(s, 44), 172, "Q", X(s, 34), 178, X(s, 22), 190]), cl, 0.1, 1.2);
+        });
+        S([120, 151, 120, 200], "cuff", 1, 1.6); V(gEll(120, 152, 2, 2, 0), "gold", 0.8);
+      }
+      if (c.chain) { S(gPath(["M", 108, 112, "Q", 120, 142, 132, 112]), "gold", 0.75, 2); F(gEll(120, 133, 4.5, 4.5, 0), "gold", [119, 132, 6]); }
+      if (c.towel) [-1, 1].forEach(function (s) {
+        F([X(s, 8), 100, X(s, 24), 106, X(s, 31), 164, X(s, 17), 166, X(s, 12), 122], "cuff", [X(s, 20) - 4, 126, 34]);
+        S([X(s, 18), 159, X(s, 30), 157], "band", 0.5, 1.2);
+      });
+      // waist down
+      var ww = heavy ? 37 : 30, wy = heavy ? 190 : 197;
+      if (c.outfit === "track") {
+        V([X(-1, ww), wy + 1, X(1, ww), wy + 1, X(1, ww), wy + 14, X(-1, ww), wy + 14], cl, 0.12, true);
+        for (var rxn = -ww + 6; rxn < ww; rxn += 8) S([120 + rxn, wy + 3, 120 + rxn, wy + 13], cl, 0.5, 0.8);
+        F([X(-1, ww), wy + 14, X(1, ww), wy + 14, X(1, ww + 7), 262, 123, 262, 120, 248, 117, 262, X(-1, ww + 7), 262], cl, [108, wy + 26, 44]);
+        [-1, 1].forEach(function (s) { S([X(s, ww - 3), wy + 15, X(s, ww + 3), 262], "cuff", 1, 2); });
+      } else if (c.outfit === "robe") {
+        [-1, 1].forEach(function (s) {
+          F([X(s, 29), 198, X(s, 5), 198, X(s, 9), 262, X(s, 40), 262], cl, [X(s, 22) - 6, 220, 36]);
+          F([X(s, 12), 198, X(s, 3), 198, X(s, 6), 262, X(s, 15), 262], tr, [X(s, 8) - 2, 220, 30]);
+        });
+        F([89, 193, 151, 193, 151, 205, 89, 205], tr, [108, 196, 34]);
+        F([112, 203, 122, 203, 126, 236, 114, 238], tr, [116, 214, 16]);
+      } else {
+        F([X(-1, ww), wy + 8, X(1, ww), wy + 8, X(1, ww + 7), 262, 123, 262, 120, 246, 117, 262, X(-1, ww + 7), 262], c.trunks, [108, wy + 22, 44]);
+        S(gPath(["M", X(-1, ww - 6), wy + 14, "Q", 104, wy + 28, 98, 262]), c.trunks, 0.9, 1.2); S(gPath(["M", X(1, ww - 10), wy + 14, "Q", 140, wy + 30, 146, 262]), c.trunks, 0.1, 1.2);
+        [-1, 1].forEach(function (s) { S([X(s, ww - 3), wy + 10, X(s, ww + 3), 262], "cuff", 1, 2.6); });
+        F([X(-1, ww + 1), wy, X(1, ww + 1), wy, X(1, ww + 1), wy + 12, X(-1, ww + 1), wy + 12], c.band, [108, wy + 3, 36]);
+        if (c.belt) {
+          F([102, wy - 4, 138, wy - 4, 142, wy + 6, 138, wy + 16, 102, wy + 16, 98, wy + 6], "gold", [114, wy + 2, 22]);
+          V(gEll(120, wy + 6, 6, 6, 0), "band", 0.5); V(gEll(118.5, wy + 4.5, 2, 1.6, 0), "white", 1);
+        } else { V([110, wy + 2, 130, wy + 2, 130, wy + 10, 110, wy + 10], "cuff", 1); S([113, wy + 6, 127, wy + 6], "band", 0.5, 1.4); }
+      }
+    });
+    L.head = mkList(function (F, V, S) {
+      var mask = c.hair === "mask", hd = gPath(["M", fx - rx, fy - 4, "Q", fx - rx, fy - ry, fx, fy - ry, "Q", fx + rx, fy - ry, fx + rx, fy - 4, "Q", fx + rx * 0.98, fy + ry * 0.62, fx + rx * 0.5, fy + ry * 0.93, "Q", fx, fy + ry * 1.1, fx - rx * 0.5, fy + ry * 0.93, "Q", fx - rx * 0.98, fy + ry * 0.62, fx - rx, fy - 4]);
+      if (!mask) {
+        F(gEll(fx - rx, fy + 0.08 * ry, 0.25 * rx, 0.32 * ry, 0), sk, [fx - rx - 2, fy, 8]);
+        F(gEll(fx + rx, fy + 0.08 * ry, 0.25 * rx, 0.32 * ry, 0), sk, [fx + rx - 2, fy, 8]);
+      }
+      F(hd, mask ? c.maskMat : sk, [fx - 5, fy - 6, 25]);
+      if (c.hair === "afro") V(gBumpy(fx, fy - ry * 0.95, rx * 1.15, 9, 3, 3), hm, 0.45);
+      if (c.hair === "buzz") F([fx - rx * 1.03, fy - ry * 0.3, fx - rx * 0.98, fy - ry * 0.8, fx - rx * 0.55, fy - ry * 1.07, fx + rx * 0.55, fy - ry * 1.07, fx + rx * 0.98, fy - ry * 0.8, fx + rx * 1.03, fy - ry * 0.3, fx + rx * 0.84, fy - ry * 0.56, fx, fy - ry * 0.66, fx - rx * 0.84, fy - ry * 0.56], hm, [fx - 5, fy - ry * 0.9, 22], false);
+      if (c.hair === "bald") V(gEll(fx - 5, fy - ry * 0.72, 5.5, 2.4, -0.3), sk, 1);
+      if (c.hair === "mohawk") {
+        V([fx - rx * 1.02, fy - ry * 0.3, fx - rx * 0.9, fy - ry * 0.85, fx - rx * 0.3, fy - ry * 1.02, fx - rx * 0.36, fy - ry * 0.6], sk, 0.28);
+        V([fx + rx * 1.02, fy - ry * 0.3, fx + rx * 0.9, fy - ry * 0.85, fx + rx * 0.3, fy - ry * 1.02, fx + rx * 0.36, fy - ry * 0.6], sk, 0.28);
+        F([fx - 6, fy - ry * 0.56, fx - 7, fy - ry * 1.0, fx, fy - ry * 1.14, fx + 7, fy - ry * 1.0, fx + 6, fy - ry * 0.56], hm, [fx - 2, fy - ry, 12], false);
+      }
+      if (mask) {
+        S([fx, fy - ry * 0.98, fx, fy - ry * 0.36], tr, 0.8, 2);
+        [-1, 1].forEach(function (sd) {
+          V([fx + sd * 0.08 * rx, fy - 0.3 * ry, fx + sd * 0.86 * rx, fy - 0.62 * ry, fx + sd * 0.98 * rx, fy - 0.2 * ry, fx + sd * 0.5 * rx, fy - 0.36 * ry], tr, 0.7);
+          V(gEll(fx + sd * 0.38 * rx, fy - 0.08 * ry, 0.34 * rx, 0.25 * ry, -sd * 0.2), sk, 0.5);
+          S([fx + sd * 0.7 * rx, fy + 0.5 * ry, fx + sd * 0.3 * rx, fy + 0.95 * ry], tr, 0.6, 1);
+        });
+        V(gEll(fx, fy + 0.62 * ry, 0.46 * rx, 0.26 * ry, 0), sk, 0.45);
+        V(gEll(fx, fy + 0.2 * ry, 0.17 * rx, 0.1 * ry, 0), c.maskMat, 0.1);
+      } else {
+        [-1, 1].forEach(function (sd) {
+          if (c.hair === "afro") V([fx + sd * rx, fy - ry * 0.35, fx + sd * rx * 0.72, fy - ry * 0.35, fx + sd * rx * 0.7, fy + ry * 0.42, fx + sd * rx * 0.88, fy + ry * 0.35], hm, 0.4);
+          if (c.hair === "buzz") V([fx + sd * rx, fy - ry * 0.35, fx + sd * rx * 0.8, fy - ry * 0.35, fx + sd * rx * 0.82, fy + ry * 0.08, fx + sd * rx * 0.95, fy + ry * 0.04], hm, 0.3);
+          S(gPath(["M", fx + sd * 0.2 * rx, fy + 0.26 * ry, "Q", fx + sd * 0.5 * rx, fy + 0.4 * ry, fx + sd * 0.55 * rx, fy + 0.62 * ry]), sk, 0.3, 0.9);
+        });
+        V(gEll(fx, fy + 0.2 * ry, 0.17 * rx, 0.1 * ry, 0), sk, 0.15); V(gEll(fx - 0.03 * rx, fy + 0.14 * ry, 0.07 * rx, 0.05 * ry, 0), sk, 0.95);
+        if (c.facial === "stubble") V(gPath(["M", fx - rx * 0.9, fy + ry * 0.36, "Q", fx - rx * 0.6, fy + ry * 0.96, fx, fy + ry * 1.04, "Q", fx + rx * 0.6, fy + ry * 0.96, fx + rx * 0.9, fy + ry * 0.36, "Q", fx + rx * 0.5, fy + ry * 0.5, fx, fy + ry * 0.46, "Q", fx - rx * 0.5, fy + ry * 0.5, fx - rx * 0.9, fy + ry * 0.36]), sk, 0.3);
+        if (c.scar) S([fx + 0.5 * rx, fy - 0.5 * ry, fx + 0.62 * rx, fy + 0.2 * ry], sk, 0.98, 1);
+      }
+      if (c.headband) {
+        F([fx - rx * 1.06, fy - ry * 0.62, fx + rx * 1.06, fy - ry * 0.62, fx + rx * 1.04, fy - ry * 0.4, fx - rx * 1.04, fy - ry * 0.4], "band", [fx - 4, fy - ry * 0.6, rx * 1.3]);
+        S([fx - rx * 1.02, fy - ry * 0.51, fx + rx * 1.02, fy - ry * 0.51], "white", 1, 1.2);
+      }
+    });
+    // one list per expression: beard (if any), brows, eyes, mouth, then moustache
+    L.face = {};
+    EXPS.forEach(function (exp) {
+      L.face[exp] = mkList(function (F, V, S) {
+        var mask = c.hair === "mask", ey = fy - 0.08 * ry, my = fy + 0.56 * ry, mw = 0.5 * rx, bm = c.browMat || hm;
+        if (c.facial === "beard") F(gPath(["M", fx - rx * 0.86, fy + ry * 0.3, "Q", fx - rx * 0.95, fy + ry * 1.2, fx - rx * 0.3, fy + ry * 2.0, "L", fx, fy + ry * 2.5, "L", fx + rx * 0.3, fy + ry * 2.0, "Q", fx + rx * 0.95, fy + ry * 1.2, fx + rx * 0.86, fy + ry * 0.3, "Q", fx + rx * 0.4, fy + ry * 0.5, fx, fy + ry * 0.46, "Q", fx - rx * 0.4, fy + ry * 0.5, fx - rx * 0.86, fy + ry * 0.3]), bm, [fx - 5, fy + ry * 0.9, 30]);
+        if (c.facial === "goatee") V([fx - 5, my + 7, fx + 5, my + 7, fx + 3.4, my + 14, fx, my + 16, fx - 3.4, my + 14], bm, 0.5);
+        [-1, 1].forEach(function (sd) {
+          var ex = fx + sd * 0.38 * rx, bIn, bOut;                // brow height at the nose end and the temple end
+          if (exp === "shout" || exp === "norm") { bIn = 0.2; bOut = 0.42; }
+          else if (exp === "oops" || exp === "hurt" || exp === "dazed") { bIn = 0.46; bOut = 0.3; }
+          else { bIn = 0.34; bOut = 0.44; }
+          if (!mask) {
+            V([fx + sd * 0.74 * rx, fy - bOut * ry, fx + sd * 0.14 * rx, fy - bIn * ry, fx + sd * 0.16 * rx, fy - (bIn - 0.1) * ry, fx + sd * 0.76 * rx, fy - (bOut - 0.11) * ry], bm, c.browV || 0);
+            if (c.longBrow) S(gPath(["M", fx + sd * 0.7 * rx, fy - (bOut - 0.05) * ry, "Q", fx + sd * 1.25 * rx, fy - bOut * ry, fx + sd * 1.3 * rx, fy + 0.2 * ry]), bm, 0.9, 1.7);
+          }
+          var winkEye = exp === "wink" && sd < 0;
+          if (exp === "dazed") { S([ex - 3, ey - 3, ex + 3, ey + 3], "eye", 0, 1.2); S([ex + 3, ey - 3, ex - 3, ey + 3], "eye", 0, 1.2); }
+          else if (exp === "hurt") { S([ex - sd * 3.5, ey - 3, ex + sd * 2.5, ey, ex - sd * 3.5, ey + 3], "eye", 0, 1.2); }
+          else if (exp === "grin" || winkEye) { S(gPath(["M", ex - 4, ey + 1, "Q", ex, ey - 4, ex + 4, ey + 1]), "eye", 0, 1.7); }
+          else {
+            var big = exp === "shout" || exp === "oops" ? 1.25 : 1;
+            V(gEll(ex, ey, 0.22 * rx * big, 0.15 * ry * big, 0), "white", 1);
+            V(gEll(ex + sd * 0.4, ey + 0.2, 0.1 * rx, 0.1 * rx, 0), "eye", 0);
+            if (exp === "smug" || (mask && exp === "norm")) V([ex - 5, ey - 5, ex + 5, ey - 5, ex + 5, ey - (exp === "smug" ? 0.6 : 2), ex - 5, ey - (exp === "smug" ? 0.6 : 2)], sk, 0.35);
+          }
+        });
+        if (exp === "shout" || exp === "oops" || exp === "dazed") {
+          var oh = exp === "oops" ? 4.5 : 7, ow = exp === "oops" ? 4.5 : 7;
+          V(gEll(fx, my + 4, ow, oh, 0), "mouth", 0);
+          if (exp !== "oops") { V([fx - 5, my - 1.5, fx + 5, my - 1.5, fx + 4.4, my + 1, fx - 4.4, my + 1], "white", 1); V(gEll(fx + (exp === "dazed" ? 2 : 0), my + 8, 4, 2.4, 0), "trunks", 0.6); }
+        } else if (exp === "hurt") {
+          V([fx - 7, my, fx + 7, my, fx + 6, my + 5.5, fx - 6, my + 5.5], "mouth", 0);
+          V([fx - 6, my + 1, fx + 6, my + 1, fx + 5.2, my + 4.4, fx - 5.2, my + 4.4], "white", 1);
+          S([fx - 2, my + 1, fx - 2, my + 4.4], "mouth", 0, 1); S([fx + 2, my + 1, fx + 2, my + 4.4], "mouth", 0, 1);
+        } else if (exp === "smug" || (c.stern && exp === "norm")) {
+          if (exp === "smug") S(gPath(["M", fx - 6, my + 3, "Q", fx + 2, my + 6, fx + 8, my]), "mouth", 0, 1.7);
+          else S(gPath(["M", fx - 6, my + 4, "Q", fx, my + 2, fx + 6, my + 4]), "mouth", 0, 1.7);
+        } else {
+          var wide = exp === "norm" ? 0.86 : 1.05;
+          V(gPath(["M", fx - mw * wide, my, "Q", fx, my + 0.36 * ry * (exp === "norm" ? 0.8 : 1.15), fx + mw * wide, my]), "mouth", 0);
+          V([fx - mw * 0.86 * wide, my + 0.2, fx + mw * 0.86 * wide, my + 0.2, fx + mw * 0.7 * wide, my + 0.1 * ry, fx - mw * 0.7 * wide, my + 0.1 * ry], "white", 1);
+          if (c.goldTooth) V([fx + mw * 0.15, my + 0.2, fx + mw * 0.42, my + 0.2, fx + mw * 0.4, my + 0.1 * ry, fx + mw * 0.17, my + 0.1 * ry], "gold", 0.8);
+        }
+        if (c.facial === "stache" || c.facial === "beard") V(gPath(["M", fx - 0.62 * rx, my + 0.06 * ry, "Q", fx - 0.5 * rx, my - 0.2 * ry, fx, my - 0.12 * ry, "Q", fx + 0.5 * rx, my - 0.2 * ry, fx + 0.62 * rx, my + 0.06 * ry, "Q", fx + 0.45 * rx, my - 0.04 * ry, fx, my - 0.01 * ry, "Q", fx - 0.45 * rx, my - 0.04 * ry, fx - 0.62 * rx, my + 0.06 * ry]), bm, c.facial === "beard" ? 0.9 : 0.35);
+      });
+    });
+    return L;
+  }
+  var LOOK = null;
+
+  // One arm: sleeve (rolled, long or none), forearm, glove. gr is the glove radius; a big glove is a
+  // punch coming at the camera, so the arm behind it foreshortens.
+  function oppArm(side, sx, sy, gx, gy, gr) {
+    var l1 = 46, l2 = 40, k = gr / 15, sk = MAT[LOOK.skin], cl = MAT[LOOK.cloth], gm = MAT[LOOK.glove], long = LOOK.sleeve === "long", roll = LOOK.sleeve === "roll";
+    var wx = gx, wy = gy;
+    solveHint(sx, sy, wx, wy, l1, l2, sx + side * 12, sy + 42);
+    var ex = IK.ex, ey = IK.ey, fdx = gx - ex, fdy = gy - ey, fl = Math.sqrt(fdx * fdx + fdy * fdy) || 1, ux = fdx / fl, uy = fdy / fl;
+    wx = gx - ux * gr * 0.85; wy = gy - uy * gr * 0.85;
+    var mx = (sx + ex) / 2, my = (sy + ey) / 2, ang = Math.atan2(ey - sy, ex - sx) - Math.PI / 2;
+    if (long) {
+      rFill(gLimb(sx, sy, ex, ey, 15, 13.5), cl, sx - 4, sy + 12, 30, 0, true);
     } else {
-      sp(L - 1, hy - 1, 10); sp(L, hy - 1, 0); sp(L, hy - 2, 0); sp(R + 1, hy - 1, 10); sp(R, hy - 1, 0); sp(R, hy - 2, 0);
+      rFill(gLimb(sx, sy, ex, ey, 12.5, 10.5), sk, sx - 4, sy + 14, 28, 0, true);
+      rFill(gEll(mx - side, my - 2, 10.5, 15, ang), sk, mx - 5, my - 6, 17, 0, false);
+      if (roll) {
+        var cx = sx + (ex - sx) * 0.55, cy = sy + (ey - sy) * 0.55;
+        rFill(gLimb(sx, sy, cx, cy, 14.5, 14), cl, sx - 4, sy + 8, 26, 0, true);
+        rFill(gLimb(sx + (ex - sx) * 0.52, sy + (ey - sy) * 0.52, sx + (ex - sx) * 0.62, sy + (ey - sy) * 0.62, 14.6, 14.6), cl, cx - 8, cy - 8, 16, 0, true);
+      }
     }
-    // nose
-    sp(hx - 1, hy + 1, 16); sp(hx, hy + 1, 16); sp(hx - 1, hy, 18);
-    // mouth under the moustache
-    if (exp === "shout" || exp === "oops") { for (var mx = hx - 2; mx <= hx + 1; mx++) { sp(mx, hy + 4, 0); sp(mx, hy + 5, 0); sp(mx, hy + 6, mx < hx ? 0 : 8); } }
-    else if (exp === "grin" || exp === "wink" || exp === "smug") { for (mx = hx - 3; mx <= hx + 2; mx++) { sp(mx, hy + 4, 10); sp(mx, hy + 5, 0); } sp(hx - 4, hy + 3, 0); sp(hx + 3, hy + 3, 0); }
-    else if (exp === "hurt" || exp === "dazed") { sp(hx - 1, hy + 4, 0); sp(hx, hy + 4, 0); sp(hx - 2, hy + 5, 0); sp(hx + 1, hy + 5, 0); sp(hx - 1, hy + 6, 0); sp(hx, hy + 6, 0); if (exp === "dazed") sp(hx, hy + 7, 8); }
-    else { sp(hx - 2, hy + 5, 0); sp(hx - 1, hy + 5, 0); sp(hx, hy + 5, 0); sp(hx + 1, hy + 5, 0); }
-    // disco moustache
-    for (mx = hx - 4; mx <= hx + 3; mx++) sp(mx, hy + 3, 19);
-    sp(hx - 4, hy + 4, 19); sp(hx + 3, hy + 4, 19); sp(hx - 3, hy + 2, 19); sp(hx + 2, hy + 2, 19);
+    // shoulder cap
+    if (long || roll) {
+      rFill(gEll(sx + side, sy + 1, 13.5, 16, side * 0.28), cl, sx - 5, sy - 7, 22, 0, true);
+      rStroke(gPath(["M", sx - side * 10, sy - 12, "Q", sx - side * 14, sy + 2, sx - side * 9, sy + 15]), cl, 0.12, 1.2);
+    } else {
+      rFill(gEll(sx + side, sy + 1, 15, 17.5, side * 0.28), sk, sx - 5, sy - 7, 22, 0, true);
+      rFill(gEll(sx - 3, sy - 7, 5, 3, -0.5), sk, 0, 0, 0, 1, false);
+    }
+    // forearm
+    if (fl > gr * 0.9) {
+      if (long) {
+        rFill(gLimb(ex, ey, wx, wy, 13.5, 10.5 * Math.max(1, k * 0.8)), cl, ex - 5, ey - 12, 26, 0, true);
+        rFill(gLimb(ex + (wx - ex) * 0.8, ey + (wy - ey) * 0.8, wx, wy, 11, 11 * Math.max(1, k * 0.8)), MAT[LOOK.trim], wx - 3, wy - 3, 12, 0, true);
+      } else {
+        rFill(gLimb(ex, ey, wx, wy, 11, 7.5 * Math.max(1, k * 0.8)), sk, ex - 4, ey - 12, 24, 0, true);
+        var bx = ex + (wx - ex) * 0.3, by = ey + (wy - ey) * 0.3;
+        rFill(gEll(bx, by, 8.5, 11.5, Math.atan2(wy - ey, wx - ex) - Math.PI / 2), sk, bx - 4, by - 5, 13, 0, false);
+      }
+    }
+    // glove: taped cuff, mitt, thumb on the inside, a seam and a highlight
+    rFill(gLimb(wx - ux * 2, wy - uy * 2, wx + ux * 5, wy + uy * 5, gr * 0.6, gr * 0.66), MAT.cuff, wx - 3, wy - 3, gr, 0, true);
+    rFill(gEll(gx + ux * 2, gy + uy * 2, gr, gr * 0.94, Math.atan2(uy, ux)), gm, gx, gy, gr * 1.2, 0, true);
+    rFill(gEll(gx - side * gr * 0.72, gy + gr * 0.28, gr * 0.36, gr * 0.5, side * 0.3), gm, gx - side * gr * 0.7 - 2, gy, gr * 0.7, 0, true);
+    rStroke(gPath(["M", gx - side * gr * 0.2, gy - gr * 0.75, "Q", gx + side * gr * 0.25, gy, gx - side * gr * 0.1, gy + gr * 0.8]), gm, 0.1, 1.1);
+    rFill(gEll(gx - gr * 0.3, gy - gr * 0.45, gr * 0.26, gr * 0.15, -0.6), gm, 0, 0, 0, 1, false);
   }
 
   function drawOpp() {
-    tgt(oppSpr, OW, OH); oppSpr.fill(EMPTY);
-    if (opp.st === "down" || opp.st === "ko") { drawOppLying(); return; }
+    sprBegin(oppSpr, oppBB);
+    var lying = opp.st === "down" || opp.st === "ko";
     oppPose();
-    var bx = P.bx, by = P.by, cx = 40 + bx, hx = cx + P.hx, hy = 30 + by + P.hy, x, y;
-    // afro
-    ellipse(hx, hy - 7, 14, 12, 19, 20, 20, -1);
-    for (var n = 0; n < CURLS.length; n += 2) sp(hx + CURLS[n] * 12, hy - 7 + CURLS[n + 1] * 10, (n & 2) ? 19 : 17);
-    // neck, torso, belly
-    capsule(cx, hy + 6, cx, 48 + by, 4.5, 16, 17, 18);
-    ellipse(cx, 64 + by, 15, 17, 16, 17, 18, -1);
-    ellipse(cx, 74 + by, 12.5, 9, 16, 17, 18, -1);
-    // pecs + navel + chest hair
-    for (x = 3; x <= 9; x++) { sp(cx - x, 60 + by + (x > 7 ? 1 : 0), 16); sp(cx + x - 1, 60 + by + (x > 7 ? 1 : 0), 16); }
-    sp(cx, 74 + by, 16); sp(cx - 1, 55 + by, 19); sp(cx + 1, 57 + by, 19); sp(cx, 59 + by, 19);
-    // sequined trunks
-    for (y = 80 + by; y < 100; y++) {
-      var row = y - (80 + by), half = 15 + row * 0.15;
-      for (x = Math.floor(cx - half); x <= Math.ceil(cx + half); x++) {
-        var nx = (x + 0.5 - cx) / half; if (nx < -1 || nx > 1) continue;
-        var c = row < 3 ? (row === 1 ? 9 : 43) : ramp3(-0.5 * nx + 0.62 * Math.sqrt(1 - nx * nx), x, y, 24, 25, 26);
-        if (row >= 3 && ((x * 7 + y * 13 + beatN * 5) % 29) === 0) c = 10;
-        if (row > 12 && Math.abs(x - cx) < 1) c = 24;
-        sp(x, y, c);
-      }
-    }
-    // shoulders
-    ellipse(cx - 14, 50 + by, 6.5, 6, 16, 17, 18, -1);
-    ellipse(cx + 14, 50 + by, 6.5, 6, 16, 17, 18, -1);
-    // gold chain + medallion
-    for (x = 0; x <= 6; x++) { sp(cx - 7 + x, 52 + by + x, (x & 1) ? 6 : 9); sp(cx + 7 - x, 52 + by + x, (x & 1) ? 6 : 9); }
-    sp(cx - 1, 59 + by, 9); sp(cx, 59 + by, 9); sp(cx - 1, 60 + by, 6); sp(cx, 60 + by, 10);
-    // head
-    ellipse(hx - 8, hy + 1, 2, 2.5, 16, 17, 18, -1); ellipse(hx + 8, hy + 1, 2, 2.5, 16, 17, 18, -1);
-    ellipse(hx, hy, 8, 9, 16, 17, 18, -1);
-    // afro fringe over the forehead
-    for (x = -7; x <= 7; x++) { sp(hx + x, hy - 7, 19); if (Math.abs(x) > 3 || (x & 1)) sp(hx + x, hy - 6, 20); }
-    drawFace(hx, hy, P.exp);
-    // arms: fixed-length bones. A punch thrown at the camera foreshortens the arm (it points at us),
-    // it never stretches. The punching shoulder cocks back on the tell and drives forward on the strike.
+    if (lying) {
+      // flat on the canvas: the same figure turned on its side, head to the right
+      P.bx = 0; P.by = 0; P.hx = 0; P.hy = 1; P.exp = "dazed"; G2(26, 34, 8, 54, 30, 8);
+      setG(0, 0.6, -0.8, 0, 236, 128, 0.8);
+    } else setG(1, 0, 0, 1, 0, 0, 1);
+    var bx = P.bx * 2, by = P.by * 2 + DAN_Y, hx = bx + P.hx * 2, hy = by + P.hy * 2;
+    setT(hx, hy + (LOOK.bounce && !lying && beatPhase < 0.12 ? 2 : 0)); runList(LOOK.back);      // an afro lands a touch late on each beat
+    setT(bx, by); runList(LOOK.torso);
+    setT(hx, hy); runList(LOOK.head); runList(LOOK.face[P.exp] || LOOK.face.norm);
+    setT(0, 0);
+    // arms: the punching shoulder cocks back on the tell and drives forward on the strike
     var twA = 0, twB = 0, ms = opp.mv ? opp.mv.side : 0;
-    if (opp.st === "tell" && !opp.feint) { if (ms < 0) twA = -1; else twB = -1; }
-    if (opp.st === "strike") { if (ms < 0) twA = 1; else twB = 1; }
-    if (opp.st === "fever" && opp.fs === 4) twB = -1.5;
-    if (opp.st === "fever" && opp.fs === 5) twB = 1.5;
-    var sAx = cx - 14 + twA * 3, sAy = 50 + by - twA * 2 + (twA > 0 ? 4 : 0), sBx = cx + 14 - twB * 3, sBy = 50 + by - twB * 2 + (twB > 0 ? 4 : 0);
-    var gAx = P.ax + bx, gAy = P.ay + by, gBx = P.bxg + bx, gBy = P.byg + by;
-    if (P.ar > P.br) { armB(); armA(); } else { armA(); armB(); }
-    function arm(sx2, sy2, gx, gy, gr) {
-      var dx = gx - sx2, dy = gy - sy2, d = Math.sqrt(dx * dx + dy * dy), l1 = 13, l2 = 12;
-      if (gr > 10) { var f = clamp((d + 1) / (l1 + l2), 0.3, 1); l1 *= f; l2 *= f; }
-      solveArm(sx2, sy2, gx, gy, l1, l2, cx);
-      capsule(sx2, sy2, IK.ex, IK.ey, 4, 16, 17, 18); capsule(IK.ex, IK.ey, IK.hx, IK.hy, 3.4, 16, 17, 18);
-      glove(IK.hx, IK.hy, gr, IK.ex, IK.ey, 21, 22, 23, 44);
+    if (!lying) {
+      if (opp.st === "tell" && !opp.feint) { if (ms < 0) twA = -1; else twB = -1; }
+      if (opp.st === "strike") { if (ms < 0) twA = 1; else twB = 1; }
+      if (opp.st === "fever" && opp.fs === 4) twB = -1.5;
+      if (opp.st === "fever" && opp.fs === 5) twB = 1.5;
     }
-    function armA() { arm(sAx, sAy, gAx, gAy, P.ar); }
-    function armB() { arm(sBx, sBy, gBx, gBy, P.br); }
-  }
-  function drawOppLying() {
-    // Flat on the canvas: torso across, afro to the right, gloves up.
-    var by = 70;
-    capsule(18, by + 12, 30, by + 14, 5, 24, 25, 26);
-    ellipse(40, by + 10, 18, 7, 16, 17, 18, -1);
-    ellipse(64, by + 4, 11, 9, 19, 20, 20, -1);
-    ellipse(60, by + 7, 7, 6, 16, 17, 18, -1);
-    sp(58, by + 5, 0); sp(60, by + 5, 0); sp(59, by + 6, 0); sp(58, by + 7, 0); sp(60, by + 7, 0);
-    for (var x = 55; x <= 61; x++) sp(x, by + 9, 19);
-    capsule(30, by + 6, 26, by - 6, 3.4, 16, 17, 18); glove(26, by - 8, 7, 30, by + 6, 21, 22, 23, 44);
-    capsule(48, by + 6, 52, by - 4, 3.4, 16, 17, 18); glove(52, by - 6, 7, 48, by + 6, 21, 22, 23, 44);
+    var sAx = 72 + bx + twA * 6, sAy = 129 + by - twA * 4 + (twA > 0 ? 8 : 0), sBx = 168 + bx - twB * 6, sBy = 129 + by - twB * 4 + (twB > 0 ? 8 : 0);
+    var gAx = (P.ax + P.bx) * 2 + 40, gAy = (P.ay + P.by) * 2 + 40, gBx = (P.bxg + P.bx) * 2 + 40, gBy = (P.byg + P.by) * 2 + 40;
+    if (P.ar > P.br) { oppArm(1, sBx, sBy, gBx, gBy, P.br * 1.85); oppArm(-1, sAx, sAy, gAx, gAy, P.ar * 1.85); }
+    else { oppArm(-1, sAx, sAy, gAx, gAy, P.ar * 1.85); oppArm(1, sBx, sBy, gBx, gBy, P.br * 1.85); }
+    setG(1, 0, 0, 1, 0, 0, 1);
+    rimLight(oppSpr, oppBB);
+    if (!LOOK.sequin) return;
+    // sequins on the shirt catch the light, a new set every beat
+    var s0 = MAT[LOOK.cloth][0], s1 = MAT[LOOK.cloth][MAT[LOOK.cloth].length - 1];
+    for (var y = oppBB.y0; y <= oppBB.y1; y++) for (var x = oppBB.x0, r = y * W2; x <= oppBB.x1; x++) {
+      var c = oppSpr[r + x];
+      if (c >= s0 && c <= s1 && ((x * 7 + y * 13 + beatN * 5) % 53) === 0) oppSpr[r + x] = c === s1 ? 10 : s1;
+    }
   }
 
   // ================================================================ Kid Volt rig (seen from behind)
-  // Arms are two bones of fixed length. A glove can never travel further than the arm reaches,
+  // Arms are two bones that may foreshorten but never stretch (solveHint). A glove cannot travel further than the arm reaches,
   // so to land a punch the whole body has to lunge in: forward reads as up the screen and a
   // touch smaller, with the torso leaning and the shoulders turning into the shot.
-  var UA = 18, FA = 17;                          // upper arm, forearm (pixels at scale 1)
-  var FACE_Y = 50, BODY_Y = 84;                  // Danny's face and ribs on screen (world y)
+  var FACE_Y = 50, BODY_Y = 84;                  // the opponent's face and ribs on screen (world y)
   var REST_X = 60, REST_Y = 114;                 // Kid's neck base at rest
   var K = { nx: 60, ny: 114, hipX: 60, s: 1, tw: 0, roll: 0, hx: 0, hy: 0, lx: 0, ly: 0, rx: 0, ry: 0, gr: 7.5, front: 0, torso: 44 };
   var IK = { ex: 0, ey: 0, hx: 0, hy: 0 };
-  // Two-bone IK: elbow bends away from the body's centre line. Out-of-reach targets are clamped.
-  function solveArm(sx, sy, tx, ty, l1, l2, centreX) {
-    var dx = tx - sx, dy = ty - sy, d = Math.sqrt(dx * dx + dy * dy) || 0.001, maxd = l1 + l2 - 0.01, mind = Math.abs(l1 - l2) + 2;
-    if (d > maxd) { tx = sx + dx / d * maxd; ty = sy + dy / d * maxd; d = maxd; }
-    if (d < mind) { tx = sx + dx / d * mind; ty = sy + dy / d * mind; d = mind; }
-    var a = Math.acos(clamp((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d), -1, 1)), base = Math.atan2(dy, dx);
-    var e1x = sx + Math.cos(base + a) * l1, e1y = sy + Math.sin(base + a) * l1;
-    var e2x = sx + Math.cos(base - a) * l1, e2y = sy + Math.sin(base - a) * l1;
-    var pick1 = Math.abs(e1x - centreX) * 0.4 + e1y > Math.abs(e2x - centreX) * 0.4 + e2y;
-    IK.ex = pick1 ? e1x : e2x; IK.ey = pick1 ? e1y : e2y; IK.hx = tx; IK.hy = ty;
-  }
   function kidRest(nx, ny) { K.nx = nx; K.ny = ny; K.hipX = 60; K.s = 1; K.tw = 0; K.roll = 0; K.hx = 0; K.hy = 0; K.gr = 7.5; K.front = 0; K.torso = 44;
     K.lx = nx - 13; K.ly = ny - 16; K.rx = nx + 13; K.ry = ny - 16; }
   // Blend two key poses (a -> b) by k; used between the held keys so moves snap, not slide.
@@ -1532,109 +2061,143 @@
     if (G.mode === "oppDown") { K.ny += 12; K.ly += 12; K.ry += 12; }
   }
 
-  function drawPlayer() {
-    tgt(plSpr, PW, PH); plSpr.fill(EMPTY);
-    kidPose();
-    var s = K.s, nx = K.nx, ny = K.ny, sw = 18 * s;
-    // shoulders turn with the punch: the punching shoulder goes forward (up) and in
-    var sLx = nx - sw + (K.tw < 0 ? -K.tw * 3 * s : 0), sLy = ny + 2 * s + K.tw * 5 * s - K.roll;
-    var sRx = nx + sw - (K.tw > 0 ? K.tw * 3 * s : 0), sRy = ny + 2 * s - K.tw * 5 * s + K.roll;
-    var l1 = UA * s, l2 = FA * s, gr = K.gr * (K.front ? 0.86 : 1) * s;
-    // arms + gloves first: when he reaches, the gloves are further from the camera than his back
-    solveArm(sLx, sLy, K.lx, K.ly, l1, l2, nx);
-    capsule(sLx, sLy, IK.ex, IK.ey, 4.6 * s, 27, 28, 29); capsule(IK.ex, IK.ey, IK.hx, IK.hy, 3.9 * s, 27, 28, 29);
-    glove(IK.hx, IK.hy, gr, IK.ex, IK.ey, 33, 34, 35, 0);
-    var leftFist = IK.hx;
-    solveArm(sRx, sRy, K.rx, K.ry, l1, l2, nx);
-    capsule(sRx, sRy, IK.ex, IK.ey, 4.6 * s, 27, 28, 29); capsule(IK.ex, IK.ey, IK.hx, IK.hy, 3.9 * s, 27, 28, 29);
-    glove(IK.hx, IK.hy, gr, IK.ex, IK.ey, 33, 34, 35, 0);
-    // back: a tapered capsule from the shoulders down to the hips, so it leans with the body
-    var hipY = ny + K.torso * s, lx0 = K.hipX - 8 * s, rx0 = K.hipX + 8 * s;
-    if (hipY < H + 4) {
-      capsule(lx0, hipY + 8 * s, lx0 - 2 * s, H + 20, 7.5 * s, 27, 28, 29);
-      capsule(rx0, hipY + 8 * s, rx0 + 2 * s, H + 20, 7.5 * s, 27, 28, 29);
-      ellipse(K.hipX, hipY + 6 * s, 17 * s, 10 * s, 0, 0, 41, -1);                       // trunks
-      for (var tx2 = Math.round(K.hipX - 16 * s); tx2 < K.hipX + 16 * s; tx2++) sp(tx2, hipY + 8 * s, 9);   // volt stripe
+  // Kid Volt, "the Spark", from behind: back wide at the shoulders and narrowing to the waistband,
+  // spiky blue hair that covers the skull, yellow gloves. Positions come from the rig (world units x2).
+  var KID_HAIR = (function () {
+    var a = [], s = 5, n = 11, a0 = Math.PI * 0.98, a1 = Math.PI * 2.02;
+    for (var i = 0; i <= n; i++) {
+      var aa = a0 + (a1 - a0) * i / n; a.push(Math.cos(aa) * 16, Math.sin(aa) * 16);
+      if (i < n) { s = (s * 16807) % 2147483647; var am = aa + (a1 - a0) * 0.5 / n, r2 = 25 + s / 2147483647 * 8; a.push(Math.cos(am) * r2, Math.sin(am) * r2); }
     }
-    capsule(nx, ny + 9 * s, K.hipX, hipY, 16 * s, 27, 28, 29);
-    ellipse(sLx, sLy + 2 * s, 7.5 * s, 6.5 * s, 27, 28, 29, -1);
-    ellipse(sRx, sRy + 2 * s, 7.5 * s, 6.5 * s, 27, 28, 29, -1);
-    // spine + shoulder blades follow the lean
-    for (var i = 0; i < 16; i++) { var f = i / 15; if (i & 1) sp(lerp(nx, K.hipX, f), ny + 8 * s + (hipY - ny - 8 * s) * f * 0.7, 27); }
-    for (i = 0; i < 5; i++) { sp(lerp(sLx, nx, 0.35) + i, sLy + 7 * s - (i >> 1), 27); sp(lerp(sRx, nx, 0.35) - i, sRy + 7 * s - (i >> 1), 27); }
-    // neck + head
-    capsule(nx, ny - 2 * s, nx, ny + 6 * s, 4.5 * s, 27, 28, 29);
-    var hx = nx + K.hx, hy = ny - 12 * s + K.hy, hr = 8 * s;
-    ellipse(hx - 8 * s, hy + 1, 2 * s, 2.5 * s, 27, 28, 29, -1); ellipse(hx + 8 * s, hy + 1, 2 * s, 2.5 * s, 27, 28, 29, -1);
-    ellipse(hx, hy, hr, 9 * s, 27, 28, 29, -1);
-    // electric-blue spikes with a lightning streak
-    tri(hx - 9 * s, hy - 2 * s, hx - 3 * s, hy - 6 * s, hx - 11 * s, hy - 12 * s, 31);
-    tri(hx - 4 * s, hy - 7 * s, hx + 3 * s, hy - 7 * s, hx - 1 * s, hy - 16 * s, 31);
-    tri(hx + 2 * s, hy - 6 * s, hx + 9 * s, hy - 2 * s, hx + 11 * s, hy - 12 * s, 31);
-    tri(hx - 3 * s, hy - 6 * s, hx + 4 * s, hy - 6 * s, hx + 5 * s, hy - 13 * s, 30);
-    ellipse(hx, hy - 2 * s, 9 * s, 8 * s, 30, 31, 32, -1);
-    var bx = Math.round(hx), by = Math.round(hy);
-    sp(bx + 2, by - 8, 9); sp(bx + 1, by - 7, 9); sp(bx + 2, by - 6, 9); sp(bx + 1, by - 5, 9); sp(bx, by - 4, 9); sp(bx + 1, by - 3, 9);
-    // trunks waistband at the hips
-    for (var x = Math.round(K.hipX - 16 * s); x < K.hipX + 16 * s; x++) { sp(x, hipY + 1, 0); sp(x, hipY + 2, (x >> 2) & 1 ? 9 : 0); }
+    [14, 11, 9, 17, 4, 12, 0, 18, -4, 12, -9, 17, -14, 11].forEach(function (v) { a.push(v); });
+    return a;
+  })();
+  function kidArm(side, sx, sy, tx, ty, l1, l2, gr, u, pass) {
+    // pass 0: glove + forearm (they sit beyond the shoulders). pass 1: upper arm + shoulder cap.
+    solveHint(sx, sy, tx, ty, l1, l2, sx + side * 22 * u, sy + 40 * u);
+    var ex = IK.ex, ey = IK.ey, gx = IK.hx, gy = IK.hy;
+    if (pass === 0) {
+      var dx = gx - ex, dy = gy - ey, L = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / L, uy = dy / L, wx = gx - ux * gr * 0.9, wy = gy - uy * gr * 0.9;
+      if (L > gr * 0.8) rFill(gLimb(ex, ey, wx, wy, 10 * u, 7.5 * u), MAT.kskin, ex - 4 * u, (ey + wy) / 2 - 4 * u, 22 * u, 0, true);
+      rFill(gLimb(wx - ux * 2 * u, wy - uy * 2 * u, wx + ux * 5 * u, wy + uy * 5 * u, gr * 0.5, gr * 0.54), MAT.cuff, wx - 3 * u, wy - 4 * u, gr * 0.7, 0, true);
+      rFill(gEll(gx, gy, gr, gr * 0.96, -side * 0.2), MAT.kglove, gx - 4 * u, gy - 4 * u, gr * 1.25, 0, true);
+      rFill(gEll(gx + side * gr * 0.72, gy + gr * 0.3, gr * 0.34, gr * 0.46, side * 0.3), MAT.kglove, gx + side * gr * 0.66, gy + 2 * u, gr * 0.55, 0, true);
+      rFill(gEll(gx - gr * 0.32, gy - gr * 0.46, gr * 0.3, gr * 0.17, -0.5), MAT.kglove, 0, 0, 0, 1, false);
+    } else {
+      rFill(gLimb(sx, sy, ex, ey, 10.5 * u, 9.5 * u), MAT.kskin, sx - 4 * u, sy + 10 * u, 24 * u, 0, true);
+      rFill(gEll(sx - side * 3 * u, sy, 10.5 * u, 12.5 * u, side * 0.25), MAT.kskin, sx - 5 * u, sy - 5 * u, 20 * u, 0, false);
+      rStroke(gPath(["M", sx - side * 10 * u, sy - 8 * u, "Q", sx - side * 14 * u, sy + u, sx - side * 9 * u, sy + 11 * u]), MAT.kskin, 0.15, 1.1);
+    }
+  }
+  function drawPlayer() {
+    sprBegin(plSpr, plBB); setG(1, 0, 0, 1, 0, 0, 1);
+    kidPose();
+    var u = K.s, nx = K.nx * 2, ny = K.ny * 2, sw = 36 * u, hipX = K.hipX * 2, hipY = ny + K.torso * 1.02 * u;
+    // shoulders turn with the punch: the punching shoulder goes forward (up the screen) and in
+    var sLx = nx - sw + (K.tw < 0 ? -K.tw * 6 * u : 0), sLy = ny + 4 * u + K.tw * 10 * u - K.roll * 2;
+    var sRx = nx + sw - (K.tw > 0 ? K.tw * 6 * u : 0), sRy = ny + 4 * u - K.tw * 10 * u + K.roll * 2;
+    var l1 = 38 * u, l2 = 46 * u, gr = K.gr * 2 * (K.front ? 0.86 : 1) * u;
+    // in guard the gloves sit wide of the head, so the spikes never hide them
+    var tLx = K.lx * 2, tLy = K.ly * 2, tRx = K.rx * 2, tRy = K.ry * 2;
+    if (ny - tLy < 44 * u) tLx = nx + (tLx - nx) * 1.4;
+    if (ny - tRy < 44 * u) tRx = nx + (tRx - nx) * 1.4;
+    kidArm(-1, sLx, sLy, tLx, tLy, l1, l2, gr, u, 0);
+    kidArm(1, sRx, sRy, tRx, tRy, l1, l2, gr, u, 0);
+    // legs and trunks show when he lunges up the screen
+    if (hipY < H2 + 20) {
+      rFill(gLimb(hipX - 14 * u, hipY + 16 * u, hipX - 19 * u, H2 + 40, 14 * u, 12 * u), MAT.kskin, hipX - 18 * u, hipY + 30 * u, 40 * u, 0, true);
+      rFill(gLimb(hipX + 14 * u, hipY + 16 * u, hipX + 19 * u, H2 + 40, 14 * u, 12 * u), MAT.kskin, hipX + 10 * u, hipY + 30 * u, 40 * u, 0, true);
+      rFill(gPath(["M", hipX - 27 * u, hipY, "L", hipX + 27 * u, hipY, "Q", hipX + 34 * u, hipY + 20 * u, hipX + 31 * u, hipY + 36 * u, "L", hipX + 3 * u, hipY + 38 * u, "L", hipX, hipY + 28 * u, "L", hipX - 3 * u, hipY + 38 * u, "L", hipX - 31 * u, hipY + 36 * u, "Q", hipX - 34 * u, hipY + 20 * u, hipX - 27 * u, hipY]), MAT.kglove, hipX - 8 * u, hipY + 12 * u, 40 * u, 0, true);
+    }
+    // back
+    var pLx = sLx + 3 * u, pLy = sLy - 9 * u, pRx = sRx - 3 * u, pRy = sRy - 9 * u, aLx = sLx + 2 * u, aLy = sLy + 14 * u, aRx = sRx - 2 * u, aRy = sRy + 14 * u;
+    rFill(gPath(["M", hipX - 26 * u, hipY + 3 * u, "Q", hipX - 30 * u, (aLy + hipY) / 2 + 6 * u, aLx, aLy, "Q", sLx - 3 * u, sLy, pLx, pLy, "Q", nx, ny - 15 * u, pRx, pRy, "Q", sRx + 3 * u, sRy, aRx, aRy, "Q", hipX + 30 * u, (aRy + hipY) / 2 + 6 * u, hipX + 26 * u, hipY + 3 * u]), MAT.kskin, nx - 16 * u, ny + 14 * u, 46 * u, 0, true);
+    rFill(gPath(["M", nx - 9 * u, ny - 16 * u, "Q", nx - 13 * u, ny - 6 * u, pLx, pLy + 2 * u, "L", pRx, pRy + 2 * u, "Q", nx + 13 * u, ny - 6 * u, nx + 9 * u, ny - 16 * u]), MAT.kskin, nx - 6 * u, ny - 6 * u, 26 * u, 0, false);
+    rFill([nx - 8 * u, ny - 20 * u, nx + 8 * u, ny - 20 * u, nx + 9 * u, ny - 2 * u, nx - 9 * u, ny - 2 * u], MAT.kskin, nx - 3 * u, ny - 12 * u, 13 * u, 0, false);
+    // spine, shoulder blades, lats: all follow the lean
+    rStroke([nx, ny + 3 * u, hipX, hipY - 2 * u], MAT.kskin, 0.18, 1.2);
+    rStroke(gPath(["M", nx - 8 * u, ny - 3 * u, "Q", nx, ny + 3 * u, nx + 8 * u, ny - 3 * u]), MAT.kskin, 0.3, 1);
+    [-1, 1].forEach(function (s) {
+      var jx = s < 0 ? sLx : sRx, jy = s < 0 ? sLy : sRy, mx = lerp(nx, hipX, 0.3);
+      rStroke(gPath(["M", nx + s * 8 * u, ny + 8 * u, "Q", lerp(nx, jx, 0.62), jy + 10 * u, lerp(nx, jx, 0.74), jy + 28 * u]), MAT.kskin, 0.2, 1.2);
+      rStroke(gPath(["M", nx + s * 10 * u, ny + 13 * u, "Q", lerp(nx, jx, 0.5), jy + 18 * u, lerp(nx, jx, 0.62), jy + 30 * u]), MAT.kskin, 0.88, 1);
+      rStroke(gPath(["M", mx + s * 27 * u, lerp(ny, hipY, 0.42), "Q", mx + s * 20 * u, lerp(ny, hipY, 0.62), lerp(nx, hipX, 0.8) + s * 19 * u, lerp(ny, hipY, 0.86)]), MAT.kskin, 0.25, 1);
+      rStroke([hipX + s * 7 * u, hipY - 9 * u, hipX + s * 9 * u, hipY - 5 * u], MAT.kskin, 0.25, 1);
+    });
+    kidArm(-1, sLx, sLy, tLx, tLy, l1, l2, gr, u, 1);
+    kidArm(1, sRx, sRy, tRx, tRy, l1, l2, gr, u, 1);
+    // waistband
+    if (hipY < H2 + 8) {
+      rFill(gLimb(hipX - 23 * u, hipY + 3 * u, hipX + 23 * u, hipY + 3 * u, 5.5 * u, 5.5 * u), MAT.ktank, hipX - 8 * u, hipY + 2 * u, 30 * u, 0, true);
+      rStroke([hipX - 5 * u, hipY + 3 * u, hipX + 5 * u, hipY + 3 * u], MAT.kglove, 0.8, 1.8);
+    }
+    // head: hair first, ears over it
+    var hx = nx + K.hx * 2, hy = ny - 25 * u + K.hy * 2;
+    rFill(gMove(KID_HAIR, u, hx, hy), MAT.khair, hx - 7 * u, hy - 9 * u, 30 * u, 0, true);
+    rStroke(gPath(["M", hx - 8 * u, hy - 12 * u, "Q", hx - 3 * u, hy - 2 * u, hx - 5 * u, hy + 9 * u]), MAT.khair, 0.95, 1);
+    rStroke(gPath(["M", hx + 6 * u, hy - 10 * u, "Q", hx + 9 * u, hy, hx + 6 * u, hy + 9 * u]), MAT.khair, 0.1, 1);
+    rFill(gEll(hx - 16 * u, hy + 4 * u, 3 * u, 5 * u, 0), MAT.kskin, hx - 17 * u, hy + 2 * u, 5 * u, 0, true);
+    rFill(gEll(hx + 16 * u, hy + 4 * u, 3 * u, 5 * u, 0), MAT.kskin, hx + 15 * u, hy + 2 * u, 5 * u, 0, true);
+    rimLight(plSpr, plBB);
   }
 
   // ================================================================ scene drawing (per frame)
   var flashes = [];
   function drawFloor() {
     var pulse = 1 - beatPhase, feverOn = opp.st === "fever" && opp.fs >= 1 && opp.fs <= 5;
-    for (var y = FLOOR_Y; y < H; y++) {
-      var dy = y - 62, z = 240 / dy, v = z / 5, fv = v - Math.floor(v), vi = Math.floor(v);
-      for (var x = 0; x < W; x++) {
-        var u = (x - 60) / dy * 9 + 50, fu = u - Math.floor(u), ui = Math.floor(u), c;
-        if (fu < 0.07 || fv < 0.09) c = 11;
+    for (var y2 = FLOOR_Y * 2; y2 < H2; y2++) {
+      var dy = (y2 + 0.5) / 2 - 62, z = 240 / dy, v = z / 5, fv = v - Math.floor(v), vi = Math.floor(v), row = y2 * W2;
+      for (var x2 = 0; x2 < W2; x2++) {
+        var u = ((x2 + 0.5) / 2 - 60) / dy * 9 + 50, fu = u - Math.floor(u), ui = Math.floor(u), c;
+        if (fu < 0.05 || fv < 0.07) c = 11;
         else {
           c = ((ui + vi) & 1) ? 12 : 11;
           var lit = ((ui * 7 + vi * 13 + beatN * 5) % (feverOn ? 3 : 5)) === 0;
           if (lit) {
-            var hue = (ui * 3 + vi * 5 + beatN) & 3, t = pulse + (bay(x, y) / 16 - 0.5) * 0.3;
+            var hue = (ui * 3 + vi * 5 + beatN) & 3, t = pulse + (bay(x2, y2) / 16 - 0.5) * 0.3;
             if (t > 0.6) c = [8, 7, 9, 40][hue]; else if (t > 0.25) c = [37, 36, 38, 39][hue];
-          }
+          } else if (fu > 0.86 || fv > 0.88) c = c === 12 ? 13 : 12;      // a bevel on each tile
         }
-        fb[y * W + x] = c;
+        fb2[row + x2] = c;
       }
     }
   }
   function drawSpotlights() {
     if (!(opp.st === "fever" && opp.fs >= 1 && opp.fs <= 5)) return;
-    var bxp = 96, byp = G.ballY;
+    var bxp = 192, byp = G.ballY * 2;
     for (var s = 0; s < 3; s++) {
       var ang = Math.PI / 2 + Math.sin(G.t * 2.2 + s * 2.1) * 0.9, ca = Math.cos(ang), sa = Math.sin(ang);
-      for (var y = byp + 4; y < H; y++) for (var x = 0; x < W; x++) {
+      for (var y = (byp + 8) | 0; y < H2; y++) for (var x = 0; x < W2; x++) {
         var dx = x - bxp, dy = y - byp, along = dx * ca + dy * sa;
         if (along <= 0) continue;
         var across = -dx * sa + dy * ca;
-        if (Math.abs(across) < along * 0.12 && bay(x, y) < 8) fb[y * W + x] = LIGHTEN[fb[y * W + x]];
+        if (Math.abs(across) < along * 0.12 && bay(x, y) < 8) fb2[y * W2 + x] = LIGHTEN[fb2[y * W2 + x]];
       }
     }
   }
   function drawBall() {
-    var bxp = 96, byp = Math.round(G.ballY);
-    for (var y = 18; y < byp - 4; y++) pset(bxp, y, 44);
-    for (var yy = -4; yy <= 4; yy++) for (var xx = -4; xx <= 4; xx++) {
-      if (xx * xx + yy * yy > 18) continue;
-      var tile = ((xx + 8 + ((G.t * 8) | 0)) >> 1) + ((yy + 8) >> 1);
-      pset(bxp + xx, byp + yy, (xx - yy < -3) ? 10 : (tile & 1) ? 43 : 44);
+    var bxp = 192, byp = Math.round(G.ballY * 2), spin = (G.t * 10) | 0;
+    for (var y = 36; y < byp - 9; y++) { fb2[y * W2 + bxp] = 44; }
+    for (var yy = -9; yy <= 9; yy++) for (var xx = -9; xx <= 9; xx++) {
+      if (xx * xx + yy * yy > 86) continue;
+      var tile = ((xx + 18 + spin) / 3 | 0) + ((yy + 18) / 3 | 0), edge = ((xx + 18 + spin) % 3 === 0) || ((yy + 18) % 3 === 0);
+      fb2[(byp + yy) * W2 + bxp + xx] = edge ? 44 : (xx - yy < -7) ? 10 : (tile & 1) ? 43 : ((tile % 5) === 0 ? 7 : 44);
     }
-    if (((G.t * 10) | 0) % 3 === 0) { pset(bxp - 2, byp - 2, 10); pset(bxp - 3, byp - 2, 10); pset(bxp - 2, byp - 3, 10); }
+    if (spin % 3 === 0) { for (var k = -3; k <= 3; k++) { fb2[(byp - 4) * W2 + bxp - 4 + k] = 10; fb2[(byp - 4 + k) * W2 + bxp - 4] = 10; } }
   }
   function drawDynamicScene() {
     // neon sign flicker
-    if (Math.random() < 0.03 || ((G.t * 3 | 0) % 17 === 0 && (G.t * 30 | 0) & 1)) for (var n = 0; n < SIGN.length; n++) fb[SIGN[n]] = 37;
+    if (Math.random() < 0.03 || ((G.t * 3 | 0) % 17 === 0 && (G.t * 30 | 0) & 1)) for (var n = 0; n < SIGN.length; n++) fb2[SIGN[n]] = signDim;
     // camera flashes in the crowd, more when he's in trouble
     var rate = G.mode === "oppDown" ? 0.5 : 0.05 + G.flow * 0.03;
-    if (Math.random() < rate) flashes.push(rnd(4, 116) | 0, rnd(54, 72) | 0, 3);
+    if (Math.random() < rate) flashes.push(rnd(8, 232) | 0, rnd(108, 144) | 0, 3);
     for (n = flashes.length - 3; n >= 0; n -= 3) {
       var fx = flashes[n], fy = flashes[n + 1];
-      pset(fx, fy, 10); pset(fx - 1, fy, 43); pset(fx + 1, fy, 43); pset(fx, fy - 1, 43); pset(fx, fy + 1, 43);
+      for (var k = -3; k <= 3; k++) { fb2[fy * W2 + fx + k] = Math.abs(k) < 2 ? 10 : 43; fb2[(fy + k) * W2 + fx] = Math.abs(k) < 2 ? 10 : 43; }
       if (--flashes[n + 2] <= 0) flashes.splice(n, 3);
     }
   }
+  function drawStar(x, y, c) { x |= 0; y |= 0; pset(x, y, 10); pset(x - 1, y, c); pset(x + 1, y, c); pset(x, y - 1, c); pset(x, y + 1, c); }
   function drawGlint(x, y) {
     var s = 2 + ((G.t * 14 | 0) & 1);
     for (var k = -s; k <= s; k++) { pset(x + k, y, k === 0 ? 10 : 9); pset(x, y + k, k === 0 ? 10 : 9); }
@@ -1650,7 +2213,7 @@
   function drawHUD() {
     rect(0, 0, W, 17, 47); for (var x = 0; x < W; x++) pset(x, 17, 13);
     drawText("KID VOLT", 2, 2, 7, 1, -1);
-    drawText("DANNY", W - 2 - textW("DANNY", 1), 2, 8, 1, -1);
+    drawText(FT.short, W - 2 - textW(FT.short, 1), 2, 8, 1, -1);
     drawBar(2, 9, 44, p.health, p.ghost, 9, false);
     drawBar(W - 46, 9, 44, opp.health, opp.ghost, 8, true);
     var clk = fmtClock(G.clock);
@@ -1698,11 +2261,12 @@
     switch (G.mode) {
       case "intro":
         G.introT += dt;
-        if (G.introT >= 1.2 && G.introT - dt < 1.2) say("LET'S DANCE!", 3);
+        if (G.introT >= 1.2 && G.introT - dt < 1.2) say(FT.lines.intro, 3);
         if (G.introT >= 3.4 && G.introT - dt < 3.4) { sfx("bell", 1); pop("FIGHT!", 60, 44, 9, 3, 0.9); }
         if (G.introT >= 3.6) {
           G.mode = "fight"; setOpp("idle"); opp.idleBeats = 2;
-          showTip("start", "Watch for the <b>sparkle</b>. Punch that spot during his wind-up to <b>COUNTER</b>.");
+          if (FT.coach && FT.coach.jab) showTip("start1", "He shows you every punch before he throws it. Watch his gloves, then tap what <b>glows</b>.");
+          else showTip("start", "Watch for the <b>sparkle</b>. Punch that spot during his wind-up to <b>COUNTER</b>.");
         }
         break;
       case "fight":
@@ -1727,12 +2291,12 @@
           }
         }
         if (opp.st === "getup" && opp.t >= opp.dur) {
-          G.mode = "fight"; opp.phase = Math.min(3, opp.kd + 1); setBpm(PHASE_BPM[opp.phase]);
+          G.mode = "fight"; opp.phase = Math.min(3, opp.kd + 1); setBpm(FT.bpm[opp.phase]);
           opp.lastGetUp = G.t; setOpp("idle"); opp.idleBeats = 2; G.count = 0;
-          opp.queue = opp.phase === 2 ? ["jabB", "hookA", "fever"] : ["jabA", "upB", "fever"];
-          say(opp.phase === 2 ? "NOW IT'S A PARTY!" : "FEVER TIME!", 4);
+          opp.queue = FT.reup[opp.phase].slice();
+          say(opp.phase === 2 ? FT.lines.up2 : FT.lines.up3, 4);
           if (opp.phase === 2) showTip("phase2", "He's back up, and the <b>tempo is faster</b>.");
-          if (opp.phase === 3) showTip("phase3", "Last dance. Watch out for <b>fakes</b>: no sparkle, no punch.");
+          if (opp.phase === 3) showTip("phase3", "Last round, and he's faster still. Punch the <b>sparkle</b>, not the guard.");
         }
         break;
       case "playerDown":
@@ -1746,7 +2310,7 @@
             else if (G.count >= 10) { endFight("KO_LOSS"); break; }
           }
         } else if (p.st === "getup" && p.t >= 0.8) {
-          G.mode = "fight"; setP("idle"); G.count = 0; afterMove(); opp.idleBeats = 2; say("STILL GOT IT?", 3);
+          G.mode = "fight"; setP("idle"); G.count = 0; afterMove(); opp.idleBeats = 2; say(FT.lines.still, 3);
         }
         break;
       case "result":
@@ -1766,14 +2330,14 @@
   var superBtn = document.getElementById("superBtn"), pipEls = superBtn.querySelectorAll(".pip i"), lastSuper = -1;
   var lastOppSt = "", lastPSt = "", lastFs = -1, lastGuard = "", builtPlayer = false;
   function render() {
-    fb.set(bg);
+    fb2.set(bg2);
     drawDynamicScene();
     drawFloor();
     drawSpotlights();
     drawBall();
 
-    // Sprites rebuild at 15 fps, or immediately when a state changes.
-    var tick = (G.t * 15) | 0;
+    // Sprites rebuild every step, or immediately when a state changes.
+    var tick = (G.t * 60) | 0;
     if (opp.st !== lastOppSt || p.st !== lastPSt || opp.fs !== lastFs || opp.guard !== lastGuard) dirty = true;
     if (dirty || tick !== lastBuild) {
       drawOpp(); drawPlayer(); dirty = false; lastBuild = tick; builtPlayer = true;
@@ -1781,27 +2345,29 @@
     }
     if (!builtPlayer && p.st !== "idle") drawPlayer();
     builtPlayer = false;
-    var ox = 20 + Math.round(opp.x), oy = 20;
-    if (G.mode !== "title") composite(oppSpr, OW, OH, ox, oy, opp.flash > 0 ? BRIGHT : null);
-
-    // the sparkle: where he's open during a real wind-up
-    if (opp.st === "tell" && !opp.feint && G.mode === "fight") {
-      var mv = opp.mv, hxw = ox + 40 + P.bx + P.hx, hyw = oy + 30 + P.by + P.hy;
-      if (mv.kind === "jab") drawGlint(hxw + mv.side * 5, hyw - 1);
-      else if (mv.kind === "hook") drawGlint(ox + 40 + P.bx + mv.side * 9, oy + 64 + P.by);
-      else drawGlint(hxw, hyw + 7);
-    }
-    if (opp.st === "fever" && opp.fs === 1) drawGlint(ox + 40 + P.bx, oy + 70 + P.by);
-    if (opp.st === "fever" && opp.fs === 4) drawTextC("!", ox + 40 + P.bx, 20, 9, 3, 0);
-    if (opp.st === "dizzy") {
-      var hdx = ox + 40 + P.bx + P.hx, hdy = oy + 18 + P.by;
-      for (var s = 0; s < 3; s++) { var a = G.t * 5 + s * 2.09; pset(hdx + Math.cos(a) * 12, hdy + Math.sin(a) * 3, s === 0 ? 10 : 9); }
-      if (Math.abs(opp.x) <= 6 && opp.t > 0.4) drawTextC("NOW!", 60, 104, 9, 2, 0);
-    }
-
+    var ox = 20 + Math.round(opp.x), oy = HEAD_Y - 30;
+    if (G.mode !== "title") composite(oppSpr, oppBB, Math.round(opp.x) * 2, 0, opp.flash > 0 ? BRIGHT : null);
     // Kid Volt (the rig places himself; only the hit shudder is added here)
     var shud = (p.st === "hurt" && p.t < 0.2 && ((G.t * 30 | 0) & 1)) ? -p.hurtBy : 0;
-    if (G.mode !== "title") composite(plSpr, PW, PH, shud, 0, (p.st === "hurt" && p.t < 0.12) ? BRIGHT : null);
+    if (G.mode !== "title") composite(plSpr, plBB, shud * 2, 0, (p.st === "hurt" && p.t < 0.12) ? BRIGHT : null);
+    // everything from here on is drawn on the overlay, above both fighters
+    fb.fill(EMPTY);
+
+    // the sparkle: where he's open during a real wind-up
+    coachHints();
+    if (opp.st === "tell" && !opp.feint && G.mode === "fight" && opp.t >= opp.dur * FT.glint) {
+      var mv = opp.mv, hxw = ox + 40 + P.bx + P.hx, hyw = oy + 30 + P.by + P.hy;
+      if (mv.kind === "jab") drawGlint(hxw + mv.side * 5, hyw - 1);
+      else if (mv.kind === "hook") drawGlint(ox + 40 + P.bx + mv.side * 12, RIB_Y + P.by);
+      else drawGlint(hxw, hyw + 11);
+    }
+    if (opp.st === "fever" && opp.fs === 1) drawGlint(ox + 40 + P.bx + P.hx, FT.special.breakZone === "low" ? RIB_Y + 4 + P.by : HEAD_Y + 11 + P.by + P.hy);
+    if (opp.st === "fever" && opp.fs === 4) drawTextC("!", ox + 40 + P.bx, 20, 9, 3, 0);
+    if (opp.st === "dizzy") {
+      var hdx = ox + 40 + P.bx + P.hx, hdy = oy + 4 + P.by;
+      for (var s = 0; s < 3; s++) { var a = G.t * 5 + s * 2.09; drawStar(hdx + Math.cos(a) * 17, hdy + Math.sin(a) * 4, s === 0 ? 10 : 9); }
+      if (Math.abs(opp.x) <= 6 && opp.t > 0.4) drawTextC("NOW!", 60, 104, 9, 2, 0);
+    }
 
     drawParticles();
 
@@ -1815,7 +2381,7 @@
 
     // intro card
     if (G.mode === "intro") {
-      if (G.introT > 0.4 && G.introT < 2.8) { drawTextC("DISCO DANNY", 60, 88, 8, 2, 0); drawTextC("52 - LAS VEGAS - 3-47", 60, 100, 43, 1, 0); }
+      if (G.introT > 0.4 && G.introT < 2.8) { drawTextC(FT.name, 60, 88, 8, FT.name.length > 11 ? 1 : 2, 0); drawTextC(FT.card, 60, 100, 43, 1, 0); }
       if (G.introT >= 2.8 && G.introT < 3.4) drawTextC("READY?", 60, 44, 10, 3, 0);
     }
     // count
@@ -1838,12 +2404,14 @@
     if (G.hurtFlash > 0) drawVignette();
 
     var L = G.invert > 0 ? lutInv : G.flash > 0 ? lutFlash : lut;
-    for (var n = 0; n < W * H; n++) pix[n] = L[fb[n]];
+    for (var y2 = 0, n = 0; y2 < H2; y2++) {
+      for (var x2 = 0, orow = (y2 >> 1) * W; x2 < W2; x2++, n++) { var oc = fb[orow + (x2 >> 1)]; pix[n] = L[oc === EMPTY ? fb2[n] : oc]; }
+    }
     octx.putImageData(img, 0, 0);
     dctx.fillStyle = "#05040f"; dctx.fillRect(0, 0, cw, ch);
     var sx = 0, syy = 0;
     if (G.shake > 0) { var amp = G.shake > 6 ? 2 : 1; sx = Math.round(rnd(-amp, amp)); syy = Math.round(rnd(-amp, amp)); }
-    dctx.drawImage(off, offX + sx * scale, offY + syy * scale, W * scale, H * scale);
+    dctx.drawImage(off, offX + Math.round(sx * 2 * scale), offY + Math.round(syy * 2 * scale), Math.round(W2 * scale), Math.round(H2 * scale));
 
     // mirror the super gauge onto the HTML button
     var sg2 = Math.round(p.superG * 20);
@@ -1865,10 +2433,43 @@
   }
 
   var titleEl = document.getElementById("title"), pauseEl = document.getElementById("pause"), resultEl = document.getElementById("result");
-  function refreshBest() {
-    var b = loadBest();
-    document.getElementById("bestLine").textContent = (b === null ? "3 knockdowns = TKO · beat the clock" : "BEST KO TIME " + fmtClock(b)) ;
+  function setStage(ix) {
+    stageIx = ix; FT = FIGHTERS[ix];
+    LOOK = LOOKS[ix] || (LOOKS[ix] = buildLook(FT.look));
+    bakeScene(FT.sign, FT.neon[0], FT.neon[1]);
+    dirty = true;
   }
+  var ladderEl = document.getElementById("ladder");
+  function refreshTitle() {
+    ladderEl.innerHTML = "";
+    FIGHTERS.forEach(function (f, n) {
+      var b = document.createElement("button");
+      b.className = "rung" + (n === stageIx ? " sel" : "") + (n < prog ? " done" : "");
+      b.disabled = n > prog;
+      b.innerHTML = "<b>" + (n < prog ? "&#10003;" : n + 1) + "</b><span>" + (n > prog ? "LOCKED" : f.short) + "</span>";
+      b.setAttribute("aria-label", "Stage " + (n + 1) + (n > prog ? ", locked" : ": " + f.name));
+      b.addEventListener("click", function () { setStage(n); refreshTitle(); });
+      ladderEl.appendChild(b);
+    });
+    document.getElementById("tKicker").textContent = "STAGE " + (stageIx + 1) + " OF " + FIGHTERS.length + " · ROOFTOP RUMBLE";
+    document.getElementById("tName").textContent = FT.name;
+    document.getElementById("tMeta").textContent = FT.meta;
+    document.getElementById("tBlurb").textContent = FT.blurb;
+    var b2 = loadBest();
+    document.getElementById("bestLine").textContent = (b2 === null ? "3 knockdowns = TKO · beat the clock" : "BEST KO TIME " + fmtClock(b2));
+  }
+  function toTitle() {
+    G.mode = "title"; G.paused = false; if (AC && AC.state === "suspended") AC.resume();
+    pauseEl.hidden = true; resultEl.hidden = true; tipEl.hidden = true; setHints(null, "");
+    setStage(Math.min(prog, FIGHTERS.length - 1, Math.max(stageIx, 0)));
+    refreshTitle(); titleEl.hidden = false;
+  }
+  // five quick taps on the logo unlock every stage (for testing a fighter without climbing to him)
+  var logoTaps = 0, logoT = 0;
+  document.getElementById("logo").addEventListener("click", function () {
+    var now = Date.now(); logoTaps = now - logoT < 600 ? logoTaps + 1 : 1; logoT = now;
+    if (logoTaps >= 5) { prog = FIGHTERS.length; saveProg(); refreshTitle(); logoTaps = 0; }
+  });
   function start() {
     audioInit();
     titleEl.hidden = true; resultEl.hidden = true; pauseEl.hidden = true; G.paused = false;
@@ -1883,6 +2484,9 @@
   }
   document.getElementById("startBtn").addEventListener("click", start);
   document.getElementById("againBtn").addEventListener("click", start);
+  document.getElementById("nextBtn").addEventListener("click", function () { setStage(Math.min(FIGHTERS.length - 1, stageIx + 1)); start(); });
+  document.getElementById("ladderBtn").addEventListener("click", toTitle);
+  document.getElementById("quitBtn").addEventListener("click", toTitle);
   document.getElementById("restartBtn").addEventListener("click", start);
   document.getElementById("resumeBtn").addEventListener("click", function () { togglePause(false); });
   document.getElementById("pauseBtn").addEventListener("click", function () { togglePause(true); });
@@ -1891,11 +2495,11 @@
     if (master) master.gain.value = muted ? 0 : 0.85;
   });
   document.addEventListener("visibilitychange", function () { if (document.hidden && (G.mode === "fight" || G.mode === "intro")) togglePause(true); });
-  refreshBest();
-
-  // Title backdrop: Danny dancing behind the card.
+  setStage(Math.min(prog, FIGHTERS.length - 1));
+  refreshTitle();
   opp.st = "celebrate";
-  window.__KV = { G: G, p: p, opp: opp, MOVES: MOVES, press: press, setBlock: function (v) { blockHeld = v ? 1 : 0; }, beat: function () { return beatPhase; } };
+  window.__KV = { G: G, p: p, opp: opp, MOVES: MOVES, press: press, setBlock: function (v) { blockHeld = v ? 1 : 0; }, beat: function () { return beatPhase; },
+                  FIGHTERS: FIGHTERS, setStage: setStage, reset: resetMatch, step: function (n) { for (var q = 0; q < n; q++) update(); }, setOpp: setOpp, setP: setP };
   requestAnimationFrame(frame);
 })();
 </script>
