@@ -1003,11 +1003,21 @@
 .ft .rr-start {
   text-decoration: none;
 }
-/* The Start sits low, under the vault door, so the door is all there. */
+/* The Start sits low, on the court in front of the pole, so both players and
+   every ball are all there. It sat at 7% under Tumbler's vault door; King of
+   the Pole's picture has less room under it, and at 7% the button stood on
+   the near kid's shoes from a tablet's width up. */
 .ft-start-wrap.rr-start-wrap {
   top: auto;
-  bottom: 7%;
+  bottom: 3%;
   translate: -50% 0;
+}
+/* Below 64rem the screen is too short for the button and "Free play" to both
+   fit under those shoes, so the line steps aside. */
+@media (max-width: 63.99rem) {
+  .ft-start-wrap .rr-hint {
+    display: none;
+  }
 }
 .ft-foot {
   display: flex;
@@ -1018,6 +1028,22 @@
 }
 .ft-foot .arc-tags {
   margin: 0;
+}
+/* Details, and the game's own website when it has one: they stay together. */
+.ft-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+/* Narrow phones: a little less padding, so the two share a line from 375px
+   up. Narrower than that, the website's link takes the next line. */
+@media (max-width: 26rem) {
+  .ft-links {
+    gap: 0.35rem;
+  }
+  .ft-links .arc-more {
+    padding-inline: 0.7rem;
+  }
 }
 
 /* Rooftop Run's own page (./rooftop-run): room above the cabinet for the way

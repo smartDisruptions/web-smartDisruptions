@@ -14,6 +14,11 @@ export interface App {
   buildPlanAvailable: boolean;
   liveUrl?: string;
   /**
+   * A game or app with a website of its own, as Broom & Blade has. The
+   * Arcade's featured cabinet and the thing's own page link to it.
+   */
+  siteUrl?: string;
+  /**
    * Something a visitor has to do before the app works, said plainly. The
    * app's page shows it right under the Try it button, so nobody opens the
    * app, finds it doing nothing and leaves. (AI Diary needs an API key,
@@ -1443,6 +1448,87 @@ export const apps: App[] = [
       ],
     },
   },
+  {
+    slug: 'king-of-the-pole',
+    name: 'King of the Pole',
+    description:
+      'Tetherball on a school playground, against the kids from my story King of the Pole. Each one throws their own special. Swipe to hit the ball, and the first to wind the rope all the way round the pole wins the round.',
+    longDescription:
+      'Tetherball on a school blacktop. You’re the new kid, and a ball on a rope hangs from the pole between you and whoever is up next. Swipe to hit it your way round the pole, and the first to wind the rope all the way up takes the round. The Arcade is a ladder of thirteen kids from King of the Pole, the story I wrote for this playground, in the order the story meets them: Milo first, in his paper crown, and Rei, three years undefeated, last. Every one of them throws a special of their own, from a ball that fades out and leaves only its shadow to five balls where only one is on the rope. You can play as yourself, with a kid you make in the character creator, or as any of eleven of them. There’s also a quick match against Milo, a solo time trial, and a song about becoming King of the Pole on the start menu.',
+    thumbnailUrl: '/images/apps/king-of-the-pole-thumbnail.webp',
+    screenshotUrls: [
+      '/images/apps/king-of-the-pole-1.webp',
+      '/images/apps/king-of-the-pole-2.webp',
+      '/images/apps/king-of-the-pole-3.webp',
+    ],
+    techStack: ['HTML5', 'Canvas 2D', 'Vanilla JavaScript', 'Web Audio API'],
+    category: 'Game',
+    status: 'live',
+    outcomes: [
+      'The ball is a real physical thing on a rope, not an animation: it swings like a pendulum, and the rope wraps around the pole and shortens as it goes.',
+      'The computer plays by the same rules as your finger. To decide where to swing, it runs the game’s own physics 1.2 seconds ahead, then has to get there on its own feet, with a reaction delay after each of your hits.',
+      'Your fighter is drawn, not simulated. The hit is your swipe’s, and they land beside the ball in that same frame with a fist on it, so the camera sees the contact. The flash plays out inside the hit’s freeze, which holds them in the strike with the ball.',
+      'Each opponent’s level is a set of real numbers, not tricks: a harder one reacts faster, runs and jumps further and misses less.',
+      'Levels run to 20, and levels 1 to 10 play exactly as they did. I played at 10 and kept beating the computer the same two ways, so I had them measured: a simulated player that sends every ball back hard showed that a ball hit just before the centre line reached the computer before it could read the hit and leap for it, and that right after its own swing it was stuck in its follow-through. At 10 it returned 28 % of the quick balls and 46 % of the rally ones. Levels 11 to 20 carry every number on past 10, and by 15 those are 81 % and 93 %.',
+      'The specials were balanced by simulation, not by feel. A scripted player went hundreds of rounds against the computer with and without them. The first version handed whoever used them a 20 to 30 point swing in win rate. The shipped one leaves the match where it was when both of you use them.',
+      'The fire was balanced the same way, and the simulation caught a design mistake. The first fire burned for a few seconds whatever happened, so letting it go by cost more rope than getting burned, and the smart play was to take the burn. Now a fireball threatens one return and goes out once it is past. Earning one takes six answered hits in a row, about one round in four against the computer at level 5, and with fireballs in play the scripted player’s win rate moves about 7 points.',
+      'The supers fool the computer the way they would fool a person. It reads the ball by running the game’s physics ahead, and a swerve’s cut toward the pole is a force that physics never sees, so it reads the round arc and reaches for a ball that isn’t coming. It can’t read a phantom until it is close, and with decoys it chases the one it picked until its swing goes through it.',
+      'The knockdown specials were the strongest yet in the simulation. A player knocked off their feet returned almost nothing, and the computer’s whirlwind moved the scripted player’s win rate 17 points. Shorter knockdowns fixed most of it. For the zap, what fixed it was the ball’s speed after the bolt: the ball was gone before the computer got up, however short its fall.',
+      'The music is two ElevenLabs Music tracks: an epic violin and piano piece on the court, one of four takes of one prompt, and the King of the Pole song on the start menu, one of five versions. Each is cut into its own loop with the seam crossfaded into the file itself, so the loop never jumps. The song plays all the way through once before it loops from a verse, and a track is only downloaded when you are about to hear it.',
+      'There is no results card. The end of a round plays out on the court in about three seconds, four for a match, with the numbers painted behind the players, and a tap skips it. The loser is thrown out to the front of their half by the finish, because at the end of a rally they were often standing behind the pole, where you couldn’t see them lose.',
+      'The big specials’ sounds are ElevenLabs sound effects, seven kept out of 28 takes by measuring them, not by ear. The Light Beam’s two shocks on screen land on the two shocks in its sound, 0.84 and 1.36 seconds in.',
+      'Every kid from the story is drawn by the same code that draws its cast sheet, so the game and the sheet can’t drift apart. That code got a game mode that splits each drawing into the layers the game animates (the body, and the head in five faces: open, blinking, fierce, happy and sad) and leaves the arms and legs to the game’s rig. The sheet still draws exactly as it did, checked pixel for pixel. A kid costs no more per frame than the ninjas the game started with, and Low graphics take about a third of High’s work.',
+      'One page with no game engine and no libraries, and its music in a second file that arrives once you are already playing.',
+      'The Arcade’s order is the story’s, not the levels’. The first cut ranked everyone by level, and that was wrong: I set some characters’ levels higher because the way they play makes them easier to beat, so a level isn’t how hard someone is. The story already climbs, so the Arcade follows it, and changing a level in the version I work in changes how someone plays, never where they come.',
+      'This page is the version for players. It is built from the same code as the version I work in, which has a settings panel for every number in the game, so a fix lands in both and the two can’t drift apart.',
+    ],
+    buildDate: '2026-10',
+    hasFullBreakdown: false,
+    buildPlanAvailable: false,
+    liveUrl: '/games/king-of-the-pole',
+    siteUrl: 'https://web-king-of-the-pole.vercel.app',
+    howToPlay: {
+      on: 'Plays on a phone or a computer. Swipe with a finger, or drag with the mouse.',
+      ways: [
+        {
+          device: 'Touch or mouse',
+          controls: [
+            {
+              action: 'Start a match',
+              how: 'Tap Play for a quick match against Milo, first to three rounds. Or tap Arcade, pick who you play as, and face the kids from the story one match at a time.',
+            },
+            {
+              action: 'Hit the ball',
+              how: 'Swipe up across it on your half of the court. A faster swipe hits harder.',
+            },
+            {
+              action: 'Take your turn',
+              how: 'You get one hit each time the ball comes to your side.',
+            },
+            {
+              action: 'Win the round',
+              how: 'Wind the rope all the way round the pole. When the round ends, tap to go on to the next.',
+            },
+            {
+              action: 'Throw your special',
+              how: 'Every hit you land fills your energy bar. When it’s full, tap the big lightning button and your next hit is the special. Or swipe at the ball in a counter-clockwise curve.',
+            },
+            {
+              action: 'Throw a fireball',
+              how: 'Six hits back and forth without a miss set the ball on fire, and whoever wins that volley gets a fireball. Tap the flame and your next hit throws it. Or swipe at the ball in a clockwise curve.',
+            },
+          ],
+        },
+        {
+          device: 'Keyboard',
+          controls: [
+            { action: 'Special', how: '`E` arms it, the same as the lightning button.' },
+            { action: 'Fireball', how: '`F` arms it, the same as the flame.' },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 export function getAppBySlug(slug: string): App | undefined {
@@ -1465,19 +1551,23 @@ export function getAppBySlug(slug: string): App | undefined {
  * Kiru's Rooftop Run, which played at the top of /games, became a cabinet
  * with Kiru's other games on 2026-11-17, when Tumbler took the featured spot
  * (Josh's call).
+ * King of the Pole, tetherball against the kids from the story of the same
+ * name, is the last in the list and took the featured spot from Tumbler,
+ * which is a cabinet in the row again (Josh's call, 2026-11-22).
  *
  * These live here rather than in the games page because /built reads them too:
  * anything in the arcade, front room or archive, is deliberately absent from
  * the catalogue, so the pages must not keep separate lists that can drift apart.
  */
-export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'rooftop-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser', 'tumbler'];
+export const ARCADE_SLUGS = ['lantern-night', 'night-parade', 'tokaido-run', 'rooftop-run', 'neo-dojo-survivors', 'rhythm-and-blade', 'moondrift', 'cosmo-outbound', 'rubble-rouser', 'tumbler', 'king-of-the-pole'];
 
 /**
  * The featured game: the big cabinet at the top of /games, marked as a new
  * release. It is one of ARCADE_SLUGS, and /games leaves it out of the row
- * below so it isn't listed twice. Tumbler since 2026-11-17 (Josh's call).
+ * below so it isn't listed twice. King of the Pole since 2026-11-22 (Josh's
+ * call); Tumbler, featured from 2026-11-17, is a cabinet in the row again.
  */
-export const ARCADE_FEATURED_SLUG = 'tumbler';
+export const ARCADE_FEATURED_SLUG = 'king-of-the-pole';
 
 /**
  * The Broom & Blade Arcade, the last room on /games before the archive's door

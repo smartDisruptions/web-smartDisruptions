@@ -14,9 +14,10 @@ export const metadata: Metadata = {
 /**
  * KIRU'S ROOFTOP RUN — the cabinet's own page (2026-11-17).
  *
- * The game used to play at the top of /games. Tumbler is the featured game
- * there now (Josh's call), so Rooftop Run is a cabinet in the row and this is
- * where its Press Start leads: the same cabinet, the same game, one room over.
+ * The game used to play at the top of /games. Tumbler took the featured spot
+ * there that day (Josh's call), so Rooftop Run is a cabinet in the row and
+ * this is where its Press Start leads: the same cabinet, the same game, one
+ * room over.
  */
 
 const BackArrow = () => (

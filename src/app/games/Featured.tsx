@@ -3,6 +3,7 @@ import type { App } from '@/data/apps';
 import { builtHref } from '@/data/projects';
 import Kiru from '@/components/kiru/Kiru';
 import { Seal } from '@/components/brand/Kanji';
+import { IconExternal } from '@/components/icons';
 import { ArrowIcon } from './Cabinets';
 
 /**
@@ -11,14 +12,20 @@ import { ArrowIcon } from './Cabinets';
  * page leaves that game out of the row below so it isn't listed twice.
  *
  * Kiru's Rooftop Run stood here, playable on the page, until 2026-11-17, when
- * Tumbler took the spot as a new release (Josh's call). A featured game opens
- * on its own page, like every cabinet in the row. No client code: the screen
- * is a picture and a link.
+ * Tumbler took the spot as a new release, and King of the Pole took it from
+ * Tumbler on 2026-11-22 (Josh's calls). A featured game opens on its own page,
+ * like every cabinet in the row. No client code: the screen is a picture and
+ * a link.
+ *
+ * The picture, its alt text and the seal are the page's to give, so nothing
+ * here is about one game. A game with a website of its own (`siteUrl`) gets a
+ * second link beside Details, to that site.
  */
 export default function Featured({
   game,
   seal,
   screen,
+  alt,
   newRelease,
 }: {
   game: App;
@@ -26,6 +33,8 @@ export default function Featured({
   seal: string;
   /** The picture on the screen: wide, with what matters in the middle. */
   screen: string;
+  /** What that picture shows, for someone who can't see it. */
+  alt: string;
   newRelease?: boolean;
 }) {
   const details = `${builtHref(game.slug)}?from=arcade`;
@@ -52,7 +61,7 @@ export default function Featured({
               <img
                 className="rr-poster-art ft-art"
                 src={screen}
-                alt={`${game.name}: a brass and gold vault door of geared rings`}
+                alt={alt}
                 width={1600}
                 height={900}
                 fetchPriority="high"
@@ -88,11 +97,20 @@ export default function Featured({
                 <li key={t}>{t}</li>
               ))}
             </ul>
-            <Link className="arc-more" href={details}>
-              Details
-              <span className="sr-only"> about {game.name}</span>
-              <ArrowIcon />
-            </Link>
+            <div className="ft-links">
+              <Link className="arc-more" href={details}>
+                Details
+                <span className="sr-only"> about {game.name}</span>
+                <ArrowIcon />
+              </Link>
+              {game.siteUrl && (
+                <a className="arc-more" href={game.siteUrl} target="_blank" rel="noopener">
+                  Visit the website
+                  <span className="sr-only"> for {game.name} (opens in a new tab)</span>
+                  <IconExternal size={15} />
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>
