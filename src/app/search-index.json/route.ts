@@ -70,12 +70,12 @@ export function GET() {
       x: 'learn game games play canvas newsletter email',
     },
     {
-      // What I Built was folded into About (the work) in October 2026; the
-      // name still finds it, and opens the wall that holds all of it.
+      // What I Built is the Apps page now; the name still finds it, and
+      // opens the wall that holds all of it.
       t: 'What I Built',
-      u: '/about#wall',
+      u: '/apps#wall',
       k: 'Page',
-      d: 'Websites, apps and games, live, on About',
+      d: 'Websites, apps and games, live, on Apps',
       x: 'built projects websites apps work portfolio',
     },
     { t: 'Arcade', u: '/games', k: 'Page', d: 'Games you can play right now' },
@@ -89,11 +89,11 @@ export function GET() {
       x: 'storm reports earnings research thesis archive',
     },
     {
-      t: 'About',
-      u: '/about',
+      t: 'Apps',
+      u: '/apps',
       k: 'Page',
       d: 'The work: everything I built, with receipts',
-      x: 'about builds built projects receipts work',
+      x: 'apps builds built projects receipts work about',
     },
     {
       t: 'Videos',

@@ -1,62 +1,31 @@
 /* ── Home sections below the hero. Prefix hm-. ──────────────────────────── */
 
-/* Receipts band — a vermilion marquee. content-visibility stops the marquee
-   once the band is scrolled away: an infinite loop off screen still cost
-   the main thread a frame every vsync (measured, October 2026). It clips to
-   its box anyway, so the paint containment changes nothing you can see. */
-.hm-band {
+/* The seam under the hero — two hairlines fading out from a vermilion
+   diamond. Still, so the hero hands over to the doors without a break. */
+.hm-seam {
   position: relative;
   z-index: 2;
-  overflow: hidden;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 47px;
-  background: #d63a22;
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  rotate: -1.2deg;
-  margin: -6px -10px 0;
-  box-shadow: 0 18px 40px -24px rgba(214, 58, 34, 0.8);
-}
-.hm-band-track {
   display: flex;
-  width: max-content;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem 0;
 }
-.hm-band-row {
-  display: flex;
-  gap: 1.5rem;
-  padding: 0.85rem 0.75rem;
+.hm-seam i {
+  flex: 0 1 11rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sd-border));
 }
-.hm-band-dot {
-  width: 0.5rem;
-  height: 0.5rem;
+.hm-seam i:last-child {
+  rotate: 180deg;
+}
+.hm-seam span {
+  width: 0.45rem;
+  height: 0.45rem;
   rotate: 45deg;
   border-radius: 1px;
-  background: rgba(255, 255, 255, 0.55);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .hm-band-track {
-    animation: hm-band 38s linear infinite;
-  }
-}
-@keyframes hm-band {
-  to {
-    transform: translateX(-50%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hm-band-track {
-    width: auto;
-  }
-  .hm-band-row {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .hm-band-row[aria-hidden] {
-    display: none;
-  }
+  background: #d63a22;
+  opacity: 0.85;
 }
 
 /* Four rooms */
@@ -498,4 +467,40 @@
 .hm-room-arcade .hm-room-kanji {
   color: #ff5bd0;
   opacity: 0.22;
+}
+
+/* 書 Writing — ai-iro, the indigo of the site's ink, ruled like a page, with
+   a lamp's light on it. The same at night and by day, like the Arcade. */
+.hm-room-writing {
+  background:
+    radial-gradient(
+      90% 60% at 30% 0%,
+      rgba(155, 176, 255, 0.3),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 1.55rem,
+      rgba(255, 255, 255, 0.07) 1.55rem calc(1.55rem + 1px)
+    ),
+    linear-gradient(165deg, #2b3a96, #141b4d);
+  color: #fff;
+  border-color: rgba(155, 176, 255, 0.35);
+}
+.hm-room-writing .hm-room-title {
+  color: #fff;
+}
+.hm-room-writing .hm-room-line,
+.hm-room-writing .hm-room-count {
+  color: #dfe5ff;
+}
+.hm-room-writing .hm-room-count {
+  background: rgba(255, 255, 255, 0.1);
+}
+.hm-room-writing .hm-room-arrow {
+  color: #9bb0ff;
+}
+.hm-room-writing .hm-room-kanji {
+  color: #9bb0ff;
+  opacity: 0.2;
 }

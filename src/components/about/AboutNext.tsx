@@ -67,7 +67,7 @@ export default function AboutNext({ to }: { to: 'person' | 'work' }) {
   return (
     <section className="au-next au-next-narrow" aria-labelledby="au-next-work">
       <Link
-        href="/about"
+        href="/apps"
         transitionTypes={['nav-back']}
         className="au-next-card sd-card"
       >

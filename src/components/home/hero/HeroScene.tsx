@@ -3,7 +3,16 @@ import Kiru from '@/components/kiru/Kiru';
 import Kanji, { Slash } from '@/components/brand/Kanji';
 import { GLYPHS } from '@/components/brand/glyphs';
 import { Button } from '@/components/ui';
-import { bamboo, fuji, haze, pagoda, roof, seeded, torii, town } from '@/components/brand/scenery';
+import {
+  bamboo,
+  fuji,
+  haze,
+  pagoda,
+  roof,
+  seeded,
+  torii,
+  town,
+} from '@/components/brand/scenery';
 import HeroFX from './HeroFX';
 import { KIRU_S, KIRU_X, KIRU_Y, RIDGE_Y, ROOF_H, ROOF_W } from './geometry';
 import './hero.css';
@@ -104,12 +113,17 @@ export default function HeroScene() {
           Building with AI, in public
         </p>
         <h1 id="hx-title" className="font-display hx-title">
-          <Slash text="I build real things" delay={0.1} />{' '}
+          <Slash text="I build things" delay={0.1} />{' '}
           <Slash text="with AI." delay={0.22} />{' '}
           <Slash text="Then I" delay={0.34} />{' '}
           <span className="hx-title-mark">
             <Slash text="show my work." delay={0.46} />
-            <StaticSvg className="hx-title-brush" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden>
+            <StaticSvg
+              className="hx-title-brush"
+              viewBox="0 0 300 20"
+              preserveAspectRatio="none"
+              aria-hidden
+            >
               <path d="M3 13 C 50 3, 90 18, 140 9 S 230 4, 297 11" />
             </StaticSvg>
           </span>
@@ -119,16 +133,22 @@ export default function HeroScene() {
           and the parts worth copying.
         </p>
         <div className="hx-actions hx-rise" style={{ animationDelay: '0.7s' }}>
-          <Button variant="primary" size="lg" href="/content">
-            Read the notes
+          <Button variant="primary" size="lg" href="/learn">
+            Start learning
           </Button>
-          <Button variant="secondary" size="lg" href="/about">
+          <Button variant="secondary" size="lg" href="/apps">
             See what I&apos;ve built
           </Button>
         </div>
-        <p className="hx-hint hx-rise" style={{ animationDelay: '1.4s' }} aria-hidden>
+        <p
+          className="hx-hint hx-rise"
+          style={{ animationDelay: '1.4s' }}
+          aria-hidden
+        >
           <Kanji char="斬" className="h-4 w-4 text-pen" />
-          <span className="hx-hint-fine">Click the sky. Kiru never misses.</span>
+          <span className="hx-hint-fine">
+            Click the sky. Kiru never misses.
+          </span>
           <span className="hx-hint-touch">Tap the sky. Kiru never misses.</span>
         </p>
       </div>
@@ -157,7 +177,11 @@ export default function HeroScene() {
           <path d="M60 18 q6 -6 12 0 q6 -6 12 0" />
         </StaticSvg>
 
-        <StaticSvg className="hx-layer hx-fuji" viewBox="0 0 1600 520" preserveAspectRatio="xMidYMax meet">
+        <StaticSvg
+          className="hx-layer hx-fuji"
+          viewBox="0 0 1600 520"
+          preserveAspectRatio="xMidYMax meet"
+        >
           <defs>
             <linearGradient id="hx-fuji-g" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="var(--hx-fuji-top)" />
@@ -174,7 +198,11 @@ export default function HeroScene() {
           </StaticSvg>
         </div>
 
-        <StaticSvg className="hx-layer hx-town" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice">
+        <StaticSvg
+          className="hx-layer hx-town"
+          viewBox="0 0 1600 300"
+          preserveAspectRatio="xMidYMax slice"
+        >
           <path d={TOWN_MID} fill="var(--hx-town-far)" />
           <path d={TOWN.roofs} className="hx-town-near" />
           <g className="hx-windows">
@@ -190,39 +218,87 @@ export default function HeroScene() {
           </StaticSvg>
         </div>
 
-        <StaticSvg className="hx-layer hx-bamboo" viewBox="0 0 300 760" preserveAspectRatio="xMinYMax meet">
+        <StaticSvg
+          className="hx-layer hx-bamboo"
+          viewBox="0 0 300 760"
+          preserveAspectRatio="xMinYMax meet"
+        >
           <path d={BAMBOO.stalks} className="hx-bamboo-stalk" />
           <path d={BAMBOO.nodes} className="hx-bamboo-node" />
           <path d={BAMBOO.leaves} className="hx-bamboo-leaf" />
         </StaticSvg>
 
         <div className="hx-layer hx-roofbox">
-          <StaticSvg className="hx-roof" viewBox={`0 0 ${ROOF_W} ${ROOF_H}`} preserveAspectRatio="xMidYMax meet">
+          <StaticSvg
+            className="hx-roof"
+            viewBox={`0 0 ${ROOF_W} ${ROOF_H}`}
+            preserveAspectRatio="xMidYMax meet"
+          >
             <defs>
               <linearGradient id="hx-roof-fade" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" style={{ stopColor: 'var(--hx-roof)' }} />
                 <stop offset="0.3" style={{ stopColor: 'var(--hx-roof)' }} />
-                <stop offset="0.62" style={{ stopColor: 'var(--hx-roof)', stopOpacity: 0 }} />
+                <stop
+                  offset="0.62"
+                  style={{ stopColor: 'var(--hx-roof)', stopOpacity: 0 }}
+                />
               </linearGradient>
             </defs>
             <path d={ROOF_BODY} className="hx-roof-body" />
             <path d={TILE_LINES} className="hx-roof-tiles" />
-            <path d={`M30 ${RIDGE_Y - 6} L${ROOF_W} ${RIDGE_Y - 6}`} className="hx-roof-ridge" />
+            <path
+              d={`M30 ${RIDGE_Y - 6} L${ROOF_W} ${RIDGE_Y - 6}`}
+              className="hx-roof-ridge"
+            />
             <path d={roof(158, RIDGE_Y - 10, 22, 14)} className="hx-roof-cap" />
           </StaticSvg>
 
           <div className="hx-glow" style={GLOW_BOX} />
-          <StaticSvg className="hx-lantern" style={LANTERN_BOX} viewBox={`150 ${RIDGE_Y} 76 134`}>
-            <path d={`M188 ${RIDGE_Y + 2} L188 ${RIDGE_Y + 34}`} className="hx-lantern-cord" />
-            <rect x="166" y={RIDGE_Y + 34} width="44" height="8" rx="2" className="hx-lantern-cap" />
-            <ellipse cx="188" cy={RIDGE_Y + 76} rx="30" ry="36" className="hx-lantern-paper" />
+          <StaticSvg
+            className="hx-lantern"
+            style={LANTERN_BOX}
+            viewBox={`150 ${RIDGE_Y} 76 134`}
+          >
+            <path
+              d={`M188 ${RIDGE_Y + 2} L188 ${RIDGE_Y + 34}`}
+              className="hx-lantern-cord"
+            />
+            <rect
+              x="166"
+              y={RIDGE_Y + 34}
+              width="44"
+              height="8"
+              rx="2"
+              className="hx-lantern-cap"
+            />
+            <ellipse
+              cx="188"
+              cy={RIDGE_Y + 76}
+              rx="30"
+              ry="36"
+              className="hx-lantern-paper"
+            />
             <path
               d={`M160 ${RIDGE_Y + 64} Q188 ${RIDGE_Y + 60} 216 ${RIDGE_Y + 64} M159 ${RIDGE_Y + 76} Q188 ${RIDGE_Y + 72} 217 ${RIDGE_Y + 76} M160 ${RIDGE_Y + 88} Q188 ${RIDGE_Y + 84} 216 ${RIDGE_Y + 88}`}
               className="hx-lantern-ribs"
             />
-            <path d={LANTERN_GLYPH} transform={`translate(176 ${RIDGE_Y + 64}) scale(0.024)`} className="hx-lantern-kanji" />
-            <rect x="168" y={RIDGE_Y + 108} width="40" height="8" rx="2" className="hx-lantern-cap" />
-            <path d={`M188 ${RIDGE_Y + 116} l0 16`} className="hx-lantern-cord" />
+            <path
+              d={LANTERN_GLYPH}
+              transform={`translate(176 ${RIDGE_Y + 64}) scale(0.024)`}
+              className="hx-lantern-kanji"
+            />
+            <rect
+              x="168"
+              y={RIDGE_Y + 108}
+              width="40"
+              height="8"
+              rx="2"
+              className="hx-lantern-cap"
+            />
+            <path
+              d={`M188 ${RIDGE_Y + 116} l0 16`}
+              className="hx-lantern-cord"
+            />
           </StaticSvg>
 
           {/* Kiru on the ridge. Three poses stacked; HeroFX picks one. */}

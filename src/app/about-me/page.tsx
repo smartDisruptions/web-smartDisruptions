@@ -65,7 +65,7 @@ const DOORS = [
 export default function AboutPage() {
   return (
     <div className="ab-page">
-      {/* The fusuma to /about, the work; the same switch heads both pages. */}
+      {/* The fusuma to /content, the writing; the same switch heads both pages. */}
       <AboutSwitch current="person" />
 
       <div className="ab-stage">

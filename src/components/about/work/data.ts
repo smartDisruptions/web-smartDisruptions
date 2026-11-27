@@ -270,7 +270,7 @@ export const wall: WallItem[] = [
     key: c.key,
     name: c.name,
     kind: c.category,
-    href: c.detailHref ?? c.liveUrl ?? '/about',
+    href: c.detailHref ?? c.liveUrl ?? '/apps',
     external: !c.detailHref,
     src: c.thumbnail,
     mark: markFor(c.key),

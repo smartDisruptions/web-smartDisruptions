@@ -6,7 +6,11 @@ import { Button } from '@/components/ui';
 /** Josh, briefly — and the promise the site has kept since the first post. */
 export default function AboutTeaser() {
   return (
-    <section aria-labelledby="hm-josh" className="sd-defer mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32" style={{ containIntrinsicSize: 'auto 560px' }}>
+    <section
+      aria-labelledby="hm-josh"
+      className="sd-defer mx-auto max-w-6xl px-5 pt-24 sm:px-6 sm:pt-32"
+      style={{ containIntrinsicSize: 'auto 560px' }}
+    >
       <div className="sd-sheet sd-reveal grid items-center gap-10 overflow-hidden p-6 sm:p-10 md:grid-cols-[auto_1fr_auto]">
         <div className="relative mx-auto w-44 sm:w-52">
           <img
@@ -29,8 +33,8 @@ export default function AboutTeaser() {
             Hi, I&apos;m Josh.
           </h2>
           <p className="font-read mt-4 max-w-xl text-[1.08rem] leading-relaxed text-text-secondary">
-            I build real things with AI and write up exactly how — so it&apos;s usable for people
-            who feel behind, stuck, or underpowered.
+            I build things with AI and write up exactly how — so it&apos;s
+            usable for people who feel behind, stuck, or underpowered.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button variant="secondary" href="/about-me">

@@ -46,7 +46,7 @@ export default function WorkThreshold() {
   return (
     <header className="au-hero">
       <div className="au-head">
-        <p className="sd-kicker">About &middot; The work</p>
+        <p className="sd-kicker">Apps &middot; The work</p>
         <h1 className="au-h1 font-display">
           <span className="au-h1-line">
             <Slash text="Step inside." />
@@ -75,9 +75,8 @@ export default function WorkThreshold() {
 
       <div className="au-body">
         <p className="au-lede font-read">
-          I build real things with AI. Then I show my work: honest breakdowns of
-          what I build &mdash; the timeline, the method, and the parts worth
-          copying. Everything below is online, and all of it is free to try.
+          I build things with AI. Then I show my work. Everything below is
+          online, and all of it is free to try.
         </p>
       </div>
 

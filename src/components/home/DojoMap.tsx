@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import Kiru, { type KiruPose } from '@/components/kiru/Kiru';
 import Kanji from '@/components/brand/Kanji';
-import StaticSvg from '@/components/brand/StaticSvg';
-import { BUILD_ROOMS, type BuildRoom } from '@/components/build/rooms';
-import { MOON, TILE_URI, pixelPaths } from '@/components/build/sections/pixels';
+import { counts } from '@/components/about/work/data';
+import { getArchivedNotes, getFieldNotes } from '@/lib/fieldNotes';
 import { GAME_SLUGS } from '@/data/apps';
 import { IconArrowRight } from '@/components/icons';
 
@@ -23,85 +22,51 @@ type Room = {
   ground?: ReactNode;
 };
 
-/** The games room's moon, in pixels like the room it opens onto. */
-const MOON_PATHS = [...pixelPaths(MOON)];
-
 /**
- * What each Build room's door is made of. Websites: a shoji, paper in a
+ * The four rooms of the dojo as app tiles (Josh's four, November 2026: Apps,
+ * Learn, Arcade and Writing; until then the three Build rooms and the
+ * Arcade). Each has its kanji, Kiru doing that room's job, one line, and a
+ * chip that tells the truth, counted from the site's own data. A 2×2 grid on
+ * a phone, a bento row on a desktop. Each tile carries its own ground, all
+ * CSS (home.css).
+ *
+ * Apps: black urushi with a gold maki-e line and a phone made of light; Kiru
+ * throws a shuriken, a tool that does one job. Learn: a shoji, paper in a
  * wooden lattice, with a browser's three dots in its top rail; Kiru is
- * building it. Apps: black urushi with a gold maki-e line and a phone made
- * of light; Kiru throws a shuriken, a tool that does one job. Games: pixel
- * stars and copper roof tiles under a night sky; Kiru runs the level.
+ * building. Arcade: neon. Writing: ai-iro, the indigo of the site's ink,
+ * ruled like a page; Kiru reads.
  */
-const BUILD_DOORS: Record<
-  BuildRoom['key'],
-  Pick<Room, 'pose' | 'tone' | 'ground'>
-> = {
-  websites: {
-    pose: 'build',
-    tone: 'hb-door-web',
-    ground: (
-      <span className="hb-door-bar" aria-hidden>
-        <i />
-        <i />
-        <i />
-      </span>
-    ),
-  },
-  apps: {
-    pose: 'throw',
-    tone: 'hb-door-app',
-    ground: <span className="hb-door-phone" aria-hidden />,
-  },
-  games: {
-    pose: 'run',
-    tone: 'hb-door-game',
-    ground: (
-      <>
-        <span className="hb-door-stars" aria-hidden>
+export default function DojoMap() {
+  const built = counts.websites + counts.apps + counts.games;
+  const notes = getFieldNotes().length + getArchivedNotes().length;
+  const rooms: Room[] = [
+    {
+      href: '/apps',
+      title: 'Apps',
+      line: 'Everything I’ve built. Free to try.',
+      count: `${built} builds`,
+      kanji: '器',
+      pose: 'throw',
+      tone: 'hb-door-app',
+      ground: <span className="hb-door-phone" aria-hidden />,
+    },
+    {
+      href: '/learn',
+      title: 'Learn',
+      line: 'Build websites, apps and games with AI.',
+      count: 'Free',
+      more: ' · by email',
+      kanji: '学',
+      pose: 'build',
+      tone: 'hb-door-web',
+      ground: (
+        <span className="hb-door-bar" aria-hidden>
           <i />
           <i />
           <i />
         </span>
-        <StaticSvg
-          viewBox="0 0 17 17"
-          shapeRendering="crispEdges"
-          className="hb-door-moon"
-          aria-hidden
-        >
-          {MOON_PATHS.map(([fill, d]) => (
-            <path key={fill} d={d} fill={fill} />
-          ))}
-        </StaticSvg>
-        <span
-          className="hb-door-tiles"
-          style={{ '--tile': TILE_URI } as CSSProperties}
-          aria-hidden
-        />
-      </>
-    ),
-  },
-};
-
-/**
- * The four rooms of the dojo as app tiles: the three Build rooms and the
- * Arcade, each with its kanji, Kiru doing that room's job, one line, and a
- * chip that tells the truth. A 2×2 grid on a phone, a bento row on a
- * desktop. Each tile carries its own ground, all CSS (home.css).
- */
-export default function DojoMap() {
-  const rooms: Room[] = [
-    ...BUILD_ROOMS.map((r) => ({
-      href: r.href,
-      title: r.title,
-      line: r.line,
-      // JOSH: no guides in these rooms yet, so no count. Once a room has
-      // some, swap this for the real number (e.g. `${guides.length} guides`).
-      count: 'New room',
-      more: ' · free by email',
-      kanji: r.kanji,
-      ...BUILD_DOORS[r.key],
-    })),
+      ),
+    },
     {
       href: '/games',
       title: 'Arcade',
@@ -110,6 +75,15 @@ export default function DojoMap() {
       kanji: '遊',
       pose: 'game',
       tone: 'hm-room-arcade',
+    },
+    {
+      href: '/content',
+      title: 'Writing',
+      line: 'What I learn building, with receipts.',
+      count: `${notes} notes`,
+      kanji: '書',
+      pose: 'read',
+      tone: 'hm-room-writing',
     },
   ];
 

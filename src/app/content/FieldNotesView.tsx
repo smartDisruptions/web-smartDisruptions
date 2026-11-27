@@ -12,6 +12,7 @@ import {
   type FieldNote,
 } from '@/lib/fieldNotes';
 import WritingStorm from '@/components/writing/storm/WritingStorm';
+import AboutSwitch from '@/components/about/AboutSwitch';
 import LevelSweep from './LevelSweep';
 import './writing.css';
 
@@ -481,6 +482,9 @@ export default function FieldNotesView({
     const [lead, ...rest] = notes;
     return (
       <div className="wr-index">
+        {/* Writing is the first of About's two pages since November 2026:
+            the fusuma slides to About Me. */}
+        <AboutSwitch current="writing" />
         <IndexHead count={notes.length} newest={newest} />
 
         <section className="wr-notes" aria-label="Field notes">

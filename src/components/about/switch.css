@@ -109,7 +109,7 @@
 .au-fsm-pull-r {
   right: 7px;
 }
-.au-fsm[data-on='work'] .au-fsm-pull-r,
+.au-fsm[data-on='writing'] .au-fsm-pull-r,
 .au-fsm[data-on='person'] .au-fsm-pull-l {
   opacity: 1;
 }
@@ -148,11 +148,11 @@
   transition: color 0.35s ease;
 }
 /* The side the door stands over: sumi on washi (15:1). */
-.au-fsm[data-on='work'] .au-fsm-tab[data-id='work'],
+.au-fsm[data-on='writing'] .au-fsm-tab[data-id='writing'],
 .au-fsm[data-on='person'] .au-fsm-tab[data-id='person'] {
   color: #1f1a14;
 }
-.au-fsm[data-on='work'] .au-fsm-tab[data-id='work'] .au-fsm-k,
+.au-fsm[data-on='writing'] .au-fsm-tab[data-id='writing'] .au-fsm-k,
 .au-fsm[data-on='person'] .au-fsm-tab[data-id='person'] .au-fsm-k {
   color: #c8321c;
 }
@@ -173,16 +173,16 @@ html[data-au-door] .au-fsm {
 html[data-au-door] .au-fsm-door {
   view-transition-name: au-fsm-door;
 }
-html[data-au-door] .au-fsm-tab[data-id='work'] {
-  view-transition-name: au-fsm-work;
+html[data-au-door] .au-fsm-tab[data-id='writing'] {
+  view-transition-name: au-fsm-writing;
 }
 html[data-au-door] .au-fsm-tab[data-id='person'] {
   view-transition-name: au-fsm-person;
 }
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-group(au-fsm-door),
-  ::view-transition-old(au-fsm-work),
-  ::view-transition-new(au-fsm-work),
+  ::view-transition-old(au-fsm-writing),
+  ::view-transition-new(au-fsm-writing),
   ::view-transition-old(au-fsm-person),
   ::view-transition-new(au-fsm-person) {
     animation-duration: 0.5s;

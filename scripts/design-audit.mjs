@@ -24,7 +24,7 @@ const ROUTES = [
   '/market-storm',
   '/apps',
   '/games',
-  '/about',
+  '/about-me',
   '/privacy',
   '/resume',
   '/content/what-ai-handed-back',

@@ -13,6 +13,11 @@
  * What I Built left the nav in October 2026, when its page was folded into
  * About (the work), so About took the last tab: on a phone it is Josh's
  * photo, the way an app's last tab is its profile.
+ *
+ * November 2026 (Josh's call): the work and the Writing swapped places. The
+ * work is the second tab, named Apps (/apps). Writing sits where the work
+ * was, as the first of About's two pages, so the About tab opens it and the
+ * fusuma at its top slides to About Me.
  */
 export type NavItem = {
   href: string;
@@ -23,30 +28,32 @@ export type NavItem = {
 
 export const NAV: NavItem[] = [
   { href: '/', label: 'Home', short: 'Home', tab: true },
-  { href: '/content', label: 'Writing', short: 'Writing', tab: true },
+  { href: '/apps', label: 'Apps', short: 'Apps', tab: true },
   { href: '/learn', label: 'Learn', short: 'Learn', tab: true },
   { href: '/games', label: 'Arcade', short: 'Play', tab: true },
   { href: '/videos', label: 'Videos', short: 'Videos', tab: false },
-  { href: '/about', label: 'About', short: 'About', tab: true },
+  { href: '/content', label: 'About', short: 'About', tab: true },
 ];
 
 /**
  * Top-level segments that belong to another section's tab. Market Storm left
  * the nav in October 2026 and became a section of the Writing page, so its
- * own page (/market-storm) and every report light Writing. The
- * guides are listed among Writing's field notes, so they light it too.
+ * own page (/market-storm) and every report light Writing's tab, which is
+ * About since November 2026. The guides are listed among Writing's field
+ * notes, so they light it too.
  *
- * About is two pages since October 2026: /about (the work) and /about-me (the
- * person), so About Me lights About. What I Built was folded into /about the
- * same month, and each thing's own page (/built/<slug>) lights About too. The
+ * About is two pages: /content (the writing) and /about-me (the person), so
+ * About Me lights About. The work is Apps (/apps): its old address (/about)
+ * and each thing's own page (/built/<slug>) light Apps. The
  * three Build pages are the three tracks /learn promises ("websites, apps and
  * games"), so they light Learn.
  */
 const PARENT: Record<string, string> = {
   'market-storm': '/content',
   guides: '/content',
-  'about-me': '/about',
-  built: '/about',
+  'about-me': '/content',
+  about: '/apps',
+  built: '/apps',
   'build-websites': '/learn',
   'build-apps': '/learn',
   'build-games': '/learn',
