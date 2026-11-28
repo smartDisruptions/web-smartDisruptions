@@ -39,13 +39,14 @@ export const metadata: Metadata = {
  */
 /*
  * The story (Josh's pick, November 2026, from candidates previewed on the
- * card): the path in one paragraph, then the AI skills he wants it to
+ * card): the path in two short paragraphs, then the AI skills he wants it to
  * carry, then what they built. Every claim is one the site already makes
  * (most are on /resume) or is in his own record. "Almost anything" and
  * "take software apart" are worded to what that record backs.
  */
 const BIO = [
-  'I’ve been teaching myself to build things since 2008. I learned by building: first websites for small businesses, then software at a university, where I’m an engineer today.',
+  'In 2008 I taught myself to build websites with WordPress, and I started selling them to clients. In 2010 I leaned more toward marketing and SEO (getting sites found on Google). I worked in that for a few years before moving on.',
+  'Now I’m an enterprise software developer at a university.',
   'Around 2023 I started using AI every day. Today I can build almost anything digital with Claude and other agentic models.',
   'I do it by setting the AI up well. I organize data so it can read it. I plug in tools through MCP so it can act. I run teams of AI agents on one written plan. And I design the full system, from the page you see to the database behind it.',
   'I also pull data out of messy sources, and I take software apart to learn how it works, then build my own.',
