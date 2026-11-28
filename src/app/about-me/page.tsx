@@ -45,8 +45,8 @@ export const metadata: Metadata = {
  * "take software apart" are worded to what that record backs.
  */
 const BIO = [
-  'I’ve been teaching myself to build things since 2008. My degree is in psychology, not computer science, so I learned by building: first websites for small businesses, then software at a university, where I’m an engineer today.',
-  'Around 2023 I started using AI every day. Today I can build almost anything digital with Claude.',
+  'I’ve been teaching myself to build things since 2008. I learned by building: first websites for small businesses, then software at a university, where I’m an engineer today.',
+  'Around 2023 I started using AI every day. Today I can build almost anything digital with Claude and other agentic models.',
   'I do it by setting the AI up well. I organize data so it can read it. I plug in tools through MCP so it can act. I run teams of AI agents on one written plan. And I design the full system, from the page you see to the database behind it.',
   'I also pull data out of messy sources, and I take software apart to learn how it works, then build my own.',
   `That’s how a food truck got online ordering with real card payments, how my university got its Net Price Calculator, and how this site got ${GAME_SLUGS.length} games. A few of them I made with my son.`,
