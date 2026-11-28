@@ -162,6 +162,26 @@ const TRAILER_STEPS: VideoStep[] = [
 const TRAILER_COST =
   'Nothing new. The games, their music and their sounds already existed.';
 
+/** How Opus 5.5's three game trailers were made. They share one answer. */
+const OPUS_TRAILER_STEPS: VideoStep[] = [
+  {
+    title: 'Opus 5.5 made the second set.',
+    body: 'It got the same kind of ask as the first three trailers, which Fable 5.2 made: show off the game, land on the beat, blow me away. It picked a new idea, a new song or a new part of one, and mostly new moments for each game, and gave each game to its own agent.',
+  },
+  {
+    title: 'The same footage, cut a new way.',
+    body: 'Each game had been filmed frame by frame at 120 game frames a second, with every hit marked. Each new trailer is a fresh cut of that footage: a beat grid plus clips, with every big hit pinned to a beat or half-beat.',
+  },
+  {
+    title: 'One program draws every frame.',
+    body: 'The page that drew the first trailers draws these too, with something new for each: widescreen bars for Kiru, TV name plates and a yellow marker for Serious Slap Champion, and chapter titles in the game’s own style for Tether Ball.',
+  },
+  {
+    title: 'The sound is the game’s own.',
+    body: 'The music is the game’s own score and the hits are the game’s own sounds, with a few from my sound library and a few made in code. The drum or piano attacks in each song were measured so the cuts sit on them.',
+  },
+];
+
 /** In the order the library shows them when nothing is sorted. */
 export const videos: Video[] = [
   {
@@ -314,6 +334,28 @@ export const videos: Video[] = [
     steps: TRAILER_STEPS,
   },
   {
+    slug: 'kiru-the-lesson',
+    kind: 'game-trailer',
+    title: 'Kiru: The Lesson',
+    line: 'Master Hideo’s one lesson in the dojo, then the duel with Kage where it pays off.',
+    about:
+      '“Let him strike first. Then answer.” Three swords gather in the quiet, Kage comes, a log takes the cut, and the counter lands. The frame opens wide for the three ultimates, then the music stops for a bar of silence before the last cut shows.',
+    date: '2026-11-22',
+    seconds: 26.2,
+    maker: 'opus-5-5',
+    topics: ['games'],
+    dir: '/videos/kiru-the-lesson',
+    tint: ['#4bbbd2', '#5276cb'],
+    cost: TRAILER_COST,
+    facts: [
+      'Real gameplay',
+      'Music: Crimson Moon, from the game’s score',
+      '176 beats a minute',
+      'Widescreen bars that open for the ultimates',
+    ],
+    steps: OPUS_TRAILER_STEPS,
+  },
+  {
     slug: 'fox-and-the-moon',
     kind: 'code-film',
     title: 'The Fox and the Moon',
@@ -464,6 +506,28 @@ export const videos: Video[] = [
     steps: TRAILER_STEPS,
   },
   {
+    slug: 'tether-ball-story-mode',
+    kind: 'game-trailer',
+    title: 'Tether Ball: Story Mode',
+    line: 'The new kid’s story in the game’s own chapters, from the first face-off to YOU WIN!',
+    about:
+      'Piano and violin under the chapter card and Yuji’s line, then the VS card slams on the drop and the specials land one to a beat, two of them at 240 frames a second. Look for the tape stopping when Kage wins, and the music crashing back on the pole slam.',
+    date: '2026-11-22',
+    seconds: 27.4,
+    maker: 'opus-5-5',
+    topics: ['games'],
+    dir: '/videos/tether-ball-story-mode',
+    tint: ['#e7d437', '#9bde3f'],
+    cost: TRAILER_COST,
+    facts: [
+      'Real gameplay',
+      'Music: the game’s own song, the orchestral trap take',
+      '75 beats a minute',
+      'Two shots at 240 frames a second',
+    ],
+    steps: OPUS_TRAILER_STEPS,
+  },
+  {
     slug: 'three-against-four',
     kind: 'code-film',
     title: 'Three Against Four',
@@ -518,6 +582,28 @@ export const videos: Video[] = [
       '60 frames a second',
     ],
     steps: TRAILER_STEPS,
+  },
+  {
+    slug: 'serious-slap-champion-fight-night',
+    kind: 'game-trailer',
+    title: 'Serious Slap Champion: Fight Night',
+    line: 'A deadpan sports broadcast: seven opponents, seven name plates, and a piano that never flinches.',
+    about:
+      'Dad believes in you, Grandpa has one tooth, and the champion is undefeated, right up to the song’s last chord. Watch for the yellow circle round a flying tooth, and whose name is on the final plate.',
+    date: '2026-11-22',
+    seconds: 30,
+    maker: 'opus-5-5',
+    topics: ['games'],
+    dir: '/videos/serious-slap-champion-fight-night',
+    tint: ['#d54c48', '#ce964f'],
+    cost: TRAILER_COST,
+    facts: [
+      'Real gameplay',
+      'Music: Sunrise, the game’s piano-and-violin theme',
+      '76 beats a minute',
+      'Every cut a hard cut on the beat',
+    ],
+    steps: OPUS_TRAILER_STEPS,
   },
   {
     slug: 'rose-window',
