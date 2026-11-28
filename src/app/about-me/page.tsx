@@ -45,12 +45,12 @@ export const metadata: Metadata = {
  * "take software apart" are worded to what that record backs.
  */
 const BIO = [
-  'In 2008 I taught myself to build websites with WordPress, and I started selling them to clients. In 2010 I leaned more toward marketing and SEO (getting sites found on Google). I worked in that for a few years before moving on.',
-  'Now I’m an enterprise software developer at a university.',
-  'Around 2023 I started using AI every day. Today I can build almost anything digital with Claude and other agentic models.',
-  'I do it by setting the AI up well. I organize data so it can read it. I plug in tools through MCP so it can act. I run teams of AI agents on one written plan. And I design the full system, from the page you see to the database behind it.',
-  'I also pull data out of messy sources, and I take software apart to learn how it works, then build my own.',
-  `That’s how a food truck got online ordering with real card payments, how my university got its Net Price Calculator, and how this site got ${GAME_SLUGS.length} games. A few of them I made with my son.`,
+  'In 2008 I taught myself to build websites with WordPress and started selling them to clients. By 2010 the work had shifted toward marketing and SEO (getting sites found on Google). That lasted a few years.',
+  'These days my job is enterprise software development at a university.',
+  'AI became part of every workday around 2023. Today I can build almost anything digital with Claude and other agentic models.',
+  'It comes down to setting the AI up well. Data gets organized so the AI can read it. Tools get plugged in through MCP so it can act. Teams of AI agents work from one written plan. And the full system is designed up front, from the page you see to the database behind it.',
+  'Two more skills help: pulling data out of messy sources, and taking software apart to learn how it works before building my own.',
+  `That’s how a food truck got online ordering with real card payments, how my university got its Net Price Calculator, and how this site got ${GAME_SLUGS.length} games. A few of them were made with my son.`,
 ];
 
 const DOORS = [
