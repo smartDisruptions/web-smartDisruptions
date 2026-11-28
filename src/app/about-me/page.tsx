@@ -28,7 +28,8 @@ export const metadata: Metadata = {
  * Until October 2026 this page was "The Path", a career timeline and a
  * skills list. Josh didn't want it to read as a résumé any more, so it became
  * a meishi: who I am in two sentences, a plain note that I build with Claude,
- * and three ways in (the Arcade, the Writing, Learn). Chosen from four
+ * and three ways in (the Arcade, Apps and Learn; Apps took the
+ * Writing's place in November 2026, since the fusuma above already opens it). Chosen from four
  * designs previewed side by side (the letter, the card, three doors, made
  * with Claude); the timeline and the other three are in git history.
  *
@@ -61,10 +62,10 @@ const DOORS = [
     line: 'Games I built. Free, and they run in your browser.',
   },
   {
-    href: '/content',
-    kanji: '書',
-    name: 'The Writing',
-    line: 'What I learn building with AI, with the receipts.',
+    href: '/apps',
+    kanji: '器',
+    name: 'Apps',
+    line: 'Everything I’ve built: websites, apps and games. Free to try.',
   },
   {
     href: '/learn',
