@@ -1,0 +1,18 @@
+{
+  "tone": "info",
+  "before": {
+    "label": "What the AI wrote",
+    "text": "Every line of the site"
+  },
+  "after": {
+    "label": "What I decided",
+    "text": "Five calls it couldn't make",
+    "detail": "Two of them: don't touch that, don't believe that"
+  },
+  "headline": [
+    { "t": "It wrote the whole site. " },
+    { "t": "Five calls", "tone": "info" },
+    { "t": " were mine." }
+  ],
+  "alt": "Split card: the AI wrote every line of the rebuilt site, against the five decisions that stayed mine — two of which were rules about what not to let it touch and what not to believe."
+}
